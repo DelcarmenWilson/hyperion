@@ -4,57 +4,19 @@ import * as z from "zod";
 import { MessageSchema } from "@/schemas";
 import { db } from "@/lib/db";
 
-export const messageInsert = async (values: z.infer<typeof MessageSchema>) => {
+export const messageInsert = async (values: z.infer<typeof MessageSchema>,conversationId:string) => {
   const validatedFields = MessageSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
 
-  const {
-    toCountry,
-    toState,
-    smsMessageSid,
-    numMedia,
-    toCity,
-    fromZip,
-    smsSid,
-    fromState,
-    smsStatus,
-    fromCity,
-    body,
-    fromCountry,
-    to,
-    messagingServiceSid,
-    toZip,
-    numSegments,
-    messageSid,
-    accountSid,
-    from,
-    apiVersion,
-  } = validatedFields.data;
+  const { role,content } = validatedFields.data;
 
   await db.message.create({
     data: {
-      toCountry,
-      toState,
-      smsMessageSid,
-      numMedia,
-      toCity,
-      fromZip,
-      smsSid,
-      fromState,
-      smsStatus,
-      fromCity,
-      body,
-      fromCountry,
-      to,
-      messagingServiceSid,
-      toZip,
-      numSegments,
-      messageSid,
-      accountSid,
-      from,
-      apiVersion,
+      conversationId,
+      role,
+      content,
     },
   });
 

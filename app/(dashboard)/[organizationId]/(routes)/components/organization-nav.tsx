@@ -5,7 +5,7 @@ import { useParams, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export function MainNav({
+export function OrganizationNav({
   className,
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) {
@@ -14,29 +14,23 @@ export function MainNav({
 
   const routes = [
     {
-      href: '/leads',
-      label: "Leads",
-      active: pathname === '/leads',
+      href: `/${params.organizationId}`,
+      label: "Overview",
+      active: pathname === `/${params.organizationId}`,
     },
     {
-      href: '/csv',
-      label: "Csv",
-      active: pathname === '/csv',
+      href: `/${params.organizationId}/teams`,
+      label: "Teams",
+      active: pathname === `/${params.organizationId}/teams`,
     },
     {
-      href: '/twilio',
-      label: "Twilio",
-      active: pathname === '/twilio',
+      href: `/${params.organizationId}/settings`,
+      label: "Settings",
+      active: pathname === `/${params.organizationId}/settings`,
     },
-    {
-      href: '/chat',
-      label: "Chat",
-      active: pathname === '/chat',
-    },
- 
   ];
   return (
-    <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)}>
+    <nav className={cn("flex flex-col mt-2 space-y-2 lg:space-y-4", className)}>
       {routes.map((route) => (
         <Link
           key={route.href}

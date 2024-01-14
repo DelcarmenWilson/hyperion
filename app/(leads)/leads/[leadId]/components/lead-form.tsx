@@ -1,18 +1,16 @@
 "use client";
+import { useState, useEffect } from "react";
+
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ArrowLeftIcon, CalendarIcon } from "@radix-ui/react-icons";
 
-import { useTransition, useState } from "react";
-import { useSession } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lead } from "@prisma/client";
-import Link from "next/link";
-import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { LeadSchema } from "@/schemas";
 
 import {
@@ -20,7 +18,6 @@ import {
   FormField,
   FormControl,
   FormLabel,
-  FormDescription,
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
@@ -42,81 +39,93 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 
 import { cn } from "@/lib/utils";
-import { leadUpdateById } from "@/actions/lead";
 import { toast } from "sonner";
+import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
+import { Separator } from "@/components/ui/separator";
 
 interface LeadFormProps {
-  lead: Lead;
+  initialData: Lead | null;
 }
 
-export const LeadForm = ({ lead }: LeadFormProps) => {
-  const user = useCurrentUser();
-  const { update } = useSession();
-  const [isPending, startTransition] = useTransition();
-  const [isDisabled, setIsDisabled] = useState(true);
-  const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
+type LeadFormValues = z.infer<typeof LeadSchema>;
 
-  const form = useForm<z.infer<typeof LeadSchema>>({
+export const LeadForm = ({ initialData }: LeadFormProps) => {
+  const params = useParams();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  const title = initialData
+    ? `${initialData.firstName} ${initialData.lastName}`
+    : "New Lead";
+
+  const description = initialData ? "Edit a Team" : "Create a new team";
+  const toastMessage = initialData ? "Lead updated." : "Lead created.";
+  const action = initialData ? "Update" : "Create";
+
+  const form = useForm<LeadFormValues>({
     resolver: zodResolver(LeadSchema),
-    defaultValues: {
-      id: lead.id,
-      firstName: lead.firstName,
-      lastName: lead.lastName,
-      address: lead.address||undefined,
-      city: lead.city||undefined,
-      state: lead.state,
-      zipCode: lead.zipCode,
-      county: lead.county || undefined,
-      homePhone: lead.homePhone || undefined,
-      cellPhone: lead.cellPhone,
-      gender: lead.gender || undefined,
-      maritalStatus: lead.maritalStatus || undefined,
-      email: lead.email,
-      dateOfBirth: lead.dateOfBirth || undefined,
-      updatedBy: user?.id,
+    defaultValues: initialData || {
+      firstName: "",
+      lastName: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      homePhone: "",
+      cellPhone: "",
+      gender: "",
+      maritalStatus: "",
+      email: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LeadSchema>) => {
-    toast.success("just cliked the update button")
-    console.log(values)
-    // startTransition(() => {
-    //   leadUpdateById(values)
-    //     .then((data) => {
-    //       if (data.error) {
-    //         toast.error(data.error);
-    //       }
-    //       if (data.success) {
-    //         toast.success(data.success);
-    //         update();
-    //       }
-    //     })
-    //     .catch(() => {
-    //       toast.error("Something went wrong");
-    //     });
-    // });
+  const onSubmit = async (values: LeadFormValues) => {
+    try {
+      setLoading(true);
+      let lead = "";
+      if (initialData) {
+        await axios.patch(`/api/leads/${params.leadId}`, values);
+      } else {
+        const newlead = await axios.post(`/api/leads`, values);
+        const l = newlead.data;
+        lead = `/${l.id}`;
+      }
+      router.refresh();
+      router.push(`/leads${lead}`);
+      toast.success(toastMessage);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
 
-    setIsDisabled(true)
+    setIsDisabled(true);
   };
 
+  useEffect(() => {
+    if (!initialData) {
+      setIsDisabled(false);
+    }
+  }, []);
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <Link href="/leads">
+      <div className="flex justify-between items-center py-2">
+        <Button onClick={() => router.push("/leads")}>
           <ArrowLeftIcon className="h-6 w-6" />
-        </Link>
-        <h2>
-          {lead.firstName} {lead.lastName}
-        </h2>
-        <div>
-          <Button>call</Button>
-        </div>
+        </Button>
+        <h2 className="font-semibold text-2xl">{title}</h2>
+        <div>{initialData && <Button>call</Button>}</div>
       </div>
+      <Separator />
 
       <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex justify-evenly items-center space-4">
+        <form
+          className="space-y-6 w-full"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col">
               {/* FIRSTNAME */}
               <FormField
@@ -127,11 +136,10 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> First Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="John"
-                        disabled={isPending||isDisabled}
-                        autoComplete="FirstName"
+                        disabled={loading || isDisabled}
+                        autoComplete="First Name"
                         type="text"
                       />
                     </FormControl>
@@ -149,11 +157,10 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Last Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="Doe"
-                        disabled={isPending || isDisabled}
-                        autoComplete="LastName"
+                        disabled={loading || isDisabled}
+                        autoComplete="Last Name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -170,11 +177,11 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Gender</FormLabel>
                     <Select
                       name="ddlGender"
-                      disabled={isPending || isDisabled}
+                      disabled={loading || isDisabled}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl className="border-[#202020]">
+                      <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Gender" />
                         </SelectTrigger>
@@ -199,9 +206,9 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel>Date of birth</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <FormControl className="border-[#202020]">
+                        <FormControl>
                           <Button
-                            disabled={isPending || isDisabled}
+                            disabled={loading || isDisabled}
                             variant={"outline"}
                             className={cn(
                               "w-[240px] pl-3 text-left font-normal",
@@ -244,10 +251,9 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Home Phone</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="457-458-9695"
-                        disabled={isPending || isDisabled}
+                        disabled={loading || isDisabled}
                         autoComplete="phone"
                       />
                     </FormControl>
@@ -265,10 +271,9 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Cell Phone</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="555-555-5555"
-                        disabled={isPending || isDisabled}
+                        disabled={loading || isDisabled}
                         autoComplete="phone"
                       />
                     </FormControl>
@@ -286,11 +291,11 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Marital Status</FormLabel>
                     <Select
                       name="ddlMaritalStatus"
-                      disabled={isPending || isDisabled}
+                      disabled={loading || isDisabled}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl className="border-[#202020]">
+                      <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Marital status" />
                         </SelectTrigger>
@@ -316,10 +321,9 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Email</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={isPending || isDisabled}
+                        disabled={loading || isDisabled}
                         autoComplete="email"
                         type="email"
                       />
@@ -339,10 +343,9 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Address</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="123 main street"
-                        disabled={isPending || isDisabled}
+                        disabled={loading || isDisabled}
                         autoComplete="address"
                       />
                     </FormControl>
@@ -360,11 +363,10 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> City</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="Queens"
-                        disabled={isPending || isDisabled}
-                        autoComplete="city"
+                        disabled={loading || isDisabled}
+                        autoComplete="address-level2"
                       />
                     </FormControl>
                     <FormMessage />
@@ -381,11 +383,10 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> State</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="VA"
-                        disabled={isPending || isDisabled}
-                        autoComplete="state"
+                        disabled={loading || isDisabled}
+                        autoComplete="address-level1"
                       />
                     </FormControl>
                     <FormMessage />
@@ -402,11 +403,10 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
                     <FormLabel> Zip Code</FormLabel>
                     <FormControl>
                       <Input
-                        className="border-[#202020]"
                         {...field}
                         placeholder="15468"
-                        disabled={isPending || isDisabled}
-                        autoComplete="zip"
+                        disabled={loading || isDisabled}
+                        autoComplete="postal-code"
                       />
                     </FormControl>
                     <FormMessage />
@@ -416,12 +416,20 @@ export const LeadForm = ({ lead }: LeadFormProps) => {
             </div>
           </div>
           <div className="text-center">
-            {isDisabled ? (
-              <Button onClick={()=>setIsDisabled(false)} variant="outline">Edit</Button>
+            {isDisabled && initialData ? (
+              <Button onClick={() => setIsDisabled(false)} variant="outline">
+                Edit
+              </Button>
             ) : (
               <div>
-                <Button onClick={()=>setIsDisabled(true)} variant="outline"> Cancel</Button>
-                <Button disabled={isPending} type="submit">Update</Button>
+                {initialData && (
+                  <Button onClick={() => setIsDisabled(true)} variant="outline">
+                    Cancel
+                  </Button>
+                )}
+                <Button disabled={loading} type="submit">
+                  {action}
+                </Button>
               </div>
             )}
           </div>

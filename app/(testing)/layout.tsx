@@ -1,6 +1,5 @@
-import { NavBar } from "./_components/navbar";
-import { Sidebar } from "./_components/sidebar";
-
+import NavBar from "@/components/navbar";
+import { Sidebar } from "./components/sidebar";
 
 const LeadsLayout = ({ children }: { children: React.ReactNode }) => {
   return (

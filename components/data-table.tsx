@@ -22,7 +22,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   size?: "sm" | "md" | "lg" | "xl";
   noresults?: string;
-  setFile?: () => {} ;
+  setFile?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,16 +41,12 @@ export function DataTable<TData, TValue>({
     switch (size) {
       case "sm":
         return "min-w-[50px]";
-        break;
       case "md":
         return "min-w-[75px]";
-        break;
       case "lg":
         return "min-w-[100px]";
-        break;
       case "xl":
         return "min-w-[150px]";
-        break;
       default:
         return "min-w-[50px]";
     }

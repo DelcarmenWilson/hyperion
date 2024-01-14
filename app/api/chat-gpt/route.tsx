@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -34,6 +35,10 @@ export async function POST(req: Request) {
     frequency_penalty: 0,
     presence_penalty: 0,
   });
+const {role,content}=response.choices[0].message
+  await db.message.create({data:{
+    role,content:content||""
+  }})
 
 //   console.log(process.env.OPENAI_API_KEY, prompt, message);
 

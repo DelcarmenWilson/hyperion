@@ -6,8 +6,7 @@ import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
-import { boolean } from "zod";
-import { getAccountByUserId } from "./data/account";
+import { getAccountByUserId } from "@/data/account";
 
 export const {
   handlers: { GET, POST },
@@ -15,7 +14,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  pages: { signIn: "/auth/login", error: "/auth/error" },
+  pages: { signIn: "/login", error: "/error" },
   events: {
     async linkAccount({ user }) {
       await db.user.update({

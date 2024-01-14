@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
-import { BiImport, BiPlus } from "react-icons/bi";
 import {
+  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -16,16 +16,6 @@ import {
 import { FaChevronDown } from "react-icons/fa";
 
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 
 import {
   DropdownMenu,
@@ -44,16 +34,27 @@ import {
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-import { ImportLeadsForm } from "../_components/import-leads-form";
+import { Import, Plus } from "lucide-react";
+import { ImportLeadsForm } from "./import-leads-form";
+import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-import { leadMasterColumns as columns } from "@/columns/columns";
-import { Lead } from "@prisma/client";
-
-interface LeadDataTableProps {
-  data: Lead[];
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  searchKey: string;
 }
 
-export const LeadDataTable = ({ data }: LeadDataTableProps) => {
+export function LeadDataTable<TData, TValue>({
+  columns,
+  data,
+  searchKey,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -85,22 +86,30 @@ export const LeadDataTable = ({ data }: LeadDataTableProps) => {
     <div className="w-full">
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter First Name..."
-          value={
-            (table.getColumn("firstName")?.getFilterValue() as string) ?? ""
-          }
+          placeholder="Search"
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("firstName")?.setFilterValue(event.target.value)
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
         <div className="flex justify-between gap-x-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <FaChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      Columns
+                      <FaChevronDown className="ml-2 h-3 w-3 opacity-70" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Set columns</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <DropdownMenuContent align="end">
               {table
                 .getAllColumns()
@@ -121,61 +130,41 @@ export const LeadDataTable = ({ data }: LeadDataTableProps) => {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
           <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon" asChild>
-                <BiImport className="h-5 w-5" />
-              </Button>
-              {/* <Button variant="outline" size="icon" asChild>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                      <BiImport className="h-5 w-5" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Import Leads</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-                    </Button> */}
-            </DialogTrigger>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Import className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Import Leads</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
               <ImportLeadsForm />
             </DialogContent>
           </Dialog>
-          <Drawer>
-            <DrawerTrigger>
-              <Button variant="outline" size="icon">
-                <BiPlus className="h-5 w-5" />
-              </Button>
-              {/* <TooltipProvider asChild>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Button variant="outline" size="icon">
-                      <BiPlus className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add new Lead</p>{" "}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider> */}
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                <DrawerDescription>
-                  This action cannot be undone.
-                </DrawerDescription>
-              </DrawerHeader>
-              <DrawerFooter>
-                <Button>Submit</Button>
-                <DrawerClose>
-                  <Button variant="outline">Cancel</Button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button variant="outline" size="icon" asChild>
+                  <Link href="/leads/new">
+                    <Plus className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add new Lead</p>{" "}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <div className="rounded-md border">
@@ -254,4 +243,4 @@ export const LeadDataTable = ({ data }: LeadDataTableProps) => {
       </div>
     </div>
   );
-};
+}

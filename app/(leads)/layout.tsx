@@ -3,7 +3,6 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import React from "react";
-import SideBar from "./(routes)/components/sidebar";
 
 export default async function DashBoardLayout({
   children,
@@ -34,7 +33,7 @@ export default async function DashBoardLayout({
       <NavBar />
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-1">
-          <SideBar />
+          {/* <SideBar /> */}
           <div className=" flex-1 bg-white w-full space-y-4 p-8 pt-6 overflow-y-auto">
             {children}
           </div>

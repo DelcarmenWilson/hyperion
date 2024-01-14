@@ -23,13 +23,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { AlertModal } from "@/components/modals/alert-modal";
+import { TeamSchema } from "@/schemas";
 
 interface TeamFormProps {
   initialData: Team | null;
 }
-
-const formSchema = z.object({ name: z.string().min(1) });
-type TeamFormValues = z.infer<typeof formSchema>;
+type TeamFormValues = z.infer<typeof TeamSchema>;
 
 export const TeamForm = ({ initialData }: TeamFormProps) => {
   const params = useParams();
@@ -37,30 +36,29 @@ export const TeamForm = ({ initialData }: TeamFormProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const title=initialData?"Edit team":"Create team"
-  const description=initialData?"Edit a Team":"Create a new team"
-  const toastMessage=initialData?"Team updated.":"Team created."
-  const action=initialData?"Save changes":"Create"
+  const title = initialData ? "Edit team" : "Create team";
+  const description = initialData ? "Edit a Team" : "Create a new team";
+  const toastMessage = initialData ? "Team updated." : "Team created.";
+  const action = initialData ? "Save changes" : "Create";
 
   const form = useForm<TeamFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name:""
-    },
+    resolver: zodResolver(TeamSchema),
+    defaultValues: initialData || {},
   });
 
   const onSubmit = async (values: TeamFormValues) => {
     try {
       setLoading(true);
-      if(initialData){
-
-        await axios.patch(`/api/${params.organizationId}/teams/${params.teamId}`, values);
-      }
-      else{
+      if (initialData) {
+        await axios.patch(
+          `/api/${params.organizationId}/teams/${params.teamId}`,
+          values
+        );
+      } else {
         await axios.post(`/api/${params.organizationId}/teams`, values);
       }
       router.refresh();
-      router.push(`/${params.organizationId}/teams`)
+      router.push(`/${params.organizationId}/teams`);
       toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
@@ -71,7 +69,9 @@ export const TeamForm = ({ initialData }: TeamFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.organizationId}/teams/${params.teamId}`);
+      await axios.delete(
+        `/api/${params.organizationId}/teams/${params.teamId}`
+      );
       router.refresh();
       router.push(`/${params.organizationId}/teams`);
       toast.success("Team deleted.");
@@ -92,17 +92,16 @@ export const TeamForm = ({ initialData }: TeamFormProps) => {
       />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {initialData &&(
-        <Button
-          disabled={loading}
-          variant="destructive"
-          size="icon"
-          onClick={() => setOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
-          
-          )}
+        {initialData && (
+          <Button
+            disabled={loading}
+            variant="destructive"
+            size="icon"
+            onClick={() => setOpen(true)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <Separator />
       <Form {...form}>

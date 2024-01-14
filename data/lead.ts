@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 
 export const LeadsGetAll = async () => {
   try {
-    const leads = await db.lead.findMany();
+    const leads = await db.lead.findMany({include:{conversation:true}});
     
     return leads;
   } catch {

@@ -37,7 +37,7 @@ export const NewVerificationForm = () => {
   return (
     <CardWrapper
       headerLabel="Confiming your verification"
-      backButtonHref="/auth/login"
+      backButtonHref="/login"
       backButtonLabel="Back to login"
     >
       <div className="flex items-center w-full justify-center">

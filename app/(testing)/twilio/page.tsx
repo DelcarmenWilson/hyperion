@@ -1,11 +1,7 @@
-
-import { TwilioForm } from "../_components/twilio-form";
+import { TwilioForm } from "../components/twilio-form";
 
 const TwilioPage = () => {
-
-  return (
-   <TwilioForm/>
-  );
+  return <TwilioForm />;
 };
 
 export default TwilioPage;
