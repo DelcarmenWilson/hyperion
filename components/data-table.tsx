@@ -22,7 +22,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   size?: "sm" | "md" | "lg" | "xl";
   noresults?: string;
-  setFile?: () => void;
+  setFile?: (e: any) => void;
 }
 
 export function DataTable<TData, TValue>({

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
-import { Copy, Edit, MessageCircle, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, Eye, MessageCircle, MoreHorizontal, Trash } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+
 import { LeadColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -93,8 +94,8 @@ export const CellAction = ({ data }: CellActionProps) => {
               router.push(`/leads/${data.id}`);
             }}
           >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
+            <Eye className="mr-2 h-4 w-4" />
+            View
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />

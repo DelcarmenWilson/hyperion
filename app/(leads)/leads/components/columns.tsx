@@ -17,7 +17,7 @@ export type LeadColumn = {
   state: string;
   zipCode: string;
   cellPhone: string;
-  conversationId: string;
+  conversationId?: string | undefined;
 };
 
 export const columns: ColumnDef<LeadColumn>[] = [
@@ -87,20 +87,5 @@ export const columns: ColumnDef<LeadColumn>[] = [
     accessorKey: "cellPhone",
     header: "Mobile",
   },
-  // {
-  //   accessorKey: "amount",
-  //   header: () => <div className="text-right">Amount</div>,
-  //   cell: ({ row }) => {
-  //     const amount = parseFloat(row.getValue("amount"));
-
-  //     // Format the amount as a dollar amount
-  //     const formatted = new Intl.NumberFormat("en-US", {
-  //       style: "currency",
-  //       currency: "USD",
-  //     }).format(amount);
-
-  //     return <div className="text-right font-medium">{formatted}</div>;
-  //   },
-  // },
   { id: "actions", cell: ({ row }) => <CellAction data={row.original} /> },
 ];

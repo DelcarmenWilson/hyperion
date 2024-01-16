@@ -1,9 +1,12 @@
+"use server"
+
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { Lead } from "@prisma/client";
 import { formatPhoneNumber } from "@/lib/utils";
+import { LeadColumn } from "@/app/(leads)/leads/components/columns";
 
 export const leadUpdateById = async (values: z.infer<typeof LeadSchema>,leadId:string) => {
 
@@ -56,8 +59,8 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
       city,
       state,
       zipCode,
-      homePhone:formatPhoneNumber(homePhone),
-      cellPhone:`+${formatPhoneNumber(cellPhone)}`,
+      homePhone:homePhone?formatPhoneNumber(homePhone):"",
+      cellPhone:formatPhoneNumber(cellPhone),
       gender: gender || "",
       maritalStatus: maritalStatus || "",
       email,
@@ -69,14 +72,12 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   return { success: "Lead created!" };
 };
 
-export const leadsImport = async (values: Lead[]) => {
+export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
   }
-  console.log(user)
-
-  return {error:"testing"}
+  
   for (let i = 0; i < values.length; i++) {
     const {
       firstName,

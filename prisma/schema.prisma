@@ -7,7 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  // provider  = "postgresql"
+  provider  = "mysql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
@@ -30,6 +31,7 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
 
   conversations Conversation[]
+  chatSettings  ChatSettings?
 }
 
 model Account {
@@ -112,12 +114,12 @@ model Lead {
   city          String
   state         String
   zipCode       String
-  homePhone     String        @default("")
+  homePhone     String?
   cellPhone     String
   gender        String        @default("N/A")
   maritalStatus String        @default("N/A")
   email         String
-  dateOfBirth   DateTime
+  dateOfBirth   DateTime?
   // age               Int?
   // faceValue         Int?
   // placeOfBirth      String?
@@ -133,13 +135,13 @@ model Lead {
   // fatherAge         Int?
   // motherAge         Int?
   // cuaseOfDeath      String?
-  status        String        @default("new")
-  notes         String        @default("")
+  status        String        @default("New")
+  notes         String?
   active        Boolean       @default(true)
   owner         String?
   conversation  Conversation?
   createdAt     DateTime      @default(now())
-  updatedBy     String        @default("")
+  updatedBy     String?
   updatedAt     DateTime      @updatedAt
 }
 
@@ -189,6 +191,18 @@ model Message {
   conversationId String
 
   role      String
-  content   String
+  content   String   @db.LongText
   createdAt DateTime @default(now())
+}
+
+// SETTINGS
+model ChatSettings {
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  initialPrompt  String   @db.LongText
+  initialMessage String   @db.LongText
+  leadInfo       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

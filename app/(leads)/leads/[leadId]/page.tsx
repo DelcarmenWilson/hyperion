@@ -1,23 +1,27 @@
-import { LeadGetById } from "@/data/lead";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LeadForm } from "./components/lead-form";
 import { db } from "@/lib/db";
+import { LeadGetById } from "@/data/lead";
+import { LeadClient } from "./components/lead-client";
 
 const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
   const lead = await LeadGetById(params.leadId);
-  //const lead = await db.team.findUnique({ where: { id: "" } });
+
+  const conversation = await db.conversation.findFirst({
+    where: { leadId: params.leadId },
+    include: { lead: true, user: true },
+  });
+
+  const messages = await db.message.findMany({
+    where: { conversationId: conversation?.id, NOT: { role: "system" } },
+  });
+
   return (
     <div className="py-4">
-      <Tabs defaultValue="personal" className="w-full">
-        <TabsList>
-          <TabsTrigger value="personal">Personal</TabsTrigger>
-          <TabsTrigger value="medical">Medical</TabsTrigger>
-        </TabsList>
-        <TabsContent value="personal">
-          <LeadForm initialData={lead} />
-        </TabsContent>
-        <TabsContent value="medical">Change your password here.</TabsContent>
-      </Tabs>
+      <LeadClient
+        lead={lead}
+        initialMessages={messages}
+        userName={conversation?.user?.name as string}
+        leadName={conversation?.lead?.lastName as string}
+      />
     </div>
   );
 };

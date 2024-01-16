@@ -35,7 +35,7 @@ export default async function DashBoardLayout({
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-1">
           <SideBar />
-          <div className=" flex-1 bg-white w-full space-y-4 p-8 pt-6 overflow-y-auto">
+          <div className=" flex-1 w-full space-y-4 p-8 pt-6 overflow-y-auto">
             {children}
           </div>
         </div>

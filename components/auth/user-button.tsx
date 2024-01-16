@@ -6,7 +6,10 @@ import { IoIosSettings } from "react-icons/io";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -22,18 +25,23 @@ export const UserButton = () => {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={user?.image || ""} />
-          <AvatarFallback className="bg-primary">
-            <FaUser className="text-white" />
+          <AvatarFallback className="bg-primary dark:bg-accent">
+            <FaUser className="text-accent dark:text-primary" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end">
+      <DropdownMenuContent className="w-60" align="end">
+        <DropdownMenuLabel className="flex flex-col">
+          {user?.name}
+
+          <span className="text-muted-foreground text-xs">{user?.email}</span>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer">
-            <IoIosSettings className="h-4 w-4 mr-2" />
-          <Link href="/settings">
-            Settings
-          </Link>
+          <IoIosSettings className="h-4 w-4 mr-2" />
+          <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <LogoutButton>
           <DropdownMenuItem>
             <ExitIcon className="h-4 w-4 mr-2" />

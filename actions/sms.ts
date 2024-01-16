@@ -4,13 +4,14 @@ import { db } from "@/lib/db";
 import twilio from "twilio";
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
+import { defaultMessage, defaultOptOut, defaultPrompt } from "@/placeholder/chat";
 
 const sid = process.env.TWILIO_CLIENT_ID;
 const token = process.env.TWILIO_CLIENT_TOKEN;
-const from=process.env.TWILIO_PHONE
+const from = process.env.TWILIO_PHONE;
 
 export const sendIntialSms = async (leadId: string) => {
-    //TODO the entire lead shall be passed
+  //TODO the entire lead shall be passed
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -21,35 +22,58 @@ export const sendIntialSms = async (leadId: string) => {
     return { error: "Lead does not exist" };
   }
 
-  const existingConversation=await db.conversation.findFirst({where:{
-    lead:{id:lead.id}
-  }})
+  const existingConversation = await db.conversation.findFirst({
+    where: {
+      lead: { id: lead.id },
+    },
+  });
 
-  if(existingConversation){
+  if (existingConversation) {
     return { error: "Conversation Already exist" };
   }
 
-  const prompt=`Your name is ${user.name}. You are a life insurance agent working with family first life. The main goal is to book an appointment with a lead. You should be very professional and keep your answers short. only answer one question at a time and give the client time to think and respond.Be very persuasive on convinf the lead that he/she needs life insurance. Here is the lead information: ${JSON.stringify(lead)}  `
+  const chatSettings = await db.chatSettings.findUnique({
+    where: { userId: user.id },
+  });
 
-  const message=`Hey ${lead.firstName} this is ${user.name}  from family first life, how are you today?`
+  let prompt = chatSettings?.initialPrompt
+    ? chatSettings.initialPrompt
+    : defaultPrompt().replace("{AGENT_NAME}", user.name as string);
 
-  const conversation= await conversationInsert(user.id,lead.id,message)
+  let message = chatSettings?.initialMessage
+    ? chatSettings.initialMessage
+    : defaultMessage().replace("{AGENT_NAME}", user.name as string);
+  message = message.replace("{LEAD_NAME}", lead.firstName as string);
 
-  if(!conversation.success){
-    return ({error:"Conversation was not created"})
+  if (chatSettings?.leadInfo) {
+    prompt += `Here is the lead information: ${JSON.stringify(lead)}  `;
+  } 
+
+  const conversation = await conversationInsert(user.id, lead.id, message);
+
+  if (!conversation.success) {
+    return { error: "Conversation was not created" };
   }
 
-  await messageInsert({role:"prompt",content:prompt},conversation.success)
-  await messageInsert({role:"system",content:message},conversation.success)
+  await messageInsert(
+    { role: "system", content: prompt },
+    conversation.success
+  );
 
+  await messageInsert(
+    { role: "user", content: message },
+    conversation.success
+  );
+
+  message +=`${"\n\n"} ${defaultOptOut}`
   const client = twilio(sid, token);
   const result = await client.messages.create({
     body: message,
     from: from,
-    to: lead.cellPhone|| lead.homePhone,
+    to: lead.cellPhone || (lead.homePhone as string),
   });
 
-  if(!result){
+  if (!result) {
     return { success: "Message was not sent!" };
   }
 

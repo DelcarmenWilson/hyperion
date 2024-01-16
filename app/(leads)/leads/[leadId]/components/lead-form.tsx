@@ -5,7 +5,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ArrowLeftIcon, CalendarIcon } from "@radix-ui/react-icons";
+import { CalendarIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,13 +42,12 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { Separator } from "@/components/ui/separator";
+
+type LeadFormValues = z.infer<typeof LeadSchema>;
 
 interface LeadFormProps {
   initialData: Lead | null;
 }
-
-type LeadFormValues = z.infer<typeof LeadSchema>;
 
 export const LeadForm = ({ initialData }: LeadFormProps) => {
   const params = useParams();
@@ -56,11 +55,6 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const title = initialData
-    ? `${initialData.firstName} ${initialData.lastName}`
-    : "New Lead";
-
-  const description = initialData ? "Edit a Team" : "Create a new team";
   const toastMessage = initialData ? "Lead updated." : "Lead created.";
   const action = initialData ? "Update" : "Create";
 
@@ -111,15 +105,6 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
   }, []);
   return (
     <div>
-      <div className="flex justify-between items-center py-2">
-        <Button onClick={() => router.push("/leads")}>
-          <ArrowLeftIcon className="h-6 w-6" />
-        </Button>
-        <h2 className="font-semibold text-2xl">{title}</h2>
-        <div>{initialData && <Button>call</Button>}</div>
-      </div>
-      <Separator />
-
       <Form {...form}>
         <form
           className="space-y-6 w-full"
@@ -197,7 +182,6 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
               />
 
               {/* DATE OF BIRTH */}
-
               <FormField
                 control={form.control}
                 name="dateOfBirth"
@@ -415,13 +399,13 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
               />
             </div>
           </div>
-          <div className="text-center">
+          <div className="flex gap-x-2 justify-center">
             {isDisabled && initialData ? (
               <Button onClick={() => setIsDisabled(false)} variant="outline">
                 Edit
               </Button>
             ) : (
-              <div>
+              <div className="flex gap-x-2">
                 {initialData && (
                   <Button onClick={() => setIsDisabled(true)} variant="outline">
                     Cancel

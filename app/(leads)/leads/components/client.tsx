@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LeadColumn, columns } from "./columns";
 import { LeadDataTable } from "./lead-data-table";
-import { sendIntialSms } from "@/actions/sms";
-import { toast } from "sonner";
 import { ApiLeadList } from "./api-list";
 
 interface LeadClientProps {

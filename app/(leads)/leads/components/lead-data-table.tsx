@@ -13,8 +13,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { FaChevronDown } from "react-icons/fa";
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -34,9 +32,9 @@ import {
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-import { Import, Plus } from "lucide-react";
+import { Import, SlidersHorizontal } from "lucide-react";
 import { ImportLeadsForm } from "./import-leads-form";
-import Link from "next/link";
+
 import {
   Tooltip,
   TooltipContent,
@@ -100,8 +98,8 @@ export function LeadDataTable<TData, TValue>({
                 <TooltipTrigger asChild>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">
+                      <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
                       Columns
-                      <FaChevronDown className="ml-2 h-3 w-3 opacity-70" />
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
@@ -150,21 +148,6 @@ export function LeadDataTable<TData, TValue>({
               <ImportLeadsForm />
             </DialogContent>
           </Dialog>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button variant="outline" size="icon" asChild>
-                  <Link href="/leads/new">
-                    <Plus className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Add new Lead</p>{" "}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
       </div>
       <div className="rounded-md border">

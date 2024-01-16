@@ -14,26 +14,25 @@ export function MainNav({
 
   const routes = [
     {
-      href: '/leads',
+      href: "/leads",
       label: "Leads",
-      active: pathname === '/leads',
+      active: pathname === "/leads",
     },
     {
-      href: '/csv',
+      href: "/csv",
       label: "Csv",
-      active: pathname === '/csv',
+      active: pathname === "/csv",
     },
     {
-      href: '/twilio',
+      href: "/twilio",
       label: "Twilio",
-      active: pathname === '/twilio',
+      active: pathname === "/twilio",
     },
     {
-      href: '/chat',
-      label: "Chat",
-      active: pathname === '/chat',
+      href: "/conversations",
+      label: "Conversations",
+      active: pathname === "/conversations",
     },
- 
   ];
   return (
     <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)}>

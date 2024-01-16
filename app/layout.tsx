@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,9 +27,16 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en">
         <body className={poppins.className}>
-          <ModalProvider/>
-          <Toaster />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ModalProvider />
+            <Toaster />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </SessionProvider>

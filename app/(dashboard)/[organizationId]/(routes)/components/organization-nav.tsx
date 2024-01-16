@@ -5,6 +5,19 @@ import { useParams, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import { activitiesUrl } from "twilio/lib/jwt/taskrouter/util";
+
 export function OrganizationNav({
   className,
   ...props
@@ -30,21 +43,26 @@ export function OrganizationNav({
     },
   ];
   return (
-    <nav className={cn("flex flex-col mt-2 space-y-2 lg:space-y-4", className)}>
-      {routes.map((route) => (
-        <Link
-          key={route.href}
-          href={route.href}
-          className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
-            route.active
-              ? "text-black dark:text-white"
-              : "text-muted-foreground"
-          )}
-        >
-          {route.label}
-        </Link>
-      ))}
-    </nav>
+    <NavigationMenu className="pt-4 max-w-full">
+      <NavigationMenuList className="flex flex-col w-full">
+        {routes.map((route) => (
+          <NavigationMenuItem key={route.href}>
+            <Link href={route.href} legacyBehavior passHref>
+              <NavigationMenuLink
+                className={cn(
+                  navigationMenuTriggerStyle(),
+                  "mb-2",
+                  route.active
+                    ? "text-black dark:text-white bg-accent"
+                    : "text-muted-foreground"
+                )}
+              >
+                {route.label}
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        ))}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }

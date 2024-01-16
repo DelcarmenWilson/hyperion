@@ -1,23 +1,21 @@
 "use client";
 import * as z from "zod";
-import { Input } from "@/components/ui/input";
 
 import Papa from "papaparse";
 import { useState, useTransition } from "react";
 import { LeadSchema } from "@/schemas";
 
 import { DataTable } from "@/components/data-table";
-import { LeadColumn, columns } from "./columns";
+import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { leadsImport } from "@/actions/lead";
-import { Lead } from "@prisma/client";
 import { formatPhoneNumber } from "@/lib/utils";
 
+type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
+
 export const ImportLeadsForm = () => {
-  const user = useCurrentUser();
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);
   const [hasData, setHasData] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -28,7 +26,8 @@ export const ImportLeadsForm = () => {
       complete: function (result: any) {
         let mapped: any = [];
         result.data.map((d: any) => {
-          const newobj: z.infer<typeof LeadSchema> = {
+          const newobj: ImportLeadsFormValues = {
+            id: "",
             firstName: d["First Name"],
             lastName: d["Last Name"],
             email: d["Email"],
@@ -41,6 +40,7 @@ export const ImportLeadsForm = () => {
             gender: "",
             maritalStatus: "",
             zipCode: d["Zip"],
+            conversationId: undefined,
           };
           mapped.push(newobj);
         });
@@ -50,21 +50,19 @@ export const ImportLeadsForm = () => {
     });
   };
   const handleImport = () => {
-    console.log(leads);
-
-    // startTransition(() => {
-    //   leadsImport(leads).then((data) => {
-    //     if (data?.success) {
-    //       toast.success(data.success);
-    //     }
-    //     if(data?.error){
-    //       toast.error(data.error)
-    //     }
-    //   });
-    // });
+    startTransition(() => {
+      leadsImport(leads).then((data) => {
+        if (data?.success) {
+          toast.success(data.success);
+        }
+        if (data?.error) {
+          toast.error(data.error);
+        }
+      });
+    });
   };
   return (
-    <div className="bg-transparent h-[500px] flex flex-col gap-2 p-3 bg-white">
+    <div className="h-[500px] flex flex-col gap-2 p-3 bg-background">
       <div className="flex flex-col justify-center items-center">
         <h3 className="text-2xl font-semibold py-2">Import Leads</h3>
         <div className="flex justify-end items-center w-full">
