@@ -1,9 +1,8 @@
-import { LeadsGetAll } from "@/data/lead";
+import { leadsGetAll } from "@/data/lead";
 import React from "react";
-import { LeadDataTable } from "../../(leads)/leads/components/lead-data-table";
 
 const CvsPage = async () => {
-  const data = await LeadsGetAll();
+  const data = await leadsGetAll();
   return <div>CvsPage</div>;
 };
 

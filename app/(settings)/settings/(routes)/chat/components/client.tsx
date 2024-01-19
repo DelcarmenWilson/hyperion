@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
 import { toast } from "sonner";
-import { ChatSettingsUpdate } from "@/data/actions/chat-settings";
+import { chatSettingsUpdate } from "@/data/actions/chat-settings";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { defaultMessage, defaultPrompt } from "@/placeholder/chat";
@@ -31,8 +31,9 @@ interface ChatClientProps {
 
 const formSchema = z.object({
   userId: z.string(),
-  initialPrompt: z.optional(z.string()),
-  initialMessage: z.optional(z.string()),
+  defaultPrompt: z.optional(z.string()),
+  defaultMessage: z.optional(z.string()),
+  defaultFunction: z.optional(z.string()),
   leadInfo: z.boolean(),
 });
 
@@ -56,12 +57,12 @@ export const ChatClient = ({ data }: ChatClientProps) => {
       "{AGENT_NAME}",
       data.user.name as string
     );
-    form.setValue("initialPrompt", prompt);
-    form.setValue("initialMessage", message);
+    form.setValue("defaultPrompt", prompt);
+    form.setValue("defaultMessage", message);
   };
   const onSubmit = (values: ChatValues) => {
     startTransition(() => {
-      ChatSettingsUpdate(values)
+      chatSettingsUpdate(values)
         .then((data) => {
           if (data.error) {
             toast.error(data.error);
@@ -86,18 +87,19 @@ export const ChatClient = ({ data }: ChatClientProps) => {
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-4">
+              {/* DEFAULT PROMPT */}
               <FormField
                 control={form.control}
-                name="initialPrompt"
+                name="defaultPrompt"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel> Prompt</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
-                        placeholder="Initial Prompt"
+                        placeholder="default Prompt"
                         disabled={loading}
-                        autoComplete="prompt"
+                        autoComplete="defaultPrompt"
                       />
                     </FormControl>
                     <FormMessage />
@@ -105,7 +107,7 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                 )}
               />
 
-              {/* LEAD INFO */}
+              {/* SEND LEAD INFO */}
               <FormField
                 control={form.control}
                 name="leadInfo"
@@ -129,19 +131,39 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                 )}
               />
 
-              {/* INITIAL MESSAGE */}
+              {/* DEFAULT MESSAGE */}
               <FormField
                 control={form.control}
-                name="initialMessage"
+                name="defaultMessage"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel> Message</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
-                        placeholder="Initial Message"
+                        placeholder="Default message"
                         disabled={loading}
-                        autoComplete="prompt"
+                        autoComplete="defaultMessage"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* DEFAULT FUNCTION */}
+              <FormField
+                control={form.control}
+                name="defaultFunction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel> Function</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Default function"
+                        disabled={loading}
+                        autoComplete="defaultFunction"
                       />
                     </FormControl>
                     <FormMessage />

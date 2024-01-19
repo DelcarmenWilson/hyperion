@@ -36,12 +36,12 @@ export const sendIntialSms = async (leadId: string) => {
     where: { userId: user.id },
   });
 
-  let prompt = chatSettings?.initialPrompt
-    ? chatSettings.initialPrompt
+  let prompt = chatSettings?.defaultPrompt
+    ? chatSettings.defaultPrompt
     : defaultPrompt().replace("{AGENT_NAME}", user.name as string);
 
-  let message = chatSettings?.initialMessage
-    ? chatSettings.initialMessage
+  let message = chatSettings?.defaultMessage
+    ? chatSettings.defaultMessage
     : defaultMessage().replace("{AGENT_NAME}", user.name as string);
   message = message.replace("{LEAD_NAME}", lead.firstName as string);
 
@@ -49,7 +49,7 @@ export const sendIntialSms = async (leadId: string) => {
     prompt += `Here is the lead information: ${JSON.stringify(lead)}  `;
   } 
 
-  const conversation = await conversationInsert(user.id, lead.id, message);
+  const conversation = await conversationInsert(user.id, lead.id);
 
   if (!conversation.success) {
     return { error: "Conversation was not created" };

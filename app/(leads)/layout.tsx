@@ -1,8 +1,11 @@
-import NavBar from "@/components/navbar";
+import React from "react";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+
 import { redirect } from "next/navigation";
-import React from "react";
+
+import NavBar from "@/components/navbar";
+import { MainSideBar } from "@/components/reusable/main-sidebar";
 
 export default async function DashBoardLayout({
   children,
@@ -29,16 +32,18 @@ export default async function DashBoardLayout({
   }
 
   return (
-    <div className="flex flex-col h-full ">
-      <NavBar />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-1">
-          {/* <SideBar /> */}
-          <div className=" flex-1 w-full space-y-4 p-8 pt-2 overflow-y-auto">
-            {children}
+    <>
+      <MainSideBar />
+      <div className="flex flex-col h-full ">
+        <NavBar />
+        <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1">
+            <div className=" flex-1 w-full space-y-4 p-8 pt-2 overflow-y-auto">
+              {children}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

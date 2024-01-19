@@ -190,7 +190,7 @@ model Conversation {
 
 model Message {
   id             String       @id @default(cuid())
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
 
   role    String
@@ -206,11 +206,12 @@ model Message {
 // SETTINGS
 model ChatSettings {
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  initialPrompt  String   @db.LongText
-  initialMessage String   @db.LongText
-  leadInfo       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  defaultPrompt   String   @db.LongText
+  defaultMessage  String   @db.LongText
+  defaultFunction String   @db.LongText
+  leadInfo        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

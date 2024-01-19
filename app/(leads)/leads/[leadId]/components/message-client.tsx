@@ -1,4 +1,4 @@
-import { MessageBox } from "@/components/reusable/messageBox";
+import { MessageBox } from "@/components/reusable/message-box";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PictureInPicture } from "lucide-react";

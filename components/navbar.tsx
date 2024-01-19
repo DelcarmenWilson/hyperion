@@ -26,10 +26,10 @@ const NavBar = async () => {
         >
           <Image
             src="/logo2.png"
-            width="100"
-            height="100"
+            width="50"
+            height="50"
             alt="logo"
-            className="mr-1 h-[60px] w-[60px]"
+            className="mr-1 h-[50px] w-[50px]"
           />
           <span>Hyperion</span>
         </Link>

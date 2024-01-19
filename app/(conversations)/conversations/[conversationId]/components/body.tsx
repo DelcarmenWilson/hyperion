@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageBox } from "@/components/reusable/messageBox";
+import { MessageBox } from "@/components/reusable/message-box";
 import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/user-conversation";
 import axios from "axios";

@@ -1,8 +1,8 @@
-import { LeadsGetAll } from "@/data/lead";
+import { leadsGetAll } from "@/data/lead";
 import { LeadColumn, columns } from "./components/columns";
 import { LeadClient } from "./components/client";
 const LeadsPage = async () => {
-  const leads = await LeadsGetAll();
+  const leads = await leadsGetAll();
 
   const formattedLeads: LeadColumn[] = leads.map((lead) => ({
     id: lead.id,
