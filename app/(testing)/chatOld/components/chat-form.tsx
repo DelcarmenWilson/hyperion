@@ -4,7 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { chatFetch } from "@/actions/chat";
+import { chatFetch } from "@/data/actions/chat";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,19 +36,19 @@ export const ChatForm = ({ onClose }: ChatFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof ChatSchema>) => {
     try {
-      setLoading(true)
+      setLoading(true);
       // const messages = [
       //   { role: "system", content: values.prompt },
       //   { role: "user", content: values.message },
       // ];
       // const response = await chatFetch(messages);
-       const response = await axios.post("/api/chat-gpt", values);
+      const response = await axios.post("/api/chat-gpt", values);
       // const response =await axios.post("/api/sendcall",values)
       console.log(response);
     } catch (error) {
       console.log(error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
       //onClose();
     }
   };

@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
 import { toast } from "sonner";
-import { ChatSettingsUpdate } from "@/actions/chat-settings";
+import { ChatSettingsUpdate } from "@/data/actions/chat-settings";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { defaultMessage, defaultPrompt } from "@/placeholder/chat";

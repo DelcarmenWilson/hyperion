@@ -1,36 +1,32 @@
-import { Message } from "@prisma/client";
-import React from "react";
-import { Message as Msg } from "./message";
+import { MessageBox } from "@/components/reusable/messageBox";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PictureInPicture } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
+import { FullConversationType } from "@/types";
 
-interface MessageClientProps {
-  initialData: Message[];
-  userName: string;
-  leadName: string;
+interface BodyProps {
+  initialData: FullConversationType;
 }
 
-export const MessageClient = ({
-  initialData,
-  userName,
-  leadName,
-}: MessageClientProps) => {
+export const Body = ({ initialData }: BodyProps) => {
   return (
     <div className="w-full flex flex-col items-center ">
       <div className="flex flex-col items-center h-[400px] w-[50%]">
         <ScrollArea className="flex flex-col flex-1 w-full border rounded-sm p-4 overflow-hidden overflow-y-auto ">
-          {initialData.map((message) => (
-            <Msg
+          {initialData.messages.map((message, i) => (
+            <MessageBox
               key={message.id}
-              message={message.content}
-              username={message.role === "user" ? leadName : userName}
-              date={format(message.createdAt, "MM-dd-yyyy hh:mm")}
-              position={
-                message.role === "user" ? "justify-end" : "justify-start"
+              data={message}
+              username={
+                message.role === "user"
+                  ? initialData.lead.lastName
+                  : (initialData.users[0].name as string)
               }
+              date={format(message.createdAt, "MM-dd-yyyy hh:mm")}
+              position={message.role === "user" ? "end" : "start"}
+              isLast={i === initialData.messages.length - 1}
             />
           ))}
         </ScrollArea>

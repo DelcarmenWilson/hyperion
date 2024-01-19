@@ -31,7 +31,11 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
 
   conversations Conversation[]
-  chatSettings  ChatSettings?
+
+  messages Message[] @relation("MessageToUser")
+  hasSeen  Message[] @relation("HasSeenToUser")
+
+  chatSettings ChatSettings?
 }
 
 model Account {
@@ -172,17 +176,16 @@ model Lead {
 // }
 
 model Conversation {
-  id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  id String @id @default(cuid())
 
   lead   Lead   @relation(fields: [leadId], references: [id])
   leadId String @unique
 
-  messages    Message[]
-  lastMessage String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  messages Message[]
+
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Message {
@@ -190,8 +193,13 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
 
-  role      String
-  content   String   @db.LongText
+  role    String
+  content String @db.LongText
+
+  sender   User?   @relation("MessageToUser", fields: [senderId], references: [id])
+  senderId String?
+
+  hasSeen   User[]   @relation("HasSeenToUser")
   createdAt DateTime @default(now())
 }
 

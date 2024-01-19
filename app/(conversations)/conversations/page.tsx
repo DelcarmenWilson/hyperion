@@ -1,5 +1,7 @@
+import EmptyState from "./components/empty-state";
+
 const ChatPage = () => {
-  return <div>ChatPage</div>;
+  return <EmptyState />;
 };
 
 export default ChatPage;

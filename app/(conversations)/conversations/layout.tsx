@@ -1,20 +1,21 @@
 import NavBar from "@/components/navbar";
-import { Sidebar } from "./components/sidebar";
-import { currentUser } from "@/lib/auth";
-import { ConversationsGetByUserId } from "@/data/conversation";
+import { ConversationList } from "./components/conversation-list";
+import { conversationsGetByUserId } from "@/data/conversation";
 
 const ChatLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await currentUser();
-  const conversations = await ConversationsGetByUserId(user?.id as string);
+  const conversations = await conversationsGetByUserId();
   return (
     <div className="h-full flex flex-col">
       <NavBar />
-      <div className="flex flex-1  space-y-8 lg:space-y-0">
-        <aside className="-mx-4 w-[250px] border-r relative overflow-hidden">
-          <Sidebar initialData={conversations} />
+      <div className="flex flex-1  space-y-8 lg:space-y-0 overflow-hidden">
+        <aside className="w-[300px] border-r relative overflow-hidden">
+          {/* {JSON.stringify(conversations)} */}
+          <ConversationList initialData={conversations!} />
         </aside>
 
-        <div className=" flex-1 w-full px-4 overflow-y-auto">{children}</div>
+        <div className=" flex flex-col flex-1 w-full overflow-y-auto border-r">
+          {children}
+        </div>
       </div>
     </div>
   );

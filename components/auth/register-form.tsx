@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { register } from "@/actions/register";
+import { register } from "@/data/actions/register";
 
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -29,7 +29,7 @@ export const RegisterForm = () => {
     defaultValues: {
       email: "",
       password: "",
-      name:""
+      name: "",
     },
   });
 
@@ -54,8 +54,7 @@ export const RegisterForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            
-          <FormField
+            <FormField
               control={form.control}
               name="name"
               render={({ field }) => (

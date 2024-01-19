@@ -1,8 +1,8 @@
 import * as z from "zod";
 import { NextResponse } from "next/server";
 import { MessageSchema } from "@/schemas";
-import { messageInsert } from "@/actions/message";
-import { chatFetch } from "@/actions/chat";
+import { messageInsert } from "@/data/actions/message";
+import { chatFetch } from "@/data/actions/chat";
 import { db } from "@/lib/db";
 import { defaultUnsubscribed } from "@/placeholder/chat";
 

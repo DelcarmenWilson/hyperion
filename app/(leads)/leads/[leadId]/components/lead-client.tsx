@@ -1,30 +1,24 @@
 "use client";
 import moment from "moment";
-import { Lead } from "@prisma/client";
-import { Message } from "@prisma/client";
 import { LeadForm } from "./lead-form";
-import { MessageClient } from "./message-client";
+import { Body } from "./message-client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { format } from "date-fns";
-import { sendIntialSms } from "@/actions/sms";
+
+import { sendIntialSms } from "@/data/actions/sms";
 import { toast } from "sonner";
+import { FullConversationType } from "@/types";
+import { Lead } from "@prisma/client";
+
 interface LeadClientProps {
-  lead: Lead | null;
-  initialMessages: Message[];
-  userName: string;
-  leadName: string;
+  lead: Lead;
+  conversation: FullConversationType | null;
 }
-export const LeadClient = ({
-  lead,
-  initialMessages,
-  userName,
-  leadName,
-}: LeadClientProps) => {
+export const LeadClient = ({ lead, conversation }: LeadClientProps) => {
   // const [messages, setMessages] = useState(second)
   const router = useRouter();
   const title = lead ? `${lead.firstName} ${lead.lastName}` : "New Lead";
@@ -53,13 +47,15 @@ export const LeadClient = ({
         </Button>
         <h2 className="font-semibold text-2xl text-center">
           {title}
-          <span className="text-md italic text-muted-foreground">
-            {" "}
-            - {lead?.maritalStatus} - {getAge(lead?.dateOfBirth!)}
-          </span>
+          {lead && (
+            <span className="text-md italic text-muted-foreground">
+              {" "}
+              - {lead.maritalStatus} - {getAge(lead.dateOfBirth!)}
+            </span>
+          )}
         </h2>
         <div className="flex gap-2">
-          {!initialMessages.length && (
+          {lead && !conversation && (
             <Button variant="outline" onClick={onStartConversation}>
               Start Conversation
             </Button>
@@ -79,15 +75,11 @@ export const LeadClient = ({
           )}
         </div>
         <TabsContent value="personal">
-          <LeadForm initialData={lead} />
+          <LeadForm initialData={lead!} />
         </TabsContent>
         <TabsContent value="medical">Change your password here.</TabsContent>
         <TabsContent value="messages">
-          <MessageClient
-            initialData={initialMessages}
-            userName={userName}
-            leadName={leadName}
-          />
+          <Body initialData={conversation!} />
         </TabsContent>
       </Tabs>
     </div>

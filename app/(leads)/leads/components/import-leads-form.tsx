@@ -9,7 +9,7 @@ import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { leadsImport } from "@/actions/lead";
+import { leadsImport } from "@/data/actions/lead";
 import { formatPhoneNumber } from "@/lib/utils";
 
 type ImportLeadsFormValues = z.infer<typeof LeadSchema>;

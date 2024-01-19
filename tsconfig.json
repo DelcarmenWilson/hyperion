@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/(testing)/components/line-chart.js"
+    "app/(testing)/components/line-chart.js",
+    "types"
   ],
   "exclude": ["node_modules"]
 }

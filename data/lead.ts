@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 
-export const LeadsGetAll = async () => {
+export const leadsGetAll = async () => {
   try {
     const leads = await db.lead.findMany({include:{conversation:true}});
     
@@ -10,7 +10,7 @@ export const LeadsGetAll = async () => {
   }
 };
 
-export const LeadGetById = async (id: string) => {
+export const leadGetById = async (id: string) => {
   try {
     const lead = await db.lead.findUnique({
       where: {

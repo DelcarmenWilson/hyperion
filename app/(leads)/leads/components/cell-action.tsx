@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { sendIntialSms } from "@/actions/sms";
+import { sendIntialSms } from "@/data/actions/sms";
 
 interface CellActionProps {
   data: LeadColumn;

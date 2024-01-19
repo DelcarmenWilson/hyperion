@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 export const conversationInsert = async (
   userId: string,
   leadId: string,
-  lastMessage: string = ""
 ) => {
   if (!userId) {
     return { error: "User id is Required!" };
@@ -17,9 +16,9 @@ export const conversationInsert = async (
 
   const conversation = await db.conversation.create({
     data: {
-      userId,
       leadId,
-      lastMessage,
+      users:{connect:[{id:userId}]
+      }
     },
   });
 

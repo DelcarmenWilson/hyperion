@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { settings } from "@/actions/settings";
+import { settings } from "@/data/actions/settings";
 import {
   Form,
   FormField,
@@ -47,7 +47,7 @@ const SettingsPage = () => {
       password: undefined,
       newPassword: undefined,
       role: user?.role || undefined,
-      isTwoFactorEnabled:user?.isTwoFactorEnabled||undefined
+      isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });
 
@@ -167,7 +167,7 @@ const SettingsPage = () => {
                   <FormItem>
                     <FormLabel> Role</FormLabel>
                     <Select
-                    name="ddlUserRole"
+                      name="ddlUserRole"
                       disabled={isPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -187,29 +187,29 @@ const SettingsPage = () => {
                   </FormItem>
                 )}
               />
- {user?.isOAuth == false && (
-              <FormField
-                control={form.control}
-                name="isTwoFactorEnabled"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Two Factor Authentication</FormLabel>
-                      <FormDescription>
-                        Enable two factor Authentication for you account
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblIsTwoFactor"
-                        disabled={isPending}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {user?.isOAuth == false && (
+                <FormField
+                  control={form.control}
+                  name="isTwoFactorEnabled"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Two Factor Authentication</FormLabel>
+                        <FormDescription>
+                          Enable two factor Authentication for you account
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          name="cblIsTwoFactor"
+                          disabled={isPending}
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               )}
             </div>
             <FormError message={error} />

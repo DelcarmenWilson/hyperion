@@ -4,7 +4,7 @@ import { Heading } from "@/components/custom/heading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { OverviewChart } from "./components/overview-chart";
-import { getGraphRevenue } from "@/actions/get-graph-revenue";
+import { getGraphRevenue } from "@/data/actions/get-graph-revenue";
 
 const DashboardPage = () => {
   const data = [
@@ -30,7 +30,6 @@ const DashboardPage = () => {
     },
   ];
   const chartData = getGraphRevenue();
-  console.log(chartData);
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-7-4 p-8 pt-6">

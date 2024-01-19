@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { settings } from "@/actions/settings";
+import { settings } from "@/data/actions/settings";
 import {
   Form,
   FormField,
