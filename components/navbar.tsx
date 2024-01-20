@@ -1,6 +1,4 @@
 import { db } from "@/lib/db";
-import Image from "next/image";
-import Link from "next/link";
 
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -14,25 +12,9 @@ const NavBar = async () => {
   if (!user) {
     redirect("/auth/login");
   }
-  const organizations = await db.organization.findMany({
-    where: { userId: user.id },
-  });
   return (
-    <div className="border-b sticky w-full top-0 z-10">
+    <div className="sticky w-full top-0 z-10">
       <div className="flex h-16 items-center px-4 overflow-hidden">
-        <Link
-          href="/"
-          className="flex justify-between items-center hover:bg-accent px-2"
-        >
-          <Image
-            src="/logo2.png"
-            width="50"
-            height="50"
-            alt="logo"
-            className="mr-1 h-[50px] w-[50px]"
-          />
-          <span>Hyperion</span>
-        </Link>
         <div>
           <MainNav className="mx-6" />
         </div>

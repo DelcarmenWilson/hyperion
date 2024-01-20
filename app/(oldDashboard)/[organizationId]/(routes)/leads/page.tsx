@@ -1,5 +1,5 @@
 import { leadsGetAll } from "@/data/lead";
-import { LeadColumn, columns } from "./components/columns";
+import { LeadColumn } from "./components/columns";
 import { LeadClient } from "./components/client";
 const LeadsPage = async () => {
   const leads = await leadsGetAll();

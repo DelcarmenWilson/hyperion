@@ -34,14 +34,10 @@ export default async function DashBoardLayout({
   return (
     <>
       <MainSideBar />
-      <div className="flex flex-col h-full ">
+      <div className="flex flex-col ml-[70px] h-full ">
         <NavBar />
-        <div className="flex flex-1 overflow-hidden">
-          <div className="flex flex-1">
-            <div className=" flex-1 w-full space-y-4 p-8 pt-2 overflow-y-auto">
-              {children}
-            </div>
-          </div>
+        <div className="flex flex-1 flex-col overflow-hidden w-full space-y-4 p-8 pt-2 overflow-y-auto">
+          {children}
         </div>
       </div>
     </>

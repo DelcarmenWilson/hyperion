@@ -3,7 +3,14 @@
 import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
-import { Copy, Eye, MessageCircle, MoreHorizontal, Trash } from "lucide-react";
+import {
+  Calendar,
+  Copy,
+  Eye,
+  MessageCircle,
+  MoreHorizontal,
+  Trash,
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -13,35 +20,24 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { LeadColumn } from "./columns";
+import { AppointmentColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { sendIntialSms } from "@/data/actions/sms";
+import { AppointmentModal } from "@/components/modals/apointment-modal";
+import { appointmentInsert } from "@/data/actions/appointment";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface CellActionProps {
-  data: LeadColumn;
+  data: AppointmentColumn;
 }
 export const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();
-
+  const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  const onStartConversation = async () => {
-    // toast.success(data.id);
-    // return;
-    await sendIntialSms(data.id).then((data) => {
-      router.refresh();
-      if (data?.error) {
-        toast.error(data.error);
-      }
-      if (data?.success) {
-        toast.error(data.success);
-      }
-    });
-  };
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const onCopy = () => {
     navigator.clipboard.writeText(data.id);
@@ -58,15 +54,15 @@ export const CellAction = ({ data }: CellActionProps) => {
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
-      setOpen(true);
+      setAlertOpen(false);
     }
   };
 
   return (
     <>
       <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
         onConfirm={onDelete}
         loading={loading}
       />
@@ -79,16 +75,12 @@ export const CellAction = ({ data }: CellActionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          {!data.conversationId && (
-            <DropdownMenuItem onClick={onStartConversation}>
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Start Convo
-            </DropdownMenuItem>
-          )}
+
           <DropdownMenuItem onClick={onCopy}>
             <Copy className="mr-2 h-4 w-4" />
             Copy Id
           </DropdownMenuItem>
+
           <DropdownMenuItem
             onClick={() => {
               router.push(`/leads/${data.id}`);
@@ -97,7 +89,7 @@ export const CellAction = ({ data }: CellActionProps) => {
             <Eye className="mr-2 h-4 w-4" />
             View
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
+          <DropdownMenuItem onClick={() => setAlertOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>

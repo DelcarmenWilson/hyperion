@@ -74,7 +74,7 @@ export const sendIntialSms = async (leadId: string) => {
   });
 
   if (!result) {
-    return { success: "Message was not sent!" };
+    return { error: "Message was not sent!" };
   }
 
   return { success: "Inital message sent!" };

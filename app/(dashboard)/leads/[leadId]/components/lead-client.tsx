@@ -1,34 +1,54 @@
 "use client";
-import moment from "moment";
+import { useRouter } from "next/navigation";
+
+import { CallDirection, Lead } from "@prisma/client";
+
+import { FullConversationType } from "@/types";
+
 import { LeadForm } from "./lead-form";
 import { Body } from "./message-client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { ArrowLeftIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { sendIntialSms } from "@/data/actions/sms";
-import { toast } from "sonner";
-import { FullConversationType } from "@/types";
-import { Lead } from "@prisma/client";
+import { callInsert } from "@/data/actions/call";
 
+import { getAge } from "@/formulas/dates";
 interface LeadClientProps {
   lead: Lead;
   conversation: FullConversationType | null;
 }
 export const LeadClient = ({ lead, conversation }: LeadClientProps) => {
-  // const [messages, setMessages] = useState(second)
+  const user = useCurrentUser();
   const router = useRouter();
   const title = lead ? `${lead.firstName} ${lead.lastName}` : "New Lead";
-  const getAge = (dateOfBirth: any): number =>
-    moment().diff(dateOfBirth, "years");
 
   const onStartConversation = async () => {
     if (!lead) return;
 
     await sendIntialSms(lead.id).then((data) => {
+      router.refresh();
+      if (data?.error) {
+        toast.error(data.error);
+      }
+      if (data?.success) {
+        toast.error(data.success);
+      }
+    });
+  };
+
+  const onStartCall = async () => {
+    if (!lead || !user) return;
+
+    await callInsert(user.id, lead.id, CallDirection.Outbound).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);
@@ -60,7 +80,7 @@ export const LeadClient = ({ lead, conversation }: LeadClientProps) => {
               Start Conversation
             </Button>
           )}
-          {lead && <Button>call</Button>}
+          {lead && <Button onClick={onStartCall}>call</Button>}
         </div>
       </div>
       <Separator />
