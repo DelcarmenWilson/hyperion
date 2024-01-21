@@ -19,6 +19,7 @@ export type LeadColumn = {
   city?: string;
   state?: string;
   zipCode?: string;
+  conversationId?: string;
   notes: string;
   createdAt: Date;
 };
