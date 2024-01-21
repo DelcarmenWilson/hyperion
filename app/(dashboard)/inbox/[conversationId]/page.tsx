@@ -4,6 +4,7 @@ import { Body } from "./components/body";
 import { Form } from "./components/form";
 import { conversationGetById } from "@/data/conversation";
 import EmptyState from "../components/empty-state";
+import { ConversationList } from "../components/conversation-list";
 
 const ConversationPage = async ({
   params,

@@ -1,16 +1,11 @@
-import { leadGetById } from "@/data/lead";
-import { LeadClient } from "./components/lead-client";
-import { conversationGetByLeadId } from "@/data/conversation";
+import { leadGetById, leadGetPrevNextById } from "@/data/lead";
+import { LeadClient } from "./components/client";
 
 const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
   const lead = await leadGetById(params.leadId);
-  const conversation = await conversationGetByLeadId(lead?.id!);
+  const prevNext = await leadGetPrevNextById(params.leadId);
 
-  return (
-    <div className="py-4">
-      <LeadClient conversation={conversation} lead={lead!} />
-    </div>
-  );
+  return <LeadClient lead={lead!} nextPrev={prevNext} />;
 };
 
 export default LeadsPage;

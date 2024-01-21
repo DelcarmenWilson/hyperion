@@ -1,33 +1,56 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { useState } from "react";
 
-import { Heading } from "@/components/custom/heading";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { LeadColumn, columns } from "./columns";
-import { LeadDataTable } from "./lead-data-table";
-import { ApiLeadList } from "./api-list";
+import { DownloadCloud, Paperclip, Plus } from "lucide-react";
+import { NewLeadDrawer } from "./new-lead-drawer";
+import { ImportLeadsForm } from "./import/import-leads-form";
 
-interface LeadClientProps {
-  data: LeadColumn[];
-}
-export const LeadClient = ({ data }: LeadClientProps) => {
-  const router = useRouter();
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+export const LeadClient = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Heading title={`Leads (${data.length})`} description="Manage Leads" />
-        <Button onClick={() => router.push(`/leads/new`)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
+      <NewLeadDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <div className="flex gap-2 mr-6">
+        <Button variant="outlineprimary" size="sm">
+          <DownloadCloud className="h-4 w-4 mr-2" />
+          GENERATE CSV
+        </Button>
+
+        <Dialog>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                  <Button variant="outlineprimary" size="sm">
+                    <Paperclip className="h-4 w-4 mr-2" />
+                    UPLOAD CSV FILE
+                  </Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Import Leads</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
+            <ImportLeadsForm />
+          </DialogContent>
+        </Dialog>
+
+        <Button size="sm" onClick={() => setDrawerOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          CREATE LEAD
         </Button>
       </div>
-      <Separator />
-      <LeadDataTable searchKey="firstName" columns={columns} data={data} />
-      <Heading title="API" description="API calls for Leads" />
-      <Separator />
-      <ApiLeadList entityName="leads" entityIdName="leadId" />
     </>
   );
 };

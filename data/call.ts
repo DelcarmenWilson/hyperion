@@ -11,3 +11,15 @@ export const callGetAllByAgentId = async (agentId: string) => {
     return [];
   }
 };
+
+export const callGetAllByLeadId = async (leadId: string) => {
+  try {
+    const calls = await db.call.findMany({
+      where: { leadId },
+      include: { agent: true, lead: true },
+    });
+    return calls;
+  } catch {
+    return [];
+  }
+};

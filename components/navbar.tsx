@@ -13,15 +13,13 @@ const NavBar = async () => {
     redirect("/auth/login");
   }
   return (
-    <div className="sticky w-full top-0 z-10">
-      <div className="flex h-16 items-center px-4 overflow-hidden">
-        <div>
-          <MainNav className="mx-6" />
-        </div>
-        <div className="ml-auto flex items-center space-x-4">
-          <ThemeToggle />
-          <UserButton />
-        </div>
+    <div className=" flex items-center  sticky w-full top-0 z-10 py-2 px-4">
+      <div>
+        <MainNav className="mx-6" />
+      </div>
+      <div className="ml-auto flex items-center space-x-4">
+        <ThemeToggle />
+        <UserButton />
       </div>
     </div>
   );

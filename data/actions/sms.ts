@@ -2,13 +2,11 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import twilio from "twilio";
+
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
 import { defaultMessage, defaultOptOut, defaultPrompt } from "@/placeholder/chat";
-
-const sid = process.env.TWILIO_CLIENT_ID;
-const token = process.env.TWILIO_CLIENT_TOKEN;
-const from = process.env.TWILIO_PHONE;
+import { cfg } from "@/lib/twilio-config";
 
 export const sendIntialSms = async (leadId: string) => {
   //TODO the entire lead shall be passed
@@ -65,11 +63,11 @@ export const sendIntialSms = async (leadId: string) => {
     conversation.success
   );
 
-  message +=`${"\n\n"} ${defaultOptOut}`
-  const client = twilio(sid, token);
+  // message +=`${"\n\n"} ${defaultOptOut}`
+  const client = twilio(cfg.accountSid, cfg.apiToken);
   const result = await client.messages.create({
     body: message,
-    from: from,
+    from: cfg.callerId,
     to: lead.cellPhone || (lead.homePhone as string),
   });
 

@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react";
 
 import { useRouter } from "next/navigation";
-import { Conversation, Message, User } from "@prisma/client";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { LeadConversationType } from "@/types";
@@ -17,7 +16,7 @@ export const ConversationBox = ({ data, selected }: ConversationBoxProps) => {
   const router = useRouter();
 
   const handleClick = useCallback(() => {
-    router.push(`/conversations/${data.id}`);
+    router.push(`/inbox/${data.id}`);
   }, [data.id, router]);
 
   const lastMessage = useMemo(() => {
@@ -66,16 +65,15 @@ export const ConversationBox = ({ data, selected }: ConversationBoxProps) => {
               {format(new Date(lastMessage.createdAt), "p")}
             </p>
           </div>
-          <p
+          {/* <p
             className={cn(
               "truncate text-sm",
               lastMessage.hasSeen
                 ? "text-muted-foreground"
                 : "text-primary font-medium italic"
             )}
-          >
-            {lastMessageText}
-          </p>
+          > */}
+          <p className={cn("truncate text-sm")}>{lastMessageText}</p>
         </div>
       </div>
     </div>

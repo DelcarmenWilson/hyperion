@@ -26,8 +26,6 @@ export const chatSettingsInsert = async (user: User) => {
 
 export const chatSettingsUpdate = async (values: any) => {
   const { userId, defaultPrompt, defaultMessage,defaultFunction,leadInfo } = values;
-
-  console.log(values);
   const chatSettings = await db.chatSettings.update({
     where: { userId: userId },
     data: {

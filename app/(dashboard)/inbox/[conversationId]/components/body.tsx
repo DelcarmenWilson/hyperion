@@ -22,7 +22,7 @@ export const Body = ({ initialData }: BodyProps) => {
   }, [conversationId]);
 
   return (
-    <ScrollArea className="flex-1 p-2 pr-3">
+    <ScrollArea className="relative flex-1 p-2 pr-10 w-full">
       {messages.map((message, i) => (
         <MessageBox
           key={message.id}

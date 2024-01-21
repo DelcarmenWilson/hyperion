@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { Gender, MaritalStatus, UserRole } from "@prisma/client";
 import * as z from "zod";
 
 export const SettingsSchema = z
@@ -67,8 +67,8 @@ export const LeadSchema = z.object({
   zipCode: z.string(),
   homePhone: z.optional(z.string()),
   cellPhone: z.string(),
-  gender: z.optional(z.string()),
-  maritalStatus: z.optional(z.string()),
+  gender: z.enum([Gender.Male, Gender.Female]),
+  maritalStatus: z.enum([MaritalStatus.Single,MaritalStatus.Married,MaritalStatus.Widowed,MaritalStatus.Divorced]),
   email: z.string().email(),
   dateOfBirth: z.optional(z.date()),
   conversationId:z.optional(z.string()),

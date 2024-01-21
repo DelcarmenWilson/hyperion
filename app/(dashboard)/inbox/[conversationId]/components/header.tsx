@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Trash } from "lucide-react";
+import { MoreHorizontal, RefreshCcw, Trash } from "lucide-react";
 
 interface HeaderProps {
   data: FullConversationType;
@@ -28,16 +28,22 @@ export const Header = ({ data }: HeaderProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/conversations/${data.id}`);
+      await axios.delete(`/api/sms/${data.id}`);
       router.refresh();
-      router.push("/conversations");
+      router.push("/sms");
+
       toast.success("Conversation deleted.");
     } catch (error) {
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
-      setAlertOpen(true);
+      setAlertOpen(false);
     }
+  };
+
+  const onRefresh = () => {
+    router.refresh();
+    router.push(`/sms/${data.id}`);
   };
 
   return (
@@ -62,10 +68,17 @@ export const Header = ({ data }: HeaderProps) => {
         <div className="flex-1">
           <div className="text-lg">{fullName}</div>
         </div>
-        <div>
+        <div className="flex gap-2">
+          <Button onClick={onRefresh}>
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
           <Button variant="destructive" onClick={() => setAlertOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />
             Delete
+          </Button>
+          <Button variant="outlineprimary" onClick={() => setDrawerOpen(true)}>
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
       </div>

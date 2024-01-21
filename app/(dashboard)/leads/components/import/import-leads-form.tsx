@@ -6,16 +6,22 @@ import { useState, useTransition } from "react";
 import { LeadSchema } from "@/schemas";
 
 import { DataTable } from "@/components/data-table";
-import { columns } from "./columns";
+import { ImportLeadColumn, columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { leadsImport } from "@/data/actions/lead";
 import { formatPhoneNumber } from "@/lib/utils";
+import { Gender, MaritalStatus } from "@prisma/client";
+import { capitalize } from "@/formulas/text";
+import { format } from "date-fns";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 export const ImportLeadsForm = () => {
   const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);
+  const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
+
   const [hasData, setHasData] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -28,23 +34,40 @@ export const ImportLeadsForm = () => {
         result.data.map((d: any) => {
           const newobj: ImportLeadsFormValues = {
             id: "",
-            firstName: d["First Name"],
-            lastName: d["Last Name"],
-            email: d["Email"],
+            firstName: capitalize(d["First Name"]),
+            lastName: capitalize(d["Last Name"]),
+            email: d["Email"].toLowerCase(),
             homePhone: formatPhoneNumber(d["Home"]),
             cellPhone: formatPhoneNumber(d["Other Phone 1"]),
-            address: d["Street Address"] || undefined,
-            dateOfBirth: new Date(d["Date Of Birth"]) || undefined,
-            city: d["City"] || undefined,
-            state: d["State"],
-            gender: "",
-            maritalStatus: "",
+            dateOfBirth:
+              d["Date Of Birth"].length > 2
+                ? new Date(d["Date Of Birth"])
+                : undefined,
+            address: capitalize(d["Street Address"]),
+            city: capitalize(d["City"]),
+            state: capitalize(d["State"]),
+            gender: Gender.Male,
+            maritalStatus: MaritalStatus.Single,
             zipCode: d["Zip"],
-            conversationId: undefined,
           };
           mapped.push(newobj);
         });
         setLeads(mapped);
+        console.log(mapped);
+        const fls: ImportLeadColumn[] = mapped.map(
+          (lead: ImportLeadsFormValues) => ({
+            id: "",
+            fullName: `${lead.firstName} ${lead.lastName}`,
+            email: lead.email,
+            cellPhone: lead.cellPhone,
+            dob: lead.dateOfBirth ? format(lead.dateOfBirth, "MM/dd/yy") : "",
+            address: lead.address,
+            city: lead.city,
+            state: lead.state,
+            zip: lead.zipCode,
+          })
+        );
+        setFormmatedLeads(fls);
         setHasData(true);
       },
     });
@@ -73,16 +96,15 @@ export const ImportLeadsForm = () => {
           )}
         </div>
       </div>
-      <br />
-      <div className="flex-1 min-w-fit  w-full overflow-y-auto text-xs">
+      <ScrollArea>
         <DataTable
           columns={columns}
-          data={leads}
+          data={formattedLeads}
           size="lg"
           noresults="Select a file"
           setFile={handleFile}
         />
-      </div>
+      </ScrollArea>
     </div>
   );
 };

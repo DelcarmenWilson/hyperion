@@ -2,9 +2,7 @@ import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import twilio from "twilio";
 
-const sid = process.env.TWILIO_CLIENT_ID;
-const token = process.env.TWILIO_CLIENT_TOKEN;
-const from=process.env.TWILIO_PHONE
+import { cfg } from "@/lib/twilio-config";
 
 export async function POST(req: Request) {
   try {
@@ -23,10 +21,10 @@ export async function POST(req: Request) {
       return new NextResponse("Message is requiered", { status: 400 });
     }
 
-    const client = twilio(sid, token);
+    const client = twilio(cfg.accountSid,cfg.apiToken);
     const result = await client.messages.create({
       body: message,
-      from: from,
+      from: cfg.callerId,
       to: phone,
     });
     return NextResponse.json(result);

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const EmptyState = () => {
   return (
-    <div className="px-4 py-10 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center bg-accent">
+    <div className="px-4 py-10 sm:px-6 lg:px-8 h-full flex flex-col flex-1 justify-center items-center bg-accent w-full">
       <Image
         src="/logo2.png"
         alt="Logo"

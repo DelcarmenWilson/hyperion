@@ -25,7 +25,7 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const body = cn("flex flex-col gap-2", isOwn && "items-end");
 
   const message = cn(
-    "text-sm w-fit overflow-hidden",
+    "text-sm max-w-[75%] overflow-hidden",
     isOwn ? "bg-primary/50 text-background" : "bg-accent",
     "rounded-md py-2 px-3"
   );

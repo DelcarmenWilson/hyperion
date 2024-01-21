@@ -9,20 +9,25 @@ import { CallHistory } from "./components/callhistory/call-history";
 import { CallHistoryColumn } from "./components/callhistory/columns";
 import { callGetAllByAgentId } from "@/data/call";
 import { currentUser } from "@/lib/auth";
+import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
+  const leadCount = await leadsGetByAgentIdTodayCount(user?.id!);
+
   const appointments = await appointmentGetAll();
-  const formattedLeads: AppointmentColumn[] = appointments.map((apt) => ({
-    id: apt.id,
-    fullName: `${apt.lead.firstName} ${apt.lead.lastName}`,
-    email: apt.lead.email,
-    phone: apt.lead.cellPhone,
-    status: apt.status,
-    dob: apt.lead.dateOfBirth || undefined,
-    date: apt.date,
-    comments: "",
-  }));
+  const formattedAppointments: AppointmentColumn[] = appointments.map(
+    (apt) => ({
+      id: apt.id,
+      fullName: `${apt.lead.firstName} ${apt.lead.lastName}`,
+      email: apt.lead.email,
+      phone: apt.lead.cellPhone,
+      status: apt.status,
+      dob: apt.lead.dateOfBirth || undefined,
+      date: apt.date,
+      comments: "",
+    })
+  );
 
   const formattedAgents: AgentSummaryColumn[] = [
     {
@@ -48,13 +53,20 @@ const DahsBoardPage = async () => {
     duration: call.duration!,
     date: call.createdAt,
   }));
+  const outBoundCallsCount = calls.filter(
+    (call) => call.direction === "Outbound"
+  ).length;
+  const inBoundCallsCount = calls.filter(
+    (call) => call.direction === "Inbound"
+  ).length;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 lg:flex-row">
         <Box
           icon={Users}
           title="LeadsToday"
-          value={1}
+          value={leadCount as number}
           href="/leads"
           hrefTitle="Go to leads"
         />
@@ -62,7 +74,7 @@ const DahsBoardPage = async () => {
         <Box
           icon={MessageSquareText}
           title="New texts"
-          value={1}
+          value={0}
           href="/leads"
           hrefTitle="Go to inbox"
         />
@@ -70,19 +82,19 @@ const DahsBoardPage = async () => {
         <Box
           icon={Phone}
           title="Outbound calls"
-          value={2}
+          value={outBoundCallsCount}
           href="/calls"
           hrefTitle="Go to calls"
         />
         <Box
           icon={PhoneIncoming}
           title="Inbound calls"
-          value={2}
+          value={inBoundCallsCount}
           href="/calls"
           hrefTitle="Go to calls"
         />
       </div>
-      <AppointmentBox data={formattedLeads} />
+      <AppointmentBox data={formattedAppointments} />
       <AgentSummary data={formattedAgents} />
       <div className="flex items-center gap-4 h-[400px]">
         <div className="border border-[#FF0000] w-[25%] h-full">Turn over</div>

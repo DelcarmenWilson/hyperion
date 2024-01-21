@@ -1,5 +1,4 @@
-"use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -9,10 +8,9 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lead } from "@prisma/client";
+import { states } from "@/constants/states";
 
 import { LeadSchema } from "@/schemas";
-
 import {
   Form,
   FormField,
@@ -40,27 +38,23 @@ import { Calendar } from "@/components/ui/calendar";
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Gender, MaritalStatus } from "@prisma/client";
+import { leadInsert } from "@/data/actions/lead";
+
+interface NewLeadFormProps {
+  onClose?: () => void;
+}
 
 type LeadFormValues = z.infer<typeof LeadSchema>;
 
-interface LeadFormProps {
-  initialData: Lead | null;
-}
-
-export const LeadForm = ({ initialData }: LeadFormProps) => {
-  const params = useParams();
+export const NewLeadForm = ({ onClose }: NewLeadFormProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
 
-  const toastMessage = initialData ? "Lead updated." : "Lead created.";
-  const action = initialData ? "Update" : "Create";
-  //TODO this has always been an issue need to find and resolve
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(LeadSchema),
-    defaultValues: initialData || {
+    defaultValues: {
       firstName: "",
       lastName: "",
       address: "",
@@ -69,49 +63,46 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
       zipCode: "",
       homePhone: "",
       cellPhone: "",
-      gender: "",
-      maritalStatus: "",
+      gender: Gender.Male,
+      maritalStatus: MaritalStatus.Single,
       email: "",
     },
   });
 
-  const onSubmit = async (values: LeadFormValues) => {
-    try {
-      setLoading(true);
-      let lead = "";
-      if (initialData) {
-        await axios.patch(`/api/leads/${params.leadId}`, values);
-      } else {
-        const newlead = await axios.post(`/api/leads`, values);
-        const l = newlead.data;
-        lead = `/${l.id}`;
-      }
-      router.refresh();
-      router.push(`/leads${lead}`);
-      toast.success(toastMessage);
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
+  const onCancel = () => {
+    form.clearErrors();
+    form.reset();
+    if (onClose) {
+      onClose();
     }
-
-    setIsDisabled(true);
   };
 
-  useEffect(() => {
-    if (!initialData) {
-      setIsDisabled(false);
-    }
-  }, []);
+  const onSubmit = async (values: LeadFormValues) => {
+    setLoading(true);
+    await leadInsert(values).then((data) => {
+      if (data.success) {
+        const newLead = data.success;
+        router.refresh();
+        router.push(`/leads/${newLead.id}`);
+        toast.success("Lead created!");
+      }
+      if (data.error) {
+        form.reset();
+        toast.error(data.error);
+      }
+    });
+
+    setLoading(false);
+  };
   return (
     <div>
       <Form {...form}>
         <form
-          className="space-y-6 w-full"
+          className="space-6 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="grid grid-cols-3 gap-4">
-            <div className="flex flex-col">
+          <div>
+            <div className="flex flex-col gap-2">
               {/* FIRSTNAME */}
               <FormField
                 control={form.control}
@@ -123,7 +114,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="John"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="First Name"
                         type="text"
                       />
@@ -144,7 +135,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="Doe"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="Last Name"
                       />
                     </FormControl>
@@ -162,7 +153,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                     <FormLabel> Gender</FormLabel>
                     <Select
                       name="ddlGender"
-                      disabled={loading || isDisabled}
+                      disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -172,8 +163,8 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value={Gender.Male}>Male</SelectItem>
+                        <SelectItem value={Gender.Female}>Female</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -188,19 +179,19 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                 render={({ field }) => (
                   <FormItem className="flex flex-col pt-2">
                     <FormLabel>Date of birth</FormLabel>
-                    <Popover>
+                    {/* <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            disabled={loading || isDisabled}
+                            disabled={loading}
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, "MM-dd-yy")
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -209,6 +200,34 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover> */}
+
+                    <Popover>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            value={
+                              field.value
+                                ? format(field.value, "MM-dd-yy")
+                                : "Pick a date"
+                            }
+                          />
+                          <PopoverTrigger asChild>
+                            <CalendarIcon className="absolute h-4 w-4 opacity-50 right-2 top-0 translate-y-1/2 cursor-pointer" />
+                          </PopoverTrigger>
+                        </div>
+                      </FormControl>
+                      <PopoverContent className="w-auto p-0" align="end">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -237,7 +256,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="457-458-9695"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="phone"
                       />
                     </FormControl>
@@ -257,7 +276,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="555-555-5555"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="phone"
                       />
                     </FormControl>
@@ -275,7 +294,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                     <FormLabel> Marital Status</FormLabel>
                     <Select
                       name="ddlMaritalStatus"
-                      disabled={loading || isDisabled}
+                      disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -285,10 +304,18 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Single">Single</SelectItem>
-                        <SelectItem value="Married">Married</SelectItem>
-                        <SelectItem value="Divorced">Divorced</SelectItem>
-                        <SelectItem value="Widowed">Widowed</SelectItem>
+                        <SelectItem value={MaritalStatus.Single}>
+                          Single
+                        </SelectItem>
+                        <SelectItem value={MaritalStatus.Married}>
+                          Married
+                        </SelectItem>
+                        <SelectItem value={MaritalStatus.Divorced}>
+                          Divorced
+                        </SelectItem>
+                        <SelectItem value={MaritalStatus.Widowed}>
+                          Widowed
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -307,7 +334,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="email"
                         type="email"
                       />
@@ -329,7 +356,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="123 main street"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="address"
                       />
                     </FormControl>
@@ -349,7 +376,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="Queens"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="address-level2"
                       />
                     </FormControl>
@@ -365,14 +392,26 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel> State</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="VA"
-                        disabled={loading || isDisabled}
-                        autoComplete="address-level1"
-                      />
-                    </FormControl>
+                    <Select
+                      name="ddlState"
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      autoComplete="address-level1"
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select State" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {states.map((state) => (
+                          <SelectItem value={state.abv}>
+                            {state.state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -389,7 +428,7 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
                       <Input
                         {...field}
                         placeholder="15468"
-                        disabled={loading || isDisabled}
+                        disabled={loading}
                         autoComplete="postal-code"
                       />
                     </FormControl>
@@ -399,33 +438,16 @@ export const LeadForm = ({ initialData }: LeadFormProps) => {
               />
             </div>
           </div>
-          <div className="flex gap-x-2 justify-center">
-            {isDisabled && initialData ? (
-              <Button onClick={() => setIsDisabled(false)} variant="outline">
-                Edit
-              </Button>
-            ) : (
-              <div className="flex gap-x-2">
-                {initialData && (
-                  <Button onClick={() => setIsDisabled(true)} variant="outline">
-                    Cancel
-                  </Button>
-                )}
-                <Button disabled={loading} type="submit">
-                  {action}
-                </Button>
-              </div>
-            )}
+          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+            <Button onClick={onCancel} type="button" variant="outline">
+              Cancel
+            </Button>
+            <Button disabled={loading} type="submit">
+              Create
+            </Button>
           </div>
         </form>
       </Form>
-
-      {/* <div className="flex w-full justify-evenly">
-        <div className="flex flex-col w-[25%] gap-y-2 px-2">
-          <Input value={lead.firstName} type="text" />
-          {JSON.stringify(lead)}
-        </div>
-      </div> */}
     </div>
   );
 };
