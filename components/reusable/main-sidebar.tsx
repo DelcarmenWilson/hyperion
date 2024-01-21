@@ -36,7 +36,7 @@ export const MainSideBar = () => {
         onClick={() => router.push("/")}
       >
         <Image
-          src="/logo2.png"
+          src="/logo3.png"
           alt="logo"
           width="40"
           height="40"
@@ -57,7 +57,7 @@ export const MainSideBar = () => {
             title={route.title}
             href={route.href}
             active={route.active!}
-            icon={route.icon}
+            icon={route.icon!}
           />
         ))}
       </ScrollArea>

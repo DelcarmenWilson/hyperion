@@ -26,7 +26,7 @@ export const appointmentInsert = async (
         agentId,
       leadId: lead.id,    
       date,
-      
+      comments:""      
           },
   });
 

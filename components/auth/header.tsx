@@ -20,7 +20,7 @@ export const Header = ({ label }: HeaderProps) => {
         )}
       >
         <Image
-          src="/logo2.png"
+          src="/logo3.png"
           width="100"
           height="100"
           className="w-[100px] h-[100px]"
