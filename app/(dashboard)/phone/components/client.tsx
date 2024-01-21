@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { startupClient } from "@/data/actions/twilio";
 import axios from "axios";
 import { useState } from "react";
-import { toast } from "sonner";
 
 export const PhoneClient = () => {
   const [name, setName] = useState("");
@@ -30,7 +29,7 @@ export const PhoneClient = () => {
   };
   return (
     <div className="text-center">
-      <Heading title="Testing Twilio call" description="just a tets" />
+      <Heading title="Testing Twilio call" description="just a tests" />
       <Button onClick={onStartDevices}>Start Up Device</Button>
       <div className="flex justify-between gap-5">
         <div>
@@ -44,7 +43,7 @@ export const PhoneClient = () => {
           <p>Speaker Devices</p>
 
           <Textarea placeholder="Devices will go here" rows={4} />
-          <Button>Seeing "Unknown" devices</Button>
+          <Button>Seeing &quot;Unknown&quot; devices</Button>
         </div>
         <div>
           <h4 className="font-bold">Your Device Info</h4>
