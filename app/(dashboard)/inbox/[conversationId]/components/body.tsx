@@ -3,19 +3,18 @@ import { useEffect, useRef, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBox } from "@/components/reusable/message-box";
-import { FullConversationType } from "@/types";
+import { FullMessageType } from "@/types";
 import useConversation from "@/hooks/user-conversation";
 import axios from "axios";
 
 interface BodyProps {
-  initialData: FullConversationType;
+  initialMessages: FullMessageType[];
+  leadLastName: string;
 }
-export const Body = ({ initialData }: BodyProps) => {
-  const [messages, setMessages] = useState(initialData.messages);
+export const Body = ({ initialMessages, leadLastName }: BodyProps) => {
+  const [messages, setMessages] = useState(initialMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { conversationId } = useConversation();
-
-  const leadName = initialData.lead.lastName as string;
 
   useEffect(() => {
     axios.post(`/api/conversations/${conversationId}/seen`);
@@ -27,7 +26,7 @@ export const Body = ({ initialData }: BodyProps) => {
         <MessageBox
           key={message.id}
           data={message}
-          username={message.role === "user" ? leadName : "assistant"}
+          username={message.role === "user" ? leadLastName : "assistant"}
           isLast={i === messages.length - 1}
         />
       ))}

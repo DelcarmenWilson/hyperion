@@ -406,7 +406,7 @@ export const NewLeadForm = ({ onClose }: NewLeadFormProps) => {
                       </FormControl>
                       <SelectContent>
                         {states.map((state) => (
-                          <SelectItem value={state.abv}>
+                          <SelectItem key={state.abv} value={state.abv}>
                             {state.state}
                           </SelectItem>
                         ))}

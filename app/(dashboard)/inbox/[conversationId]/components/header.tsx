@@ -9,26 +9,27 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MoreHorizontal, RefreshCcw, Trash } from "lucide-react";
+import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
 
 interface HeaderProps {
-  data: FullConversationType;
+  lead: LeadColumn;
 }
-export const Header = ({ data }: HeaderProps) => {
+export const Header = ({ lead }: HeaderProps) => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const initials = `${data.lead.firstName.substring(
+  const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
     0,
     1
-  )} ${data.lead.lastName.substring(0, 1)}`;
-  const fullName = `${data.lead.firstName} ${data.lead.lastName}`;
+  )}`;
+  const fullName = `${lead.firstName} ${lead.lastName}`;
 
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/sms/${data.id}`);
+      await axios.delete(`/api/sms/${lead.id}`);
       router.refresh();
       router.push("/sms");
 
@@ -43,7 +44,7 @@ export const Header = ({ data }: HeaderProps) => {
 
   const onRefresh = () => {
     router.refresh();
-    router.push(`/sms/${data.id}`);
+    router.push(`/sms/${lead.id}`);
   };
 
   return (
@@ -54,11 +55,7 @@ export const Header = ({ data }: HeaderProps) => {
         onConfirm={onDelete}
         loading={loading}
       />
-      <ProfileDrawer
-        data={data}
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      />
+      <ProfileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <div className="flex justify-between items-center border-b h-14 px-2">
         <div className="flex justify-center items-center bg-primary text-accent  rounded-full p-1 mr-2">
           <span className="text-lg font-semibold">

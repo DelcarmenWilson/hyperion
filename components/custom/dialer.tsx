@@ -3,60 +3,61 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { AlertCircle, Phone, X } from "lucide-react";
 import { Switch } from "../ui/switch";
+import { numbers } from "@/constants/phone-numbers";
 
 export const Dialer = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [disabled, setDisabled] = useState(false);
-  const numbers = [
-    {
-      value: "1",
-      letters: "",
-    },
-    {
-      value: "2",
-      letters: "ABC",
-    },
-    {
-      value: "3",
-      letters: "EFG",
-    },
-    {
-      value: "4",
-      letters: "GHI",
-    },
-    {
-      value: "5",
-      letters: "JKL",
-    },
-    {
-      value: "6",
-      letters: "MNO",
-    },
-    {
-      value: "7",
-      letters: "PQRS",
-    },
-    {
-      value: "8",
-      letters: "TUV",
-    },
-    {
-      value: "9",
-      letters: "WXYZ",
-    },
-    {
-      value: "*",
-      letters: "",
-    },
-    {
-      value: "0",
-      letters: "",
-    },
-    {
-      value: "#",
-      letters: " ",
-    },
-  ];
+  // const numbers = [
+  //   {
+  //     value: "1",
+  //     letters: "",
+  //   },
+  //   {
+  //     value: "2",
+  //     letters: "ABC",
+  //   },
+  //   {
+  //     value: "3",
+  //     letters: "EFG",
+  //   },
+  //   {
+  //     value: "4",
+  //     letters: "GHI",
+  //   },
+  //   {
+  //     value: "5",
+  //     letters: "JKL",
+  //   },
+  //   {
+  //     value: "6",
+  //     letters: "MNO",
+  //   },
+  //   {
+  //     value: "7",
+  //     letters: "PQRS",
+  //   },
+  //   {
+  //     value: "8",
+  //     letters: "TUV",
+  //   },
+  //   {
+  //     value: "9",
+  //     letters: "WXYZ",
+  //   },
+  //   {
+  //     value: "*",
+  //     letters: "",
+  //   },
+  //   {
+  //     value: "0",
+  //     letters: "",
+  //   },
+  //   {
+  //     value: "#",
+  //     letters: " ",
+  //   },
+  // ];
 
   const onClick = (num: string) => {
     setPhoneNumber((state) => (state += num));
@@ -101,6 +102,7 @@ export const Dialer = () => {
       <div className="grid grid-cols-3 gap-1">
         {numbers.map((number) => (
           <Button
+            key={number.value}
             disabled={disabled}
             className="flex-col gap-1 h-14"
             variant="outlineprimary"

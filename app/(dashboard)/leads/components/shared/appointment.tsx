@@ -32,7 +32,7 @@ export const Appointment = ({ dob, showInfo = false }: AppointmentProps) => {
       {showInfo && (
         <div>
           <p>Country: Meckenburg</p>
-          <p>Height: 5'7</p>
+          <p>Height: 5&apos;7</p>
           <p>Weight: 153 lbs</p>
           <p>Smoker: No</p>
           <p>Income: $46524.00</p>

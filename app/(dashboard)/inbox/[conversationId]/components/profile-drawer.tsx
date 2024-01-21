@@ -10,13 +10,8 @@ import { Fragment } from "react";
 interface ProfileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  data: FullConversationType;
 }
-export const ProfileDrawer = ({
-  isOpen,
-  onClose,
-  data,
-}: ProfileDrawerProps) => {
+export const ProfileDrawer = ({ isOpen, onClose }: ProfileDrawerProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>

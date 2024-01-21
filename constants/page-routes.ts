@@ -14,13 +14,13 @@ import {
   UserSquare,
   Users,
 } from "lucide-react";
-type MainNavType = {
+type NavType = {
   title: string;
   href: string;
   active?: boolean;
-  icon: LucideIcon;
+  icon?: LucideIcon;
 };
-export const MainSidebarRoutes: MainNavType[] = [
+export const MainSidebarRoutes: NavType[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
@@ -86,5 +86,29 @@ export const MainSidebarRoutes: MainNavType[] = [
     title: "Billing",
     href: "/billing",
     icon: DollarSign,
+  },
+];
+
+export const SettingsSidebarRoutes:NavType[] = [
+  { title: "Profile", href: "/settings" },
+  {
+    title: "Account",
+    href: "/settings/account",
+  },
+  {
+    title: "Chat",
+    href: "/settings/chat",
+  },
+  {
+    title: "Appearance",
+    href: "/settings/appearance",
+  },
+  {
+    title: "Notifications",
+    href: "/settings/notifications",
+  },
+  {
+    title: "Display",
+    href: "/settings/display",
   },
 ];
