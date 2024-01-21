@@ -1,10 +1,11 @@
-import { MessageBox } from "@/components/reusable/message-box";
-import { format } from "date-fns";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { PictureInPicture } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
+import { PictureInPicture } from "lucide-react";
+
 import { FullConversationType } from "@/types";
+
+import { MessageBox } from "@/components/reusable/message-box";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
 interface BodyProps {
   initialData: FullConversationType;
@@ -24,8 +25,6 @@ export const Body = ({ initialData }: BodyProps) => {
                   ? initialData.lead.lastName
                   : (initialData.users[0].name as string)
               }
-              date={format(message.createdAt, "MM-dd-yyyy hh:mm")}
-              position={message.role === "user" ? "end" : "start"}
               isLast={i === initialData.messages.length - 1}
             />
           ))}
