@@ -3,7 +3,14 @@
  * These routes do not require authentication
  * @type {string[]}
  */
-export const publicRoutes = ["/", "/new-verification","/api/sms/in","/api/sms/out","/api/organizations"];
+export const publicRoutes = [
+  "/",
+  "/new-verification",
+  "/api/organizations",
+  "/api/voice",
+  "/api/sms/in",
+  "/api/sms/out",
+];
 // export const publicRoutes = ["/", "/new-verification","/api/:path*"];
 
 /**
@@ -33,4 +40,4 @@ export const apiAuthPrefix = "/api/auth";
  *
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = "/";
+export const DEFAULT_LOGIN_REDIRECT = "/dashboard";

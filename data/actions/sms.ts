@@ -2,13 +2,11 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import twilio from "twilio";
+
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
 import { defaultMessage, defaultOptOut, defaultPrompt } from "@/placeholder/chat";
-
-const sid = process.env.TWILIO_CLIENT_ID;
-const token = process.env.TWILIO_CLIENT_TOKEN;
-const from = process.env.TWILIO_PHONE;
+import { cfg } from "@/lib/twilio-config";
 
 export const sendIntialSms = async (leadId: string) => {
   //TODO the entire lead shall be passed
@@ -36,12 +34,12 @@ export const sendIntialSms = async (leadId: string) => {
     where: { userId: user.id },
   });
 
-  let prompt = chatSettings?.initialPrompt
-    ? chatSettings.initialPrompt
+  let prompt = chatSettings?.defaultPrompt
+    ? chatSettings.defaultPrompt
     : defaultPrompt().replace("{AGENT_NAME}", user.name as string);
 
-  let message = chatSettings?.initialMessage
-    ? chatSettings.initialMessage
+  let message = chatSettings?.defaultMessage
+    ? chatSettings.defaultMessage
     : defaultMessage().replace("{AGENT_NAME}", user.name as string);
   message = message.replace("{LEAD_NAME}", lead.firstName as string);
 
@@ -49,7 +47,7 @@ export const sendIntialSms = async (leadId: string) => {
     prompt += `Here is the lead information: ${JSON.stringify(lead)}  `;
   } 
 
-  const conversation = await conversationInsert(user.id, lead.id, message);
+  const conversation = await conversationInsert(user.id, lead.id);
 
   if (!conversation.success) {
     return { error: "Conversation was not created" };
@@ -65,16 +63,16 @@ export const sendIntialSms = async (leadId: string) => {
     conversation.success
   );
 
-  message +=`${"\n\n"} ${defaultOptOut}`
-  const client = twilio(sid, token);
+  // message +=`${"\n\n"} ${defaultOptOut}`
+  const client = twilio(cfg.accountSid, cfg.apiToken);
   const result = await client.messages.create({
     body: message,
-    from: from,
+    from: cfg.callerId,
     to: lead.cellPhone || (lead.homePhone as string),
   });
 
   if (!result) {
-    return { success: "Message was not sent!" };
+    return { error: "Message was not sent!" };
   }
 
   return { success: "Inital message sent!" };

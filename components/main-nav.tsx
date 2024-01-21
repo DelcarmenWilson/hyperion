@@ -10,14 +10,8 @@ export function MainNav({
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
-  const params = useParams();
 
   const routes = [
-    {
-      href: "/leads",
-      label: "Leads",
-      active: pathname === "/leads",
-    },
     {
       href: "/csv",
       label: "Csv",
@@ -27,11 +21,6 @@ export function MainNav({
       href: "/twilio",
       label: "Twilio",
       active: pathname === "/twilio",
-    },
-    {
-      href: "/conversations",
-      label: "Conversations",
-      active: pathname === "/conversations",
     },
   ];
   return (

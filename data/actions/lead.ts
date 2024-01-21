@@ -4,27 +4,9 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
-import { Lead } from "@prisma/client";
 import { formatPhoneNumber } from "@/lib/utils";
-import { LeadColumn } from "@/app/(leads)/leads/components/columns";
 
-export const leadUpdateById = async (values: z.infer<typeof LeadSchema>,leadId:string) => {
 
-  const existingLead = await db.lead.findUnique({ where: { id:leadId } });
-
-  if (!existingLead) {
-    return { error: "Lead does not exist" };
-  }
-
-  const updateduser = await db.lead.update({
-    where: { id: existingLead.id },
-    data: {
-      ...values,
-    },
-  });
-
-  return { success: "Lead has been updated" };
-};
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -51,7 +33,15 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     dateOfBirth,
   } = validatedFields.data;
 
-  await db.lead.create({
+  const existingLead=await db.lead.findMany({where:{
+    cellPhone:formatPhoneNumber(cellPhone) 
+  }})
+console.log(existingLead.length)
+  if(existingLead.length){    
+    return { error: "Lead already exist" }
+  }
+
+  const newLead=await db.lead.create({
     data: {
       firstName,
       lastName,
@@ -69,7 +59,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     },
   });
 
-  return { success: "Lead created!" };
+  return { success:newLead };
 };
 
 export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
@@ -114,5 +104,38 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   }
 
   // await db.lead.createMany(data)
-  return { success: "Fields have been validated" };
+  return { success: "Leads have been imported" };
+};
+
+
+export const leadUpdateById = async (values: z.infer<typeof LeadSchema>,leadId:string) => {
+
+  const existingLead = await db.lead.findUnique({ where: { id:leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  const updateduser = await db.lead.update({
+    where: { id: existingLead.id },
+    data: {
+      ...values,
+    },
+  });
+
+  return { success: "Lead has been updated" };
+};
+
+export const leadUpdateNotesById = async (leadId:string,notes:string) => {
+
+  const existingLead = await db.lead.findUnique({ where: { id:leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+await db.lead.update({where:{id:leadId},data:{
+  notes
+}})
+  return { success: "Lead notes have been updated" };
 };
