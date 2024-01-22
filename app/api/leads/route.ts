@@ -1,6 +1,6 @@
+import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { reFormatPhoneNumber } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

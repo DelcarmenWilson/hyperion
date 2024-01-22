@@ -1,3 +1,4 @@
+import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
@@ -83,8 +84,8 @@ export async function PATCH(
       data: {
         firstName,
         lastName,
-        homePhone,
-        cellPhone,
+        homePhone:reFormatPhoneNumber(homePhone),
+        cellPhone:reFormatPhoneNumber(cellPhone),
         address,
         state,
         city,
