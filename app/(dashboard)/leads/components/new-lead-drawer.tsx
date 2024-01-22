@@ -39,7 +39,7 @@ export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-sm">
-                  <div className="flex flex-col h-full overflow-y-auto bg-white py-2 shadow-xl">
+                  <div className="flex flex-col h-full overflow-y-auto bg-background  py-2 shadow-xl">
                     <div className="px-2 sm:px-2">
                       <div className="flex items-start justify-end">
                         <div className="flex h-7 items-center">

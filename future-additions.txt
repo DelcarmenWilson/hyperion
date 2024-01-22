@@ -1,6 +1,8 @@
+-- be able to delete conversation
+
 - remove the opt out message
 
-- make the agent make call initailly
+- make the agent make calls initailly
 - make the phone number visible after the process has been completed
 
 - remove phone chatgpt info
@@ -10,3 +12,8 @@
 - create function to talk to the crm
 create messaging between agents.
 - mimick the  ringy crm. loook at youtube,
+
+--comments in appoiment shiuld not be requiered
+--change the calendar icon
+--dont let agent send out text if they dont have the default prompt and message
+--add the + 1 to phone numbers when lead is create

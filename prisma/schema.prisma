@@ -53,6 +53,7 @@ model User {
 
   appointments Appointment[]
   calls        Call[]
+  presets      Presets[]
   chatSettings ChatSettings?
 }
 
@@ -122,7 +123,7 @@ model Organization {
 model Team {
   id             String       @id @default(cuid())
   organizationId String
-  organization   Organization @relation("OrganizationToTeam", fields: [organizationId], references: [id])
+  organization   Organization @relation("OrganizationToTeam", fields: [organizationId], references: [id], onDelete: Cascade)
   name           String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -172,7 +173,7 @@ model Lead {
 model Conversation {
   id String @id @default(cuid())
 
-  lead   Lead   @relation(fields: [leadId], references: [id])
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId String @unique
 
   messages Message[]
@@ -191,7 +192,7 @@ model Message {
   // content String @db.LongText
   content String
 
-  sender   User?   @relation("MessageToUser", fields: [senderId], references: [id])
+  sender   User?   @relation("MessageToUser", fields: [senderId], references: [id], onDelete: Cascade)
   senderId String?
 
   hasSeen   User[]   @relation("HasSeenToUser")
@@ -202,10 +203,10 @@ model Appointment {
   id   String   @id @default(cuid())
   date DateTime
 
-  agent   User   @relation(fields: [agentId], references: [id])
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
 
-  lead   Lead   @relation(fields: [leadId], references: [id])
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId String
 
   status   String @default("Scheduled")
@@ -235,10 +236,10 @@ model ChatSettings {
 //CALLS
 model Call {
   id      String @id @default(cuid())
-  agent   User   @relation(fields: [agentId], references: [id])
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
 
-  lead      Lead          @relation(fields: [leadId], references: [id])
+  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId    String
   direction CallDirection @default(Inbound)
   timeZone  String
@@ -247,4 +248,16 @@ model Call {
 
   createdAt DateTime  @default(now())
   endedAt   DateTime?
+}
+
+model Presets {
+  id String @id @default(cuid())
+
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId String
+
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

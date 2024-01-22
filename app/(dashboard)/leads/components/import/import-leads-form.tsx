@@ -10,11 +10,11 @@ import { ImportLeadColumn, columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { leadsImport } from "@/data/actions/lead";
-import { formatPhoneNumber } from "@/lib/utils";
 import { Gender, MaritalStatus } from "@prisma/client";
 import { capitalize } from "@/formulas/text";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { reFormatPhoneNumber } from "@/formulas/phones";
 
 type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
@@ -37,8 +37,8 @@ export const ImportLeadsForm = () => {
             firstName: capitalize(d["First Name"]),
             lastName: capitalize(d["Last Name"]),
             email: d["Email"].toLowerCase(),
-            homePhone: formatPhoneNumber(d["Home"]),
-            cellPhone: formatPhoneNumber(d["Other Phone 1"]),
+            homePhone: reFormatPhoneNumber(d["Home"]),
+            cellPhone: reFormatPhoneNumber(d["Other Phone 1"]),
             dateOfBirth:
               d["Date Of Birth"].length > 2
                 ? new Date(d["Date Of Birth"])

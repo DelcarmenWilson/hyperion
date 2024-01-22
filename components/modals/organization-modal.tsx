@@ -40,7 +40,7 @@ export const OrganizationModal = () => {
       setLoading(true);
       const response = await axios.post("/api/organizations", values);
 
-      window.location.assign(`/${response.data.id}`);
+      window.location.assign(`/dashboard`);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {

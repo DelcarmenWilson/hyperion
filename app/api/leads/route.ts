@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { formatPhoneNumber } from "@/lib/utils";
+import { reFormatPhoneNumber } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -57,8 +57,8 @@ export async function POST(req: Request) {
         city,
         state,
         zipCode,
-        homePhone:formatPhoneNumber(homePhone),
-        cellPhone:formatPhoneNumber(cellPhone),
+        homePhone:reFormatPhoneNumber(homePhone),
+        cellPhone:reFormatPhoneNumber(cellPhone),
         gender,
         maritalStatus,
         email,

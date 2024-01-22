@@ -1,12 +1,10 @@
-"use server"
+"use server";
 
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
-import { formatPhoneNumber } from "@/lib/utils";
-
-
+import { reFormatPhoneNumber } from "@/formulas/phones";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -33,15 +31,21 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     dateOfBirth,
   } = validatedFields.data;
 
-  const existingLead=await db.lead.findMany({where:{
-    cellPhone:formatPhoneNumber(cellPhone) 
-  }})
-console.log(existingLead.length)
-  if(existingLead.length){    
-    return { error: "Lead already exist" }
+  const existingLead = await db.lead.findMany({
+    where: {
+      cellPhone: reFormatPhoneNumber(cellPhone),
+    },
+  });
+
+  if (!homePhone) {
+    homePhone == cellPhone;
   }
 
-  const newLead=await db.lead.create({
+  if (existingLead.length) {
+    return { error: "Lead already exist" };
+  }
+
+  const newLead = await db.lead.create({
     data: {
       firstName,
       lastName,
@@ -49,8 +53,8 @@ console.log(existingLead.length)
       city,
       state,
       zipCode,
-      homePhone:homePhone?formatPhoneNumber(homePhone):"",
-      cellPhone:formatPhoneNumber(cellPhone),
+      homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
+      cellPhone: reFormatPhoneNumber(cellPhone),
       gender: gender || "",
       maritalStatus: maritalStatus || "",
       email,
@@ -59,7 +63,7 @@ console.log(existingLead.length)
     },
   });
 
-  return { success:newLead };
+  return { success: newLead };
 };
 
 export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
@@ -67,7 +71,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   if (!user) {
     return { error: "Unauthorized" };
   }
-  
+
   for (let i = 0; i < values.length; i++) {
     const {
       firstName,
@@ -107,10 +111,11 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   return { success: "Leads have been imported" };
 };
 
-
-export const leadUpdateById = async (values: z.infer<typeof LeadSchema>,leadId:string) => {
-
-  const existingLead = await db.lead.findUnique({ where: { id:leadId } });
+export const leadUpdateById = async (
+  values: z.infer<typeof LeadSchema>,
+  leadId: string
+) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
@@ -126,16 +131,18 @@ export const leadUpdateById = async (values: z.infer<typeof LeadSchema>,leadId:s
   return { success: "Lead has been updated" };
 };
 
-export const leadUpdateNotesById = async (leadId:string,notes:string) => {
-
-  const existingLead = await db.lead.findUnique({ where: { id:leadId } });
+export const leadUpdateNotesById = async (leadId: string, notes: string) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
   }
 
-await db.lead.update({where:{id:leadId},data:{
-  notes
-}})
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      notes,
+    },
+  });
   return { success: "Lead notes have been updated" };
 };

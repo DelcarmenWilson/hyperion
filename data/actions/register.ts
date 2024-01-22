@@ -27,10 +27,14 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       email,
       name,
       password: hashedPassword,
+      //TODO dont forget to remove this afte fixing token
+      emailVerified:new Date()
     },
   });
+//TODO
+  // const verificationToken = await generateVerificationToken(email);
+  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  // return { success: "Confirmation Email sent!" };
 
-  const verificationToken = await generateVerificationToken(email);
-  await sendVerificationEmail(verificationToken.email, verificationToken.token);
-  return { success: "Confirmation Email sent!" };
+  return { success: "Account created continue to login" };
 };
