@@ -13,7 +13,7 @@ export const conversationsGetByUserId = async () => {
     });
     return conversations;
   } catch {
-    return null;
+    return [];
   }
 };
 

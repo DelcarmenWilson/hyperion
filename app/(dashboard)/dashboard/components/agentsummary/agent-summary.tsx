@@ -2,7 +2,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { AgentSummaryColumn, columns } from "./columns";
-import { DashBoardTable } from "../dashboard-tables";
+import { DashBoardTable } from "../dashboard-table";
 import { Button } from "@/components/ui/button";
 
 interface AgentSummaryBoxProps {

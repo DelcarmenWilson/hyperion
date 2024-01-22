@@ -1,4 +1,4 @@
-import { Conversation, Message, User, Lead } from "@prisma/client";
+import { Conversation, Message, User, Lead, Preset } from "@prisma/client";
 
 export type FullMessageType = Message & {
   hasSeen: User[];
@@ -14,4 +14,10 @@ export type FullConversationType = Conversation & {
 export type LeadConversationType = Conversation & {
   lead: Lead;
   messages: Message[];
+};
+
+
+export type PresetFormValues = {
+  type: Preset;
+  content: string;
 };

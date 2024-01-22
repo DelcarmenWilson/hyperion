@@ -1,13 +1,13 @@
-import { leadsGetAllByAgentId } from "@/data/lead";
-import { LeadColumn, columns } from "./components/columns";
+import { Users } from "lucide-react";
+import { currentUser } from "@/lib/auth";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { DownloadCloud, Paperclip, Plus, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { currentUser } from "@/lib/auth";
-import { DashBoardTable } from "../dashboard/components/dashboard-tables";
+import { DashBoardTable } from "../dashboard/components/dashboard-table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LeadClient } from "./components/client";
+
+import { leadsGetAllByAgentId } from "@/data/lead";
+import { LeadColumn, columns } from "./components/columns";
 const LeadsPage = async () => {
   const user = await currentUser();
   const leads = await leadsGetAllByAgentId(user?.id!);

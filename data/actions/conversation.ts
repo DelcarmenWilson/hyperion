@@ -1,5 +1,6 @@
 "use server";
 
+import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const conversationInsert = async (
@@ -28,4 +29,26 @@ export const conversationInsert = async (
 
 
   return  ({success:conversation.id} );
+};
+export const conversationDeleteById = async (
+  id: string,
+) => {
+  const user=await currentUser()
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+  const existingConversation=await db.conversation.findUnique({where:{id},include:{users:true}})
+  if (!existingConversation) {
+    return { error: "Conversation does not exist!" };
+  }
+  
+  if (existingConversation.users[0].id!==user.id) {
+    return { error: "Unauthorized!" };
+  }
+
+  await db.conversation.delete({where:{id}})
+  
+
+
+  return  ({success:"conversation has been deleted"} );
 };

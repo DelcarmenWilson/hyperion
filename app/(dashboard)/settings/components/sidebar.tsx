@@ -13,33 +13,6 @@ export const Sidebar = () => {
     route.active = pathname === route.href;
     return route;
   });
-  //   { title: "Profile", href: "/settings", active: pathname === "/settings" },
-  //   {
-  //     title: "Account",
-  //     href: "/settings/account",
-  //     active: pathname === "/settings/account",
-  //   },
-  //   {
-  //     title: "Chat",
-  //     href: "/settings/chat",
-  //     active: pathname === "/settings/chat",
-  //   },
-  //   {
-  //     title: "Appearance",
-  //     href: "/settings/appearance",
-  //     active: pathname === "/settings/appearance",
-  //   },
-  //   {
-  //     title: "Notifications",
-  //     href: "/settings/notifications",
-  //     active: pathname === "/settings/notifications",
-  //   },
-  //   {
-  //     title: "Display",
-  //     href: "/settings/display",
-  //     active: pathname === "/settings/display",
-  //   },
-  // ];
   return (
     <div className="w-[200px] bg-background overflow-y-auto border-r py-2">
       <Heading title="Settings" description="User settings" />
