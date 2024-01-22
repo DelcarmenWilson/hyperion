@@ -1,5 +1,3 @@
-import { db } from "@/lib/db";
-
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -10,7 +8,7 @@ import { ThemeToggle } from "./custom/theme-toggle";
 const NavBar = async () => {
   const user = await currentUser();
   if (!user) {
-    redirect("/auth/login");
+    redirect("/login");
   }
   return (
     <div className=" flex items-center  sticky w-full top-0 z-10 py-2 px-4">

@@ -18,7 +18,7 @@ export default async function DashBoardLayout({
   const user = await currentUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect("/login");
   }
 
   const organization = await db.organization.findFirst({
