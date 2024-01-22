@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const newMessage = await db.message.create({
       data: {
-        role: "assitant",
+        role: "assistant",
         content: message,
         hasSeen: { connect: { id: user.id } },
         conversation: {
