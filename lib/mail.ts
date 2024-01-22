@@ -13,7 +13,7 @@ export const sendTwoFactorTokenEmail=async(email:string,token:string)=>{
 }
 
 export const sendPasswordResetEmail = async (email:string,token:string)=>{
-  const resetlink=`${domain}/auth/new-password?token=${token}`;
+  const resetlink=`${domain}/new-password?token=${token}`;
   await resend.emails.send({
     from: "onboarding@resend.dev",
     to: email,
