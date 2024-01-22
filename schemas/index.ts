@@ -1,4 +1,4 @@
-import { Gender, MaritalStatus, Preset, UserRole } from "@prisma/client";
+import { Gender, MaritalStatus, MessageRole, Preset, UserRole } from "@prisma/client";
 import * as z from "zod";
 
 export const SettingsSchema = z
@@ -126,7 +126,7 @@ export const TeamSchema = z.object({ name: z.string().min(1) });
 // });
 
 export const MessageSchema = z.object({
-  role: z.string(),
+  role:  z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
 });
 
