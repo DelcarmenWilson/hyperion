@@ -10,6 +10,14 @@ enum CallDirection {
   Outbound
 }
 
+enum Preset {
+  Birthday
+  FollowUp
+  Reminder
+  Text
+  Away
+}
+
 enum Gender {
   Male
   Female
@@ -22,6 +30,12 @@ enum MaritalStatus {
   Widowed
 }
 
+enum MessageRole {
+  system
+  assistant
+  user
+}
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
@@ -29,7 +43,7 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  // provider  = "mysql"
+  //provider  = "mysql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
@@ -188,8 +202,8 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
 
-  role    String
-  // content String @db.LongText
+  role    MessageRole @default(user)
+  //content String      @db.LongText
   content String
 
   sender   User?   @relation("MessageToUser", fields: [senderId], references: [id], onDelete: Cascade)
@@ -210,7 +224,7 @@ model Appointment {
   leadId String
 
   status   String @default("Scheduled")
-  // comments String @db.LongText
+  //comments String @db.LongText
   comments String
 
   createdAt DateTime @default(now())
@@ -221,9 +235,9 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // defaultPrompt   String   @db.LongText
-  // defaultMessage  String   @db.LongText
-  // defaultFunction String   @db.LongText
+  // defaultPrompt   String @db.LongText
+  // defaultMessage  String @db.LongText
+  // defaultFunction String @db.LongText
   defaultPrompt   String
   defaultMessage  String
   defaultFunction String
@@ -255,7 +269,8 @@ model Presets {
 
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
-
+  type    Preset @default(Text)
+  //content String @db.LongText
   content String
 
   createdAt DateTime @default(now())

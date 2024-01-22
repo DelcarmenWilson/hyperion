@@ -16,4 +16,6 @@ create messaging between agents.
 --comments in appoiment shiuld not be requiered
 --change the calendar icon
 --dont let agent send out text if they dont have the default prompt and message
---add the + 1 to phone numbers when lead is create
+
+
+------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)

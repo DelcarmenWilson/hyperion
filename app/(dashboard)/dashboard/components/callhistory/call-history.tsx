@@ -2,7 +2,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Phone } from "lucide-react";
 import { CallHistoryColumn, columns } from "./columns";
-import { DashBoardTable } from "../dashboard-tables";
+import { DashBoardTable } from "../dashboard-table";
 
 interface AgentSummaryBoxProps {
   data: CallHistoryColumn[];

@@ -34,8 +34,12 @@ export async function POST(req: Request) {
   
   await messageInsert(textFromLead, conversation.id);
 
-  if(textFromLead.content.toLowerCase()==="STOP"){
-    return new NextResponse(defaultUnsubscribed(), { status: 200 });
+  switch(textFromLead.content.toLowerCase()){
+    case "stop":
+      return new NextResponse(defaultUnsubscribed(), { status: 200 });
+      case "reset":
+        await db.conversation.delete({where:{id:conversation.id}})
+      return new NextResponse("Conversation has been reset", { status: 200 });
   }
 
   const messages = await db.message.findMany({

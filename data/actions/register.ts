@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { getUserByEmail } from "@/data/user";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
+import { chatSettingsInsert } from "./chat-settings";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -22,19 +23,22 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Email already in use!" };
   }
 
-  await db.user.create({
+  const user = await db.user.create({
     data: {
       email,
       name,
       password: hashedPassword,
-      //TODO dont forget to remove this afte fixing token
-      emailVerified:new Date()
+      //TODO dont forget to remove this after fixing token
+      emailVerified: new Date(),
     },
   });
-//TODO
+  //TODO
   // const verificationToken = await generateVerificationToken(email);
   // await sendVerificationEmail(verificationToken.email, verificationToken.token);
   // return { success: "Confirmation Email sent!" };
+
+  //CREATE CHAT SETTINGS
+  await chatSettingsInsert(user);
 
   return { success: "Account created continue to login" };
 };

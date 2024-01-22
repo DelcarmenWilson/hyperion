@@ -1,4 +1,4 @@
-import { Sidebar } from "@/app/(settings)/components/sidebar";
+import { Sidebar } from "./components/sidebar";
 
 export default function SettingsLayout({
   children,

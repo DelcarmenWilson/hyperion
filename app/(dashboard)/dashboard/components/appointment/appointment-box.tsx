@@ -2,7 +2,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { AppointmentColumn, columns } from "./columns";
-import { DashBoardTable } from "../dashboard-tables";
+import { DashBoardTable } from "../dashboard-table";
 
 interface AppointmentBoxProps {
   data: AppointmentColumn[];
