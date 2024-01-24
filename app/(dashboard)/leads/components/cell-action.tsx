@@ -26,8 +26,6 @@ import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { sendIntialSms } from "@/data/actions/sms";
-import { AppointmentModal } from "@/components/modals/apointment-modal";
-import { appointmentInsert } from "@/data/actions/appointment";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface CellActionProps {
@@ -38,23 +36,6 @@ export const CellAction = ({ data }: CellActionProps) => {
   const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [appointmentOpen, setAppointmentOpen] = useState(false);
-
-  const onSetAppointment = async () => {
-    setLoading(true);
-    await appointmentInsert(user?.id!, data, new Date()).then((data) => {
-      router.refresh();
-      if (data?.error) {
-        toast.error(data.error);
-      }
-      if (data?.success) {
-        toast.error(data.success);
-      }
-    });
-
-    setLoading(false);
-    setAppointmentOpen(false);
-  };
 
   const onStartConversation = async () => {
     // toast.success(data.id);
@@ -97,13 +78,6 @@ export const CellAction = ({ data }: CellActionProps) => {
         onConfirm={onDelete}
         loading={loading}
       />
-      <AppointmentModal
-        title={data.firstName}
-        isOpen={appointmentOpen}
-        onClose={() => setAppointmentOpen(false)}
-        onConfirm={onSetAppointment}
-        loading={loading}
-      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -123,7 +97,7 @@ export const CellAction = ({ data }: CellActionProps) => {
             <Copy className="mr-2 h-4 w-4" />
             Copy Id
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setAppointmentOpen(true)}>
+          <DropdownMenuItem>
             <Calendar className="mr-2 h-4 w-4" />
             Appointment
           </DropdownMenuItem>

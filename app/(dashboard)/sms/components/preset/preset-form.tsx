@@ -16,7 +16,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { presetCreate } from "@/data/actions/preset";
 import { toast } from "sonner";
 import { PresetFormValues } from "@/types";
@@ -24,13 +24,16 @@ import { Preset } from "@prisma/client";
 
 interface PresetFormProps {
   type: Preset;
+  content?: string;
 }
-export const PresetForm = ({ type }: PresetFormProps) => {
+export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
   const [isPending, startTransition] = useTransition();
+  const [count, setCount] = useState(content.length);
+
   const form = useForm<PresetFormValues>({
     defaultValues: {
       type: type,
-      content: "",
+      content: content,
     },
   });
 
@@ -69,6 +72,7 @@ export const PresetForm = ({ type }: PresetFormProps) => {
                       disabled={isPending}
                       {...field}
                       placeholder="message"
+                      onChange={(e) => setCount(e.target.value.length)}
                     />
                     <Smile className="absolute text-primary -right-2.5 -top-2.5" />
                   </div>
@@ -79,7 +83,7 @@ export const PresetForm = ({ type }: PresetFormProps) => {
           />
           <div className="flex justify-between font-light text-xs gap-2">
             <div className="flex flex-col gap-2">
-              <p>48/700 (1 test message)</p>
+              <p>{count}/700 (1 test message)</p>
               <p>
                 Opt-out notice: ...If this was a mistake, please reply cancel
               </p>

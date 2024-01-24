@@ -63,7 +63,7 @@ export const columns: ColumnDef<LeadColumn>[] = [
   {
     accessorKey: "call",
     header: "",
-    cell: ({ row }) => <Call leadId={row.original.id} />,
+    cell: ({ row }) => <Call lead={row.original} />,
   },
 
   {

@@ -3,14 +3,16 @@ import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { Lead } from "@prisma/client";
-import { format } from "date-fns";
 
 import {
   ArrowLeft,
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Folder,
   List,
+  Mail,
+  MessageSquareMore,
   Pencil,
   PhoneCall,
   User,
@@ -29,6 +31,7 @@ import { LeadColumn } from "../../components/columns";
 import { Call } from "../../components/shared/call";
 import { Appointment } from "../../components/shared/appointment";
 import ExtraInfo from "../../components/shared/extra-info";
+import { Sms } from "./sms";
 
 interface LeadClientProps {
   lead: Lead;
@@ -97,7 +100,7 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
             <Info lead={formattedLead} />
 
             <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
-            <Call leadId={lead.id} />
+            <Call lead={formattedLead} />
           </div>
           <div className="flex justify-around col-span-2">
             <Appointment dob={lead.dateOfBirth!} showInfo />
@@ -180,21 +183,21 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
                     className="flex flex-col justify-center gap-2"
                     value="sms"
                   >
-                    <List className="w-4 h-4" />
+                    <MessageSquareMore className="w-4 h-4" />
                     SMS History
                   </TabsTrigger>
                   <TabsTrigger
                     className="flex flex-col justify-center gap-2"
                     value="email"
                   >
-                    <PhoneCall className="w-4 h-4" />
+                    <Mail className="w-4 h-4" />
                     SEND EMAIL
                   </TabsTrigger>
                   <TabsTrigger
                     className="flex flex-col justify-center gap-2"
                     value="documents"
                   >
-                    <Calendar className="w-4 h-4" />
+                    <Folder className="w-4 h-4" />
                     DOCUMENTS
                   </TabsTrigger>
                 </TabsList>
@@ -202,7 +205,9 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
             </div>
 
             <div className="px-2">
-              <TabsContent value="sms">SMS History</TabsContent>
+              <TabsContent value="sms">
+                <Sms />
+              </TabsContent>
               <TabsContent value="email">SEND EMAIL</TabsContent>
               <TabsContent value="documents">DOCUMENTS</TabsContent>
             </div>

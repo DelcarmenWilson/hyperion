@@ -16,21 +16,25 @@ import { callInsert } from "@/data/actions/call";
 import { toast } from "sonner";
 import { CallDirection } from "@prisma/client";
 import { useState } from "react";
+import { useDialerModal } from "@/hooks/use-dialer-modal";
+import { LeadColumn } from "../columns";
 interface CallProps {
-  leadId: string;
+  lead: LeadColumn;
   intialCallCount?: number;
 }
-export const Call = ({ leadId, intialCallCount }: CallProps) => {
+export const Call = ({ lead, intialCallCount }: CallProps) => {
   const user = useCurrentUser();
+  const useDialer = useDialerModal();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [callCount, setCallCount] = useState(intialCallCount || 0);
 
   const onStartCall = async () => {
-    if (!leadId || !user) return;
+    if (!lead.id || !user) return;
     setLoading(true);
     setCallCount((state) => (state += 1));
-    await callInsert(user.id, leadId, CallDirection.Outbound).then((data) => {
+
+    await callInsert(user.id, lead.id, CallDirection.Outbound).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);
@@ -46,7 +50,7 @@ export const Call = ({ leadId, intialCallCount }: CallProps) => {
       <p className="text-sm">Local time : 11:31 am</p>
       <Button
         className="w-fit relative"
-        onClick={onStartCall}
+        onClick={() => useDialer.onOpen(lead)}
         size="sm"
         disabled={loading}
       >

@@ -7,9 +7,10 @@ export const publicRoutes = [
   "/",
   "/new-verification",
   "/api/organizations",
-  "/api/voice",
   "/api/sms/in",
   "/api/sms/out",
+  "/api/token",
+  "/api/voice",
 ];
 // export const publicRoutes = ["/", "/new-verification","/api/:path*"];
 
