@@ -3,14 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
-import {
-  Calendar,
-  Copy,
-  Eye,
-  MessageCircle,
-  MoreHorizontal,
-  Trash,
-} from "lucide-react";
+import { Copy, Eye, MoreHorizontal, Trash } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -25,9 +18,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { sendIntialSms } from "@/data/actions/sms";
-import { AppointmentModal } from "@/components/modals/apointment-modal";
-import { appointmentInsert } from "@/data/actions/appointment";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface CellActionProps {

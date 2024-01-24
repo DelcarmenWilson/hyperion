@@ -1,9 +1,7 @@
-// import { cfg } from "@/lib/twilio-config";
-// import { generateName } from "@/formulas/name-generator";
-
 import { PhoneClient } from "./components/client";
 
-const PhonePage = () => {
+const PhonePage = async () => {
+  // const device = await startupClient();
   return <PhoneClient />;
 };
 

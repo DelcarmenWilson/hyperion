@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       from: cfg.callerId,
       to: phone,
     });
+    
     return NextResponse.json(result);
   } catch (error) {
     console.log("[SENDSMD_POST]", error);

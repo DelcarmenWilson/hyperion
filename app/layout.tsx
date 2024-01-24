@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
+import { DialerProvider } from "@/providers/dialer-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default async function RootLayout({
         <body className={cn("bg-secondary", poppins.className)}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ModalProvider />
+            <DialerProvider />
             <Toaster />
             {children}
           </ThemeProvider>
