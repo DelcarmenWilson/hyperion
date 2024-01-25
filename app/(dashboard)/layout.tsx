@@ -31,7 +31,6 @@ export default async function DashBoardLayout({
   if (!organization) {
     redirect("/");
   }
-
   return (
     <>
       <MainSideBar />

@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { UserRole } from "@prisma/client";
+import { PhoneNumber, UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
 import { db } from "@/lib/db";
@@ -59,6 +59,7 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;    
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
       }
       return session;
@@ -75,6 +76,7 @@ export const {
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.role;
+      token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 
       return token;

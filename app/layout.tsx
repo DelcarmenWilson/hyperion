@@ -8,6 +8,7 @@ import { ModalProvider } from "@/providers/modal-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import { DialerProvider } from "@/providers/dialer-provider";
+import { PhoneProvider } from "@/providers/phone-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default async function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ModalProvider />
             <DialerProvider />
+            <PhoneProvider />
             <Toaster />
             {children}
           </ThemeProvider>

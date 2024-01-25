@@ -1,14 +1,20 @@
 import { nameGenerator } from "@/formulas/name-generator";
 import { cfg } from "./twilio-config";
 import twilio from "twilio";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { db } from "./db";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
 
 let identity: string;
 
-export function tokenGenerator() {
-  identity = nameGenerator();
+export function tokenGenerator(id?: string) {
+  if (id) {
+    identity = id;
+  } else {
+    identity = nameGenerator();
+  }
   const accessToken = new AccessToken(
     cfg.accountSid,
     cfg.apiKey,
@@ -29,12 +35,18 @@ export function tokenGenerator() {
   };
 }
 
-export function voiceResponse(requestBody: any) {
+export async function voiceResponse (requestBody: any) {
+
   const toNumberOrClientName = requestBody.To;
-  const callerId = cfg.callerId;
+  let callerId = requestBody.AgentNumber;
+
+  const existingNumbers = await db.phoneNumber.findMany({where:{phone:requestBody.To}})
+  if (existingNumbers.length) {
+    callerId == existingNumbers[0].phone
+  }
+
+  console.log(toNumberOrClientName,existingNumbers,callerId,requestBody)
   let twiml = new VoiceResponse();
-  
-  console.log(requestBody.To,callerId,identity);
 
   // If the request to the /voice endpoint is TO your Twilio Number,
   // then it is an incoming call towards your Twilio.Device.

@@ -7,23 +7,49 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { AlertCircle, Phone, X } from "lucide-react";
 import { Switch } from "../ui/switch";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { numbers } from "@/constants/phone-numbers";
 import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { PhoneType } from "@/types";
 
 interface DialerProps {
   lead?: LeadColumn;
 }
 export const Dialer = ({ lead }: DialerProps) => {
+  const user = useCurrentUser();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
   const [device, setDevice] = useState<Device>();
-  const [phoneNumber, setPhoneNumber] = useState(lead?.cellPhone || "");
-  const [call, setCall] = useState<Connection>();
+  const [toNumber, setToNumber] = useState(lead?.cellPhone || "");
+  const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
+  const [selectedNumber, setSelectedNumber] = useState(
+    user?.phoneNumbers[0].phone || ""
+  );
+
+  const [outGoingCall, setOutGoingCall] = useState<Connection>();
+  // const [inCommingCall, setInComingCall] = useState<Connection>();
 
   async function startupClient() {
+    if (!user?.phoneNumbers.length) {
+      console.log("no phone number have been set up");
+      return null;
+    }
+    const numbers: PhoneType[] = user.phoneNumbers.map((p) => {
+      return { value: p.phone, state: p.state };
+    });
+    setMyPhoneNumbers(numbers);
     try {
-      const response = await axios.get("/api/token");
+      const response = await axios.post("/api/token", { identity: user?.id });
       const data = response.data;
       intitializeDevice(data.token);
       console.log(data);
@@ -47,7 +73,9 @@ export const Dialer = ({ lead }: DialerProps) => {
 
     device.on("error", function (error: any) {});
 
-    // device.on("incoming", handleIncomingCall);
+    // device.on("incoming", function (call: Connection) {
+    //   setInComingCall(call);
+    // });
 
     // device.audio.on("deviceChange", updateAllAudioDevices.bind(device));
 
@@ -59,49 +87,64 @@ export const Dialer = ({ lead }: DialerProps) => {
 
   async function onCallStarted() {
     if (device) {
-      const call = await device.connect({ To: phoneNumber });
+      const call = await device.connect({
+        To: toNumber,
+        AgentNumber: selectedNumber as string,
+      });
 
       // "accepted" means the call has finished connecting and the state is now "open"
       // call.on("accept", updateUIAcceptedOutgoingCall);
-      // call.on("disconnect", updateUIDisconnectedOutgoingCall);
+      call.on("disconnect", onOutGoingCallDisconnect);
       // call.on("cancel", updateUIDisconnectedOutgoingCall);
-      setCall(call);
-      // outgoingCallHangupButton.onclick = () => {
-      //   log("Hanging up ...");
-      //   call.disconnect();
-      // };
+      setOutGoingCall(call);
     } else {
     }
   }
 
-  const onCallDisconnect = () => {
-    call?.disconnect();
-    setCall(undefined);
+  const onOutGoingCallDisconnect = () => {
+    outGoingCall?.disconnect();
+    setOutGoingCall(undefined);
   };
 
+  // const onIncomingCallDisconnect = () => {
+  //   inCommingCall?.disconnect();
+  //   setInComingCall(undefined);
+  // };
+
+  // const onIncomingCallAccept = () => {
+  //   inCommingCall?.accept();
+  // };
+  // const onIncomingCallReject = () => {
+  //   inCommingCall?.reject();
+  //   setInComingCall(undefined);
+  // };
+
   const onClick = (num: string) => {
-    setPhoneNumber((state) => (state += num));
-    if (phoneNumber.length > 9) {
+    setToNumber((state) => (state += num));
+    if (toNumber.length > 9) {
       setDisabled(true);
     }
   };
+
   const onReset = () => {
-    setPhoneNumber("");
+    setToNumber("");
     setDisabled(false);
   };
+
   useEffect(() => {
-    if (phoneNumber.length > 9) {
+    if (toNumber.length > 9) {
       setDisabled(true);
     }
     startupClient();
-  }, [phoneNumber]);
+  }, [toNumber]);
+
   return (
     <div className="flex">
       <div className="flex flex-col gap-2 p-4">hello</div>
       <div className="flex flex-col gap-2 p-4">
         {leadFullName}
         <div className="relative">
-          <Input placeholder="Phone Number" value={phoneNumber} />
+          <Input placeholder="Phone Number" value={toNumber} />
           <X
             className="h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer"
             onClick={onReset}
@@ -109,7 +152,23 @@ export const Dialer = ({ lead }: DialerProps) => {
         </div>
         <div className="flex justify-between items-center">
           <span className="w-40">Caller Id</span>
-          <Input placeholder="Smart local Id" />
+
+          <Select
+            name="ddlState"
+            defaultValue={selectedNumber}
+            onValueChange={(e) => setSelectedNumber(e)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Smart local Id" />
+            </SelectTrigger>
+            <SelectContent>
+              {myPhoneNumbers.map((phone) => (
+                <SelectItem key={phone.value} value={phone.value}>
+                  {phone.value} | {phone.state}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex gap-2 text-sm">
@@ -141,16 +200,26 @@ export const Dialer = ({ lead }: DialerProps) => {
             </Button>
           ))}
         </div>
-        {!call ? (
+        {!outGoingCall ? (
           <Button disabled={!disabled} onClick={onCallStarted}>
             <Phone className="h-4 w-4 mr-2" /> Call
           </Button>
         ) : (
-          <Button variant="destructive" onClick={onCallDisconnect}>
+          <Button variant="destructive" onClick={onOutGoingCallDisconnect}>
             <Phone className="h-4 w-4 mr-2" /> Hang up
           </Button>
         )}
       </div>
+      {/* {inCommingCall && (
+        <div className="flex justify-between items-center">
+          <Button disabled={!disabled} onClick={onIncomingCallAccept}>
+            <Phone className="h-4 w-4 mr-2" /> Call
+          </Button>
+          <Button variant="destructive" onClick={onIncomingCallReject}>
+            <Phone className="h-4 w-4 mr-2" /> Cancel
+          </Button>
+        </div>
+      )} */}
     </div>
   );
 };
