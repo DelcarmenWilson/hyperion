@@ -21,3 +21,8 @@ export type PresetFormValues = {
   type: Preset;
   content: string;
 };
+
+export type PhoneType = {
+  value: string;
+  state:string
+};
