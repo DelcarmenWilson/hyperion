@@ -99,7 +99,7 @@ export const Dialer = ({ lead }: DialerProps) => {
 
   useEffect(() => {
     startupClient();
-  });
+  }, []);
 
   return (
     <div className="flex">
