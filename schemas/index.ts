@@ -70,7 +70,7 @@ export const LeadSchema = z.object({
   gender: z.enum([Gender.Male, Gender.Female]),
   maritalStatus: z.enum([MaritalStatus.Single,MaritalStatus.Married,MaritalStatus.Widowed,MaritalStatus.Divorced]),
   email: z.string().email(),
-  dateOfBirth: z.optional(z.date()),
+  dateOfBirth: z.optional(z.string()),
   conversationId:z.optional(z.string()),
   // age               :     z.optional(z.number()),
   // faceValue         :     z.optional(z.number()),

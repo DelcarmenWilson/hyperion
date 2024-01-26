@@ -34,7 +34,7 @@ export async function POST(request: Request) {
           connect: { id: newMessage.id },
         },
       },
-      include: { users: true, messages: true },
+      include: { agent: true, messages: true },
     });
 
     return NextResponse.json(newMessage);

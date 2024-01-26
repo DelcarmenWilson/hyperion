@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const leads = await db.lead.findMany({
       include: {
-        conversation: true
+        conversations: true
       },
     });
 

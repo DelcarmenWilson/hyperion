@@ -18,8 +18,7 @@ export const conversationInsert = async (
   const conversation = await db.conversation.create({
     data: {
       leadId,
-      users:{connect:[{id:userId}]
-      }
+      agentId:userId
     },
   });
 
@@ -37,12 +36,12 @@ export const conversationDeleteById = async (
   if (!user) {
     return { error: "Unauthenticated!" };
   }
-  const existingConversation=await db.conversation.findUnique({where:{id},include:{users:true}})
+  const existingConversation=await db.conversation.findUnique({where:{id}})
   if (!existingConversation) {
     return { error: "Conversation does not exist!" };
   }
   
-  if (existingConversation.users[0].id!==user.id) {
+  if (existingConversation.agentId!==user.id) {
     return { error: "Unauthorized!" };
   }
 

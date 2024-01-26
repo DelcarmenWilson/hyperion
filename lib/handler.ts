@@ -1,7 +1,6 @@
 import { nameGenerator } from "@/formulas/name-generator";
 import { cfg } from "./twilio-config";
 import twilio from "twilio";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { db } from "./db";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
@@ -41,22 +40,26 @@ export async function voiceResponse (requestBody: any) {
   let callerId = requestBody.AgentNumber;
 
   const existingNumbers = await db.phoneNumber.findMany({where:{phone:requestBody.To}})
-  if (existingNumbers.length) {
-    callerId == existingNumbers[0].phone
+  const myphone=existingNumbers[0]
+  if (myphone) {
+    callerId = myphone.phone
   }
 
-  console.log(toNumberOrClientName,existingNumbers,callerId,requestBody)
+  // console.log(identity,toNumberOrClientName,existingNumbers,callerId,requestBody)
   let twiml = new VoiceResponse();
 
   // If the request to the /voice endpoint is TO your Twilio Number,
   // then it is an incoming call towards your Twilio.Device.
   if (toNumberOrClientName == callerId) {
+    
+    console.log("incoming call")
     let dial = twiml.dial();
 
     // This will connect the caller with your Twilio.Device/client
     dial.client(identity);
   } else if (requestBody.To) {
     // This is an outgoing call
+    console.log("outgoing call")
 
     // set the callerId
     let dial = twiml.dial({ callerId });

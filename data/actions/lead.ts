@@ -58,7 +58,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
       gender: gender || "",
       maritalStatus: maritalStatus || "",
       email,
-      dateOfBirth,
+      dateOfBirth:new Date(dateOfBirth!),
       owner: user.id,
     },
   });

@@ -11,11 +11,13 @@
 - cannot create any more account without creatingorganizations.
 - create function to talk to the crm
 create messaging between agents.
-- mimick the  ringy crm. loook at youtube,
 
 --comments in appoiment shiuld not be requiered
 --change the calendar icon
 --dont let agent send out text if they dont have the default prompt and message
+--dont forget to change add the timer to the phonemodal (incoming calls)
+--find a way to incorporate the sadcn calender in new lead form
+--font forget to enable the register in the register.ts
 
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)

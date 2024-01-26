@@ -15,9 +15,7 @@ export async function DELETE(request: Request, { params }: { params: IParams }) 
     const { conversationId } = params;
     
   await db.conversation.delete({
-      where: { id: conversationId },
-      include: {
-        users: { where: { id: user?.id } },}
+      where: { id: conversationId,agentId:user.id },
     });
 
     return new NextResponse("Success", { status: 200 });
