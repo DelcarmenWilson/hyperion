@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     // Find the conversation
     const conversation = await db.conversation.findUnique({
       where: { id: conversationId },
-      include: { messages: { include: { hasSeen: true } }, users: true },
+      include: { messages: { include: { hasSeen: true } }, agent: true },
     });
     if (!conversation) {
       return new NextResponse("Invalid Id", { status: 400 });

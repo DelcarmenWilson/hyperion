@@ -23,6 +23,8 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Email already in use!" };
   }
 
+  return {success:"Register Diasabled!"}
+
   const user = await db.user.create({
     data: {
       email,

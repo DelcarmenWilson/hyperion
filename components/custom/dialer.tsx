@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Connection, Device } from "twilio-client";
+import { Connection } from "twilio-client";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -20,6 +19,7 @@ import { numbers } from "@/constants/phone-numbers";
 import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { PhoneType } from "@/types";
+import { device } from "@/lib/device";
 
 interface DialerProps {
   lead?: LeadColumn;
@@ -29,7 +29,7 @@ export const Dialer = ({ lead }: DialerProps) => {
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
-  const [device, setDevice] = useState<Device>();
+
   const [toNumber, setToNumber] = useState(lead?.cellPhone || "");
   const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(
@@ -37,7 +37,6 @@ export const Dialer = ({ lead }: DialerProps) => {
   );
 
   const [outGoingCall, setOutGoingCall] = useState<Connection>();
-  // const [inCommingCall, setInComingCall] = useState<Connection>();
 
   async function startupClient() {
     if (!user?.phoneNumbers.length) {
@@ -48,46 +47,20 @@ export const Dialer = ({ lead }: DialerProps) => {
       return { value: p.phone, state: p.state };
     });
     setMyPhoneNumbers(numbers);
-    try {
-      const response = await axios.post("/api/token", { identity: user?.id });
-      const data = response.data;
-      intitializeDevice(data.token);
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-  function intitializeDevice(token: string) {
-    // logDiv.classList.remove("hide");
-    const device = new Device(token, {
-      logLevel: 1,
-    });
-    addDeviceListeners(device);
-    setDevice(device);
+    addDeviceListeners;
   }
 
-  function addDeviceListeners(device: Device) {
+  function addDeviceListeners() {
     device.on("ready", function () {
-      // callControlsDiv.classList.remove("hide");
+      console.log("ready");
     });
 
     device.on("error", function (error: any) {});
-
-    // device.on("incoming", function (call: Connection) {
-    //   setInComingCall(call);
-    // });
-
-    // device.audio.on("deviceChange", updateAllAudioDevices.bind(device));
-
-    // Show audio selection UI if it is supported by the browser.
-    // if (device.audio.isOutputSelectionSupported) {
-    //   audioSelectionDiv.classList.remove("hide");
-    // }
   }
 
   async function onCallStarted() {
     if (device) {
-      const call = await device.connect({
+      const call = device.connect({
         To: toNumber,
         AgentNumber: selectedNumber as string,
       });
@@ -106,19 +79,6 @@ export const Dialer = ({ lead }: DialerProps) => {
     setOutGoingCall(undefined);
   };
 
-  // const onIncomingCallDisconnect = () => {
-  //   inCommingCall?.disconnect();
-  //   setInComingCall(undefined);
-  // };
-
-  // const onIncomingCallAccept = () => {
-  //   inCommingCall?.accept();
-  // };
-  // const onIncomingCallReject = () => {
-  //   inCommingCall?.reject();
-  //   setInComingCall(undefined);
-  // };
-
   const onClick = (num: string) => {
     setToNumber((state) => (state += num));
     if (toNumber.length > 9) {
@@ -135,8 +95,11 @@ export const Dialer = ({ lead }: DialerProps) => {
     if (toNumber.length > 9) {
       setDisabled(true);
     }
+  }, [toNumber.length]);
+
+  useEffect(() => {
     startupClient();
-  }, [toNumber]);
+  });
 
   return (
     <div className="flex">

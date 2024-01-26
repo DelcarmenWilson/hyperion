@@ -4,13 +4,18 @@ import { db } from "@/lib/db";
 export const conversationsGetByUserId = async () => {
   try {
     const user = await currentUser();
+    if (!user?.email) {
+      return [];
+    }
+
     const conversations = await db.conversation.findMany({
+      where:{agentId:user.id},
       include: {
-        users: { where: { id: user?.id } },
         lead: true,
         messages: true,
       },
     });
+
     return conversations;
   } catch {
     return [];
@@ -24,9 +29,9 @@ export const conversationGetById = async (conversationId: string) => {
       return null;
     }
     const conversation = await db.conversation.findUnique({
-      where: { id: conversationId },
+      where: { id: conversationId,agentId:user.id },
       include: {
-        users: { where: { id: user?.id } },
+        
         lead: true,
         messages: { include: { sender: true, hasSeen: true } },
       },
@@ -39,10 +44,9 @@ export const conversationGetById = async (conversationId: string) => {
 export const conversationGetByLeadId = async (leadId: string) => {
   try {
     const conversation = await db.conversation.findFirst({
-      where: { leadId },
+      where: { leadId},
       include: {
         lead: true,
-        users: true,
         messages: { include: { sender: true, hasSeen: true } },
       },
     });

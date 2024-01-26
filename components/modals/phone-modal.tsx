@@ -1,4 +1,5 @@
 "use client";
+// import { device } from "@/lib/device";
 import { Fragment, useEffect, useState } from "react";
 import {
   Phone,
@@ -19,8 +20,10 @@ import {
 } from "@/components/ui/select";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { Connection } from "twilio-client";
+
+import { device } from "@/lib/device";
 import axios from "axios";
-import { Connection, Device } from "twilio-client";
 
 type AgentType = {
   name: string;
@@ -49,42 +52,38 @@ const agents: AgentType[] = [
 export const PhoneModal = () => {
   const usePm = usePhoneModal();
   const [agent, setAgent] = useState("");
-  const user = useCurrentUser();
+
   // PHONE VARIABLES
-  const [device, setDevice] = useState<Device>();
   const [inCommingCall, setInComingCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
+  const [fromNumber, setFromNumber] = useState("");
+  const [fromName, setFromName] = useState("");
 
-  async function startupClient() {
-    if (!user?.phoneNumbers.length) {
-      console.log("no phone number have been set up");
-      return null;
-    }
-
-    try {
-      const response = await axios.post("/api/token", { identity: user?.id });
-      const data = response.data;
-      intitializeDevice(data.token);
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  function intitializeDevice(token: string) {
-    const device = new Device(token, {
-      logLevel: 1,
+  function addDeviceListeners() {
+    device?.on("ready", function () {
+      console.log("ready");
     });
-    addDeviceListeners(device);
-    setDevice(device);
-  }
 
-  function addDeviceListeners(device: Device) {
-    device.on("ready", function () {});
+    device?.on("error", function (error: any) {
+      console.log(error);
+    });
 
-    device.on("error", function (error: any) {});
+    device?.on("incoming", async function (call: Connection) {
+      call.on("disconnect", function (error: any) {
+        onIncomingCallDisconnect();
+      });
+      call.on("cancel", function (error: any) {
+        onIncomingCallDisconnect();
+      });
+      const response = await axios.post("/api/leads/details", {
+        phone: call.parameters.from,
+      });
 
-    device.on("incoming", function (call: Connection) {
+      const data = response.data;
+      const fullName = `${data?.firstName} ${data?.lastName}`;
+      setFromName(fullName);
+      setFromNumber(data.cellPhone);
+
       usePm.onOpen();
       setInComingCall(call);
     });
@@ -94,21 +93,26 @@ export const PhoneModal = () => {
     inCommingCall?.disconnect();
     setInComingCall(undefined);
     setIsCallAccepted(false);
+    setFromName("");
+    setFromNumber("");
+    usePm.onClose();
   };
 
   const onIncomingCallAccept = () => {
     inCommingCall?.accept();
     setIsCallAccepted(true);
   };
+
   const onIncomingCallReject = () => {
     inCommingCall?.reject();
     setInComingCall(undefined);
     setIsCallAccepted(false);
     usePm.onClose();
   };
+
   useEffect(() => {
-    startupClient();
-  }, []);
+    addDeviceListeners();
+  });
 
   return (
     <Transition.Root show={usePm.isOpen} as={Fragment}>
@@ -143,13 +147,13 @@ export const PhoneModal = () => {
                       <span>
                         Incoming call from{" "}
                         <span className="text-primary font-bold italic">
-                          561-899-8575
+                          {fromNumber}
                         </span>
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Leads name: Wilson Del Carmen</span>{" "}
-                      <span className="text-primary font-bold">30</span>
+                      <span>Leads name: {fromName}</span>
+                      {/* <span className="text-primary font-bold">30</span> */}
                     </div>
                     {!isCallAccepted ? (
                       <div className="flex flex-col gap-2">

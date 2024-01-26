@@ -2,7 +2,7 @@ import { Users } from "lucide-react";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { InboxClient } from "./components/inbox-client";
+import { InboxClient } from "./components/client";
 import { conversationsGetByUserId } from "@/data/conversation";
 import { InboxColumn, columns } from "./components/columns";
 import { DataTable } from "./components/data-table";

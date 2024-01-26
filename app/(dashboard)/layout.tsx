@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import NavBar from "@/components/navbar";
 import { MainSideBar } from "@/components/reusable/main-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PhoneProvider } from "@/providers/phone-provider";
 
 export default async function DashBoardLayout({
   children,
@@ -31,16 +32,14 @@ export default async function DashBoardLayout({
   if (!organization) {
     redirect("/");
   }
+
   return (
     <>
+      <PhoneProvider />
       <MainSideBar />
       <div className="flex flex-col ml-[70px] h-full ">
         <NavBar />
-        <ScrollArea className="w-full px-4">
-          {/* <div className="flex flex-1 flex-col overflow-hidden w-full space-y-4 p-8 pt-2 overflow-y-auto"> */}
-          {children}
-          {/* </div> */}
-        </ScrollArea>
+        <ScrollArea className="w-full px-4">{children}</ScrollArea>
       </div>
     </>
   );

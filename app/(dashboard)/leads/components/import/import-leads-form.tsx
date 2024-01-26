@@ -39,10 +39,11 @@ export const ImportLeadsForm = () => {
             email: d["Email"].toLowerCase(),
             homePhone: reFormatPhoneNumber(d["Home"]),
             cellPhone: reFormatPhoneNumber(d["Other Phone 1"]),
-            dateOfBirth:
-              d["Date Of Birth"].length > 2
-                ? new Date(d["Date Of Birth"])
-                : undefined,
+            // dateOfBirth:
+            //   d["Date Of Birth"].length > 2
+            //     ? new Date(d["Date Of Birth"])
+            //     : undefined,
+            dateOfBirth: d["Date Of Birth"],
             address: capitalize(d["Street Address"]),
             city: capitalize(d["City"]),
             state: capitalize(d["State"]),
