@@ -60,15 +60,16 @@ export const PhoneModal = () => {
   const [fromName, setFromName] = useState("");
 
   function addDeviceListeners() {
-    device?.on("ready", function () {
+    if (!device) return;
+    device.on("ready", function () {
       console.log("ready");
     });
 
-    device?.on("error", function (error: any) {
+    device.on("error", function (error: any) {
       console.log(error);
     });
 
-    device?.on("incoming", async function (call: Connection) {
+    device.on("incoming", async function (call: Connection) {
       call.on("disconnect", function (error: any) {
         onIncomingCallDisconnect();
       });

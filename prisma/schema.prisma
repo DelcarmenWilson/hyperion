@@ -42,8 +42,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  //provider  = "mysql"
+  //provider  = "postgresql"
+  provider  = "mysql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
@@ -206,8 +206,8 @@ model Message {
   conversationId String
 
   role    MessageRole @default(user)
-  //content String      @db.LongText
-  content String
+  content String      @db.LongText
+  //content String
 
   sender   User?   @relation("MessageToUser", fields: [senderId], references: [id], onDelete: Cascade)
   senderId String?
@@ -227,8 +227,8 @@ model Appointment {
   leadId String
 
   status   String @default("Scheduled")
-  // comments String @db.LongText
-  comments String
+  comments String @db.LongText
+  //comments String
 
   createdAt DateTime @default(now())
 }
@@ -238,12 +238,12 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // defaultPrompt   String @db.LongText
-  // defaultMessage  String @db.LongText
-  // defaultFunction String @db.LongText
-  defaultPrompt   String
-  defaultMessage  String
-  defaultFunction String
+  defaultPrompt   String @db.LongText
+  defaultMessage  String @db.LongText
+  defaultFunction String @db.LongText
+  // defaultPrompt   String
+  // defaultMessage  String
+  // defaultFunction String
 
   leadInfo  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -273,8 +273,8 @@ model Presets {
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
   type    Preset @default(Text)
-  //content String @db.LongText
-  content String
+  content String @db.LongText
+  //content String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

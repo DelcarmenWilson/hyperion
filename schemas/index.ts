@@ -101,30 +101,6 @@ export const ChatSchema = z.object({
 
 export const TeamSchema = z.object({ name: z.string().min(1) });
 
-//OLD
-// export const MessageSchema = z.object({
-//   toCountry: z.string(),
-//   toState: z.string(),
-//   smsMessageSid: z.string(),
-//   numMedia: z.string(),
-//   toCity: z.string(),
-//   fromZip: z.string(),
-//   smsSid: z.string(),
-//   fromState: z.string(),
-//   smsStatus: z.string(),
-//   fromCity: z.string(),
-//   body: z.string(),
-//   fromCountry: z.string(),
-//   to: z.string(),
-//   messagingServiceSid: z.string(),
-//   toZip: z.string(),
-//   numSegments: z.string(),
-//   messageSid: z.string(),
-//   accountSid: z.string(),
-//   from: z.string(),
-//   apiVersion: z.string(),
-// });
-
 export const MessageSchema = z.object({
   role:  z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
@@ -139,4 +115,12 @@ export const PresetSchema = z.object({
     Preset.Away,
   ]),
   content: z.string(),
+});
+
+export const AppointmentSchema = z.object({
+  date: z.date(),
+  time:z.string(),
+  agentId: z.string(),
+  leadId: z.string(),
+  comments: z.string(),
 });

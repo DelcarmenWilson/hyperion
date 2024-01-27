@@ -1,18 +1,22 @@
 "use client";
-import { Button } from "@/components/ui/button";
-
-import { Dialer } from "@/components/custom/dialer";
-import { Dialog, Transition } from "@headlessui/react";
-import { X } from "lucide-react";
 import { Fragment } from "react";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
+import { X } from "lucide-react";
+import { Dialog, Transition } from "@headlessui/react";
 
-export const DialerModal = () => {
-  const dialerModel = useDialerModal();
+import { Button } from "@/components/ui/button";
+import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+import { AppointmentForm } from "@/components/custom/appointment-form";
+
+export const AppointmentModal = () => {
+  const appointmentModel = useAppointmentModal();
 
   return (
-    <Transition.Root show={dialerModel.isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={dialerModel.onClose}>
+    <Transition.Root show={appointmentModel.isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-50"
+        onClose={appointmentModel.onClose}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"
@@ -38,16 +42,17 @@ export const DialerModal = () => {
                 <Dialog.Panel className="pointer-events-auto w-auto max-w-screen-2xl">
                   <div className="flex flex-col h-full overflow-y-auto bg-white py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
-                      <div className="flex items-start justify-end">
-                        <div className="ml-3 flex h-7 items-center">
-                          <Button onClick={dialerModel.onClose}>
+                      <div className="flex items-center justify-between">
+                        New Appoinment
+                        <div className="flex items-center ml-3">
+                          <Button size="xs" onClick={appointmentModel.onClose}>
                             <span className="sr-only">Close panel</span>
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
                     </div>
-                    <Dialer />
+                    <AppointmentForm />
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

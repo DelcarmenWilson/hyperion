@@ -8,6 +8,7 @@ import NavBar from "@/components/navbar";
 import { MainSideBar } from "@/components/reusable/main-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PhoneProvider } from "@/providers/phone-provider";
+import { AppointmentProvider } from "@/providers/appointment-provider";
 
 export default async function DashBoardLayout({
   children,
@@ -35,6 +36,7 @@ export default async function DashBoardLayout({
 
   return (
     <>
+      <AppointmentProvider />
       <PhoneProvider />
       <MainSideBar />
       <div className="flex flex-col ml-[70px] h-full ">

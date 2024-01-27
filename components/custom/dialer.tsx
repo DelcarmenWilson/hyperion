@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Connection } from "twilio-client";
-
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { AlertCircle, Phone, X } from "lucide-react";
-import { Switch } from "../ui/switch";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 import {
   Select,
@@ -16,16 +16,14 @@ import {
 } from "@/components/ui/select";
 
 import { numbers } from "@/constants/phone-numbers";
-import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { PhoneType } from "@/types";
 import { device } from "@/lib/device";
+import { useDialerModal } from "@/hooks/use-dialer-modal";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
-interface DialerProps {
-  lead?: LeadColumn;
-}
-export const Dialer = ({ lead }: DialerProps) => {
+export const Dialer = () => {
   const user = useCurrentUser();
+  const { lead } = useDialerModal();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
@@ -64,11 +62,7 @@ export const Dialer = ({ lead }: DialerProps) => {
         To: toNumber,
         AgentNumber: selectedNumber as string,
       });
-
-      // "accepted" means the call has finished connecting and the state is now "open"
-      // call.on("accept", updateUIAcceptedOutgoingCall);
       call.on("disconnect", onOutGoingCallDisconnect);
-      // call.on("cancel", updateUIDisconnectedOutgoingCall);
       setOutGoingCall(call);
     } else {
     }
@@ -173,16 +167,6 @@ export const Dialer = ({ lead }: DialerProps) => {
           </Button>
         )}
       </div>
-      {/* {inCommingCall && (
-        <div className="flex justify-between items-center">
-          <Button disabled={!disabled} onClick={onIncomingCallAccept}>
-            <Phone className="h-4 w-4 mr-2" /> Call
-          </Button>
-          <Button variant="destructive" onClick={onIncomingCallReject}>
-            <Phone className="h-4 w-4 mr-2" /> Cancel
-          </Button>
-        </div>
-      )} */}
     </div>
   );
 };

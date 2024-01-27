@@ -32,7 +32,11 @@ export const Info = ({ lead }: InfoProps) => {
     <div className="flex flex-col gap-2 text-sm">
       <p>{`${lead.firstName} ${lead.lastName}`}</p>
       <p className="flex items-center gap-2 text-primary">
-        <Link className="font-extrabold italic" href={`/leads/${lead.id}`}>
+        <Link
+          className="font-extrabold italic"
+          onClick={() => router.push(`/leads/${lead.id}`, {})}
+          href={`/leads/${lead.id}`}
+        >
           {formatPhoneNumber(lead.cellPhone)}
         </Link>
         <CopyButton value={lead.cellPhone} />

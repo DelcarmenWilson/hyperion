@@ -1,13 +1,15 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { NotesForm } from "./shared/notes-form";
-import { Info } from "./shared/info";
-import { Call } from "./shared/call";
 import { Appointment } from "./shared/appointment";
-import ExtraInfo from "./shared/extra-info";
+import { Call } from "./shared/call";
+import { DropDown } from "./shared/dropdown";
+import { ExtraInfo } from "./shared/extra-info";
+import { Info } from "./shared/info";
+import { NotesForm } from "./shared/notes-form";
 
 export type LeadColumn = {
   id: string;
@@ -39,11 +41,14 @@ export const columns: ColumnDef<LeadColumn>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="flex flex-col justify-center items-center gap-2">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+        <DropDown lead={row.original} />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,

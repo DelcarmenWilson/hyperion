@@ -1,4 +1,3 @@
-import { nameGenerator } from "@/formulas/name-generator";
 import { cfg } from "./twilio-config";
 import twilio from "twilio";
 import { db } from "./db";
@@ -6,14 +5,7 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
 
-let identity: string;
-
-export function tokenGenerator(id?: string) {
-  if (id) {
-    identity = id;
-  } else {
-    identity = nameGenerator();
-  }
+export const tokenGenerator=(identity: string)=> {
   const accessToken = new AccessToken(
     cfg.accountSid,
     cfg.apiKey,
@@ -34,7 +26,7 @@ export function tokenGenerator(id?: string) {
   };
 }
 
-export async function voiceResponse (requestBody: any) {
+export  const voiceResponse=async (requestBody: any) =>{
 
   const toNumberOrClientName = requestBody.To;
   let callerId = requestBody.AgentNumber;
@@ -52,14 +44,12 @@ export async function voiceResponse (requestBody: any) {
   // then it is an incoming call towards your Twilio.Device.
   if (toNumberOrClientName == callerId) {
     
-    console.log("incoming call")
     let dial = twiml.dial();
 
     // This will connect the caller with your Twilio.Device/client
-    dial.client(identity);
+    dial.client(myphone.agentId as string);
   } else if (requestBody.To) {
-    // This is an outgoing call
-    console.log("outgoing call")
+    // This is an outgoing call    
 
     // set the callerId
     let dial = twiml.dial({ callerId });
@@ -82,6 +72,7 @@ export async function voiceResponse (requestBody: any) {
  * @param {Number|String} number
  * @return {Boolean}
  */
-function isAValidPhoneNumber(number: string) {
+
+const isAValidPhoneNumber=(number: string): boolean =>{
   return /^[\d\+\-\(\) ]+$/.test(number);
 }

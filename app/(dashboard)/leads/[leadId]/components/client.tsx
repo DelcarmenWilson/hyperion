@@ -25,12 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotesForm } from "../../components/shared/notes-form";
+import { Appointment } from "../../components/shared/appointment";
+import { ExtraInfo } from "../../components/shared/extra-info";
+import { Call } from "../../components/shared/call";
 import { Info } from "../../components/shared/info";
 import { LeadColumn } from "../../components/columns";
-import { Call } from "../../components/shared/call";
-import { Appointment } from "../../components/shared/appointment";
-import ExtraInfo from "../../components/shared/extra-info";
+import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
 
 interface LeadClientProps {

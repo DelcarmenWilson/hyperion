@@ -25,7 +25,7 @@ const DahsBoardPage = async () => {
       status: apt.status,
       dob: apt.lead.dateOfBirth || undefined,
       date: apt.date,
-      comments: "",
+      comments: apt.comments,
     })
   );
 
@@ -65,7 +65,7 @@ const DahsBoardPage = async () => {
       <div className="flex flex-col gap-4 lg:flex-row">
         <Box
           icon={Users}
-          title="LeadsToday"
+          title="Leads today"
           value={leadCount as number}
           href="/leads"
           hrefTitle="Go to leads"

@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import { device } from "@/lib/device";
-import { DialerModal } from "@/components/modals/dialer-modal";
-import { PhoneModal } from "@/components/modals/phone-modal";
+import { AppointmentModal } from "@/components/modals/appointment-modal";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-export const PhoneProvider = () => {
+export const AppointmentProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
+  // const [device, setDevice] = useState<Device>();
   const user = useCurrentUser();
 
   useEffect(() => {
@@ -30,8 +30,7 @@ export const PhoneProvider = () => {
 
   return (
     <>
-      <DialerModal />
-      <PhoneModal />
+      <AppointmentModal />
     </>
   );
 };
