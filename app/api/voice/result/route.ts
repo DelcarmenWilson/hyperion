@@ -1,5 +1,6 @@
 import { voiceResponse } from "@/lib/handler";
 import { NextResponse } from "next/server";
+import twilio from "twilio";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -8,8 +9,7 @@ export async function POST(req: Request) {
     key = key.replace('"', "");
     j[key] = value;
   });
-  
+ 
   console.log(j)
-  const reponse = await voiceResponse(j);
-  return new NextResponse(reponse, { status: 200 });
+  return new NextResponse("",{ status: 200 });
 }

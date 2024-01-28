@@ -1,5 +1,18 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  //provider  = "mysql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
 enum UserRole {
   MASTER
   ADMIN
@@ -37,18 +50,6 @@ enum MessageRole {
   user
 }
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
-}
-
-datasource db {
-  provider  = "postgresql"
-  //provider  = "mysql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
-
 model User {
   id            String    @id @default(cuid())
   username      String
@@ -72,7 +73,6 @@ model User {
   conversations Conversation[]
 
   messages Message[] @relation("MessageToUser")
-  hasSeen  Message[] @relation("HasSeenToUser")
 
   appointments Appointment[]
   calls        Call[]
@@ -225,7 +225,7 @@ model Message {
   sender   User?   @relation("MessageToUser", fields: [senderId], references: [id], onDelete: Cascade)
   senderId String?
 
-  hasSeen   User[]   @relation("HasSeenToUser")
+  hasSeen   Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 
@@ -240,7 +240,7 @@ model Appointment {
   leadId String
 
   status   String @default("Scheduled")
-  //comments String @db.LongText
+  // comments String @db.LongText
   comments String
 
   createdAt DateTime @default(now())
@@ -265,19 +265,19 @@ model ChatSettings {
 
 //CALLS
 model Call {
-  id      String @id @default(cuid())
+  id      String @id @unique
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
 
-  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId    String
-  direction CallDirection @default(Inbound)
-  timeZone  String
-  status    String?
-  duration  String        @default("0 seconds")
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String
 
-  createdAt DateTime  @default(now())
-  endedAt   DateTime?
+  direction CallDirection @default(Inbound)
+  status    String?
+  duration  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Presets {
