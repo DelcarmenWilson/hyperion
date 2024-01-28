@@ -1,5 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -10,13 +11,13 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { message, conversationId } = body;
+    const { message, conversationId,hasSeen } = body;
 
     const newMessage = await db.message.create({
       data: {
         role: "assistant",
         content: message,
-        hasSeen: { connect: { id: user.id } },
+        hasSeen: hasSeen||false,
         conversation: {
           connect: {
             id: conversationId,
@@ -36,6 +37,8 @@ export async function POST(request: Request) {
       },
       include: { agent: true, messages: true },
     });
+
+    await pusherServer.trigger(conversationId,'messages:new',newMessage)
 
     return NextResponse.json(newMessage);
   } catch (error: any) {

@@ -15,6 +15,7 @@ export type InboxColumn = {
   cellPhone: string;
   message: string;
   createdAt: Date;
+  unread: number;
 };
 
 export const columns: ColumnDef<InboxColumn>[] = [
@@ -55,10 +56,10 @@ export const columns: ColumnDef<InboxColumn>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "disposition",
-    header: "disposition",
-  },
+  // {
+  //   accessorKey: "disposition",
+  //   header: "disposition",
+  // },
   {
     accessorKey: "message",
     header: "message",
@@ -66,6 +67,7 @@ export const columns: ColumnDef<InboxColumn>[] = [
       <Message
         conversationId={row.original.id}
         message={row.original.message}
+        count={row.original.unread}
       />
     ),
   },

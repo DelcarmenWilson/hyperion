@@ -29,22 +29,22 @@ export const Call = ({ lead, intialCallCount }: CallProps) => {
   const [loading, setLoading] = useState(false);
   const [callCount, setCallCount] = useState(intialCallCount || 0);
 
-  const onStartCall = async () => {
-    if (!lead.id || !user) return;
-    setLoading(true);
-    setCallCount((state) => (state += 1));
+  // const onStartCall = async () => {
+  //   if (!lead.id || !user) return;
+  //   setLoading(true);
+  //   setCallCount((state) => (state += 1));
 
-    await callInsert(user.id, lead.id, CallDirection.Outbound).then((data) => {
-      router.refresh();
-      if (data?.error) {
-        toast.error(data.error);
-      }
-      if (data?.success) {
-        toast.error(data.success);
-      }
-    });
-    setLoading(false);
-  };
+  //   await callInsert(user.id, lead.id, CallDirection.Outbound).then((data) => {
+  //     router.refresh();
+  //     if (data?.error) {
+  //       toast.error(data.error);
+  //     }
+  //     if (data?.success) {
+  //       toast.error(data.success);
+  //     }
+  //   });
+  //   setLoading(false);
+  // };
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm">Local time : 11:31 am</p>

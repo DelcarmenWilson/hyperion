@@ -53,9 +53,18 @@ export const sendIntialSms = async (leadId: string) => {
 
   prompt = replacePreset(prompt, user.name!, lead);
   message = replacePreset(message, user.name!, lead);
+  message += defaultOptOut.request
 
   if (chatSettings?.leadInfo) {
-    prompt += `Here is the lead information: ${JSON.stringify(lead)}  `;
+    const leadInfo={
+      "first Name":lead.firstName,
+      "last Name":lead.lastName,
+      "Date Of Birth":lead.dateOfBirth,
+      address:lead.address,
+      city:lead.city,
+      state:lead.state,
+    }
+    prompt += `Here is the lead information: ${JSON.stringify(leadInfo)}  `;
   }
 
   const conversation = await conversationInsert(user.id, lead.id);

@@ -18,6 +18,8 @@ const InboxPage = async () => {
       message: conversation.messages[conversation.messages.length - 1]?.content,
       createdAt:
         conversation.messages[conversation.messages.length - 1]?.createdAt,
+      unread: conversation.messages.filter((message) => !message.hasSeen)
+        .length,
     })
   );
   return (
@@ -32,11 +34,11 @@ const InboxPage = async () => {
               View Inbox
             </CardTitle>
           </div>
-          <InboxClient />
+          {/* <InboxClient /> */}
         </div>
 
-        <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2">
-          <ScrollArea className="w-full flex-1 h-[400px]">
+        <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
+          <ScrollArea className="w-full flex-1 pr-5">
             <DataTable columns={columns} data={formattedConversations} />
           </ScrollArea>
         </CardContent>

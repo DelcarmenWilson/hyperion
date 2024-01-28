@@ -16,8 +16,11 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     // Find the conversation
     const conversation = await db.conversation.findUnique({
       where: { id: conversationId },
-      include: { messages: { include: { hasSeen: true } }, agent: true },
+      include: { 
+        messages:true
+        , agent: true },
     });
+
     if (!conversation) {
       return new NextResponse("Invalid Id", { status: 400 });
     }
@@ -29,15 +32,14 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     }
 
     //Update seen of last message
-    const updatedMessage = await db.message.update({
-      where: { id: lastMessage.id },
-      include: { sender: true, hasSeen: true },
+    await db.message.updateMany({
+      where: { conversationId: conversation.id },
       data: {
-        hasSeen: { connect: { id: user.id } },
+        hasSeen: true
       },
     });
 
-    return NextResponse.json(updatedMessage);
+    return NextResponse.json({status:200});
   } catch (error: any) {
     console.log("CONVERSATION_SEEN", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -1,19 +1,22 @@
+import { currentUser } from "@/lib/auth";
 import { MessageSquareText, Phone, PhoneIncoming, Users } from "lucide-react";
 import { Box } from "./components/box";
 import { AppointmentBox } from "./components/appointment/appointment-box";
-import { appointmentGetAll } from "@/data/appointment";
 import { AppointmentColumn } from "./components/appointment/columns";
 import { AgentSummary } from "./components/agentsummary/agent-summary";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
-import { CallHistory } from "./components/callhistory/call-history";
 import { CallHistoryColumn } from "./components/callhistory/columns";
+import { CallHistory } from "./components/callhistory/call-history";
+
+import { appointmentGetAll } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
-import { currentUser } from "@/lib/auth";
+import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
   const leadCount = await leadsGetByAgentIdTodayCount(user?.id!);
+  const messagesCount = await messagesGetByAgentIdUnSeen(user?.id!);
 
   const appointments = await appointmentGetAll();
   const formattedAppointments: AppointmentColumn[] = appointments.map(
@@ -42,6 +45,7 @@ const DahsBoardPage = async () => {
   ];
 
   const calls = await callGetAllByAgentId(user?.id!);
+
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,
     agentName: call.agent.username!,
@@ -49,13 +53,14 @@ const DahsBoardPage = async () => {
     direction: call.direction,
     fullName: `${call.lead.firstName} ${call.lead.lastName}`,
     email: call.lead.email,
-    timeZone: call.timeZone,
     duration: call.duration!,
     date: call.createdAt,
   }));
+
   const outBoundCallsCount = calls.filter(
     (call) => call.direction === "Outbound"
   ).length;
+
   const inBoundCallsCount = calls.filter(
     (call) => call.direction === "Inbound"
   ).length;
@@ -74,7 +79,7 @@ const DahsBoardPage = async () => {
         <Box
           icon={MessageSquareText}
           title="New texts"
-          value={0}
+          value={messagesCount}
           href="/leads"
           hrefTitle="Go to inbox"
         />

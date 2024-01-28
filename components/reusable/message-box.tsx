@@ -14,7 +14,7 @@ interface MessageProps {
 export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const session = useSession();
 
-  const isOwn = session?.data?.user?.email == data?.sender?.email;
+  const isOwn = data.role != "user";
   // const seenList = (data.hasSeen || [])
   //   .filter((user) => user.email != data?.sender?.email)
   //   .map((user) => user.name)
@@ -22,23 +22,24 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const senderName = data?.sender ? data.sender.username : username;
   const container = cn(isOwn && "order-2 ", "mb-2");
 
-  const body = cn("flex flex-col gap-2", isOwn && "items-end");
+  const body = cn("flex flex-col mb-2", isOwn && "items-end");
 
   const message = cn(
     "text-sm max-w-[60%]",
-    isOwn ? "bg-primary/50 text-background" : "bg-accent",
+    isOwn ? "bg-primary text-background" : "bg-accent",
     "rounded-md py-2 px-3 text-wrap  break-words"
   );
 
   return (
-    <div className={container}>
+    <div>
       <div className={body}>
-        <div className="flex items-center gap-1">
-          <div className="text-sm">{senderName}</div>
-          <div className="text-xs">{format(new Date(data.createdAt), "p")}</div>
+        <div className="gap-1 text-sm italic">
+          <span>
+            {senderName} {format(new Date(data.createdAt), "p")}
+          </span>
         </div>
+        <div className={message}>{data.content}</div>
       </div>
-      <div className={message}>{data.content}</div>
       {/* {isLast && isOwn && seenList.length > 0 && (
         <div className="text-xs font-light text-muted-foreground">
           {`Seen by ${seenList}`}
