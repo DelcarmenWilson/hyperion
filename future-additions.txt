@@ -20,7 +20,10 @@
 --remove functionlity to click out side of the new lead form. only leave the x to close the box
 --the messages in the inbox need to be wrapped
 --delay chat gpt response
--- get chat gpt to return a specific date and time
+--get chat gpt to return a specific date and time
+--need to push messages automatically
+--need to get the date od birth from the lead source and plus it in to the database.
+--need to register the call when it is made. 
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
