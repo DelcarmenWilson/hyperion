@@ -1,16 +1,15 @@
 "use server";
-
-import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
+import * as z from "zod"
 import { db } from "@/lib/db";
+import { AppointmentSchema } from "@/schemas";
 
 export const appointmentInsert = async (
-  agentId: string,
-  lead: LeadColumn,
-  date: Date
+  values:z.infer<typeof AppointmentSchema> ,
 ) => {
 
+  const {date,agentId,leadId,comments}=values
   const existingAppointments = await db.appointment.findMany({
-    where: { leadId: lead.id, agentId, status: "Scheduled" },
+    where: { leadId, agentId, status: "Scheduled" },
   });
 
   const existingAppointment = existingAppointments[0];
@@ -24,9 +23,9 @@ export const appointmentInsert = async (
   const appointment = await db.appointment.create({
     data: {  
         agentId,
-      leadId: lead.id,    
-      date,
-      comments:""      
+      leadId,
+      date:new Date(date),
+      comments
           },
   });
 

@@ -5,8 +5,13 @@ import twilio from "twilio";
 
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
-import { defaultMessage, defaultOptOut, defaultPrompt } from "@/placeholder/chat";
+import {
+  defaultChat,
+  defaultOptOut,
+} from "@/placeholder/chat";
 import { cfg } from "@/lib/twilio-config";
+import { replacePreset } from "@/formulas/text";
+import { getRandomNumber } from "@/formulas/numbers";
 
 export const sendIntialSms = async (leadId: string) => {
   //TODO the entire lead shall be passed
@@ -30,22 +35,28 @@ export const sendIntialSms = async (leadId: string) => {
     return { error: "Conversation Already exist" };
   }
 
+  const presets = await db.presets.findMany({
+    where: { agentId: user.id, type: "Text" },
+  });
+  const rnd = getRandomNumber(0, 2);
+  const preset = presets[rnd];
+  
   const chatSettings = await db.chatSettings.findUnique({
     where: { userId: user.id },
   });
 
   let prompt = chatSettings?.defaultPrompt
-    ? chatSettings.defaultPrompt
-    : defaultPrompt().replace("{AGENT_NAME}", user.name as string);
+    ? chatSettings?.defaultPrompt
+    : defaultChat.prompt;
 
-  let message = chatSettings?.defaultMessage
-    ? chatSettings.defaultMessage
-    : defaultMessage().replace("{AGENT_NAME}", user.name as string);
-  message = message.replace("{LEAD_NAME}", lead.firstName as string);
+  let message = preset ? preset.content : defaultChat.message;
+
+  prompt = replacePreset(prompt, user.name!, lead);
+  message = replacePreset(message, user.name!, lead);
 
   if (chatSettings?.leadInfo) {
     prompt += `Here is the lead information: ${JSON.stringify(lead)}  `;
-  } 
+  }
 
   const conversation = await conversationInsert(user.id, lead.id);
 
@@ -58,10 +69,7 @@ export const sendIntialSms = async (leadId: string) => {
     conversation.success
   );
 
-  await messageInsert(
-    { role: "user", content: message },
-    conversation.success
-  );
+  await messageInsert({ role: "user", content: message }, conversation.success);
 
   // message +=`${"\n\n"} ${defaultOptOut}`
   const client = twilio(cfg.accountSid, cfg.apiToken);
@@ -77,3 +85,5 @@ export const sendIntialSms = async (leadId: string) => {
 
   return { success: "Inital message sent!" };
 };
+
+

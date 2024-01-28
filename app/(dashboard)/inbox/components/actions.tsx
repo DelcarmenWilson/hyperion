@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { conversationDeleteById } from "@/data/actions/conversation";
+import { conversationDeleteById } from "@/actions/conversation";
 import { ChevronDown, CircleSlash, Trash } from "lucide-react";
 import { toast } from "sonner";
 interface ActionsProps {

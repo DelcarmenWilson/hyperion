@@ -6,6 +6,7 @@ if (process.env.NODE_ENV !== "test") {
 } else {
   dotenv.config({ path: ".env.example" });
 }
+
 type config = {
   port: number | string;
   accountSid: string;
@@ -15,6 +16,7 @@ type config = {
   apiSecret: string;
   apiToken: string;
 };
+
 export const cfg: config = {
   port: process.env.PORT || 3000,
   accountSid: process.env.TWILIO_ACCOUNT_SID!,

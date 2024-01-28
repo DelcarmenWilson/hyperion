@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
+import { states } from "@/constants/states";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -45,6 +46,14 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     return { error: "Lead already exist" };
   }
 
+  const st = states.find((e) => e.state == state || e.abv == state);
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId: user.id,status:{not:"Deactive"} },
+  });
+
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+
   const newLead = await db.lead.create({
     data: {
       firstName,
@@ -58,7 +67,8 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
       gender: gender || "",
       maritalStatus: maritalStatus || "",
       email,
-      dateOfBirth:new Date(dateOfBirth!),
+      dateOfBirth: new Date(dateOfBirth!),
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
       owner: user.id,
     },
   });
@@ -71,7 +81,11 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   if (!user) {
     return { error: "Unauthorized" };
   }
-
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId: user.id,status:{not:"Deactive"} },
+  });
+  
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   for (let i = 0; i < values.length; i++) {
     const {
       firstName,
@@ -88,13 +102,16 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
       dateOfBirth,
     } = values[i];
 
+    const st = states.find((e) => e.state == state || e.abv == state);
+    const phoneNumber = phoneNumbers.find((e) => e.state == state);
+
     await db.lead.create({
       data: {
         firstName,
         lastName,
         address,
         city,
-        state,
+        state: st?.abv ? st.abv : state,
         zipCode,
         homePhone,
         cellPhone,
@@ -102,13 +119,12 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         maritalStatus,
         email,
         dateOfBirth,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         owner: user?.id,
       },
     });
   }
-
-  // await db.lead.createMany(data)
-  return { success: "Leads have been imported" };
+  return { success: `${values.length} Leads have been imported` };
 };
 
 export const leadUpdateById = async (
@@ -121,7 +137,7 @@ export const leadUpdateById = async (
     return { error: "Lead does not exist" };
   }
 
-  const updateduser = await db.lead.update({
+   await db.lead.update({
     where: { id: existingLead.id },
     data: {
       ...values,

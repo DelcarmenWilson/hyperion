@@ -1,3 +1,4 @@
+import { states } from "@/constants/states";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -49,6 +50,14 @@ export async function POST(req: Request) {
       return new NextResponse("Address is required", { status: 400 });
     }
 
+    const st = states.find((e) => e.state == state || e.abv == state);
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId: user.id,status:{not:"Deactive"} },
+  });
+
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+
     const lead = await db.lead.create({
       data: {
         firstName,
@@ -63,6 +72,7 @@ export async function POST(req: Request) {
         maritalStatus,
         email,
         dateOfBirth,
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         owner: user.id,
       },
     });

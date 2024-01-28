@@ -20,10 +20,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
 import { toast } from "sonner";
-import { chatSettingsUpdate } from "@/data/actions/chat-settings";
+import { chatSettingsUpdate } from "@/actions/chat-settings";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
-import { defaultMessage, defaultPrompt } from "@/placeholder/chat";
+import { defaultChat } from "@/placeholder/chat";
 
 interface ChatClientProps {
   data: ChatSettings & { user: User };
@@ -49,17 +49,10 @@ export const ChatClient = ({ data }: ChatClientProps) => {
   });
 
   const onResetDefaults = () => {
-    const prompt = defaultPrompt().replace(
-      "{AGENT_NAME}",
-      data.user.name as string
-    );
-    const message = defaultMessage().replace(
-      "{AGENT_NAME}",
-      data.user.name as string
-    );
-    form.setValue("defaultPrompt", prompt);
-    form.setValue("defaultMessage", message);
+    form.setValue("defaultPrompt", defaultChat.prompt);
+    form.setValue("defaultMessage", defaultChat.message);
   };
+
   const onSubmit = (values: ChatValues) => {
     startTransition(() => {
       chatSettingsUpdate(values)
@@ -106,38 +99,19 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                   </FormItem>
                 )}
               />
-
-              {/* SEND LEAD INFO */}
-              <FormField
-                control={form.control}
-                name="leadInfo"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Lead Info</FormLabel>
-                      <FormDescription>
-                        Send lead info with the intial prompt
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblIsTwoFactor"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
               {/* DEFAULT MESSAGE */}
               <FormField
                 control={form.control}
                 name="defaultMessage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel> Message</FormLabel>
+                    <FormLabel>
+                      {" "}
+                      Message{" "}
+                      <span className="text-destructive font-bold ialic">
+                        Depricated!! Please use presets
+                      </span>
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
@@ -167,6 +141,29 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* SEND LEAD INFO */}
+              <FormField
+                control={form.control}
+                name="leadInfo"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Lead Info</FormLabel>
+                      <FormDescription>
+                        Send lead info with the intial prompt
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblIsTwoFactor"
+                        disabled={loading}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

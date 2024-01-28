@@ -22,7 +22,7 @@ import {
   CommandItem,
   CommandSeparator,
 } from "@/components/ui/command";
-import { useOrganizationModal } from "@/hooks/use-organization-modal";
+import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 
 type PopoverTriggersProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -35,7 +35,7 @@ export const OrganizationSwitcher = ({
   className,
   items = [],
 }: OrganizationSwitcherProps) => {
-  const organizationModal = useOrganizationModal();
+  const organizationModal = useMasterAccountModal();
   const params = useParams();
   const router = useRouter();
 
@@ -98,16 +98,18 @@ export const OrganizationSwitcher = ({
               ))}
             </CommandGroup>
           </CommandList>
-          <CommandSeparator/>
+          <CommandSeparator />
           <CommandList>
             <CommandGroup>
-                <CommandItem onSelect={()=>{
-                    setOpen(false)
-                    organizationModal.onOpen()
-                }}>
-                    <PlusCircle className="mr-2 h-5 w-5"/>
-                    Create Organization
-                </CommandItem>
+              <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  organizationModal.onOpen();
+                }}
+              >
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Create Organization
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

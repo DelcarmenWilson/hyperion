@@ -15,19 +15,19 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const session = useSession();
 
   const isOwn = session?.data?.user?.email == data?.sender?.email;
-  const seenList = (data.hasSeen || [])
-    .filter((user) => user.email != data?.sender?.email)
-    .map((user) => user.name)
-    .join(", ");
-  const senderName = data?.sender ? data.sender.name : username;
-  const container = cn(isOwn && "order-2");
+  // const seenList = (data.hasSeen || [])
+  //   .filter((user) => user.email != data?.sender?.email)
+  //   .map((user) => user.name)
+  //   .join(", ");
+  const senderName = data?.sender ? data.sender.username : username;
+  const container = cn(isOwn && "order-2 ", "mb-2");
 
   const body = cn("flex flex-col gap-2", isOwn && "items-end");
 
   const message = cn(
-    "text-sm max-w-[75%] overflow-hidden",
+    "text-sm max-w-[60%]",
     isOwn ? "bg-primary/50 text-background" : "bg-accent",
-    "rounded-md py-2 px-3"
+    "rounded-md py-2 px-3 text-wrap  break-words"
   );
 
   return (
@@ -38,14 +38,12 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
           <div className="text-xs">{format(new Date(data.createdAt), "p")}</div>
         </div>
       </div>
-      <div className={message}>
-        <div>{data.content}</div>
-      </div>
-      {isLast && isOwn && seenList.length > 0 && (
+      <div className={message}>{data.content}</div>
+      {/* {isLast && isOwn && seenList.length > 0 && (
         <div className="text-xs font-light text-muted-foreground">
           {`Seen by ${seenList}`}
         </div>
-      )}
+      )} */}
     </div>
     // <div
     //   className={cn(

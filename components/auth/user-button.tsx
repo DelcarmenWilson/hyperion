@@ -6,7 +6,6 @@ import { IoIosSettings } from "react-icons/io";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,

@@ -1,22 +1,22 @@
-"use client"
-import { useEffect,useState } from "react"
+"use client";
+import { useEffect, useState } from "react";
 
-import { OrganizationModal } from "@/components/modals/organization-modal"
+import { MasterAccountModal } from "@/components/modals/master-account-modal";
 
-export const ModalProvider=()=>{
-    const [isMounted,setIsMounted]=useState(false)
+export const ModalProvider = () => {
+  const [isMounted, setIsMounted] = useState(false);
 
-    useEffect(()=>{
-        setIsMounted(true)
-    },[])
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-    if(!isMounted){
-        return null;
-    }
+  if (!isMounted) {
+    return null;
+  }
 
-    return (
-        <>
-        <OrganizationModal/>
-        </>
-    )
-}
+  return (
+    <>
+      <MasterAccountModal />
+    </>
+  );
+};

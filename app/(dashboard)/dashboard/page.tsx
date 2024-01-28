@@ -25,7 +25,7 @@ const DahsBoardPage = async () => {
       status: apt.status,
       dob: apt.lead.dateOfBirth || undefined,
       date: apt.date,
-      comments: "",
+      comments: apt.comments,
     })
   );
 
@@ -44,7 +44,7 @@ const DahsBoardPage = async () => {
   const calls = await callGetAllByAgentId(user?.id!);
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,
-    agentName: call.agent.name!,
+    agentName: call.agent.username!,
     phone: call.lead.cellPhone,
     direction: call.direction,
     fullName: `${call.lead.firstName} ${call.lead.lastName}`,
@@ -65,7 +65,7 @@ const DahsBoardPage = async () => {
       <div className="flex flex-col gap-4 lg:flex-row">
         <Box
           icon={Users}
-          title="LeadsToday"
+          title="Leads today"
           value={leadCount as number}
           href="/leads"
           hrefTitle="Go to leads"

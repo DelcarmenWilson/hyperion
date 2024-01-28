@@ -25,13 +25,14 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotesForm } from "../../components/shared/notes-form";
+import { Appointment } from "../../components/shared/appointment";
+import { ExtraInfo } from "../../components/shared/extra-info";
+import { Call } from "../../components/shared/call";
 import { Info } from "../../components/shared/info";
 import { LeadColumn } from "../../components/columns";
-import { Call } from "../../components/shared/call";
-import { Appointment } from "../../components/shared/appointment";
-import ExtraInfo from "../../components/shared/extra-info";
+import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 interface LeadClientProps {
   lead: Lead;
@@ -51,6 +52,7 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
     city: lead.city,
     state: lead.state,
     zipCode: lead.zipCode,
+    defaultNumber: lead.defaultNumber,
     notes: lead.notes as string,
     createdAt: lead.createdAt,
   };
@@ -115,7 +117,10 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
           <p className="flex gap-2">
             <span>
               Caller Id for calls /texts{" "}
-              <span className="font-bold"> 312-847-3370</span>
+              <span className="font-bold">
+                {" "}
+                {formatPhoneNumber(lead.defaultNumber)}
+              </span>
             </span>
             <Pencil className="h-4 w-4 ml-2 text-primary" />
           </p>

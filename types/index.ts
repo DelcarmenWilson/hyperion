@@ -1,21 +1,19 @@
 import { Conversation, Message, User, Lead, Preset } from "@prisma/client";
 
 export type FullMessageType = Message & {
+  sender?: User|null;
   hasSeen: User[];
-  sender?: User;
 };
 
 export type FullConversationType = Conversation & {
-  users: User[];
-  messages: FullMessageType[];
   lead: Lead;
+  messages: FullMessageType[];
 };
 
 export type LeadConversationType = Conversation & {
   lead: Lead;
   messages: Message[];
 };
-
 
 export type PresetFormValues = {
   type: Preset;
@@ -24,5 +22,5 @@ export type PresetFormValues = {
 
 export type PhoneType = {
   value: string;
-  state:string
+  state: string;
 };

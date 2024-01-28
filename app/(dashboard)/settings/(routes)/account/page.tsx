@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { settings } from "@/data/actions/settings";
+import { settings } from "@/actions/settings";
 import {
   Form,
   FormField,
@@ -50,7 +50,7 @@ const AccountPage = () => {
       email: user?.email || undefined,
       password: undefined,
       newPassword: undefined,
-      role: user?.role || undefined,
+      role: user?.role || "USER",
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });

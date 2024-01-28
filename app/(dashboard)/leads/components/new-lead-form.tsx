@@ -40,7 +40,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Gender, MaritalStatus } from "@prisma/client";
-import { leadInsert } from "@/data/actions/lead";
+import { leadInsert } from "@/actions/lead";
 
 interface NewLeadFormProps {
   onClose?: () => void;

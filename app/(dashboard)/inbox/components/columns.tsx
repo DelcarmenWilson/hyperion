@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, CircleSlash, Trash } from "lucide-react";
 import { Actions } from "./actions";
+import { Message } from "./message";
 
 export type InboxColumn = {
   id: string;
@@ -60,9 +61,12 @@ export const columns: ColumnDef<InboxColumn>[] = [
   },
   {
     accessorKey: "message",
-    header: "",
+    header: "message",
     cell: ({ row }) => (
-      <div className="max-w-[500px]">{row.original.message}</div>
+      <Message
+        conversationId={row.original.id}
+        message={row.original.message}
+      />
     ),
   },
 

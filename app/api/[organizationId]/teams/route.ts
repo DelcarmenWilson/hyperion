@@ -31,7 +31,8 @@ export async function POST(req:Request,{params}:{params:{organizationId:string}}
          const team=await db.team.create({
             data:{
                 name,
-                organizationId:params.organizationId
+                organizationId:params.organizationId,
+                userId:user.id
             }
          })
         return NextResponse.json(team)

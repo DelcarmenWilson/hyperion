@@ -1,11 +1,17 @@
-import { Gender, MaritalStatus, MessageRole, Preset, UserRole } from "@prisma/client";
+import {
+  Gender,
+  MaritalStatus,
+  MessageRole,
+  Preset,
+  UserRole,
+} from "@prisma/client";
 import * as z from "zod";
 
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.ADMIN, UserRole.USER]),
+    role: z.enum([UserRole.MASTER,UserRole.ADMIN, UserRole.USER]),
     email: z.optional(z.string().email()),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
@@ -45,20 +51,40 @@ export const LoginSchema = z.object({
   code: z.optional(z.string()),
 });
 
-export const RegisterSchema = z.object({
-  email: z.string().email({
-    message: "Email is required",
+export const MasterRegisterSchema = z.object({
+  organization: z.string().min(1),
+  team: z.string().min(1),
+  username: z.string().min(1, {
+    message: "Username required",
   }),
   password: z.string().min(6, {
     message: "Minimum 6 characters required",
   }),
-  name: z.string().min(1, {
-    message: "Name required",
+  email: z.string().email({
+    message: "Email is required",
   }),
+  firstName: z.string().min(3, "First name must be at least 3 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+});
+
+export const RegisterSchema = z.object({
+  team: z.string().min(5,{message:"*"}),
+  npn: z.string().min(4,{message:"*"}),
+  username: z.string().min(1, {
+    message: "Username required",
+  }),
+  password: z.string().min(6, {
+    message: "Minimum 6 characters required",
+  }),
+  email: z.string().email({
+    message: "Email is required",
+  }),
+  firstName: z.string().min(3, "First name must be at least 3 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
 });
 
 export const LeadSchema = z.object({
-  id:z.optional(z.string()),
+  id: z.optional(z.string()),
   firstName: z.string().min(3, "First name must be at least 3 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   address: z.string(),
@@ -68,10 +94,15 @@ export const LeadSchema = z.object({
   homePhone: z.optional(z.string()),
   cellPhone: z.string(),
   gender: z.enum([Gender.Male, Gender.Female]),
-  maritalStatus: z.enum([MaritalStatus.Single,MaritalStatus.Married,MaritalStatus.Widowed,MaritalStatus.Divorced]),
+  maritalStatus: z.enum([
+    MaritalStatus.Single,
+    MaritalStatus.Married,
+    MaritalStatus.Widowed,
+    MaritalStatus.Divorced,
+  ]),
   email: z.string().email(),
   dateOfBirth: z.optional(z.string()),
-  conversationId:z.optional(z.string()),
+  conversationId: z.optional(z.string()),
   // age               :     z.optional(z.number()),
   // faceValue         :     z.optional(z.number()),
   // placeOfBirth      :     z.optional(z.string()),
@@ -101,32 +132,8 @@ export const ChatSchema = z.object({
 
 export const TeamSchema = z.object({ name: z.string().min(1) });
 
-//OLD
-// export const MessageSchema = z.object({
-//   toCountry: z.string(),
-//   toState: z.string(),
-//   smsMessageSid: z.string(),
-//   numMedia: z.string(),
-//   toCity: z.string(),
-//   fromZip: z.string(),
-//   smsSid: z.string(),
-//   fromState: z.string(),
-//   smsStatus: z.string(),
-//   fromCity: z.string(),
-//   body: z.string(),
-//   fromCountry: z.string(),
-//   to: z.string(),
-//   messagingServiceSid: z.string(),
-//   toZip: z.string(),
-//   numSegments: z.string(),
-//   messageSid: z.string(),
-//   accountSid: z.string(),
-//   from: z.string(),
-//   apiVersion: z.string(),
-// });
-
 export const MessageSchema = z.object({
-  role:  z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
+  role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
 });
 
@@ -139,4 +146,12 @@ export const PresetSchema = z.object({
     Preset.Away,
   ]),
   content: z.string(),
+});
+
+export const AppointmentSchema = z.object({
+  date: z.date(),
+  time: z.string(),
+  agentId: z.string(),
+  leadId: z.string(),
+  comments: z.string(),
 });

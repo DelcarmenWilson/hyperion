@@ -1,15 +1,15 @@
 "use client";
-import { PhoneModal } from "@/components/modals/phone-modal";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { Device } from "twilio-client";
+import axios from "axios";
+
 import { device } from "@/lib/device";
 import { DialerModal } from "@/components/modals/dialer-modal";
+import { PhoneModal } from "@/components/modals/phone-modal";
+
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export const PhoneProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
-  // const [device, setDevice] = useState<Device>();
   const user = useCurrentUser();
 
   useEffect(() => {

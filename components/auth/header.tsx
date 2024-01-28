@@ -21,9 +21,9 @@ export const Header = ({ label }: HeaderProps) => {
       >
         <Image
           src="/logo3.png"
-          width="100"
-          height="100"
-          className="w-[100px] h-[100px]"
+          width="60"
+          height="60"
+          className="w-[60px] h-[60px]"
           alt="logo"
         />
         <span>Hyperion</span>

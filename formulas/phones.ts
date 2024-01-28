@@ -7,7 +7,7 @@ export function formatPhoneNumber(phoneNumberString:string) {
     if (match) {
       return '(' + match[1] + ') ' + match[2] + '-' + match[3];
     }
-    return null;
+    return "";
   }
 
   export const reFormatPhoneNumber = (str: string) => {
@@ -29,3 +29,7 @@ export function formatPhoneNumber(phoneNumberString:string) {
     }  
     return "";
   };
+
+  export const isAValidPhoneNumber=(number: string): boolean =>{
+    return /^[\d\+\-\(\) ]+$/.test(number);
+  }
