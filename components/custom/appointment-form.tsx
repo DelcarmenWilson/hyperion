@@ -43,7 +43,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { appointmentInsert } from "@/data/actions/appointment";
+import { appointmentInsert } from "@/actions/appointment";
 
 type AppointmentFormValues = z.infer<typeof AppointmentSchema>;
 

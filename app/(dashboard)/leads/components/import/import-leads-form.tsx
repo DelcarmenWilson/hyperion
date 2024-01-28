@@ -9,7 +9,7 @@ import { DataTable } from "@/components/data-table";
 import { ImportLeadColumn, columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { leadsImport } from "@/data/actions/lead";
+import { leadsImport } from "@/actions/lead";
 import { Gender, MaritalStatus } from "@prisma/client";
 import { capitalize } from "@/formulas/text";
 import { format } from "date-fns";

@@ -8,7 +8,7 @@ import { MessageSquare, Pencil } from "lucide-react";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { LeadColumn } from "../columns";
-import { sendIntialSms } from "@/data/actions/sms";
+import { sendIntialSms } from "@/actions/sms";
 import { toast } from "sonner";
 interface InfoProps {
   lead: LeadColumn;

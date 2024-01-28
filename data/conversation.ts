@@ -30,8 +30,7 @@ export const conversationGetById = async (conversationId: string) => {
     }
     const conversation = await db.conversation.findUnique({
       where: { id: conversationId,agentId:user.id },
-      include: {
-        
+      include: {        
         lead: true,
         messages: { include: { sender: true, hasSeen: true } },
       },

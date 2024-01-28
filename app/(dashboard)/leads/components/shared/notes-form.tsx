@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { leadUpdateNotesById } from "@/data/actions/lead";
+import { leadUpdateNotesById } from "@/actions/lead";
 import { useState } from "react";
 import { toast } from "sonner";
 

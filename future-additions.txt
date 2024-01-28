@@ -18,6 +18,17 @@ create messaging between agents.
 --dont forget to change add the timer to the phonemodal (incoming calls)
 --find a way to incorporate the sadcn calender in new lead form
 --font forget to enable the register in the register.ts
+--remove functionlity to click out side of the new lead form. only leave the x to close the box
 
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
+
+git checkout messages
+git pull 
+git checkout main
+git pull
+git merge --no-ff --no-commit messages
+
+
+git commit -m messages
+git push

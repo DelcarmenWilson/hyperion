@@ -31,12 +31,12 @@ export const Modal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
-      <DialogContent>
+      <DialogContent className="flex flex-col h-full">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div>{children}</div>
+        <div className="flex flex-col flex-1 overflow-hidden">{children}</div>
       </DialogContent>
     </Dialog>
   );

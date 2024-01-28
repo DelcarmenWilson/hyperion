@@ -1,18 +1,13 @@
 "use server";
 
+import { replacePresetUser } from "@/formulas/text";
 import { db } from "@/lib/db";
-import { defaultMessage, defaultPrompt } from "@/placeholder/chat";
+import { defaultChat } from "@/placeholder/chat";
 import { User } from "@prisma/client";
 
 export const chatSettingsInsert = async (user: User) => {
-  const prompt = defaultPrompt().replace(
-    "{AGENT_NAME}",
-    user.name as string
-  );
-  const message = defaultMessage().replace(
-    "{AGENT_NAME}",
-    user.name as string
-  );
+  const prompt = replacePresetUser(defaultChat.prompt,user.firstName);
+  const message = replacePresetUser(defaultChat.message,user.firstName);
 
   await db.chatSettings.create({
     data: {

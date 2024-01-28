@@ -20,6 +20,7 @@ import { PhoneType } from "@/types";
 import { device } from "@/lib/device";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const Dialer = () => {
   const user = useCurrentUser();
@@ -31,7 +32,7 @@ export const Dialer = () => {
   const [toNumber, setToNumber] = useState(lead?.cellPhone || "");
   const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(
-    user?.phoneNumbers[0].phone || ""
+    lead?.defaultNumber || user?.phoneNumbers[0].phone || ""
   );
 
   const [outGoingCall, setOutGoingCall] = useState<Connection>();
@@ -101,7 +102,10 @@ export const Dialer = () => {
       <div className="flex flex-col gap-2 p-4">
         {leadFullName}
         <div className="relative">
-          <Input placeholder="Phone Number" value={toNumber} />
+          <Input
+            placeholder="Phone Number"
+            value={formatPhoneNumber(toNumber)}
+          />
           <X
             className="h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer"
             onClick={onReset}
@@ -121,7 +125,7 @@ export const Dialer = () => {
             <SelectContent>
               {myPhoneNumbers.map((phone) => (
                 <SelectItem key={phone.value} value={phone.value}>
-                  {phone.value} | {phone.state}
+                  {formatPhoneNumber(phone.value)} | {phone.state}
                 </SelectItem>
               ))}
             </SelectContent>

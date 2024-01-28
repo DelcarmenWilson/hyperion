@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { login } from "@/data/actions/login";
+import { login } from "@/actions/login";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -72,7 +72,7 @@ export const LoginForm = () => {
       headerLabel="Welcome Back"
       backButtonLabel="Dont have an account"
       backButtonHref="/register"
-      showSocial
+      showSocial={false}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

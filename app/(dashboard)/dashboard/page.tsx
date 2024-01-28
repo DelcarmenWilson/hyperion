@@ -44,7 +44,7 @@ const DahsBoardPage = async () => {
   const calls = await callGetAllByAgentId(user?.id!);
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,
-    agentName: call.agent.name!,
+    agentName: call.agent.username!,
     phone: call.lead.cellPhone,
     direction: call.direction,
     fullName: `${call.lead.firstName} ${call.lead.lastName}`,

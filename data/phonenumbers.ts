@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 
-export const getPhoneNumbersByAgentId =async(agentId:string)=>{   
+export const phoneNumbersGetByAgentId =async(agentId:string)=>{   
     try {
         const phones=await db.phoneNumber.findMany({where:{agentId}})
     

@@ -1,10 +1,10 @@
 import * as z from "zod";
 import { NextResponse } from "next/server";
 import { MessageSchema } from "@/schemas";
-import { messageInsert } from "@/data/actions/message";
-import { chatFetch } from "@/data/actions/chat";
+import { messageInsert } from "@/actions/message";
+import { chatFetch } from "@/actions/chat";
 import { db } from "@/lib/db";
-import { defaultUnsubscribed } from "@/placeholder/chat";
+import { defaultOptOut } from "@/placeholder/chat";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
   switch(textFromLead.content.toLowerCase()){
     case "stop":
-      return new NextResponse(defaultUnsubscribed(), { status: 200 });
+      return new NextResponse(defaultOptOut.confirm, { status: 200 });
       case "reset":
         await db.conversation.delete({where:{id:conversation.id}})
       return new NextResponse("Conversation has been reset", { status: 200 });

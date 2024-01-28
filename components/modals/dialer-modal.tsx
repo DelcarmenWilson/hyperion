@@ -36,7 +36,7 @@ export const DialerModal = () => {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-auto max-w-screen-2xl">
-                  <div className="flex flex-col h-full overflow-y-auto bg-white py-6 shadow-xl">
+                  <div className="flex flex-col h-full overflow-y-auto bg-background py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-end">
                         <div className="ml-3 flex h-7 items-center">

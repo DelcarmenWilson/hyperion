@@ -9,16 +9,18 @@ export default async function SetupLayout({
 }) {
   const user = await currentUser();
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  const organization = await db.organization.findFirst({
-    where: { userId: user.id },
-  });
+  const organization = await db.organization.findFirst();
 
   if (organization) {
-    redirect(`/dashboard`);
+    if (!user) {
+      redirect("/login");
+    } else {
+      if (user.role == "MASTER") {
+        redirect(`/admin`);
+      } else {
+        redirect(`/dashboard`);
+      }
+    }
   }
 
   return <>{children}</>;

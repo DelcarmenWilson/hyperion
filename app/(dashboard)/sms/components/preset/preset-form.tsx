@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState, useTransition } from "react";
-import { presetCreate } from "@/data/actions/preset";
+import { presetCreate } from "@/actions/preset";
 import { toast } from "sonner";
 import { PresetFormValues } from "@/types";
 import { Preset } from "@prisma/client";
@@ -72,7 +72,7 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
                       disabled={isPending}
                       {...field}
                       placeholder="message"
-                      onChange={(e) => setCount(e.target.value.length)}
+                      // onChange={(e) => setCount(e.target.value.length)}
                     />
                     <Smile className="absolute text-primary -right-2.5 -top-2.5" />
                   </div>

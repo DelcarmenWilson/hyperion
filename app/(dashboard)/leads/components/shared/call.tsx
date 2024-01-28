@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { callInsert } from "@/data/actions/call";
+import { callInsert } from "@/actions/call";
 import { toast } from "sonner";
 import { CallDirection } from "@prisma/client";
 import { useState } from "react";

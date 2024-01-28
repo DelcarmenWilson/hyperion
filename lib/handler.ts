@@ -1,6 +1,7 @@
 import { cfg } from "./twilio-config";
 import twilio from "twilio";
 import { db } from "./db";
+import { isAValidPhoneNumber } from "@/formulas/phones";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
@@ -73,6 +74,4 @@ export  const voiceResponse=async (requestBody: any) =>{
  * @return {Boolean}
  */
 
-const isAValidPhoneNumber=(number: string): boolean =>{
-  return /^[\d\+\-\(\) ]+$/.test(number);
-}
+

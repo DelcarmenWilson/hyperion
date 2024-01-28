@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { presetDeleteById, presetUpdateById } from "@/data/actions/preset";
+import { presetDeleteById, presetUpdateById } from "@/actions/preset";
 
 interface PresetDataProps {
   preset: Presets;

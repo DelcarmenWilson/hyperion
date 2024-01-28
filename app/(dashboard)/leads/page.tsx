@@ -24,6 +24,7 @@ const LeadsPage = async ({
     lastName: lead.lastName,
     email: lead.email,
     cellPhone: lead.cellPhone,
+    defaultNumber: lead.defaultNumber,
     notes: lead.notes as string,
     createdAt: lead.createdAt,
   }));

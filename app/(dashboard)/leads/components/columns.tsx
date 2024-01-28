@@ -10,6 +10,7 @@ import { DropDown } from "./shared/dropdown";
 import { ExtraInfo } from "./shared/extra-info";
 import { Info } from "./shared/info";
 import { NotesForm } from "./shared/notes-form";
+import { StringifyOptions } from "querystring";
 
 export type LeadColumn = {
   id: string;
@@ -22,6 +23,7 @@ export type LeadColumn = {
   state?: string;
   zipCode?: string;
   conversationId?: string;
+  defaultNumber: string;
   notes: string;
   createdAt: Date;
 };

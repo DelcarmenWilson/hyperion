@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { sendIntialSms } from "@/data/actions/sms";
+import { sendIntialSms } from "@/actions/sms";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface CellActionProps {

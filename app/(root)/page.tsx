@@ -1,18 +1,18 @@
 "use client";
 
 import { Modal } from "@/components/custom/modal";
-import { useOrganizationModal } from "@/hooks/use-organization-modal";
+import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 import { useEffect } from "react";
 
 export default function Home() {
-  const onOpen = useOrganizationModal((state) => state.onOpen);
-  const isOpen = useOrganizationModal((state) => state.isOpen);
+  const onOpen = useMasterAccountModal((state) => state.onOpen);
+  const isOpen = useMasterAccountModal((state) => state.isOpen);
 
   useEffect(() => {
     if (!isOpen) {
       onOpen();
     }
-  },[isOpen,onOpen]);
+  }, [isOpen, onOpen]);
 
   return (
     <div className="p-4">
