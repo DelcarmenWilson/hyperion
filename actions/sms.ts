@@ -75,7 +75,7 @@ export const sendIntialSms = async (leadId: string) => {
   const client = twilio(cfg.accountSid, cfg.apiToken);
   const result = await client.messages.create({
     body: message,
-    from: cfg.callerId,
+    from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
   });
 
