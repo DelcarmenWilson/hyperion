@@ -6,6 +6,7 @@ import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
+import { format } from "date-fns";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -118,7 +119,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         gender,
         maritalStatus,
         email,
-        dateOfBirth,
+        dateOfBirth:new Date(),
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         owner: user?.id,
       },
