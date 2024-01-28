@@ -29,7 +29,7 @@ export const Form = () => {
   };
 
   return (
-    <div className="p-4 border-t flex items-center gap-2 lg:gap-4 w-full">
+    <div className="border-t flex items-center pt-2 gap-2 lg:gap-4 w-full">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex items-center gap-2 lg:gap-4 w-full"

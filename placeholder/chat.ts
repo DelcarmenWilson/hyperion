@@ -6,10 +6,16 @@ export const defaultChat: {prompt:string,message:string} = {
 };
 
 export const defaultOptOut: {request:string,confirm:string} = {
-  request: "Reply STOP to unsubscribe | Reply HELP for Help.",
+  request: "if this was a mistake, please reply cancel",
   confirm:
-    "You have successfully been unsubscribed. You will not recieve any more messages from this number. Reply START to resubscribe.",
+    "You have successfully been removed from our database. You will not recieve any more messages from this number..",
 };
+
+// export const defaultOptOut: {request:string,confirm:string} = {
+//   request: "Reply STOP to unsubscribe | Reply HELP for Help.",
+//   confirm:
+//     "You have successfully been unsubscribed. You will not recieve any more messages from this number. Reply START to resubscribe.",
+// };
 
 const defaultPrompts = [
   {

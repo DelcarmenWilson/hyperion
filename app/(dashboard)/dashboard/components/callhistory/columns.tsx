@@ -14,7 +14,6 @@ export type CallHistoryColumn = {
   direction: string;
   fullName: string;
   email: string;
-  timeZone: string;
   duration: string;
   date: Date;
 };

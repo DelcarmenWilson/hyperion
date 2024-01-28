@@ -26,9 +26,11 @@ export default async function DashBoardLayout({
       <MainSideBar />
       <div className="flex flex-col ml-[70px] h-full ">
         <NavBar />
-        <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4">
+        {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
+        <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
           {children}
-        </ScrollArea>
+        </div>
+        {/* </ScrollArea> */}
       </div>
     </>
   );

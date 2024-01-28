@@ -1,14 +1,11 @@
 -- be able to delete conversation
 
-- remove the opt out message
 
 - make the agent make calls initailly
 - make the phone number visible after the process has been completed
 
 - remove phone chatgpt in the info.
 - create auto response from twilio.
-- only create one superAdmin account.
-- cannot create any more account without creating organizations.
 - create function to talk to the crm. create messaging between agents.
 
 --comments in appoiment shiuld not be requiered
@@ -18,12 +15,16 @@
 --find a way to incorporate the sadcn calender in new lead form
 --font forget to enable the register in the register.ts
 --remove functionlity to click out side of the new lead form. only leave the x to close the box
---the messages in the inbox need to be wrapped
+
 --delay chat gpt response
 --get chat gpt to return a specific date and time
---need to push messages automatically
+
 --need to get the date od birth from the lead source and plus it in to the database.
 --need to register the call when it is made. 
+--need to be able to send made 
+-- work on the call results and updates
+-- get an original sound simpler to 
+--dont forget to uncomment the inbox client in the inbox
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
