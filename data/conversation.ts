@@ -9,7 +9,7 @@ export const conversationsGetByUserId = async () => {
     }
 
     const conversations = await db.conversation.findMany({
-      // where:{agentId:user.id},
+      where:{agentId:user.id},
       include: {
         lead: true,
         messages: true,
