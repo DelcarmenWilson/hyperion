@@ -17,14 +17,15 @@ import {
 
 import { numbers } from "@/constants/phone-numbers";
 import { PhoneType } from "@/types";
-import { device } from "@/lib/device";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { useDevice } from "@/hooks/use-device";
 
 export const Dialer = () => {
   const user = useCurrentUser();
   const { lead } = useDialerModal();
+  const device = useDevice();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
@@ -50,6 +51,7 @@ export const Dialer = () => {
   }
 
   function addDeviceListeners() {
+    if (!device) return;
     device.on("ready", function () {
       console.log("ready");
     });
@@ -98,9 +100,9 @@ export const Dialer = () => {
 
   return (
     <div className="flex">
-      <div className="flex flex-col gap-2 p-4">hello</div>
+      {/* <div className="flex flex-col gap-2 p-4">hello</div> */}
       <div className="flex flex-col gap-2 p-4">
-        {leadFullName}
+        {lead ? leadFullName : "New Call"}
         <div className="relative">
           <Input
             placeholder="Phone Number"

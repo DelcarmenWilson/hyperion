@@ -6,7 +6,6 @@ import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { format } from "date-fns";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -149,7 +148,24 @@ export const leadUpdateById = async (
   return { success: "Lead has been updated" };
 };
 
-export const leadUpdateNotesById = async (leadId: string, notes: string) => {
+export const leadUpdateByIdAutoChat = async (leadId: string, autoChat: boolean) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      autoChat,
+    },
+  });
+
+  return { success: `Lead hyper chat has been turned ${autoChat?"on":"off"}!` };
+};
+
+export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {

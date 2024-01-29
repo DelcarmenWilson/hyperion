@@ -15,7 +15,7 @@ interface NewLeadDrawerProps {
 export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"
@@ -43,11 +43,7 @@ export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
                     <div className="px-2 sm:px-2">
                       <div className="flex items-start justify-end">
                         <div className="flex h-7 items-center">
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={onClose}
-                          >
+                          <Button size="sm" onClick={onClose}>
                             <span className="sr-only">Close panel</span>
                             <X className="h-4 w-4" />
                           </Button>

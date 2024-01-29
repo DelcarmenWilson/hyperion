@@ -19,11 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { Connection } from "twilio-client";
-
-import { device } from "@/lib/device";
 import axios from "axios";
+import { useDevice } from "@/hooks/use-device";
 
 type AgentType = {
   name: string;
@@ -51,6 +49,7 @@ const agents: AgentType[] = [
 
 export const PhoneModal = () => {
   const usePm = usePhoneModal();
+  const device = useDevice();
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
