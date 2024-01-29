@@ -107,11 +107,11 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
         </div>
 
         <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
-          <ScrollArea className="w-full flex-1 pr-5">
+          <ScrollArea className="w-full flex-1 pr-2">
             <DashBoardTable
               columns={columns}
               data={leads}
-              searchKey="fullName"
+              searchKey="lastName"
             />
           </ScrollArea>
         </CardContent>

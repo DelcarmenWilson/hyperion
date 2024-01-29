@@ -80,7 +80,7 @@ const DahsBoardPage = async () => {
           icon={MessageSquareText}
           title="New texts"
           value={messagesCount}
-          href="/leads"
+          href="/inbox"
           hrefTitle="Go to inbox"
         />
 
