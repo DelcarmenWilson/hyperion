@@ -56,6 +56,11 @@ export const columns: ColumnDef<LeadColumn>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "lastName",
+    header: "",
+    cell: ({ row }) => <div />,
+  },
+  {
     accessorKey: "fullName",
     header: "",
     cell: ({ row }) => <Info lead={row.original} />,

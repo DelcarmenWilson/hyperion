@@ -5,10 +5,7 @@ import twilio from "twilio";
 
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
-import {
-  defaultChat,
-  defaultOptOut,
-} from "@/placeholder/chat";
+import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { cfg } from "@/lib/twilio-config";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
@@ -40,7 +37,7 @@ export const sendIntialSms = async (leadId: string) => {
   });
   const rnd = getRandomNumber(0, 2);
   const preset = presets[rnd];
-  
+
   const chatSettings = await db.chatSettings.findUnique({
     where: { userId: user.id },
   });
@@ -53,17 +50,17 @@ export const sendIntialSms = async (leadId: string) => {
 
   prompt = replacePreset(prompt, user.name!, lead);
   message = replacePreset(message, user.name!, lead);
-  message += defaultOptOut.request
+  message += defaultOptOut.request;
 
   if (chatSettings?.leadInfo) {
-    const leadInfo={
-      "first Name":lead.firstName,
-      "last Name":lead.lastName,
-      "Date Of Birth":lead.dateOfBirth,
-      address:lead.address,
-      city:lead.city,
-      state:lead.state,
-    }
+    const leadInfo = {
+      "first Name": lead.firstName,
+      "last Name": lead.lastName,
+      "Date Of Birth": lead.dateOfBirth,
+      address: lead.address,
+      city: lead.city,
+      state: lead.state,
+    };
     prompt += `Here is the lead information: ${JSON.stringify(leadInfo)}  `;
   }
 
@@ -75,10 +72,15 @@ export const sendIntialSms = async (leadId: string) => {
 
   await messageInsert(
     { role: "system", content: prompt },
+    user.id,
     conversation.success
   );
 
-  await messageInsert({ role: "user", content: message }, conversation.success);
+  await messageInsert(
+    { role: "assistant", content: message },
+    user.id,
+    conversation.success
+  );
 
   // message +=`${"\n\n"} ${defaultOptOut}`
   const client = twilio(cfg.accountSid, cfg.apiToken);
@@ -94,5 +96,3 @@ export const sendIntialSms = async (leadId: string) => {
 
   return { success: "Inital message sent!" };
 };
-
-

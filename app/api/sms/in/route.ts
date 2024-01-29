@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     return new NextResponse(null, { status: 200 });
   }
 
-  await messageInsert(textFromLead, conversation.id);
+  await messageInsert(textFromLead, conversation.id,conversation.agentId);
 
   switch (textFromLead.content.toLowerCase()) {
     case "stop":
@@ -59,8 +59,8 @@ export async function POST(req: Request) {
   }
 
   setTimeout(async () => {
-    await messageInsert({ role, content }, conversation.id);
-  }, 1000);
+    await messageInsert({ role, content }, conversation.id,conversation.agentId);
+  }, 5000);
 
   return new NextResponse(content, { status: 200 });
 }

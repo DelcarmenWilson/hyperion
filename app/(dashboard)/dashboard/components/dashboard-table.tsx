@@ -79,7 +79,7 @@ export function DashBoardTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full">
+    <div className="px-1">
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Search"
