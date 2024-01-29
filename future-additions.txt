@@ -24,7 +24,12 @@
 --need to be able to send made 
 -- work on the call results and updates
 -- get an original sound simpler to 
---dont forget to uncomment the inbox client in the inbox
+-- dont forget to uncomment the inbox client in the inbox
+-- inbound callnot showing right info
+-- incorporate intake form
+-- Vendor 
+-- Lead type [General,final expense, mortgae protection,Iul]
+-- fixe lead Status.
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
