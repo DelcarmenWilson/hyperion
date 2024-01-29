@@ -23,6 +23,7 @@ export const messageInsert = async (values: z.infer<typeof MessageSchema>,conver
     },
   });
   await pusherServer.trigger(conversationId,'messages:new',newMessage)
+  await pusherServer.trigger(senderId,'messages:new',"")
 
   return { success: "Message Created!" };
 };

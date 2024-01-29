@@ -240,7 +240,7 @@ model Appointment {
   leadId String
 
   status   String @default("Scheduled")
-  //comments String @db.LongText
+  // comments String @db.LongText
   comments String
 
   createdAt DateTime @default(now())

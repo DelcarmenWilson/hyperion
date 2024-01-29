@@ -13,8 +13,10 @@ interface BodyProps {
   initialData: FullConversationType;
 }
 export const Body = ({ initialData }: BodyProps) => {
-  const [messages, setMessages] = useState(initialData.messages);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const [messages, setMessages] = useState(initialData.messages);
   const { conversationId } = useConversation();
 
   const leadName = initialData.lead.lastName as string;
@@ -28,7 +30,11 @@ export const Body = ({ initialData }: BodyProps) => {
     bottomRef?.current?.scrollIntoView();
 
     const messageHandler = (message: FullMessageType) => {
-      // axios.post(`/api/conversations/${conversationId}/seen`);
+      axios.post(`/api/conversations/${conversationId}/seen`);
+      if (message.role == "user" && audioRef.current) {
+        console.log("playing");
+        audioRef.current.play();
+      }
       setMessages((current) => {
         if (find(current, { id: message.id })) {
           return current;
@@ -47,6 +53,7 @@ export const Body = ({ initialData }: BodyProps) => {
 
   return (
     // <ScrollArea className="flex-1 flex flex-col p-2 pr-3">
+
     <div className="flex flex-col flex-1 w-full px-4 overflow-hidden overflow-y-auto">
       {messages.map((message, i) => (
         <MessageBox
@@ -57,6 +64,7 @@ export const Body = ({ initialData }: BodyProps) => {
         />
       ))}
       <div ref={bottomRef} className="pt-24" />
+      <audio ref={audioRef} src="/sounds/message.mp3" />;
     </div>
     // </ScrollArea>
   );

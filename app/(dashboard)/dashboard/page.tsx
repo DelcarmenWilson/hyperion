@@ -12,6 +12,7 @@ import { appointmentGetAll } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
+import DashBoardClient from "./components/client";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -66,48 +67,15 @@ const DahsBoardPage = async () => {
   ).length;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <Box
-          icon={Users}
-          title="Leads today"
-          value={leadCount as number}
-          href="/leads"
-          hrefTitle="Go to leads"
-        />
-
-        <Box
-          icon={MessageSquareText}
-          title="New texts"
-          value={messagesCount}
-          href="/inbox"
-          hrefTitle="Go to inbox"
-        />
-
-        <Box
-          icon={Phone}
-          title="Outbound calls"
-          value={outBoundCallsCount}
-          href="/calls"
-          hrefTitle="Go to calls"
-        />
-        <Box
-          icon={PhoneIncoming}
-          title="Inbound calls"
-          value={inBoundCallsCount}
-          href="/calls"
-          hrefTitle="Go to calls"
-        />
-      </div>
-      <AppointmentBox data={formattedAppointments} />
-      <AgentSummary data={formattedAgents} />
-      <div className="flex items-center gap-4 h-[400px]">
-        <div className="border border-[#FF0000] w-[25%] h-full">Turn over</div>
-        <div className="w-[75%] h-full">
-          <CallHistory data={formatedCallHistory} />
-        </div>
-      </div>
-    </div>
+    <DashBoardClient
+      leadCount={leadCount}
+      messagesCount={messagesCount}
+      inBoundCallsCount={inBoundCallsCount}
+      outBoundCallsCount={outBoundCallsCount}
+      appointments={formattedAppointments}
+      agents={formattedAgents}
+      callHistory={formatedCallHistory}
+    />
   );
 };
 
