@@ -34,6 +34,7 @@ export const Header = ({ conversation }: HeaderProps) => {
     email: lead.email,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
+    autoChat: lead.autoChat,
     notes: lead.notes!,
     createdAt: lead.createdAt,
   };
