@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Connection } from "twilio-client";
 import { AlertCircle, Phone, X } from "lucide-react";
-
+import { device } from "@/lib/device";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -20,12 +20,10 @@ import { PhoneType } from "@/types";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { useDevice } from "@/hooks/use-device";
 
 export const Dialer = () => {
   const user = useCurrentUser();
   const { lead } = useDialerModal();
-  const device = useDevice();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const useDevice = () => {
+export const useDevice2 = () => {
   const [mounted, setMounted] = useState(false);
 
   const dv = typeof window !== "undefined" ? device : undefined;
