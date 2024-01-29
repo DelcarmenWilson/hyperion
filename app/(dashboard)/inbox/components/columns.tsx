@@ -76,7 +76,10 @@ export const columns: ColumnDef<InboxColumn>[] = [
     accessorKey: "createdAt",
     header: "Recieved on",
     cell: ({ row }) => (
-      <div>{format(row.original.createdAt, "MM-dd-yyy h:mm aaaa")}</div>
+      <div>
+        {row.original.createdAt &&
+          format(row.original.createdAt, "MM-dd-yyy h:mm aaaa")}
+      </div>
     ),
   },
 ];
