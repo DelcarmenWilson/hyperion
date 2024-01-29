@@ -12,11 +12,7 @@ export const AppointmentModal = () => {
 
   return (
     <Transition.Root show={appointmentModel.isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-50"
-        onClose={appointmentModel.onClose}
-      >
+      <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"

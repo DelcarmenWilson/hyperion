@@ -33,6 +33,7 @@ import { LeadColumn } from "../../components/columns";
 import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { DropDown } from "../../components/shared/dropdown";
 
 interface LeadClientProps {
   lead: Lead;
@@ -53,6 +54,7 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
     state: lead.state,
     zipCode: lead.zipCode,
     defaultNumber: lead.defaultNumber,
+    autoChat: lead.autoChat,
     notes: lead.notes as string,
     createdAt: lead.createdAt,
   };
@@ -99,8 +101,12 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
         {/*DATA  */}
         <div className="grid grid-cols-5">
           <div className="grid grid-cols-3 col-span-3 gap-2">
-            <Info lead={formattedLead} />
-
+            <div className="relative">
+              <div className="absolute top-0 right-0">
+                <DropDown lead={formattedLead} />
+              </div>
+              <Info lead={formattedLead} />
+            </div>
             <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
             <Call lead={formattedLead} />
           </div>

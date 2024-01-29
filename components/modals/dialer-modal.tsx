@@ -9,10 +9,10 @@ import { useDialerModal } from "@/hooks/use-dialer-modal";
 
 export const DialerModal = () => {
   const dialerModel = useDialerModal();
-
+  const close = () => {};
   return (
     <Transition.Root show={dialerModel.isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={dialerModel.onClose}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"
@@ -22,7 +22,7 @@ export const DialerModal = () => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-40" />
+          <div className="fixed inset-0 bg-black bg-opacity-40 pointer-events-none" />
         </Transition.Child>
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute indent-0 overflow-hidden">
@@ -36,11 +36,11 @@ export const DialerModal = () => {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-auto max-w-screen-2xl">
-                  <div className="flex flex-col h-full overflow-y-auto bg-background py-6 shadow-xl">
+                  <div className="flex flex-col h-full overflow-y-auto bg-background py-3 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-end">
-                        <div className="ml-3 flex h-7 items-center">
-                          <Button onClick={dialerModel.onClose}>
+                        <div className="flex ml-3 h-7 items-center">
+                          <Button size="icon" onClick={dialerModel.onClose}>
                             <span className="sr-only">Close panel</span>
                             <X className="h-4 w-4" />
                           </Button>

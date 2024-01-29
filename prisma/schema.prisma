@@ -157,7 +157,7 @@ model Team {
 }
 
 model Lead {
-  id            String         @id @default(cuid())
+  id            String        @id @default(cuid())
   firstName     String
   lastName      String
   address       String
@@ -166,8 +166,8 @@ model Lead {
   zipCode       String
   homePhone     String?
   cellPhone     String
-  gender        Gender         @default(Male)
-  maritalStatus MaritalStatus  @default(Single)
+  gender        Gender        @default(Male)
+  maritalStatus MaritalStatus @default(Single)
   email         String
   dateOfBirth   DateTime?
   // age               Int?
@@ -185,17 +185,20 @@ model Lead {
   // fatherAge         Int?
   // motherAge         Int?
   // cuaseOfDeath      String?
-  status        String         @default("New")
+  status        String        @default("New")
   defaultNumber String
   notes         String?
-  active        Boolean        @default(true)
+  active        Boolean       @default(true)
   owner         String?
+
+  autoChat      Boolean        @default(false)
   conversations Conversation[]
   appointments  Appointment[]
   calls         Call[]
-  createdAt     DateTime       @default(now())
-  updatedBy     String?
-  updatedAt     DateTime       @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedBy String?
+  updatedAt DateTime @updatedAt
 }
 
 model Conversation {
@@ -251,16 +254,16 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // defaultPrompt   String @db.LongText
-  // defaultMessage  String @db.LongText
-  // defaultFunction String @db.LongText
+  //defaultPrompt   String   @db.LongText
+  //defaultMessage  String   @db.LongText
+  //defaultFunction String   @db.LongText
   defaultPrompt   String
   defaultMessage  String
   defaultFunction String
-
-  leadInfo  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  autoChat        Boolean  @default(false)
+  leadInfo        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 //CALLS

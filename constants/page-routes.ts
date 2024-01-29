@@ -36,11 +36,11 @@ export const MainSidebarRoutes: NavType[] = [
     href: "/inbox",
     icon: MessagesSquare,
   },
-  // {
-  //   title: "Sales Pipeline",
-  //   href: "/sales",
-  //   icon: UserSquare,
-  // },
+  {
+    title: "Sales Pipeline",
+    href: "/sales-pipeline",
+    icon: UserSquare,
+  },
   // {
   //   title: "Reports",
   //   href: "/reports",

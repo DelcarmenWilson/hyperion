@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { leadUpdateNotesById } from "@/actions/lead";
+import { leadUpdateByIdNotes } from "@/actions/lead";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -22,7 +22,7 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
   const onNotesUpdated = async () => {
     if (!notes) return;
     setLoading(true);
-    await leadUpdateNotesById(leadId, notes).then((data) => {
+    await leadUpdateByIdNotes(leadId, notes).then((data) => {
       if (data.success) {
         toast.success(data.success);
       }
