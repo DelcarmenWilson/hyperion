@@ -31,13 +31,10 @@ export const Body = ({ initialData }: BodyProps) => {
 
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
-<<<<<<< HEAD
       if (message.role == "user" && audioRef.current) {
         console.log("playing");
         audioRef.current.play();
       }
-=======
->>>>>>> sales
       setMessages((current) => {
         if (find(current, { id: message.id })) {
           return current;
