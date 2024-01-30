@@ -9,11 +9,11 @@ import { MoveDownLeft, MoveUpRight } from "lucide-react";
 
 export type CallHistoryColumn = {
   id: string;
-  agentName: string;
-  phone?: string;
+  // agentName: string;
+  // phone?: string;
   direction: string;
-  fullName?: string;
-  email?: string;
+  // fullName?: string;
+  // email?: string;
   duration: string;
   date: Date;
   recordUrl: string;
@@ -43,17 +43,10 @@ export const columns: ColumnDef<CallHistoryColumn>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "agentName",
-    header: "Agent",
-  },
-  {
     accessorKey: "phone",
     header: "Phone Number",
     cell: ({ row }) => (
       <div>
-        <p className="text-primary font-bold italic">
-          {row.original?.phone ? formatPhoneNumber(row.original?.phone) : ""}
-        </p>
         <p className="flex gap-2 items-center">
           {row.original.direction.toLowerCase() === "inbound" ? (
             <MoveDownLeft className="h-4 w-4" />
@@ -66,21 +59,17 @@ export const columns: ColumnDef<CallHistoryColumn>[] = [
     ),
   },
 
-  {
-    accessorKey: "fullName",
-    header: "Lead info",
-    cell: ({ row }) => (
-      <div>
-        <p className="capitalize">{row.original.fullName}</p>
-        <p className="lowercase">{row.original.email}</p>
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "fullName",
+  //   header: "Lead info",
+  //   cell: ({ row }) => (
+  //     <div>
+  //       <p className="capitalize">{row.original.fullName}</p>
+  //       <p className="lowercase">{row.original.email}</p>
+  //     </div>
+  //   ),
+  // },
 
-  {
-    accessorKey: "timeZone",
-    header: "Time Zone",
-  },
   {
     accessorKey: "duration",
     header: "Duration",

@@ -1,7 +1,5 @@
 import { db } from "@/lib/db";
-import { voiceResponse } from "@/lib/handler";
 import { NextResponse } from "next/server";
-import twilio from "twilio";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -10,11 +8,14 @@ export async function POST(req: Request) {
     key = key.replace('"', "");
     j[key] = value;
   });
-  
- await db.call.update({where:{id:j.CallSid},data:{
-  status:j.CallStatus,
-  duration:j.CallDuration
- }})
-  
+ 
+  await db.call.update({where:{id:j.CallSid},data:{
+    recordId:j.RecordingSid,
+    recordUrl:j.RecordingUrl,
+    recordStatus:j.RecordingStatus,
+    recordStartTime:new Date(j.RecordingStartTime),
+    recordDuration:j.RecordingDuration
+   }})
+   
   return new NextResponse("",{ status: 200 });
 }

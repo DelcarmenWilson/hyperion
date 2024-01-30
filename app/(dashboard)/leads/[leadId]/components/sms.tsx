@@ -1,3 +1,5 @@
+"use client";
+
 export const Sms = () => {
-  return <div>Sms</div>;
+  return <div className="w-full">SMS</div>;
 };

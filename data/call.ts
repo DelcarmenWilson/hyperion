@@ -4,7 +4,7 @@ export const callGetAllByAgentId = async (agentId: string) => {
   try {
     const calls = await db.call.findMany({
       where: { agentId },
-      include: { agent: true, lead: true },
+      include: { lead: true },
     });
     return calls;
   } catch {
@@ -16,7 +16,6 @@ export const callGetAllByLeadId = async (leadId: string) => {
   try {
     const calls = await db.call.findMany({
       where: { leadId },
-      include: { agent: true, lead: true },
     });
     return calls;
   } catch {

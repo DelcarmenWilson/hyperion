@@ -12,39 +12,32 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { callInsert } from "@/actions/call";
-import { toast } from "sonner";
-import { CallDirection } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { LeadColumn } from "../columns";
+import { pusherClient } from "@/lib/pusher";
 interface CallProps {
   lead: LeadColumn;
-  intialCallCount?: number;
 }
-export const Call = ({ lead, intialCallCount }: CallProps) => {
-  const user = useCurrentUser();
+export const Call = ({ lead }: CallProps) => {
   const useDialer = useDialerModal();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [callCount, setCallCount] = useState(intialCallCount || 0);
+  const [callCount, setCallCount] = useState(lead.callCount || 0);
 
-  // const onStartCall = async () => {
-  //   if (!lead.id || !user) return;
-  //   setLoading(true);
-  //   setCallCount((state) => (state += 1));
+  useEffect(() => {
+    pusherClient.subscribe(lead.id as string);
 
-  //   await callInsert(user.id, lead.id, CallDirection.Outbound).then((data) => {
-  //     router.refresh();
-  //     if (data?.error) {
-  //       toast.error(data.error);
-  //     }
-  //     if (data?.success) {
-  //       toast.error(data.success);
-  //     }
-  //   });
-  //   setLoading(false);
-  // };
+    const callHandler = () => {
+      setCallCount((current) => {
+        return current + 1;
+      });
+    };
+    pusherClient.bind("call:new", callHandler);
+    return () => {
+      pusherClient.unsubscribe(lead.id as string);
+      pusherClient.unbind("call:new", callHandler);
+    };
+  }, [lead.id]);
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm">Local time : 11:31 am</p>
@@ -52,7 +45,6 @@ export const Call = ({ lead, intialCallCount }: CallProps) => {
         className="w-fit relative"
         onClick={() => useDialer.onOpen(lead)}
         size="sm"
-        disabled={loading}
       >
         <Phone className="w-4 h-4 mr-2" />
         CLICK TO CALL
