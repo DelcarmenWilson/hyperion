@@ -8,7 +8,7 @@ import { AgentSummaryColumn } from "./components/agentsummary/columns";
 import { CallHistoryColumn } from "./components/callhistory/columns";
 import { CallHistory } from "./components/callhistory/call-history";
 
-import { appointmentGetAll } from "@/data/appointment";
+import { appointmentsGetAllByUserId } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
@@ -19,7 +19,8 @@ const DahsBoardPage = async () => {
   const leadCount = await leadsGetByAgentIdTodayCount(user?.id!);
   const messagesCount = await messagesGetByAgentIdUnSeen(user?.id!);
 
-  const appointments = await appointmentGetAll();
+  const appointments = await appointmentsGetAllByUserId(user?.id!);
+
   const formattedAppointments: AppointmentColumn[] = appointments.map(
     (apt) => ({
       id: apt.id,
@@ -49,21 +50,22 @@ const DahsBoardPage = async () => {
 
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,
-    agentName: call.agent.username!,
-    phone: call.lead.cellPhone,
+    agentName: user?.name!,
+    phone: call.lead?.cellPhone,
     direction: call.direction,
-    fullName: `${call.lead.firstName} ${call.lead.lastName}`,
-    email: call.lead.email,
+    fullName: `${call.lead?.firstName} ${call.lead?.lastName}`,
+    email: call.lead?.email,
     duration: call.duration!,
     date: call.createdAt,
+    recordUrl: call.recordUrl as string,
   }));
 
   const outBoundCallsCount = calls.filter(
-    (call) => call.direction === "Outbound"
+    (call) => call.direction.toLowerCase() === "outbound"
   ).length;
 
   const inBoundCallsCount = calls.filter(
-    (call) => call.direction === "Inbound"
+    (call) => call.direction.toLowerCase() === "inbound"
   ).length;
 
   return (

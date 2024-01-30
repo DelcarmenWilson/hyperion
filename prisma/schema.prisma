@@ -19,11 +19,6 @@ enum UserRole {
   USER
 }
 
-enum CallDirection {
-  Inbound
-  Outbound
-}
-
 enum Preset {
   Birthday
   FollowUp
@@ -75,7 +70,6 @@ model User {
   messages Message[] @relation("MessageToUser")
 
   appointments Appointment[]
-  calls        Call[]
   presets      Presets[]
   phoneNumbers PhoneNumber[]
   chatSettings ChatSettings?
@@ -255,32 +249,13 @@ model ChatSettings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   //defaultPrompt   String   @db.LongText
-  //defaultMessage  String   @db.LongText
   //defaultFunction String   @db.LongText
   defaultPrompt   String
-  defaultMessage  String
   defaultFunction String
   autoChat        Boolean  @default(false)
   leadInfo        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-}
-
-//CALLS
-model Call {
-  id      String @id @unique
-  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId String
-
-  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String
-
-  direction CallDirection @default(Inbound)
-  status    String?
-  duration  String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Presets {
@@ -289,6 +264,7 @@ model Presets {
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
   type    Preset @default(Text)
+
   //content String @db.LongText
   content String
 
@@ -309,4 +285,27 @@ model PhoneNumber {
   status    String   @default("Active")
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+//CALLS
+model Call {
+  id      String @id @unique
+  agentId String
+
+  from   String
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String?
+
+  direction String  @default("inbound")
+  status    String?
+  duration  String?
+
+  recordId        String?
+  recordUrl       String?
+  recordStartTime DateTime?
+  recordStatus    String?
+  recordDuration  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

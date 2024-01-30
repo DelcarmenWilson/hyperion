@@ -34,12 +34,15 @@ import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { DropDown } from "../../components/shared/dropdown";
+import { CallHistoryColumn } from "./callhistory/columns";
+import { CallHistory } from "./callhistory/call-history";
 
 interface LeadClientProps {
   lead: Lead;
   nextPrev: any;
+  calls: CallHistoryColumn[];
 }
-export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
+export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
   const user = useCurrentUser();
   const router = useRouter();
 
@@ -57,7 +60,9 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
     autoChat: lead.autoChat,
     notes: lead.notes as string,
     createdAt: lead.createdAt,
+    callCount: calls.length,
   };
+
   return (
     <Card className="flex flex-col relative w-full">
       <div className="flex justify-between items-center mb-2">
@@ -124,7 +129,6 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
             <span>
               Caller Id for calls /texts{" "}
               <span className="font-bold">
-                {" "}
                 {formatPhoneNumber(lead.defaultNumber)}
               </span>
             </span>
@@ -177,7 +181,9 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
 
             <div className="px-2">
               <TabsContent value="activity">ACTIVITY LOG</TabsContent>
-              <TabsContent value="call">CALL HISTORY</TabsContent>
+              <TabsContent value="call">
+                <CallHistory data={calls} />
+              </TabsContent>
               <TabsContent value="events">CALENDAR EVENTS</TabsContent>
               <TabsContent value="meetings">MEETINGS</TabsContent>
             </div>

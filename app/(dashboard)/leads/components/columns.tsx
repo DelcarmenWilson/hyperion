@@ -26,6 +26,7 @@ export type LeadColumn = {
   autoChat: boolean;
   notes: string;
   createdAt: Date;
+  callCount?: number;
 };
 
 export const columns: ColumnDef<LeadColumn>[] = [

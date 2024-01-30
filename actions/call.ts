@@ -1,9 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { CallDirection } from "@prisma/client";
 
-export const callInsert = async (id:string,agentId:string,leadId:string,direction:CallDirection) => {
+export const callInsert = async (id:string,agentId:string,leadId:string,direction:string) => {
     try {
         if(!agentId){
             return {error:"Agent id is required!"}
@@ -17,7 +16,8 @@ export const callInsert = async (id:string,agentId:string,leadId:string,directio
               agentId,
               leadId,
               direction:direction ,  
-              status:""
+              status:"",
+              from:""
             },
           });
           return {success:"Call created"}
