@@ -3,12 +3,38 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Phone } from "lucide-react";
 import { CallHistoryColumn, columns } from "./columns";
 import { DashBoardTable } from "../dashboard-table";
+import { Call } from "@prisma/client";
+import { pusherClient } from "@/lib/pusher";
+import { useEffect, useState } from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { find } from "lodash";
 
 interface AgentSummaryBoxProps {
-  data: CallHistoryColumn[];
+  initialCalls: CallHistoryColumn[];
 }
 
-export const CallHistory = ({ data }: AgentSummaryBoxProps) => {
+export const CallHistory = ({ initialCalls }: AgentSummaryBoxProps) => {
+  const user = useCurrentUser();
+  const [calls, setCalls] = useState<CallHistoryColumn[]>(initialCalls);
+  const leadId = initialCalls[0]?.lead?.id;
+
+  useEffect(() => {
+    pusherClient.subscribe(user?.id as string);
+
+    const callHandler = (newCall: CallHistoryColumn) => {
+      setCalls((current) => {
+        if (find(current, { id: newCall.id })) {
+          current.shift();
+        }
+        return [newCall, ...current];
+      });
+    };
+    pusherClient.bind("calllog:new", callHandler);
+    return () => {
+      pusherClient.unsubscribe(user?.id as string);
+      pusherClient.unbind("calllog:new", callHandler);
+    };
+  }, [leadId]);
   return (
     <Card className="relative  overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">
@@ -27,7 +53,7 @@ export const CallHistory = ({ data }: AgentSummaryBoxProps) => {
       </div>
 
       <CardContent className="items-center space-y-0 pb-2">
-        <DashBoardTable columns={columns} data={data} searchKey="fullName" />
+        <DashBoardTable columns={columns} data={calls} searchKey="fullName" />
       </CardContent>
     </Card>
   );

@@ -32,7 +32,6 @@ export const Body = ({ initialData }: BodyProps) => {
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
       if (message.role == "user" && audioRef.current) {
-        console.log("playing");
         audioRef.current.play();
       }
       setMessages((current) => {

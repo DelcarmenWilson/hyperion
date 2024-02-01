@@ -13,7 +13,6 @@ export const leadsGetAll = async () => {
 export const leadsGetAllByAgentId = async (agentId:string) => {
   try {
     const leads = await db.lead.findMany({where:{owner:agentId},include:{calls:true}});
-    
     return leads;
   } catch {
     return [];

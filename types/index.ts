@@ -1,4 +1,4 @@
-import { Conversation, Message, User, Lead, Preset } from "@prisma/client";
+import { Conversation, Message, User, Lead, Preset, Call } from "@prisma/client";
 
 export type FullMessageType = Message & {
   sender?: User|null
@@ -22,4 +22,8 @@ export type PresetFormValues = {
 export type PhoneType = {
   value: string;
   state: string;
+};
+
+export type FullCall=Call& {
+  lead: Lead;
 };

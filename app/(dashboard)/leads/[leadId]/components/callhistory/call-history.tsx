@@ -1,34 +1,47 @@
 "use client";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Phone } from "lucide-react";
-import { CallHistoryColumn, columns } from "./columns";
-import { DashBoardTable } from "@/app/(dashboard)/dashboard/components/dashboard-table";
+import { useEffect, useState } from "react";
+import { find } from "lodash";
+import { pusherClient } from "@/lib/pusher";
 
-interface AgentSummaryBoxProps {
-  data: CallHistoryColumn[];
+import { CallBox } from "./call-box";
+import { Call } from "@prisma/client";
+
+interface CallHistoryBoxProps {
+  initialCalls: Call[];
 }
 
-export const CallHistory = ({ data }: AgentSummaryBoxProps) => {
-  return (
-    <Card className="relative  overflow-hidden w-full">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
-          <div className="bg-accent p-4 rounded-br-lg">
-            <Phone className="h-5 w-5 text-primary" />
-          </div>
-          <CardTitle className=" text-sm text-muted-foreground">
-            Call history
-          </CardTitle>
-        </div>
-        <CardTitle className=" text-sm text-muted-foreground text-right mr-6">
-          add search and block list
-          <p className="font-bold text-primary">1</p>
-        </CardTitle>
-      </div>
+export const CallHistory = ({ initialCalls }: CallHistoryBoxProps) => {
+  const [calls, setCalls] = useState<Call[]>(initialCalls);
+  const leadId = initialCalls[0].leadId;
 
-      <CardContent className="items-center space-y-0 pb-2">
-        <DashBoardTable columns={columns} data={data} searchKey="fullName" />
-      </CardContent>
-    </Card>
+  useEffect(() => {
+    pusherClient.subscribe(leadId as string);
+
+    const callHandler = (newCall: Call) => {
+      setCalls((current) => {
+        if (find(current, { id: newCall.id })) {
+          current.shift();
+        }
+        return [newCall, ...current];
+      });
+    };
+    pusherClient.bind("call:coach", callHandler);
+    return () => {
+      pusherClient.unsubscribe(leadId as string);
+      pusherClient.unbind("call:coach", callHandler);
+    };
+  }, [leadId]);
+  return (
+    <div className="text-sm">
+      <div className="grid grid-cols-5 gap-2 text-md text-muted-foreground">
+        <span>Direction</span>
+        <span>Duration</span>
+        <span className="col-span-2">Date / Time</span>
+        <span>Recording</span>
+      </div>
+      {calls?.map((call) => (
+        <CallBox key={call.id} call={call} />
+      ))}
+    </div>
   );
 };

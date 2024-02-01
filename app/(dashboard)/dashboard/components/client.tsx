@@ -7,11 +7,13 @@ import { AppointmentBox } from "./appointment/appointment-box";
 import { AppointmentColumn } from "./appointment/columns";
 import { AgentSummary } from "./agentsummary/agent-summary";
 import { AgentSummaryColumn } from "./agentsummary/columns";
-import { CallHistoryColumn } from "./callhistory/columns";
 import { CallHistory } from "./callhistory/call-history";
 import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { find } from "lodash";
+
+import { FullCall } from "@/types";
+import TurnOverRate from "./turnover/turn-over-rate";
+import { CallHistoryColumn } from "./callhistory/columns";
 
 interface DashBoardClientProps {
   leadCount: number;
@@ -88,14 +90,16 @@ const DashBoardClient = ({
         />
       </div>
       <AppointmentBox data={appointments} />
-      <AgentSummary data={agents} />
+      <AgentSummary initialData={agents} />
       <div className="flex items-center gap-4 h-[400px]">
-        <div className="border border-[#FF0000] w-[25%] h-full">Turn over</div>
+        <div className="w-[25%] h-full">
+          <TurnOverRate />
+        </div>
         <div className="w-[75%] h-full">
-          <CallHistory data={callHistory} />
+          <CallHistory initialCalls={callHistory} />
         </div>
       </div>
-      <audio ref={audioRef} src="/sounds/message.mp3" />;
+      <audio ref={audioRef} src="/sounds/message.mp3" />
     </div>
   );
 };

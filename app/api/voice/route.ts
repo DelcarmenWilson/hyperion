@@ -12,30 +12,58 @@ export async function POST(req: Request) {
     j[key] = value;
   });
 
-  let lead:any;
+  const lead = await db.lead.findFirst({
+    where: { cellPhone: j.Direction == "outbound" ? j.To : j.From },
+  });
 
-  if(j.AgentNumber){
-    j.Direction="outbound"
-    j.AgentId=j.Caller.replace("client:","")   
-     lead = await db.lead.findFirst({where:{cellPhone:j.To}}) 
-    j.LeadPhone=j.To
-  }
-  else{
-    lead = await db.lead.findFirst({where:{cellPhone:j.From}}) 
-    j.LeadPhone=j.From
-    const agent=await db.phoneNumber.findFirst({where:{phone:j.To}})
-    j.AgentId=agent?.agentId
+  if (j.Direction == "outbound") {
+    j.AgentId = j.Caller.replace("client:", "");
+  } else {
+    const phonenumber = await db.phoneNumber.findFirst({
+      where: { phone: j.To },
+    });
+    const settings = await db.chatSettings.findUnique({
+      where: { userId: phonenumber?.agentId! },
+    });
+    j.Recording = settings?.record
+      ? "record-from-answer-dual"
+      : "do-not-record";
+    j.AgentId = phonenumber?.agentId;
   }
 
-  const newCall=await db.call.create({data:{
-    id:j.CallSid,
-    agentId:j.AgentId,
-    from:j.From,
-    direction:j.Direction,
-    status:j.CallStatus,
-    leadId:lead.id
-  }})
-  await pusherServer.trigger(lead.id,'call:new',newCall)
+  await db.chatSettings.update({
+    where: { userId: j.AgentId },
+    data: {
+      currentCall: j.CallSid,
+    },
+  });
+
+  const newCall = await db.call.create({
+    data: {
+      id: j.CallSid,
+      agentId: j.AgentId,
+      from: j.From,
+      direction: j.Direction,
+      status: j.CallStatus,
+      leadId: lead?.id,
+    },
+  });
+
+  if (j.Coach == "on") {
+    const agent = await db.user.findUnique({
+      where: { id: j.AgentId },
+      include: {
+        phoneNumbers: {
+          where: { status: "default" },
+        },
+        chatSettings: true,
+      },
+    });
+    await pusherServer.trigger(j.AgentId, "call:coach", agent);
+  }
+  if (lead?.id) {
+    await pusherServer.trigger(lead?.id, "call:new", newCall);
+  }
 
   const reponse = await voiceResponse(j);
   return new NextResponse(reponse, { status: 200 });

@@ -20,13 +20,5 @@ export const usePhoneModal = create<usePhoneModalStore>((set) => ({
   onClose: () => set({ isOpen: false }),
   onLoad(dv) {
     set({ device: dv });
-    // set({ device: new Device(tokenGenerator(id).token) });
-    // set({ device: new Device(tokenGenerator(id).token) });
   },
-  // onLoad(id) {
-  //   if (this.identity) return;
-  //   set({ identity: id });
-  //   // set({ device: new Device(tokenGenerator(id).token) });
-  //   // set({ device: new Device(tokenGenerator(id).token) });
-  // },
 }));

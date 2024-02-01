@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { ResetSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
+import { userGetByEmail } from "@/data/user";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { generatePasswordResetToken } from "@/lib/tokens";
 
@@ -15,7 +15,7 @@ export const reset = async (values: z.infer<typeof ResetSchema>) => {
 
   const { email } = validatedFields.data;
 
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await userGetByEmail(email);
   if (!existingUser) {
     return { error: "Email not found!" };
   }

@@ -11,6 +11,7 @@ import {
   MessagesSquare,
   Phone,
   Settings,
+  TestTube,
   UserSquare,
   Users,
 } from "lucide-react";
@@ -87,9 +88,14 @@ export const MainSidebarRoutes: NavType[] = [
   //   href: "/billing",
   //   icon: DollarSign,
   // },
+  {
+    title: "Test",
+    href: "/test",
+    icon: TestTube,
+  },
 ];
 
-export const SettingsSidebarRoutes:NavType[] = [
+export const SettingsNavbarRoutes:NavType[] = [
   { title: "Profile", href: "/settings" },
   {
     title: "Account",

@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { MasterRegisterSchema } from "@/schemas";
 import { RegisterSchema } from "@/schemas";
 
-import { getUserByEmail } from "@/data/user";
+import { userGetByEmail } from "@/data/user";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 import { chatSettingsInsert } from "./chat-settings";
@@ -20,7 +20,7 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
   const { team, npn, username, password, email, firstName, lastName } =
     validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await userGetByEmail(email);
 
   if (existingUser) {
     return { error: "Email already in use!" };
@@ -105,3 +105,6 @@ export const userMasterInsert = async (
 
   return { success: "Master account created" };
 };
+
+
+

@@ -1,5 +1,4 @@
 "use client";
-// import { device } from "@/lib/device";
 import { Fragment, useEffect, useState } from "react";
 import {
   Phone,
@@ -8,6 +7,9 @@ import {
   PhoneOff,
   X,
 } from "lucide-react";
+import axios from "axios";
+import { Connection } from "twilio-client";
+import { device } from "@/lib/device";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -19,9 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { Connection } from "twilio-client";
-import axios from "axios";
-import { device } from "@/lib/device";
+import { formatSecondsToTime } from "@/formulas/numbers";
 
 type AgentType = {
   name: string;
@@ -52,10 +52,12 @@ export const PhoneModal = () => {
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
-  const [inCommingCall, setInComingCall] = useState<Connection>();
+  const [call, setInComingCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
   const [fromNumber, setFromNumber] = useState("");
   const [fromName, setFromName] = useState("");
+  const [time, setTime] = useState(0);
+  const [running, setRunning] = useState(false);
 
   function addDeviceListeners() {
     if (!device) return;
@@ -75,13 +77,15 @@ export const PhoneModal = () => {
         onIncomingCallDisconnect();
       });
       const response = await axios.post("/api/leads/details", {
-        phone: call.parameters.from,
+        phone: call.parameters.From,
       });
 
       const data = response.data;
-      const fullName = `${data?.firstName} ${data?.lastName}`;
+      const fullName = data.firstName
+        ? `${data.firstName} ${data.lastName}`
+        : "Unknown Caller";
       setFromName(fullName);
-      setFromNumber(data.cellPhone);
+      setFromNumber(data.cellPhone || call.parameters.From);
 
       usePm.onOpen();
       setInComingCall(call);
@@ -89,30 +93,44 @@ export const PhoneModal = () => {
   }
 
   const onIncomingCallDisconnect = () => {
-    inCommingCall?.disconnect();
+    call?.disconnect();
     setInComingCall(undefined);
     setIsCallAccepted(false);
     setFromName("");
     setFromNumber("");
+    setRunning(false);
+    setTime(0);
     usePm.onClose();
   };
 
   const onIncomingCallAccept = () => {
-    inCommingCall?.accept();
+    call?.accept();
     setIsCallAccepted(true);
+    setRunning(true);
   };
 
   const onIncomingCallReject = () => {
-    inCommingCall?.reject();
+    call?.reject();
     setInComingCall(undefined);
     setIsCallAccepted(false);
     usePm.onClose();
   };
 
   useEffect(() => {
+    let interval: any;
+    if (running) {
+      interval = setInterval(() => {
+        setTime((state) => state + 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [running]);
+
+  useEffect(() => {
     addDeviceListeners();
   });
-
   return (
     <Transition.Root show={usePm.isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={usePm.onClose}>
@@ -151,8 +169,10 @@ export const PhoneModal = () => {
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Leads name: {fromName}</span>
-                      {/* <span className="text-primary font-bold">30</span> */}
+                      <span>Lead name: {fromName}</span>
+                      <span className="text-primary font-bold">
+                        {formatSecondsToTime(time)}
+                      </span>
                     </div>
                     {!isCallAccepted ? (
                       <div className="flex flex-col gap-2">

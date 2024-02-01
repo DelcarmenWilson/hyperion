@@ -2,7 +2,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +14,6 @@ import {
   FormItem,
   FormDescription,
 } from "@/components/ui/form";
-import { MessageCircle } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
@@ -29,28 +27,29 @@ interface ChatClientProps {
   data: ChatSettings & { user: User };
 }
 
-const formSchema = z.object({
+const chatSchema = z.object({
   userId: z.string(),
   defaultPrompt: z.optional(z.string()),
-  defaultMessage: z.optional(z.string()),
   defaultFunction: z.optional(z.string()),
+  autoChat: z.boolean(),
+  record: z.boolean(),
+  coach: z.boolean(),
   leadInfo: z.boolean(),
 });
 
-type ChatValues = z.infer<typeof formSchema>;
+type ChatValues = z.infer<typeof chatSchema>;
 
 export const ChatClient = ({ data }: ChatClientProps) => {
   const router = useRouter();
   const [loading, startTransition] = useTransition();
 
   const form = useForm<ChatValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(chatSchema),
     defaultValues: data,
   });
 
   const onResetDefaults = () => {
     form.setValue("defaultPrompt", defaultChat.prompt);
-    form.setValue("defaultMessage", defaultChat.message);
   };
 
   const onSubmit = (values: ChatValues) => {
@@ -71,119 +70,158 @@ export const ChatClient = ({ data }: ChatClientProps) => {
     });
   };
   return (
-    <div className="w-[50%] h-full rounded-none">
-      <div className="flex justify-center items-center text-2xl font-semibold p-2">
-        <MessageCircle className="mr-2 h-5 w-5" /> Chat Settings
-      </div>
-      <Separator />
-      <div>
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-4">
-              {/* DEFAULT PROMPT */}
-              <FormField
-                control={form.control}
-                name="defaultPrompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Prompt</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="default Prompt"
-                        disabled={loading}
-                        autoComplete="defaultPrompt"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* DEFAULT MESSAGE */}
-              <FormField
-                control={form.control}
-                name="defaultMessage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {" "}
-                      Message{" "}
-                      <span className="text-destructive font-bold ialic">
-                        Depricated!! Please use presets
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Default message"
-                        disabled={loading}
-                        autoComplete="defaultMessage"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <Form {...form}>
+      <form className="space-y-6 mx-1" onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            {/* DEFAULT PROMPT */}
+            <FormField
+              control={form.control}
+              name="defaultPrompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="default Prompt"
+                      disabled={loading}
+                      autoComplete="defaultPrompt"
+                      rows={7}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* DEFAULT FUNCTION */}
+            <FormField
+              control={form.control}
+              name="defaultFunction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Function</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Default function"
+                      disabled={loading}
+                      autoComplete="defaultFunction"
+                      rows={7}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            {/* SEND LEAD INFO */}
+            <FormField
+              control={form.control}
+              name="leadInfo"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Lead Info</FormLabel>
+                    <FormDescription>
+                      Send lead info with the intial prompt
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblIsTwoFactor"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              {/* DEFAULT FUNCTION */}
-              <FormField
-                control={form.control}
-                name="defaultFunction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Function</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Default function"
-                        disabled={loading}
-                        autoComplete="defaultFunction"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* SEND LEAD INFO */}
-              <FormField
-                control={form.control}
-                name="leadInfo"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Lead Info</FormLabel>
-                      <FormDescription>
-                        Send lead info with the intial prompt
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblIsTwoFactor"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                disabled={loading}
-                variant="outline"
-                onClick={onResetDefaults}
-                type="button"
-              >
-                Reset Defaults
-              </Button>
-              <Button disabled={loading} type="submit">
-                Save Changes
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </div>
+            {/* AUTO CHAT */}
+            <FormField
+              control={form.control}
+              name="autoChat"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Hyper Chat</FormLabel>
+                    <FormDescription>Automatic messaging</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblAutoChat"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* RECORD */}
+            <FormField
+              control={form.control}
+              name="record"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Recording</FormLabel>
+                    <FormDescription>Recording calls</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblRecord"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* COACH */}
+            <FormField
+              control={form.control}
+              name="coach"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Coach</FormLabel>
+                    <FormDescription>
+                      Enable coahing (future feature)
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblCoach"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            disabled={loading}
+            variant="outline"
+            onClick={onResetDefaults}
+            type="button"
+          >
+            Reset Defaults
+          </Button>
+          <Button disabled={loading} type="submit">
+            Save Changes
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

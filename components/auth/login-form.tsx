@@ -110,6 +110,7 @@ export const LoginForm = () => {
                           {...field}
                           placeholder="john.doe@example.com"
                           type="email"
+                          autoComplete="email"
                         />
                       </FormControl>
                       <FormMessage />
@@ -128,6 +129,7 @@ export const LoginForm = () => {
                           {...field}
                           placeholder="******"
                           type="password"
+                          autoComplete="password"
                         />
                       </FormControl>
                       <Button

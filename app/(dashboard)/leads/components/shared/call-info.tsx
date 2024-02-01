@@ -16,10 +16,10 @@ import { useEffect, useState } from "react";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { LeadColumn } from "../columns";
 import { pusherClient } from "@/lib/pusher";
-interface CallProps {
+interface CallInfoProps {
   lead: LeadColumn;
 }
-export const Call = ({ lead }: CallProps) => {
+export const CallInfo = ({ lead }: CallInfoProps) => {
   const useDialer = useDialerModal();
   const [callCount, setCallCount] = useState(lead.callCount || 0);
 

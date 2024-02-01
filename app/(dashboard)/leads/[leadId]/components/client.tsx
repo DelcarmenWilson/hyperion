@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { Lead } from "@prisma/client";
+import { Call, Lead } from "@prisma/client";
 
 import {
   ArrowLeft,
@@ -27,20 +27,19 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Appointment } from "../../components/shared/appointment";
 import { ExtraInfo } from "../../components/shared/extra-info";
-import { Call } from "../../components/shared/call";
+import { CallInfo } from "../../components/shared/call-info";
 import { Info } from "../../components/shared/info";
 import { LeadColumn } from "../../components/columns";
 import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { DropDown } from "../../components/shared/dropdown";
-import { CallHistoryColumn } from "./callhistory/columns";
 import { CallHistory } from "./callhistory/call-history";
 
 interface LeadClientProps {
   lead: Lead;
   nextPrev: any;
-  calls: CallHistoryColumn[];
+  calls: Call[];
 }
 export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
   const user = useCurrentUser();
@@ -113,7 +112,7 @@ export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
               <Info lead={formattedLead} />
             </div>
             <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
-            <Call lead={formattedLead} />
+            <CallInfo lead={formattedLead} />
           </div>
           <div className="flex justify-around col-span-2">
             <Appointment dob={lead.dateOfBirth!} showInfo />
@@ -182,7 +181,7 @@ export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
             <div className="px-2">
               <TabsContent value="activity">ACTIVITY LOG</TabsContent>
               <TabsContent value="call">
-                <CallHistory data={calls} />
+                <CallHistory initialCalls={calls} />
               </TabsContent>
               <TabsContent value="events">CALENDAR EVENTS</TabsContent>
               <TabsContent value="meetings">MEETINGS</TabsContent>

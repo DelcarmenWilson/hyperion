@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Appointment } from "./shared/appointment";
-import { Call } from "./shared/call";
+import { CallInfo } from "./shared/call-info";
 import { DropDown } from "./shared/dropdown";
 import { ExtraInfo } from "./shared/extra-info";
 import { Info } from "./shared/info";
@@ -76,7 +76,7 @@ export const columns: ColumnDef<LeadColumn>[] = [
   {
     accessorKey: "call",
     header: "",
-    cell: ({ row }) => <Call lead={row.original} />,
+    cell: ({ row }) => <CallInfo lead={row.original} />,
   },
 
   {

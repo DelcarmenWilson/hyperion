@@ -6,7 +6,7 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
 
-export const tokenGenerator=(identity: string)=> {
+export const tokenGenerator = (identity: string) => {
   const accessToken = new AccessToken(
     cfg.accountSid,
     cfg.apiKey,
@@ -25,34 +25,39 @@ export const tokenGenerator=(identity: string)=> {
     identity: identity,
     token: accessToken.toJwt(),
   };
-}
+};
 
-export  const voiceResponse=async (requestBody: any) =>{
-
+export const voiceResponse = async (requestBody: any) => {
   const toNumberOrClientName = requestBody.To;
-  const {AgentId,AgentNumber}=requestBody
-  
+  const { CallSid, AgentId, AgentNumber, Direction, Recording } = requestBody;
+    
+  const params = {
+    callerId: AgentNumber,
+    record: Recording,
+    recordingStatusCallback: "/api/voice/recording"
+  };
+
   let twiml = new VoiceResponse();
-  
-  if (toNumberOrClientName == AgentNumber) {
-    
-    let dial = twiml.dial({record:"record-from-answer-dual",recordingStatusCallback:"/api/voice/recording" });
-    
+
+  if (Direction == "inbound") {
+    // This is an incoming call
+    let dial = twiml.dial(params);
     dial.client(AgentId);
   } else if (requestBody.To) {
-    // This is an outgoing call    
+    // This is an outgoing call
 
-    // set the callerId
-    let dial = twiml.dial({callerId:AgentNumber,record:"record-from-answer-dual",recordingStatusCallback:"/api/voice/recording" });    
-    
+    let dial = twiml.dial(params);
+
     const attr = isAValidPhoneNumber(toNumberOrClientName)
       ? "number"
       : "client";
-    dial[attr]({}, toNumberOrClientName);
-   } 
-   //else {
-  //   twiml.say("Thanks for calling!");
-  // }
+    dial[attr](toNumberOrClientName);
+
+    // dial.conference({coach:CallSid,},AgentId)
+  }
+  else {
+    twiml.say("Thanks for calling!");
+  }
 
   return twiml.toString();
-}
+};

@@ -5,17 +5,20 @@ import { ColumnDef } from "@tanstack/react-table";
 // import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { CellAction } from "./cell-action";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type AgentSummaryColumn = {
   id: string;
   username: string;
-  email: string;
+  email?: string;
   subscriptionExpires: string;
   balance: string;
   leadsPending: string;
   carrierViolations: string;
+  coaching: boolean;
+  currentCall: string;
 };
 
 export const columns: ColumnDef<AgentSummaryColumn>[] = [
@@ -83,9 +86,9 @@ export const columns: ColumnDef<AgentSummaryColumn>[] = [
     accessorKey: "carrierViolations",
     header: "Carrier violations",
   },
-  // {
-  //   header: "Actions",
-  //   id: "actions",
-  //   cell: ({ row }) => <CellAction data={row.original} />,
-  // },
+  {
+    header: "Actions",
+    id: "actions",
+    cell: ({ row }) => <CellAction agent={row.original} />,
+  },
 ];
