@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getUserByEmail } from "@/data/user";
+import { userGetByEmail } from "@/data/user";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { chatSettingsInsert } from "./chat-settings";
 
@@ -20,7 +20,7 @@ export const newVerification = async (token: string) => {
   }
 
   //GET THE ECISITING USER
-  const existingUser = await getUserByEmail(existingToken.email);
+  const existingUser = await userGetByEmail(existingToken.email);
   if (!existingUser) {
     return { error: "Email does not exist!" };
   }

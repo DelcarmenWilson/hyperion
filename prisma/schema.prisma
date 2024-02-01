@@ -237,7 +237,7 @@ model Appointment {
   leadId String
 
   status   String @default("Scheduled")
-  // comments String @db.LongText
+  //comments String @db.LongText
   comments String
 
   createdAt DateTime @default(now())
@@ -248,14 +248,20 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  //defaultPrompt   String   @db.LongText
-  //defaultFunction String   @db.LongText
+  //defaultPrompt   String @db.LongText
+  //defaultFunction String @db.LongText
   defaultPrompt   String
   defaultFunction String
-  autoChat        Boolean  @default(false)
-  leadInfo        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  leadInfo Boolean @default(true)
+
+  autoChat Boolean @default(false)
+  record   Boolean @default(false)
+  coach    Boolean @default(false)
+
+  currentCall String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Presets {
@@ -298,13 +304,13 @@ model Call {
 
   direction String  @default("inbound")
   status    String?
-  duration  String?
+  duration  Int?
 
   recordId        String?
   recordUrl       String?
   recordStartTime DateTime?
   recordStatus    String?
-  recordDuration  String?
+  recordDuration  Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

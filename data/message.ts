@@ -4,7 +4,7 @@ export const messagesGetByConversationId = async (conversationId: string) => {
   try {
     const messages = await db.message.findMany({
       where: { conversationId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     return messages;

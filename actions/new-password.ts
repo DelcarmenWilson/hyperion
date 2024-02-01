@@ -3,7 +3,7 @@
 import * as z from "zod";
 import bcrypt from "bcryptjs"
 import { NewPasswordSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
+import { userGetByEmail } from "@/data/user";
 
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { db } from "@/lib/db";
@@ -33,7 +33,7 @@ export const newPassword = async (
     return {error:"Token has expired!"}
   }
 
-  const existingUser = await getUserByEmail(existingToken.email);
+  const existingUser = await userGetByEmail(existingToken.email);
   if (!existingUser) {
     return { error: " Email does not exist!" };
   }

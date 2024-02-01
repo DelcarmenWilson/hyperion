@@ -1,18 +1,14 @@
 import { currentUser } from "@/lib/auth";
-import { MessageSquareText, Phone, PhoneIncoming, Users } from "lucide-react";
-import { Box } from "./components/box";
-import { AppointmentBox } from "./components/appointment/appointment-box";
 import { AppointmentColumn } from "./components/appointment/columns";
-import { AgentSummary } from "./components/agentsummary/agent-summary";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
-import { CallHistoryColumn } from "./components/callhistory/columns";
-import { CallHistory } from "./components/callhistory/call-history";
 
 import { appointmentsGetAllByUserId } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 import DashBoardClient from "./components/client";
+import { usersGetSummaryByTeamId } from "@/data/user";
+import { CallHistoryColumn } from "./components/callhistory/columns";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -33,31 +29,37 @@ const DahsBoardPage = async () => {
       comments: apt.comments,
     })
   );
-
-  const formattedAgents: AgentSummaryColumn[] = [
-    {
-      id: "ghdklgdjknd",
-      username: "Edna Mode",
-      email: "EdnaMode@gmail.com",
-      subscriptionExpires: "12-31-2029",
-      balance: "100",
-      leadsPending: "0",
-      carrierViolations: "0",
-    },
-  ];
+  const agents = await usersGetSummaryByTeamId(
+    user?.id!,
+    user?.role!,
+    user?.team!
+  );
+  const formattedAgents: AgentSummaryColumn[] = agents.map((agent) => ({
+    id: agent.id,
+    username: agent.username,
+    email: agent.email as string,
+    subscriptionExpires: "12-31-2029",
+    balance: "100",
+    leadsPending: "0",
+    carrierViolations: "0",
+    coaching: agent.chatSettings?.coach!,
+    currentCall: agent.chatSettings?.currentCall!,
+  }));
 
   const calls = await callGetAllByAgentId(user?.id!);
 
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,
     agentName: user?.name!,
-    phone: call.lead?.cellPhone,
+    phone: call.lead?.cellPhone!,
+    from: call.from,
     direction: call.direction,
     fullName: `${call.lead?.firstName} ${call.lead?.lastName}`,
-    email: call.lead?.email,
+    email: call.lead?.email!,
     duration: call.duration!,
     date: call.createdAt,
     recordUrl: call.recordUrl as string,
+    lead: call.lead || undefined,
   }));
 
   const outBoundCallsCount = calls.filter(

@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { voiceResponse } from "@/lib/handler";
+import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 import twilio from "twilio";
 
@@ -11,10 +12,15 @@ export async function POST(req: Request) {
     j[key] = value;
   });
   
- await db.call.update({where:{id:j.CallSid},data:{
+ const call=await db.call.update({where:{id:j.CallSid},data:{
   status:j.CallStatus,
-  duration:j.CallDuration
+  duration:parseInt(j.CallDuration)
  }})
+
+ if (call?.leadId) {
+  await pusherServer.trigger(call?.leadId, "calllog:new", call);
+  await pusherServer.trigger(call?.agentId, "calllog:new", call);
+}
   
   return new NextResponse("",{ status: 200 });
 }

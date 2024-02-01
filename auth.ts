@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 
 import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
-import { getUserById } from "@/data/user";
+import { userGetById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 
@@ -28,7 +28,7 @@ export const {
       //Allow OAuth without enail verification
       if (account?.provider !== "credentials") return true;
 
-      const existingUser = await getUserById(user.id);
+      const existingUser = await userGetById(user.id);
 
       //Prevent sign in witout email verification
       if (!existingUser?.emailVerified) return false;
@@ -59,6 +59,8 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;    
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.record=token.record as boolean
+        session.user.team=token.team as string
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
       }
@@ -67,7 +69,7 @@ export const {
     async jwt({ token }) {
       if (!token.sub) return token;
 
-      const existingUser = await getUserById(token.sub);
+      const existingUser = await userGetById(token.sub);
       if (!existingUser) return token;
 
       const existingAccount = await getAccountByUserId(existingUser.id);
@@ -76,6 +78,8 @@ export const {
       token.name = existingUser.username;
       token.email = existingUser.email;
       token.role = existingUser.role;
+      token.record=existingUser.chatSettings?.record
+      token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 

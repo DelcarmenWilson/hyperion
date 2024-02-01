@@ -4,7 +4,7 @@ import { AuthError } from "next-auth";
 
 import { signIn } from "@/auth";
 import { LoginSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
+import { userGetByEmail } from "@/data/user";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
@@ -25,7 +25,7 @@ export const login = async (
   }
 
   const { email, password, code } = validatedFields.data;
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await userGetByEmail(email);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return { error: "Invalid credentials" };
