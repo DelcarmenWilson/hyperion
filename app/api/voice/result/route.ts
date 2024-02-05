@@ -1,26 +1,29 @@
+import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import { voiceResponse } from "@/lib/handler";
 import { pusherServer } from "@/lib/pusher";
+import { client } from "@/lib/twilio-config";
 import { NextResponse } from "next/server";
-import twilio from "twilio";
 
 export async function POST(req: Request) {
   const body = await req.formData();
-  var j: any = {};
-  body.forEach(function (value, key) {
-    key = key.replace('"', "");
-    j[key] = value;
-  });
-  
- const call=await db.call.update({where:{id:j.CallSid},data:{
-  status:j.CallStatus,
-  duration:parseInt(j.CallDuration)
- }})
 
- if (call?.leadId) {
-  await pusherServer.trigger(call?.leadId, "calllog:new", call);
-  await pusherServer.trigger(call?.agentId, "calllog:new", call);
-}
-  
-  return new NextResponse("",{ status: 200 });
+  const j: any = formatObject(body);
+
+  const results = (await client.calls.get(j.callSid).fetch()).toJSON();
+
+  const call = await db.call.update({
+    where: { id: j.callSid },
+    data: {
+      status: j.callStatus,
+      duration: parseInt(j.callDuration),
+      price: results.price,
+    },
+  });
+
+  if (call?.leadId) {
+    await pusherServer.trigger(call?.leadId, "calllog:new", call);
+    await pusherServer.trigger(call?.agentId, "calllog:new", call);
+  }
+
+  return new NextResponse("", { status: 200 });
 }

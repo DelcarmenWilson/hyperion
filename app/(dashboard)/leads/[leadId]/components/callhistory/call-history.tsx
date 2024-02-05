@@ -33,7 +33,7 @@ export const CallHistory = ({ initialCalls }: CallHistoryBoxProps) => {
   }, [leadId]);
   return (
     <div className="text-sm">
-      <div className="grid grid-cols-5 gap-2 text-md text-muted-foreground">
+      <div className="grid grid-cols-5 items-center  gap-2 text-md text-muted-foreground">
         <span>Direction</span>
         <span>Duration</span>
         <span className="col-span-2">Date / Time</span>

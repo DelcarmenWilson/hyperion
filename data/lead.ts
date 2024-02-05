@@ -2,17 +2,24 @@ import { db } from "@/lib/db";
 
 export const leadsGetAll = async () => {
   try {
-    const leads = await db.lead.findMany({include:{conversations:true}});
-    
+    const leads = await db.lead.findMany({ include: { conversations: true } });
+
     return leads;
   } catch {
     return [];
   }
 };
 
-export const leadsGetAllByAgentId = async (agentId:string) => {
+export const leadsGetAllByAgentId = async (agentId: string) => {
   try {
-    const leads = await db.lead.findMany({where:{owner:agentId},include:{calls:true}});
+    const leads = await db.lead.findMany({
+      where: { owner: agentId },
+      include: {
+        conversations:true,
+        appointments: { where: { status: "scheduled" } },
+        calls: true,
+      },
+    });
     return leads;
   } catch {
     return [];
@@ -24,6 +31,10 @@ export const leadGetById = async (id: string) => {
     const lead = await db.lead.findUnique({
       where: {
         id,
+      }, include: {
+        conversations:true,
+        appointments: { where: { status: "scheduled" } },
+        calls: true,
       },
     });
 
@@ -37,7 +48,7 @@ export const leadGetPrevNextById = async (id: string) => {
   try {
     const prev = await db.lead.findMany({
       take: 1,
-      select:{id:true},
+      select: { id: true },
       where: {
         id: {
           lt: id,
@@ -50,7 +61,7 @@ export const leadGetPrevNextById = async (id: string) => {
 
     const next = await db.lead.findMany({
       take: 1,
-      select:{id:true},
+      select: { id: true },
       where: {
         id: {
           gt: id,
@@ -60,21 +71,21 @@ export const leadGetPrevNextById = async (id: string) => {
         id: "asc",
       },
     });
-    return {prev:prev[0]?.id||null,next:next[0]?.id};
+    return { prev: prev[0]?.id || null, next: next[0]?.id };
   } catch {
     return null;
   }
 };
 
 export const leadsGetByAgentIdTodayCount = async (agentId: string) => {
-  const lastdate=new Date()
-  lastdate.setDate(lastdate.getDate()-1)
+  const lastdate = new Date();
+  lastdate.setDate(lastdate.getDate() - 1);
   try {
     const leads = await db.lead.aggregate({
-      _count:{id:true},      
+      _count: { id: true },
       where: {
-        owner:agentId,
-        createdAt:{gte: new Date(lastdate)}
+        owner: agentId,
+        createdAt: { gte: new Date(lastdate) },
       },
     });
 
@@ -83,6 +94,3 @@ export const leadsGetByAgentIdTodayCount = async (agentId: string) => {
     return 0;
   }
 };
-
-
-

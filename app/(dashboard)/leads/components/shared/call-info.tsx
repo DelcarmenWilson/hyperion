@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   MessageSquareWarning,
@@ -10,14 +10,11 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useEffect, useState } from "react";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
-import { LeadColumn } from "../columns";
 import { pusherClient } from "@/lib/pusher";
+import { FullLead } from "@/types";
 interface CallInfoProps {
-  lead: LeadColumn;
+  lead: FullLead;
 }
 export const CallInfo = ({ lead }: CallInfoProps) => {
   const useDialer = useDialerModal();

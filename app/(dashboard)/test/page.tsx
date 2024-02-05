@@ -1,9 +1,15 @@
-import { AudioPlayer } from "@/components/custom/audio-player";
+"use client";
+
+import { creatCall } from "@/actions/test";
+import { Button } from "@/components/ui/button";
 
 const TestPage = () => {
+  const startCall = () => {
+    creatCall();
+  };
   return (
     <div>
-      <AudioPlayer src={"/sounds/message.mp3"} />
+      <Button onClick={startCall}>Call</Button>
     </div>
   );
 };

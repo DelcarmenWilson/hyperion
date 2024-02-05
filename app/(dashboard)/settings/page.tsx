@@ -82,12 +82,12 @@ const SettingsPage = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel> Name</FormLabel>
+                  <FormLabel> user Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="John Doe"
-                      disabled={isPending}
+                      disabled
                       autoComplete="name"
                     />
                   </FormControl>
@@ -169,7 +169,7 @@ const SettingsPage = () => {
                   <FormLabel> Role</FormLabel>
                   <Select
                     name="ddlUserRole"
-                    disabled={isPending}
+                    disabled
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >

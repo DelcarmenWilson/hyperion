@@ -1,11 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 import { FullConversationType } from "@/types";
 import { Separator } from "@/components/ui/separator";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useRouter } from "next/navigation";
 import { Body } from "./body";
 import { Form } from "./form";
 import { Header } from "./header";
@@ -28,8 +26,10 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
       <Separator />
       <CardContent className="flex flex-col flex-1  gap-2 overflow-hidden">
         <Body initialData={conversation!} />
-        {/* <div className="border flex-1 w-full"></div> */}
-        <Form />
+        <Form
+          phone={conversation.lead.cellPhone}
+          defaultPhone={conversation.lead.defaultNumber}
+        />
       </CardContent>
     </Card>
   );

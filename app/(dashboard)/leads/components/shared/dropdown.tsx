@@ -1,6 +1,11 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import axios from "axios";
 import { cn } from "@/lib/utils";
-import { Calendar, Check, ChevronDown, X } from "lucide-react";
+import { Calendar, Check, ChevronDown, Trash, X } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -12,22 +17,26 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
-import { LeadColumn } from "../columns";
-import { useState } from "react";
-import { leadUpdateByIdAutoChat } from "@/actions/lead";
-import { toast } from "sonner";
+
+import { AlertModal } from "@/components/modals/alert-modal";
+import { FullLead } from "@/types";
+import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
 
 interface DropDownDrops {
-  lead: LeadColumn;
+  lead: FullLead;
+  conversationId?: string;
 }
 
-export const DropDown = ({ lead }: DropDownDrops) => {
+export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
+  const router = useRouter();
   const useAppointment = useAppointmentModal();
-  const [autoChat, setAutoChat] = useState(lead.autoChat);
+  const [autoChat, setAutoChat] = useState<boolean>(lead.autoChat);
+  const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const onAutoChatToggle = () => {
     setAutoChat((state) => !state);
-    leadUpdateByIdAutoChat(lead.id, !autoChat).then((data) => {
+    conversationUpdateByIdAutoChat(lead.id, !autoChat).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
@@ -36,42 +45,71 @@ export const DropDown = ({ lead }: DropDownDrops) => {
       }
     });
   };
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button className="rounded-full" size="icon">
-          <ChevronDown className="w-4 h-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-60" align="center">
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={() => useAppointment.onOpen(lead)}
-        >
-          <Calendar className="h-4 w-4 mr-2" />
-          New Appointment
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className={cn(
-            " text-background cursor-pointer",
-            autoChat ? "bg-primary" : "bg-destructive"
-          )}
-          onClick={onAutoChatToggle}
-        >
-          <div className="flex items-center justify-between gap-2">
-            {autoChat ? (
-              <Check className="w-4 h-4 " />
-            ) : (
-              <X className="w-4 h-4 " />
-            )}
-            <span>Hyper Chat</span>
-            <span>{autoChat ? "ON" : "OFF"}</span>
-          </div>
-        </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-      </DropdownMenuContent>
-    </DropdownMenu>
+  const onDelete = async () => {
+    try {
+      setLoading(true);
+      await axios.delete(`/api/conversations/${conversationId}`);
+      router.refresh();
+      router.push("/inbox");
+      toast.success("Conversation deleted.");
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+      setAlertOpen(false);
+    }
+  };
+  return (
+    <>
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        onConfirm={onDelete}
+        loading={loading}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Button className="rounded-full" size="icon">
+            <ChevronDown className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-60" align="center">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => useAppointment.onOpen(lead)}
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            New Appointment
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={cn(
+              " text-background cursor-pointer",
+              autoChat ? "bg-primary" : "bg-destructive"
+            )}
+            onClick={onAutoChatToggle}
+          >
+            <div className="flex items-center justify-between gap-2">
+              {autoChat ? (
+                <Check className="w-4 h-4 " />
+              ) : (
+                <X className="w-4 h-4 " />
+              )}
+              <span>Hyper Chat</span>
+              <span>{autoChat ? "ON" : "OFF"}</span>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => setAlertOpen(true)}
+          >
+            <Trash className="h-4 w-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };

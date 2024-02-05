@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Clock, MoreVertical } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -7,14 +8,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Clock, MoreVertical } from "lucide-react";
 import { LeadBox } from "./lead-box";
-import { LeadColumn } from "../../leads/components/columns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FullLead } from "@/types";
 
 interface BoxProps {
   title: string;
-  leads: LeadColumn[];
+  leads: FullLead[];
 }
 export const Box = ({ title, leads }: BoxProps) => {
   return (

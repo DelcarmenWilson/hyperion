@@ -1,11 +1,11 @@
-import { LeadColumn } from "@/app/(dashboard)/leads/components/columns";
+import { FullLead } from "@/types";
 import { create } from "zustand";
 
 interface useAppointmentModalStore {
   isOpen: boolean;
-  onOpen: (e?: LeadColumn) => void;
+  onOpen: (e?: FullLead) => void;
   onClose: () => void;
-  lead?: LeadColumn;
+  lead?: FullLead;
 }
 
 export const useAppointmentModal = create<useAppointmentModalStore>((set) => ({

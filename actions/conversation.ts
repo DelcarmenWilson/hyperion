@@ -29,6 +29,7 @@ export const conversationInsert = async (
 
   return  ({success:conversation.id} );
 };
+
 export const conversationDeleteById = async (
   id: string,
 ) => {
@@ -50,4 +51,26 @@ export const conversationDeleteById = async (
 
 
   return  ({success:"conversation has been deleted"} );
+};
+
+export const conversationUpdateByIdAutoChat = async (
+  id: string,autoChat:boolean
+) => {
+  const user=await currentUser()
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
+  const existingConversation=await db.conversation.findUnique({where:{id}})
+  if (!existingConversation) {
+    return { error: "Conversation does not exist!" };
+  }
+  
+  if (existingConversation.agentId!==user.id) {
+    return { error: "Unauthorized!" };
+  }
+
+  await db.conversation.update({where:{id},data:{autoChat}})
+  
+  return  ({success:`hyper chat has been turned ${autoChat?"on":"off"} `} );
 };

@@ -15,11 +15,6 @@ export async function POST(req: Request) {
     j[key] = value;
   });
 
-  const textFromLead: z.infer<typeof MessageSchema> = {
-    role: "user",
-    content: j.Body,
-  };
-
   const conversation = await db.conversation.findFirst({
     where: {
       lead: {
@@ -28,11 +23,19 @@ export async function POST(req: Request) {
     },
   });
 
+  const textFromLead: z.infer<typeof MessageSchema> = {
+    role: "user",
+    content: j.Body,
+    conversationId: conversation?.id!,
+    senderId: conversation?.agentId!,
+    hasSeen: false,
+  };
+
   if (!conversation) {
     return new NextResponse(null, { status: 200 });
   }
 
-  await messageInsert(textFromLead, conversation.id,conversation.agentId);
+  await messageInsert(textFromLead);
 
   switch (textFromLead.content.toLowerCase()) {
     case "stop":
@@ -49,7 +52,7 @@ export async function POST(req: Request) {
   let chatmessages = messages.map((message) => {
     return { role: message.role, content: message.content };
   });
-  chatmessages.push(textFromLead);
+  chatmessages.push({role:textFromLead.role,content:textFromLead.content});
 
   const chatresponse = await chatFetch(chatmessages);
   const { role, content } = chatresponse.choices[0].message;
@@ -59,7 +62,13 @@ export async function POST(req: Request) {
   }
 
   setTimeout(async () => {
-    await messageInsert({ role, content }, conversation.id,conversation.agentId);
+    await messageInsert({
+      role,
+      content,
+      conversationId: conversation.id,
+      senderId: conversation.agentId,
+      hasSeen: false,
+    });
   }, 5000);
 
   return new NextResponse(content, { status: 200 });

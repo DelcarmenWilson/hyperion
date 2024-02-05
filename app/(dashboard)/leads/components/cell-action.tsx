@@ -20,16 +20,16 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { LeadColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { sendIntialSms } from "@/actions/sms";
+import { smsCreateInitial } from "@/actions/sms";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { FullLead } from "@/types";
 
 interface CellActionProps {
-  data: LeadColumn;
+  data: FullLead;
 }
 export const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();
@@ -40,7 +40,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onStartConversation = async () => {
     // toast.success(data.id);
     // return;
-    await sendIntialSms(data.id).then((data) => {
+    await smsCreateInitial(data.id).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);

@@ -106,8 +106,8 @@ export const SettingsNavbarRoutes:NavType[] = [
     href: "/settings/chat",
   },
   {
-    title: "Appearance",
-    href: "/settings/appearance",
+    title: "Availability",
+    href: "/settings/availability",
   },
   {
     title: "Notifications",

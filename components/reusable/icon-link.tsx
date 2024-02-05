@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { useSidebar } from "@/store/use-sidebar";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface IconLinkProps {
   title: string;
@@ -34,4 +35,8 @@ export const IconLink = ({
       </Button>
     </Link>
   );
+};
+
+export const IconLinkSkeleton = () => {
+  return <Skeleton className="min-h-[32px] w-full rounded-sm mb-2" />;
 };

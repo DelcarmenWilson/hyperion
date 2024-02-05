@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -45,4 +46,24 @@ export const Box = ({
       </CardContent>
     </Card>
   );
+};
+
+export const BoxSkeleton = () => {
+  return (
+    <Card className="relative overflow-hidden w-full">
+      <div className="flex justify-between items-center mb-2">
+        <Skeleton className="w-[50px] aspect-square rounded-br-lg" />
+        <CardTitle className="flex flex-col items-end gap-1 mr-6">
+          <Skeleton className="w-[100px] h-5" />
+          <Skeleton className="w-5 h-5" />
+        </CardTitle>
+      </div>
+
+      {/* <Separator /> */}
+      <CardContent className="flex p-2 border-t">
+        <Skeleton className="h-6 w-[150px]" />
+      </CardContent>
+    </Card>
+  );
+  // return <Skeleton className="min-h-[32px] w-full rounded-sm mb-2" />;
 };

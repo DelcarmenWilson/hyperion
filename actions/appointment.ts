@@ -1,13 +1,13 @@
 "use server";
-import * as z from "zod"
+import * as z from "zod";
 import { db } from "@/lib/db";
-import { AppointmentSchema } from "@/schemas";
+import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
+import { states } from "@/constants/states";
 
 export const appointmentInsert = async (
-  values:z.infer<typeof AppointmentSchema> ,
+  values: z.infer<typeof AppointmentSchema>
 ) => {
-
-  const {date,agentId,leadId,comments}=values
+  const { date, agentId, leadId, comments } = values;
   const existingAppointments = await db.appointment.findMany({
     where: { leadId, agentId, status: "Scheduled" },
   });
@@ -21,12 +21,79 @@ export const appointmentInsert = async (
   }
 
   const appointment = await db.appointment.create({
-    data: {  
-        agentId,
+    data: {
+      agentId,
       leadId,
-      date:new Date(date),
-      comments
-          },
+      date: new Date(date),
+      comments,
+    },
+  });
+
+  if (!appointment) {
+    return { error: "Appointment was not created!" };
+  }
+
+  return { success: "Appointment Scheduled!" };
+};
+
+export const appointmentInsertBook = async (
+  values: z.infer<typeof AppointmentLeadSchema>,
+  agentId: string,
+  date: Date
+) => {
+  const {
+    id,
+    firstName,
+    lastName,
+    state,
+    cellPhone,
+    gender,
+    maritalStatus,
+    email,
+  } = values;
+  let leadId = id;
+  if (!leadId) {
+    const st = states.find((e) => e.state == state || e.abv == state);
+    const phoneNumbers = await db.phoneNumber.findMany({
+      where: { agentId, status: { not: "Deactive" } },
+    });
+
+    const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+    const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+    const lead = await db.lead.create({
+      data: {
+        firstName,
+        lastName,
+        state,
+        cellPhone,
+        gender,
+        maritalStatus,
+        email,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      },
+    });
+
+    leadId=lead.id
+  }
+
+  const existingAppointments = await db.appointment.findMany({
+    where: { leadId, agentId, status: "Scheduled" },
+  });
+
+  const existingAppointment = existingAppointments[0];
+  if (existingAppointment) {
+    await db.appointment.update({
+      where: { id: existingAppointment.id },
+      data: { status: "Rescheduled" },
+    });
+  }
+
+  const appointment = await db.appointment.create({
+    data: {
+      agentId,
+      leadId,
+      date,comments:""
+    },
   });
 
   if (!appointment) {

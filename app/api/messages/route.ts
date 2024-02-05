@@ -23,7 +23,7 @@ export async function POST(request: Request) {
             id: conversationId,
           },
         },
-        sender:{connect:{id:user.id}}
+        senderId:user.id
       },
     });
 

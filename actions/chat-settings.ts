@@ -7,7 +7,7 @@ import { defaultChat } from "@/placeholder/chat";
 import { User } from "@prisma/client";
 
 export const chatSettingsInsert = async (user: User) => {
-  const prompt = replacePresetUser(defaultChat.prompt, user.firstName);
+  const prompt = replacePresetUser(defaultChat.prompt, user);
 
   await db.chatSettings.create({
     data: {
