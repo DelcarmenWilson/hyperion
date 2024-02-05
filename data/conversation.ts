@@ -32,7 +32,7 @@ export const conversationGetById = async (conversationId: string) => {
       where: { id: conversationId,agentId:user.id },
       include: {        
         lead: true,
-        messages: { include: { sender: true} },
+        messages: true,
       },
     });
     return conversation;
@@ -46,7 +46,7 @@ export const conversationGetByLeadId = async (leadId: string) => {
       where: { leadId},
       include: {
         lead: true,
-        messages: { include: { sender: true } },
+        messages: true,
       },
     });
     return conversation;

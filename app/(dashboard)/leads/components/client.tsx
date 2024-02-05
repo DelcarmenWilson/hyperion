@@ -18,10 +18,11 @@ import {
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { DashBoardTable } from "../../dashboard/components/dashboard-table";
-import { LeadColumn, columns } from "./columns";
+import { columns } from "./columns";
+import { FullLead } from "@/types";
 
 interface LeadClientProps {
-  leads: LeadColumn[];
+  leads: FullLead[];
 }
 export const LeadClient = ({ leads }: LeadClientProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);

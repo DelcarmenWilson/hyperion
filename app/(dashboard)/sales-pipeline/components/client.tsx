@@ -3,13 +3,13 @@ import { UserSquare } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Box } from "./box";
-import { LeadColumn } from "../../leads/components/columns";
+import { FullLead } from "@/types";
 
-interface SaleCLientProps {
-  data: LeadColumn[];
+interface SaleClientProps {
+  data: FullLead[];
 }
 
-export const SalesClient = ({ data }: SaleCLientProps) => {
+export const SalesClient = ({ data }: SaleClientProps) => {
   return (
     <Card className="flex flex-col flex-1 relative overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">

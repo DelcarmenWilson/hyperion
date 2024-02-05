@@ -148,23 +148,6 @@ export const leadUpdateById = async (
   return { success: "Lead has been updated" };
 };
 
-export const leadUpdateByIdAutoChat = async (leadId: string, autoChat: boolean) => {
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-
-  if (!existingLead) {
-    return { error: "Lead does not exist" };
-  }
-
-  await db.lead.update({
-    where: { id: leadId },
-    data: {
-      autoChat,
-    },
-  });
-
-  return { success: `Lead hyper chat has been turned ${autoChat?"on":"off"}!` };
-};
-
 export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 

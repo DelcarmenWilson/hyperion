@@ -1,13 +1,14 @@
+import React from "react";
+import { format } from "date-fns";
+import { Clock, Phone } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { useDialerModal } from "@/hooks/use-dialer-modal";
-import { Clock, Phone } from "lucide-react";
-import React from "react";
-import { LeadColumn } from "../../leads/components/columns";
-import { format } from "date-fns";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { FullLead } from "@/types";
 
 interface LeadBoxProps {
-  lead: LeadColumn;
+  lead: FullLead;
 }
 
 export const LeadBox = ({ lead }: LeadBoxProps) => {

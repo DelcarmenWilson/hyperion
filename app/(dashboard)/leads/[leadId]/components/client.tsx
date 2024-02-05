@@ -25,42 +25,24 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Appointment } from "../../components/shared/appointment";
+import { AppointmentBox } from "../../components/shared/appointment";
 import { ExtraInfo } from "../../components/shared/extra-info";
 import { CallInfo } from "../../components/shared/call-info";
 import { Info } from "../../components/shared/info";
-import { LeadColumn } from "../../components/columns";
 import { NotesForm } from "../../components/shared/notes-form";
 import { Sms } from "./sms";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { DropDown } from "../../components/shared/dropdown";
 import { CallHistory } from "./callhistory/call-history";
+import { FullLead } from "@/types";
 
 interface LeadClientProps {
-  lead: Lead;
+  lead: FullLead;
   nextPrev: any;
-  calls: Call[];
 }
-export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
+export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
   const user = useCurrentUser();
   const router = useRouter();
-
-  const formattedLead: LeadColumn = {
-    id: lead.id,
-    firstName: lead.firstName,
-    lastName: lead.lastName,
-    email: lead.email,
-    cellPhone: lead.cellPhone,
-    address: lead.address,
-    city: lead.city,
-    state: lead.state,
-    zipCode: lead.zipCode,
-    defaultNumber: lead.defaultNumber,
-    autoChat: lead.autoChat,
-    notes: lead.notes as string,
-    createdAt: lead.createdAt,
-    callCount: calls.length,
-  };
 
   return (
     <Card className="flex flex-col relative w-full">
@@ -107,15 +89,19 @@ export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
           <div className="grid grid-cols-3 col-span-3 gap-2">
             <div className="relative">
               <div className="absolute top-0 right-0">
-                <DropDown lead={formattedLead} />
+                <DropDown lead={lead} />
               </div>
-              <Info lead={formattedLead} />
+              <Info lead={lead} />
             </div>
             <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
-            <CallInfo lead={formattedLead} />
+            <CallInfo lead={lead} />
           </div>
           <div className="flex justify-around col-span-2">
-            <Appointment dob={lead.dateOfBirth!} showInfo />
+            <AppointmentBox
+              call={lead.lastCall!}
+              appointment={lead.lastApp!}
+              showInfo
+            />
             <ExtraInfo createdAt={lead.createdAt} />
           </div>
         </div>
@@ -181,7 +167,7 @@ export const LeadClient = ({ lead, nextPrev, calls }: LeadClientProps) => {
             <div className="px-2">
               <TabsContent value="activity">ACTIVITY LOG</TabsContent>
               <TabsContent value="call">
-                <CallHistory initialCalls={calls} />
+                <CallHistory initialCalls={lead.calls!} />
               </TabsContent>
               <TabsContent value="events">CALENDAR EVENTS</TabsContent>
               <TabsContent value="meetings">MEETINGS</TabsContent>

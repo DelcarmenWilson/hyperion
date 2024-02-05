@@ -1,21 +1,26 @@
 "use server";
+
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import twilio from "twilio";
 
 import { conversationInsert } from "./conversation";
 import { messageInsert } from "./message";
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
-import { cfg } from "@/lib/twilio-config";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
+import { cfg, client } from "@/lib/twilio-config";
 
-export const sendIntialSms = async (leadId: string) => {
-  //TODO the entire lead shall be passed
-  const user = await currentUser();
+export const smsCreateInitial = async (leadId: string) => {
+  const dbuser = await currentUser();
+  if (!dbuser) {
+    return { error: "Unauthenticated" };
+  }
+
+  const user=await db.user.findUnique({where:{id:dbuser.id}})
   if (!user) {
     return { error: "Unauthorized" };
   }
+
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!lead) {
@@ -48,9 +53,9 @@ export const sendIntialSms = async (leadId: string) => {
 
   let message = preset ? preset.content : defaultChat.message;
 
-  prompt = replacePreset(prompt, user.name!, lead);
-  message = replacePreset(message, user.name!, lead);
-  message += defaultOptOut.request;
+  prompt = replacePreset(prompt, user, lead);
+  message = replacePreset(message, user, lead);
+  message += ` ${defaultOptOut.request}`;
 
   if (chatSettings?.leadInfo) {
     const leadInfo = {
@@ -61,31 +66,97 @@ export const sendIntialSms = async (leadId: string) => {
       city: lead.city,
       state: lead.state,
     };
-    prompt += `Here is the lead information: ${JSON.stringify(leadInfo)}  `;
+    prompt += ` Here is the lead information: ${JSON.stringify(leadInfo)}  `;
   }
 
-  const conversation = await conversationInsert(user.id, lead.id);
+  const conversationId = (await conversationInsert(user.id, lead.id)).success;
 
-  if (!conversation.success) {
+  if (!conversationId) {
     return { error: "Conversation was not created" };
   }
 
-  await messageInsert(
-    { role: "system", content: prompt },
-    user.id,
-    conversation.success
-  );
+  // await db.message.createMany({data:[
+  //   {
+  //     role: "system",
+  //     content: prompt,
+  //     conversationId,
+  //     senderId: user.id,
+  //     hasSeen: false,
+  //   },{
+  //     role: "assistant",
+  //     content: message,
+  //     conversationId,
+  //     senderId: user.id,
+  //     hasSeen: false,
+  //   }
 
-  await messageInsert(
-    { role: "assistant", content: message },
-    user.id,
-    conversation.success
-  );
+  // ],
+  // skipDuplicates:true
 
-  // message +=`${"\n\n"} ${defaultOptOut}`
-  const client = twilio(cfg.accountSid, cfg.apiToken);
+  // })
+
+  await messageInsert({
+    role: "system",
+    content: prompt,
+    conversationId,
+    senderId: user.id,
+    hasSeen: false,
+  });
+
+    const result = await client.messages.create({
+     body: "Hi Wilson",
+    from: lead.defaultNumber,
+    to: lead.cellPhone || (lead.homePhone as string),
+    applicationSid:cfg.twimlAppSid  ,
+  });
+
+  await messageInsert({
+    role: "assistant",
+    content: message,
+    conversationId,
+    senderId: user.id,
+    hasSeen: false,
+    sid:result.sid
+  });
+
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
+  return { success: "Inital message sent!" };
+};
+
+export const smsCreate = async (leadId: string, message: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const lead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!lead) {
+    return { error: "Lead does not exist" };
+  }
+
+  const existingConversation = await db.conversation.findFirst({
+    where: {
+      lead: { id: lead.id },
+    },
+  });
+  let convoid = existingConversation?.id;
+  if (!convoid) {
+    convoid = (await conversationInsert(user.id, lead.id)).success;
+  }
+
+  await messageInsert({
+    role: "assistant",
+    content: message,
+    conversationId: convoid!,
+    senderId: user.id,
+    hasSeen: false,
+  });
+
   const result = await client.messages.create({
-    body: message,
+     body: message,
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
   });
@@ -94,5 +165,5 @@ export const sendIntialSms = async (leadId: string) => {
     return { error: "Message was not sent!" };
   }
 
-  return { success: "Inital message sent!" };
+  return { success: "Message sent!" };
 };

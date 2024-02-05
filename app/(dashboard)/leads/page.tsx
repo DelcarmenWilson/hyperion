@@ -3,21 +3,25 @@ import { currentUser } from "@/lib/auth";
 import { LeadClient } from "./components/client";
 
 import { leadsGetAllByAgentId } from "@/data/lead";
-import { LeadColumn } from "./components/columns";
+import { FullLead } from "@/types";
 
 const LeadsPage = async () => {
   const user = await currentUser();
   const leads = await leadsGetAllByAgentId(user?.id!);
 
-  const formattedLeads: LeadColumn[] = leads.map((lead) => ({
+  const formattedLeads: FullLead[] = leads.map((lead) => ({
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
     email: lead.email,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
-    autoChat: lead.autoChat,
+    autoChat: lead.conversations[0].autoChat,
     notes: lead.notes as string,
+    calls: lead.calls,
+    lastCall: lead.calls[lead.calls.length - 1],
+    appointments: lead.appointments,
+    appointment: lead.appointments[0],
     createdAt: lead.createdAt,
   }));
 

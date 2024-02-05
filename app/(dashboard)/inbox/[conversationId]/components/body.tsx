@@ -63,7 +63,7 @@ export const Body = ({ initialData }: BodyProps) => {
         />
       ))}
       <div ref={bottomRef} className="pt-24" />
-      <audio ref={audioRef} src="/sounds/message.mp3" />;
+      <audio ref={audioRef} src="/sounds/message.mp3" />
     </div>
     // </ScrollArea>
   );

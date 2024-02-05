@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import twilio from "twilio";
 
+
 if (process.env.NODE_ENV !== "test") {
   dotenv.config({ path: ".env" });
 } else {
@@ -16,6 +17,7 @@ type config = {
   apiSecret: string;
   apiToken: string;
 };
+export const vResponse=twilio.twiml.VoiceResponse
 
 export const cfg: config = {
   port: process.env.PORT || 3000,

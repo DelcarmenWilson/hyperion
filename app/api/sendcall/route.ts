@@ -1,11 +1,10 @@
 import { currentUser } from "@/lib/auth";
+import { client } from "@/lib/twilio-config";
 import { NextResponse } from "next/server";
 import twilio from "twilio";
 
-const VoiceResponse = require('twilio').twiml.VoiceResponse;
+const VoiceResponse = twilio.twiml.VoiceResponse;
 
-const sid = process.env.TWILIO_CLIENT_ID;
-const token = process.env.TWILIO_CLIENT_TOKEN;
 const from = process.env.TWILIO_PHONE!;
 
 export async function POST(req: Request) {
@@ -19,9 +18,7 @@ export async function POST(req: Request) {
 
     if (!phone) {
       return new NextResponse("Phone is required", { status: 400 });
-    }
-    const client = twilio(sid, token);
-
+    }    
     client.calls
       .create({
         url: "http://demo.twilio.com/docs/voice.xml",

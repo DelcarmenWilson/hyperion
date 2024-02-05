@@ -25,3 +25,14 @@ export const appointmentsGetAllByUserId = async (agentId:string) => {
     return [];
   }
 };
+
+export const appointmentsGetAllByUserIdUpcoming = async (agentId:string) => {
+  try {
+    const appointments = await db.appointment.findMany({where:{agentId}
+    });
+    
+    return appointments;
+  } catch {
+    return [];
+  }
+};

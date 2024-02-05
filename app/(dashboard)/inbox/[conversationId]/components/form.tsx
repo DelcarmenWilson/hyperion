@@ -8,7 +8,11 @@ import { Send } from "lucide-react";
 
 import { MessageInput } from "./message-input";
 
-export const Form = () => {
+interface FormProps {
+  phone: string;
+  defaultPhone: string;
+}
+export const Form = ({ phone, defaultPhone }: FormProps) => {
   const { conversationId } = useConversation();
 
   const {
@@ -22,10 +26,18 @@ export const Form = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setValue("message", "", { shouldValidate: true });
-    axios.post("/api/messages", {
-      ...data,
-      conversationId,
-    });
+    // console.log(data);
+    // return;
+    axios
+      .post("/api/sms/out", {
+        ...data,
+        conversationId,
+        phone,
+        from: defaultPhone,
+      })
+      .then((data) => {
+        console.log(data);
+      });
   };
 
   return (

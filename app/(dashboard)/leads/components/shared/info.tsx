@@ -7,18 +7,19 @@ import { MessageSquare, Pencil } from "lucide-react";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 import { CopyButton } from "@/components/reusable/copy-button";
-import { LeadColumn } from "../columns";
-import { sendIntialSms } from "@/actions/sms";
+import { smsCreateInitial } from "@/actions/sms";
 import { toast } from "sonner";
+import { FullLead } from "@/types";
+
 interface InfoProps {
-  lead: LeadColumn;
+  lead: FullLead;
 }
 export const Info = ({ lead }: InfoProps) => {
   const router = useRouter();
 
-  const onStartConversation = async () => {
+  const onSendInitialSms = async () => {
     if (!lead) return;
-    await sendIntialSms(lead.id).then((data) => {
+    await smsCreateInitial(lead.id).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);
@@ -57,14 +58,12 @@ export const Info = ({ lead }: InfoProps) => {
         <Pencil className="h-4 w-4 ml-2" />
       </p>
       <div>
-        <Button
-          variant="outlineprimary"
-          size="xs"
-          onClick={onStartConversation}
-        >
-          <MessageSquare className="h-4 w-4 mr-2" />
-          SEND SMS
-        </Button>
+        {!lead.conversationId && (
+          <Button variant="outlineprimary" size="xs" onClick={onSendInitialSms}>
+            <MessageSquare className="h-4 w-4 mr-2" />
+            SEND SMS
+          </Button>
+        )}
       </div>
     </div>
   );

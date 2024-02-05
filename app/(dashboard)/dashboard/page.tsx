@@ -6,9 +6,10 @@ import { appointmentsGetAllByUserId } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
-import DashBoardClient from "./components/client";
+import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
 import { usersGetSummaryByTeamId } from "@/data/user";
 import { CallHistoryColumn } from "./components/callhistory/columns";
+import { Suspense } from "react";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -71,15 +72,18 @@ const DahsBoardPage = async () => {
   ).length;
 
   return (
-    <DashBoardClient
-      leadCount={leadCount}
-      messagesCount={messagesCount}
-      inBoundCallsCount={inBoundCallsCount}
-      outBoundCallsCount={outBoundCallsCount}
-      appointments={formattedAppointments}
-      agents={formattedAgents}
-      callHistory={formatedCallHistory}
-    />
+    <Suspense fallback={<DashBoardClientSkeleton />}>
+      <DashBoardClient
+        leadCount={leadCount}
+        messagesCount={messagesCount}
+        inBoundCallsCount={inBoundCallsCount}
+        outBoundCallsCount={outBoundCallsCount}
+        appointments={formattedAppointments}
+        agents={formattedAgents}
+        callHistory={formatedCallHistory}
+      />
+      {/* <DashBoardClientSkeleton /> */}
+    </Suspense>
   );
 };
 

@@ -4,32 +4,15 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { Appointment } from "./shared/appointment";
+import { AppointmentBox } from "./shared/appointment";
 import { CallInfo } from "./shared/call-info";
 import { DropDown } from "./shared/dropdown";
 import { ExtraInfo } from "./shared/extra-info";
 import { Info } from "./shared/info";
 import { NotesForm } from "./shared/notes-form";
+import { FullLead } from "@/types";
 
-export type LeadColumn = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  cellPhone: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  conversationId?: string;
-  defaultNumber: string;
-  autoChat: boolean;
-  notes: string;
-  createdAt: Date;
-  callCount?: number;
-};
-
-export const columns: ColumnDef<LeadColumn>[] = [
+export const columns: ColumnDef<FullLead>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -82,7 +65,12 @@ export const columns: ColumnDef<LeadColumn>[] = [
   {
     accessorKey: "appointment",
     header: "",
-    cell: ({ row }) => <Appointment />,
+    cell: ({ row }) => (
+      <AppointmentBox
+        call={row.original.lastCall!}
+        appointment={row.original.lastApp!}
+      />
+    ),
   },
   {
     accessorKey: "extra info",

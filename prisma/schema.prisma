@@ -66,13 +66,10 @@ model User {
   team   Team?   @relation(fields: [teamId], references: [id])
 
   conversations Conversation[]
-
-  messages Message[] @relation("MessageToUser")
-
-  appointments Appointment[]
-  presets      Presets[]
-  phoneNumbers PhoneNumber[]
-  chatSettings ChatSettings?
+  appointments  Appointment[]
+  presets       Presets[]
+  phoneNumbers  PhoneNumber[]
+  chatSettings  ChatSettings?
 }
 
 model Account {
@@ -154,10 +151,10 @@ model Lead {
   id            String        @id @default(cuid())
   firstName     String
   lastName      String
-  address       String
-  city          String
+  address       String?
+  city          String?
   state         String
-  zipCode       String
+  zipCode       String?
   homePhone     String?
   cellPhone     String
   gender        Gender        @default(Male)
@@ -185,7 +182,6 @@ model Lead {
   active        Boolean       @default(true)
   owner         String?
 
-  autoChat      Boolean        @default(false)
   conversations Conversation[]
   appointments  Appointment[]
   calls         Call[]
@@ -206,8 +202,24 @@ model Conversation {
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
 
+  autoChat Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  userId    String @unique
+  title     String
+  subTitle  String
+  type      String @default("hourly")
+  sunday    String
+  monday    String
+  tuesday   String
+  wednesday String
+  thursday  String
+  friday    String
+  saturday  String
 }
 
 model Message {
@@ -219,7 +231,11 @@ model Message {
   //content String      @db.LongText
   content String
 
-  sender   User?   @relation("MessageToUser", fields: [senderId], references: [id], onDelete: Cascade)
+  sid    String?
+  status String  @default("sent")
+  error  String?
+  price  String?
+
   senderId String?
 
   hasSeen   Boolean  @default(false)
@@ -248,8 +264,8 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  //defaultPrompt   String @db.LongText
-  //defaultFunction String @db.LongText
+  // defaultPrompt   String @db.LongText
+  // defaultFunction String @db.LongText
   defaultPrompt   String
   defaultFunction String
 
@@ -311,6 +327,8 @@ model Call {
   recordStartTime DateTime?
   recordStatus    String?
   recordDuration  Int?
+
+  price String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

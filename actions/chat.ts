@@ -1,5 +1,6 @@
 "use server"
 import OpenAI from "openai";
+
 export const chatFetch = async (messages: any=[]) => {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,

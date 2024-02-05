@@ -19,8 +19,7 @@ export const tokenGenerator = (identity: string) => {
     incomingAllow: true,
   });
   accessToken.addGrant(grant);
-
-  // Include identity and token in a JSON response
+  
   return {
     identity: identity,
     token: accessToken.toJwt(),
@@ -28,35 +27,31 @@ export const tokenGenerator = (identity: string) => {
 };
 
 export const voiceResponse = async (requestBody: any) => {
-  const toNumberOrClientName = requestBody.To;
-  const { CallSid, AgentId, AgentNumber, Direction, Recording } = requestBody;
-    
+  const { agentId, agentNumber, direction, recording,to } = requestBody;
+
   const params = {
-    callerId: AgentNumber,
-    record: Recording,
-    recordingStatusCallback: "/api/voice/recording"
+    callerId: agentNumber,
+    record: recording,
+    recordingStatusCallback: "/api/voice/recording",
   };
 
-  let twiml = new VoiceResponse();
+  const twiml = new VoiceResponse();
 
-  if (Direction == "inbound") {
-    // This is an incoming call
-    let dial = twiml.dial(params);
-    dial.client(AgentId);
-  } else if (requestBody.To) {
-    // This is an outgoing call
+  let dial = twiml.dial(params);
 
-    let dial = twiml.dial(params);
-
-    const attr = isAValidPhoneNumber(toNumberOrClientName)
-      ? "number"
-      : "client";
-    dial[attr](toNumberOrClientName);
-
-    // dial.conference({coach:CallSid,},AgentId)
-  }
-  else {
-    twiml.say("Thanks for calling!");
+  switch (direction) {
+    case "inbound":
+      dial.client(agentId);
+      break;
+    case "outbound":
+      const attr = isAValidPhoneNumber(to)
+        ? "number"
+        : "client";
+      dial[attr](to);
+      break;
+    default:
+      twiml.say("Thanks for calling!");
+      break;
   }
 
   return twiml.toString();

@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MessageSquareText, Phone, PhoneIncoming, Users } from "lucide-react";
-import { Box } from "../components/box";
-import { AppointmentBox } from "./appointment/appointment-box";
+import { Box, BoxSkeleton } from "../components/box";
+import {
+  AppointmentBox,
+  AppointmentBoxSkeleton,
+} from "./appointment/appointment-box";
 import { AppointmentColumn } from "./appointment/columns";
 import { AgentSummary } from "./agentsummary/agent-summary";
 import { AgentSummaryColumn } from "./agentsummary/columns";
@@ -24,7 +27,7 @@ interface DashBoardClientProps {
   agents: AgentSummaryColumn[];
   callHistory: CallHistoryColumn[];
 }
-const DashBoardClient = ({
+export const DashBoardClient = ({
   leadCount,
   messagesCount,
   outBoundCallsCount,
@@ -89,6 +92,7 @@ const DashBoardClient = ({
           hrefTitle="Go to calls"
         />
       </div>
+      {/* <AppointmentBoxSkeleton /> */}
       <AppointmentBox data={appointments} />
       <AgentSummary initialData={agents} />
       <div className="flex items-center gap-4 h-[400px]">
@@ -104,4 +108,24 @@ const DashBoardClient = ({
   );
 };
 
-export default DashBoardClient;
+export const DashBoardClientSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
+        {[...Array(4)].map((_, i) => (
+          <BoxSkeleton key={i} />
+        ))}
+      </div>
+      {/* <AppointmentBox data={appointments} />
+      <AgentSummary initialData={agents} /> */}
+      {/* <div className="flex items-center gap-4 h-[400px]">
+        <div className="w-[25%] h-full">
+          <TurnOverRate />
+        </div>
+        <div className="w-[75%] h-full">
+          <CallHistory initialCalls={callHistory} />
+        </div>
+      </div> */}
+    </div>
+  );
+};

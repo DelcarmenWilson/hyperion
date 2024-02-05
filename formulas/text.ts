@@ -1,4 +1,4 @@
-import { Lead } from "@prisma/client";
+import { Lead, User } from "@prisma/client";
 
 export function capitalize(text:string) {
     return text.toLowerCase()
@@ -7,17 +7,17 @@ export function capitalize(text:string) {
     .join(' ');
 }
 
-export const replacePresetUser = (message: string, userName: string):string => {
-    if (!userName) return message;
+export const replacePresetUser = (message: string, user:User):string => {
+    if (!user) return message;
     // USER INFO
-    message = message.replace("#my_first_name", userName);
+    message = message.replace("#my_first_name", user.firstName);
     message = message.replace("#my_company_name", "Family First Life");
     return message;
   };
-export const replacePreset = (message: string, userName: string, lead: Lead):string => {
-    if (!userName || !lead) return message;
+export const replacePreset = (message: string, user:User, lead: Lead):string => {
+    if (!user || !lead) return message;
     // USER INFO
-    message = message.replace("#my_first_name", userName);
+    message = message.replace("#my_first_name", user.firstName);
     message = message.replace("#my_company_name", "Family First Life");
     // LEAD INFO
     message = message.replace("#first_name", lead.firstName);
