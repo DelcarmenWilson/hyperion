@@ -54,7 +54,6 @@ export const ImportLeadsForm = () => {
           mapped.push(newobj);
         });
         setLeads(mapped);
-        console.log(mapped);
         const fls: ImportLeadColumn[] = mapped.map(
           (lead: ImportLeadsFormValues) => ({
             id: "",

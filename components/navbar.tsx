@@ -1,10 +1,11 @@
 "use client";
-import { Button } from "./ui/button";
 import { Smartphone } from "lucide-react";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
+
+import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { Button } from "./ui/button";
 
 const NavBar = () => {
-  const useDialer = useDialerModal();
+  const usePm = usePhoneModal();
   return (
     <div className=" flex items-center  sticky w-full top-0 z-10 py-2 px-4">
       <div>{/* <MainNav className="mx-6" /> */}</div>
@@ -12,7 +13,7 @@ const NavBar = () => {
         <Button
           className="rounded-full"
           size="icon"
-          onClick={() => useDialer.onOpen()}
+          onClick={() => usePm.onDialerOpen()}
         >
           <Smartphone className="w-4 h-4" />
         </Button>

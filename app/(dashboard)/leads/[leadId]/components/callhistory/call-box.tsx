@@ -12,7 +12,7 @@ interface CallBoxProps {
 }
 export const CallBox = ({ call }: CallBoxProps) => {
   return (
-    <div className="grid grid-cols-5 gap-2 border-b py-2">
+    <div className="grid grid-cols-5 items-center gap-2 border-b py-2 ">
       <div className="flex gap-2 items-center">
         {call.direction.toLowerCase() === "inbound" ? (
           <MoveDownLeft className="h-4 w-4" />

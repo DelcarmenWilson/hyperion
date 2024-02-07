@@ -1,4 +1,5 @@
 import {
+  Calendar,
   ClipboardList,
   Computer,
   DollarSign,
@@ -68,6 +69,11 @@ export const MainSidebarRoutes: NavType[] = [
   //   href: "/marketing",
   //   icon: Computer,
   // },
+  {
+    title: "Appointments",
+    href: "/appointments",
+    icon: Calendar,
+  },
   {
     title: "Sms",
     href: "/sms",

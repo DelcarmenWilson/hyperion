@@ -52,6 +52,10 @@ export function AvailabilityClient({ schedule }: AvailabilityClientProps) {
     values.thursday = thursday;
     values.friday = friday;
     values.saturday = saturday;
+    // console.log(values);
+    // setLoading(false);
+
+    // return;
 
     await scheduleUpdateByUserId(values).then((data) => {
       if (data.success) {

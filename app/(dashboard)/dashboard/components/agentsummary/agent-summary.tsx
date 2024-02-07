@@ -2,7 +2,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { AgentSummaryColumn, columns } from "./columns";
-import { DashBoardTable } from "../dashboard-table";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { pusherClient } from "@/lib/pusher";

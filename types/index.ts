@@ -33,7 +33,6 @@ export type FullLead = {
   appointments?:Appointment[]
   lastApp?:Appointment
   createdAt: Date;
-  callCount?: number;
 };
 
 export type PresetFormValues = {

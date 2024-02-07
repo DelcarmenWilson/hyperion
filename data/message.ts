@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import {  client } from "@/lib/twilio-config";
 
 export const messagesGetByConversationId = async (conversationId: string) => {
   try {

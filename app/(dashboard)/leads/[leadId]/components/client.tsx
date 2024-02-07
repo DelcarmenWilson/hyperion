@@ -2,8 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { Call, Lead } from "@prisma/client";
-
 import {
   ArrowLeft,
   Calendar,
@@ -35,6 +33,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { DropDown } from "../../components/shared/dropdown";
 import { CallHistory } from "./callhistory/call-history";
 import { FullLead } from "@/types";
+import { CalendarEvents } from "../calendarevents/calendar-events";
 
 interface LeadClientProps {
   lead: FullLead;
@@ -169,7 +168,9 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
               <TabsContent value="call">
                 <CallHistory initialCalls={lead.calls!} />
               </TabsContent>
-              <TabsContent value="events">CALENDAR EVENTS</TabsContent>
+              <TabsContent value="events">
+                <CalendarEvents appointments={lead.appointments!} />
+              </TabsContent>
               <TabsContent value="meetings">MEETINGS</TabsContent>
             </div>
           </Tabs>

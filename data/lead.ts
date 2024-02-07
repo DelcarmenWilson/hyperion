@@ -17,6 +17,7 @@ export const leadsGetAllByAgentId = async (agentId: string) => {
       include: {
         conversations:true,
         appointments: { where: { status: "scheduled" } },
+        // appointments: { where: { status: "scheduled" } },
         calls: true,
       },
     });
@@ -33,7 +34,8 @@ export const leadGetById = async (id: string) => {
         id,
       }, include: {
         conversations:true,
-        appointments: { where: { status: "scheduled" } },
+        // appointments: { where: { status: "scheduled" } },
+        appointments: true,
         calls: true,
       },
     });

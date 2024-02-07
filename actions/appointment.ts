@@ -3,6 +3,7 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
 import { states } from "@/constants/states";
+import { smsSend } from "./sms";
 
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>
@@ -33,6 +34,10 @@ export const appointmentInsert = async (
     return { error: "Appointment was not created!" };
   }
 
+  const lead = await db.lead.findUnique({ where: { id: leadId } });
+  if (lead) {
+     await smsSend(lead?.defaultNumber!,lead?.cellPhone!,`appointment set for ${date.toDateString()}`)
+  }
   return { success: "Appointment Scheduled!" };
 };
 
@@ -73,7 +78,7 @@ export const appointmentInsertBook = async (
       },
     });
 
-    leadId=lead.id
+    leadId = lead.id;
   }
 
   const existingAppointments = await db.appointment.findMany({
@@ -92,7 +97,8 @@ export const appointmentInsertBook = async (
     data: {
       agentId,
       leadId,
-      date,comments:""
+      date,
+      comments: "",
     },
   });
 
