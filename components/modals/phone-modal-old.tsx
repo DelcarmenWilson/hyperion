@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { Connection } from "twilio-client";
+import { device } from "@/lib/device";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -19,10 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
-
 import { formatSecondsToTime } from "@/formulas/numbers";
 
 type AgentType = {
@@ -49,23 +47,11 @@ const agents: AgentType[] = [
   },
 ];
 
-// interface PhoneModalProps {
-//   dev: Device;
-// }
-
 export const PhoneModal = () => {
-  const user = useCurrentUser();
-  const {
-    device,
-    onPhoneClose: onClose,
-    onPhoneOpen: onOpen,
-    isPhoneOpen: isOpen,
-  } = usePhoneModal();
+  const usePm = usePhoneModal();
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
-
-  // const [dev, setDev] = useState<Device>(new Device());
   const [call, setInComingCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
   const [fromNumber, setFromNumber] = useState("");
@@ -73,7 +59,7 @@ export const PhoneModal = () => {
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
 
-  const addDeviceListeners = () => {
+  function addDeviceListeners() {
     if (!device) return;
     device.on("ready", function () {
       console.log("ready");
@@ -101,10 +87,10 @@ export const PhoneModal = () => {
       setFromName(fullName);
       setFromNumber(data.cellPhone || call.parameters.From);
 
-      onOpen();
+      usePm.onPhoneOpen();
       setInComingCall(call);
     });
-  };
+  }
 
   const onIncomingCallDisconnect = () => {
     call?.disconnect();
@@ -114,7 +100,7 @@ export const PhoneModal = () => {
     setFromNumber("");
     setRunning(false);
     setTime(0);
-    onClose();
+    usePm.onPhoneClose();
   };
 
   const onIncomingCallAccept = () => {
@@ -127,7 +113,7 @@ export const PhoneModal = () => {
     call?.reject();
     setInComingCall(undefined);
     setIsCallAccepted(false);
-    onClose();
+    usePm.onPhoneClose();
   };
 
   useEffect(() => {
@@ -143,18 +129,11 @@ export const PhoneModal = () => {
   }, [running]);
 
   useEffect(() => {
-    // axios.post("/api/token", { identity: user?.id }).then((response) => {
-    //   const data = response.data;
-    //   dev.setup(data.token, {
-    //     logLevel: 1,
-    //   });
-    //   addDeviceListeners();
-    // });
     addDeviceListeners();
   });
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+    <Transition.Root show={usePm.isPhoneOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={usePm.onPhoneClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"

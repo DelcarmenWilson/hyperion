@@ -173,7 +173,6 @@ export const PresetSchema = z.object({
 
 export const AppointmentSchema = z.object({
   date: z.date(),
-  time: z.string(),
   agentId: z.string(),
   leadId: z.string(),
   comments: z.string(),

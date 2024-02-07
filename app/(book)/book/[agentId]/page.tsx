@@ -5,6 +5,7 @@ import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
 import { BookAgentClient } from "./components/client";
 import { leadGetById } from "@/data/lead";
 import { scheduleGetByUserId } from "@/data/schedule";
+import { userGetById } from "@/data/user";
 
 const BookAgentPage = async ({
   params,
@@ -17,6 +18,7 @@ const BookAgentPage = async ({
 }) => {
   const appointments = await appointmentsGetAllByUserIdUpcoming(params.agentId);
   const lead = await leadGetById(searchParams?.lid as string);
+  const user = await userGetById(params.agentId);
   const schedule = await scheduleGetByUserId(params.agentId);
 
   const formattedLead: z.infer<typeof AppointmentLeadSchema> = {
@@ -31,6 +33,7 @@ const BookAgentPage = async ({
   };
   return (
     <BookAgentClient
+      userImage={user?.image!}
       schedule={schedule!}
       lead={formattedLead || undefined}
       appointments={appointments}

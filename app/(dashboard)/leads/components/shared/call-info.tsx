@@ -10,15 +10,16 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { pusherClient } from "@/lib/pusher";
 import { FullLead } from "@/types";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { getLocalTime } from "@/formulas/dates";
 interface CallInfoProps {
   lead: FullLead;
 }
 export const CallInfo = ({ lead }: CallInfoProps) => {
-  const useDialer = useDialerModal();
-  const [callCount, setCallCount] = useState(lead.callCount || 0);
+  const usePm = usePhoneModal();
+  const [callCount, setCallCount] = useState(lead.calls?.length || 0);
 
   useEffect(() => {
     pusherClient.subscribe(lead.id as string);
@@ -37,10 +38,11 @@ export const CallInfo = ({ lead }: CallInfoProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm">Local time : 11:31 am</p>
+      {/* <p className="text-sm">Local time : 11:31 am</p> */}
+      {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
       <Button
         className="w-fit relative"
-        onClick={() => useDialer.onOpen(lead)}
+        onClick={() => usePm.onDialerOpen(lead)}
         size="sm"
       >
         <Phone className="w-4 h-4 mr-2" />

@@ -23,7 +23,7 @@ export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
     available ? scheduleBreak[1].split("-")[0] : "12:00"
   );
   const [breakTo, setBreakTo] = useState(
-    available ? scheduleBreak[0].split("-")[1] : "13:00"
+    available ? scheduleBreak[1].split("-")[1] : "13:00"
   );
 
   const onSetAvailable = (e: boolean) => {
@@ -34,22 +34,19 @@ export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
 
   const onSetWorkFrom = (time: string) => {
     setWorkFrom(time);
-    onSetTotalHours();
+    setHours(`${time}-${workTo},${breakFrom}-${breakTo}`);
   };
   const onSetWorkTo = (time: string) => {
     setWorkTo(time);
-    onSetTotalHours();
+    setHours(`${workFrom}-${time},${breakFrom}-${breakTo}`);
   };
   const onSetBreakFrom = (time: string) => {
     setBreakFrom(time);
-    onSetTotalHours();
+    setHours(`${workFrom}-${workTo},${time}-${breakTo}`);
   };
   const onSetBreakTo = (time: string) => {
     setBreakTo(time);
-    onSetTotalHours();
-  };
-  const onSetTotalHours = () => {
-    setHours(`${workFrom}-${workTo},${breakFrom}-${breakTo}`);
+    setHours(`${workFrom}-${workTo},${breakFrom}-${time}`);
   };
 
   return (

@@ -16,7 +16,7 @@ const LeadsPage = async () => {
     email: lead.email,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
-    autoChat: lead.conversations[0].autoChat,
+    autoChat: lead.conversations[0]?.autoChat,
     notes: lead.notes as string,
     calls: lead.calls,
     lastCall: lead.calls[lead.calls.length - 1],

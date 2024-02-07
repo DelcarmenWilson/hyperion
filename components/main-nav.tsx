@@ -10,7 +10,7 @@ export function MainNav({
   const usePm = usePhoneModal();
   return (
     <div>
-      <Button onClick={usePm.onOpen}>Open Modal</Button>
+      <Button onClick={usePm.onPhoneOpen}>Open Modal</Button>
     </div>
   );
 }

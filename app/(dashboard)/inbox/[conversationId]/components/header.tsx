@@ -1,23 +1,21 @@
 "use client";
-import { useState } from "react";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Phone } from "lucide-react";
+
+import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { FullConversationType, FullLead } from "@/types";
 import { Button } from "@/components/ui/button";
-import { AlertModal } from "@/components/modals/alert-modal";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ArrowLeft, Phone, Trash } from "lucide-react";
-import { formatPhoneNumber } from "@/formulas/phones";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { DropDown } from "@/app/(dashboard)/leads/components/shared/dropdown";
+
+import { formatPhoneNumber } from "@/formulas/phones";
 
 interface HeaderProps {
   conversation: FullConversationType;
 }
 export const Header = ({ conversation }: HeaderProps) => {
   const router = useRouter();
-  const useDialer = useDialerModal();
+  const usePm = usePhoneModal();
 
   const lead = conversation.lead;
   const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
@@ -50,7 +48,7 @@ export const Header = ({ conversation }: HeaderProps) => {
           className="rounded-full"
           variant="outlineprimary"
           size="icon"
-          onClick={() => useDialer.onOpen(formattedLead)}
+          onClick={() => usePm.onDialerOpen(formattedLead)}
         >
           <Phone className="w-4 h-4" />
         </Button>

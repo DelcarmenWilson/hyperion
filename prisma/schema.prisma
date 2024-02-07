@@ -264,8 +264,8 @@ model ChatSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // defaultPrompt   String @db.LongText
-  // defaultFunction String @db.LongText
+  //defaultPrompt   String @db.LongText
+  //defaultFunction String @db.LongText
   defaultPrompt   String
   defaultFunction String
 

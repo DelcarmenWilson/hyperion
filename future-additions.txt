@@ -30,10 +30,12 @@
 -- create video call for meetings
 -- create live dial calls
 -- be able to integrate calledly goldy,website
--- as per suandra send reminder to client after the appointment is set
+-- as per suandra send reminder to client after the appointment is set--check?
+-- send cofirmation for appointment a day earlier
 
 
 -- make cell phone mandatory inside new lead form
+-- work more on the local time function
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
@@ -42,7 +44,6 @@ git pull
 git checkout main
 git pull
 git merge --no-ff --no-commit messages
-
 
 git commit -m messages
 git push

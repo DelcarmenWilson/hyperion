@@ -1,13 +1,13 @@
 "use client";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Phone } from "lucide-react";
-import { CallHistoryColumn, columns } from "./columns";
-import { DashBoardTable } from "../dashboard-table";
-import { Call } from "@prisma/client";
-import { pusherClient } from "@/lib/pusher";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { find } from "lodash";
+import { pusherClient } from "@/lib/pusher";
+import { Phone } from "lucide-react";
+
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
+import { CallHistoryColumn, columns } from "./columns";
 
 interface AgentSummaryBoxProps {
   initialCalls: CallHistoryColumn[];

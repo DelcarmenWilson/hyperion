@@ -1,8 +1,9 @@
 "use client";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ClipboardList } from "lucide-react";
+
 import { PhoneNumberColumn, columns } from "./columns";
-import { DashBoardTable } from "../../dashboard/components/dashboard-table";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
 
 type ItemType = {
   title: string;

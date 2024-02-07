@@ -167,3 +167,24 @@ export const smsCreate = async (leadId: string, message: string) => {
 
   return { success: "Message sent!" };
 };
+
+export const smsSend = async (fromPhone:string,toPhone: string,  message: string) => { 
+
+  if (!message) {
+    return { error: "Message cannot be empty!" };
+  }
+
+  const result = await client.messages.create({
+     body: message,
+    from: fromPhone,
+    to: toPhone,
+  });
+
+  console.log(result)
+
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
+  return { success: "Message sent!" };
+};

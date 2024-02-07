@@ -5,13 +5,13 @@ import { Dialer } from "@/components/custom/dialer";
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import { Fragment } from "react";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 export const DialerModal = () => {
-  const dialerModel = useDialerModal();
+  const { isDialerOpen, onDialerClose } = usePhoneModal();
   const close = () => {};
   return (
-    <Transition.Root show={dialerModel.isOpen} as={Fragment}>
+    <Transition.Root show={isDialerOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
@@ -40,7 +40,7 @@ export const DialerModal = () => {
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-end">
                         <div className="flex ml-3 h-7 items-center">
-                          <Button size="icon" onClick={dialerModel.onClose}>
+                          <Button size="icon" onClick={onDialerClose}>
                             <span className="sr-only">Close panel</span>
                             <X className="h-4 w-4" />
                           </Button>

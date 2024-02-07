@@ -34,7 +34,7 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const onAutoChatToggle = () => {
+  const onHyperChatToggle = () => {
     setAutoChat((state) => !state);
     conversationUpdateByIdAutoChat(lead.id, !autoChat).then((data) => {
       if (data.error) {
@@ -82,24 +82,25 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
             <Calendar className="h-4 w-4 mr-2" />
             New Appointment
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className={cn(
-              " text-background cursor-pointer",
-              autoChat ? "bg-primary" : "bg-destructive"
-            )}
-            onClick={onAutoChatToggle}
-          >
-            <div className="flex items-center justify-between gap-2">
-              {autoChat ? (
-                <Check className="w-4 h-4 " />
-              ) : (
-                <X className="w-4 h-4 " />
+          {conversationId && (
+            <DropdownMenuItem
+              className={cn(
+                " text-background cursor-pointer",
+                autoChat ? "bg-primary" : "bg-destructive"
               )}
-              <span>Hyper Chat</span>
-              <span>{autoChat ? "ON" : "OFF"}</span>
-            </div>
-          </DropdownMenuItem>
-
+              onClick={onHyperChatToggle}
+            >
+              <div className="flex items-center justify-between gap-2">
+                {autoChat ? (
+                  <Check className="w-4 h-4 " />
+                ) : (
+                  <X className="w-4 h-4 " />
+                )}
+                <span>Hyper Chat</span>
+                <span>{autoChat ? "ON" : "OFF"}</span>
+              </div>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="cursor-pointer"

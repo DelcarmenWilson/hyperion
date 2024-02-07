@@ -2,7 +2,7 @@ import { currentUser } from "@/lib/auth";
 import { AppointmentColumn } from "./components/appointment/columns";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
-import { appointmentsGetAllByUserId } from "@/data/appointment";
+import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
 import { callGetAllByAgentId } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
@@ -16,7 +16,7 @@ const DahsBoardPage = async () => {
   const leadCount = await leadsGetByAgentIdTodayCount(user?.id!);
   const messagesCount = await messagesGetByAgentIdUnSeen(user?.id!);
 
-  const appointments = await appointmentsGetAllByUserId(user?.id!);
+  const appointments = await appointmentsGetAllByUserIdToday(user?.id!);
 
   const formattedAppointments: AppointmentColumn[] = appointments.map(
     (apt) => ({

@@ -13,7 +13,7 @@ const SalesPage = async () => {
     email: lead.email,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
-    autoChat: lead.conversations[0].autoChat,
+    autoChat: lead.conversations[0]?.autoChat,
     notes: lead.notes as string,
     createdAt: lead.createdAt,
   }));

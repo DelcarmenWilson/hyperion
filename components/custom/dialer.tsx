@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Connection } from "twilio-client";
+import { Connection, Device } from "twilio-client";
 import { AlertCircle, Phone, X } from "lucide-react";
-import { device } from "@/lib/device";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -17,7 +16,6 @@ import {
 
 import { numbers } from "@/constants/phone-numbers";
 import { PhoneType } from "@/types";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { cn } from "@/lib/utils";
@@ -28,14 +26,16 @@ import {
 } from "@/actions/chat-settings";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 export const Dialer = () => {
   const { update } = useSession();
   const user = useCurrentUser();
-  const { lead } = useDialerModal();
+  const { device, lead } = usePhoneModal();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
+
   const [toName, setToName] = useState(lead ? leadFullName : "New Call");
   const [toNumber, setToNumber] = useState(
     formatPhoneNumber(lead?.cellPhone as string) || ""

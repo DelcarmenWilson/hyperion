@@ -3,16 +3,16 @@ import { format } from "date-fns";
 import { Clock, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useDialerModal } from "@/hooks/use-dialer-modal";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { FullLead } from "@/types";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 interface LeadBoxProps {
   lead: FullLead;
 }
 
 export const LeadBox = ({ lead }: LeadBoxProps) => {
-  const useDialer = useDialerModal();
+  const usePm = usePhoneModal();
   return (
     <div className="border-b">
       <div className="flex justify-between items-center p-2 text-xs">
@@ -29,7 +29,7 @@ export const LeadBox = ({ lead }: LeadBoxProps) => {
         <div className="flex flex-col justify-between gap-2 items-end">
           <Button
             className="rounded-full w-fit"
-            onClick={() => useDialer.onOpen(lead)}
+            onClick={() => usePm.onDialerOpen(lead)}
           >
             <Phone className="w-4 h-4" />
           </Button>

@@ -48,6 +48,21 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
 
   //CREATE CHAT SETTINGS
   await chatSettingsInsert(user);
+  const hours="09:00-17:00,12:00-13:00"
+  await db.schedule.create({data:{
+    userId:user.id,
+    title:"Book an Appointment with #first_name".replace("#first_name",user.firstName),
+    subTitle:"Pick the time that best works for you. I am looking forward to connecting with you.",
+    monday:hours,
+    tuesday:hours,
+    wednesday:hours,
+    thursday:hours,
+    friday:hours,
+    saturday:"Not Available",
+    sunday:"Not Available",
+
+
+  }})
 
   return { success: "Account created continue to login" };
 };

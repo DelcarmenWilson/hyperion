@@ -40,10 +40,14 @@ import {
 import { states } from "@/constants/states";
 import { AppointmentLeadSchema } from "@/schemas";
 import { Badge } from "@/components/ui/badge";
-import { concateDate } from "@/formulas/dates";
+import { concateDate, getTommorrow } from "@/formulas/dates";
 import { appointmentInsertBook } from "@/actions/appointment";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import user from "pusher-js/types/src/core/user";
+import { FaUser } from "react-icons/fa";
 
 interface BookAgentClientProps {
+  userImage: string;
   schedule: Schedule;
   lead?: z.infer<typeof AppointmentLeadSchema>;
   appointments: Appointment[];
@@ -51,18 +55,19 @@ interface BookAgentClientProps {
 type LeadFormValues = z.infer<typeof AppointmentLeadSchema>;
 
 export const BookAgentClient = ({
+  userImage,
   schedule,
   lead,
   appointments,
 }: BookAgentClientProps) => {
-  const tommorrow = new Date().setDate(new Date().getDate() + 1);
+  const tommorrow = getTommorrow();
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState(true);
   const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>(
     breakDownSchedule(schedule)
   );
   const [times, setTimes] = useState<ScheduleTimeType[]>();
-  const [selectedDate, setselectedDate] = useState(new Date(tommorrow));
+  const [selectedDate, setselectedDate] = useState(tommorrow);
   const [selectedTime, setselectedTime] = useState("");
 
   const OnDateSlected = (date: Date) => {
@@ -140,13 +145,19 @@ export const BookAgentClient = ({
     <div className="flex justify-center p-4">
       <div className="flex flex-col gap-2 w-[600px]">
         <div className="flex flex-col justify-center items-center text-center gap-2 ">
-          <Image
-            src="/assets/wdelcarmen.jpg"
+          {/* <Image
+            src={userImage}
             width={80}
             height={80}
             className="w-auto h-auto"
             alt="Profile Image"
-          />
+          /> */}
+          <Avatar className="w-[100px] h-auto rounded-md">
+            <AvatarImage src={userImage || ""} />
+            <AvatarFallback className="bg-primary dark:bg-accent">
+              <FaUser className="text-accent dark:text-primary h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
           <p className="font-bold text-2xl">{schedule.title}</p>
           <p className="text-sm">{schedule.subTitle}</p>
         </div>{" "}

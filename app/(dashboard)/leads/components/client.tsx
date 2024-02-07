@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { DashBoardTable } from "../../dashboard/components/dashboard-table";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { columns } from "./columns";
 import { FullLead } from "@/types";
 
@@ -28,40 +28,6 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   return (
     <>
-      {/* <NewLeadDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <div className="flex gap-2 mr-6">
-        <Button variant="outlineprimary" size="sm">
-          <DownloadCloud className="h-4 w-4 mr-2" />
-          GENERATE CSV
-        </Button>
-
-        <Dialog>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                  <Button variant="outlineprimary" size="sm">
-                    <Paperclip className="h-4 w-4 mr-2" />
-                    UPLOAD CSV FILE
-                  </Button>
-                </DialogTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Import Leads</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
-            <ImportLeadsForm />
-          </DialogContent>
-        </Dialog>
-
-        <Button size="sm" onClick={() => setDrawerOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          CREATE LEAD
-        </Button>
-      </div> */}
-
       <NewLeadDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <Card className="flex flex-col flex-1 relative overflow-hidden w-full">
         <div className="flex justify-between items-center mb-2">
@@ -74,11 +40,10 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
             </CardTitle>
           </div>
           <div className="flex gap-2 mr-6">
-            <Button variant="outlineprimary" size="sm">
+            {/* <Button variant="outlineprimary" size="sm">
               <DownloadCloud className="h-4 w-4 mr-2" />
               GENERATE CSV
-            </Button>
-
+            </Button> */}
             <Dialog>
               <TooltipProvider>
                 <Tooltip>
