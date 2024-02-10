@@ -8,6 +8,7 @@ export type ExtendedUser = DefaultSession["user"] & {
     record:boolean
     team:string
     phoneNumbers:PhoneNumber[]
+    image:string
   };
   
   declare module "next-auth" {

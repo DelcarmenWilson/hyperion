@@ -10,7 +10,7 @@ const SalesPage = async () => {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
-    email: lead.email,
+    email: lead.email!,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
     autoChat: lead.conversations[0]?.autoChat,

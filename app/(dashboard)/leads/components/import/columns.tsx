@@ -1,9 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-
-import { formatPhoneNumber } from "@/formulas/phones";
 
 export type ImportLeadColumn = {
   id: string;
@@ -15,6 +12,17 @@ export type ImportLeadColumn = {
   city: string;
   state: string;
   zip: string;
+  // gender:string
+  // maritalStatus:string
+  // weight: number;
+  // height: string;
+  // income: number;
+  // policyAmount: number;
+  // smoker: boolean;
+  // currentlyInsured: boolean;
+  // currentInsuranse: string;
+  // vendor: string;
+  // recievedAt: string;
 };
 
 export const columns: ColumnDef<ImportLeadColumn>[] = [

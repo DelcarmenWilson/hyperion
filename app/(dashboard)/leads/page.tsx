@@ -13,7 +13,7 @@ const LeadsPage = async () => {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
-    email: lead.email,
+    email: lead.email!,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
     autoChat: lead.conversations[0]?.autoChat,
@@ -22,6 +22,13 @@ const LeadsPage = async () => {
     lastCall: lead.calls[lead.calls.length - 1],
     appointments: lead.appointments,
     appointment: lead.appointments[0],
+    vendor: lead.vendor,
+    type: lead.type,
+    status: lead.status,
+    quote: lead.quote!,
+    saleAmount: lead.saleAmount!,
+    commision: lead.commision!,
+    costOfLead: lead.costOfLead!,
     createdAt: lead.createdAt,
   }));
 

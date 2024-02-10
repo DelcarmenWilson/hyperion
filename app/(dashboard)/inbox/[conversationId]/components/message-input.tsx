@@ -3,6 +3,7 @@ import React from "react";
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 
 interface MessageInputProps {
+  disabled: boolean;
   placeholder?: string;
   id: string;
   type?: string;
@@ -12,6 +13,7 @@ interface MessageInputProps {
 }
 
 export const MessageInput = ({
+  disabled,
   placeholder,
   id,
   type,
@@ -22,6 +24,7 @@ export const MessageInput = ({
   return (
     <div className="relative w-full">
       <Input
+        disabled={disabled}
         id={id}
         type={type}
         autoComplete={id}

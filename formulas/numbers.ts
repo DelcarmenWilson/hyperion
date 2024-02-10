@@ -15,3 +15,8 @@ export const getRandomNumber = (min: number, max: number):number => {
     
     return minutes+':'+seconds;
 }
+
+export const USDollar = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});

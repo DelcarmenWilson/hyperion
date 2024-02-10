@@ -1,6 +1,8 @@
 import { Lead, User } from "@prisma/client";
 
-export function capitalize(text:string) {
+export const capitalize=(text:string):string=> {
+  if(!text)
+  return text
     return text.toLowerCase()
     .split(' ')
     .map((s) => s.charAt(0).toUpperCase() + s.substring(1))

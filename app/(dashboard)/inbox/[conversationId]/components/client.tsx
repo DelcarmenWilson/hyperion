@@ -27,6 +27,7 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
       <CardContent className="flex flex-col flex-1  gap-2 overflow-hidden">
         <Body initialData={conversation!} />
         <Form
+          disabled={conversation.lead.status == "Do_Not_Call"}
           phone={conversation.lead.cellPhone}
           defaultPhone={conversation.lead.defaultNumber}
         />

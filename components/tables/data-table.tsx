@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "./ui/input";
+import { Cloud } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -29,7 +29,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   size,
-  noresults,
+  noresults = "No Results",
   setFile,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
@@ -89,9 +89,13 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {noresults || "No Results"}
-
-                <Input type="file" accept=".csv" onChange={setFile} />
+                <label className="">
+                  <input type="file" accept=".csv" onChange={setFile} hidden />
+                  <div className="flex flex-col justify-center items-center w-full h-20 rounded border-2 border-dashed cursor-pointer text-muted-foreground">
+                    <Cloud className="w-8 h-8" />
+                    <span className="font-bold  text-xl">{noresults}</span>
+                  </div>
+                </label>
               </TableCell>
             </TableRow>
           )}

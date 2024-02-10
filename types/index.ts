@@ -1,7 +1,17 @@
-import { Conversation, Message, User, Lead, Preset, Call, Appointment } from "@prisma/client";
+import * as z from "zod";
+import { LeadSchema } from "@/schemas";
+import {
+  Conversation,
+  Message,
+  User,
+  Lead,
+  Preset,
+  Call,
+  Appointment,
+} from "@prisma/client";
 
 export type FullMessageType = Message & {
-  sender?: User|null
+  sender?: User | null;
 };
 
 export type FullConversationType = Conversation & {
@@ -28,12 +38,21 @@ export type FullLead = {
   defaultNumber: string;
   autoChat: boolean;
   notes: string;
-  calls?:Call[]
-  lastCall?:Call
-  appointments?:Appointment[]
-  lastApp?:Appointment
+  calls?: Call[];
+  lastCall?: Call;
+  appointments?: Appointment[];
+  lastApp?: Appointment;
+  vendor?: string;
+  type?: string;
+  status?: string;
+
+  quote?: number;
+  saleAmount?: number;
+  commision?: number;
+  costOfLead?: number;
   createdAt: Date;
 };
+export type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 export type PresetFormValues = {
   type: Preset;
@@ -45,6 +64,6 @@ export type PhoneType = {
   state: string;
 };
 
-export type FullCall=Call& {
+export type FullCall = Call & {
   lead: Lead;
 };

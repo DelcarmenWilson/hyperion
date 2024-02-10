@@ -7,12 +7,12 @@ import { CallBox } from "./call-box";
 import { Call } from "@prisma/client";
 
 interface CallHistoryBoxProps {
+  leadId: string;
   initialCalls: Call[];
 }
 
-export const CallHistory = ({ initialCalls }: CallHistoryBoxProps) => {
+export const CallHistory = ({ leadId, initialCalls }: CallHistoryBoxProps) => {
   const [calls, setCalls] = useState<Call[]>(initialCalls);
-  const leadId = initialCalls[0].leadId;
 
   useEffect(() => {
     pusherClient.subscribe(leadId as string);
@@ -42,6 +42,9 @@ export const CallHistory = ({ initialCalls }: CallHistoryBoxProps) => {
       {calls?.map((call) => (
         <CallBox key={call.id} call={call} />
       ))}
+      {!calls.length && (
+        <p className="text-muted-foreground text-center mt-2">No calls found</p>
+      )}
     </div>
   );
 };

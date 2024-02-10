@@ -41,7 +41,7 @@ export const Box = ({ title, leads }: BoxProps) => {
       </div>
       <div className="flex justify-between items-center gap-2 px-2">
         <Button>START DIALING</Button>
-        <p>Totla leads: {leads.length}</p>
+        <p>Total leads: {leads.length}</p>
       </div>
       <Separator className="my-2" />
       <ScrollArea>

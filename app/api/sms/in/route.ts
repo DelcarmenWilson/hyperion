@@ -39,6 +39,7 @@ export async function POST(req: Request) {
 
   switch (textFromLead.content.toLowerCase()) {
     case "stop":
+      await db.lead.update({where:{id:conversation.leadId},data:{status:"Do_Not_Call"}})
       return new NextResponse(defaultOptOut.confirm, { status: 200 });
     case "reset":
       await db.conversation.delete({ where: { id: conversation.id } });

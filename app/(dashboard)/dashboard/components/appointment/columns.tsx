@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 export type AppointmentColumn = {
   id: string;
   fullName: string;
-  email: string;
+  email?: string;
   phone: string;
   dob?: Date;
   date: Date;

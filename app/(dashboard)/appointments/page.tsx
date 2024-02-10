@@ -12,7 +12,7 @@ const AppointmentsPage = async () => {
     (apt) => ({
       id: apt.id,
       fullName: `${apt.lead.firstName} ${apt.lead.lastName}`,
-      email: apt.lead.email,
+      email: apt.lead.email!,
       phone: apt.lead.cellPhone,
       status: apt.status,
       dob: apt.lead.dateOfBirth || undefined,

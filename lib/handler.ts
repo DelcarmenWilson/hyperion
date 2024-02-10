@@ -41,6 +41,12 @@ export const voiceResponse = async (requestBody: any) => {
 
   switch (direction) {
     case "inbound":
+      // twiml.say({voice:"alice"},"Thank you for calling strongside financial, please hold")
+      // twiml.pause({length:1})
+      // twiml.say({voice:"alice"},"For english press 1")
+      // twiml.pause({length:1})
+      // twiml.say({voice:"alice"},"Para español oprima 2")
+      // twiml.gather({})
       dial.client(agentId);
       break;
     case "outbound":
