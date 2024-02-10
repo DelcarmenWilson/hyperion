@@ -6,3 +6,8 @@ export const formatObject=((object:FormData)=>{
     })
     return obj;
 })
+
+let USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+});

@@ -42,7 +42,7 @@ export const leadGetById = async (id: string) => {
 
     return lead;
   } catch {
-    return null;
+    return  null;
   }
 };
 

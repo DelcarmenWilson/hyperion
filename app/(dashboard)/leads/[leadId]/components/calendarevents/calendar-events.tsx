@@ -19,6 +19,11 @@ export const CalendarEvents = ({ appointments }: CalendarEventsProps) => {
       {appointments?.map((appointment) => (
         <CalendarBox key={appointment.id} appointment={appointment} />
       ))}
+      {!appointments.length && (
+        <p className="text-muted-foreground text-center mt-2">
+          No appointments found
+        </p>
+      )}
     </div>
   );
 };

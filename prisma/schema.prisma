@@ -45,9 +45,25 @@ enum MessageRole {
   user
 }
 
+enum LeadType {
+  General
+  Final_Expense
+  Mortgage_Protection
+  Iul
+  Annuity
+}
+
+enum LeadStatus {
+  New
+  Attempted_to_Contact
+  Not_Interest
+  Do_Not_Call
+  Sold
+}
+
 model User {
   id            String    @id @default(cuid())
-  username      String
+  username      String    @unique
   firstName     String
   lastName      String
   phoneNumber   String?
@@ -148,47 +164,48 @@ model Team {
 }
 
 model Lead {
-  id            String        @id @default(cuid())
-  firstName     String
-  lastName      String
-  address       String?
-  city          String?
-  state         String
-  zipCode       String?
-  homePhone     String?
-  cellPhone     String
-  gender        Gender        @default(Male)
-  maritalStatus MaritalStatus @default(Single)
-  email         String
-  dateOfBirth   DateTime?
-  // age               Int?
-  // faceValue         Int?
-  // placeOfBirth      String?
-  // stateOfBirth      String?
-  // ssn               String?
-  // driversLicense    String?
-  // driversState      String?
-  // driversExpiration DateTime?
-  // greenCard         String?
-  // citizenship       String?
-  // yearInUsa         Int?
-  // parentsLiving     Boolean?
-  // fatherAge         Int?
-  // motherAge         Int?
-  // cuaseOfDeath      String?
-  status        String        @default("New")
+  id               String        @id @default(cuid())
+  firstName        String
+  lastName         String
+  address          String?
+  city             String?
+  state            String
+  zipCode          String?
+  homePhone        String?
+  cellPhone        String
+  gender           Gender        @default(Male)
+  maritalStatus    MaritalStatus @default(Single)
+  email            String?
+  dateOfBirth      DateTime?
+  weight           Int?
+  height           String?
+  income           Int?
+  policyAmount     Int?
+  smoker           Boolean       @default(false)
+  currentlyInsured Boolean       @default(false)
+  currentInsuranse String?
+
+  vendor String     @default("Manually_Created")
+  type   LeadType   @default(General)
+  status LeadStatus @default(New)
+
+  quote      Int?
+  saleAmount Int?
+  commision  Int?
+  costOfLead Int?
+
   defaultNumber String
   notes         String?
-  active        Boolean       @default(true)
   owner         String?
 
   conversations Conversation[]
   appointments  Appointment[]
   calls         Call[]
 
-  createdAt DateTime @default(now())
-  updatedBy String?
-  updatedAt DateTime @updatedAt
+  recievedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedBy  String?
+  updatedAt  DateTime @updatedAt
 }
 
 model Conversation {

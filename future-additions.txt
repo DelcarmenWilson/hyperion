@@ -7,23 +7,20 @@
 - create function to talk to the crm. create messaging between agents.
 
 --comments in appoiment shiuld not be requiered
---change the calendar icon
+
 --dont let agent send out text if they dont have the default prompt and message
 
 --find a way to incorporate the sadcn calender in new lead form
 
 --get chat gpt to return a specific date and time
 
---need to get the date od birth from the lead source and plug it in to the database.
---need to be able to send email 
+-- need to be able to send email 
 -- get an original sound simpler to ebay chime
 -- dont forget to uncomment the inbox client in the inbox
 -- incorporate intake form
--- vendor column  needs to be added
--- Lead type [General,final expense, mortgae protection,Iul]
--- fix lead Status
--- get agent couching working and be able to 
--- foward to another agent
+
+-- get agent couching working
+-- be able to  foward to another agent
 -- request to create new teams
 -- create metrics pert teams
 -- add sending credential will on the phone
@@ -33,9 +30,12 @@
 -- as per suandra send reminder to client after the appointment is set--check?
 -- send cofirmation for appointment a day earlier
 
-
 -- make cell phone mandatory inside new lead form
 -- work more on the local time function
+-- make the app send a sms if you dont log in.
+-- make the app send you motivational speeches every now and then.
+-- only count outgoing calls in the lead page (call count)
+-- withing the dashboard only show the 24 hours incoming and outgoing call count
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 

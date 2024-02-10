@@ -9,10 +9,11 @@ import { Send } from "lucide-react";
 import { MessageInput } from "./message-input";
 
 interface FormProps {
+  disabled: boolean;
   phone: string;
   defaultPhone: string;
 }
-export const Form = ({ phone, defaultPhone }: FormProps) => {
+export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
   const { conversationId } = useConversation();
 
   const {
@@ -47,6 +48,7 @@ export const Form = ({ phone, defaultPhone }: FormProps) => {
         className="flex items-center gap-2 lg:gap-4 w-full"
       >
         <MessageInput
+          disabled={disabled}
           id="message"
           type="text"
           register={register}
@@ -54,7 +56,12 @@ export const Form = ({ phone, defaultPhone }: FormProps) => {
           errors={errors}
           placeholder="Write a message..."
         />
-        <Button size="icon" type="submit" className="rounded-full">
+        <Button
+          disabled={disabled}
+          size="icon"
+          type="submit"
+          className="rounded-full"
+        >
           <Send className="h-4 w-4" />
         </Button>
       </form>

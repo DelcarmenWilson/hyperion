@@ -112,6 +112,7 @@ export const Dialer = () => {
 
   const onNumberTyped = (num: string) => {
     setToNumber(num);
+    setDisabled(num.length > 9 ? true : false);
   };
 
   const onCheckNumber = () => {
@@ -145,6 +146,7 @@ export const Dialer = () => {
     });
   };
   const onReset = () => {
+    setToName("");
     setToNumber("");
     setDisabled(false);
   };
@@ -166,6 +168,7 @@ export const Dialer = () => {
           <Input
             placeholder="Phone Number"
             value={toNumber}
+            maxLength={10}
             onChange={(e) => onNumberTyped(e.target.value)}
           />
           <X

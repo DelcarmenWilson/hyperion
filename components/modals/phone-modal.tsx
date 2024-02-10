@@ -49,10 +49,6 @@ const agents: AgentType[] = [
   },
 ];
 
-// interface PhoneModalProps {
-//   dev: Device;
-// }
-
 export const PhoneModal = () => {
   const user = useCurrentUser();
   const {
@@ -66,7 +62,7 @@ export const PhoneModal = () => {
   // PHONE VARIABLES
 
   // const [dev, setDev] = useState<Device>(new Device());
-  const [call, setInComingCall] = useState<Connection>();
+  const [call, setCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
   const [fromNumber, setFromNumber] = useState("");
   const [fromName, setFromName] = useState("");
@@ -102,13 +98,13 @@ export const PhoneModal = () => {
       setFromNumber(data.cellPhone || call.parameters.From);
 
       onOpen();
-      setInComingCall(call);
+      setCall(call);
     });
   };
 
   const onIncomingCallDisconnect = () => {
     call?.disconnect();
-    setInComingCall(undefined);
+    setCall(undefined);
     setIsCallAccepted(false);
     setFromName("");
     setFromNumber("");
@@ -125,7 +121,7 @@ export const PhoneModal = () => {
 
   const onIncomingCallReject = () => {
     call?.reject();
-    setInComingCall(undefined);
+    setCall(undefined);
     setIsCallAccepted(false);
     onClose();
   };
@@ -154,7 +150,7 @@ export const PhoneModal = () => {
   });
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"

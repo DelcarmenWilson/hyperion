@@ -6,6 +6,7 @@ import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
+import { LeadStatus, LeadType } from "@prisma/client";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -48,7 +49,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
 
   const st = states.find((e) => e.state == state || e.abv == state);
   const phoneNumbers = await db.phoneNumber.findMany({
-    where: { agentId: user.id,status:{not:"Deactive"} },
+    where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
@@ -82,9 +83,9 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
     return { error: "Unauthorized" };
   }
   const phoneNumbers = await db.phoneNumber.findMany({
-    where: { agentId: user.id,status:{not:"Deactive"} },
+    where: { agentId: user.id, status: { not: "Deactive" } },
   });
-  
+
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   for (let i = 0; i < values.length; i++) {
     const {
@@ -100,9 +101,19 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
       maritalStatus,
       email,
       dateOfBirth,
+      weight,
+      height,
+      income,
+      policyAmount,
+      smoker,
+      currentlyInsured,
+      currentInsuranse,
+      vendor,
+      recievedAt,
     } = values[i];
 
-    const st = states.find((e) => e.state == state || e.abv == state);
+    const st =states.find(
+            (e) => e.state.toLowerCase == state.toLowerCase || e.abv.toLowerCase == state.toLowerCase)
     const phoneNumber = phoneNumbers.find((e) => e.state == state);
 
     await db.lead.create({
@@ -118,8 +129,19 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         gender,
         maritalStatus,
         email,
-        //TODO - 
-        dateOfBirth:new Date(),
+        //TODO -
+        dateOfBirth:
+          Date.parse(dateOfBirth!) > 0 ? new Date(dateOfBirth!) : null,
+        weight,
+        height,
+        income,
+        policyAmount,
+        smoker,
+        currentlyInsured,
+        currentInsuranse,
+        vendor,
+        recievedAt:
+          Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         owner: user?.id,
       },
@@ -138,7 +160,7 @@ export const leadUpdateById = async (
     return { error: "Lead does not exist" };
   }
 
-   await db.lead.update({
+  await db.lead.update({
     where: { id: existingLead.id },
     data: {
       ...values,
@@ -162,4 +184,118 @@ export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
     },
   });
   return { success: "Lead notes have been updated" };
+};
+
+export const leadUpdateByIdQuote = async (leadId: string, quote: number) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      quote,
+    },
+  });
+  return { success: "Lead quote has been updated" };
+};
+
+export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      type,
+    },
+  });
+  return { success: "Lead type has been updated" };
+};
+
+export const leadUpdateByIdStatus = async (leadId: string, status: LeadStatus) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      status,
+    },
+  });
+  return { success: "Lead status has been updated" };
+};
+
+export const leadUpdateByIdVendor = async (leadId: string, vendor: string) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      vendor,
+    },
+  });
+  return { success: "Lead vendor has been updated" };
+};
+
+//TODO the folowing 3 functions can be combined into 1
+
+
+export const leadUpdateByIdCommision = async (leadId: string, commision: number) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      commision,
+    },
+  });
+  return { success: "Lead commission has been updated" };
+};
+
+export const leadUpdateByIdCost = async (leadId: string, costOfLead: number) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      costOfLead,
+    },
+  });
+  return { success: "Lead cost has been updated" };
+};
+export const leadUpdateByIdSale = async (leadId: string, saleAmount: number) => {
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+
+  if (!existingLead) {
+    return { error: "Lead does not exist" };
+  }
+
+  await db.lead.update({
+    where: { id: leadId },
+    data: {
+      saleAmount,
+    },
+  });
+  return { success: "Lead sale amount has been updated" };
 };

@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { settings } from "@/actions/settings";
 import {
   Form,
   FormField,
@@ -31,6 +30,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { FormSuccess } from "@/components/form-success";
 import { FormError } from "@/components/form-error";
 import { UserRole } from "@prisma/client";
+import { userUpdateById } from "@/actions/user";
 
 const SettingsPage = () => {
   const user = useCurrentUser();
@@ -53,7 +53,7 @@ const SettingsPage = () => {
 
   const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
     startTransition(() => {
-      settings(values)
+      userUpdateById(values)
         .then((data) => {
           if (data.error) {
             setError(data.error);

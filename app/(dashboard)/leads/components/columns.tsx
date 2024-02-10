@@ -75,6 +75,6 @@ export const columns: ColumnDef<FullLead>[] = [
   {
     accessorKey: "extra info",
     header: "",
-    cell: ({ row }) => <ExtraInfo createdAt={row.original.createdAt} />,
+    cell: ({ row }) => <ExtraInfo lead={row.original} />,
   },
 ];

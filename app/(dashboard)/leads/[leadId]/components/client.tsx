@@ -33,7 +33,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { DropDown } from "../../components/shared/dropdown";
 import { CallHistory } from "./callhistory/call-history";
 import { FullLead } from "@/types";
-import { CalendarEvents } from "../calendarevents/calendar-events";
+import { CalendarEvents } from "./calendarevents/calendar-events";
 
 interface LeadClientProps {
   lead: FullLead;
@@ -101,7 +101,7 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
               appointment={lead.lastApp!}
               showInfo
             />
-            <ExtraInfo createdAt={lead.createdAt} />
+            <ExtraInfo lead={lead} />
           </div>
         </div>
         <div className="text-sm font-light px-4">
@@ -166,7 +166,7 @@ export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
             <div className="px-2">
               <TabsContent value="activity">ACTIVITY LOG</TabsContent>
               <TabsContent value="call">
-                <CallHistory initialCalls={lead.calls!} />
+                <CallHistory leadId={lead.id} initialCalls={lead.calls!} />
               </TabsContent>
               <TabsContent value="events">
                 <CalendarEvents appointments={lead.appointments!} />

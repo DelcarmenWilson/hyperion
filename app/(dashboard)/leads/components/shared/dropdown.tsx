@@ -76,6 +76,7 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-60" align="center">
           <DropdownMenuItem
+            disabled={lead.status == "Do_Not_Call"}
             className="cursor-pointer"
             onClick={() => useAppointment.onOpen(lead)}
           >

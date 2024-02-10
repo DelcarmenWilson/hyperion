@@ -63,6 +63,7 @@ export const {
         session.user.team=token.team as string
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
+        session.user.image= token.picture as string
       }
       return session;
     },
@@ -82,6 +83,7 @@ export const {
       token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      token.picture=existingUser.image
 
       return token;
     },

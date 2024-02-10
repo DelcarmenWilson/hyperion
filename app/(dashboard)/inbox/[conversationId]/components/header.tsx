@@ -27,11 +27,12 @@ export const Header = ({ conversation }: HeaderProps) => {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
-    email: lead.email,
+    email: lead.email!,
     cellPhone: lead.cellPhone,
     defaultNumber: lead.defaultNumber,
     autoChat: conversation.autoChat,
     notes: lead.notes!,
+    status: lead.status,
     createdAt: lead.createdAt,
   };
 
@@ -45,6 +46,7 @@ export const Header = ({ conversation }: HeaderProps) => {
           {fullName} {formatPhoneNumber(conversation.lead.cellPhone)}
         </span>
         <Button
+          disabled={lead.status == "Do_Not_Call"}
           className="rounded-full"
           variant="outlineprimary"
           size="icon"

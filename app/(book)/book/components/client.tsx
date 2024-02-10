@@ -4,7 +4,6 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
 import { scheduleTimes } from "@/constants/schedule-times";
 
 export const BookClient = () => {
