@@ -1,30 +1,10 @@
+"use client";
+import * as z from "zod";
 import { useEffect, useState } from "react";
 
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "@radix-ui/react-icons";
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import { AppointmentSchema } from "@/schemas";
-import {
-  Form,
-  FormField,
-  FormControl,
-  FormLabel,
-  FormMessage,
-  FormItem,
-} from "@/components/ui/form";
-
-import { useRouter } from "next/navigation";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 import { Calendar } from "@/components/ui/calendar";
 
@@ -48,7 +28,6 @@ import { Appointment } from "@prisma/client";
 export const AppointmentForm = () => {
   const tommorrow = getToday();
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
 
@@ -125,9 +104,11 @@ export const AppointmentForm = () => {
     axios.get("/api/user/schedule").then((response) => {
       setBrSchedule(breakDownSchedule(response.data));
     });
-    axios.get("/api/user/appointments").then((response) => {
-      setAppointments(response.data);
-    });
+    axios
+      .post("/api/user/appointments", { user: user?.id })
+      .then((response) => {
+        setAppointments(response.data);
+      });
   }, []);
 
   return (
