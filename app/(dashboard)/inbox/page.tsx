@@ -2,10 +2,9 @@ import { Users } from "lucide-react";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { InboxClient } from "./components/client";
 import { conversationsGetByUserId } from "@/data/conversation";
-import { InboxColumn, columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
+import { InboxColumn } from "./components/columns";
+import { InboxClient } from "./components/client";
 
 const InboxPage = async () => {
   const conversations = await conversationsGetByUserId();
@@ -15,9 +14,8 @@ const InboxPage = async () => {
       fullName: `${conversation.lead.firstName} ${conversation.lead.lastName}`,
       disposition: "",
       cellPhone: conversation.lead.cellPhone,
-      message: conversation.messages[conversation.messages.length - 1]?.content,
-      createdAt:
-        conversation.messages[conversation.messages.length - 1]?.createdAt,
+      message: conversation.lastMessage!,
+      updatedAt: conversation.updatedAt,
       unread: conversation.messages.filter((message) => !message.hasSeen)
         .length,
     })
@@ -39,7 +37,7 @@ const InboxPage = async () => {
 
         <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
           <ScrollArea className="w-full flex-1 pr-5">
-            <DataTable columns={columns} data={formattedConversations} />
+            <InboxClient convos={formattedConversations} />
           </ScrollArea>
         </CardContent>
       </Card>

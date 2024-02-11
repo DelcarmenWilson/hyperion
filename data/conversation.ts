@@ -13,7 +13,7 @@ export const conversationsGetByUserId = async () => {
       include: {
         lead: true,
         messages: true,
-      },
+      },orderBy:{updatedAt:"desc"}
     });
 
     return conversations;
@@ -40,6 +40,7 @@ export const conversationGetById = async (conversationId: string) => {
     return null;
   }
 };
+
 export const conversationGetByLeadId = async (leadId: string) => {
   try {
     const conversation = await db.conversation.findFirst({

@@ -14,7 +14,7 @@ export type InboxColumn = {
   disposition: string;
   cellPhone: string;
   message: string;
-  createdAt: Date;
+  updatedAt: Date;
   unread: number;
 };
 
@@ -77,8 +77,8 @@ export const columns: ColumnDef<InboxColumn>[] = [
     header: "Recieved on",
     cell: ({ row }) => (
       <div>
-        {row.original.createdAt &&
-          format(row.original.createdAt, "MM-dd-yyy h:mm aaaa")}
+        {row.original.updatedAt &&
+          format(row.original.updatedAt, "MM-dd-yyy h:mm aaaa")}
       </div>
     ),
   },

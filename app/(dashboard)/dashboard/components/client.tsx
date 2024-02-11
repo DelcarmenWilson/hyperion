@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MessageSquareText, Phone, PhoneIncoming, Users } from "lucide-react";
+import {
+  MessageSquareText,
+  PhoneIncoming,
+  PhoneOutgoing,
+  Users,
+} from "lucide-react";
+
 import { Box, BoxSkeleton } from "../components/box";
 import {
   AppointmentBox,
@@ -14,9 +20,9 @@ import { CallHistory } from "./callhistory/call-history";
 import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { FullCall } from "@/types";
 import TurnOverRate from "./turnover/turn-over-rate";
 import { CallHistoryColumn } from "./callhistory/columns";
+import { format } from "date-fns";
 
 interface DashBoardClientProps {
   leadCount: number;
@@ -40,6 +46,12 @@ export const DashBoardClient = ({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [message, setMessage] = useState(messagesCount);
 
+  const date = format(
+    new Date("2024-02-12T15:00:00.0000Z"),
+    "MM-dd @ hh:mm aa"
+  );
+  console.log(date);
+
   useEffect(() => {
     pusherClient.subscribe(user?.id as string);
 
@@ -60,7 +72,7 @@ export const DashBoardClient = ({
   }, [user?.id]);
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 lg:flex-row">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Box
           icon={Users}
           title="Leads today"
@@ -78,7 +90,7 @@ export const DashBoardClient = ({
         />
 
         <Box
-          icon={Phone}
+          icon={PhoneOutgoing}
           title="Outbound calls"
           value={outBoundCallsCount}
           href="/calls"
@@ -95,11 +107,11 @@ export const DashBoardClient = ({
       {/* <AppointmentBoxSkeleton /> */}
       <AppointmentBox data={appointments} />
       <AgentSummary initialData={agents} />
-      <div className="flex items-center gap-4 h-[400px]">
-        <div className="w-[25%] h-full">
+      <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">
+        <div className="w-full lg:w-[25%] h-full">
           <TurnOverRate />
         </div>
-        <div className="w-[75%] h-full">
+        <div className="w-full lg:w-[75%] h-full">
           <CallHistory initialCalls={callHistory} />
         </div>
       </div>

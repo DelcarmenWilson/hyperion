@@ -6,6 +6,7 @@
 export const publicRoutes = [
   "/",
   "/new-verification",
+  "/api/appointments/reminder",
   "/api/organizations",
   "/api/leads/details",
   "/api/sms/in",
@@ -21,7 +22,7 @@ export const publicRoutes = [
 
 /**
  * An array of routes that are used for authentications
- * These routes will redirect loginned users to /settings
+ * These routes will redirect logged in users to /dashboard
  * @type {string[]}
  */
 
@@ -42,7 +43,7 @@ export const authRoutes = [
 export const apiAuthPrefix = "/api/auth";
 
 /**
- * The defsult redirect path after loginin
+ * The defsult redirect path after login in
  *
  * @type {string}
  */

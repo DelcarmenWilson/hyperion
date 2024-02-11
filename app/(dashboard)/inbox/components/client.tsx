@@ -1,29 +1,47 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { AlarmClock, CircleSlash, MessageSquareText } from "lucide-react";
-import React from "react";
+"use client";
 
-export const InboxClient = () => {
-  return (
-    <div className="flex gap-2 pt-4 mr-4">
-      <Button variant="outlineprimary" size="sm">
-        <AlarmClock className="h-4 w-4 mr-2" />
-        VIEW SCHEDULED TEXTS
-      </Button>
-      <Button variant="outlineprimary" size="sm">
-        <MessageSquareText className="h-4 w-4 mr-2" />
-        VIEW SENT TEXTS
-      </Button>
-      <Button variant="outlineprimary" className="relative" size="sm">
-        <CircleSlash className="h-4 w-4 mr-2" />
-        VIEW REJECTED TEXTS
-        <Badge
-          variant="destructive"
-          className="absolute -top-3 -right-3 rounded-full"
-        >
-          13
-        </Badge>
-      </Button>
-    </div>
-  );
+import { useEffect, useState } from "react";
+import { InboxColumn, columns } from "./columns";
+import { DataTable } from "./data-table";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { pusherClient } from "@/lib/pusher";
+import { find } from "lodash";
+import { Conversation } from "@prisma/client";
+
+type InboxClientProps = {
+  convos: InboxColumn[];
+};
+export const InboxClient = ({ convos }: InboxClientProps) => {
+  const user = useCurrentUser();
+  const [conversations, setConversations] = useState<InboxColumn[]>(convos);
+  useEffect(() => {
+    pusherClient.subscribe(user?.id as string);
+
+    const convoHandler = (updatedConvo: Conversation) => {
+      // if (message.role == "user" && audioRef.current) {
+      //   audioRef.current.play();
+      // }
+      setConversations((current) => {
+        if (find(current, { id: updatedConvo.id })) {
+          const convo = current.find((e) => e.id == updatedConvo.id);
+          const index = current.findIndex((e) => e.id == updatedConvo.id);
+          if (!convo) {
+            return current;
+          }
+          convo.message = updatedConvo.lastMessage!;
+          convo.updatedAt = updatedConvo.updatedAt;
+          current.unshift(current.splice(index, 1)[0]);
+
+          return [...current];
+        }
+        return [...current];
+      });
+    };
+    pusherClient.bind("messages:new", convoHandler);
+    return () => {
+      pusherClient.unsubscribe(user?.id as string);
+      pusherClient.unbind("messages:new", convoHandler);
+    };
+  }, [user?.id]);
+  return <DataTable columns={columns} data={conversations} />;
 };

@@ -40,7 +40,6 @@ interface LeadClientProps {
   nextPrev: any;
 }
 export const LeadClient = ({ lead, nextPrev }: LeadClientProps) => {
-  const user = useCurrentUser();
   const router = useRouter();
 
   return (

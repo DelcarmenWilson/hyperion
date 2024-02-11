@@ -22,13 +22,18 @@ import { Schedule } from "@prisma/client";
 import { ScheduleSchema } from "@/schemas";
 import { useState } from "react";
 import { scheduleUpdateByUserId } from "@/actions/schedule";
+import Link from "next/link";
 
-interface AvailabilityClientProps {
+type AvailabilityClientProps = {
+  username: string;
   schedule: Schedule;
-}
+};
 type ScheduleFormValues = z.infer<typeof ScheduleSchema>;
 
-export function AvailabilityClient({ schedule }: AvailabilityClientProps) {
+export function AvailabilityClient({
+  username,
+  schedule,
+}: AvailabilityClientProps) {
   const [loading, setLoading] = useState(false);
   const [sunday, setSunday] = useState(schedule.sunday);
   const [monday, setMonday] = useState(schedule.monday);
@@ -71,10 +76,8 @@ export function AvailabilityClient({ schedule }: AvailabilityClientProps) {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-2/3 space-y-6 pl-2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 pl-2">
+        {/* TYPE */}
         <FormField
           control={form.control}
           name="type"
@@ -108,6 +111,15 @@ export function AvailabilityClient({ schedule }: AvailabilityClientProps) {
             </FormItem>
           )}
         />
+        <p className="text-right w-full text-sm text-primary mt-0">
+          <Link
+            href={`/book/${username}`}
+            className="text-right w-full text-sm text-primary"
+            target="_blank"
+          >
+            Booking page : {`/book/${username}`}
+          </Link>
+        </p>
         {/*TILTE */}
         <FormField
           control={form.control}

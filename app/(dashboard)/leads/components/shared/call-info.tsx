@@ -28,7 +28,8 @@ interface CallInfoProps {
 }
 export const CallInfo = ({ lead }: CallInfoProps) => {
   const usePm = usePhoneModal();
-  const [callCount, setCallCount] = useState(lead.calls?.length || 0);
+  const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
+  const [callCount, setCallCount] = useState(leadcount?.length || 0);
 
   const onStatusUpdated = (e: any) => {
     leadUpdateByIdStatus(lead.id, e).then((data) => {

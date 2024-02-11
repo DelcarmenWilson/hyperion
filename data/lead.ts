@@ -1,3 +1,4 @@
+import { getYesterday } from "@/formulas/dates";
 import { db } from "@/lib/db";
 
 export const leadsGetAll = async () => {
@@ -80,14 +81,12 @@ export const leadGetPrevNextById = async (id: string) => {
 };
 
 export const leadsGetByAgentIdTodayCount = async (agentId: string) => {
-  const lastdate = new Date();
-  lastdate.setDate(lastdate.getDate() - 1);
   try {
     const leads = await db.lead.aggregate({
       _count: { id: true },
       where: {
         owner: agentId,
-        createdAt: { gte: new Date(lastdate) },
+        createdAt: { gte: getYesterday()},
       },
     });
 

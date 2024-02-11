@@ -25,7 +25,18 @@ export const userGetById = async (id: string) => {
     return null;
   }
 };
+export const userGetByUserName = async (username: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { username },
+      include: { phoneNumbers: true, chatSettings: true, team: true },
+    });
 
+    return user;
+  } catch {
+    return null;
+  }
+};
 export const usersGetSummaryByTeamId = async (
   userId: string,
   role: UserRole,

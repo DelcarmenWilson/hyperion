@@ -109,7 +109,7 @@ export const LeadSchema = z.object({
   state: z.string(),
   zipCode: z.string(),
   homePhone: z.optional(z.string()),
-  cellPhone: z.string(),
+  cellPhone: z.string().min(10,"required"),
   gender: z.enum([Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
