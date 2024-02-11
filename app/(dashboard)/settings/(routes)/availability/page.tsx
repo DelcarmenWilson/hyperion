@@ -5,7 +5,7 @@ import { scheduleGetByUserId } from "@/data/schedule";
 const AvailabilityPage = async () => {
   const user = await currentUser();
   const schedule = await scheduleGetByUserId(user?.id!);
-  return <AvailabilityClient schedule={schedule!} />;
+  return <AvailabilityClient username={user?.name!} schedule={schedule!} />;
 };
 
 export default AvailabilityPage;

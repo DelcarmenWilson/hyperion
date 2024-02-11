@@ -61,6 +61,6 @@ export const getYesterday=():Date=>{
 
 export const getLast24hrs=():Date=>{
   let yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(yesterday.getHours()-24)
   return yesterday
 }

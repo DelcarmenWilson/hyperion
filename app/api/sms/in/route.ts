@@ -5,6 +5,8 @@ import { messageInsert } from "@/actions/message";
 import { chatFetch } from "@/actions/chat";
 import { db } from "@/lib/db";
 import { defaultOptOut } from "@/placeholder/chat";
+import { format } from "date-fns";
+import { appointmentInsert } from "@/actions/appointment";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -39,7 +41,10 @@ export async function POST(req: Request) {
 
   switch (textFromLead.content.toLowerCase()) {
     case "stop":
-      await db.lead.update({where:{id:conversation.leadId},data:{status:"Do_Not_Call"}})
+      await db.lead.update({
+        where: { id: conversation.leadId },
+        data: { status: "Do_Not_Call" },
+      });
       return new NextResponse(defaultOptOut.confirm, { status: 200 });
     case "reset":
       await db.conversation.delete({ where: { id: conversation.id } });
@@ -53,7 +58,7 @@ export async function POST(req: Request) {
   let chatmessages = messages.map((message) => {
     return { role: message.role, content: message.content };
   });
-  chatmessages.push({role:textFromLead.role,content:textFromLead.content});
+  chatmessages.push({ role: textFromLead.role, content: textFromLead.content });
 
   const chatresponse = await chatFetch(chatmessages);
   const { role, content } = chatresponse.choices[0].message;
@@ -71,6 +76,19 @@ export async function POST(req: Request) {
       hasSeen: false,
     });
   }, 5000);
+
+  if (content.includes("{schedule}")) {
+     const aptDate = new Date(content.replace("{schedule}", "").trim());
+     await appointmentInsert({date:aptDate,leadId:conversation.leadId,agentId:conversation.agentId,comments:""},false)
+
+    return new NextResponse(
+      `Appointment has been schedule for ${format(
+        aptDate,
+        "MM-dd @ hh:mm aa"
+      )}`,
+      { status: 200 }
+    );
+  }
 
   return new NextResponse(content, { status: 200 });
 }

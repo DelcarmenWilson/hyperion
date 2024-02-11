@@ -1,15 +1,17 @@
 "use client";
 
-import { creatCall } from "@/actions/test";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const TestPage = () => {
-  const startCall = () => {
-    creatCall();
+  const onSendReminder = () => {
+    axios.get("/api/appointments/reminder").then((data) => {
+      console.log(data);
+    });
   };
   return (
     <div>
-      <Button onClick={startCall}>Call</Button>
+      <Button onClick={onSendReminder}>Reminder</Button>
     </div>
   );
 };

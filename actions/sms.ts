@@ -16,7 +16,7 @@ export const smsCreateInitial = async (leadId: string) => {
     return { error: "Unauthenticated" };
   }
 
-  const user=await db.user.findUnique({where:{id:dbuser.id}})
+  const user = await db.user.findUnique({ where: { id: dbuser.id } });
   if (!user) {
     return { error: "Unauthorized" };
   }
@@ -66,7 +66,9 @@ export const smsCreateInitial = async (leadId: string) => {
       city: lead.city,
       state: lead.state,
     };
-    prompt += ` Here is the lead information: ${JSON.stringify(leadInfo)}  `;
+    prompt += `Todays Date is ${new Date()} Here is my information: ${JSON.stringify(
+      leadInfo
+    )}  `;
   }
 
   const conversationId = (await conversationInsert(user.id, lead.id)).success;
@@ -74,26 +76,6 @@ export const smsCreateInitial = async (leadId: string) => {
   if (!conversationId) {
     return { error: "Conversation was not created" };
   }
-
-  // await db.message.createMany({data:[
-  //   {
-  //     role: "system",
-  //     content: prompt,
-  //     conversationId,
-  //     senderId: user.id,
-  //     hasSeen: false,
-  //   },{
-  //     role: "assistant",
-  //     content: message,
-  //     conversationId,
-  //     senderId: user.id,
-  //     hasSeen: false,
-  //   }
-
-  // ],
-  // skipDuplicates:true
-
-  // })
 
   await messageInsert({
     role: "system",
@@ -103,11 +85,11 @@ export const smsCreateInitial = async (leadId: string) => {
     hasSeen: false,
   });
 
-    const result = await client.messages.create({
-     body: "Hi Wilson",
+  const result = await client.messages.create({
+    body: message,
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
-    applicationSid:cfg.twimlAppSid  ,
+    applicationSid: cfg.twimlAppSid,
   });
 
   await messageInsert({
@@ -116,7 +98,7 @@ export const smsCreateInitial = async (leadId: string) => {
     conversationId,
     senderId: user.id,
     hasSeen: false,
-    sid:result.sid
+    sid: result.sid,
   });
 
   if (!result) {
@@ -156,7 +138,7 @@ export const smsCreate = async (leadId: string, message: string) => {
   });
 
   const result = await client.messages.create({
-     body: message,
+    body: message,
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
   });
@@ -168,19 +150,20 @@ export const smsCreate = async (leadId: string, message: string) => {
   return { success: "Message sent!" };
 };
 
-export const smsSend = async (fromPhone:string,toPhone: string,  message: string) => { 
-
+export const smsSend = async (
+  fromPhone: string,
+  toPhone: string,
+  message: string
+) => {
   if (!message) {
     return { error: "Message cannot be empty!" };
   }
 
   const result = await client.messages.create({
-     body: message,
+    body: message,
     from: fromPhone,
     to: toPhone,
   });
-
-  console.log(result)
 
   if (!result) {
     return { error: "Message was not sent!" };

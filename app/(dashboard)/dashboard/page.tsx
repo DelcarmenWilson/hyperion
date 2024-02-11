@@ -3,7 +3,7 @@ import { AppointmentColumn } from "./components/appointment/columns";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
 import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
-import { callGetAllByAgentId } from "@/data/call";
+import { callGetAllByAgentIdLast24Hours } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
@@ -47,7 +47,7 @@ const DahsBoardPage = async () => {
     currentCall: agent.chatSettings?.currentCall!,
   }));
 
-  const calls = await callGetAllByAgentId(user?.id!);
+  const calls = await callGetAllByAgentIdLast24Hours(user?.id!);
 
   const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
     id: call.id,

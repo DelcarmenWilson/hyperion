@@ -101,7 +101,7 @@ export const AppointmentForm = () => {
   };
 
   useEffect(() => {
-    axios.get("/api/user/schedule").then((response) => {
+    axios.post("/api/user/schedule").then((response) => {
       setBrSchedule(breakDownSchedule(response.data));
     });
     axios

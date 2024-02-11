@@ -4,9 +4,11 @@ import { db } from "@/lib/db";
 import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
 import { states } from "@/constants/states";
 import { smsSend } from "./sms";
+import { format } from "date-fns";
 
 export const appointmentInsert = async (
-  values: z.infer<typeof AppointmentSchema>
+  values: z.infer<typeof AppointmentSchema>,
+  sendSms: boolean = true
 ) => {
   const { date, agentId, leadId, comments } = values;
   const existingAppointments = await db.appointment.findMany({
@@ -33,10 +35,15 @@ export const appointmentInsert = async (
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-
-  const lead = await db.lead.findUnique({ where: { id: leadId } });
-  if (lead) {
-     await smsSend(lead?.defaultNumber!,lead?.cellPhone!,`appointment set for ${date.toDateString()}`)
+  if (sendSms) {
+    const lead = await db.lead.findUnique({ where: { id: leadId } });
+    if (lead) {
+      await smsSend(
+        lead?.defaultNumber!,
+        lead?.cellPhone!,
+        `appointment set for ${format(date, "MM-dd @ hh:mm aa")}`
+      );
+    }
   }
   return { success: "Appointment Scheduled!" };
 };

@@ -5,7 +5,7 @@ import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
 import { BookAgentClient } from "./components/client";
 import { leadGetById } from "@/data/lead";
 import { scheduleGetByUserId } from "@/data/schedule";
-import { userGetById } from "@/data/user";
+import { userGetByUserName } from "@/data/user";
 
 const BookAgentPage = async ({
   params,
@@ -16,10 +16,10 @@ const BookAgentPage = async ({
   };
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const appointments = await appointmentsGetAllByUserIdUpcoming(params.agentId);
+  const user = await userGetByUserName(params.agentId);
+  const appointments = await appointmentsGetAllByUserIdUpcoming(user?.id!);
   const lead = await leadGetById(searchParams?.lid as string);
-  const user = await userGetById(params.agentId);
-  const schedule = await scheduleGetByUserId(params.agentId);
+  const schedule = await scheduleGetByUserId(user?.id!);
 
   const formattedLead: z.infer<typeof AppointmentLeadSchema> = {
     id: lead?.id!,
