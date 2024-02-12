@@ -27,7 +27,7 @@ const DahsBoardPage = async () => {
       status: apt.status,
       dob: apt.lead.dateOfBirth || undefined,
       date: apt.date,
-      comments: apt.comments,
+      comments: apt.comments!,
     })
   );
   const agents = await usersGetSummaryByTeamId(

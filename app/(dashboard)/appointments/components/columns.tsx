@@ -18,7 +18,7 @@ export type AppointmentColumn = {
   dob?: Date;
   date: Date;
   status: string;
-  comments: string;
+  comments?: string;
 };
 
 export const columns: ColumnDef<AppointmentColumn>[] = [
