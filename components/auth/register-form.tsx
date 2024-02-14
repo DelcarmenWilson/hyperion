@@ -41,7 +41,7 @@ export const RegisterForm = ({ teams }: RegisterFormProps) => {
     defaultValues: {
       team: "",
       npn: "",
-      username: "",
+      userName: "",
       password: "",
       email: "",
       firstName: "",
@@ -136,7 +136,7 @@ export const RegisterForm = ({ teams }: RegisterFormProps) => {
               {/* USERNAME */}
               <FormField
                 control={form.control}
-                name="username"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>

@@ -33,7 +33,7 @@ export const Box = ({
         <div className="bg-accent p-4 rounded-br-lg">
           <Icon className="h-5 w-5 text-primary" />
         </div>
-        <CardTitle className=" text-xl text-muted-foreground text-right">
+        <CardTitle className=" text-xl text-muted-foreground text-left lg:text-right">
           <span>{title}</span>
         </CardTitle>
       </div>

@@ -70,7 +70,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
       email,
       dateOfBirth: new Date(dateOfBirth!),
       defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
-      owner: user.id,
+      userId: user.id,
     },
   });
 
@@ -112,8 +112,11 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
       recievedAt,
     } = values[i];
 
-    const st =states.find(
-            (e) => e.state.toLowerCase == state.toLowerCase || e.abv.toLowerCase == state.toLowerCase)
+    const st = states.find(
+      (e) =>
+        e.state.toLowerCase == state.toLowerCase ||
+        e.abv.toLowerCase == state.toLowerCase
+    );
     const phoneNumber = phoneNumbers.find((e) => e.state == state);
 
     await db.lead.create({
@@ -143,7 +146,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         recievedAt:
           Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
-        owner: user?.id,
+        userId: user?.id,
       },
     });
   }
@@ -218,7 +221,10 @@ export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
   return { success: "Lead type has been updated" };
 };
 
-export const leadUpdateByIdStatus = async (leadId: string, status: LeadStatus) => {
+export const leadUpdateByIdStatus = async (
+  leadId: string,
+  status: LeadStatus
+) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -252,8 +258,10 @@ export const leadUpdateByIdVendor = async (leadId: string, vendor: string) => {
 
 //TODO the folowing 3 functions can be combined into 1
 
-
-export const leadUpdateByIdCommision = async (leadId: string, commision: number) => {
+export const leadUpdateByIdCommision = async (
+  leadId: string,
+  commision: number
+) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -269,7 +277,10 @@ export const leadUpdateByIdCommision = async (leadId: string, commision: number)
   return { success: "Lead commission has been updated" };
 };
 
-export const leadUpdateByIdCost = async (leadId: string, costOfLead: number) => {
+export const leadUpdateByIdCost = async (
+  leadId: string,
+  costOfLead: number
+) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -284,7 +295,10 @@ export const leadUpdateByIdCost = async (leadId: string, costOfLead: number) => 
   });
   return { success: "Lead cost has been updated" };
 };
-export const leadUpdateByIdSale = async (leadId: string, saleAmount: number) => {
+export const leadUpdateByIdSale = async (
+  leadId: string,
+  saleAmount: number
+) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {

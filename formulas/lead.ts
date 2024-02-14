@@ -8,7 +8,6 @@ export const convertLead = (
   result: any,
   vendor: string
 ): ImportLeadsFormValues[] => {
-  console.log(vendor);
   switch (vendor) {
     case importVendors[1].value:
       return MediaAlphaLeads(result, vendor);

@@ -1,12 +1,11 @@
 "use client";
 import * as z from "zod";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
 import { useSession } from "next-auth/react";
-
-import { User } from "lucide-react";
 
 import { toast } from "sonner";
 
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Form,
   FormField,
@@ -93,12 +91,13 @@ const SettingsPage = () => {
       />
       <div className="flex mb-2 gap-2 items-center justify-center">
         <div className="relative text-center overflow-hidden rounded-full group">
-          <Avatar className="w-[100px] h-auto rounded-full">
-            <AvatarImage src={image || ""} />
-            <AvatarFallback className="bg-primary dark:bg-accent">
-              <User className="text-accent dark:text-primary h-5 w-5" />
-            </AvatarFallback>
-          </Avatar>
+          <Image
+            width={100}
+            height={100}
+            className="rounded-full shadow-sm shadow-white w-[100px] aspect-square"
+            src={image || "/assets/teamDefaultImage.jpg"}
+            alt="Team Image"
+          />
           <Button
             className="absolute bottom-0 left-0 w-full opacity-0 group-hover:opacity-100"
             variant="secondary"
@@ -110,7 +109,7 @@ const SettingsPage = () => {
       </div>
       <Form {...form}>
         <form className="space-y-6 px-1" onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <div>
               <FormField
                 control={form.control}

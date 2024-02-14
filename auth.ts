@@ -76,7 +76,7 @@ export const {
       const existingAccount = await getAccountByUserId(existingUser.id);
 
       token.isOAuth = !!existingAccount;
-      token.name = existingUser.username;
+      token.name = existingUser.userName;
       token.email = existingUser.email;
       token.role = existingUser.role;
       token.record=existingUser.chatSettings?.record
@@ -84,7 +84,6 @@ export const {
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
       token.picture=existingUser.image
-
       return token;
     },
   },

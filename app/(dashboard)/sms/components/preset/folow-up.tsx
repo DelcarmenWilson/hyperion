@@ -6,7 +6,7 @@ export const FollowUp = () => {
   return (
     <Box
       icon={CircleDollarSign}
-      title="Initial Preset Texts"
+      title="Follow Up Texts"
       description="Send your lead a presentation followup text after you wuote you leads."
     >
       dimelo

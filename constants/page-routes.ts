@@ -1,17 +1,23 @@
 import {
   Calendar,
   ClipboardList,
+  Cog,
   Computer,
+  ComputerIcon,
   DollarSign,
   Globe2,
   Home,
+  Import,
   LineChart,
+  Lock,
   LucideIcon,
   Mail,
   MessageSquare,
   MessagesSquare,
   Phone,
+  Server,
   Settings,
+  ShieldHalf,
   TestTube,
   UserSquare,
   Users,
@@ -21,7 +27,31 @@ type NavType = {
   href: string;
   active?: boolean;
   icon?: LucideIcon;
+  master?: boolean;
 };
+
+export const AdminSidebarRoutes: NavType[] = [
+  { title: "Teams", href: "/admin/teams", icon: ShieldHalf },
+  { title: "Users", href: "/admin/users", icon: Users },
+  { title: "Import", href: "/admin/import", icon: Import },
+  { title: "Server", href: "/admin/server", icon: Server },
+  {
+    title: "Client",
+    href: "/admin/client",
+    icon: ComputerIcon,
+  },
+  {
+    title: "Admin",
+    href: "/admin",
+    icon: Lock,
+  },
+  {
+    title: "Settings",
+    href: "/admin/settings",
+    icon: Cog,
+  },
+];
+
 export const MainSidebarRoutes: NavType[] = [
   {
     title: "Dashboard",
@@ -101,7 +131,7 @@ export const MainSidebarRoutes: NavType[] = [
   },
 ];
 
-export const SettingsNavbarRoutes:NavType[] = [
+export const SettingsNavbarRoutes: NavType[] = [
   { title: "Profile", href: "/settings" },
   {
     title: "Account",

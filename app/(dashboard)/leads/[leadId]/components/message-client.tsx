@@ -23,7 +23,7 @@ export const Body = ({ initialData }: BodyProps) => {
               username={
                 message.role === "user"
                   ? initialData.lead.lastName
-                  : message.sender?.username!
+                  : message.sender?.userName!
               }
               isLast={i === initialData.messages.length - 1}
             />

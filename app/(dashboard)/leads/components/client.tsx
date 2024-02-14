@@ -30,8 +30,8 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
     <>
       <NewLeadDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <Card className="flex flex-col flex-1 relative overflow-hidden w-full">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col justify-between lg:items-center mb-2 lg:flex-row ">
+          <div className="flex items-center gap-2 mb-2">
             <div className="bg-accent p-4 rounded-br-lg">
               <Users className="h-5 w-5 text-primary" />
             </div>
@@ -39,7 +39,7 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
               View Leads
             </CardTitle>
           </div>
-          <div className="flex gap-2 mr-6">
+          <div className="flex gap-2 lg:mr-6 px-2">
             {/* <Button variant="outlineprimary" size="sm">
               <DownloadCloud className="h-4 w-4 mr-2" />
               GENERATE CSV

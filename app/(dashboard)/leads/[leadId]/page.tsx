@@ -17,7 +17,7 @@ const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
     state: lead?.state!,
     zipCode: lead?.zipCode!,
     defaultNumber: lead?.defaultNumber!,
-    autoChat: lead?.conversations[0]?.autoChat!,
+    autoChat: lead?.conversation?.autoChat!,
     notes: lead?.notes as string,
     calls: lead?.calls!,
     lastCall: lead?.calls[lead?.calls.length - 1],

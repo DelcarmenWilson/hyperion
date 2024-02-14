@@ -53,6 +53,7 @@ export const appointmentInsertBook = async (
   agentId: string,
   date: Date
 ) => {
+  
   const {
     id,
     firstName,
@@ -63,7 +64,9 @@ export const appointmentInsertBook = async (
     maritalStatus,
     email,
   } = values;
+
   let leadId = id;
+
   if (!leadId) {
     const st = states.find((e) => e.state == state || e.abv == state);
     const phoneNumbers = await db.phoneNumber.findMany({
@@ -82,6 +85,7 @@ export const appointmentInsertBook = async (
         maritalStatus,
         email,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+        userId:agentId
       },
     });
 

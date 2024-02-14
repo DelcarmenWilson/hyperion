@@ -3,10 +3,13 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { format } from "date-fns";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
+  
   const appointments = await db.appointment.findMany({
+    where:{status:"Scheduled"},
     include: { lead: true },
   });
+
   if (appointments) {
     appointments.forEach((app) => {
       client.messages.create({

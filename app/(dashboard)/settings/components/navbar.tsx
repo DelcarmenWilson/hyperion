@@ -11,7 +11,7 @@ export const NavBar = () => {
     return route;
   });
   return (
-    <div className="flex flex-1 justify-center items-center gap-2">
+    <div className="flex flex-1 flex-wrap justify-center items-center gap-2">
       {routes.map((route) => (
         <Link key={route.href} href={route.href}>
           <Button variant={route.active ? "default" : "ghost"} size="sm">

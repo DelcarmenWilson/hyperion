@@ -5,6 +5,7 @@ import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
 import { ImageIcon } from "lucide-react";
+import { revalidatePath } from "next/cache";
 
 interface ProfileImageModalProps {
   isOpen: boolean;
@@ -37,6 +38,9 @@ export const ProfileImageModal = ({
       formData.append("profileImage", selectedFile);
       axios.post("/api/user/image", formData).then(() => {
         toast.success("Profile Image has been updated");
+        onClose();
+        revalidatePath("/");
+        revalidatePath("/settings");
       });
     } catch (error: any) {
       console.log(error.response?.data);
@@ -70,7 +74,7 @@ export const ProfileImageModal = ({
             multiple={false}
             onChange={onFileChange}
           />
-          <div className="min-w-40 aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
+          <div className="min-w-40 max-w-md aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
             {selectedImage ? (
               <Image
                 width={80}

@@ -54,7 +54,7 @@ export const LoginSchema = z.object({
 export const MasterRegisterSchema = z.object({
   organization: z.string().min(1),
   team: z.string().min(1),
-  username: z.string().min(1, {
+  userName: z.string().min(1, {
     message: "Username required",
   }),
   password: z.string().min(6, {
@@ -70,7 +70,7 @@ export const MasterRegisterSchema = z.object({
 export const RegisterSchema = z.object({
   team: z.string().min(5,{message:"*"}),
   npn: z.string().min(4,{message:"*"}),
-  username: z.string().min(1, {
+  userName: z.string().min(1, {
     message: "Username required",
   }),
   password: z.string().min(6, {

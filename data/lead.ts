@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 
 export const leadsGetAll = async () => {
   try {
-    const leads = await db.lead.findMany({ include: { conversations: true } });
+    const leads = await db.lead.findMany({ include: { conversation: true } });
 
     return leads;
   } catch {
@@ -11,12 +11,12 @@ export const leadsGetAll = async () => {
   }
 };
 
-export const leadsGetAllByAgentId = async (agentId: string) => {
+export const leadsGetAllByAgentId = async (userId: string) => {
   try {
     const leads = await db.lead.findMany({
-      where: { owner: agentId },
+      where: { userId },
       include: {
-        conversations:true,
+        conversation:true,
         appointments: { where: { status: "scheduled" } },
         // appointments: { where: { status: "scheduled" } },
         calls: true,
@@ -34,7 +34,7 @@ export const leadGetById = async (id: string) => {
       where: {
         id,
       }, include: {
-        conversations:true,
+        conversation:true,
         // appointments: { where: { status: "scheduled" } },
         appointments: true,
         calls: true,
@@ -80,12 +80,12 @@ export const leadGetPrevNextById = async (id: string) => {
   }
 };
 
-export const leadsGetByAgentIdTodayCount = async (agentId: string) => {
+export const leadsGetByAgentIdTodayCount = async (userId: string) => {
   try {
     const leads = await db.lead.aggregate({
       _count: { id: true },
       where: {
-        owner: agentId,
+        userId,
         createdAt: { gte: getYesterday()},
       },
     });

@@ -26,7 +26,7 @@ export const SalesClient = ({ data }: SaleClientProps) => {
 
       <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
         <ScrollArea className="w-full flex-1 pr-2">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <Box title="New Lead Not called" leads={data} />
             <Box title="Week 1 Leads: No response" leads={data} />
             <Box title="Week 2 Leads: No response" leads={data} />

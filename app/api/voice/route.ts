@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const newCall = await db.call.create({
     data: {
       id: j.callSid,
-      agentId: j.agentId,
+      userId: j.agentId,
       from: j.from,
       direction: j.direction,
       status: j.callStatus,

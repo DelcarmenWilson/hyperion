@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Check, HelpCircle, Phone } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -13,34 +14,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { states } from "@/constants/states";
 import { Input } from "@/components/ui/input";
-import { number } from "zod";
-import { toast } from "sonner";
+
 import { isAValidPhoneNumber } from "@/formulas/phones";
 import { phoneNumberInsert } from "@/actions/phone";
-
-type ItemType = {
-  text: string;
-};
+import { states } from "@/constants/states";
 
 export const PurchasePhoneNumbers = () => {
   const [stateSelected, setStateSelected] = useState("");
   const [numberSelected, setNumberSelected] = useState("");
-  const items: ItemType[] = [
-    {
-      text: "Does local id work automatically?",
-    },
-    {
-      text: "Can i get multilple numbers in the same state for the area code matching?",
-    },
-    { text: "Can i change the caller ID number for a lead anytime?" },
-    { text: "Can i get multilple numbers in states all over the country?" },
-    { text: "Can i monitor the spam rate and deliverability of my numbers?" },
-    {
-      text: "If i dont have a number in a particular state, will my default number be used?",
-    },
-    { text: "Can i dedicate 1 number for calling and the rest for texting?" },
+  const items: string[] = [
+    "Does local id work automatically?",
+    "Can I get multilple numbers in the same state for the area code matching?",
+    "Can I change the caller ID number for a lead anytime?",
+    "Can I get multilple numbers in states all over the country?",
+    "Can I monitor the spam rate and deliverability of my numbers?",
+    "If I dont have a number in a particular state, will my default number be used?",
+    "Can I dedicate 1 number for calling and the rest for texting?",
   ];
 
   const onPurchaseNumber = () => {
@@ -82,7 +72,7 @@ export const PurchasePhoneNumbers = () => {
         </div>
       </div>
       <CardContent className="items-center pb-2">
-        <div className="grid grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
           <div className="flex flex-col gap-1">
             <span className="text-sm text-muted-foreground">Search by</span>
             <RadioGroup defaultValue="option-one" className="grid-cols-2 w-fit">
@@ -131,7 +121,7 @@ export const PurchasePhoneNumbers = () => {
             <h4 className="font-bold text-primary">Yes you can</h4>
             <div className="flex flex-col gap-1 font-light text-sm">
               {items.map((item, i) => (
-                <Item key={i} text={item.text} />
+                <Item key={i} text={item} />
               ))}
             </div>
             <span className="flex items-center gap-2 font-bold text-primary">
@@ -145,9 +135,9 @@ export const PurchasePhoneNumbers = () => {
   );
 };
 
-interface TxtProps {
+type TxtProps = {
   text: string;
-}
+};
 
 export const Item = ({ text }: TxtProps) => {
   return (
