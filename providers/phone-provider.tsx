@@ -1,37 +1,50 @@
 "use client";
-import { useEffect, useState } from "react";
-import axios from "axios";
-
 import { DialerModal } from "@/components/modals/dialer-modal";
 import { PhoneModal } from "@/components/modals/phone-modal";
-
 import { useCurrentUser } from "@/hooks/use-current-user";
+import axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Device } from "twilio-client";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
 
-export const PhoneProvider = () => {
-  const [isMounted, setIsMounted] = useState(false);
+type PhoneContextProviderProps = {
+  children: React.ReactNode;
+};
+type PhoneContext = {
+  phone: Device;
+  setPhone: React.Dispatch<React.SetStateAction<Device>>;
+};
+
+export const PhoneContext = createContext<PhoneContext | null>(null);
+export default function PhoneContextProvider({
+  children,
+}: PhoneContextProviderProps) {
+  const [phone, setPhone] = useState<Device>(new Device());
   const user = useCurrentUser();
-  const usePm = usePhoneModal();
 
   useEffect(() => {
     if (!user?.phoneNumbers.length) return;
     axios.post("/api/token", { identity: user?.id }).then((response) => {
       const data = response.data;
-      usePm.onLoad(new Device(data.token));
+      phone.setup(data.token);
     });
-
-    setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <>
+    <PhoneContext.Provider value={{ phone, setPhone }}>
+      {children}
       <DialerModal />
       <PhoneModal />
-    </>
+    </PhoneContext.Provider>
   );
-};
+}
+
+export function usePhoneContext() {
+  const context = useContext(PhoneContext);
+  if (!context) {
+    throw new Error(
+      "usePhoneContext must be used withing  PhoneContextProvider"
+    );
+  }
+
+  return context;
+}

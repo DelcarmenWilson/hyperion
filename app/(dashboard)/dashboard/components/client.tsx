@@ -22,7 +22,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 
 import TurnOverRate from "./turnover/turn-over-rate";
 import { CallHistoryColumn } from "./callhistory/columns";
-import { format } from "date-fns";
 
 interface DashBoardClientProps {
   leadCount: number;
@@ -45,12 +44,6 @@ export const DashBoardClient = ({
   const user = useCurrentUser();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [message, setMessage] = useState(messagesCount);
-
-  const date = format(
-    new Date("2024-02-12T15:00:00.0000Z"),
-    "MM-dd @ hh:mm aa"
-  );
-  console.log(date);
 
   useEffect(() => {
     pusherClient.subscribe(user?.id as string);

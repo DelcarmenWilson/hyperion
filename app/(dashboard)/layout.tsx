@@ -7,9 +7,9 @@ import {
   MainSideBar,
   MainSidebarSkeleton,
 } from "@/components/reusable/main-sidebar";
-import { PhoneProvider } from "@/providers/phone-provider";
 import { AppointmentProvider } from "@/providers/appointment-provider";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PhoneContextProvider from "@/providers/phone-provider";
 
 export default async function DashBoardLayout({
   children,
@@ -24,19 +24,20 @@ export default async function DashBoardLayout({
 
   return (
     <>
-      <AppointmentProvider />
-      <PhoneProvider />
-      <Suspense fallback={<MainSidebarSkeleton />}>
-        <MainSideBar />
-      </Suspense>
-      <div className="flex flex-col ml-[70px] h-full ">
-        <NavBar />
-        {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
-        <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
-          {children}
+      <PhoneContextProvider>
+        <AppointmentProvider />
+        <Suspense fallback={<MainSidebarSkeleton />}>
+          <MainSideBar />
+        </Suspense>
+        <div className="flex flex-col ml-[70px] h-full ">
+          <NavBar />
+          {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
+          <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
+            {children}
+          </div>
+          {/* </ScrollArea> */}
         </div>
-        {/* </ScrollArea> */}
-      </div>
+      </PhoneContextProvider>
     </>
   );
 }

@@ -3,7 +3,7 @@
 import Papa from "papaparse";
 import { useState, useTransition } from "react";
 
-import { DataTable } from "@/components/tables/data-table";
+import { DataTableImport } from "@/components/tables/data-table-import";
 import { ImportLeadColumn, columns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -106,7 +106,7 @@ export const ImportLeadsForm = () => {
         </div>
       </div>
       <ScrollArea>
-        <DataTable
+        <DataTableImport
           columns={columns}
           data={formattedLeads}
           size="lg"

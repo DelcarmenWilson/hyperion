@@ -63,7 +63,7 @@ enum LeadStatus {
 
 model User {
   id            String    @id @default(cuid())
-  username      String    @unique
+  userName      String    @unique
   firstName     String
   lastName      String
   phoneNumber   String?
@@ -79,13 +79,90 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
 
   teamId String?
-  team   Team?   @relation(fields: [teamId], references: [id])
+  team   Team?   @relation("UsersToTeam", fields: [teamId], references: [id])
 
+  teamOwned Team? @relation("UserToTeam")
+
+  leads         Lead[]
+  calls         Call[]
   conversations Conversation[]
   appointments  Appointment[]
-  presets       Presets[]
-  phoneNumbers  PhoneNumber[]
-  chatSettings  ChatSettings?
+
+  presets      Presets[]
+  phoneNumbers PhoneNumber[]
+  chatSettings ChatSettings?
+  schedule     Schedule?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// SETTINGS
+model ChatSettings {
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  //defaultPrompt   String @db.LongText
+  //defaultFunction String @db.LongText
+  defaultPrompt   String
+  defaultFunction String
+
+  leadInfo Boolean @default(true)
+
+  autoChat Boolean @default(false)
+  record   Boolean @default(false)
+  coach    Boolean @default(false)
+
+  currentCall String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Presets {
+  id String @id @default(cuid())
+
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId String
+  type    Preset @default(Text)
+
+  //content String @db.LongText
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PhoneNumber {
+  id    String @id @default(cuid())
+  phone String
+  state String
+
+  agent   User?   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId String?
+
+  renewAt DateTime
+
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title     String
+  subTitle  String
+  type      String   @default("hourly")
+  sunday    String
+  monday    String
+  tuesday   String
+  wednesday String
+  thursday  String
+  friday    String
+  saturday  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -156,9 +233,15 @@ model Team {
   organizationId String
   organization   Organization @relation("OrganizationToTeam", fields: [organizationId], references: [id], onDelete: Cascade)
 
-  name      String
-  users     User[]
-  userId    String
+  name   String
+  image  String?
+  banner String?
+
+  users  User[] @relation("UsersToTeam")
+  userId String
+
+  owner     User?    @relation("UserToTeam", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -196,11 +279,13 @@ model Lead {
 
   defaultNumber String
   notes         String?
-  owner         String?
 
-  conversations Conversation[]
-  appointments  Appointment[]
-  calls         Call[]
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  conversation Conversation?
+  appointments Appointment[]
+  calls        Call[]
 
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -208,11 +293,38 @@ model Lead {
   updatedAt  DateTime @updatedAt
 }
 
+//CALLS
+model Call {
+  id String @id @unique
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  from   String
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String?
+
+  direction String  @default("inbound")
+  status    String?
+  duration  Int?
+
+  recordId        String?
+  recordUrl       String?
+  recordStartTime DateTime?
+  recordStatus    String?
+  recordDuration  Int?
+
+  price String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Conversation {
   id String @id @default(cuid())
 
   lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String
+  leadId String @unique
 
   messages Message[]
 
@@ -226,20 +338,6 @@ model Conversation {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Schedule {
-  userId    String @unique
-  title     String
-  subTitle  String
-  type      String @default("hourly")
-  sunday    String
-  monday    String
-  tuesday   String
-  wednesday String
-  thursday  String
-  friday    String
-  saturday  String
 }
 
 model Message {
@@ -275,80 +373,6 @@ model Appointment {
   status   String  @default("Scheduled")
   //comments String? @db.LongText
   comments String?
-
-  createdAt DateTime @default(now())
-}
-
-// SETTINGS
-model ChatSettings {
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  //defaultPrompt   String @db.LongText
-  //defaultFunction String @db.LongText
-  defaultPrompt   String
-  defaultFunction String
-
-  leadInfo Boolean @default(true)
-
-  autoChat Boolean @default(false)
-  record   Boolean @default(false)
-  coach    Boolean @default(false)
-
-  currentCall String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Presets {
-  id String @id @default(cuid())
-
-  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId String
-  type    Preset @default(Text)
-
-  //content String @db.LongText
-  content String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model PhoneNumber {
-  id    String @id @default(cuid())
-  phone String
-  state String
-
-  agent   User?   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId String?
-
-  renewAt DateTime
-
-  status    String   @default("Active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
-
-//CALLS
-model Call {
-  id      String @id @unique
-  agentId String
-
-  from   String
-  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String?
-
-  direction String  @default("inbound")
-  status    String?
-  duration  Int?
-
-  recordId        String?
-  recordUrl       String?
-  recordStartTime DateTime?
-  recordStatus    String?
-  recordDuration  Int?
-
-  price String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

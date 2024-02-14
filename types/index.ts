@@ -8,8 +8,27 @@ import {
   Preset,
   Call,
   Appointment,
+  Team,
+  Organization,
 } from "@prisma/client";
+export type FullUser=User & {
+  calls: Call[],
+  appointments: Appointment[],
+  conversations: Conversation[],
+  leads: Lead[],
+};
 
+export type FullUserReport={
+  id:string;
+  image:string | null;
+  userName:string;
+  role:String;
+  calls: number,
+  appointments: number,
+  conversations: number,
+  revenue:number
+
+}
 export type FullMessageType = Message & {
   sender?: User | null;
 };
@@ -66,4 +85,23 @@ export type PhoneType = {
 
 export type FullCall = Call & {
   lead: Lead;
+};
+
+export type FullTeam= Team & {
+  users: User[];
+  organization:Organization
+  owner:User | null;
+};
+
+export type FullTeamReport= {
+  id:string,
+  name:string,
+  image:string | null,
+  banner:string| null,
+  calls: number,
+  appointments: number,
+  conversations: number,
+  revenue:number
+  organization:Organization
+  owner:User | null;
 };

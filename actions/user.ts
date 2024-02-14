@@ -3,11 +3,12 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import path from "path";
+import { writeFile } from "fs/promises";
 
 import { MasterRegisterSchema } from "@/schemas";
 import { RegisterSchema } from "@/schemas";
 import { SettingsSchema } from "@/schemas";
-
 
 import { userGetByEmail, userGetById } from "@/data/user";
 import { generateVerificationToken } from "@/lib/tokens";
@@ -20,7 +21,7 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Invalid fields!" };
   }
 
-  const { team, npn, username, password, email, firstName, lastName } =
+  const { team, npn, userName, password, email, firstName, lastName } =
     validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
   const existingUser = await userGetByEmail(email);
@@ -35,7 +36,7 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
     data: {
       teamId: team,
       npn,
-      username,
+      userName,
       password: hashedPassword,
       email,
       firstName,
@@ -51,21 +52,25 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
 
   //CREATE CHAT SETTINGS
   await chatSettingsInsert(user);
-  const hours="09:00-17:00,12:00-13:00"
-  await db.schedule.create({data:{
-    userId:user.id,
-    title:"Book an Appointment with #first_name".replace("#first_name",user.firstName),
-    subTitle:"Pick the time that best works for you. I am looking forward to connecting with you.",
-    monday:hours,
-    tuesday:hours,
-    wednesday:hours,
-    thursday:hours,
-    friday:hours,
-    saturday:"Not Available",
-    sunday:"Not Available",
-
-
-  }})
+  const hours = "09:00-17:00,12:00-13:00";
+  await db.schedule.create({
+    data: {
+      userId: user.id,
+      title: "Book an Appointment with #first_name".replace(
+        "#first_name",
+        user.firstName
+      ),
+      subTitle:
+        "Pick the time that best works for you. I am looking forward to connecting with you.",
+      monday: hours,
+      tuesday: hours,
+      wednesday: hours,
+      thursday: hours,
+      friday: hours,
+      saturday: "Not Available",
+      sunday: "Not Available",
+    },
+  });
 
   return { success: "Account created continue to login" };
 };
@@ -78,7 +83,7 @@ export const userMasterInsert = async (
     return { error: "Invalid fields!" };
   }
 
-  const { organization, team, username, password, email, firstName, lastName } =
+  const { organization, team, userName, password, email, firstName, lastName } =
     validatedFields.data;
 
   const existingMaster = await db.user.findFirst({
@@ -93,7 +98,7 @@ export const userMasterInsert = async (
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await db.user.create({
     data: {
-      username,
+      userName,
       password: hashedPassword,
       firstName,
       lastName,
@@ -106,6 +111,7 @@ export const userMasterInsert = async (
   const newOrganization = await db.organization.create({
     data: { name: organization, userId: newUser.id },
   });
+
   const newTeam = await db.team.create({
     data: {
       name: team,
@@ -121,10 +127,35 @@ export const userMasterInsert = async (
     },
   });
 
+  await chatSettingsInsert(newUser);
+
+  const hours = "Not Available";
+
+  await db.schedule.create({
+    data: {
+      userId: newUser.id,
+      title: "Book an Appointment with #first_name".replace(
+        "#first_name",
+        newUser.firstName
+      ),
+      subTitle:
+        "Pick the time that best works for you. I am looking forward to connecting with you.",
+      monday: hours,
+      tuesday: hours,
+      wednesday: hours,
+      thursday: hours,
+      friday: hours,
+      saturday: hours,
+      sunday: hours,
+    },
+  });
+
   return { success: "Master account created" };
 };
 
-export const userUpdateById = async (values: z.infer<typeof SettingsSchema>) => {
+export const userUpdateById = async (
+  values: z.infer<typeof SettingsSchema>
+) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -144,25 +175,31 @@ export const userUpdateById = async (values: z.infer<typeof SettingsSchema>) => 
 
   if (values.email && values.email !== user.email) {
     const existingUser = await userGetByEmail(values.email);
-    if (existingUser && existingUser.id !== user.id){
-      return { error: "Email already in use!" };}
-
-      const verificationToken=await generateVerificationToken(values.email)
-      await sendVerificationEmail(verificationToken.email,verificationToken.token)
-
-      return {success:"Verification email sent"}
-  }
-
-  if(values.password && values.newPassword && dbUser.password){
-    const passwordsMatch=await bcrypt.compare(values.password,dbUser.password)
-    if(!passwordsMatch){
-        return {error:"Incorrect password"}
+    if (existingUser && existingUser.id !== user.id) {
+      return { error: "Email already in use!" };
     }
-    const hashedPassword=await bcrypt.hash(values.newPassword,10)
-    values.password=hashedPassword
-    values.newPassword=undefined
+
+    const verificationToken = await generateVerificationToken(values.email);
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
+
+    return { success: "Verification email sent" };
   }
 
+  if (values.password && values.newPassword && dbUser.password) {
+    const passwordsMatch = await bcrypt.compare(
+      values.password,
+      dbUser.password
+    );
+    if (!passwordsMatch) {
+      return { error: "Incorrect password" };
+    }
+    const hashedPassword = await bcrypt.hash(values.newPassword, 10);
+    values.password = hashedPassword;
+    values.newPassword = undefined;
+  }
 
   await db.user.update({
     where: { id: dbUser.id },
@@ -172,6 +209,3 @@ export const userUpdateById = async (values: z.infer<typeof SettingsSchema>) => 
   });
   return { success: "Settings Updated! " };
 };
-
-
-

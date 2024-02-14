@@ -35,9 +35,10 @@ const DahsBoardPage = async () => {
     user?.role!,
     user?.team!
   );
+
   const formattedAgents: AgentSummaryColumn[] = agents.map((agent) => ({
     id: agent.id,
-    username: agent.username,
+    username: agent.userName,
     email: agent.email as string,
     subscriptionExpires: "12-31-2029",
     balance: "100",

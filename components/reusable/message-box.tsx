@@ -19,7 +19,7 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   //   .filter((user) => user.email != data?.sender?.email)
   //   .map((user) => user.name)
   //   .join(", ");
-  const senderName = data?.sender ? data.sender.username : username;
+  const senderName = data?.sender ? data.sender.userName : username;
   const container = cn(isOwn && "order-2 ", "mb-2");
 
   const body = cn("flex flex-col mb-2", isOwn && "items-end");

@@ -20,10 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
+import { usePhoneContext } from "@/providers/phone-provider";
 
 type AgentType = {
   name: string;
@@ -50,18 +50,15 @@ const agents: AgentType[] = [
 ];
 
 export const PhoneModal = () => {
-  const user = useCurrentUser();
   const {
-    device,
     onPhoneClose: onClose,
     onPhoneOpen: onOpen,
     isPhoneOpen: isOpen,
   } = usePhoneModal();
+  const { phone } = usePhoneContext();
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
-
-  // const [dev, setDev] = useState<Device>(new Device());
   const [call, setCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
   const [fromNumber, setFromNumber] = useState("");
@@ -70,16 +67,16 @@ export const PhoneModal = () => {
   const [running, setRunning] = useState(false);
 
   const addDeviceListeners = () => {
-    if (!device) return;
-    device.on("ready", function () {
+    if (!phone) return;
+    phone.on("ready", function () {
       console.log("ready");
     });
 
-    device.on("error", function (error: any) {
+    phone.on("error", function (error: any) {
       console.log(error);
     });
 
-    device.on("incoming", async function (call: Connection) {
+    phone.on("incoming", async function (call: Connection) {
       call.on("disconnect", function (error: any) {
         onIncomingCallDisconnect();
       });

@@ -69,7 +69,7 @@ export async function PATCH(
     const leadByUser = await db.lead.findFirst({
       where: {
         id: params.leadId,
-        owner: user.id,
+        userId: user.id,
       },
     });
 
@@ -119,7 +119,7 @@ export async function DELETE(
     const leadByUser = await db.lead.findFirst({
       where: {
         id: params.leadId,
-        owner: user.id,
+        userId: user.id,
       },
     });
 

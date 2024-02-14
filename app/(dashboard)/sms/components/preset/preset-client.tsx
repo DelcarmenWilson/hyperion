@@ -12,7 +12,7 @@ export const PresetClient = async () => {
   const presets = await presetGetAllByAgentId(user?.id!);
   return (
     <ScrollArea className="flex-1">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2  gap-4">
         <div className="flex flex-col gap-4">
           <Text presets={presets} />
           <WhileAway />

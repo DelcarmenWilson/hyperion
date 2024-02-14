@@ -1,12 +1,12 @@
-- make the agent make calls initailly
-- make the phone number visible after the process has been completed
+-- make the agent make calls initailly
+-- make the phone number visible after the process has been completed
 
-- remove phone chatgpt in the info.
-- create auto response from twilio.
-- create function to talk to the crm. create messaging between agents.
+-- remove phone chatgpt in the info.
+-- create auto response from twilio.
+-- create function to talk to the crm. create messaging between agents.
 
---dont let agent send out text if they dont have the default prompt and message
---find a way to incorporate the sadcn calender in new lead form
+-- dont let agent send out text if they dont have the default prompt and message
+-- find a way to incorporate the sadcn calender in new lead form
 --get chat gpt to return a specific date and time almost done
     -- need to convert iso date to local date time
 
@@ -25,7 +25,7 @@
 -- be able to integrate calledly, goldy,website
 -- as per suandra send reminder to client after the appointment is set--check?
 -- send cofirmation for appointment a day earlier
---dont fortget to remove the content from the rsponse in api/sms/in 
+-- dont fortget to remove the content from the rsponse in api/sms/in 
 
 -- work more on the local time function
 -- make the app send a sms if you dont log in.

@@ -72,7 +72,7 @@ export const ChatClient = ({ data }: ChatClientProps) => {
   return (
     <Form {...form}>
       <form className="space-y-6 mx-1" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mr-4 lg:mr-0">
           <div>
             {/* DEFAULT PROMPT */}
             <FormField

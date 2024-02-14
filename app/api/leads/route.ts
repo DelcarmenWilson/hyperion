@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   try {
     const leads = await db.lead.findMany({
       include: {
-        conversations: true
+        conversation: true,
       },
     });
 
@@ -51,12 +51,12 @@ export async function POST(req: Request) {
     }
 
     const st = states.find((e) => e.state == state || e.abv == state);
-  const phoneNumbers = await db.phoneNumber.findMany({
-    where: { agentId: user.id,status:{not:"Deactive"} },
-  });
+    const phoneNumbers = await db.phoneNumber.findMany({
+      where: { agentId: user.id, status: { not: "Deactive" } },
+    });
 
-  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
-  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+    const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+    const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
     const lead = await db.lead.create({
       data: {
@@ -66,14 +66,14 @@ export async function POST(req: Request) {
         city,
         state,
         zipCode,
-        homePhone:reFormatPhoneNumber(homePhone),
-        cellPhone:reFormatPhoneNumber(cellPhone),
+        homePhone: reFormatPhoneNumber(homePhone),
+        cellPhone: reFormatPhoneNumber(cellPhone),
         gender,
         maritalStatus,
         email,
         dateOfBirth,
-      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
-        owner: user.id,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+        userId: user.id,
       },
     });
 

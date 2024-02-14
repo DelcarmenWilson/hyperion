@@ -27,11 +27,13 @@ import {
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhoneContext } from "@/providers/phone-provider";
 
 export const Dialer = () => {
   const { update } = useSession();
   const user = useCurrentUser();
-  const { device, lead } = usePhoneModal();
+  const { lead } = usePhoneModal();
+  const { phone } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   // PHONE VARIABLES
@@ -63,16 +65,16 @@ export const Dialer = () => {
   };
 
   function addDeviceListeners() {
-    if (!device) return;
-    device.on("ready", function () {
+    if (!phone) return;
+    phone.on("ready", function () {
       console.log("ready");
     });
 
-    device.on("error", function (error: any) {});
+    phone.on("error", function (error: any) {});
   }
 
   const onCallStarted = () => {
-    if (!device) return;
+    if (!phone) return;
     if (!lead) {
       setToNumber((state) => formatPhoneNumber(state));
 
@@ -87,7 +89,7 @@ export const Dialer = () => {
         });
     }
 
-    const call = device.connect({
+    const call = phone.connect({
       To: reFormatPhoneNumber(toNumber),
       AgentNumber: selectedNumber as string,
       Recording: record ? "record-from-answer-dual" : "do-not-record",

@@ -1,7 +1,16 @@
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
+
+
+export const userGetAll = async () => {
+  try {
+    const users = await db.user.findMany();
+
+    return users;
+  } catch {
+    return [];
+  }
+};
 
 export const userGetByEmail = async (email: string) => {
   try {
@@ -25,10 +34,10 @@ export const userGetById = async (id: string) => {
     return null;
   }
 };
-export const userGetByUserName = async (username: string) => {
+export const userGetByUserName = async (userName: string) => {
   try {
     const user = await db.user.findUnique({
-      where: { username },
+      where: { userName },
       include: { phoneNumbers: true, chatSettings: true, team: true },
     });
 

@@ -32,7 +32,7 @@ export const MasterAccountModal = () => {
     defaultValues: {
       organization: "",
       team: "",
-      username: "",
+      userName: "",
       password: "",
       email: "",
       firstName: "",
@@ -103,7 +103,7 @@ export const MasterAccountModal = () => {
               />
               <FormField
                 control={form.control}
-                name="username"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>

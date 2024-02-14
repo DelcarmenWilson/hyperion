@@ -6,7 +6,7 @@ const SmsPage = () => {
     <>
       {/* ACTIVITY */}
       <Tabs defaultValue="preset">
-        <TabsList className="w-full gap-4">
+        <TabsList className="w-full flex-wrap h-auto gap-4">
           <TabsTrigger value="preset">PRESET TEXTS</TabsTrigger>
           <TabsTrigger value="drip">DRIP MARKETING</TabsTrigger>
           <TabsTrigger value="keyworkds">KEYWORDS</TabsTrigger>

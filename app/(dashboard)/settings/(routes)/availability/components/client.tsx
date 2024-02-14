@@ -76,7 +76,7 @@ export function AvailabilityClient({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 pl-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-2/3 pl-2">
         {/* TYPE */}
         <FormField
           control={form.control}
