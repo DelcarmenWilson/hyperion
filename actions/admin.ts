@@ -49,3 +49,20 @@ export const adminUpdateLeadNumbers = async (userId: string) => {
 
   return { success: "phone numbers have been updated" };
 };
+
+export const adminConfirmUserEmail = async (userId: string, date: string) => {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return { error: "User does not exist" };
+  }
+
+  await db.user.update({
+    where: { id: userId },
+    data: { emailVerified: new Date(date) },
+  });
+
+  return { success: "email has been confirmed" };
+};

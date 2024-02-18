@@ -5,6 +5,7 @@ import { NumberChange } from "./components/change-number";
 import { Heading } from "@/components/custom/heading";
 import { Separator } from "@/components/ui/separator";
 import { PhoneUpdate } from "./components/phone-update";
+import { EmailConfirm } from "./components/email-confimation";
 
 const MiscPage = async () => {
   const users = await userGetAll();
@@ -21,6 +22,7 @@ const MiscPage = async () => {
             <TabsList className="w-full justify-start flex-wrap h-auto">
               <TabsTrigger value="phoneChange">PHONE CHANGE</TabsTrigger>
               <TabsTrigger value="phoneUpdate">PHONES UPDATE</TabsTrigger>
+              <TabsTrigger value="emailConfirm">EMAIL CONFIRM</TabsTrigger>
             </TabsList>
           </div>
 
@@ -30,6 +32,9 @@ const MiscPage = async () => {
             </TabsContent>
             <TabsContent value="phoneUpdate">
               <PhoneUpdate users={users} />
+            </TabsContent>
+            <TabsContent value="emailConfirm">
+              <EmailConfirm users={users} />
             </TabsContent>
           </div>
         </Tabs>
