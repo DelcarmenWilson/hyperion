@@ -12,31 +12,37 @@ import {
 } from "@/components/ui/select";
 
 import { User } from "@prisma/client";
-import { adminUpdateLeadNumbers } from "@/actions/admin";
+import { adminConfirmUserEmail } from "@/actions/admin";
 import { toast } from "sonner";
 import { Heading } from "@/components/custom/heading";
 
-type PhoneUpdateProps = {
+type EmailConfirmProps = {
   users: User[];
 };
-export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
+export const EmailConfirm = ({ users }: EmailConfirmProps) => {
   const [loading, setLoading] = useState(false);
   const [selecteUser, setSelecteUser] = useState(users[0].id);
+  const [date, setDate] = useState(new Date().toLocaleString());
 
   const onSubmit = () => {
     if (!selecteUser) {
       toast.error("Please slect a user");
     }
-    adminUpdateLeadNumbers(selecteUser).then((data) => {
-      toast.success(data.success);
+    if (!date) {
+      toast.error("Please enter a date");
+    }
+    adminConfirmUserEmail(selecteUser, date).then((data) => {
+      if (data.error) {
+        toast.error(data.error);
+      }
+      if (data.success) {
+        toast.success(data.success);
+      }
     });
   };
   return (
     <div>
-      <Heading
-        title={`Phone Update`}
-        description="Change user specific number"
-      />
+      <Heading title={`Email Confirm`} description="Confirm users email" />
       <div className="flex flex-col gap-2">
         <p>User</p>
         <Select
@@ -57,6 +63,8 @@ export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
           </SelectContent>
         </Select>
 
+        <p>date</p>
+        <Input defaultValue={date} onChange={(e) => setDate(e.target.value)} />
         <Button onClick={onSubmit}>Submit</Button>
       </div>
     </div>

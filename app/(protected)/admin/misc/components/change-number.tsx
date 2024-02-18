@@ -42,37 +42,39 @@ export const NumberChange = ({ users }: NumberChangeProps) => {
         title={`Change Number`}
         description="Change user specific number"
       />
-      <p>User</p>
-      <Select
-        name="ddlUser"
-        disabled={loading}
-        onValueChange={(e) => setSelecteUser(e)}
-        defaultValue={selecteUser}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Select a User" />
-        </SelectTrigger>
-        <SelectContent>
-          {users.map((user) => (
-            <SelectItem key={user.id} value={user.id}>
-              {user.userName}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="flex flex-col gap-2">
+        <p>User</p>
+        <Select
+          name="ddlUser"
+          disabled={loading}
+          onValueChange={(e) => setSelecteUser(e)}
+          defaultValue={selecteUser}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a User" />
+          </SelectTrigger>
+          <SelectContent>
+            {users.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.userName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <p>Old Phone Number</p>
-      <Input
-        defaultValue={oldPhone}
-        onChange={(e) => setOldPhone(e.target.value)}
-      />
-      <p>New Phone Number</p>
+        <p>Old Phone Number</p>
+        <Input
+          defaultValue={oldPhone}
+          onChange={(e) => setOldPhone(e.target.value)}
+        />
+        <p>New Phone Number</p>
 
-      <Input
-        defaultValue={newPhone}
-        onChange={(e) => setNewPhone(e.target.value)}
-      />
-      <Button onClick={onSubmit}>Submit</Button>
+        <Input
+          defaultValue={newPhone}
+          onChange={(e) => setNewPhone(e.target.value)}
+        />
+        <Button onClick={onSubmit}>Submit</Button>
+      </div>
     </div>
   );
 };
