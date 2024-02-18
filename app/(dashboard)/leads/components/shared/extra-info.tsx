@@ -27,14 +27,16 @@ interface ExtraInfoProps {
 }
 
 export const ExtraInfo = ({ lead }: ExtraInfoProps) => {
-  const [sale, setSale] = useState(lead.saleAmount?.toString() || "");
-  const [commision, setCommision] = useState(lead.commision?.toString() || "");
+  const [converageAmount, setCoverageAmount] = useState(
+    lead.saleAmount?.toString() || ""
+  );
+  const [annualPremium, setAp] = useState(lead.commision?.toString() || "");
   const [costOfLead, setCostOfLead] = useState(
     lead.costOfLead?.toString() || ""
   );
 
-  const onSaleUpdated = () => {
-    const newSale = parseInt(sale);
+  const onConverageUpdated = () => {
+    const newSale = parseInt(converageAmount);
     if (newSale != lead.saleAmount) {
       lead.saleAmount = newSale;
       leadUpdateByIdSale(lead.id, newSale).then((data) => {
@@ -48,8 +50,8 @@ export const ExtraInfo = ({ lead }: ExtraInfoProps) => {
     }
   };
 
-  const onCommisionUpdated = () => {
-    const newCommision = parseInt(commision);
+  const onApUpdated = () => {
+    const newCommision = parseInt(annualPremium);
     if (newCommision != lead.commision) {
       lead.commision = newCommision;
       leadUpdateByIdCommision(lead.id, newCommision).then((data) => {
@@ -111,16 +113,18 @@ export const ExtraInfo = ({ lead }: ExtraInfoProps) => {
         </SelectContent>
       </Select>
       <FieldBox
-        name="Sale amount"
-        field={sale}
-        setField={setSale}
-        onFieldUpdate={onSaleUpdated}
+        name="Coverage amount"
+        field={converageAmount}
+        maxLength={9}
+        setField={setCoverageAmount}
+        onFieldUpdate={onConverageUpdated}
       />
       <FieldBox
-        name="Commision"
-        field={commision}
-        setField={setCommision}
-        onFieldUpdate={onCommisionUpdated}
+        name="AP"
+        field={annualPremium}
+        setField={setAp}
+        maxLength={6}
+        onFieldUpdate={onApUpdated}
       />
       <FieldBox
         name=" Cost of lead"

@@ -2,6 +2,7 @@ import { cfg } from "./twilio-config";
 import twilio from "twilio";
 
 import { isAValidPhoneNumber } from "@/formulas/phones";
+import { VercelLogoIcon } from "@radix-ui/react-icons";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
@@ -19,7 +20,7 @@ export const tokenGenerator = (identity: string) => {
     incomingAllow: true,
   });
   accessToken.addGrant(grant);
-  
+
   return {
     identity: identity,
     token: accessToken.toJwt(),
@@ -27,12 +28,13 @@ export const tokenGenerator = (identity: string) => {
 };
 
 export const voiceResponse = async (requestBody: any) => {
-  const { agentId, agentNumber, direction, recording,to } = requestBody;
+  const { agentId, agentNumber, direction, recording, to } = requestBody;
 
   const params = {
     callerId: agentNumber,
     record: recording,
     recordingStatusCallback: "/api/voice/recording",
+    action: "/api/voice/action",
   };
 
   const twiml = new VoiceResponse();
@@ -50,15 +52,59 @@ export const voiceResponse = async (requestBody: any) => {
       dial.client(agentId);
       break;
     case "outbound":
-      const attr = isAValidPhoneNumber(to)
-        ? "number"
-        : "client";
+      const attr = isAValidPhoneNumber(to) ? "number" : "client";
       dial[attr](to);
       break;
     default:
-      twiml.say("Thanks for calling!");
+      twiml.say({ voice: "alice" }, "Thanks for calling!");
       break;
   }
 
+  return twiml.toString();
+};
+
+export const actionResponse = async () => {
+  const twiml = new VoiceResponse();
+
+  const gather = twiml.gather({ action: "/api/voice/callback", numDigits: 1 });
+  gather.say(
+    { voice: "alice" },
+    "The person you are trying to reach is unavailable. If you would like to receive a callback, press 1."
+  );
+  twiml.pause("1");
+  const gather2 = twiml.gather({ action: "/api/voice/callback", numDigits: 1 });
+  gather2.say(
+    { voice: "alice" },
+    "If you would like to leave a voicemail instead press 2."
+  );
+  twiml.pause("1");
+  const gather3 = twiml.gather({ action: "/api/voice/callback", numDigits: 1 });
+  gather3
+    .say({ voice: "alice" }, "Otherwise press 3 or hangup.")
+    .twiml.pause("1");
+  twiml.redirect("/api/voice/callback");
+
+  return twiml.toString();
+};
+
+export const voicemailResponse = async () => {
+  const twiml = new VoiceResponse();
+  twiml.pause("1");
+  twiml.say(
+    { voice: "alice" },
+    "The person you are trying to reach is unavailable. Please leave a voicemail after the beep"
+  );
+  twiml.pause("1");
+  twiml.record({
+    action: "/api/voice/voicemail",
+    timeout: 5,
+    transcribe: true,
+    transcribeCallback: "/api/voice/transcribe",
+  });
+  twiml.say(
+    { voice: "alice" },
+    "Your mesage has been saved. Goodbye."
+  );
+  twiml.hangup()
   return twiml.toString();
 };

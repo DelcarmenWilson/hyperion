@@ -9,11 +9,12 @@ export const conversationsGetByUserId = async () => {
     }
 
     const conversations = await db.conversation.findMany({
-      where:{agentId:user.id},
+      where: { agentId: user.id },
       include: {
         lead: true,
         messages: true,
-      },orderBy:{updatedAt:"desc"}
+      },
+      orderBy: { updatedAt: "desc" },
     });
 
     return conversations;
@@ -29,9 +30,11 @@ export const conversationGetById = async (conversationId: string) => {
       return null;
     }
     const conversation = await db.conversation.findUnique({
-      where: { id: conversationId,agentId:user.id },
-      include: {        
-        lead: true,
+      where: { id: conversationId, agentId: user.id },
+      include: {
+        lead: {
+          include: { calls: true, appointments: true, activities: true },
+        },
         messages: true,
       },
     });
@@ -44,9 +47,11 @@ export const conversationGetById = async (conversationId: string) => {
 export const conversationGetByLeadId = async (leadId: string) => {
   try {
     const conversation = await db.conversation.findFirst({
-      where: { leadId},
+      where: { leadId },
       include: {
-        lead: true,
+        lead:  {
+          include: { calls: true, appointments: true, activities: true },
+        },
         messages: true,
       },
     });

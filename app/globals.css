@@ -12,6 +12,15 @@ body,
 background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,84,171,1) 56%, rgba(0,212,255,1) 90%);
 
 }
+.no-visible-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+ 
+.no-visible-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 /* BLACK */
 /* @layer base {
   :root {

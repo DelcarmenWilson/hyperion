@@ -8,12 +8,15 @@ import {
   Globe2,
   Home,
   Import,
+  Key,
   LineChart,
   Lock,
   LucideIcon,
   Mail,
   MessageSquare,
+  MessageSquarePlus,
   MessagesSquare,
+  MilestoneIcon,
   Phone,
   Server,
   Settings,
@@ -34,6 +37,9 @@ export const AdminSidebarRoutes: NavType[] = [
   { title: "Teams", href: "/admin/teams", icon: ShieldHalf },
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Import", href: "/admin/import", icon: Import },
+  { title: "Feedback", href: "/admin/feedback", icon: MessageSquarePlus },
+  { title: "Misc", href: "/admin/misc", icon: MilestoneIcon },
+
   { title: "Server", href: "/admin/server", icon: Server },
   {
     title: "Client",
@@ -46,9 +52,19 @@ export const AdminSidebarRoutes: NavType[] = [
     icon: Lock,
   },
   {
+    title: "Page Settings",
+    href: "/admin/page-settings",
+    icon: Key,
+  },
+  {
     title: "Settings",
     href: "/admin/settings",
     icon: Cog,
+  },  
+  {
+    title: "Test",
+    href: "/test",
+    icon: TestTube,
   },
 ];
 
@@ -124,11 +140,6 @@ export const MainSidebarRoutes: NavType[] = [
   //   href: "/billing",
   //   icon: DollarSign,
   // },
-  {
-    title: "Test",
-    href: "/test",
-    icon: TestTube,
-  },
 ];
 
 export const SettingsNavbarRoutes: NavType[] = [

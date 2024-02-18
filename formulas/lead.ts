@@ -13,11 +13,37 @@ export const convertLead = (
       return MediaAlphaLeads(result, vendor);
     case importVendors[2].value:
       return ProspectForLeads(result, vendor);
+      case importVendors[3].value:
+      return MutualOfOmaha(result, vendor);
     default:
       return IlcLeads(result, vendor);
   }
 };
 
+const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
+  let mapped: ImportLeadsFormValues[] = [];
+  result.data.map((d: any) => {
+    const newobj: ImportLeadsFormValues = {
+      id: "",
+      firstName: capitalize(d["First Name"]),
+      lastName: capitalize(d["Last Name"]),
+      email: d["Email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["Home"]),
+      cellPhone: reFormatPhoneNumber(d["Other Phone 1"]),
+      dateOfBirth: d["Date Of Birth"],
+      address: capitalize(d["Street Address"]),
+      city: capitalize(d["City"]),
+      state: capitalize(d["State"]),
+      gender: Gender.Male,
+      maritalStatus: MaritalStatus.Single,
+      zipCode: d["Zip"],
+      vendor: vendor,
+      recievedAt:d["Received Date"]
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
 const MediaAlphaLeads = (
   result: any,
   vendor: string
@@ -49,7 +75,35 @@ const MediaAlphaLeads = (
   });
   return mapped;
 };
+const MutualOfOmaha = (
+  result: any,
+  vendor: string
+): ImportLeadsFormValues[] => {
+  let mapped: ImportLeadsFormValues[] = [];
+  result.data.map((d: any) => {
+    const newobj: ImportLeadsFormValues = {
+      id: "",
+      firstName: capitalize(d["firstname"]),
+      lastName: capitalize(d["lastname"]),
 
+      email: "no.email@email.com",
+      homePhone: reFormatPhoneNumber(d["Tele"]),
+      cellPhone: reFormatPhoneNumber(d["Tele"]),
+      dateOfBirth: "",
+      address: capitalize(d["address"]),
+      city: capitalize(d["city"]),
+      state: capitalize(d["State"]),      
+      zipCode: d["zip"],
+
+      gender: d["PrefixTTL"]=="Ms"?"Female":"Male",
+
+       maritalStatus: "Single",
+       vendor: vendor,
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
 const ProspectForLeads = (
   result: any,
   vendor: string
@@ -75,31 +129,6 @@ const ProspectForLeads = (
       income: parseInt(d["family income"]),
       vendor: vendor,
       policyAmount: parseInt(d["Policy Amount"]),
-    };
-    mapped.push(newobj);
-  });
-  return mapped;
-};
-
-const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
-  result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
-      id: "",
-      firstName: capitalize(d["First Name"]),
-      lastName: capitalize(d["Last Name"]),
-      email: d["Email"].toLowerCase(),
-      homePhone: reFormatPhoneNumber(d["Home"]),
-      cellPhone: reFormatPhoneNumber(d["Other Phone 1"]),
-      dateOfBirth: d["Date Of Birth"],
-      address: capitalize(d["Street Address"]),
-      city: capitalize(d["City"]),
-      state: capitalize(d["State"]),
-      gender: Gender.Male,
-      maritalStatus: MaritalStatus.Single,
-      zipCode: d["Zip"],
-      vendor: vendor,
-      recievedAt:d["Received Date"]
     };
     mapped.push(newobj);
   });

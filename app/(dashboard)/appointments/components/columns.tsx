@@ -92,15 +92,15 @@ export const columns: ColumnDef<AppointmentColumn>[] = [
     cell: ({ row }) => (
       <div>
         <p>
-          D.O.B:{" "}
+          D.O.B:
           <span className="text-primary italic font-bold">
-            {format(row.original.dob!, "MM-dd-yy")}
+            {row.original.dob ? format(row.original.dob, "MM-dd-yy") : "N/A"}
           </span>
         </p>
         <p>
-          Age:{" "}
+          Age:
           <span className="text-primary italic font-bold">
-            {getAge(row.original.dob!)}
+            {row.original.dob ? getAge(row.original.dob!) : "N/A"}
           </span>
         </p>
       </div>

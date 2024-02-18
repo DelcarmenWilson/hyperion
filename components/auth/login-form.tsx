@@ -21,8 +21,10 @@ import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export const LoginForm = () => {
+  const [show, setShow] = useState(false);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const urlError =
@@ -123,14 +125,30 @@ export const LoginForm = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={isPending}
-                          {...field}
-                          placeholder="******"
-                          type="password"
-                          autoComplete="password"
-                        />
+                      <FormControl className="relative">
+                        <div className="w-full flex items-center">
+                          <Input
+                            disabled={isPending}
+                            {...field}
+                            placeholder="******"
+                            type={show ? "text" : "password"}
+                            autoComplete="password"
+                          />
+
+                          <Button
+                            onClick={() => setShow(!show)}
+                            size="sm"
+                            variant="ghost"
+                            type="button"
+                            className="absolute right-0"
+                          >
+                            {show ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <Button
                         size="sm"

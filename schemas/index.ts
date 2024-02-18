@@ -11,7 +11,7 @@ export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.MASTER,UserRole.ADMIN, UserRole.USER]),
+    role: z.enum([UserRole.MASTER, UserRole.ADMIN, UserRole.USER]),
     email: z.optional(z.string().email()),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
@@ -68,8 +68,8 @@ export const MasterRegisterSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
-  team: z.string().min(5,{message:"*"}),
-  npn: z.string().min(4,{message:"*"}),
+  team: z.string().min(5, { message: "*" }),
+  npn: z.string().min(4, { message: "*" }),
   userName: z.string().min(1, {
     message: "Username required",
   }),
@@ -87,17 +87,17 @@ export const ScheduleSchema = z.object({
   // type: z.enum(["half", "hourly"], {
   //   required_error: "You need to select a notification type.",
   // }),
-  userId:z.string(),
+  userId: z.string(),
   type: z.string(),
   title: z.string(),
   subTitle: z.string(),
-  sunday:z.string(),
-  monday:z.string(),
-  tuesday:z.string(),
-  wednesday:z.string(),
-  thursday:z.string(),
-  friday:z.string(),
-  saturday:z.string()
+  sunday: z.string(),
+  monday: z.string(),
+  tuesday: z.string(),
+  wednesday: z.string(),
+  thursday: z.string(),
+  friday: z.string(),
+  saturday: z.string(),
 });
 
 export const LeadSchema = z.object({
@@ -109,7 +109,7 @@ export const LeadSchema = z.object({
   state: z.string(),
   zipCode: z.string(),
   homePhone: z.optional(z.string()),
-  cellPhone: z.string().min(10,"required"),
+  cellPhone: z.string().min(10, "required"),
   gender: z.enum([Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
@@ -119,19 +119,17 @@ export const LeadSchema = z.object({
   ]),
   email: z.string().email(),
   dateOfBirth: z.optional(z.string()),
-  weight:z.optional(z.number()),
-  height:z.optional(z.string()),
-  income:z.optional(z.number()),
-  policyAmount:z.optional(z.number()),
-  smoker:z.optional(z.boolean()),
-  currentlyInsured:z.optional(z.boolean()),
-  currentInsuranse:z.optional(z.string()),
-  vendor:z.optional(z.string()),
+  weight: z.optional(z.number()),
+  height: z.optional(z.string()),
+  income: z.optional(z.number()),
+  policyAmount: z.optional(z.number()),
+  smoker: z.optional(z.boolean()),
+  currentlyInsured: z.optional(z.boolean()),
+  currentInsuranse: z.optional(z.string()),
+  vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
-  recievedAt:z.optional(z.string())
+  recievedAt: z.optional(z.string()),
 });
-
-
 
 export const TwilioSchema = z.object({
   phone: z.string(),
@@ -148,10 +146,10 @@ export const TeamSchema = z.object({ name: z.string().min(1) });
 export const MessageSchema = z.object({
   role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
-  conversationId:z.string(),
-  senderId:z.string(),
-  hasSeen:z.boolean(),
-  sid:z.optional(z.string()),
+  conversationId: z.string(),
+  senderId: z.string(),
+  hasSeen: z.boolean(),
+  sid: z.optional(z.string()),
 });
 
 export const PresetSchema = z.object({
@@ -186,4 +184,12 @@ export const AppointmentLeadSchema = z.object({
     MaritalStatus.Divorced,
   ]),
   email: z.string().email(),
+});
+
+export const FeedbackSchema = z.object({
+  id:z.optional(z.string()),
+  userId:z.optional(z.string()),
+  headLine: z.string().min(3),
+  page: z.string(),
+  feedback: z.string().min(5),
 });

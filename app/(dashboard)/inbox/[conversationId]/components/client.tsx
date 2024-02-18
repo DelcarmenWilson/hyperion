@@ -2,14 +2,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
-import { FullConversationType } from "@/types";
+import { FullConversation } from "@/types";
 import { Separator } from "@/components/ui/separator";
 import { Body } from "./body";
 import { Form } from "./form";
 import { Header } from "./header";
 
 interface ConversationClientProps {
-  conversation: FullConversationType;
+  conversation: FullConversation;
 }
 
 const ConversationClient = ({ conversation }: ConversationClientProps) => {

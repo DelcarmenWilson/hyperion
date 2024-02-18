@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/(testing)/components/line-chart.js",
-    "types"
+    "types",
+    "app/api/user/voicemails"
   ],
   "exclude": ["node_modules"]
 }

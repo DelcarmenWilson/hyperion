@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Connection, Device } from "twilio-client";
-import { AlertCircle, Phone, X } from "lucide-react";
+import { Connection } from "twilio-client";
+import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -29,7 +29,7 @@ import { useSession } from "next-auth/react";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { usePhoneContext } from "@/providers/phone-provider";
 
-export const Dialer = () => {
+export const PhoneOut = () => {
   const { update } = useSession();
   const user = useCurrentUser();
   const { lead } = usePhoneModal();
@@ -47,15 +47,16 @@ export const Dialer = () => {
 
   const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(
-    lead?.defaultNumber || user?.phoneNumbers[0].phone || ""
+    lead?.defaultNumber || user?.phoneNumbers[0]?.phone || ""
   );
 
   const [call, setCall] = useState<Connection>();
+  const [isCallMuted, setIsCallMuted] = useState(false);
 
   const startupClient = () => {
     if (!user?.phoneNumbers.length) {
-      console.log("no phone number have been set up");
-      return null;
+      console.log("no phone number has been set up");
+      return;
     }
     const numbers: PhoneType[] = user.phoneNumbers.map((p) => {
       return { value: p.phone, state: p.state };
@@ -77,13 +78,11 @@ export const Dialer = () => {
     if (!phone) return;
     if (!lead) {
       setToNumber((state) => formatPhoneNumber(state));
-
       axios
         .post("/api/leads/details", { phone: reFormatPhoneNumber(toNumber) })
         .then((response) => {
           const { id, cellPhone, firstName, lastName } = response.data;
           if (id) {
-            console.log(id, cellPhone, firstName, lastName);
             setToName(`${firstName} ${lastName}`);
           }
         });
@@ -98,7 +97,6 @@ export const Dialer = () => {
     });
 
     call.on("disconnect", onCallDisconnect);
-
     setCall(call);
   };
 
@@ -108,8 +106,12 @@ export const Dialer = () => {
   };
 
   const onNumberClick = (num: string) => {
-    setToNumber((state) => (state += num));
-    onCheckNumber();
+    if (call) {
+      call.sendDigits(num);
+    } else {
+      setToNumber((state) => (state += num));
+      onCheckNumber();
+    }
   };
 
   const onNumberTyped = (num: string) => {
@@ -147,6 +149,17 @@ export const Dialer = () => {
       }
     });
   };
+
+  const onCallMuted = () => {
+    if (call) {
+      call.mute(false);
+      setIsCallMuted((state) => {
+        call.mute(!state);
+        return !state;
+      });
+    }
+  };
+
   const onReset = () => {
     setToName("");
     setToNumber("");
@@ -162,102 +175,105 @@ export const Dialer = () => {
   }, []);
 
   return (
-    <div className="flex">
-      {/* <div className="flex flex-col gap-2 p-4">hello</div> */}
-      <div className="flex flex-col gap-2 p-4">
-        {toName}
-        <div className="relative">
-          <Input
-            placeholder="Phone Number"
-            value={toNumber}
-            maxLength={10}
-            onChange={(e) => onNumberTyped(e.target.value)}
-          />
-          <X
-            className={cn(
-              "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
-              toNumber.length == 0 ? "opacity-0" : "opacity-100"
-            )}
-            onClick={onReset}
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="w-40">Caller Id</span>
-
-          <Select
-            name="ddlState"
-            disabled={!!call}
-            defaultValue={selectedNumber}
-            onValueChange={(e) => setSelectedNumber(e)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Smart local Id" />
-            </SelectTrigger>
-            <SelectContent>
-              {myPhoneNumbers.map((phone) => (
-                <SelectItem key={phone.value} value={phone.value}>
-                  {formatPhoneNumber(phone.value)} | {phone.state}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex  items-center text-sm gap-2">
-          <AlertCircle className="h-4 w-4" /> Call recording
-          <div className="ml-auto flex gap-2">
-            Off
-            <Switch
-              disabled={!!call}
-              checked={record}
-              onCheckedChange={onRecordUpdate}
-            />
-            On
-          </div>
-        </div>
-        <div className="flex items-center text-sm gap-2">
-          <AlertCircle className="h-4 w-4" /> Agent coaching
-          <div className="ml-auto flex gap-2">
-            Off{" "}
-            <Switch
-              disabled={!!call}
-              checked={coach}
-              onCheckedChange={onCoachUpdate}
-            />{" "}
-            On
-          </div>
-        </div>
-        {/* <div className="flex justify-between items-center">
-          <div className="flex gap-2 text-sm">
-            <AlertCircle className="h-4 w-4" /> Agent coaching
-          </div>
-          <div className="flex gap-2">
-            Off <Switch /> On
-          </div>
-        </div> */}
-        <div className="grid grid-cols-3 gap-1">
-          {numbers.map((number) => (
-            <Button
-              key={number.value}
-              disabled={disabled}
-              className="flex-col gap-1 h-14"
-              variant="outlineprimary"
-              onClick={() => onNumberClick(number.value)}
-            >
-              <p>{number.value}</p>
-              <p>{number.letters}</p>
-            </Button>
-          ))}
-        </div>
-        {!call ? (
-          <Button disabled={!disabled} onClick={onCallStarted}>
-            <Phone className="h-4 w-4 mr-2" /> Call
-          </Button>
-        ) : (
-          <Button variant="destructive" onClick={onCallDisconnect}>
-            <Phone className="h-4 w-4 mr-2" /> Hang up
-          </Button>
-        )}
+    <div className="flex flex-col gap-2 p-2">
+      {toName}
+      <div className="relative">
+        <Input
+          placeholder="Phone Number"
+          value={toNumber}
+          maxLength={10}
+          onChange={(e) => onNumberTyped(e.target.value)}
+        />
+        <X
+          className={cn(
+            "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
+            toNumber.length == 0 ? "opacity-0" : "opacity-100"
+          )}
+          onClick={onReset}
+        />
       </div>
+      <div className="flex justify-between items-center">
+        <span className="w-40">Caller Id</span>
+        <Select
+          name="ddlState"
+          disabled={!!call}
+          defaultValue={selectedNumber}
+          onValueChange={(e) => setSelectedNumber(e)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Smart local Id" />
+          </SelectTrigger>
+          <SelectContent>
+            {myPhoneNumbers.map((phone) => (
+              <SelectItem key={phone.value} value={phone.value}>
+                {formatPhoneNumber(phone.value)} | {phone.state}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex  items-center text-sm gap-2">
+        <AlertCircle className="h-4 w-4" /> Call recording
+        <div className="ml-auto flex gap-2">
+          Off
+          <Switch
+            disabled={!!call}
+            checked={record}
+            onCheckedChange={onRecordUpdate}
+          />
+          On
+        </div>
+      </div>
+      <div className="flex items-center text-sm gap-2">
+        <AlertCircle className="h-4 w-4" /> Agent coaching
+        <div className="ml-auto flex gap-2">
+          Off{" "}
+          <Switch
+            disabled={!!call}
+            checked={coach}
+            onCheckedChange={onCoachUpdate}
+          />
+          On
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-1">
+        {numbers.map((number) => (
+          <Button
+            key={number.value}
+            className="flex-col gap-1 h-14"
+            variant="outlineprimary"
+            onClick={() => onNumberClick(number.value)}
+          >
+            <p>{number.value}</p>
+            <p>{number.letters}</p>
+          </Button>
+        ))}
+      </div>
+      {!call ? (
+        <Button disabled={!disabled} onClick={onCallStarted}>
+          <Phone className="h-4 w-4 mr-2" /> Call
+        </Button>
+      ) : (
+        <Button variant="destructive" onClick={onCallDisconnect}>
+          <Phone className="h-4 w-4 mr-2" /> Hang up
+        </Button>
+      )}
+      {call && (
+        <Button
+          variant={isCallMuted ? "destructive" : "outlinedestructive"}
+          onClick={onCallMuted}
+        >
+          {isCallMuted ? (
+            <span className="flex gap-2">
+              <MicOff className="h-4 w-4 mr-2" /> CALL IS MUTED
+            </span>
+          ) : (
+            <span className="flex gap-2">
+              <Mic className="h-4 w-4 mr-2" /> Mute
+            </span>
+          )}
+        </Button>
+      )}
     </div>
   );
 };

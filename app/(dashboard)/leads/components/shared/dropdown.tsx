@@ -19,18 +19,19 @@ import { Button } from "@/components/ui/button";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 
 import { AlertModal } from "@/components/modals/alert-modal";
-import { FullLead } from "@/types";
+import { FullLeadNoConvo } from "@/types";
 import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
+import { Conversation } from "@prisma/client";
 
-interface DropDownDrops {
-  lead: FullLead;
-  conversationId?: string;
-}
+type DropDownDrops = {
+  lead: FullLeadNoConvo;
+  conversation?: Conversation;
+};
 
-export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
+export const DropDown = ({ lead, conversation }: DropDownDrops) => {
   const router = useRouter();
   const useAppointment = useAppointmentModal();
-  const [autoChat, setAutoChat] = useState<boolean>(lead.autoChat);
+  const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
@@ -49,7 +50,7 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/conversations/${conversationId}`);
+      await axios.delete(`/api/conversations/${conversation?.id}`);
       router.refresh();
       router.push("/inbox");
       toast.success("Conversation deleted.");
@@ -69,7 +70,7 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
         loading={loading}
       />
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button className="rounded-full" size="icon">
             <ChevronDown className="w-4 h-4" />
           </Button>
@@ -83,7 +84,7 @@ export const DropDown = ({ lead, conversationId }: DropDownDrops) => {
             <Calendar className="h-4 w-4 mr-2" />
             New Appointment
           </DropdownMenuItem>
-          {conversationId && (
+          {conversation?.id && (
             <DropdownMenuItem
               className={cn(
                 " text-background cursor-pointer",

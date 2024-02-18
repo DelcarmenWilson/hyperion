@@ -23,7 +23,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import TurnOverRate from "./turnover/turn-over-rate";
 import { CallHistoryColumn } from "./callhistory/columns";
 
-interface DashBoardClientProps {
+type DashBoardClientProps = {
   leadCount: number;
   messagesCount: number;
   outBoundCallsCount: number;
@@ -31,7 +31,7 @@ interface DashBoardClientProps {
   appointments: AppointmentColumn[];
   agents: AgentSummaryColumn[];
   callHistory: CallHistoryColumn[];
-}
+};
 export const DashBoardClient = ({
   leadCount,
   messagesCount,

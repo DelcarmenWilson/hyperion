@@ -7,15 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { USDollar } from "@/formulas/numbers";
 
-interface FieldBoxProps {
+type FieldBoxProps = {
   name: string;
   field: string;
+  maxLength?: number;
   setField: (e: string) => void;
   onFieldUpdate: () => void;
-}
+};
 export const FieldBox = ({
   name,
   field,
+  maxLength = 4,
   setField,
   onFieldUpdate,
 }: FieldBoxProps) => {
@@ -41,7 +43,7 @@ export const FieldBox = ({
       {fieldEnabled ? (
         <Input
           className="w-[60px] h-5"
-          maxLength={4}
+          maxLength={maxLength}
           value={field}
           onChange={(e) => onFieldChange(e.target.value)}
         />

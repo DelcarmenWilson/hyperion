@@ -3,14 +3,14 @@ import { useEffect, useRef, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBox } from "@/components/reusable/message-box";
-import { FullConversationType, FullMessageType } from "@/types";
+import { FullConversation, FullMessage } from "@/types";
 import useConversation from "@/hooks/user-conversation";
 import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 
 interface BodyProps {
-  initialData: FullConversationType;
+  initialData: FullConversation;
 }
 export const Body = ({ initialData }: BodyProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -29,7 +29,7 @@ export const Body = ({ initialData }: BodyProps) => {
     pusherClient.subscribe(conversationId as string);
     bottomRef?.current?.scrollIntoView();
 
-    const messageHandler = (message: FullMessageType) => {
+    const messageHandler = (message: FullMessage) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
       if (message.role == "user" && audioRef.current) {
         audioRef.current.play();

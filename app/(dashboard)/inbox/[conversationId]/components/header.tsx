@@ -4,14 +4,14 @@ import { ArrowLeft, Phone } from "lucide-react";
 
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 
-import { FullConversationType, FullLead } from "@/types";
+import { FullConversation, FullLead } from "@/types";
 import { Button } from "@/components/ui/button";
 import { DropDown } from "@/app/(dashboard)/leads/components/shared/dropdown";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
 interface HeaderProps {
-  conversation: FullConversationType;
+  conversation: FullConversation;
 }
 export const Header = ({ conversation }: HeaderProps) => {
   const router = useRouter();
@@ -23,18 +23,6 @@ export const Header = ({ conversation }: HeaderProps) => {
     1
   )}`;
   const fullName = `${lead.firstName} ${lead.lastName}`;
-  const formattedLead: FullLead = {
-    id: lead.id,
-    firstName: lead.firstName,
-    lastName: lead.lastName,
-    email: lead.email!,
-    cellPhone: lead.cellPhone,
-    defaultNumber: lead.defaultNumber,
-    autoChat: conversation.autoChat,
-    notes: lead.notes!,
-    status: lead.status,
-    createdAt: lead.createdAt,
-  };
 
   return (
     <div className="flex flex-1 justify-between items-center h-14 px-2">
@@ -50,12 +38,12 @@ export const Header = ({ conversation }: HeaderProps) => {
           className="rounded-full"
           variant="outlineprimary"
           size="icon"
-          onClick={() => usePm.onDialerOpen(formattedLead)}
+          onClick={() => usePm.onPhoneOutOpen(lead)}
         >
           <Phone className="w-4 h-4" />
         </Button>
 
-        <DropDown lead={formattedLead} />
+        <DropDown lead={lead} />
       </div>
       <div className="flex items-center gap-2">
         <Button

@@ -1,23 +1,22 @@
 import { create } from "zustand";
-import { Device } from "twilio-client";
-import { FullLead } from "@/types";
+import { FullLead, FullLeadNoConvo } from "@/types";
 
 interface usePhoneModalStore {
-  isPhoneOpen: boolean;
-  onPhoneOpen: () => void;
-  onPhoneClose: () => void;
+  isPhoneInOpen: boolean;
+  onPhoneInOpen: () => void;
+  onPhoneInClose: () => void;
 
-  isDialerOpen: boolean;
-  onDialerOpen: (e?: FullLead) => void;
-  onDialerClose: () => void;
-  lead?: FullLead;
+  isPhoneOutOpen: boolean;
+  onPhoneOutOpen: (e?: FullLeadNoConvo) => void;
+  onPhoneOutClose: () => void;
+  lead?: FullLeadNoConvo;
 }
 
 export const usePhoneModal = create<usePhoneModalStore>((set) => ({
-  isPhoneOpen: false,
-  onPhoneOpen: () => set({ isPhoneOpen: true }),
-  onPhoneClose: () => set({ isPhoneOpen: false }),
-  isDialerOpen: false,
-  onDialerOpen: (e) => set({ isDialerOpen: true, lead: e }),
-  onDialerClose: () => set({ isDialerOpen: false }),
+  isPhoneInOpen: false,
+  onPhoneInOpen: () => set({ isPhoneInOpen: true }),
+  onPhoneInClose: () => set({ isPhoneInOpen: false }),
+  isPhoneOutOpen: false,
+  onPhoneOutOpen: (e) => set({ isPhoneOutOpen: true, lead: e }),
+  onPhoneOutClose: () => set({ isPhoneOutOpen: false }),
 }));

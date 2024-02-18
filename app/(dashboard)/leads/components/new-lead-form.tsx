@@ -1,6 +1,8 @@
-import { useState } from "react";
-
 import * as z from "zod";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,15 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Gender, MaritalStatus } from "@prisma/client";
 import { leadInsert } from "@/actions/lead";
 
-interface NewLeadFormProps {
+type NewLeadFormProps = {
   onClose?: () => void;
-}
+};
 
 type LeadFormValues = z.infer<typeof LeadSchema>;
 

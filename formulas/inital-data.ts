@@ -153,6 +153,7 @@ export const convertCalls = (result: any): Call[] => {
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
       from: d["from"],
+      type: d["type"],
       recordId: d["recordId"],
       recordStartTime: d["recordStartTime"]?new Date(d["recordStartTime"]):null,
       recordStatus: d["recordStatus"],
@@ -162,6 +163,10 @@ export const convertCalls = (result: any): Call[] => {
       recordDuration: d["recordDuration"]
         ? parseInt(d["recordDuration"])
         : null,
+        transcriptionId:d["transcriptionId"],
+        transcriptionText:d["transcriptionText"],
+        transcriptionUrl:d["transcriptionUrl"],
+        listened:d["listened"]=="f"?false:true,
       price: d["price"],
     };
     mapped.push(newobj);

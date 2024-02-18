@@ -16,10 +16,11 @@ export const leadsGetAllByAgentId = async (userId: string) => {
     const leads = await db.lead.findMany({
       where: { userId },
       include: {
-        conversation:true,
+        conversation: true,
         appointments: { where: { status: "scheduled" } },
         // appointments: { where: { status: "scheduled" } },
         calls: true,
+        activities:true
       },
     });
     return leads;
@@ -33,17 +34,19 @@ export const leadGetById = async (id: string) => {
     const lead = await db.lead.findUnique({
       where: {
         id,
-      }, include: {
-        conversation:true,
+      },
+      include: {
+        conversation: true,
         // appointments: { where: { status: "scheduled" } },
-        appointments: true,
-        calls: true,
+        appointments: {orderBy:{date:"desc"}},
+        calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
+        activities:{orderBy:{createdAt:"desc"}}
       },
     });
 
     return lead;
   } catch {
-    return  null;
+    return null;
   }
 };
 
@@ -74,7 +77,7 @@ export const leadGetPrevNextById = async (id: string) => {
         id: "asc",
       },
     });
-    return { prev: prev[0]?.id || null, next: next[0]?.id };
+    return { prev: prev[0]?.id || null, next: next[0]?.id || null };
   } catch {
     return null;
   }
@@ -86,7 +89,7 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
       _count: { id: true },
       where: {
         userId,
-        createdAt: { gte: getYesterday()},
+        createdAt: { gte: getYesterday() },
       },
     });
 

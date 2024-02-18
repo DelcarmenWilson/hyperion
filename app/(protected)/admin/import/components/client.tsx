@@ -6,7 +6,6 @@ import { PresetsBox } from "./presets/presets-box";
 import { SchedulesBox } from "./schedules/schedules";
 import { LeadsBox } from "./leads/leads-box";
 import { CallsBox } from "./calls/calls-box";
-import { AppointmentBox } from "@/app/(dashboard)/appointments/components/appointment-box";
 import { AppointmentsBox } from "./appointments/appointments-box";
 import { ConversationsBox } from "./conversations/conversations-box";
 import { MessagesBox } from "./messages/messages-box";

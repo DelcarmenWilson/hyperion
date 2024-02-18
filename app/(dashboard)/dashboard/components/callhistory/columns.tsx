@@ -108,9 +108,7 @@ export const columns: ColumnDef<CallHistoryColumn>[] = [
     header: "Date/Time",
     cell: ({ row }) => (
       <div>
-        <p className="capitalize">
-          {format(row.original.date, "MM-dd-yyyy hh:mm aaaaa'M'")}
-        </p>
+        {row.original.date && format(row.original.date, "MM-dd-yyyy hh:mm aa")}
       </div>
     ),
   },

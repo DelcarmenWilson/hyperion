@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { FullLead } from "@/types";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
+import Link from "next/link";
 
 interface LeadBoxProps {
   lead: FullLead;
@@ -18,9 +19,12 @@ export const LeadBox = ({ lead }: LeadBoxProps) => {
       <div className="flex justify-between items-center p-2 text-xs">
         <div>
           <p>{`${lead.firstName} ${lead.lastName}`}</p>
-          <p className="text-primary italic font-bold">
+          <Link
+            className="text-primary italic font-bold"
+            href={`/leads/${lead.id}`}
+          >
             {formatPhoneNumber(lead.cellPhone)}
-          </p>
+          </Link>
           <p className="flex gap-1">
             Local
             <Clock className="w-4 h-4" />: 12:41 pm
@@ -29,7 +33,7 @@ export const LeadBox = ({ lead }: LeadBoxProps) => {
         <div className="flex flex-col justify-between gap-2 items-end">
           <Button
             className="rounded-full w-fit"
-            onClick={() => usePm.onDialerOpen(lead)}
+            onClick={() => usePm.onPhoneOutOpen(lead)}
           >
             <Phone className="w-4 h-4" />
           </Button>
