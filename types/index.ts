@@ -10,32 +10,33 @@ import {
   Appointment,
   Team,
   Organization,
+  Feedback,
+  Activity,
 } from "@prisma/client";
-export type FullUser=User & {
-  calls: Call[],
-  appointments: Appointment[],
-  conversations: Conversation[],
-  leads: Lead[],
+export type FullUser = User & {
+  calls: Call[];
+  appointments: Appointment[];
+  conversations: Conversation[];
+  leads: Lead[];
 };
 
-export type FullUserReport={
-  id:string;
-  image:string | null;
-  userName:string;
-  role:String;
-  calls: number,
-  appointments: number,
-  conversations: number,
-  revenue:number
-
-}
-export type FullMessageType = Message & {
+export type FullUserReport = {
+  id: string;
+  image: string | null;
+  userName: string;
+  role: String;
+  calls: number;
+  appointments: number;
+  conversations: number;
+  revenue: number;
+};
+export type FullMessage = Message & {
   sender?: User | null;
 };
 
-export type FullConversationType = Conversation & {
-  lead: Lead;
-  messages: FullMessageType[];
+export type FullConversation = Conversation & {
+  lead: FullLeadNoConvo;
+  messages: FullMessage[];
 };
 
 export type LeadConversationType = Conversation & {
@@ -43,34 +44,20 @@ export type LeadConversationType = Conversation & {
   messages: Message[];
 };
 
-export type FullLead = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  cellPhone: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  conversationId?: string;
-  defaultNumber: string;
-  autoChat: boolean;
-  notes: string;
-  calls?: Call[];
-  lastCall?: Call;
-  appointments?: Appointment[];
-  lastApp?: Appointment;
-  vendor?: string;
-  type?: string;
-  status?: string;
 
-  quote?: number;
-  saleAmount?: number;
-  commision?: number;
-  costOfLead?: number;
-  createdAt: Date;
+export type FullLeadNoConvo = Lead & {
+  calls: Call[];
+  appointments: Appointment[];
+  activities: Activity[];
 };
+
+export type FullLead = Lead & {
+  conversation: Conversation | null;
+  calls: Call[];
+  appointments: Appointment[];
+  activities: Activity[];
+};
+
 export type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 export type PresetFormValues = {
@@ -87,21 +74,33 @@ export type FullCall = Call & {
   lead: Lead;
 };
 
-export type FullTeam= Team & {
+export type FullTeam = Team & {
   users: User[];
-  organization:Organization
-  owner:User | null;
+  organization: Organization;
+  owner: User | null;
 };
 
-export type FullTeamReport= {
-  id:string,
-  name:string,
-  image:string | null,
-  banner:string| null,
-  calls: number,
-  appointments: number,
-  conversations: number,
-  revenue:number
-  organization:Organization
-  owner:User | null;
+export type FullTeamReport = {
+  id: string;
+  name: string;
+  image: string | null;
+  banner: string | null;
+  calls: number;
+  appointments: number;
+  conversations: number;
+  revenue: number;
+  organization: Organization;
+  owner: User | null;
+};
+
+export type FullFeedback = Feedback & {
+  user: User;
+};
+
+export type Voicemail = {
+  id: string;
+  lead?: Lead;
+  from: string;
+  recordUrl: string;
+  updatedAt: string;
 };

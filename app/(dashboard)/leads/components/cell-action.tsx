@@ -87,12 +87,12 @@ export const CellAction = ({ data }: CellActionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          {!data.conversationId && (
+          {/* {!data.conversationId && (
             <DropdownMenuItem onClick={onStartConversation}>
               <MessageCircle className="mr-2 h-4 w-4" />
               Start Convo
             </DropdownMenuItem>
-          )}
+          )} */}
           <DropdownMenuItem onClick={onCopy}>
             <Copy className="mr-2 h-4 w-4" />
             Copy Id

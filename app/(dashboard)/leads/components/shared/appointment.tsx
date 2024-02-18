@@ -1,16 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FullLead } from "@/types";
 import { Appointment, Call } from "@prisma/client";
 import { format } from "date-fns";
 import { Cake, CalendarX, Plus, XCircle } from "lucide-react";
 
-interface AppointmentProps {
+type AppointmentProps = {
+  lead: FullLead;
   call: Call;
   appointment: Appointment;
   dob?: Date;
   showInfo?: boolean;
-}
+};
 export const AppointmentBox = ({
+  lead,
   call,
   appointment,
   dob,
@@ -44,11 +47,11 @@ export const AppointmentBox = ({
 
       {showInfo && (
         <div>
-          <p>Country: Meckenburg</p>
-          <p>Height: 5&apos;7</p>
-          <p>Weight: 153 lbs</p>
-          <p>Smoker: No</p>
-          <p>Income: $46524.00</p>
+          <p>Dob: {dob && format(dob, "MM/dd/yy")}</p>
+          <p>Height: {lead.height}</p>
+          <p>Weight: {lead.weight} lbs</p>
+          <p>Smoker: {lead.smoker}</p>
+          <p>Income: {lead.income}</p>
         </div>
       )}
 

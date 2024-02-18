@@ -1,11 +1,11 @@
-import { FullLead } from "@/types";
+import { FullLeadNoConvo } from "@/types";
 import { create } from "zustand";
 
 interface useAppointmentModalStore {
   isOpen: boolean;
-  onOpen: (e?: FullLead) => void;
+  onOpen: (e?: FullLeadNoConvo) => void;
   onClose: () => void;
-  lead?: FullLead;
+  lead?: FullLeadNoConvo;
 }
 
 export const useAppointmentModal = create<useAppointmentModalStore>((set) => ({

@@ -7,6 +7,7 @@ import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
 import { LeadStatus, LeadType } from "@prisma/client";
+import { activityInsert } from "./activity";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -47,7 +48,12 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     return { error: "Lead already exist" };
   }
 
-  const st = states.find((e) => e.state == state || e.abv == state);
+  const st = states.find(
+    (e) =>
+      e.state.toLowerCase() == state.toLowerCase() ||
+      e.abv.toLowerCase() == state.toLowerCase()
+  );
+
   const phoneNumbers = await db.phoneNumber.findMany({
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
@@ -114,8 +120,8 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
 
     const st = states.find(
       (e) =>
-        e.state.toLowerCase == state.toLowerCase ||
-        e.abv.toLowerCase == state.toLowerCase
+        e.state.toLowerCase() == state.toLowerCase() ||
+        e.abv.toLowerCase() == state.toLowerCase()
     );
     const phoneNumber = phoneNumbers.find((e) => e.state == state);
 
@@ -190,10 +196,18 @@ export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
 };
 
 export const leadUpdateByIdQuote = async (leadId: string, quote: number) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+  
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -202,22 +216,31 @@ export const leadUpdateByIdQuote = async (leadId: string, quote: number) => {
       quote,
     },
   });
+  activityInsert(leadId, "Quote updated","Quote", user.id, quote.toString());
   return { success: "Lead quote has been updated" };
 };
 
 export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
+
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
   }
-
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
+  }
   await db.lead.update({
     where: { id: leadId },
     data: {
       type,
     },
   });
+  activityInsert(leadId, "Type updated","Type", user.id, type);
   return { success: "Lead type has been updated" };
 };
 
@@ -225,10 +248,19 @@ export const leadUpdateByIdStatus = async (
   leadId: string,
   status: LeadStatus
 ) => {
+  const user = await currentUser();
+
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -237,14 +269,24 @@ export const leadUpdateByIdStatus = async (
       status,
     },
   });
+  activityInsert(leadId, "Status updated","status", user.id, status);
   return { success: "Lead status has been updated" };
 };
 
 export const leadUpdateByIdVendor = async (leadId: string, vendor: string) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
+
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -253,19 +295,28 @@ export const leadUpdateByIdVendor = async (leadId: string, vendor: string) => {
       vendor,
     },
   });
+
+  activityInsert(leadId, "Vendor updated","Vendor", user.id, vendor);
   return { success: "Lead vendor has been updated" };
 };
 
 //TODO the folowing 3 functions can be combined into 1
-
 export const leadUpdateByIdCommision = async (
   leadId: string,
   commision: number
 ) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -274,17 +325,26 @@ export const leadUpdateByIdCommision = async (
       commision,
     },
   });
-  return { success: "Lead commission has been updated" };
+  activityInsert(leadId, "Ap updated", "Ap", user.id, commision.toString());
+  return { success: "Lead Ap has been updated" };
 };
 
 export const leadUpdateByIdCost = async (
   leadId: string,
   costOfLead: number
 ) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -293,16 +353,32 @@ export const leadUpdateByIdCost = async (
       costOfLead,
     },
   });
+  activityInsert(
+    leadId,
+    "cost of lead updated",
+    "Cost of Lead",
+    user.id,
+    costOfLead.toString()
+  );
   return { success: "Lead cost has been updated" };
 };
+
 export const leadUpdateByIdSale = async (
   leadId: string,
   saleAmount: number
 ) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
+  }
+
+  if (user.id != existingLead.userId) {
+    return { error: "Unauthorized" };
   }
 
   await db.lead.update({
@@ -311,5 +387,12 @@ export const leadUpdateByIdSale = async (
       saleAmount,
     },
   });
-  return { success: "Lead sale amount has been updated" };
+  activityInsert(
+    leadId,
+    "Coverage amount updated",
+    "Coverage amount",
+    user.id,
+    saleAmount.toString()
+  );
+  return { success: "Lead coverage amount has been updated" };
 };

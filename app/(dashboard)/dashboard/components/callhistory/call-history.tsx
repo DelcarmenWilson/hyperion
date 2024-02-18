@@ -34,7 +34,7 @@ export const CallHistory = ({ initialCalls }: AgentSummaryBoxProps) => {
       pusherClient.unsubscribe(user?.id as string);
       pusherClient.unbind("calllog:new", callHandler);
     };
-  }, [leadId]);
+  }, [leadId, user?.id]);
   return (
     <Card className="relative  overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">

@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const { user } = body;
     const appointments = await appointmentsGetAllByUserIdUpcoming(user);
 
-    console.log(appointments);
     return NextResponse.json(appointments);
   } catch (error) {
     console.log("[APPOINTMENTS_POST]", error);

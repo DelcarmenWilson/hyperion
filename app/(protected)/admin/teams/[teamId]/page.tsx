@@ -1,5 +1,6 @@
 import { teamsGetById } from "@/data/team";
 import { TeamClient } from "./components/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/custom/heading";
 import { FullTeamReport, FullUserReport } from "@/types";
 import { UsersClient } from "./components/users";
@@ -52,11 +53,18 @@ const TeamPage = async ({
   return (
     <>
       <TeamClient team={teamReport} />
-      <Heading
-        title={`Users (${team.users.length})`}
-        description={`${team.name}'s users`}
-      />
-      <UsersClient users={userReport} />
+
+      <Card className="mt-4">
+        <CardHeader>
+          <Heading
+            title={`Users (${team.users.length})`}
+            description={`${team.name}'s users`}
+          />
+          <CardContent className="p-0">
+            <UsersClient users={userReport} />
+          </CardContent>
+        </CardHeader>
+      </Card>
     </>
   );
 };

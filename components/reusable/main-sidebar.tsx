@@ -7,7 +7,7 @@ import { IconLink, IconLinkSkeleton } from "./icon-link";
 import { useSidebar } from "@/store/use-sidebar";
 import { cn } from "@/lib/utils";
 import { MainSidebarRoutes } from "@/constants/page-routes";
-import { ThemeToggle } from "../custom/theme-toggle";
+// import { ThemeToggle } from "../custom/theme-toggle";
 import { UserButton } from "../auth/user-button";
 import { Skeleton } from "../ui/skeleton";
 
@@ -65,7 +65,7 @@ export const MainSideBar = () => {
         ))}
       </ScrollArea>
       <div className="flex flex-col mt-auto items-center space-y-4">
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         <UserButton />
       </div>
     </aside>

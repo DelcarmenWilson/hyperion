@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
 import { toast } from "sonner";
+import { leadStatus } from "@/constants/lead";
 interface CallInfoProps {
   lead: FullLead;
 }
@@ -72,20 +73,22 @@ export const CallInfo = ({ lead }: CallInfoProps) => {
     <div className="flex flex-col gap-2">
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
-      <Button
-        disabled={lead.status == "Do_Not_Call"}
-        className="w-fit relative"
-        onClick={() => usePm.onDialerOpen(lead)}
-        size="sm"
-      >
-        <Phone className="w-4 h-4 mr-2" />
-        CLICK TO CALL
+      <div className="relative w-fit">
+        <Button
+          disabled={lead.status == "Do_Not_Call"}
+          onClick={() => usePm.onPhoneOutOpen(lead)}
+          size="sm"
+        >
+          <Phone className="w-4 h-4 mr-2" />
+          CLICK TO CALL
+        </Button>
+
         {callCount > 0 && (
-          <Badge className="absolute -top-3 -right-3 rounded-full text-xs">
+          <Badge className="absolute -right-6 rounded-full text-xs">
             {callCount}
           </Badge>
         )}
-      </Button>
+      </div>
       <div>
         <p className="text-muted-foreground">Type</p>
         <Select
@@ -117,13 +120,11 @@ export const CallInfo = ({ lead }: CallInfoProps) => {
             <SelectValue placeholder="Disposition" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="New">New</SelectItem>
-            <SelectItem value="Attempted_to_Contact">
-              Attempted to Contact
-            </SelectItem>
-            <SelectItem value="Not_Interest">Not Interest</SelectItem>
-            <SelectItem value="Do_Not_Call">Do Not Call</SelectItem>
-            <SelectItem value="Sold">Sold</SelectItem>
+            {leadStatus.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                {status.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

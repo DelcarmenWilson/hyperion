@@ -6,12 +6,12 @@ import { useSidebar } from "@/store/use-sidebar";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface IconLinkProps {
+type IconLinkProps = {
   title: string;
   href: string;
   active: boolean;
   icon: LucideIcon;
-}
+};
 
 export const IconLink = ({
   title,

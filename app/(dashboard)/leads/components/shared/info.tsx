@@ -54,11 +54,7 @@ export const Info = ({ lead }: InfoProps) => {
     <div className="flex flex-col gap-1 text-sm">
       <p className="font-semibold text-lg">{`${lead.firstName} ${lead.lastName}`}</p>
       <p className="flex items-center gap-2 text-primary">
-        <Link
-          className="font-extrabold italic"
-          onClick={() => router.push(`/leads/${lead.id}`, {})}
-          href={`/leads/${lead.id}`}
-        >
+        <Link className="font-extrabold italic" href={`/leads/${lead.id}`}>
           {formatPhoneNumber(lead.cellPhone)}
         </Link>
         <CopyButton value={lead.cellPhone} />
@@ -80,7 +76,7 @@ export const Info = ({ lead }: InfoProps) => {
       />
 
       <div>
-        {!lead.conversationId && (
+        {!lead.conversation?.id && (
           <Button
             disabled={lead.status == "Do_Not_Call"}
             variant="outlineprimary"

@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { FullMessageType } from "@/types";
+import { FullMessage } from "@/types";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 
 interface MessageProps {
-  data: FullMessageType;
+  data: FullMessage;
   username: string;
   isLast: boolean;
 }

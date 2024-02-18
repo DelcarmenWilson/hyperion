@@ -19,6 +19,10 @@ export const allVendors: VendorType[] = [
     value: "Prospect_For_Leads",
     name: "Prospect For Leads",
   },
+  {
+    value: "Mutual_Of_Omaha",
+    name: "Mutual Of Omaha",
+  },  
 ];
 
 export const importVendors: VendorType[]=allVendors.slice(1)

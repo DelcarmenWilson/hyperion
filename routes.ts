@@ -15,8 +15,12 @@ export const publicRoutes = [
   "/api/test",
   "/api/token",
   "/api/voice",
+  "/api/voice/action",
+  "/api/voice/callback",
   "/api/voice/recording",
   "/api/voice/result",
+  "/api/voice/transcribe",
+  "/api/voice/voicemail",
 ];
 // export const publicRoutes = ["/", "/new-verification","/api/:path*"];
 

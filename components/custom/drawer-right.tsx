@@ -6,13 +6,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import { Fragment } from "react";
-import { NewLeadForm } from "./new-lead-form";
 
-interface NewLeadDrawerProps {
+type DrawerRightProps = {
+  title: string;
   isOpen: boolean;
   onClose: () => void;
-}
-export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
+  children: React.ReactNode;
+};
+export const DrawerRight = ({
+  title,
+  isOpen,
+  onClose,
+  children,
+}: DrawerRightProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => {}}>
@@ -41,7 +47,8 @@ export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-sm">
                   <div className="flex flex-col h-full overflow-y-auto bg-background  py-2 shadow-xl">
                     <div className="px-2 sm:px-2">
-                      <div className="flex items-start justify-end">
+                      <div className="flex items-center justify-between">
+                        <p className=" font-semibold text-xl">{title}</p>
                         <div className="flex h-7 items-center">
                           <Button size="sm" onClick={onClose}>
                             <span className="sr-only">Close panel</span>
@@ -50,9 +57,7 @@ export const NewLeadDrawer = ({ isOpen, onClose }: NewLeadDrawerProps) => {
                         </div>
                       </div>
                     </div>
-                    <ScrollArea className="flex-1 p-2">
-                      <NewLeadForm onClose={onClose} />
-                    </ScrollArea>
+                    <ScrollArea className="flex-1 p-2">{children}</ScrollArea>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

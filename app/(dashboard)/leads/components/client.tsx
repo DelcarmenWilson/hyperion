@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DownloadCloud, Paperclip, Plus, Users } from "lucide-react";
-import { NewLeadDrawer } from "./new-lead-drawer";
 import { ImportLeadsForm } from "./import/import-leads-form";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,71 +16,40 @@ import {
 } from "@/components/ui/tooltip";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { columns } from "./columns";
 import { FullLead } from "@/types";
+import { DrawerRight } from "@/components/custom/drawer-right";
+import { NewLeadForm } from "./new-lead-form";
+import { DataTableHeadless } from "@/components/tables/data-table-headless";
+import { PageLayout } from "@/components/custom/page-layout";
+import { TopMenu } from "./top-menu";
+import { PageLayoutScroll } from "@/components/custom/page-layout-scroll";
 
 interface LeadClientProps {
   leads: FullLead[];
 }
 export const LeadClient = ({ leads }: LeadClientProps) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
     <>
-      <NewLeadDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <Card className="flex flex-col flex-1 relative overflow-hidden w-full">
-        <div className="flex flex-col justify-between lg:items-center mb-2 lg:flex-row ">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="bg-accent p-4 rounded-br-lg">
-              <Users className="h-5 w-5 text-primary" />
-            </div>
-            <CardTitle className=" text-sm text-muted-foreground">
-              View Leads
-            </CardTitle>
-          </div>
-          <div className="flex gap-2 lg:mr-6 px-2">
-            {/* <Button variant="outlineprimary" size="sm">
-              <DownloadCloud className="h-4 w-4 mr-2" />
-              GENERATE CSV
-            </Button> */}
-            <Dialog>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button variant="outlineprimary" size="sm">
-                        <Paperclip className="h-4 w-4 mr-2" />
-                        UPLOAD CSV FILE
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Import Leads</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
-                <ImportLeadsForm />
-              </DialogContent>
-            </Dialog>
-
-            <Button size="sm" onClick={() => setDrawerOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              CREATE LEAD
-            </Button>
-          </div>
-        </div>
-
-        <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
-          <ScrollArea className="w-full flex-1 pr-2">
-            <DashBoardTable
-              columns={columns}
-              data={leads}
-              searchKey="lastName"
-            />
-          </ScrollArea>
-        </CardContent>
-      </Card>
+      <DrawerRight
+        title="New Lead"
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      >
+        <NewLeadForm onClose={() => setIsDrawerOpen(false)} />
+      </DrawerRight>
+      <PageLayoutScroll
+        title="View Leads"
+        icon={Users}
+        topMenu={<TopMenu setIsOpen={setIsDrawerOpen} />}
+      >
+        <DataTableHeadless
+          columns={columns}
+          data={leads}
+          searchKey="lastName"
+        />
+      </PageLayoutScroll>
     </>
   );
 };

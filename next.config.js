@@ -3,7 +3,14 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/api/voice",
+        // source: "/api/voice",
+        // headers: [
+        //   {
+        //     key: "content-type",
+        //     value: "text/xml;application/xml;text/html",
+        //   },
+        // ],
+        source: "/api/(.*)",
         headers: [
           {
             key: "content-type",

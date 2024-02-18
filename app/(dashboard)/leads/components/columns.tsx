@@ -15,24 +15,24 @@ import { FullLead } from "@/types";
 export const columns: ColumnDef<FullLead>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        value="all"
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+    // header: ({ table }) => (
+    //   <Checkbox
+    //     value="all"
+    //     checked={
+    //       table.getIsAllPageRowsSelected() ||
+    //       (table.getIsSomePageRowsSelected() && "indeterminate")
+    //     }
+    //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //     aria-label="Select all"
+    //   />
+    // ),
     cell: ({ row }) => (
       <div className="flex flex-col justify-center items-center gap-2">
-        <Checkbox
+        {/* <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-        />
+        /> */}
         <DropDown lead={row.original} />
       </div>
     ),
@@ -53,7 +53,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "notes",
     header: "",
     cell: ({ row }) => (
-      <NotesForm leadId={row.original.id} intialNotes={row.original.notes} />
+      <NotesForm leadId={row.original.id} intialNotes={row.original.notes!} />
     ),
   },
   {
@@ -67,8 +67,11 @@ export const columns: ColumnDef<FullLead>[] = [
     header: "",
     cell: ({ row }) => (
       <AppointmentBox
-        call={row.original.lastCall!}
-        appointment={row.original.lastApp!}
+        lead={row.original}
+        call={row.original.calls[row.original.calls.length - 1]!}
+        appointment={
+          row.original.appointments[row.original.appointments.length - 1]!
+        }
       />
     ),
   },

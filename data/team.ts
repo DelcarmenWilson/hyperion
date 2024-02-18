@@ -18,11 +18,11 @@ export const teamsGetById = async (id: string) => {
     const teams = await db.team.findUnique({
       where: { id },
       include: {
-        users: {
-          include: {
+        users: {          
+          include: {            
             calls: true,
             appointments: true,
-            conversations: true,
+            conversations:true,
             leads: true,
           },
         },

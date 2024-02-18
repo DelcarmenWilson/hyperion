@@ -1,22 +1,28 @@
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import { PictureInPicture } from "lucide-react";
 
-import { FullConversationType } from "@/types";
+import { FullConversation } from "@/types";
 
 import { MessageBox } from "@/components/reusable/message-box";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 
 interface BodyProps {
-  initialData: FullConversationType;
+  initialData: FullConversation;
 }
 
 export const Body = ({ initialData }: BodyProps) => {
   return (
     <div className="w-full flex flex-col items-center ">
-      <div className="flex flex-col items-center h-[400px] w-[50%]">
-        <ScrollArea className="flex flex-col flex-1 w-full border rounded-sm p-4 overflow-hidden overflow-y-auto ">
-          {initialData.messages.map((message, i) => (
+      <div className="flex flex-col items-center h-[400px] w-full">
+        <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4 overflow-hidden overflow-y-auto ">
+          {!initialData?.messages.length}
+          {
+            <p className="text-center text-muted-foreground">
+              No sms have been sent
+            </p>
+          }
+          {initialData?.messages.map((message, i) => (
             <MessageBox
               key={message.id}
               data={message}

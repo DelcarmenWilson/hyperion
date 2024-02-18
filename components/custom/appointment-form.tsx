@@ -101,15 +101,17 @@ export const AppointmentForm = () => {
   };
 
   useEffect(() => {
-    axios.post("/api/user/schedule").then((response) => {
-      setBrSchedule(breakDownSchedule(response.data));
-    });
-    axios
-      .post("/api/user/appointments", { user: user?.id })
-      .then((response) => {
-        setAppointments(response.data);
+    return () => {
+      axios.post("/api/user/schedule", { user: user?.id }).then((response) => {
+        setBrSchedule(breakDownSchedule(response.data));
       });
-  }, []);
+      axios
+        .post("/api/user/appointments", { user: user?.id })
+        .then((response) => {
+          setAppointments(response.data);
+        });
+    };
+  }, [user?.id]);
 
   return (
     <div>
@@ -133,26 +135,6 @@ export const AppointmentForm = () => {
                 }
                 initialFocus
               />
-
-              {/* <Popover>
-                <div className="relative">
-                  <Input value={selectedDate.toDateString()} />
-                  <PopoverTrigger asChild>
-                    <CalendarIcon className="absolute h-4 w-4 opacity-50 right-2 top-0 translate-y-1/2 cursor-pointer" />
-                  </PopoverTrigger>
-                </div>
-                <PopoverContent className="w-auto p-0" align="end">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(e) => OnDateSlected(e!)}
-                    disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover> */}
             </div>
 
             {/* Time*/}

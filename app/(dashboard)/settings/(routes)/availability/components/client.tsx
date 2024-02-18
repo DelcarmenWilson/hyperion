@@ -209,8 +209,8 @@ export function AvailabilityClient({
             disabled={loading}
           />
         </div>
-        <div className="text-end">
-          <Button type="submit">Submit</Button>
+        <div className="text-end mt-2">
+          <Button type="submit">Update Availability</Button>
         </div>
       </form>
     </Form>

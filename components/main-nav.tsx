@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 export function MainNav({
@@ -8,9 +8,10 @@ export function MainNav({
   ...props
 }: React.HtmlHTMLAttributes<HTMLElement>) {
   const usePm = usePhoneModal();
+
   return (
     <div>
-      <Button onClick={usePm.onPhoneOpen}>Open Modal</Button>
+      <Button onClick={usePm.onPhoneInOpen}>Open Modal</Button>
     </div>
   );
 }

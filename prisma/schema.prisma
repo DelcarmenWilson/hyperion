@@ -56,9 +56,23 @@ enum LeadType {
 enum LeadStatus {
   New
   Attempted_to_Contact
+  First_Call
+  Second_Call
+  Third_Call
+  Voicemail
+  Text
   Not_Interest
   Do_Not_Call
   Sold
+  Door_Knock
+  Appointment
+  Submitted
+  Closed
+  Declined
+  Follow_Up
+  Lapsed
+  Archive
+  Deleted
 }
 
 model User {
@@ -87,12 +101,62 @@ model User {
   calls         Call[]
   conversations Conversation[]
   appointments  Appointment[]
+  activities    Activity[]
+
+  carriers    UserCarrier[]
+  licenses    UserLicense[]
+  loginStatus LoginStatus[]
 
   presets      Presets[]
   phoneNumbers PhoneNumber[]
   chatSettings ChatSettings?
   schedule     Schedule?
 
+  feedbacks Feedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserCarrier {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  carrierId String
+
+  comments  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserLicense {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  state         String
+  type          String
+  licenseNumber String
+  dateExpires   DateTime
+
+  comments  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LoginStatus {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  Duration Int?
+
+  comments  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -286,6 +350,7 @@ model Lead {
   conversation Conversation?
   appointments Appointment[]
   calls        Call[]
+  activities   Activity[]
 
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -304,6 +369,8 @@ model Call {
   lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId String?
 
+  type String @default("call")
+
   direction String  @default("inbound")
   status    String?
   duration  Int?
@@ -313,6 +380,11 @@ model Call {
   recordStartTime DateTime?
   recordStatus    String?
   recordDuration  Int?
+
+  transcriptionId   String?
+  transcriptionUrl  String?
+  transcriptionText String?
+  listened          Boolean @default(true)
 
   price String?
 
@@ -345,8 +417,9 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
 
-  role    MessageRole @default(user)
-  //content String      @db.LongText
+  role MessageRole @default(user)
+
+  //content String @db.LongText
   content String
 
   sid    String?
@@ -373,6 +446,64 @@ model Appointment {
   status   String  @default("Scheduled")
   //comments String? @db.LongText
   comments String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Activity {
+  id String @id @default(cuid())
+
+  type     String  @default("general")
+  activity String
+  newValue String?
+
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feedback {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  headLine String
+  page     String
+
+  //feedback String @db.LongText
+  feedback String
+
+  status   String  @default("New")
+  //comments String? @db.LongText
+  comments String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ADMIN TABLES
+
+model MedicalCondition {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Carrier {
+  id          String @id @default(cuid())
+  image       String
+  name        String
+  description String
+
+  userCarriers UserCarrier[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
