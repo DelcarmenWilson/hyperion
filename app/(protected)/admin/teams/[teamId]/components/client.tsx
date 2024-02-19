@@ -132,7 +132,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
                               </SelectTrigger>
                               <SelectContent>
                                 {users.map((user) => (
-                                  <SelectItem value={user.id}>
+                                  <SelectItem key={user.id} value={user.id}>
                                     {user.userName}
                                   </SelectItem>
                                 ))}

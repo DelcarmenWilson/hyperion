@@ -130,7 +130,9 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         {teams.map((team) => (
-                          <SelectItem value={team.id}>{team.name}</SelectItem>
+                          <SelectItem key={team.id} value={team.id}>
+                            {team.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -210,7 +212,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
                         </SelectTrigger>
                         <SelectContent>
                           {UserRoles.map((role) => (
-                            <SelectItem value={role.value}>
+                            <SelectItem key={role.value} value={role.value}>
                               {role.name}
                             </SelectItem>
                           ))}

@@ -4,11 +4,11 @@ import { ArrowLeft, Phone } from "lucide-react";
 
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 
-import { FullConversation, FullLead } from "@/types";
+import { FullConversation } from "@/types";
 import { Button } from "@/components/ui/button";
-import { DropDown } from "@/components/shared/dropdown";
 
 import { formatPhoneNumber } from "@/formulas/phones";
+import { DropDown } from "@/components/lead/dropdown";
 
 interface HeaderProps {
   conversation: FullConversation;
