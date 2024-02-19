@@ -12,6 +12,17 @@ export const teamsGetAll = async () => {
   }
 };
 
+export const teamsGetAllByOrganization = async (organizationId:string) => {
+  try {
+    const teams = await db.team.findMany({where:{organizationId},
+      include: { users: true, organization: true, owner: true },
+    });
+    return teams;
+  } catch (error: any) {
+    return [];
+  }
+};
+
 export const teamsGetById = async (id: string) => {
   try {
     //TODO need to aggregate the use count

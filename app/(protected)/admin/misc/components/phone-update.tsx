@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,13 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { User } from "@prisma/client";
 import { adminUpdateLeadNumbers } from "@/actions/admin";
-import { toast } from "sonner";
 import { Heading } from "@/components/custom/heading";
+import { HalfUser } from "@/types";
 
 type PhoneUpdateProps = {
-  users: User[];
+  users: HalfUser[];
 };
 export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
   const [loading, setLoading] = useState(false);

@@ -7,6 +7,8 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 import { Conversation } from "@prisma/client";
+import { PageLayout } from "@/components/custom/page-layout";
+import { MessagesSquare } from "lucide-react";
 
 type InboxClientProps = {
   convos: InboxColumn[];
@@ -43,5 +45,9 @@ export const InboxClient = ({ convos }: InboxClientProps) => {
       pusherClient.unbind("messages:new", convoHandler);
     };
   }, [user?.id]);
-  return <DataTable columns={columns} data={conversations} />;
+  return (
+    <PageLayout title="View Inbox" icon={MessagesSquare}>
+      <DataTable columns={columns} data={conversations} />{" "}
+    </PageLayout>
+  );
 };

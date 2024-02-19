@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { Box, BoxSkeleton } from "../components/box";
+import { CardBox, BoxSkeleton } from "@/components/custom/card-box";
 import {
   AppointmentBox,
   AppointmentBoxSkeleton,
@@ -66,7 +66,7 @@ export const DashBoardClient = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Box
+        <CardBox
           icon={Users}
           title="Leads today"
           value={leadCount}
@@ -74,7 +74,7 @@ export const DashBoardClient = ({
           hrefTitle="Go to leads"
         />
 
-        <Box
+        <CardBox
           icon={MessageSquareText}
           title="New texts"
           value={message}
@@ -82,14 +82,14 @@ export const DashBoardClient = ({
           hrefTitle="Go to inbox"
         />
 
-        <Box
+        <CardBox
           icon={PhoneOutgoing}
           title="Outbound calls"
           value={outBoundCallsCount}
           href="/calls"
           hrefTitle="Go to calls"
         />
-        <Box
+        <CardBox
           icon={PhoneIncoming}
           title="Inbound calls"
           value={inBoundCallsCount}

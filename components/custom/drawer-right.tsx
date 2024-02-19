@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
@@ -12,12 +13,14 @@ type DrawerRightProps = {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  size?: string;
 };
 export const DrawerRight = ({
   title,
   isOpen,
   onClose,
   children,
+  size = "max-w-sm",
 }: DrawerRightProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -44,7 +47,9 @@ export const DrawerRight = ({
                 leave="transform transition ease-in-out duration-500"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-sm">
+                <Dialog.Panel
+                  className={cn("pointer-events-auto w-screen", size)}
+                >
                   <div className="flex flex-col h-full overflow-y-auto bg-background  py-2 shadow-xl">
                     <div className="px-2 sm:px-2">
                       <div className="flex items-center justify-between">

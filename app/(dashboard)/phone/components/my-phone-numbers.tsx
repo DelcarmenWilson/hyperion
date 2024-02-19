@@ -4,6 +4,7 @@ import { ClipboardList } from "lucide-react";
 import { PhoneNumberColumn, columns } from "./columns";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
+import { CardLayout } from "@/components/custom/card-layout";
 
 type ItemType = {
   title: string;
@@ -36,31 +37,15 @@ export const MyPhoneNumbers = ({ phoneNumbers }: MyPhoneNumbers) => {
     },
   ];
   return (
-    <Card className="relative overflow-hidden w-full">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
-          <div className="bg-accent p-4 rounded-br-lg">
-            <ClipboardList className="h-5 w-5 text-primary" />
-          </div>
-          <CardTitle className=" text-sm text-muted-foreground">
-            My Phone Numbers
-          </CardTitle>
-        </div>
-      </div>
-      <CardContent className="items-center space-y-0 pb-2">
-        <h6 className="font-normal">Phone number status legend</h6>
-        <ul className=" list-disc text-sm font-light leading-tight ml-4">
-          {items.map((item) => (
-            <Item key={item.title} title={item.title} text={item.text} />
-          ))}
-        </ul>
-        <DashBoardTable
-          data={phoneNumbers}
-          columns={columns}
-          searchKey="phone"
-        />
-      </CardContent>
-    </Card>
+    <CardLayout title="Purchase Phone Numbers" icon={ClipboardList}>
+      <h6 className="font-normal">Phone number status legend</h6>
+      <ul className=" list-disc text-sm font-light leading-tight ml-4">
+        {items.map((item) => (
+          <Item key={item.title} title={item.title} text={item.text} />
+        ))}
+      </ul>
+      <DashBoardTable data={phoneNumbers} columns={columns} searchKey="phone" />
+    </CardLayout>
   );
 };
 

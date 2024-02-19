@@ -5,9 +5,9 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatter } from "@/lib/utils";
-import { FullUserReport } from "@/types";
+import { FullUserTeamReport } from "@/types";
 
-export const columns: ColumnDef<FullUserReport>[] = [
+export const columns: ColumnDef<FullUserTeamReport>[] = [
   {
     id: "select",
     header: ({ table }) => (

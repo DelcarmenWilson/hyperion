@@ -1,14 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FullLead } from "@/types";
+import { FullLead, FullLeadNoConvo } from "@/types";
 import { Appointment, Call } from "@prisma/client";
 import { format } from "date-fns";
 import { Cake, CalendarX, Plus, XCircle } from "lucide-react";
 
 type AppointmentProps = {
-  lead: FullLead;
-  call: Call;
-  appointment: Appointment;
+  lead: FullLead | FullLeadNoConvo;
+  call?: Call;
+  appointment?: Appointment;
   dob?: Date;
   showInfo?: boolean;
 };

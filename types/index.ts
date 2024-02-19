@@ -12,15 +12,31 @@ import {
   Organization,
   Feedback,
   Activity,
+  PhoneNumber,
 } from "@prisma/client";
+
+export type HalfUser={
+  id:string,userName:string
+}
 export type FullUser = User & {
   calls: Call[];
+  leads: Lead[];
   appointments: Appointment[];
   conversations: Conversation[];
-  leads: Lead[];
+  team:Team
 };
 
-export type FullUserReport = {
+export type FullUserReport = User & {
+  phoneNumbers:PhoneNumber[]
+  calls: Call[];
+  leads: Lead[];
+  conversations: Conversation[];
+  appointments: Appointment[];
+  team?:FullTeam|null
+};
+
+
+export type FullUserTeamReport = {
   id: string;
   image: string | null;
   userName: string;
@@ -75,14 +91,14 @@ export type FullCall = Call & {
 };
 
 export type FullTeam = Team & {
-  users: User[];
+  users?: User[];
   organization: Organization;
   owner: User | null;
 };
 
 export type FullTeamReport = {
   id: string;
-  name: string;
+  name: string;  
   image: string | null;
   banner: string | null;
   calls: number;
@@ -90,6 +106,7 @@ export type FullTeamReport = {
   conversations: number;
   revenue: number;
   organization: Organization;
+  userId:string;
   owner: User | null;
 };
 

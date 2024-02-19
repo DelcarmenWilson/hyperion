@@ -1,14 +1,7 @@
 "use client";
 import Image from "next/image";
-import {
-  Calendar,
-  CreditCard,
-  DollarSign,
-  HeartPulse,
-  MessageCircle,
-  Phone,
-  Users,
-} from "lucide-react";
+import { useState } from "react";
+import { Calendar, DollarSign, MessageCircle, Phone } from "lucide-react";
 import { formatter } from "@/lib/utils";
 
 import CountUp from "react-countup";
@@ -16,17 +9,34 @@ import CountUp from "react-countup";
 import { getGraphRevenue } from "@/actions/get-graph-revenue";
 
 import { Input } from "@/components/ui/input";
-import { FullTeamReport } from "@/types";
+import { FullTeamReport, HalfUser } from "@/types";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { OverviewChart } from "./overview-chart";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { adminChangeTeamManager } from "@/actions/admin";
+import { useRouter } from "next/navigation";
 
 interface TeamClientProps {
   team: FullTeamReport;
+  users: HalfUser[];
 }
 
-export const TeamClient = ({ team }: TeamClientProps) => {
-  console.log(team.revenue);
+export const TeamClient = ({ team, users }: TeamClientProps) => {
+  const router = useRouter();
+  const user = useCurrentUser();
+  const [loading, setLoading] = useState(false);
+  const [selecteUser, setSelecteUser] = useState(users[0].id);
   const data = [
     {
       title: "Calls",
@@ -50,6 +60,17 @@ export const TeamClient = ({ team }: TeamClientProps) => {
     },
   ];
   const chartData = getGraphRevenue();
+  const onManagerChange = () => {
+    if (!selecteUser) {
+      toast.error("Invalid Data");
+    }
+    setLoading(true);
+    adminChangeTeamManager(team.id, selecteUser).then((data) => {
+      toast.success(data.success);
+      setLoading(false);
+      router.refresh();
+    });
+  };
   return (
     <>
       <div className="flex items-center justify-between gap-2 mb-1">
@@ -70,16 +91,62 @@ export const TeamClient = ({ team }: TeamClientProps) => {
               alt="Team Image"
             />
             <span className=" text-2xl">{team?.name}</span>
-            <div className="text-center ml-auto">
-              <p className="text-sm">Owner</p>
-              <Image
-                width={50}
-                height={50}
-                className="rounded-full shadow-sm shadow-white w-[50px] aspect-square"
-                src={team?.owner?.image || "/assets/teamDefaultImage.jpg"}
-                alt="Team Image"
-              />
-              <p>{team.owner?.firstName}</p>
+            <div className=" ml-auto">
+              {team?.owner ? (
+                <div className="flex flex-col items-center">
+                  <p className="text-sm">Manager</p>
+                  <Image
+                    width={50}
+                    height={50}
+                    className="rounded-full shadow-sm shadow-white w-[50px] aspect-square"
+                    src={team?.owner?.image || "/assets/teamDefaultImage.jpg"}
+                    alt="Team Image"
+                  />
+                  <p>{team.owner?.firstName}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <p>No Manager</p>
+                  {user?.role == "MASTER" ||
+                    (team.userId == user?.id && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm">Add</Button>
+                        </DialogTrigger>
+                        <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
+                          <h3 className="text-2xl font-semibold py-2">
+                            Add Manager
+                          </h3>
+                          <div>
+                            <p className="text-muted-foreground">
+                              Select a Manager
+                            </p>
+
+                            <Select
+                              name="ddlUsers"
+                              onValueChange={setSelecteUser}
+                              defaultValue={selecteUser}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a Manager" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {users.map((user) => (
+                                  <SelectItem value={user.id}>
+                                    {user.userName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <Button disabled={loading} onClick={onManagerChange}>
+                            Add
+                          </Button>
+                        </DialogContent>
+                      </Dialog>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

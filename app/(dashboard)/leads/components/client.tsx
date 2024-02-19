@@ -21,9 +21,9 @@ import { FullLead } from "@/types";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { NewLeadForm } from "./new-lead-form";
 import { DataTableHeadless } from "@/components/tables/data-table-headless";
-import { PageLayout } from "@/components/custom/page-layout";
+import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
-import { PageLayoutScroll } from "@/components/custom/page-layout-scroll";
+import { PageLayout } from "@/components/custom/page-layout";
 
 interface LeadClientProps {
   leads: FullLead[];
@@ -39,7 +39,7 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
       >
         <NewLeadForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
-      <PageLayoutScroll
+      <PageLayout
         title="View Leads"
         icon={Users}
         topMenu={<TopMenu setIsOpen={setIsDrawerOpen} />}
@@ -49,7 +49,7 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
           data={leads}
           searchKey="lastName"
         />
-      </PageLayoutScroll>
+      </PageLayout>
     </>
   );
 };

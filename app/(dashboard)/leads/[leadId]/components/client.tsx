@@ -13,27 +13,27 @@ import {
 } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppointmentBox } from "../../components/shared/appointment";
-import { ExtraInfo } from "../../components/shared/extra-info";
-import { CallInfo } from "../../components/shared/call-info";
-import { Info } from "../../components/shared/info";
-import { NotesForm } from "../../components/shared/notes-form";
+import { AppointmentBox } from "../../../../../components/lead/appointment";
+import { ExtraInfo } from "../../../../../components/lead/extra-info";
+import { CallInfo } from "../../../../../components/lead/call-info";
+import { Info } from "../../../../../components/lead/info";
+import { NotesForm } from "../../../../../components/lead/notes-form";
 import { Sms } from "./sms";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { DropDown } from "../../components/shared/dropdown";
+import { DropDown } from "../../../../../components/lead/dropdown";
 import { CallHistory } from "./call-history/call-history";
 import { FullConversation, FullLead } from "@/types";
 import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityLog } from "./activity-log/activity-log";
-import { PageLayout } from "@/components/custom/page-layout";
+import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
-import { PageLayoutScroll } from "@/components/custom/page-layout-scroll";
+import { PageLayout } from "@/components/custom/page-layout";
 import { Body } from "./message-client";
 
 type LeadClientProps = {
   lead: FullLead;
-  conversation: FullConversation;
-  nextPrev: { prev: string | null; next: string | null } | null;
+  conversation?: FullConversation;
+  nextPrev?: { prev: string | null; next: string | null } | null;
 };
 
 export const LeadClient = ({
@@ -42,10 +42,10 @@ export const LeadClient = ({
   nextPrev,
 }: LeadClientProps) => {
   return (
-    <PageLayoutScroll
+    <PageLayout
       icon={User}
       title={`View Lead - ${lead.firstName}`}
-      topMenu={<TopMenu nextPrev={nextPrev} />}
+      topMenu={<TopMenu nextPrev={nextPrev!} />}
     >
       {/*DATA  */}
       <div className="grid grid-cols-1 lg:grid-cols-5 ">
@@ -173,13 +173,13 @@ export const LeadClient = ({
 
           <div className="px-2">
             <TabsContent value="sms">
-              <Body initialData={conversation} />
+              <Body initialData={conversation!} />
             </TabsContent>
             <TabsContent value="email">SEND EMAIL</TabsContent>
             <TabsContent value="documents">DOCUMENTS</TabsContent>
           </div>
         </Tabs>
       </div>
-    </PageLayoutScroll>
+    </PageLayout>
   );
 };

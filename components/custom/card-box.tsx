@@ -1,30 +1,23 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 
-interface BoxProps {
+interface CardBoxProps {
   icon: LucideIcon;
   title: string;
   value: number;
   href: string;
   hrefTitle: string;
 }
-export const Box = ({
+export const CardBox = ({
   icon: Icon,
   title,
   value,
   href,
   hrefTitle,
-}: BoxProps) => {
+}: CardBoxProps) => {
   return (
     <Card className="relative  overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">

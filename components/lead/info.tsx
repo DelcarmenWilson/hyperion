@@ -9,7 +9,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { smsCreateInitial } from "@/actions/sms";
 import { toast } from "sonner";
-import { FullLead } from "@/types";
+import { FullLead, FullLeadNoConvo } from "@/types";
 import { Input } from "@/components/ui/input";
 import { ChangeEvent, useState } from "react";
 import { leadUpdateByIdQuote } from "@/actions/lead";
@@ -17,7 +17,7 @@ import { USDollar } from "@/formulas/numbers";
 import { FieldBox } from "./field-box";
 
 interface InfoProps {
-  lead: FullLead;
+  lead: FullLead | FullLeadNoConvo;
 }
 export const Info = ({ lead }: InfoProps) => {
   const router = useRouter();
@@ -75,7 +75,7 @@ export const Info = ({ lead }: InfoProps) => {
         onFieldUpdate={onQuoteUpdated}
       />
 
-      <div>
+      {/* <div>
         {!lead.conversation?.id && (
           <Button
             disabled={lead.status == "Do_Not_Call"}
@@ -87,7 +87,7 @@ export const Info = ({ lead }: InfoProps) => {
             SEND SMS
           </Button>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

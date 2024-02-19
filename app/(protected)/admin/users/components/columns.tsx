@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User } from "@prisma/client";
 import { formatter } from "@/lib/utils";
+import Link from "next/link";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -67,5 +68,12 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     header: "Role",
+  },
+  {
+    accessorKey: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <Link href={`/admin/users/${row.original.id}`}>Details</Link>
+    ),
   },
 ];
