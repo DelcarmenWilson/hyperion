@@ -44,7 +44,7 @@ export const columns: ColumnDef<FullTeam>[] = [
   {
     accessorKey: "users",
     header: "Users",
-    cell: ({ row }) => <span>{row.original.users.length}</span>,
+    cell: ({ row }) => <span>{row.original.users?.length}</span>,
   },
   {
     accessorKey: "owner",
