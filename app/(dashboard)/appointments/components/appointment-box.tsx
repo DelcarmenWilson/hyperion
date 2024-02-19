@@ -4,7 +4,7 @@ import { Calendar } from "lucide-react";
 import { AppointmentColumn, columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
-import { PageLayoutScroll } from "@/components/custom/page-layout-scroll";
+import { PageLayout } from "@/components/custom/page-layout";
 
 interface AppointmentBoxProps {
   data: AppointmentColumn[];
@@ -12,9 +12,9 @@ interface AppointmentBoxProps {
 
 export const AppointmentBox = ({ data }: AppointmentBoxProps) => {
   return (
-    <PageLayoutScroll title="Appointments" icon={Calendar}>
+    <PageLayout title="Appointments" icon={Calendar}>
       <DashBoardTable columns={columns} data={data} searchKey="fullName" />
-    </PageLayoutScroll>
+    </PageLayout>
   );
 };
 

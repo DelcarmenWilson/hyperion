@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 
-
 export const userGetAll = async () => {
   try {
     const users = await db.user.findMany();
@@ -11,6 +10,7 @@ export const userGetAll = async () => {
     return [];
   }
 };
+
 
 export const userGetByEmail = async (email: string) => {
   try {
@@ -34,6 +34,27 @@ export const userGetById = async (id: string) => {
     return null;
   }
 };
+
+export const userGetByIdReport = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { id },
+      include: {
+        phoneNumbers: true,
+        calls: true,
+        leads: true,
+        appointments: true,
+        conversations: true,
+        team: {include:{organization:true,owner:true}},
+      },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
 export const userGetByUserName = async (userName: string) => {
   try {
     const user = await db.user.findUnique({
@@ -49,17 +70,18 @@ export const userGetByUserName = async (userName: string) => {
 export const usersGetSummaryByTeamId = async (
   userId: string,
   role: UserRole,
-  teamId: string,
+  teamId: string
 ) => {
   try {
     if (role != "MASTER") return [];
-    
+
     const agents = await db.user.findMany({
       where: { teamId, NOT: { id: userId } },
       include: {
         phoneNumbers: {
           where: { status: "default" },
-        },chatSettings:true
+        },
+        chatSettings: true,
       },
     });
 

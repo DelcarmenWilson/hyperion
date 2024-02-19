@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,14 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { User } from "@prisma/client";
 import { adminChangeLeadDefaultNumber } from "@/actions/admin";
-import { toast } from "sonner";
 import { Heading } from "@/components/custom/heading";
+import { HalfUser } from "@/types";
 
 type NumberChangeProps = {
-  users: User[];
+  users: HalfUser[];
 };
 export const NumberChange = ({ users }: NumberChangeProps) => {
   const [loading, setLoading] = useState(false);

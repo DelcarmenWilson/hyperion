@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Feedback } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedbackForm } from "./shared/feedback-form";
+import { PageLayout } from "@/components/custom/page-layout";
 
 type FeedbacksClientProps = {
   feedbacks: Feedback[];
@@ -15,19 +16,8 @@ type FeedbacksClientProps = {
 
 export const FeedbacksClient = ({ feedbacks }: FeedbacksClientProps) => {
   return (
-    <Card className="flex flex-col relative overflow-hidden w-full min-h-full">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
-          <div className="bg-accent p-4 rounded-br-lg">
-            <MessageSquarePlus className="h-5 w-5 text-primary" />
-          </div>
-          <CardTitle className=" text-sm text-muted-foreground">
-            Feedback
-          </CardTitle>
-        </div>
-      </div>
-
-      <CardContent className="flex-1 grid grid-cols-2 space-y-0 pb-2 overflow-hidden">
+    <PageLayout title="Feddback" icon={MessageSquarePlus}>
+      <div className="flex-1 grid grid-cols-2 space-y-0 pb-2 overflow-hidden">
         <div className="border-e">
           <FeedbackForm feedback={null} />
         </div>
@@ -47,8 +37,8 @@ export const FeedbacksClient = ({ feedbacks }: FeedbacksClientProps) => {
             )}
           </ScrollArea>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </PageLayout>
   );
 };
 

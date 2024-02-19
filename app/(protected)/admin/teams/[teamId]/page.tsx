@@ -1,9 +1,10 @@
-import { teamsGetById } from "@/data/team";
 import { TeamClient } from "./components/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heading } from "@/components/custom/heading";
-import { FullTeamReport, FullUserReport } from "@/types";
 import { UsersClient } from "./components/users";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Heading } from "@/components/custom/heading";
+import { FullTeamReport, FullUserTeamReport } from "@/types";
+import { teamsGetById } from "@/data/team";
+import { adminUsersGetAll } from "@/actions/admin";
 
 const TeamPage = async ({
   params,
@@ -13,6 +14,7 @@ const TeamPage = async ({
   };
 }) => {
   const team = await teamsGetById(params.teamId);
+  const users = await adminUsersGetAll();
   if (!team) {
     return null;
   }
@@ -23,6 +25,7 @@ const TeamPage = async ({
     name: team.name,
     image: team.image,
     banner: team.banner,
+    userId: team.userId,
     owner: team.owner,
     calls: team.users.reduce((sum, user) => sum + user.calls.length, 0),
     appointments: team.users.reduce(
@@ -40,19 +43,19 @@ const TeamPage = async ({
     ),
   };
 
-  const userReport: FullUserReport[] = team.users.map((user) => ({
+  const userReport: FullUserTeamReport[] = team.users.map((user) => ({
     id: user.id,
     image: user.image,
     userName: user.userName,
     role: user.role,
     calls: user.calls.length,
-    appointments: user.conversations.length,
-    conversations: user.appointments.length,
+    appointments: user.appointments.length,
+    conversations: user.conversations.length,
     revenue: user.leads.reduce((sum, lead) => sum + lead.saleAmount!, 0),
   }));
   return (
     <>
-      <TeamClient team={teamReport} />
+      <TeamClient team={teamReport} users={users} />
 
       <Card className="mt-4">
         <CardHeader>

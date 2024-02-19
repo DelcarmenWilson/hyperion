@@ -4,12 +4,12 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { AppointmentBox } from "./shared/appointment";
-import { CallInfo } from "./shared/call-info";
-import { DropDown } from "./shared/dropdown";
-import { ExtraInfo } from "./shared/extra-info";
-import { Info } from "./shared/info";
-import { NotesForm } from "./shared/notes-form";
+import { AppointmentBox } from "../../../../components/lead/appointment";
+import { CallInfo } from "../../../../components/lead/call-info";
+import { DropDown } from "../../../../components/lead/dropdown";
+import { ExtraInfo } from "../../../../components/lead/extra-info";
+import { Info } from "../../../../components/lead/info";
+import { NotesForm } from "../../../../components/lead/notes-form";
 import { FullLead } from "@/types";
 
 export const columns: ColumnDef<FullLead>[] = [

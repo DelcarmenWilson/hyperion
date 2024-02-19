@@ -1,9 +1,9 @@
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { FullUserReport } from "@/types";
+import { FullUserTeamReport } from "@/types";
 
 type UserClientProps = {
-  users: FullUserReport[];
+  users: FullUserTeamReport[];
 };
 
 export const UsersClient = ({ users }: UserClientProps) => {

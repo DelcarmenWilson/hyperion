@@ -19,11 +19,11 @@ import {
 } from "@/actions/lead";
 
 import { toast } from "sonner";
-import { FullLead } from "@/types";
+import { FullLead, FullLeadNoConvo } from "@/types";
 import { FieldBox } from "./field-box";
 
 interface ExtraInfoProps {
-  lead: FullLead;
+  lead: FullLead | FullLeadNoConvo;
 }
 
 export const ExtraInfo = ({ lead }: ExtraInfoProps) => {

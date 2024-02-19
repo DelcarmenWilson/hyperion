@@ -6,7 +6,7 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { FullConversation, FullLead } from "@/types";
 import { Button } from "@/components/ui/button";
-import { DropDown } from "@/app/(dashboard)/leads/components/shared/dropdown";
+import { DropDown } from "@/components/shared/dropdown";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 

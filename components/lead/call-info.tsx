@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { pusherClient } from "@/lib/pusher";
-import { FullLead } from "@/types";
+import { FullLead, FullLeadNoConvo } from "@/types";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { getLocalTime } from "@/formulas/dates";
 import {
@@ -24,10 +24,12 @@ import {
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
 import { toast } from "sonner";
 import { leadStatus } from "@/constants/lead";
+
 interface CallInfoProps {
-  lead: FullLead;
+  lead: FullLead | FullLeadNoConvo;
+  showBtnCall?: boolean;
 }
-export const CallInfo = ({ lead }: CallInfoProps) => {
+export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhoneModal();
   const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
@@ -73,22 +75,25 @@ export const CallInfo = ({ lead }: CallInfoProps) => {
     <div className="flex flex-col gap-2">
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
-      <div className="relative w-fit">
-        <Button
-          disabled={lead.status == "Do_Not_Call"}
-          onClick={() => usePm.onPhoneOutOpen(lead)}
-          size="sm"
-        >
-          <Phone className="w-4 h-4 mr-2" />
-          CLICK TO CALL
-        </Button>
 
-        {callCount > 0 && (
-          <Badge className="absolute -right-6 rounded-full text-xs">
-            {callCount}
-          </Badge>
-        )}
-      </div>
+      {showBtnCall && (
+        <div className="relative w-fit">
+          <Button
+            disabled={lead.status == "Do_Not_Call"}
+            onClick={() => usePm.onPhoneOutOpen(lead)}
+            size="sm"
+          >
+            <Phone className="w-4 h-4 mr-2" />
+            CLICK TO CALL
+          </Button>
+
+          {callCount > 0 && (
+            <Badge className="absolute -right-6 rounded-full text-xs">
+              {callCount}
+            </Badge>
+          )}
+        </div>
+      )}
       <div>
         <p className="text-muted-foreground">Type</p>
         <Select
