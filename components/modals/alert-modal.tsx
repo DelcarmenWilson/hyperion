@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/custom/modal";
 import { Button } from "@/components/ui/button";
 
-interface AlertModalProps {
+type AlertModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   loading: boolean;
-}
+  height?: string;
+};
 export const AlertModal = ({
   isOpen,
   onClose,
   onConfirm,
   loading,
+  height = "h-full",
 }: AlertModalProps) => {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -28,6 +30,7 @@ export const AlertModal = ({
       description="This action cannot be undone."
       isOpen={isOpen}
       onClose={onClose}
+      height={height}
     >
       <div className="pt-6 space-x-2 flex items-center justify-end w-full">
         <Button disabled={loading} variant="outline" onClick={onClose}>

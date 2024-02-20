@@ -20,7 +20,7 @@ import { CallHistory } from "./callhistory/call-history";
 import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import TurnOverRate from "./turnover/turn-over-rate";
+import { TurnOverRate } from "./turnover/turn-over-rate";
 import { CallHistoryColumn } from "./callhistory/columns";
 
 type DashBoardClientProps = {

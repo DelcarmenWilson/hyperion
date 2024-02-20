@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { adminUpdateLeadNumbers } from "@/actions/admin";
+import { adminUpdateLeadNumbers, adminUpdateUserNumber } from "@/actions/admin";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
 
@@ -22,14 +22,37 @@ export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
   const [loading, setLoading] = useState(false);
   const [selecteUser, setSelecteUser] = useState(users[0].id);
 
-  const onSubmit = () => {
+  const onLeadNumbersUpdate = () => {
     if (!selecteUser) {
       toast.error("Please slect a user");
     }
+    setLoading(true);
     adminUpdateLeadNumbers(selecteUser).then((data) => {
-      toast.success(data.success);
+      if (data.error) {
+        toast.error(data.error);
+      }
+      if (data.success) {
+        toast.success(data.success);
+      }
     });
+    setLoading(false);
   };
+  const onUserNumberUpdate = () => {
+    if (!selecteUser) {
+      toast.error("Please slect a user");
+    }
+    setLoading(true);
+    adminUpdateUserNumber(selecteUser).then((data) => {
+      if (data.error) {
+        toast.error(data.error);
+      }
+      if (data.success) {
+        toast.success(data.success);
+      }
+    });
+    setLoading(false);
+  };
+
   return (
     <div>
       <Heading
@@ -55,8 +78,14 @@ export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
             ))}
           </SelectContent>
         </Select>
-
-        <Button onClick={onSubmit}>Submit</Button>
+        <div className="flex gap-2">
+          <Button disabled={loading} onClick={onLeadNumbersUpdate}>
+            Lead Number Update
+          </Button>
+          <Button disabled={loading} onClick={onUserNumberUpdate}>
+            User Number Update
+          </Button>
+        </div>
       </div>
     </div>
   );

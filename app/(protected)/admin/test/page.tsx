@@ -1,9 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs-ace";
+import { createStateHook } from "@/lib/state-manager";
 import Image from "next/image";
+import { toast } from "sonner";
 
 function TabsDemo() {
+  const pusher = createStateHook(null);
+
   const tabs = [
     {
       title: "Product",
@@ -56,11 +61,15 @@ function TabsDemo() {
       ),
     },
   ];
-
+  const onClick = () => {
+    toast.success("Testing a new toast");
+  };
   return (
-    <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full items-start justify-start my-40 no-visible-scrollbar">
-      <Tabs tabs={tabs} />
-    </div>
+    // <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full items-start justify-start my-4 no-visible-scrollbar">
+    //   <Tabs tabs={tabs} />
+    //   <Button onClick={onClick}>Toast</Button>
+    // </div>
+    <div></div>
   );
 }
 export default TabsDemo;

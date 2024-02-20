@@ -13,15 +13,6 @@ const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
     redirect("/dashboard");
   }
   return (
-    // <div className="h-full w-full flex gap-y-5 items-center justify-center ">
-    //   <div className="w-[150px] h-full p-2">
-    //     <AdminSidebar />
-    //   </div>
-    //   <div className="flex-1 h-full w-full border bg-background m-4 p-2 ">
-    //     {children}
-    //   </div>
-    // </div>
-
     <>
       <AdminSidebar />
       <div className="flex flex-col ml-[70px] h-full ">

@@ -86,7 +86,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             <Image
               width={60}
               height={60}
-              className="rounded-full shadow-sm shadow-white w-[60px] aspect-square"
+              className="rounded-full shadow-sm shadow-white h-auto w-[60px] aspect-square"
               src={team?.image || "/assets/teamDefaultImage.jpg"}
               alt="Team Image"
             />
@@ -98,7 +98,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
                   <Image
                     width={50}
                     height={50}
-                    className="rounded-full shadow-sm shadow-white w-[50px] aspect-square"
+                    className="rounded-full shadow-sm shadow-white h-auto w-[50px] aspect-square"
                     src={team?.owner?.image || "/assets/teamDefaultImage.jpg"}
                     alt="Team Image"
                   />

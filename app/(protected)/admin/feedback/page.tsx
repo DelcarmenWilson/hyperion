@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/tables/data-table";
 import { feedbackGetAll } from "@/actions/feedback";
 import { columns } from "./components/columns";
-import { PageLayoutAdmin } from "../../components/page-layout";
+import { PageLayoutAdmin } from "../../../../components/custom/page-layout-admin";
 
 const FeedbackPage = async () => {
   const feedbacks = await feedbackGetAll();

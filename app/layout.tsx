@@ -30,7 +30,7 @@ export default async function RootLayout({
         <body className={cn("bg-secondary", poppins.className)}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ModalProvider />
-            <Toaster />
+            <Toaster richColors />
             {children}
           </ThemeProvider>
         </body>

@@ -20,7 +20,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         appointments: { where: { status: "scheduled" } },
         // appointments: { where: { status: "scheduled" } },
         calls: true,
-        activities:true
+        activities: true,
       },
     });
     return leads;
@@ -38,9 +38,9 @@ export const leadGetById = async (id: string) => {
       include: {
         conversation: true,
         // appointments: { where: { status: "scheduled" } },
-        appointments: {orderBy:{date:"desc"}},
+        appointments: { orderBy: { date: "desc" } },
         calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
-        activities:{orderBy:{createdAt:"desc"}}
+        activities: { orderBy: { createdAt: "desc" } },
       },
     });
 
@@ -98,3 +98,26 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
     return 0;
   }
 };
+// LEADSTATUS
+export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
+  try {
+    const leadStatus = await db.leadStatus.findMany({
+      where: { OR: [{ userId }, { type: { equals: "default" } }] },
+    });
+    return leadStatus;
+  } catch {
+    return [];
+  }
+};
+
+export const leadStatusGetAllByAgentId = async (userId: string) => {
+  try {
+    const leadStatus = await db.leadStatus.findMany({
+      where: {userId},
+    });
+    return leadStatus;
+  } catch {
+    return [];
+  }
+};
+

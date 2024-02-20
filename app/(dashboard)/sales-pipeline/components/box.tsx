@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Clock, MoreVertical } from "lucide-react";
+import { Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,19 +11,22 @@ import { Separator } from "@/components/ui/separator";
 import { LeadBox } from "./lead-box";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FullLead } from "@/types";
+import { Actions } from "./actions";
+import { PipeLine } from "@prisma/client";
+import { useState } from "react";
 
-interface BoxProps {
-  title: string;
+type BoxProps = {
+  pipeline: PipeLine;
   leads: FullLead[];
-}
-export const Box = ({ title, leads }: BoxProps) => {
+  sendPipeline: (e: PipeLine) => void;
+};
+export const Box = ({ pipeline, leads, sendPipeline }: BoxProps) => {
+  const [index, setIndex] = useState(pipeline.index);
   return (
     <section className="flex flex-col gap-2 border border-primary h-[400px]">
       <div className="bg-primary text-background flex justify-between items-center gap-2 px-2">
-        <p>{title}</p>
-        <Button variant="ghost" size="icon">
-          <MoreVertical className="h-4 w-4" />
-        </Button>
+        <p>{pipeline.name}</p>
+        <Actions pipeline={pipeline} sendPipeline={sendPipeline} />
       </div>
       <div>
         <Select>
@@ -45,8 +48,12 @@ export const Box = ({ title, leads }: BoxProps) => {
       </div>
       <Separator className="my-2" />
       <ScrollArea>
-        {leads.map((lead) => (
-          <LeadBox key={lead.id} lead={lead} />
+        {leads.map((lead, i) => (
+          <LeadBox
+            key={lead.id}
+            bg={i == index ? "bg-secondary" : ""}
+            lead={lead}
+          />
         ))}
       </ScrollArea>
     </section>

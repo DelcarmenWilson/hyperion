@@ -6,6 +6,7 @@ import { Calendar, DollarSign, MessageCircle, Phone, User } from "lucide-react";
 import { formatter } from "@/lib/utils";
 import { capitalize } from "@/formulas/text";
 import { format } from "date-fns";
+import { Team } from "@prisma/client";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,6 @@ import { CardCountUp } from "@/components/custom/card-count-up";
 import { FullUserReport } from "@/types";
 import { CardLayout } from "@/components/custom/card-layout";
 import { Button } from "@/components/ui/button";
-import { Team } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -25,10 +25,11 @@ import {
 import { UserRoles } from "@/constants/user";
 import { adminChangeTeam, adminChangeUserRole } from "@/actions/admin";
 import { toast } from "sonner";
-interface UserClientProps {
+
+type UserClientProps = {
   user: FullUserReport;
   teams: Team[];
-}
+};
 
 export const UserClient = ({ user, teams }: UserClientProps) => {
   const router = useRouter();
@@ -55,11 +56,14 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
       icon: <DollarSign />,
     },
   ];
+
+  const [loading, setLoading] = useState(false);
   const [team, setTeam] = useState(user.teamId!);
   const [role, setRole] = useState(user.role.toString());
 
   const onRoleChange = () => {
     if (!role) return;
+    setLoading(true);
     adminChangeUserRole(user.id, role).then((data) => {
       if (data.error) {
         toast.error(data.error);
@@ -68,11 +72,13 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
         toast.success(data.success);
         router.refresh();
       }
+      setLoading(false);
     });
   };
 
   const onTeamChange = () => {
     if (!team) return;
+    setLoading(true);
     adminChangeTeam(user.id, team).then((data) => {
       if (data.error) {
         toast.error(data.error);
@@ -81,6 +87,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
         toast.success(data.success);
         router.refresh();
       }
+      setLoading(false);
     });
   };
 
@@ -122,6 +129,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
 
                     <Select
                       name="ddlTeam"
+                      disabled={loading}
                       onValueChange={setTeam}
                       defaultValue={team}
                     >
@@ -137,7 +145,10 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button disabled={user.teamId == team} onClick={onTeamChange}>
+                  <Button
+                    disabled={user.teamId == team || loading}
+                    onClick={onTeamChange}
+                  >
                     Change
                   </Button>
                 </DialogContent>
@@ -204,6 +215,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
 
                       <Select
                         name="ddlRole"
+                        disabled={loading}
                         onValueChange={setRole}
                         defaultValue={role}
                       >
@@ -219,7 +231,10 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button disabled={user.role == role} onClick={onRoleChange}>
+                    <Button
+                      disabled={user.role == role || loading}
+                      onClick={onRoleChange}
+                    >
                       Change
                     </Button>
                   </DialogContent>

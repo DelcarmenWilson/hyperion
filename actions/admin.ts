@@ -1,7 +1,7 @@
 "use server";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
-import { currentRole } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 
@@ -58,6 +58,24 @@ export const adminUpdateLeadNumbers = async (userId: string) => {
 
   return { success: "phone numbers have been updated" };
 };
+export const adminUpdateUserNumber = async (agentId: string) => {
+ 
+const phoneNumbers=await db.phoneNumber.findMany({where:{agentId}})
+if (!phoneNumbers.length) {
+  return { error: "No phone number found" };
+}
+
+for (const number of phoneNumbers) {
+  await db.phoneNumber.update({
+    where: { id: number.id },
+    data: {
+      phone: reFormatPhoneNumber(number.phone),
+    },
+  });
+}
+  return { success: "user number have been updated" };
+};
+
 
 export const adminConfirmUserEmail = async (userId: string, date: string) => {
   const user = await db.user.findUnique({
@@ -94,7 +112,7 @@ export const adminChangeUserRole = async (userId: string, role: string) => {
 
   return { success: "Role has been changed" };
 };
-
+// TEAM
 export const adminChangeTeam = async (userId: string, teamId: string) => {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -151,4 +169,39 @@ export const adminChangeTeamManager = async (teamId: string, userId: string) => 
   });
 
   return { success: `${exisitingUser.firstName} now manages ${exisitingTeam.name}!` };
+};
+// LEAD_STATUS
+export const adminLeadStatusInsert = async (status: string) => {
+  
+  const user = await currentUser()
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role!="MASTER") {
+    return { error: "Unauthorized" };
+  }
+
+  const existingStatus=await db.leadStatus.findFirst({where:{status}})
+  if(existingStatus){    
+    return { error: "Status already exists" };
+  }
+  
+  await db.leadStatus.create({
+    data: {
+      status,type:"default",
+      userId:user.id
+    },
+  });
+
+  return { success: "Status created" };
+};
+export const adminLeadStatusGetAll = async () => {
+  try {
+    const status =await db.leadStatus.findMany({
+    });
+    return status
+  } catch (error) {
+    return []
+  }
 };
