@@ -5,25 +5,38 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { AppointmentSchema } from "@/schemas";
-
-import { Calendar } from "@/components/ui/calendar";
+import { Appointment } from "@prisma/client";
 
 import { toast } from "sonner";
+import axios from "axios";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { appointmentInsert } from "@/actions/appointment";
-import axios from "axios";
 import {
   BrokenScheduleType,
   ScheduleTimeType,
   breakDownSchedule,
   generateScheduleTimes,
 } from "@/constants/schedule-times";
-import { concateDate, getToday } from "@/formulas/dates";
-import { Appointment } from "@prisma/client";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+import {
+  concateDate,
+  getToday,
+  getTommorrow,
+  getYesterday,
+} from "@/formulas/dates";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export const AppointmentForm = () => {
   const tommorrow = getToday();
@@ -31,17 +44,18 @@ export const AppointmentForm = () => {
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
 
+  const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
   const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>();
   const [times, setTimes] = useState<ScheduleTimeType[]>();
   const [appointments, setAppointments] = useState<Appointment[]>();
-  const [selectedDate, setselectedDate] = useState<Date>(tommorrow);
-  const [selectedTime, setselectedTime] = useState("");
+  const [date, setDate] = useState<Date>(getTommorrow);
+  const [time, setTime] = useState("");
   const [comments, setComments] = useState("");
 
   const OnDateSlected = (date: Date) => {
     if (!date) return;
-    setselectedDate(date);
+    setDate(date);
     const day = date.getDay();
     if (!brSchedule) return;
     if (brSchedule[day].day == "Not Available") {
@@ -69,6 +83,8 @@ export const AppointmentForm = () => {
         return time;
       });
     });
+
+    setCalOpen(false);
   };
 
   const onCancel = () => {
@@ -79,8 +95,8 @@ export const AppointmentForm = () => {
 
   const onSubmit = async () => {
     setLoading(true);
-    const newDate = concateDate(selectedDate, selectedTime);
-    if (!selectedTime) return;
+    const newDate = concateDate(date, time);
+    if (!time) return;
     const appointment: z.infer<typeof AppointmentSchema> = {
       date: newDate,
       agentId: user?.id!,
@@ -101,17 +117,25 @@ export const AppointmentForm = () => {
   };
 
   useEffect(() => {
-    return () => {
-      axios.post("/api/user/schedule", { user: user?.id }).then((response) => {
-        setBrSchedule(breakDownSchedule(response.data));
-      });
+    const loadAppointments = () => {
       axios
         .post("/api/user/appointments", { user: user?.id })
         .then((response) => {
           setAppointments(response.data);
         });
     };
-  }, [user?.id]);
+    return () => loadAppointments();
+  }, [date]);
+
+  useEffect(() => {
+    const initialLoad = () => {
+      axios.post("/api/user/schedule", { user: user?.id }).then((response) => {
+        setBrSchedule(breakDownSchedule(response.data));
+        OnDateSlected(new Date());
+      });
+    };
+    return () => initialLoad();
+  }, []);
 
   return (
     <div>
@@ -126,7 +150,7 @@ export const AppointmentForm = () => {
             {/* DATE*/}
 
             <div className="flex justify-center items-center flex-col pt-2">
-              <Calendar
+              {/* <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={(e) => OnDateSlected(e!)}
@@ -134,23 +158,47 @@ export const AppointmentForm = () => {
                   date < new Date() || date < new Date("1900-01-01")
                 }
                 initialFocus
-              />
+              /> */}
+              <Popover open={calOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[280px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                    onClick={() => setCalOpen(true)}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(e) => OnDateSlected(e!)}
+                    disabled={(date) =>
+                      date <= getYesterday() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Time*/}
             {available ? (
               <div className="grid grid-cols-4 font-bold text-sm gap-2">
-                {times?.map((time) => (
+                {times?.map((tm) => (
                   <Button
-                    variant={
-                      selectedTime == time.value ? "default" : "outlineprimary"
-                    }
-                    disabled={time.disabled}
-                    key={time.value}
-                    onClick={() => setselectedTime(time.value)}
+                    variant={time == tm.value ? "default" : "outlineprimary"}
+                    disabled={tm.disabled}
+                    key={tm.value}
+                    onClick={() => setTime(tm.value)}
                     type="button"
                   >
-                    {time.text}
+                    {tm.text}
                   </Button>
                 ))}
               </div>
