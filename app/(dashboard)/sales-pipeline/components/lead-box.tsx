@@ -7,16 +7,18 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { FullLead } from "@/types";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LeadBoxProps {
   lead: FullLead;
+  bg?: string;
 }
 
-export const LeadBox = ({ lead }: LeadBoxProps) => {
+export const LeadBox = ({ lead, bg }: LeadBoxProps) => {
   const usePm = usePhoneModal();
   return (
     <div className="border-b">
-      <div className="flex justify-between items-center p-2 text-xs">
+      <div className={cn("flex justify-between items-center p-2 text-xs", bg)}>
         <div>
           <p>{`${lead.firstName} ${lead.lastName}`}</p>
           <Link

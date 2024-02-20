@@ -6,7 +6,7 @@ import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { LeadStatus, LeadType } from "@prisma/client";
+import { LeadType } from "@prisma/client";
 import { activityInsert } from "./activity";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
@@ -246,7 +246,7 @@ export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
 
 export const leadUpdateByIdStatus = async (
   leadId: string,
-  status: LeadStatus
+  status: string
 ) => {
   const user = await currentUser();
 
@@ -395,4 +395,28 @@ export const leadUpdateByIdSale = async (
     saleAmount.toString()
   );
   return { success: "Lead coverage amount has been updated" };
+};
+
+// LEADSTATUS
+export const leadStatusInsert = async (status: string) => {
+  
+  const user = await currentUser()
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+
+  const existingStatus=await db.leadStatus.findFirst({where:{status}})
+  if(existingStatus){    
+    return { error: "Status already exists" };
+  }
+  
+  const leadStatus=await db.leadStatus.create({
+    data: {
+      status,
+      userId:user.id
+    },
+  });
+
+  return { success: leadStatus };
 };

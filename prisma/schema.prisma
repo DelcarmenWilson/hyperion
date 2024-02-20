@@ -53,28 +53,6 @@ enum LeadType {
   Annuity
 }
 
-enum LeadStatus {
-  New
-  Attempted_to_Contact
-  First_Call
-  Second_Call
-  Third_Call
-  Voicemail
-  Text
-  Not_Interest
-  Do_Not_Call
-  Sold
-  Door_Knock
-  Appointment
-  Submitted
-  Closed
-  Declined
-  Follow_Up
-  Lapsed
-  Archive
-  Deleted
-}
-
 model User {
   id            String    @id @default(cuid())
   userName      String    @unique
@@ -332,9 +310,9 @@ model Lead {
   currentlyInsured Boolean       @default(false)
   currentInsuranse String?
 
-  vendor String     @default("Manually_Created")
-  type   LeadType   @default(General)
-  status LeadStatus @default(New)
+  vendor String   @default("Manually_Created")
+  type   LeadType @default(General)
+  status String   @default("New")
 
   quote      Int?
   saleAmount Int?
@@ -356,6 +334,18 @@ model Lead {
   createdAt  DateTime @default(now())
   updatedBy  String?
   updatedAt  DateTime @updatedAt
+}
+
+model LeadStatus {
+  id     String @id @default(cuid())
+  status String
+  type   String @default("User Generated")
+
+  userId String
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  PipeLine  PipeLine[]
 }
 
 //CALLS
@@ -463,6 +453,21 @@ model Activity {
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PipeLine {
+  id   String @id @default(cuid())
+  name String
+
+  status   LeadStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId String
+
+  index Int @default(0)
+
+  userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

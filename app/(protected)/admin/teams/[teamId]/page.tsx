@@ -64,7 +64,7 @@ const TeamPage = async ({
             description={`${team.name}'s users`}
           />
           <CardContent className="p-0">
-            <UsersClient users={userReport} />
+            <UsersClient users={userReport} teamId={params.teamId} />
           </CardContent>
         </CardHeader>
       </Card>

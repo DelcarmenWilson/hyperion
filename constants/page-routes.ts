@@ -25,7 +25,7 @@ import {
   UserSquare,
   Users,
 } from "lucide-react";
-type NavType = {
+export type NavType = {
   title: string;
   href: string;
   active?: boolean;
@@ -134,8 +134,8 @@ export const MainSidebarRoutes: NavType[] = [
 export const SettingsNavbarRoutes: NavType[] = [
   { title: "Profile", href: "/settings" },
   {
-    title: "Account",
-    href: "/settings/account",
+    title: "Config",
+    href: "/settings/config",
   },
   {
     title: "Chat",

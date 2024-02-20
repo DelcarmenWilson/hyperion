@@ -41,7 +41,7 @@ export const columns: ColumnDef<FullUserTeamReport>[] = [
         <Image
           width={40}
           height={50}
-          className="rounded-full shadow-sm shadow-white w-[40px] aspect-square"
+          className="rounded-full shadow-sm shadow-white h-auto w-[40px] aspect-square"
           src={row.original.image || "/assets/teamDefaultImage.jpg"}
           alt="Team Image"
         />
@@ -52,19 +52,6 @@ export const columns: ColumnDef<FullUserTeamReport>[] = [
     accessorKey: "userName",
     header: "User Name",
   },
-  // {
-  //   accessorKey: "firstName",
-  //   header: "First Name",
-  // },
-  // {
-  //   accessorKey: "lastName",
-  //   header: "Last Name",
-  // },
-  // {
-  //   accessorKey: "email",
-  //   header: "Email",
-  // },
-
   {
     accessorKey: "calls",
     header: "Calls",

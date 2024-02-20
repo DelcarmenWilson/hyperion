@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/select";
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
 import { toast } from "sonner";
-import { leadStatus } from "@/constants/lead";
+import { usePhoneContext } from "@/providers/phone-provider";
+// import { leadStatus } from "@/constants/lead";
 
 interface CallInfoProps {
   lead: FullLead | FullLeadNoConvo;
@@ -33,6 +34,7 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhoneModal();
   const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
+  const { leadStatus } = usePhoneContext();
 
   const onStatusUpdated = (e: any) => {
     leadUpdateByIdStatus(lead.id, e).then((data) => {
@@ -125,9 +127,9 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
             <SelectValue placeholder="Disposition" />
           </SelectTrigger>
           <SelectContent>
-            {leadStatus.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.name}
+            {leadStatus?.map((status) => (
+              <SelectItem key={status.id} value={status.status}>
+                {status.status}
               </SelectItem>
             ))}
           </SelectContent>

@@ -13,6 +13,7 @@ import {
   Feedback,
   Activity,
   PhoneNumber,
+  PipeLine,
 } from "@prisma/client";
 
 export type HalfUser={
@@ -114,6 +115,9 @@ export type FullFeedback = Feedback & {
   user: User;
 };
 
+export type FullPipeline=PipeLine &{
+  status:{status:string}
+}
 export type Voicemail = {
   id: string;
   lead?: Lead;

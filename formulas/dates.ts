@@ -24,9 +24,18 @@ export const concateDate = (date: Date, time: string): Date => {
   return date;
 };
 
+export const weekStartEnd = (): {from:Date,to:Date} => {
+  const curr = new Date;
+  const first = curr.getDate() - curr.getDay(); 
+  const last = first + 6;
+  
+  const firstday = new Date(curr.setDate(first))
+  const lastday = new Date(curr.setDate(last))
+
+  return {from:firstday,to:lastday};
+};
+
 export const getLocalTime=(abv:string)=>{
-
-
   let date=new Date()
   const utcHours=date.getUTCHours()
   const offset=states.find(e=>e.abv==abv)
