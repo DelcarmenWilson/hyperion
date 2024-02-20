@@ -1,12 +1,10 @@
-inbox - check the lastmessage on each conversation. it cvannot be empty
-fixe the issue where whne you close the dialer the window is giving an error on chrome
+fix the issue where whne you close the dialer the window is giving an error on chrome
 be able to text any number
 
 change the the default phone number per person for saundra
 
 create messaging between us
 be able to change agents to spanish speaking
-option to shcedule appointments for today
 
 if convo has > 4 messages it can be considered a full convo in the Admin Users Page
 
@@ -24,7 +22,7 @@ tab called blueprint > personalized businees plan for the indivdual.
     -- need to convert iso date to local date time
 
 -- need to be able to send email 
--- get an original sound simpler to ebay chime
+-- get an original sound sampler to ebay chime
 -- dont forget to uncomment the inbox client in the inbox
 -- incorporate intake form
 
@@ -43,6 +41,10 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- work more on the local time function
 -- make the app send a sms if you dont log in.
 -- make the app send you motivational speeches every now and then.
+
+
+-----BUGS
+-- in the appointment for todays days should populate todays schedule but doesnt (on load)
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
