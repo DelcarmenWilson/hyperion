@@ -37,18 +37,21 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useAppointmentContext } from "@/providers/appointment-provider";
 
 export const AppointmentForm = () => {
   const tommorrow = getToday();
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
+  const { schedule, appointments, setAppointments } = useAppointmentContext();
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
-  const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>();
+  const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>(
+    breakDownSchedule(schedule!)
+  );
   const [times, setTimes] = useState<ScheduleTimeType[]>();
-  const [appointments, setAppointments] = useState<Appointment[]>();
   const [date, setDate] = useState<Date>(getTommorrow);
   const [time, setTime] = useState("");
   const [comments, setComments] = useState("");
@@ -58,6 +61,13 @@ export const AppointmentForm = () => {
     setDate(date);
     const day = date.getDay();
     if (!brSchedule) return;
+
+    const currentapps = appointments?.filter(
+      (e) => new Date(e.date).toDateString() == date.toDateString()
+    );
+
+    console.log(schedule, appointments);
+
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
@@ -66,10 +76,6 @@ export const AppointmentForm = () => {
       setTimes(sc);
       setAvailable(true);
     }
-
-    const currentapps = appointments?.filter(
-      (e) => new Date(e.date).toDateString() == date.toDateString()
-    );
 
     setTimes((times) => {
       return times?.map((time) => {
@@ -93,7 +99,8 @@ export const AppointmentForm = () => {
     }
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
     setLoading(true);
     const newDate = concateDate(date, time);
     if (!time) return;
@@ -106,7 +113,10 @@ export const AppointmentForm = () => {
 
     await appointmentInsert(appointment).then((data) => {
       if (data.success) {
-        toast.success(data.success);
+        setAppointments((apps) => {
+          return [...apps!, data.success];
+        });
+        toast.success("Appointment scheduled!");
       }
       if (data.error) {
         toast.error(data.error);
@@ -117,24 +127,10 @@ export const AppointmentForm = () => {
   };
 
   useEffect(() => {
-    const loadAppointments = () => {
-      axios
-        .post("/api/user/appointments", { user: user?.id })
-        .then((response) => {
-          setAppointments(response.data);
-        });
-    };
-    return () => loadAppointments();
-  }, [date]);
-
-  useEffect(() => {
     const initialLoad = () => {
-      axios.post("/api/user/schedule", { user: user?.id }).then((response) => {
-        setBrSchedule(breakDownSchedule(response.data));
-        OnDateSlected(new Date());
-      });
+      OnDateSlected(new Date());
     };
-    return () => initialLoad();
+    initialLoad();
   }, []);
 
   return (

@@ -41,16 +41,13 @@ export const convertLead = (
 const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   const extractInfo = (data: string): any => {
-    let exData =
-      data
-        .replaceAll('"]', '",')
-        .replace("[", '{"')
-        .replaceAll("[", '"')
-        .replaceAll("]", '",')
-        .replaceAll(": ", '":"')
-        .replaceAll(" ", "") + "}";
-
-    exData = exData.replace('","}', '"}').replace(",}", "}");
+    let exData = data
+      .replaceAll('"', "")
+      .replaceAll("' ", "")
+      .replaceAll(": ", '":"')
+      .replaceAll("] [", '","')
+      .replace("[", '{"')
+      .replace("]", '"}');
     return JSON.parse(exData);
   };
 
@@ -191,7 +188,7 @@ const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
       zipCode: d["Zip"],
       gender: "NA",
       maritalStatus: "Single",
-      type:convertType(d["Policy Type"]),
+      type: convertType(d["Policy Type"]),
       recievedAt: d["Date Requested"],
       policyAmount: parseInt(d["Amount Requested"]),
       vendor: vendor,
@@ -218,7 +215,7 @@ const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
       zipCode: d["zip"],
       gender: "NA",
       maritalStatus: "Single",
-      type:convertType(d["product"]),
+      type: convertType(d["product"]),
       recievedAt: d["date purchased"],
       vendor: vendor,
     };

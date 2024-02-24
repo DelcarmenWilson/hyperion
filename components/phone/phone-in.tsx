@@ -22,30 +22,7 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone-provider";
-
-type AgentType = {
-  name: string;
-  phone: string;
-};
-
-const agents: AgentType[] = [
-  {
-    name: "Wilson",
-    phone: "6589584123",
-  },
-  {
-    name: "Victoria",
-    phone: "7873096122",
-  },
-  {
-    name: "Saundra",
-    phone: "3652548894",
-  },
-  {
-    name: "Johnni",
-    phone: "2547845615",
-  },
-];
+import { PhoneAgents } from "@/constants/phone";
 
 export const PhoneIn = () => {
   const { onPhoneInClose: onClose, onPhoneInOpen: onOpen } = usePhoneModal();
@@ -60,40 +37,7 @@ export const PhoneIn = () => {
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
 
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("ready from phone in");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
-
-    phone.on("incoming", async function (call: Connection) {
-      call.on("disconnect", function (error: any) {
-        onIncomingCallDisconnect();
-      });
-      call.on("cancel", function (error: any) {
-        onIncomingCallDisconnect();
-      });
-      const response = await axios.post("/api/leads/details", {
-        phone: call.parameters.From,
-      });
-
-      const data = response.data;
-      const fullName = data.firstName
-        ? `${data.firstName} ${data.lastName}`
-        : "Unknown Caller";
-      setFromName(fullName);
-      setFromNumber(data.cellPhone || call.parameters.From);
-
-      onOpen();
-      setCall(call);
-    });
-  };
-
-  const onIncomingCallDisconnect = () => {
+  const onDisconnect = () => {
     call?.disconnect();
     setCall(undefined);
     setIsCallAccepted(false);
@@ -104,13 +48,13 @@ export const PhoneIn = () => {
     onClose();
   };
 
-  const onIncomingCallAccept = () => {
+  const onAccept = () => {
     call?.accept();
     setIsCallAccepted(true);
     setRunning(true);
   };
 
-  const onIncomingCallReject = () => {
+  const onReject = () => {
     call?.reject();
     setCall(undefined);
     setIsCallAccepted(false);
@@ -130,6 +74,38 @@ export const PhoneIn = () => {
   }, [running]);
 
   useEffect(() => {
+    const addDeviceListeners = () => {
+      if (!phone) return;
+      phone.on("ready", function () {
+        console.log("ready from phone in");
+      });
+
+      phone.on("error", function (error: any) {
+        console.log(error);
+      });
+
+      phone.on("incoming", async function (call: Connection) {
+        call.on("disconnect", function (error: any) {
+          onDisconnect();
+        });
+        call.on("cancel", function (error: any) {
+          onDisconnect();
+        });
+        const response = await axios.post("/api/leads/details", {
+          phone: call.parameters.From,
+        });
+
+        const data = response.data;
+        const fullName = data.firstName
+          ? `${data.firstName} ${data.lastName}`
+          : "Unknown Caller";
+        setFromName(fullName);
+        setFromNumber(data.cellPhone || call.parameters.From);
+
+        onOpen();
+        setCall(call);
+      });
+    };
     return () => addDeviceListeners();
   }, [phone]);
   return (
@@ -151,7 +127,7 @@ export const PhoneIn = () => {
         <div className="flex flex-col gap-2">
           <Button
             className="flex justify-center items-center gap-2"
-            onClick={onIncomingCallAccept}
+            onClick={onAccept}
           >
             <Phone className="w-4 h-4" /> Answer
           </Button>
@@ -159,7 +135,7 @@ export const PhoneIn = () => {
           <Button
             variant="destructive"
             className="flex justify-center items-center gap-2"
-            onClick={onIncomingCallReject}
+            onClick={onReject}
           >
             <PhoneOff className="w-4 h-4" /> Reject
           </Button>
@@ -168,7 +144,7 @@ export const PhoneIn = () => {
         <Button
           variant="destructive"
           className="flex justify-center items-center gap-2"
-          onClick={onIncomingCallDisconnect}
+          onClick={onDisconnect}
         >
           <PhoneOff className="w-4 h-4" /> Hang Up
         </Button>
@@ -179,9 +155,9 @@ export const PhoneIn = () => {
           <SelectValue placeholder="Forward to agent" />
         </SelectTrigger>
         <SelectContent>
-          {agents.map((agent) => (
-            <SelectItem key={agent.name} value={agent.phone}>
-              {agent.name}
+          {PhoneAgents.map((agent) => (
+            <SelectItem key={agent.title} value={agent.text}>
+              {agent.title}
             </SelectItem>
           ))}
         </SelectContent>
