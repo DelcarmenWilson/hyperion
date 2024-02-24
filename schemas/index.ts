@@ -110,7 +110,7 @@ export const LeadSchema = z.object({
   zipCode: z.string(),
   homePhone: z.optional(z.string()),
   cellPhone: z.string().min(10, "required"),
-  gender: z.enum([Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
     MaritalStatus.Married,
@@ -126,6 +126,7 @@ export const LeadSchema = z.object({
   smoker: z.optional(z.boolean()),
   currentlyInsured: z.optional(z.boolean()),
   currentInsuranse: z.optional(z.string()),
+  type:z.optional(z.string()),
   vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
   recievedAt: z.optional(z.string()),
@@ -176,7 +177,7 @@ export const AppointmentLeadSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   state: z.string(),
   cellPhone: z.string(),
-  gender: z.enum([Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
     MaritalStatus.Married,
@@ -192,4 +193,10 @@ export const FeedbackSchema = z.object({
   headLine: z.string().min(3),
   page: z.string(),
   feedback: z.string().min(5),
+});
+
+export const DevFeedbackSchema = z.object({
+  id:z.optional(z.string()),
+  status: z.string(),
+  comments: z.string(),
 });

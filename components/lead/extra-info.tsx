@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 
-import { allVendors } from "@/constants/vendors";
+import { allVendors } from "@/constants/lead";
 import {
   Select,
   SelectContent,

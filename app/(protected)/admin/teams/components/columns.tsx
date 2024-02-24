@@ -62,7 +62,7 @@ export const columns: ColumnDef<FullTeam>[] = [
     header: "Actions",
     id: "actions",
     cell: ({ row }) => (
-      <Button asChild>
+      <Button size="sm" asChild>
         <Link href={`/admin/teams/${row.original.id}`}>Details</Link>
       </Button>
     ),

@@ -6,7 +6,6 @@ import { LeadSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { LeadType } from "@prisma/client";
 import { activityInsert } from "./activity";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
@@ -114,6 +113,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
       smoker,
       currentlyInsured,
       currentInsuranse,
+      type,
       vendor,
       recievedAt,
     } = values[i];
@@ -138,7 +138,6 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         gender,
         maritalStatus,
         email,
-        //TODO -
         dateOfBirth:
           Date.parse(dateOfBirth!) > 0 ? new Date(dateOfBirth!) : null,
         weight,
@@ -148,6 +147,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         smoker,
         currentlyInsured,
         currentInsuranse,
+        type ,
         vendor,
         recievedAt:
           Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
@@ -180,6 +180,10 @@ export const leadUpdateById = async (
 };
 
 export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) {
+    return { error: "Unauthenticated" };
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -192,6 +196,8 @@ export const leadUpdateByIdNotes = async (leadId: string, notes: string) => {
       notes,
     },
   });
+
+  activityInsert(leadId,"notes","Notes updated",user.id,notes);
   return { success: "Lead notes have been updated" };
 };
 
@@ -216,11 +222,11 @@ export const leadUpdateByIdQuote = async (leadId: string, quote: number) => {
       quote,
     },
   });
-  activityInsert(leadId, "Quote updated","Quote", user.id, quote.toString());
+  activityInsert(leadId,"Quote", "Quote updated", user.id, quote.toString());
   return { success: "Lead quote has been updated" };
 };
 
-export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
+export const leadUpdateByIdType = async (leadId: string, type: string) => {
 
   const user = await currentUser();
   if (!user?.id || !user?.email) {
@@ -240,7 +246,7 @@ export const leadUpdateByIdType = async (leadId: string, type: LeadType) => {
       type,
     },
   });
-  activityInsert(leadId, "Type updated","Type", user.id, type);
+  activityInsert(leadId,"Type", "Type updated", user.id, type);
   return { success: "Lead type has been updated" };
 };
 
@@ -269,7 +275,7 @@ export const leadUpdateByIdStatus = async (
       status,
     },
   });
-  activityInsert(leadId, "Status updated","status", user.id, status);
+  activityInsert(leadId,"status", "Status updated", user.id, status);
   return { success: "Lead status has been updated" };
 };
 
@@ -296,7 +302,7 @@ export const leadUpdateByIdVendor = async (leadId: string, vendor: string) => {
     },
   });
 
-  activityInsert(leadId, "Vendor updated","Vendor", user.id, vendor);
+  activityInsert(leadId,"Vendor", "Vendor updated", user.id, vendor);
   return { success: "Lead vendor has been updated" };
 };
 
@@ -325,7 +331,7 @@ export const leadUpdateByIdCommision = async (
       commision,
     },
   });
-  activityInsert(leadId, "Ap updated", "Ap", user.id, commision.toString());
+  activityInsert(leadId, "Ap", "Ap updated", user.id, commision.toString());
   return { success: "Lead Ap has been updated" };
 };
 

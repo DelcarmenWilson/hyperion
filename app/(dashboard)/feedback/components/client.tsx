@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { MessageSquarePlus } from "lucide-react";
 import { format } from "date-fns";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Feedback } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,7 +15,7 @@ type FeedbacksClientProps = {
 
 export const FeedbacksClient = ({ feedbacks }: FeedbacksClientProps) => {
   return (
-    <PageLayout title="Feddback" icon={MessageSquarePlus}>
+    <PageLayout title="Feedback" icon={MessageSquarePlus}>
       <div className="flex-1 grid grid-cols-2 space-y-0 pb-2 overflow-hidden">
         <div className="border-e">
           <FeedbackForm feedback={null} />

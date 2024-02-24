@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { FeedbackSchema } from "@/schemas";
+import { DevFeedbackSchema, FeedbackSchema } from "@/schemas";
 
 export const feedbackInsert = async (
   values: z.infer<typeof FeedbackSchema>
@@ -75,8 +75,13 @@ export const feedbackUpdateById = async (
   }
   const user = await currentUser();
 
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
   const { id,userId,headLine, page, feedback } = validatedFields.data;
-  if (!user?.id != !userId) {
+  
+  if (user?.id != userId) {
     return { error: "Unauthorized!" };
   }
 
@@ -90,4 +95,33 @@ export const feedbackUpdateById = async (
   });
 
   return { success: "Feedback has been created" };
+};
+
+export const feedbackUpdateByIdDev = async (
+  values: z.infer<typeof DevFeedbackSchema>
+) => {
+  const validatedFields = DevFeedbackSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
+  const { id,status,comments } = validatedFields.data;
+  
+  if (user?.role != "MASTER") {
+    return { error: "Unauthorized!" };
+  }
+
+  await db.feedback.update({where:{id},
+    data: {
+      status,comments
+    },
+  });
+
+  return { success: "Feedback comment has been created" };
 };

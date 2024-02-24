@@ -1,6 +1,7 @@
 fix the issue where whne you close the dialer the window is giving an error on chrome
 be able to text any number
 
+
 change the the default phone number per person for saundra
 
 create messaging between us
@@ -41,20 +42,25 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- work more on the local time function
 -- make the app send a sms if you dont log in.
 -- make the app send you motivational speeches every now and then.
+--let each agent create thier own incoming and outgoing voicemail
+   --let the agent send out voicemail aon answering machin pickup
+   --let the call get worwarded to the agents voicemail if its setup else leave the default.
+
 
 
 -----BUGS
 -- in the appointment for todays days should populate todays schedule but doesnt (on load)
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
+-----Typscript error in feedbackId client.-Dev form
 
-git checkout cron
+git checkout sales-pipeline
 git pull 
 git checkout main
 git pull
-git merge --no-ff --no-commit cron
+git merge --no-ff --no-commit sales-pipeline
 
-git commit -m cron
+git commit -m sales-pipeline
 git push
 
 Anthony (346) 292-5900 TX

@@ -33,15 +33,15 @@ import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 type FeedbackFormValues = z.infer<typeof FeedbackSchema>;
-type FeedBackIdClientProps = {
+type FeedbackFormProps = {
   feedback: Feedback | null;
 };
 
-export const FeedbackForm = ({ feedback }: FeedBackIdClientProps) => {
+export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
   const role = useCurrentRole();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const routes = MainSidebarRoutes.sort((a, b) => {
+  const routes = [...MainSidebarRoutes].sort((a, b) => {
     if (a.title < b.title) {
       return -1;
     }
@@ -176,13 +176,13 @@ export const FeedbackForm = ({ feedback }: FeedBackIdClientProps) => {
           />
         </div>
 
-        {role == "USER" && (
+        {role != "MASTER" && feedback?.status != "resolved" && (
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              {feedback ? "Create" : "Update"} Feedback
+              {feedback ? "Update" : "Create"} Feedback
             </Button>
           </div>
         )}

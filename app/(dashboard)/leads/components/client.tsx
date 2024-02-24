@@ -32,6 +32,8 @@ import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
 import { PageLayout } from "@/components/custom/page-layout";
 import { usePhoneContext } from "@/providers/phone-provider";
+import { verify } from "crypto";
+import { allVendors } from "@/constants/lead";
 
 interface LeadClientProps {
   leads: FullLead[];
@@ -41,13 +43,26 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
   const [status, setStatus] = useState(
     leadStatus ? leadStatus[0].status : "New"
   );
+  const [vendor, setVendor] = useState("All");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [currentLeads, setCurrentLeads] = useState(
     leads.filter((e) => e.status == status)
   );
   const onSetStatus = (st: string) => {
     setStatus(st);
-    setCurrentLeads(leads.filter((e) => e.status == st));
+    if (vendor == "All") setCurrentLeads(leads.filter((e) => e.status == st));
+    else
+      setCurrentLeads(
+        leads.filter((e) => e.status == st && e.vendor == vendor)
+      );
+  };
+  const onSetVendor = (vd: string) => {
+    setVendor(vd);
+    if (vd == "All") setCurrentLeads(leads.filter((e) => e.status == status));
+    else
+      setCurrentLeads(
+        leads.filter((e) => e.status == status && e.vendor == vd)
+      );
   };
   return (
     <>
@@ -66,7 +81,6 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
         <div className="grid grid-cols-3 gap-2 mt-2">
           <div className="flex items-center gap-2">
             <p className="text-muted-foreground">Status</p>
-
             <Select
               name="ddlStatus"
               onValueChange={onSetStatus}
@@ -79,6 +93,26 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
                 {leadStatus?.map((status) => (
                   <SelectItem key={status.id} value={status.status}>
                     {status.status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-muted-foreground">Vendor</p>
+            <Select
+              name="ddlVendor"
+              defaultValue={vendor}
+              onValueChange={onSetVendor}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vendor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                {allVendors.map((vendor) => (
+                  <SelectItem key={vendor.name} value={vendor.value}>
+                    {vendor.name}
                   </SelectItem>
                 ))}
               </SelectContent>

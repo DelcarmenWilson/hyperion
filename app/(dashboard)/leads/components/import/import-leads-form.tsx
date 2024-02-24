@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { ImportLeadsFormValues } from "@/types";
 import { convertLead } from "@/formulas/lead";
-import { importVendors } from "@/constants/vendors";
+import { importVendors } from "@/constants/lead";
 
 export const ImportLeadsForm = () => {
   const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);

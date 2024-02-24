@@ -1,5 +1,5 @@
 "use client";
-import { MoreVertical, Trash } from "lucide-react";
+import { FilePenLine, MoreVertical, Trash } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import { PipeLine } from "@prisma/client";
 
 type ActionProps = {
   pipeline: PipeLine;
-  sendPipeline: (e: PipeLine) => void;
+  sendPipeline: (e: PipeLine, type: string) => void;
 };
 
 export const Actions = ({ pipeline, sendPipeline }: ActionProps) => {
@@ -29,7 +29,14 @@ export const Actions = ({ pipeline, sendPipeline }: ActionProps) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="cursor-pointer"
-            onClick={() => sendPipeline(pipeline)}
+            onClick={() => sendPipeline(pipeline, "dialog")}
+          >
+            <FilePenLine className="h-4 w-4 mr-2" />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => sendPipeline(pipeline, "alert")}
           >
             <Trash className="h-4 w-4 mr-2" />
             Delete

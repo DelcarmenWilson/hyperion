@@ -14,12 +14,11 @@ export const teamCreate = async (name: string) => {
   if (existingTeam) {
     return { error: "A team already exist with this name!" };
   }
-  const userTeam = await db.user.findUnique({
-    where: { id: user.id },
-    include: { team: true, teamOwned: true },
+  const userTeam = await db.team.findUnique({
+    where: { ownerId: user.id },
   });
-
-  if (!userTeam?.teamOwned) {
+  
+  if (!userTeam ) {
     return { error: "Unauthorized" };
   }
 
@@ -27,9 +26,8 @@ export const teamCreate = async (name: string) => {
     data: {
       name,
       organizationId:
-        userTeam.teamOwned?.organizationId ||
-        userTeam.team?.organizationId as string,
-      userId: userTeam.id,
+        userTeam.organizationId,
+      userId: user.id,
     },
   });
 

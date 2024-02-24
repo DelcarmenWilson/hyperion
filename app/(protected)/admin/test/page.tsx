@@ -1,87 +1,50 @@
 "use client";
 
+import { DateRangePicker } from "@/components/custom/date-range-picker";
+import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
 import { Button } from "@/components/ui/button";
-import { Tabs } from "@/components/ui/tabs-ace";
-import { createStateHook } from "@/lib/state-manager";
+import { Input } from "@/components/ui/input";
+import { weekStartEnd } from "@/formulas/dates";
+import axios from "axios";
+import { format } from "date-fns";
 import Image from "next/image";
+import { useState } from "react";
 import { toast } from "sonner";
 
 function TabsDemo() {
-  const pusher = createStateHook(null);
+  const [rData, setRData] = useState("");
 
-  const tabs = [
-    {
-      title: "Product",
-      value: "product",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Product Tab</p>
-          {/* <DummyContent /> */}
-        </div>
-      ),
-    },
-    {
-      title: "Services",
-      value: "services",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Services tab</p>
-          {/* <DummyContent /> */}
-        </div>
-      ),
-    },
-    {
-      title: "Playground",
-      value: "playground",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Playground tab</p>
-          {/* <DummyContent /> */}
-        </div>
-      ),
-    },
-    {
-      title: "Content",
-      value: "content",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Content tab</p>
-          {/* <DummyContent /> */}
-        </div>
-      ),
-    },
-    {
-      title: "Random",
-      value: "random",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900">
-          <p>Random tab</p>
-          {/* <DummyContent /> */}
-        </div>
-      ),
-    },
-  ];
-  const onClick = () => {
-    toast.success("Testing a new toast");
+  const [dates, setDates] = useState(weekStartEnd());
+
+  const onDateSelected = (e: any) => {
+    setDates(e);
+  };
+  const onSubmit = () => {
+    axios
+      .post("/api/test", {
+        from: dates.from.toUTCString(),
+        to: dates.to.toUTCString(),
+        // from: format(dates.from, "YYYY-MM-DD"),
+        // to: format(dates.to, "YYYY-MM-DD"),
+      })
+      .then((data) => {
+        setRData(data.data);
+      });
+    toast.success(JSON.stringify(dates));
   };
   return (
-    // <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col max-w-5xl mx-auto w-full items-start justify-start my-4 no-visible-scrollbar">
-    //   <Tabs tabs={tabs} />
-    //   <Button onClick={onClick}>Toast</Button>
-    // </div>
-    <div></div>
+    <PageLayoutAdmin title="Test" description="Testing Page">
+      <div>
+        <p className="text-muted-foreground">Date Range</p>
+        <DateRangePicker
+          setDate={onDateSelected}
+          date={dates}
+          className="flex"
+        />
+      </div>
+      <Button onClick={onSubmit}>Submit</Button>
+      {JSON.stringify(rData)}
+    </PageLayoutAdmin>
   );
 }
 export default TabsDemo;
-
-const DummyContent = () => {
-  return (
-    <Image
-      src="/linear.webp"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
-  );
-};

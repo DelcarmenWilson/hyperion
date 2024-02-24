@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getAge } from "@/formulas/dates";
 import { FullLead, FullLeadNoConvo } from "@/types";
 import { Appointment, Call } from "@prisma/client";
 import { format } from "date-fns";
@@ -47,20 +48,58 @@ export const AppointmentBox = ({
 
       {showInfo && (
         <div>
-          <p>Dob: {dob && format(dob, "MM/dd/yy")}</p>
-          <p>Height: {lead.height}</p>
-          <p>Weight: {lead.weight} lbs</p>
-          <p>Smoker: {lead.smoker}</p>
-          <p>Income: {lead.income}</p>
+          <p>
+            Dob: {lead.dateOfBirth && format(lead.dateOfBirth, "MM/dd/yy")}
+            {lead.dateOfBirth ? (
+              <span className="font-semibold">
+                {" "}
+                - {getAge(lead.dateOfBirth)} yrs.
+              </span>
+            ) : (
+              <span className="text-destructive">Not set</span>
+            )}
+          </p>
+          <Box title="Height" value={lead.height!} />
+          <p>
+            Weight:
+            {lead.weight ? (
+              <span>{lead.weight} lbs</span>
+            ) : (
+              <span className="text-destructive">Not set</span>
+            )}{" "}
+          </p>
+          <p>Smoker: {lead.smoker ? "Yes" : "No"}</p>
+          <Box
+            title="Income"
+            value={lead.income ? lead.income.toString() : ""}
+          />
+          <Box title="Gender" value={lead.gender} />
+          <Box title="Marital Status" value={lead.maritalStatus} />
         </div>
       )}
 
-      {showInfo && (
+      {/* {showInfo && (
         <Button className="flex gap-1 w-fit" variant="secondary">
           <Plus className="h-4 w-4" />
           NEW FIELD
         </Button>
-      )}
+      )} */}
     </div>
+  );
+};
+type BoxProps = {
+  title: string;
+  value: string;
+};
+const Box = ({ title, value }: BoxProps) => {
+  return (
+    <p>
+      {title}:
+      {value ? (
+        <span> {value}</span>
+      ) : (
+        <span className="text-destructive"> Not set</span>
+      )}
+    </p>
   );
 };

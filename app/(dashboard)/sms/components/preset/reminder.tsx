@@ -7,9 +7,9 @@ export const Reminder = () => {
     <Box
       icon={CircleDollarSign}
       title="Verification Reminder Preset Text"
-      description="Send your lead a text reminiding them of you verification after a sale."
+      description="Send your lead a text reminding them of you verification after a sale."
     >
-      dimelo
+      (FUTURE UPDATE)
     </Box>
   );
 };

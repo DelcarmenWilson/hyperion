@@ -18,7 +18,7 @@ import { useState } from "react";
 type BoxProps = {
   pipeline: PipeLine;
   leads: FullLead[];
-  sendPipeline: (e: PipeLine) => void;
+  sendPipeline: (e: PipeLine, type: string) => void;
 };
 export const Box = ({ pipeline, leads, sendPipeline }: BoxProps) => {
   const [index, setIndex] = useState(pipeline.index);

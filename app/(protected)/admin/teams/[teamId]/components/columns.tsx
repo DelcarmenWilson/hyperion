@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatter } from "@/lib/utils";
 import { FullUserTeamReport } from "@/types";
+import Link from "next/link";
 
 export const columns: ColumnDef<FullUserTeamReport>[] = [
   {
@@ -42,7 +43,7 @@ export const columns: ColumnDef<FullUserTeamReport>[] = [
           width={40}
           height={50}
           className="rounded-full shadow-sm shadow-white h-auto w-[40px] aspect-square"
-          src={row.original.image || "/assets/teamDefaultImage.jpg"}
+          src={row.original.image || "/assets/defaults/teamImage.jpg"}
           alt="Team Image"
         />
       </div>
@@ -72,5 +73,12 @@ export const columns: ColumnDef<FullUserTeamReport>[] = [
   {
     accessorKey: "role",
     header: "Role",
+  },
+  {
+    accessorKey: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <Link href={`/admin/users/${row.original.id}`}>Details</Link>
+    ),
   },
 ];

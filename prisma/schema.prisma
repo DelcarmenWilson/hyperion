@@ -28,6 +28,7 @@ enum Preset {
 }
 
 enum Gender {
+  NA
   Male
   Female
 }
@@ -43,14 +44,6 @@ enum MessageRole {
   system
   assistant
   user
-}
-
-enum LeadType {
-  General
-  Final_Expense
-  Mortgage_Protection
-  Iul
-  Annuity
 }
 
 model User {
@@ -298,7 +291,7 @@ model Lead {
   zipCode          String?
   homePhone        String?
   cellPhone        String
-  gender           Gender        @default(Male)
+  gender           Gender        @default(NA)
   maritalStatus    MaritalStatus @default(Single)
   email            String?
   dateOfBirth      DateTime?
@@ -310,9 +303,9 @@ model Lead {
   currentlyInsured Boolean       @default(false)
   currentInsuranse String?
 
-  vendor String   @default("Manually_Created")
-  type   LeadType @default(General)
-  status String   @default("New")
+  vendor String @default("Manually_Created")
+  type   String @default("General")
+  status String @default("New")
 
   quote      Int?
   saleAmount Int?
@@ -466,9 +459,9 @@ model PipeLine {
   statusId String
 
   index Int @default(0)
+  order Int @default(0)
 
-  userId String
-
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
