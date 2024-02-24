@@ -1,16 +1,7 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-
+import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Copy,
-  Eye,
-  MoreHorizontal,
-  Phone,
-  ShieldMinus,
-  Trash,
-} from "lucide-react";
+import { Copy, MoreHorizontal, Phone, ShieldMinus } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -20,24 +11,20 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { PhoneNumberColumn } from "./columns";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import axios from "axios";
+
 import { AlertModal } from "@/components/modals/alert-modal";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import {
   phoneNumberUpdateByIdActivate,
   phoneNumberUpdateByIdDeactivate,
   phoneNumberUpdateByIdDefault,
 } from "@/actions/phone";
+import { PhoneNumber } from "@prisma/client";
 
 interface CellActionProps {
-  data: PhoneNumberColumn;
+  data: PhoneNumber;
 }
 export const CellAction = ({ data }: CellActionProps) => {
-  const router = useRouter();
-  const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
