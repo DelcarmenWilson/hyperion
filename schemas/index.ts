@@ -198,5 +198,5 @@ export const FeedbackSchema = z.object({
 export const DevFeedbackSchema = z.object({
   id:z.optional(z.string()),
   status: z.string(),
-  comments: z.string(),
+  comments: z.optional(z.string()),
 });

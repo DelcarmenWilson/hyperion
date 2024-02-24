@@ -44,7 +44,11 @@ export const DevFeedbackForm = ({ feedback }: DevFeedbackFormProps) => {
 
   const form = useForm<DevFeedbackFormValues>({
     resolver: zodResolver(DevFeedbackSchema),
-    defaultValues: feedback,
+    defaultValues: {
+      id: feedback.id,
+      status: feedback.status,
+      comments: feedback.comments!,
+    },
   });
 
   const onSubmit = async (values: DevFeedbackFormValues) => {

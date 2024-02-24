@@ -1,7 +1,6 @@
 import { ImportLeadsFormValues } from "@/types";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
-import { MaritalStatus } from "@prisma/client";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -69,7 +68,7 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       city: capitalize(d["City"]),
       state: capitalize(d["State"]),
       gender: "NA",
-      maritalStatus: MaritalStatus.Single,
+      maritalStatus: "Single",
       weight: parseInt(a["Weight"]),
       height: a["Height"],
       smoker: a["IsSmoker"] == "No" ? false : true,
@@ -162,7 +161,7 @@ const ProspectForLeads = (
       state: d["state"],
       zipCode: d["zip"],
       gender: d["gender"],
-      maritalStatus: MaritalStatus.Single,
+      maritalStatus: "Single",
       currentlyInsured: d["currently insured"] == "No" ? false : true,
       currentInsuranse: d["current ins.company"],
       income: parseInt(d["family income"]),
@@ -191,7 +190,7 @@ const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
       state: d["State"],
       zipCode: d["Zip"],
       gender: "NA",
-      maritalStatus: MaritalStatus.Single,
+      maritalStatus: "Single",
       type:convertType(d["Policy Type"]),
       recievedAt: d["Date Requested"],
       policyAmount: parseInt(d["Amount Requested"]),
@@ -218,7 +217,7 @@ const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
       state: d["state"],
       zipCode: d["zip"],
       gender: "NA",
-      maritalStatus: MaritalStatus.Single,
+      maritalStatus: "Single",
       type:convertType(d["product"]),
       recievedAt: d["date purchased"],
       vendor: vendor,
