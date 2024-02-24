@@ -99,7 +99,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
             width={200}
             height={100}
             className="h-full w-full"
-            src={"/assets/teamDefaultBanner.jpg"}
+            src={"/assets/defaults/teamBanner.jpg"}
             alt="Team Banner"
           />
           <div className="absolute flex items-center gap-4 top-0 left-0 w-full h-full text-white p-4">
@@ -107,7 +107,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
               width={60}
               height={60}
               className="rounded-full shadow-sm shadow-white w-[60px] aspect-square"
-              src={user?.image || "/assets/teamDefaultImage.jpg"}
+              src={user?.image || "/assets/defaults/teamImage.jpg"}
               alt="Team Image"
             />
             <span className=" text-2xl">

@@ -16,26 +16,26 @@ import {
   PipeLine,
 } from "@prisma/client";
 
-export type HalfUser={
-  id:string,userName:string
-}
+export type HalfUser = {
+  id: string;
+  userName: string;
+};
 export type FullUser = User & {
   calls: Call[];
   leads: Lead[];
   appointments: Appointment[];
   conversations: Conversation[];
-  team:Team
+  team: Team;
 };
 
 export type FullUserReport = User & {
-  phoneNumbers:PhoneNumber[]
+  phoneNumbers: PhoneNumber[];
   calls: Call[];
   leads: Lead[];
   conversations: Conversation[];
   appointments: Appointment[];
-  team?:FullTeam|null
+  team?: FullTeam | null;
 };
-
 
 export type FullUserTeamReport = {
   id: string;
@@ -46,6 +46,9 @@ export type FullUserTeamReport = {
   appointments: number;
   conversations: number;
   revenue: number;
+};
+export type FullPhoneNumber = PhoneNumber & {
+  agent: { firstName: string; lastName: string } | null;
 };
 export type FullMessage = Message & {
   sender?: User | null;
@@ -60,7 +63,6 @@ export type LeadConversationType = Conversation & {
   lead: Lead;
   messages: Message[];
 };
-
 
 export type FullLeadNoConvo = Lead & {
   calls: Call[];
@@ -99,7 +101,7 @@ export type FullTeam = Team & {
 
 export type FullTeamReport = {
   id: string;
-  name: string;  
+  name: string;
   image: string | null;
   banner: string | null;
   calls: number;
@@ -107,7 +109,7 @@ export type FullTeamReport = {
   conversations: number;
   revenue: number;
   organization: Organization;
-  userId:string;
+  userId: string;
   owner: User | null;
 };
 
@@ -115,9 +117,9 @@ export type FullFeedback = Feedback & {
   user: User;
 };
 
-export type FullPipeline=PipeLine &{
-  status:{status:string}
-}
+export type FullPipeline = PipeLine & {
+  status: { status: string };
+};
 export type Voicemail = {
   id: string;
   lead?: Lead;

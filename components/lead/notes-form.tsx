@@ -14,11 +14,6 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState(intialNotes);
 
-  const handleNotesChange = (e: any) => {
-    const { value } = e.target;
-    setNotes(value);
-  };
-
   const onNotesUpdated = async () => {
     if (!notes) return;
     setLoading(true);
@@ -39,7 +34,7 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
         placeholder="Additional notes here"
         className="rounded-br-none rounded-bl-none"
         value={notes}
-        onChange={handleNotesChange}
+        onChange={(e) => setNotes(e.target.value)}
         rows={3}
       />
       <Button

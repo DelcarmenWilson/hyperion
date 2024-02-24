@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
 import { useSession } from "next-auth/react";
+import { revalidatePath } from "next/cache";
 
 import { toast } from "sonner";
 
@@ -58,10 +59,14 @@ const SettingsPage = () => {
     },
   });
 
-  const onImageUpdated = () => {
+  const onImageUpdated = (e: string) => {
     setProfileOpen(false);
+    setImage(e);
     update();
-    router.push("/settings");
+    revalidatePath("/");
+    router.refresh();
+
+    toast.success("Profile Image has been updated");
   };
 
   const onSubmit = (values: SettingsValues) => {
@@ -95,7 +100,7 @@ const SettingsPage = () => {
             width={100}
             height={100}
             className="rounded-full shadow-sm shadow-white w-[100px] aspect-square"
-            src={image || "/assets/teamDefaultImage.jpg"}
+            src={image || "/assets/defaults/teamImage.jpg"}
             alt="Team Image"
           />
           <Button

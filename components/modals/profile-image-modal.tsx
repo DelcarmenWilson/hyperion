@@ -1,17 +1,16 @@
+"use client";
 import { ChangeEvent, useEffect, useState } from "react";
+import { ImageIcon } from "lucide-react";
 import { Modal } from "@/components/custom/modal";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import axios from "axios";
-import { toast } from "sonner";
-import { ImageIcon } from "lucide-react";
-import { revalidatePath } from "next/cache";
 
-interface ProfileImageModalProps {
+type ProfileImageModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onImageUpdate: () => void;
-}
+  onImageUpdate: (e: string) => void;
+};
 export const ProfileImageModal = ({
   isOpen,
   onClose,
@@ -36,18 +35,15 @@ export const ProfileImageModal = ({
       if (!selectedFile) return;
       const formData = new FormData();
       formData.append("profileImage", selectedFile);
+      formData.append("filePath", "assets/users");
       axios.post("/api/user/image", formData).then(() => {
-        toast.success("Profile Image has been updated");
-        onClose();
-        revalidatePath("/");
-        revalidatePath("/settings");
+        setSelectedImage("");
+        setSelectedFile(undefined);
+        onImageUpdate(selectedImage);
       });
     } catch (error: any) {
       console.log(error.response?.data);
     }
-    setSelectedImage("");
-    setSelectedFile(undefined);
-    onImageUpdate();
     setUploading(false);
   };
   useEffect(() => {
@@ -63,7 +59,7 @@ export const ProfileImageModal = ({
       description="Previous image will be replaced"
       isOpen={isOpen}
       onClose={onClose}
-      height="h-[400px]"
+      height="min-h-[400px]"
     >
       <div className="flex flex-col justify-center items-center">
         <label>

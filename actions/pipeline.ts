@@ -2,13 +2,16 @@
 
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-
+import { forIn } from "lodash";
+import { PipeLine } from "@prisma/client";
 
 // TODO DATA- should be moved
 export const pipelineGetAllByAgentId = async (userId: string) => {
   try {
     const pipelines = await db.pipeLine.findMany({
-      where: { userId },include:{status:{select:{status:true}}},
+      where: { userId },
+      include: { status: { select: { status: true } } },
+      orderBy: { order: "asc" },
     });
     return pipelines;
   } catch {
@@ -23,9 +26,14 @@ export const pipelineInsert = async (statusId: string, name: string) => {
     return { error: "Unathenticated" };
   }
 
-  const exisitingStatus = await db.pipeLine.findFirst({
-    where: { userId: user.id, OR: [{ statusId }, { name }] },
+  const pipelines = await db.pipeLine.findMany({
+    where: { userId: user.id },
   });
+
+  const exisitingStatus = pipelines.find(
+    (e) => e.name == name || e.statusId == statusId
+  );
+
   if (exisitingStatus) {
     return { error: "Stage with same status or title already exists" };
   }
@@ -35,12 +43,33 @@ export const pipelineInsert = async (statusId: string, name: string) => {
       userId: user.id,
       statusId,
       name,
+      order:pipelines.length
     },
   });
 
   return { success: "Pipeline stage created!" };
 };
 
+export const pipelineUpdateOrder = async (
+  pipelines: { id: string; order: number }[]
+) => {
+  const user = await currentUser();
+
+  if (!user || !user.email) {
+    return { error: "Unathenticated" };
+  }
+
+  for (const pipeline of pipelines) {
+    await db.pipeLine.updateMany({
+      where: { id: pipeline.id },
+      data: {
+        order: pipeline.order,
+      },
+    });
+  }
+
+  return { success: "Pipeline stages ordered!" };
+};
 
 export const pipelineDeleteById = async (id: string) => {
   const user = await currentUser();
@@ -60,10 +89,37 @@ export const pipelineDeleteById = async (id: string) => {
     return { error: "Unauthorized" };
   }
 
-  await db.pipeLine.delete({where:{id:exisitingPipeLine.id}
-  });
+  await db.pipeLine.delete({ where: { id: exisitingPipeLine.id } });
 
   return { success: "stage has been deleted!" };
 };
 
+export const pipelineUpdateById = async (pipeline: PipeLine) => {
+  const user = await currentUser();
 
+  if (!user || !user.email) {
+    return { error: "Unathenticated" };
+  }
+
+  const userStatus = await db.pipeLine.findMany({
+    where: { userId: user.id },
+  });
+  const { statusId, name } = pipeline;
+  const exisitingStatus = userStatus.find(
+    (e) => e.id!=pipeline.id && (e.name == name || e.statusId == statusId)
+  );
+
+  if (exisitingStatus) {
+    return { error: "Another  with same status or title already exists" };
+  }
+
+  await db.pipeLine.update({
+    where: { id: pipeline.id },
+    data: {
+      statusId,
+      name,
+    },
+  });
+
+  return { success: "Pipeline updated!" };
+};

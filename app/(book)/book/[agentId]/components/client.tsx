@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import * as z from "zod";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -43,15 +43,15 @@ import { Badge } from "@/components/ui/badge";
 import { concateDate, getTommorrow } from "@/formulas/dates";
 import { appointmentInsertBook } from "@/actions/appointment";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import user from "pusher-js/types/src/core/user";
 import { FaUser } from "react-icons/fa";
 
-interface BookAgentClientProps {
+type BookAgentClientProps = {
   userImage: string;
   schedule: Schedule;
   lead?: z.infer<typeof AppointmentLeadSchema>;
   appointments: Appointment[];
-}
+};
+
 type LeadFormValues = z.infer<typeof AppointmentLeadSchema>;
 
 export const BookAgentClient = ({

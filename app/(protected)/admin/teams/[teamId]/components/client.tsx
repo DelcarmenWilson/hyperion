@@ -79,7 +79,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             width={200}
             height={100}
             className="h-full w-full"
-            src={team?.banner || "/assets/teamDefaultBanner.jpg"}
+            src={team?.banner || "/assets/defaults/teamBanner.jpg"}
             alt="Team Banner"
           />
           <div className="absolute flex items-center gap-4 top-0 left-0 w-full h-full text-white p-4">
@@ -87,7 +87,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
               width={60}
               height={60}
               className="rounded-full shadow-sm shadow-white h-auto w-[60px] aspect-square"
-              src={team?.image || "/assets/teamDefaultImage.jpg"}
+              src={team?.image || "/assets/defaults/teamImage.jpg"}
               alt="Team Image"
             />
             <span className=" text-2xl">{team?.name}</span>
@@ -99,7 +99,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
                     width={50}
                     height={50}
                     className="rounded-full shadow-sm shadow-white h-auto w-[50px] aspect-square"
-                    src={team?.owner?.image || "/assets/teamDefaultImage.jpg"}
+                    src={team?.owner?.image || "/assets/defaults/teamImage.jpg"}
                     alt="Team Image"
                   />
                   <p>{team.owner?.firstName}</p>
@@ -107,44 +107,43 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
               ) : (
                 <div className="flex flex-col items-center">
                   <p>No Manager</p>
-                  {user?.role == "MASTER" ||
-                    (team.userId == user?.id && (
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button size="sm">Add</Button>
-                        </DialogTrigger>
-                        <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
-                          <h3 className="text-2xl font-semibold py-2">
-                            Add Manager
-                          </h3>
-                          <div>
-                            <p className="text-muted-foreground">
-                              Select a Manager
-                            </p>
+                  {(user?.role == "MASTER" || team.userId == user?.id) && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="sm">Add</Button>
+                      </DialogTrigger>
+                      <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
+                        <h3 className="text-2xl font-semibold py-2">
+                          Add Manager
+                        </h3>
+                        <div>
+                          <p className="text-muted-foreground">
+                            Select a Manager
+                          </p>
 
-                            <Select
-                              name="ddlUsers"
-                              onValueChange={setSelecteUser}
-                              defaultValue={selecteUser}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a Manager" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {users.map((user) => (
-                                  <SelectItem key={user.id} value={user.id}>
-                                    {user.userName}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <Button disabled={loading} onClick={onManagerChange}>
-                            Add
-                          </Button>
-                        </DialogContent>
-                      </Dialog>
-                    ))}
+                          <Select
+                            name="ddlUsers"
+                            onValueChange={setSelecteUser}
+                            defaultValue={selecteUser}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a Manager" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  {user.userName}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button disabled={loading} onClick={onManagerChange}>
+                          Add
+                        </Button>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               )}
             </div>

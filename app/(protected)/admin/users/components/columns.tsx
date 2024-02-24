@@ -43,7 +43,7 @@ export const columns: ColumnDef<User>[] = [
           width={40}
           height={50}
           className="rounded-full shadow-sm shadow-white w-[40px] aspect-square"
-          src={row.original.image || "/assets/teamDefaultImage.jpg"}
+          src={row.original.image || "/assets/defaults/teamImage.jpg"}
           alt="Team Image"
         />
       </div>

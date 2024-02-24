@@ -20,19 +20,12 @@ import { isAValidPhoneNumber } from "@/formulas/phones";
 import { phoneNumberInsert } from "@/actions/phone";
 import { states } from "@/constants/states";
 import { CardLayout } from "@/components/custom/card-layout";
+import { PhonePurcahseItems } from "@/constants/phone";
+import { ItemProps } from "@/types/item";
 
 export const PurchasePhoneNumbers = () => {
   const [stateSelected, setStateSelected] = useState("");
   const [numberSelected, setNumberSelected] = useState("");
-  const items: string[] = [
-    "Does local id work automatically?",
-    "Can I get multilple numbers in the same state for the area code matching?",
-    "Can I change the caller ID number for a lead anytime?",
-    "Can I get multilple numbers in states all over the country?",
-    "Can I monitor the spam rate and deliverability of my numbers?",
-    "If I dont have a number in a particular state, will my default number be used?",
-    "Can I dedicate 1 number for calling and the rest for texting?",
-  ];
 
   const onPurchaseNumber = () => {
     if (!stateSelected) {
@@ -68,7 +61,7 @@ export const PurchasePhoneNumbers = () => {
           <RadioGroup defaultValue="option-one" className="grid-cols-2 w-fit">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="option-one" id="option-one" />
-              <Label htmlFor="option-one">Sate</Label>
+              <Label htmlFor="option-one">State</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="option-two" id="option-two" />
@@ -110,8 +103,8 @@ export const PurchasePhoneNumbers = () => {
         <div className="flex flex-col gap-2">
           <h4 className="font-bold text-primary">Yes you can</h4>
           <div className="flex flex-col gap-1 font-light text-sm">
-            {items.map((item, i) => (
-              <Item key={i} text={item} />
+            {PhonePurcahseItems.map((item, i) => (
+              <Item key={i} text={item.text} />
             ))}
           </div>
           <span className="flex items-center gap-2 font-bold text-primary">
@@ -124,11 +117,7 @@ export const PurchasePhoneNumbers = () => {
   );
 };
 
-type TxtProps = {
-  text: string;
-};
-
-export const Item = ({ text }: TxtProps) => {
+export const Item = ({ text }: ItemProps) => {
   return (
     <span className="flex items-center gap-2">
       <Check className="w-4 h-4" />

@@ -24,6 +24,7 @@ import {
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
 import { toast } from "sonner";
 import { usePhoneContext } from "@/providers/phone-provider";
+import { allLeadTypes } from "@/constants/lead";
 // import { leadStatus } from "@/constants/lead";
 
 interface CallInfoProps {
@@ -47,8 +48,8 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
     });
   };
 
-  const onTypeUpdated = (e: any) => {
-    leadUpdateByIdType(lead.id, e).then((data) => {
+  const onTypeUpdated = (type: string) => {
+    leadUpdateByIdType(lead.id, type).then((data) => {
       if (data.error) {
         toast.success(data.error);
       }
@@ -104,16 +105,12 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
           onValueChange={onTypeUpdated}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Disposition" />
+            <SelectValue placeholder="Lead Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="General">General</SelectItem>
-            <SelectItem value="Final_Expense">Final Expense</SelectItem>
-            <SelectItem value="Mortgage_Protection">
-              Mortgage Protection
-            </SelectItem>
-            <SelectItem value="Iul">Iul</SelectItem>
-            <SelectItem value="Sold">Annuity</SelectItem>
+            {allLeadTypes.map((type) => (
+              <SelectItem value={type.value}>{type.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <p className="text-muted-foreground">Status</p>

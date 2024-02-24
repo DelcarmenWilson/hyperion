@@ -10,7 +10,7 @@ import { PhoneLeadInfo } from "@/components/phone/phone-lead-info";
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
   return (
-    <div className="flex w-full bg-white justify-end h-full">
+    <div className="flex w-full justify-end h-full">
       <PhoneLeadInfo />
       <Tabs className="w-[400px] border-s" defaultValue="phone">
         <TabsList className="w-full  h-auto">

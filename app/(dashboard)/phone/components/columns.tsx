@@ -5,17 +5,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { PhoneNumber } from "@prisma/client";
 
-export type PhoneNumberColumn = {
-  id: string;
-  phone: string;
-  state: string;
-  reneAt: Date;
-  status: string;
-  updateAt: Date;
-};
-
-export const columns: ColumnDef<PhoneNumberColumn>[] = [
+export const columns: ColumnDef<PhoneNumber>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -50,7 +42,7 @@ export const columns: ColumnDef<PhoneNumberColumn>[] = [
   {
     accessorKey: "renewAt",
     header: "Next renewal date",
-    cell: ({ row }) => <span>{format(row.original.reneAt, "MM-dd-yy")}</span>,
+    cell: ({ row }) => <span>{format(row.original.renewAt, "MM-dd-yy")}</span>,
   },
   {
     accessorKey: "status",
@@ -60,7 +52,7 @@ export const columns: ColumnDef<PhoneNumberColumn>[] = [
       <div>
         {row.original.status}
         {row.original.status === "Inactive" &&
-          ` since ${format(row.original.reneAt, "MM-dd-yy")}`}
+          ` since ${format(row.original.updatedAt, "MM-dd-yy")}`}
       </div>
     ),
   },

@@ -38,8 +38,12 @@ export const AdminSidebarRoutes: NavType[] = [
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Import", href: "/admin/import", icon: Import },
   { title: "Feedback", href: "/admin/feedback", icon: MessageSquarePlus },
-  { title: "Misc", href: "/admin/misc", icon: MilestoneIcon },
-  
+  { title: "Misc", href: "/admin/misc", icon: MilestoneIcon },  
+  {
+    title: "Phone Setup",
+    href: "/admin/phone",
+    icon: Phone,
+  },  
   {
     title: "Admin",
     href: "/admin",
