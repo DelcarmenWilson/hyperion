@@ -53,28 +53,16 @@ export const PhoneOut = () => {
   const [call, setCall] = useState<Connection>();
   const [isCallMuted, setIsCallMuted] = useState(false);
 
-  const startupClient = () => {
-    if (!user?.phoneNumbers.length) {
-      console.log("no phone number has been set up");
-      return;
-    }
-    const numbers: PhoneType[] = user.phoneNumbers.map((p) => {
-      return { value: p.phone, state: p.state };
-    });
-    setMyPhoneNumbers(numbers);
-    addDeviceListeners;
-  };
-
-  function addDeviceListeners() {
+  const addDeviceListeners = () => {
     if (!phone) return;
     phone.on("ready", function () {
       console.log("ready");
     });
 
     phone.on("error", function (error: any) {});
-  }
+  };
 
-  const onCallStarted = () => {
+  const onStarted = () => {
     if (!phone) return;
     if (!lead) {
       setToNumber((state) => formatPhoneNumber(state));
@@ -96,11 +84,11 @@ export const PhoneOut = () => {
       Direction: "outbound",
     });
 
-    call.on("disconnect", onCallDisconnect);
+    call.on("disconnect", onDisconnect);
     setCall(call);
   };
 
-  const onCallDisconnect = () => {
+  const onDisconnect = () => {
     call?.disconnect();
     setCall(undefined);
   };
@@ -171,8 +159,20 @@ export const PhoneOut = () => {
   }, []);
 
   useEffect(() => {
-    startupClient();
-  }, []);
+    const startupClient = () => {
+      if (!user?.phoneNumbers.length) {
+        console.log("no phone number has been set up");
+        return;
+      }
+      const numbers: PhoneType[] = user.phoneNumbers.map((p) => ({
+        value: p.phone,
+        state: p.state,
+      }));
+      setMyPhoneNumbers(numbers);
+      addDeviceListeners;
+    };
+    return () => startupClient();
+  }, [phone]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -250,11 +250,11 @@ export const PhoneOut = () => {
         ))}
       </div>
       {!call ? (
-        <Button disabled={!disabled} onClick={onCallStarted}>
+        <Button disabled={!disabled} onClick={onStarted}>
           <Phone className="h-4 w-4 mr-2" /> Call
         </Button>
       ) : (
-        <Button variant="destructive" onClick={onCallDisconnect}>
+        <Button variant="destructive" onClick={onDisconnect}>
           <Phone className="h-4 w-4 mr-2" /> Hang up
         </Button>
       )}
