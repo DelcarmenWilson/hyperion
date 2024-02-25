@@ -54,14 +54,15 @@ tab called blueprint > personalized businees plan for the indivdual.
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 -----Typscript error in feedbackId client.-Dev form
 
-git checkout sales-pipeline
+remvced ckeditor
+"@ckeditor/ckeditor5-build-classic": "^41.1.0",
+    "@ckeditor/ckeditor5-react": "^6.2.0",
+
+git checkout pipeline
 git pull 
-git checkout main
+git checkout master
 git pull
-git merge --no-ff --no-commit sales-pipeline
+git merge --no-ff --no-commit pipeline
 
-git commit -m sales-pipeline
+git commit -m pipeline
 git push
-
-Anthony (346) 292-5900 TX
-Andrea (470) 863-4162 GA
