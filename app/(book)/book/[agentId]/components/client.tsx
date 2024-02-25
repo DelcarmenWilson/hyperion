@@ -138,8 +138,8 @@ export const BookAgentClient = ({
   };
 
   useEffect(() => {
-    OnDateSlected(selectedDate);
-  }, []);
+    return () => OnDateSlected(selectedDate);
+  });
 
   return (
     <div className="flex justify-center p-4">
