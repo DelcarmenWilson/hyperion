@@ -1,12 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useGlobalContext } from "@/providers/global-provider";
-import { ChevronDown, ChevronUp, Cog, RefreshCcw } from "lucide-react";
-import { format } from "date-fns";
-import { toast } from "sonner";
 
-import { FullPipeline } from "@/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
@@ -17,14 +11,20 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { pipelineInsert, pipelineUpdateOrder } from "@/actions/pipeline";
+import { usePhoneContext } from "@/providers/phone-provider";
+import { ChevronDown, ChevronUp, Cog, RefreshCcw } from "lucide-react";
+import { FullPipeline } from "@/types";
+import { format } from "date-fns";
 
 type TopMenuProps = {
   pipelines: FullPipeline[];
 };
 
 export const TopMenu = ({ pipelines }: TopMenuProps) => {
-  const { leadStatus } = useGlobalContext();
+  const { leadStatus } = usePhoneContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");

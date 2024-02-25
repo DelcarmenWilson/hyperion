@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { pipelineDeleteById, pipelineUpdateById } from "@/actions/pipeline";
+import { usePhoneContext } from "@/providers/phone-provider";
 import { Input } from "@/components/ui/input";
-import { useGlobalContext } from "@/providers/global-provider";
 
 type SaleClientProps = {
   data: FullLead[];
@@ -28,7 +28,7 @@ type SaleClientProps = {
 };
 
 export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
-  const { leadStatus } = useGlobalContext();
+  const { leadStatus } = usePhoneContext();
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);

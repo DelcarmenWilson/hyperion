@@ -10,7 +10,7 @@ export const phoneNumbersGetByAgentId = async (agentId: string) => {
   }
 };
 
-export const phoneNumbersGetAll = async () => {
+export const phoneNumbersGetByAll = async () => {
   try {
     const phones = await db.phoneNumber.findMany({
       include: { agent: { select: { firstName: true, lastName: true } } },

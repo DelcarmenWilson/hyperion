@@ -12,8 +12,13 @@ export const appointmentInsert = async (
 ) => {
   const { date, agentId, leadId, comments } = values;
 <<<<<<< HEAD
+<<<<<<< HEAD
   const conflctingApp = await db.appointment.findFirst({
     where: { agentId,date:new Date(date), status: "Scheduled" },
+=======
+  const conflctingApp = await db.appointment.findMany({
+    where: { date:new Date(date), status: "Scheduled" },
+>>>>>>> parent of 640c050 (sales-pipeline)
   });
 if(conflctingApp){
   return { error: "Conflicting time Please select another time!" };

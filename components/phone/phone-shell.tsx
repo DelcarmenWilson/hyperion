@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneOut } from "@/components/phone/phone-out";
 import { usePhoneContext } from "@/providers/phone-provider";
 import { VoicemailOut } from "@/components/phone/voicemail-out";
+import { Badge } from "@/components/ui/badge";
 import { PhoneLeadInfo } from "@/components/phone/phone-lead-info";
 
 const PhoneShell = () => {

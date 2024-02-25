@@ -2,7 +2,7 @@ import { cfg } from "./twilio-config";
 import twilio from "twilio";
 
 import { isAValidPhoneNumber } from "@/formulas/phones";
-
+import { VercelLogoIcon } from "@radix-ui/react-icons";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;

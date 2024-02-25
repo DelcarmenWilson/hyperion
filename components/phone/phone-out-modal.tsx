@@ -14,6 +14,7 @@ export const PhoneOutModal = () => {
       onClose={onDialerClose}
       size="w-auto"
     >
+      {/* <PhoneOut /> */}
       <PhoneShell />
     </DrawerRight>
   );

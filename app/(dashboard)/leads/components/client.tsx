@@ -1,8 +1,19 @@
 "use client";
 import { useState } from "react";
-import { Users } from "lucide-react";
-import { useGlobalContext } from "@/providers/global-provider";
 
+import { Button } from "@/components/ui/button";
+import { DownloadCloud, Paperclip, Plus, Users } from "lucide-react";
+import { ImportLeadsForm } from "./import/import-leads-form";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -12,12 +23,19 @@ import {
 } from "@/components/ui/select";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { DataTableHeadless } from "@/components/tables/data-table-headless";
 import { PageLayout } from "@/components/custom/page-layout";
+=======
+import { columns } from "./columns";
+import { FullLead } from "@/types";
+>>>>>>> parent of 640c050 (sales-pipeline)
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { NewLeadForm } from "./new-lead-form";
+import { DataTableHeadless } from "@/components/tables/data-table-headless";
 
 import { TopMenu } from "./top-menu";
+<<<<<<< HEAD
 import { columns } from "./columns";
 import { FullLead } from "@/types";
 =======
@@ -33,13 +51,18 @@ import { PageLayout } from "@/components/custom/page-layout";
 import { usePhoneContext } from "@/providers/phone-provider";
 import { verify } from "crypto";
 >>>>>>> parent of 9f16759 (sales-pipeline)
+=======
+import { PageLayout } from "@/components/custom/page-layout";
+import { usePhoneContext } from "@/providers/phone-provider";
+
+>>>>>>> parent of 640c050 (sales-pipeline)
 import { allVendors } from "@/constants/lead";
 
 interface LeadClientProps {
   leads: FullLead[];
 }
 export const LeadClient = ({ leads }: LeadClientProps) => {
-  const { leadStatus } = useGlobalContext();
+  const { leadStatus } = usePhoneContext();
   const [status, setStatus] = useState(
     leadStatus ? leadStatus[0].status : "New"
   );

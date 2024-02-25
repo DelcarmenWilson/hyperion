@@ -42,8 +42,11 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   const extractInfo = (data: string): any => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     if(!data)    
     return {};
+=======
+>>>>>>> parent of 640c050 (sales-pipeline)
     let exData = data
       .replaceAll('"', "")
       .replaceAll("' ", "")
@@ -51,6 +54,7 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       .replaceAll("] [", '","')
       .replace("[", '{"')
       .replace("]", '"}');
+<<<<<<< HEAD
      return JSON.parse(exData);
 =======
     let exData =
@@ -65,6 +69,9 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
     exData = exData.replace('","}', '"}').replace(",}", "}");
     return JSON.parse(exData);
 >>>>>>> parent of 9f16759 (sales-pipeline)
+=======
+    return JSON.parse(exData);
+>>>>>>> parent of 640c050 (sales-pipeline)
   };
 
   result.data.map((d: any) => {
