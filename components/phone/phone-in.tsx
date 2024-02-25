@@ -107,7 +107,7 @@ export const PhoneIn = () => {
       });
     };
     return () => addDeviceListeners();
-  }, [phone]);
+  }, [phone, onDisconnect]);
   return (
     <>
       <div className="flex items-center justify-center gap-2">

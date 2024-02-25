@@ -1,5 +1,3 @@
-"use client";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CarrierBox } from "./components/carrier-box";
 import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
