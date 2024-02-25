@@ -39,11 +39,7 @@ export default function PhoneContextProvider({
       phone.setup(token);
       phone.setMaxListeners(3);
     }
-    // axios.post("/api/token", { identity: user?.id }).then((response) => {
-    //   const data = response.data;
-    //   phone.setup(data.token);
-    // });
-  }, []);
+  }, [token, phone]);
 
   return (
     <PhoneContext.Provider

@@ -4,9 +4,9 @@ import { DialogHp } from "../custom/dialog-hp";
 import { PhoneIn } from "./phone-in";
 
 export const PhoneInModal = () => {
-  const { isPhoneInOpen: isOpen } = usePhoneModal();
+  const { isPhoneInOpen } = usePhoneModal();
   return (
-    <DialogHp isOpen={isOpen}>
+    <DialogHp isOpen={isPhoneInOpen}>
       <PhoneIn />
     </DialogHp>
   );

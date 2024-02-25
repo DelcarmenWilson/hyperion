@@ -75,22 +75,7 @@ export const PhoneLeadInfo = () => {
             intialNotes={lead?.notes as string}
           />
         </div>
-        <PhoneScript />
-        {/* <div className="flex flex-col absolute bottom-0 left:0 w-full h-full overflow-hidden">
-          <ScrollArea className="flex-1 bg-background overflow-hidden">
-            <CKeditor
-              name="scripts"
-              // onChange={(data: string) => {
-              //   setData(data);
-              // }}
-              value={formattedScript}
-              editorLoaded={editorLoaded}
-            />
-          </ScrollArea>
-          <div className="mt-auto flex items-center justify-center w-full  h-9 border overflow-hidden relative cursor-pointer hover:bg-secondary ">
-            <p className="text-primary  text-sm">Basic Script</p>
-          </div>
-        </div> */}
+        {/* <PhoneScript /> */}
       </div>
     </div>
   );
