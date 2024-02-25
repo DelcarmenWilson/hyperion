@@ -1,19 +1,32 @@
-import { TeamClient } from "./components/client";
-import { UsersClient } from "./components/users";
+import { FullTeamReport, FullUserTeamReport } from "@/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heading } from "@/components/custom/heading";
-import { FullTeamReport, FullUserTeamReport } from "@/types";
-import { teamsGetById } from "@/data/team";
+
+import { TeamClient } from "./components/client";
+import { UsersClient } from "./components/users";
+
+import { teamsGetByIdStats } from "@/data/team";
 import { adminUsersGetAll } from "@/data/admin";
+import { weekStartEnd } from "@/formulas/dates";
 
 const TeamPage = async ({
   params,
+  searchParams,
 }: {
   params: {
     teamId: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const team = await teamsGetById(params.teamId);
+  const week = weekStartEnd();
+  const from = searchParams.from ? searchParams.from : week.from.toString();
+  const to = searchParams.to ? searchParams.to : (week.to.toString() as string);
+  const team = await teamsGetByIdStats(
+    params.teamId,
+    to as string,
+    from as string
+  );
+
   const users = await adminUsersGetAll();
   if (!team) {
     return null;

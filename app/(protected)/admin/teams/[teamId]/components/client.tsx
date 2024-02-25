@@ -1,15 +1,17 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone } from "lucide-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { formatter } from "@/lib/utils";
+import { toast } from "sonner";
 
 import CountUp from "react-countup";
 
-import { getGraphRevenue } from "@/actions/get-graph-revenue";
+import { FullTeamReport, HalfUser } from "@/types";
 
 import { Input } from "@/components/ui/input";
-import { FullTeamReport, HalfUser } from "@/types";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -20,12 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { OverviewChart } from "./overview-chart";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { DateRangePicker } from "@/components/custom/date-range-picker";
+import { OverviewChart } from "./overview-chart";
+
+import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { adminChangeTeamManager } from "@/actions/admin";
-import { useRouter } from "next/navigation";
+import { weekStartEnd } from "@/formulas/dates";
 
 interface TeamClientProps {
   team: FullTeamReport;
@@ -34,6 +37,7 @@ interface TeamClientProps {
 
 export const TeamClient = ({ team, users }: TeamClientProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [selecteUser, setSelecteUser] = useState(users[0].id);
@@ -59,7 +63,25 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
       icon: <DollarSign />,
     },
   ];
+  const from = searchParams.get("from");
+  const searchDates = {
+    from: new Date(searchParams.get("from") as string),
+    to: new Date(searchParams.get("to") as string),
+  };
   const chartData = getGraphRevenue();
+
+  const [dates, setDates] = useState(from ? searchDates : weekStartEnd());
+
+  const onDateSelected = (e: any) => {
+    setDates(e);
+  };
+  const onUpdate = () => {
+    router.push(
+      `/admin/teams/${
+        team.id
+      }?from=${dates.from.toLocaleDateString()}&to=${dates.to.toLocaleDateString()}`
+    );
+  };
   const onManagerChange = () => {
     if (!selecteUser) {
       toast.error("Invalid Data");
@@ -161,6 +183,14 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
               value={team?.organization.name}
             />
           </div>
+        </div>
+        <div className="flex items-end gap-2 w-1/2 mb-2">
+          <DateRangePicker
+            setDate={onDateSelected}
+            date={dates}
+            className="flex"
+          />
+          <Button onClick={onUpdate}>Update</Button>
         </div>
       </div>
       <Separator />
