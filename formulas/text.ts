@@ -12,8 +12,9 @@ export const capitalize = (text: string): string => {
 export const replacePresetUser = (message: string, user: User): string => {
   if (!user) return message;
   // USER INFO
-  message = message.replace("#my_first_name", user.firstName);
-  message = message.replace("#my_company_name", "Family First Life");
+  message = message
+    .replace("#my_first_name", user.firstName)
+    .replace("#my_company_name", "Family First Life");
   return message;
 };
 export const replacePreset = (
@@ -23,11 +24,11 @@ export const replacePreset = (
 ): string => {
   if (!user || !lead) return message;
   // USER INFO
-  message = message.replace("#my_first_name", user.firstName);
-  message = message.replace("#my_company_name", "Family First Life");
+  message = message.replace("#my_first_name", user.firstName)
+  .replace("#my_company_name", "Family First Life")
   // LEAD INFO
-  message = message.replace("#first_name", lead.firstName);
-  message = message.replace("#state", lead.state);
+  .replace("#first_name", lead.firstName)
+  .replace("#state", lead.state);
   return message;
 };
 

@@ -1,19 +1,8 @@
 "use client";
 import { useState } from "react";
+import { Users } from "lucide-react";
+import { useGlobalContext } from "@/providers/global-provider";
 
-import { Button } from "@/components/ui/button";
-import { DownloadCloud, Paperclip, Plus, Users } from "lucide-react";
-import { ImportLeadsForm } from "./import/import-leads-form";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -22,23 +11,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { columns } from "./columns";
-import { FullLead } from "@/types";
+import { DataTableHeadless } from "@/components/tables/data-table-headless";
+import { PageLayout } from "@/components/custom/page-layout";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { NewLeadForm } from "./new-lead-form";
-import { DataTableHeadless } from "@/components/tables/data-table-headless";
 
 import { TopMenu } from "./top-menu";
-import { PageLayout } from "@/components/custom/page-layout";
-import { usePhoneContext } from "@/providers/phone-provider";
-
+import { columns } from "./columns";
+import { FullLead } from "@/types";
 import { allVendors } from "@/constants/lead";
 
 interface LeadClientProps {
   leads: FullLead[];
 }
 export const LeadClient = ({ leads }: LeadClientProps) => {
-  const { leadStatus } = usePhoneContext();
+  const { leadStatus } = useGlobalContext();
   const [status, setStatus] = useState(
     leadStatus ? leadStatus[0].status : "New"
   );

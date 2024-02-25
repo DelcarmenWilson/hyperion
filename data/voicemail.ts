@@ -4,7 +4,13 @@ export const voicemailGetUnHeard = async (userId: string) => {
   try {
     const voicemails = await db.call.findMany({
       where: { userId, type: "voicemail", listened: false },
-      include: { lead:true },
+      select: {
+        id:true,
+        from:true,
+        recordUrl: true,
+        updatedAt: true,
+        lead: { select: { firstName: true, lastName: true } },
+      },
     });
 
     return voicemails;

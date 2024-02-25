@@ -3,10 +3,8 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import path from "path";
-import { writeFile } from "fs/promises";
 
-import { MasterRegisterSchema } from "@/schemas";
+import { MasterRegisterSchema, UserLicenseSchema } from "@/schemas";
 import { RegisterSchema } from "@/schemas";
 import { SettingsSchema } from "@/schemas";
 
@@ -208,4 +206,41 @@ export const userUpdateById = async (
     },
   });
   return { success: "Settings Updated! " };
+};
+
+// USERLICENSES
+export const userLicenseInsert = async (
+  values: z.infer<typeof UserLicenseSchema>
+) => {
+  const validatedFields = UserLicenseSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const { state, type, licenseNumber, dateExpires, comments } =
+    validatedFields.data;
+
+  const existingLicense = await db.userLicense.findUnique({
+    where: { licenseNumber },
+  });
+  
+  if (existingLicense) {
+    return { error: "License already exist!" };
+  }
+  const license = await db.userLicense.create({
+    data: {
+      state,
+      type,
+      licenseNumber,
+      dateExpires: new Date(dateExpires),
+      comments,
+      userId: user.id,
+    },
+  });
+
+  return { success: license };
 };

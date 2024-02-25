@@ -111,10 +111,10 @@ model UserLicense {
 
   state         String
   type          String
-  licenseNumber String
+  licenseNumber String   @unique
   dateExpires   DateTime
 
-  comments  String
+  comments  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -496,12 +496,24 @@ model MedicalCondition {
 }
 
 model Carrier {
-  id          String @id @default(cuid())
-  image       String
+  id          String  @id @default(cuid())
+  image       String?
   name        String
-  description String
+  description String?
 
   userCarriers UserCarrier[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// SCRIPTS
+
+model Script {
+  id     String @id @default(cuid())
+  title  String
+  script String @db.LongText
+  userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

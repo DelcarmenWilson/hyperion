@@ -120,10 +120,3 @@ export type FullFeedback = Feedback & {
 export type FullPipeline = PipeLine & {
   status: { status: string };
 };
-export type Voicemail = {
-  id: string;
-  lead?: Lead;
-  from: string;
-  recordUrl: string;
-  updatedAt: string;
-};

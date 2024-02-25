@@ -18,6 +18,7 @@ import {
   MessagesSquare,
   MilestoneIcon,
   Phone,
+  ScrollText,
   Server,
   Settings,
   ShieldHalf,
@@ -53,6 +54,11 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Page Settings",
     href: "/admin/page-settings",
     icon: Key,
+  },
+  {
+    title: "Scripts",
+    href: "/admin/scripts",
+    icon: ScrollText,
   },
   {
     title: "Test",

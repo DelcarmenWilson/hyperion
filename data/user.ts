@@ -34,6 +34,17 @@ export const userGetById = async (id: string) => {
     return null;
   }
 };
+export const userGetByIdDefault = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { id },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
 
 export const userGetByIdReport = async (id: string) => {
   try {
@@ -67,6 +78,7 @@ export const userGetByUserName = async (userName: string) => {
     return null;
   }
 };
+
 export const usersGetSummaryByTeamId = async (
   userId: string,
   role: UserRole,
@@ -86,6 +98,19 @@ export const usersGetSummaryByTeamId = async (
     });
 
     return agents;
+  } catch {
+    return [];
+  }
+};
+
+// USER LICENSES
+export const userLicensesGetAllByUserId = async (
+  userId:string
+) => {
+  try {
+    const licenses = await db.userLicense.findMany({where:{userId}});
+
+    return licenses;
   } catch {
     return [];
   }

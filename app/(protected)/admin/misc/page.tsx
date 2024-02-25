@@ -3,8 +3,8 @@ import { NumberChange } from "./components/change-number";
 import { PhoneUpdate } from "./components/phone-update";
 import { EmailConfirm } from "./components/email-confimation";
 import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
-import { adminLeadStatusGetAll, adminUsersGetAll } from "@/actions/admin";
 import { LeadStatusBox } from "@/components/lead/lead-status";
+import { adminLeadStatusGetAll, adminUsersGetAll } from "@/data/admin";
 
 const MiscPage = async () => {
   const users = await adminUsersGetAll();

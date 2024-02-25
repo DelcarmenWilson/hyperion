@@ -1,9 +1,11 @@
 "use server";
 
+import * as z from "zod";
+import { db } from "@/lib/db";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentRole, currentUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
+import { CarrierSchema } from "@/schemas";
 
 export const admin = async () => {
   const role = await currentRole();
@@ -13,17 +15,7 @@ export const admin = async () => {
 
   return { error: "Forbidden!" };
 };
-export const adminUsersGetAll = async () => {
-  try {
-    const users = await db.user.findMany({
-      select: { id: true, userName: true },
-    });
 
-    return users;
-  } catch {
-    return [];
-  }
-};
 export const adminChangeLeadDefaultNumber = async (
   userId: string,
   oldPhone: string,
@@ -75,7 +67,6 @@ for (const number of phoneNumbers) {
 }
   return { success: "user number have been updated" };
 };
-
 
 export const adminConfirmUserEmail = async (userId: string, date: string) => {
   const user = await db.user.findUnique({
@@ -196,12 +187,37 @@ export const adminLeadStatusInsert = async (status: string) => {
 
   return { success: "Status created" };
 };
-export const adminLeadStatusGetAll = async () => {
-  try {
-    const status =await db.leadStatus.findMany({
-    });
-    return status
-  } catch (error) {
-    return []
+
+//CARRIER
+export const adminCarrierInsert = async (values: z.infer<typeof CarrierSchema>) => {
+  
+  const user = await currentUser()
+
+  if (!user) {
+    return { error: "Unathenticated" };
   }
+  if (user.role!="MASTER") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = CarrierSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { image,name,description } =
+    validatedFields.data;
+
+  const existingCarrier=await db.carrier.findFirst({where:{name}})
+  if(existingCarrier){    
+    return { error: "Carrier already exists" };
+  }
+  
+  const carrier=await db.carrier.create({
+    data: {
+      image:image as string,name,description
+    },
+  });
+
+  return { success: carrier };
 };
