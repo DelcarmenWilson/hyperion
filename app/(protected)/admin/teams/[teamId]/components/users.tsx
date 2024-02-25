@@ -1,12 +1,14 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { DataTable } from "@/components/tables/data-table";
-import { columns } from "./columns";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FullUserTeamReport } from "@/types";
+
+import { columns } from "./columns";
+
+import { DataTable } from "@/components/tables/data-table";
 import { DateRangePicker } from "@/components/custom/date-range-picker";
+import { Button } from "@/components/ui/button";
 import { weekStartEnd } from "@/formulas/dates";
-import axios from "axios";
 
 type UserClientProps = {
   users: FullUserTeamReport[];
@@ -14,26 +16,35 @@ type UserClientProps = {
 };
 
 export const UsersClient = ({ users, teamId }: UserClientProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [initalUsers, setInitalUsers] = useState(users);
-  const [dates, setDates] = useState(weekStartEnd());
+  const from = searchParams.get("from");
+  const searchDates = {
+    from: new Date(searchParams.get("from") as string),
+    to: new Date(searchParams.get("to") as string),
+  };
+  const [dates, setDates] = useState(from ? searchDates : weekStartEnd());
 
   const onDateSelected = (e: any) => {
     setDates(e);
   };
-  // useEffect(()=>{
-  // axios.post("/admin/user-team-report",{teamId:teamId})
-  // },[])
+  const onUpdate = () => {
+    router.push(
+      `/admin/teams/${teamId}?from=${dates.from.toLocaleDateString()}&to=${dates.to.toLocaleDateString()}`
+    );
+  };
   return (
     <>
-      <div>
-        <p className="text-muted-foreground">Date Range</p>
+      <div className="flex items-end gap-2 w-1/2 mb-2">
         <DateRangePicker
           setDate={onDateSelected}
           date={dates}
           className="flex"
         />
+        <Button onClick={onUpdate}>Update</Button>
       </div>
-      <DataTable columns={columns} data={initalUsers} searchKey="userName" />;
+      <DataTable columns={columns} data={initalUsers} searchKey="userName" />
     </>
   );
 };

@@ -57,6 +57,8 @@ tab called blueprint > personalized businees plan for the indivdual.
 remvced ckeditor
 npm uninstall --save @ckeditor/ckeditor5-build-classic
 npm uninstall --save @ckeditor/ckeditor5-react
+npm install --save @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
+
 
 git checkout pipeline
 git pull 

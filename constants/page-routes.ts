@@ -55,11 +55,11 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/page-settings",
     icon: Key,
   },
-  // {
-  //   title: "Scripts",
-  //   href: "/admin/scripts",
-  //   icon: ScrollText,
-  // },
+  {
+    title: "Scripts",
+    href: "/admin/scripts",
+    icon: ScrollText,
+  },
   {
     title: "Test",
     href: "/admin/test",
