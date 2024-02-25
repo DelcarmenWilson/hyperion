@@ -17,7 +17,7 @@ export const PhoneScript = () => {
 
   const formattedScript = useMemo(() => {
     return replaceScript(script?.script!, user?.firstName!, lead!, licenses!);
-  }, [lead]);
+  }, [script, user, lead, licenses]);
 
   useEffect(() => {
     setEditorLoaded(true);
