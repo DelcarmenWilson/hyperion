@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useGlobalContext } from "@/providers/global-provider";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { LeadStatus } from "@prisma/client";
@@ -16,13 +15,14 @@ import { columns } from "./leadstatus-columns";
 import { leadStatusInsert } from "@/actions/lead";
 
 import { adminLeadStatusInsert } from "@/actions/admin";
+import { usePhoneContext } from "@/providers/phone-provider";
 
 type LeadStatusBoxProps = {
   leadStatus: LeadStatus[];
 };
 export const LeadStatusBox = ({ leadStatus }: LeadStatusBoxProps) => {
   const role = useCurrentRole();
-  const { setLeadStatus } = useGlobalContext();
+  const { setLeadStatus } = usePhoneContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [newStatus, setNewStatus] = useState("");

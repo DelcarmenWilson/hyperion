@@ -9,12 +9,6 @@ import {
 } from "@/components/reusable/main-sidebar";
 import AppointmentProvider from "@/providers/appointment-provider";
 import PhoneContextProvider from "@/providers/phone-provider";
-import GlobalContextProvider from "@/providers/global-provider";
-import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
-import { scriptGetOne } from "@/data/script";
-import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/data/user";
-import { voicemailGetUnHeard } from "@/data/voicemail";
-import { getTwilioToken } from "@/data/verification-token";
 
 export default async function DashBoardLayout({
   children,
@@ -22,12 +16,6 @@ export default async function DashBoardLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-  const initUser = await userGetByIdDefault(user?.id!);
-  const status = await leadStatusGetAllByAgentIdDefault(user?.id!);
-  const script = await scriptGetOne();
-  const voicemails = await voicemailGetUnHeard(user?.id!);
-  const token = await getTwilioToken(user?.id!);
-  const licenses = await userLicensesGetAllByUserId(user?.id!);
 
   if (!user) {
     redirect("/login");
@@ -42,16 +30,9 @@ export default async function DashBoardLayout({
         <NavBar />
         {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
         <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
-          <GlobalContextProvider
-            initUser={initUser!}
-            initStatus={status}
-            intScript={script!}
-            initLicenses={licenses}
-          >
-            <PhoneContextProvider initVoicemails={voicemails} token={token!}>
-              <AppointmentProvider>{children}</AppointmentProvider>
-            </PhoneContextProvider>
-          </GlobalContextProvider>
+          <PhoneContextProvider>
+            <AppointmentProvider>{children}</AppointmentProvider>
+          </PhoneContextProvider>
         </div>
         {/* </ScrollArea> */}
       </div>

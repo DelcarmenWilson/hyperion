@@ -37,40 +37,6 @@ export const PhoneIn = () => {
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
 
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("ready from phone in");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
-
-    phone.on("incoming", async function (call: Connection) {
-      call.on("disconnect", function (error: any) {
-        onDisconnect();
-      });
-      call.on("cancel", function (error: any) {
-        onDisconnect();
-      });
-      // const response = await axios.post("/api/leads/details", {
-      //   phone: call.parameters.From,
-      // });
-
-      // const data = response.data;
-      // const fullName = data.firstName
-      //   ? `${data.firstName} ${data.lastName}`
-      //   : "Unknown Caller";
-      // setFromName(fullName);
-      // setFromNumber(data.cellPhone || call.parameters.From);
-      console.log("incoming Call");
-
-      onOpen();
-      setCall(call);
-    });
-  };
-
   const onDisconnect = () => {
     call?.disconnect();
     setCall(undefined);
@@ -108,40 +74,39 @@ export const PhoneIn = () => {
   }, [running]);
 
   useEffect(() => {
-    // const addDeviceListeners = () => {
-    //   if (!phone) return;
-    //   phone.on("ready", function () {
-    //     console.log("ready from phone in");
-    //   });
+    const addDeviceListeners = () => {
+      if (!phone) return;
+      phone.on("ready", function () {
+        console.log("ready from phone in");
+      });
 
-    //   phone.on("error", function (error: any) {
-    //     console.log(error);
-    //   });
+      phone.on("error", function (error: any) {
+        console.log(error);
+      });
 
-    //   phone.on("incoming", async function (call: Connection) {
-    //     call.on("disconnect", function (error: any) {
-    //       onDisconnect();
-    //     });
-    //     call.on("cancel", function (error: any) {
-    //       onDisconnect();
-    //     });
-    //     // const response = await axios.post("/api/leads/details", {
-    //     //   phone: call.parameters.From,
-    //     // });
+      phone.on("incoming", async function (call: Connection) {
+        call.on("disconnect", function (error: any) {
+          onDisconnect();
+        });
+        call.on("cancel", function (error: any) {
+          onDisconnect();
+        });
+        const response = await axios.post("/api/leads/details", {
+          phone: call.parameters.From,
+        });
 
-    //     // const data = response.data;
-    //     // const fullName = data.firstName
-    //     //   ? `${data.firstName} ${data.lastName}`
-    //     //   : "Unknown Caller";
-    //     // setFromName(fullName);
-    //     // setFromNumber(data.cellPhone || call.parameters.From);
-    //     console.log("incoming Call");
+        const data = response.data;
+        const fullName = data.firstName
+          ? `${data.firstName} ${data.lastName}`
+          : "Unknown Caller";
+        setFromName(fullName);
+        setFromNumber(data.cellPhone || call.parameters.From);
 
-    //     onOpen();
-    //     setCall(call);
-    //   });
-    // };
-    addDeviceListeners();
+        onOpen();
+        setCall(call);
+      });
+    };
+    return () => addDeviceListeners();
   }, [phone]);
   return (
     <>

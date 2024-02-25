@@ -1,13 +1,10 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useGlobalContext } from "@/providers/global-provider";
 
 import { UserLicense } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -43,8 +40,7 @@ type LicenseFormProps = {
 type LicenseFormValues = z.infer<typeof UserLicenseSchema>;
 export const LicenseForm = ({ initLicenses }: LicenseFormProps) => {
   const [loading, setLoading] = useState(false);
-  const { licenses, setLicenses } = useGlobalContext();
-  // const [licenses, setLicenses] = useState(initLicenses);
+  const [licenses, setLicenses] = useState(initLicenses);
 
   const form = useForm<LicenseFormValues>({
     resolver: zodResolver(UserLicenseSchema),

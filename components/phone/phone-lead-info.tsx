@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useGlobalContext } from "@/providers/global-provider";
+import { useState } from "react";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { cn } from "@/lib/utils";
@@ -12,8 +11,7 @@ import { AppointmentBox } from "@/components/lead/appointment";
 import { Info } from "@/components/lead/info";
 import { CallInfo } from "@/components/lead/call-info";
 import { NotesForm } from "@/components/lead/notes-form";
-import { PhoneScript } from "./phone-script";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 export const PhoneLeadInfo = () => {
   const { lead } = usePhoneModal();
