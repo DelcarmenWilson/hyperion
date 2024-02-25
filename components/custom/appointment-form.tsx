@@ -119,7 +119,7 @@ export const AppointmentForm = () => {
       OnDateSlected(new Date());
     };
     return () => initialLoad();
-  }, []);
+  });
 
   return (
     <div>

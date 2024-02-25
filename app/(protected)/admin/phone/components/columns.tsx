@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TwilioNumber } from "@/types/twilio";
-import { Image, MessageCircle, Phone, X } from "lucide-react";
+import { FileImage, Image, MessageCircle, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const columns: ColumnDef<TwilioNumber>[] = [
@@ -73,7 +73,11 @@ export const columns: ColumnDef<TwilioNumber>[] = [
     header: "Mms",
     cell: ({ row }) => (
       <p>
-        {row.original.capabilities.MMS ? <Image size={16} /> : <X size={16} />}{" "}
+        {row.original.capabilities.MMS ? (
+          <FileImage size={16} />
+        ) : (
+          <X size={16} />
+        )}{" "}
       </p>
     ),
   },

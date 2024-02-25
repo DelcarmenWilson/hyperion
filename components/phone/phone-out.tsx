@@ -155,8 +155,8 @@ export const PhoneOut = () => {
   };
 
   useEffect(() => {
-    onCheckNumber();
-  }, []);
+    return () => onCheckNumber();
+  });
 
   useEffect(() => {
     const startupClient = () => {
@@ -169,10 +169,10 @@ export const PhoneOut = () => {
         state: p.state,
       }));
       setMyPhoneNumbers(numbers);
-      addDeviceListeners;
+      addDeviceListeners();
     };
     return () => startupClient();
-  }, [phone]);
+  });
 
   return (
     <div className="flex flex-col gap-2 p-2">
