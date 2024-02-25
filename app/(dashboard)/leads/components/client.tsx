@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Users } from "lucide-react";
-import { useGlobalContext } from "@/providers/global-provider";
+import { usePhoneContext } from "@/providers/phone-provider";
 
 import {
   Select,
@@ -25,7 +25,7 @@ interface LeadClientProps {
   leads: FullLead[];
 }
 export const LeadClient = ({ leads }: LeadClientProps) => {
-  const { leadStatus } = useGlobalContext();
+  const { leadStatus } = usePhoneContext();
   const [status, setStatus] = useState(
     leadStatus ? leadStatus[0].status : "New"
   );
