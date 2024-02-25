@@ -25,21 +25,37 @@ import {
 import { useAppointmentContext } from "@/providers/appointment-provider";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+<<<<<<< HEAD
 import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
 import { AppointmentSchema } from "@/schemas";
+=======
+import {
+  concateDate,
+  getToday,
+  getTommorrow,
+  getYesterday,
+} from "@/formulas/dates";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+>>>>>>> parent of 9f16759 (sales-pipeline)
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
-  const { schedule, appointments, setAppointments } = useAppointmentContext();
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
+<<<<<<< HEAD
   const [brSchedule] = useState<BrokenScheduleType[]>(
     breakDownSchedule(schedule!)
   );
+=======
+  const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>();
+>>>>>>> parent of 9f16759 (sales-pipeline)
   const [times, setTimes] = useState<ScheduleTimeType[]>();
+  const [appointments, setAppointments] = useState<Appointment[]>();
   const [date, setDate] = useState<Date>(getTommorrow);
   const [time, setTime] = useState("");
   const [comments, setComments] = useState("");
@@ -49,13 +65,6 @@ export const AppointmentForm = () => {
     setDate(date);
     const day = date.getDay();
     if (!brSchedule) return;
-
-    const currentapps = appointments?.filter(
-      (e) => new Date(e.date).toDateString() == date.toDateString()
-    );
-
-    console.log(schedule, appointments);
-
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
@@ -64,6 +73,10 @@ export const AppointmentForm = () => {
       setTimes(sc);
       setAvailable(true);
     }
+
+    const currentapps = appointments?.filter(
+      (e) => new Date(e.date).toDateString() == date.toDateString()
+    );
 
     setTimes((times) => {
       return times?.map((time) => {
@@ -87,8 +100,7 @@ export const AppointmentForm = () => {
     }
   };
 
-  const onSubmit = async (e: any) => {
-    e.preventDefault();
+  const onSubmit = async () => {
     setLoading(true);
     const newDate = concateDate(date, time);
     if (!time) return;
@@ -101,10 +113,7 @@ export const AppointmentForm = () => {
 
     await appointmentInsert(appointment).then((data) => {
       if (data.success) {
-        setAppointments((apps) => {
-          return [...apps!, data.success];
-        });
-        toast.success("Appointment scheduled!");
+        toast.success(data.success);
       }
       if (data.error) {
         toast.error(data.error);
@@ -115,8 +124,22 @@ export const AppointmentForm = () => {
   };
 
   useEffect(() => {
+    const loadAppointments = () => {
+      axios
+        .post("/api/user/appointments", { user: user?.id })
+        .then((response) => {
+          setAppointments(response.data);
+        });
+    };
+    return () => loadAppointments();
+  }, [date]);
+
+  useEffect(() => {
     const initialLoad = () => {
-      OnDateSlected(new Date());
+      axios.post("/api/user/schedule", { user: user?.id }).then((response) => {
+        setBrSchedule(breakDownSchedule(response.data));
+        OnDateSlected(new Date());
+      });
     };
     return () => initialLoad();
   }, []);

@@ -1,11 +1,16 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { Device } from "twilio-client";
 import { PhoneOutModal } from "@/components/phone/phone-out-modal";
 import { PhoneInModal } from "@/components/phone/phone-in-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
+<<<<<<< HEAD
 import { Voicemail } from "@/types/phone";
+=======
+import axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Device } from "twilio-client";
+import { Voicemail } from "@/types";
+import { LeadStatus } from "@prisma/client";
+>>>>>>> parent of 9f16759 (sales-pipeline)
 
 type PhoneContextProviderProps = {
   token: string;
@@ -21,7 +26,6 @@ type PhoneContext = {
 };
 
 export const PhoneContext = createContext<PhoneContext | null>(null);
-
 export default function PhoneContextProvider({
   token,
   initVoicemails,
@@ -65,7 +69,7 @@ export function usePhoneContext() {
   const context = useContext(PhoneContext);
   if (!context) {
     throw new Error(
-      "usePhoneContext must be used withing PhoneContextProvider"
+      "usePhoneContext must be used withing  PhoneContextProvider"
     );
   }
 

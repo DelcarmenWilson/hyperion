@@ -11,6 +11,7 @@ export const appointmentInsert = async (
   sendSms: boolean = true
 ) => {
   const { date, agentId, leadId, comments } = values;
+<<<<<<< HEAD
   const conflctingApp = await db.appointment.findFirst({
     where: { agentId,date:new Date(date), status: "Scheduled" },
   });
@@ -18,9 +19,13 @@ if(conflctingApp){
   return { error: "Conflicting time Please select another time!" };
 }
   const existingAppointment = await db.appointment.findFirst({
+=======
+  const existingAppointments = await db.appointment.findMany({
+>>>>>>> parent of 9f16759 (sales-pipeline)
     where: { leadId, agentId, status: "Scheduled" },
   });
 
+  const existingAppointment = existingAppointments[0];
   if (existingAppointment) {
     await db.appointment.update({
       where: { id: existingAppointment.id },
@@ -50,7 +55,7 @@ if(conflctingApp){
       );
     }
   }
-  return { success: appointment };
+  return { success: "Appointment Scheduled!" };
 };
 
 export const appointmentInsertBook = async (

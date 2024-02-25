@@ -7,7 +7,12 @@ import {
   MainSideBar,
   MainSidebarSkeleton,
 } from "@/components/reusable/main-sidebar";
+<<<<<<< HEAD
 import AppointmentProvider from "@/providers/appointment-provider";
+=======
+import { AppointmentProvider } from "@/providers/appointment-provider";
+import { ScrollArea } from "@/components/ui/scroll-area";
+>>>>>>> parent of 9f16759 (sales-pipeline)
 import PhoneContextProvider from "@/providers/phone-provider";
 import GlobalContextProvider from "@/providers/global-provider";
 import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
@@ -35,6 +40,7 @@ export default async function DashBoardLayout({
 
   return (
     <>
+<<<<<<< HEAD
       <Suspense fallback={<MainSidebarSkeleton />}>
         <MainSideBar />
       </Suspense>
@@ -55,6 +61,22 @@ export default async function DashBoardLayout({
         </div>
         {/* </ScrollArea> */}
       </div>
+=======
+      <PhoneContextProvider>
+        <AppointmentProvider />
+        <Suspense fallback={<MainSidebarSkeleton />}>
+          <MainSideBar />
+        </Suspense>
+        <div className="flex flex-col ml-[70px] h-full ">
+          <NavBar />
+          {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
+          <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
+            {children}
+          </div>
+          {/* </ScrollArea> */}
+        </div>
+      </PhoneContextProvider>
+>>>>>>> parent of 9f16759 (sales-pipeline)
     </>
   );
 }
