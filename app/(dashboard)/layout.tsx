@@ -23,19 +23,21 @@ export default async function DashBoardLayout({
 
   return (
     <>
-      <Suspense fallback={<MainSidebarSkeleton />}>
-        <MainSideBar />
-      </Suspense>
-      <div className="flex flex-col ml-[70px] h-full ">
-        <NavBar />
-        {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
-        <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
-          <PhoneContextProvider>
-            <AppointmentProvider>{children}</AppointmentProvider>
-          </PhoneContextProvider>
-        </div>
-        {/* </ScrollArea> */}
-      </div>
+      <PhoneContextProvider>
+        <AppointmentProvider>
+          <Suspense fallback={<MainSidebarSkeleton />}>
+            <MainSideBar />
+          </Suspense>
+          <div className="flex flex-col ml-[70px] h-full ">
+            <NavBar />
+            {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
+            <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
+              {children}
+            </div>
+            {/* </ScrollArea> */}
+          </div>
+        </AppointmentProvider>
+      </PhoneContextProvider>
     </>
   );
 }
