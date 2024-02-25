@@ -55,8 +55,8 @@ tab called blueprint > personalized businees plan for the indivdual.
 -----Typscript error in feedbackId client.-Dev form
 
 remvced ckeditor
-"@ckeditor/ckeditor5-build-classic": "^41.1.0",
-    "@ckeditor/ckeditor5-react": "^6.2.0",
+npm uninstall --save @ckeditor/ckeditor5-build-classic
+npm uninstall --save @ckeditor/ckeditor5-react
 
 git checkout pipeline
 git pull 
