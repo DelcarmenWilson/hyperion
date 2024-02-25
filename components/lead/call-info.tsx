@@ -1,19 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import {
-  MessageSquareWarning,
-  MoreVertical,
-  Phone,
-  XCircle,
-} from "lucide-react";
+import { Phone } from "lucide-react";
+import { useGlobalContext } from "@/providers/global-provider";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { allLeadTypes } from "@/constants/lead";
 
+import { pusherClient } from "@/lib/pusher";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { pusherClient } from "@/lib/pusher";
 import { FullLead, FullLeadNoConvo } from "@/types";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { getLocalTime } from "@/formulas/dates";
 import {
   Select,
   SelectContent,
@@ -22,10 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
-import { toast } from "sonner";
-import { usePhoneContext } from "@/providers/phone-provider";
-import { allLeadTypes } from "@/constants/lead";
-// import { leadStatus } from "@/constants/lead";
 
 interface CallInfoProps {
   lead: FullLead | FullLeadNoConvo;
@@ -35,7 +28,7 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhoneModal();
   const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
-  const { leadStatus } = usePhoneContext();
+  const { leadStatus } = useGlobalContext();
 
   const onStatusUpdated = (e: any) => {
     leadUpdateByIdStatus(lead.id, e).then((data) => {

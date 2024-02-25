@@ -1,26 +1,28 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
-import { adminLeadStatusInsert } from "@/actions/admin";
+import { useGlobalContext } from "@/providers/global-provider";
+import { useCurrentRole } from "@/hooks/user-current-role";
+
+import { LeadStatus } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
 import { Input } from "@/components/ui/input";
-import { LeadStatus } from "@prisma/client";
 import { DataTable } from "@/components/custom/data-table";
-import { columns } from "../../app/(protected)/admin/misc/components/columns";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { columns } from "./leadstatus-columns";
+
 import { leadStatusInsert } from "@/actions/lead";
-import { usePhoneContext } from "@/providers/phone-provider";
+
+import { adminLeadStatusInsert } from "@/actions/admin";
 
 type LeadStatusBoxProps = {
   leadStatus: LeadStatus[];
 };
 export const LeadStatusBox = ({ leadStatus }: LeadStatusBoxProps) => {
   const role = useCurrentRole();
-  const { setLeadStatus } = usePhoneContext();
+  const { setLeadStatus } = useGlobalContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [newStatus, setNewStatus] = useState("");

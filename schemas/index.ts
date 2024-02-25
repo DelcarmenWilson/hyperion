@@ -200,3 +200,20 @@ export const DevFeedbackSchema = z.object({
   status: z.string(),
   comments: z.optional(z.string()),
 });
+
+export const UserLicenseSchema = z.object({
+  state: z.string().min(2,"*"),
+  type : z.string().min(2,"*"),
+  licenseNumber: z.string().min(3,"*"),
+  dateExpires:z.string().min(3,"*"),
+  comments: z.optional(z.string()),
+});
+
+
+export const CarrierSchema = z.object({
+  image:z.optional(z.string()),
+  name : z.string().min(2,"*"),
+  description: z.optional(z.string()),
+});
+
+

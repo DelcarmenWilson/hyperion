@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heading } from "@/components/custom/heading";
 import { FullTeamReport, FullUserTeamReport } from "@/types";
 import { teamsGetById } from "@/data/team";
-import { adminUsersGetAll } from "@/actions/admin";
+import { adminUsersGetAll } from "@/data/admin";
 
 const TeamPage = async ({
   params,

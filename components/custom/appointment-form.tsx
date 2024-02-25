@@ -1,18 +1,14 @@
 "use client";
 import * as z from "zod";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-
-import { AppointmentSchema } from "@/schemas";
-import { Appointment } from "@prisma/client";
-
-import { toast } from "sonner";
-import axios from "axios";
-
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -26,21 +22,13 @@ import {
   breakDownSchedule,
   generateScheduleTimes,
 } from "@/constants/schedule-times";
+import { useAppointmentContext } from "@/providers/appointment-provider";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
-import {
-  concateDate,
-  getToday,
-  getTommorrow,
-  getYesterday,
-} from "@/formulas/dates";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { useAppointmentContext } from "@/providers/appointment-provider";
+import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
+import { AppointmentSchema } from "@/schemas";
 
 export const AppointmentForm = () => {
-  const tommorrow = getToday();
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
@@ -48,7 +36,7 @@ export const AppointmentForm = () => {
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
-  const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>(
+  const [brSchedule] = useState<BrokenScheduleType[]>(
     breakDownSchedule(schedule!)
   );
   const [times, setTimes] = useState<ScheduleTimeType[]>();

@@ -11,8 +11,8 @@ export const appointmentInsert = async (
   sendSms: boolean = true
 ) => {
   const { date, agentId, leadId, comments } = values;
-  const conflctingApp = await db.appointment.findMany({
-    where: { date:new Date(date), status: "Scheduled" },
+  const conflctingApp = await db.appointment.findFirst({
+    where: { agentId,date:new Date(date), status: "Scheduled" },
   });
 if(conflctingApp){
   return { error: "Conflicting time Please select another time!" };

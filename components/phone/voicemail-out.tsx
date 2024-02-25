@@ -1,7 +1,7 @@
 "use client";
 
-import { Voicemail } from "@/types";
 import { AudioPlayer } from "@/components/custom/audio-player";
+import { Voicemail } from "@/types/phone";
 import { format } from "date-fns";
 
 type VoicemailOutProps = {
@@ -24,7 +24,7 @@ export const VoicemailOut = ({ voicemails }: VoicemailOutProps) => {
       {voicemails?.map((vm) => (
         <div key={vm.id} className="grid grid-cols-3 items-center py-1">
           <p className="cols-span-2">{vm.lead ? vm.lead.firstName : vm.from}</p>
-          <AudioPlayer src={vm.recordUrl} />
+          <AudioPlayer src={vm.recordUrl as string} />
           <p>{format(vm.updatedAt, "MM/dd hh:mm aa")}</p>
         </div>
       ))}

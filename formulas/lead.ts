@@ -41,6 +41,8 @@ export const convertLead = (
 const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   const extractInfo = (data: string): any => {
+    if(!data)    
+    return {};
     let exData = data
       .replaceAll('"', "")
       .replaceAll("' ", "")
@@ -48,7 +50,7 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       .replaceAll("] [", '","')
       .replace("[", '{"')
       .replace("]", '"}');
-    return JSON.parse(exData);
+     return JSON.parse(exData);
   };
 
   result.data.map((d: any) => {

@@ -1,9 +1,8 @@
 "use client";
 import { Box } from "@/components/reusable/box";
-import { Pencil, Trash, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { PresetForm } from "./preset-form";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { PresetData } from "./preset-data";
 import { Presets } from "@prisma/client";
 
