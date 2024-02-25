@@ -60,11 +60,10 @@ npm uninstall --save @ckeditor/ckeditor5-react
 npm install --save @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
 
 
-git checkout pipeline
-git pull 
+
 git checkout master
 git pull
-git merge --no-ff --no-commit pipeline
+git merge --no-ff --no-commit teams
 
-git commit -m pipeline
+git commit -m teams
 git push
