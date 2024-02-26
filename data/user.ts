@@ -11,7 +11,6 @@ export const userGetAll = async () => {
   }
 };
 
-
 export const userGetByEmail = async (email: string) => {
   try {
     const user = await db.user.findUnique({ where: { email } });
@@ -56,7 +55,7 @@ export const userGetByIdReport = async (id: string) => {
         leads: true,
         appointments: true,
         conversations: true,
-        team: {include:{organization:true,owner:true}},
+        team: { include: { organization: true, owner: true } },
       },
     });
 
@@ -104,13 +103,24 @@ export const usersGetSummaryByTeamId = async (
 };
 
 // USER LICENSES
-export const userLicensesGetAllByUserId = async (
-  userId:string
-) => {
+export const userLicensesGetAllByUserId = async (userId: string) => {
   try {
-    const licenses = await db.userLicense.findMany({where:{userId}});
+    const licenses = await db.userLicense.findMany({ where: { userId } });
 
     return licenses;
+  } catch {
+    return [];
+  }
+};
+// USER LICENSES
+export const userCarriersGetAllByUserId = async (userId: string) => {
+  try {
+    const carriers = await db.userCarrier.findMany({
+      where: { userId },
+      include: { carrier: { select: { name: true } } },
+    });
+
+    return carriers;
   } catch {
     return [];
   }

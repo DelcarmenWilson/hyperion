@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { useGlobalContext } from "@/providers/global-provider";
 
 interface CallInfoProps {
   lead: FullLead | FullLeadNoConvo;
@@ -28,7 +28,7 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhoneModal();
   const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
-  const { leadStatus } = usePhoneContext();
+  const { leadStatus } = useGlobalContext();
 
   const onStatusUpdated = (e: any) => {
     leadUpdateByIdStatus(lead.id, e).then((data) => {

@@ -3,9 +3,9 @@ import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Carrier, UserLicense } from "@prisma/client";
+import { MedicalCondition } from "@prisma/client";
 
-export const columns: ColumnDef<Carrier>[] = [
+export const columns: ColumnDef<MedicalCondition>[] = [
   {
     id: "select",
     header: ({ table }) => (

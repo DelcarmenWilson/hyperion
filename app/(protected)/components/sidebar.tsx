@@ -10,16 +10,17 @@ import { IconLink } from "@/components/reusable/icon-link";
 import { ThemeToggle } from "@/components/custom/theme-toggle";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 export const AdminSidebar = () => {
   const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
   const pathname = usePathname();
   const router = useRouter();
-
-  const routes = AdminSidebarRoutes.map((route) => {
-    route.active = pathname === route.href;
-    return route;
-  });
+  const role = useCurrentRole();
+  const routes =
+    role == "MASTER"
+      ? AdminSidebarRoutes
+      : AdminSidebarRoutes.filter((e) => !e.master);
 
   return (
     <aside
@@ -59,7 +60,7 @@ export const AdminSidebar = () => {
             key={route.href}
             title={route.title}
             href={route.href}
-            active={route.active!}
+            active={pathname === route.href}
             icon={route.icon!}
           />
         ))}
@@ -69,35 +70,5 @@ export const AdminSidebar = () => {
         <UserButton />
       </div>
     </aside>
-    // <nav className="bg-secondary flex flex-col w-full justify-between items-center p-4 h-full  shadow-sm">
-    //   <div className="flex flex-col gap-y-2">
-    //     {AdminSidebarRoutes.map((link) => (
-    //       <Button
-    //         key={link.href}
-    //         asChild
-    //         variant={pathname === link.href ? "default" : "outline"}
-    //       >
-    //         <Link href={link.href}>{link.title}</Link>
-    //       </Button>
-    //     ))}
-
-    //     {/* <Button
-    //       asChild
-    //       variant={pathname === "/client" ? "default" : "outline"}
-    //     >
-    //       <Link href="/client">Client</Link>
-    //     </Button>
-    //     <Button asChild variant={pathname === "/admin" ? "default" : "outline"}>
-    //       <Link href="/admin">Admin</Link>
-    //     </Button>
-    //     <Button
-    //       asChild
-    //       variant={pathname === "/settings" ? "default" : "outline"}
-    //     >
-    //       <Link href="/settings">Settings</Link>
-    //     </Button> */}
-    //   </div>
-    //   <UserButton />
-    // </nav>
   );
 };

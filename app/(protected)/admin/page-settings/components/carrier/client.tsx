@@ -7,12 +7,15 @@ import { DataTable } from "@/components/custom/data-table";
 import { Heading } from "@/components/custom/heading";
 import { Carrier } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { CarrierForm } from "./carrier-form";
+
+import { CarrierForm } from "./form";
 import { columns } from "./columns";
-type CarrierBoxProps = {
+
+type CarrierClientProps = {
   initCarriers: Carrier[];
 };
-export const CarrierBox = ({ initCarriers }: CarrierBoxProps) => {
+
+export const CarrierClient = ({ initCarriers }: CarrierClientProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [carriers, setCarriers] = useState(initCarriers);
   const onCarrierCreated = (e?: Carrier) => {

@@ -1,5 +1,4 @@
-import * as z from "zod";
-import { LeadSchema } from "@/schemas";
+
 import {
   Conversation,
   Message,
@@ -14,6 +13,7 @@ import {
   Activity,
   PhoneNumber,
   PipeLine,
+  UserCarrier,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -77,12 +77,7 @@ export type FullLead = Lead & {
   activities: Activity[];
 };
 
-export type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
-export type PresetFormValues = {
-  type: Preset;
-  content: string;
-};
 
 export type PhoneType = {
   value: string;
@@ -119,4 +114,7 @@ export type FullFeedback = Feedback & {
 
 export type FullPipeline = PipeLine & {
   status: { status: string };
+};
+export type FullUserCarrier = UserCarrier & {
+  carrier: { name: string };
 };

@@ -15,7 +15,7 @@ export const adminUsersGetAll = async () => {
   // LEAD_STATUS
   export const adminLeadStatusGetAll = async () => {
     try {
-      const status =await db.leadStatus.findMany({
+      const status =await db.leadStatus.findMany({where:{type:"default"}
       });
       return status
     } catch (error) {
@@ -23,12 +23,22 @@ export const adminUsersGetAll = async () => {
     }
   };
 
-   // LEAD_STATUS
+   // CARRIERS
    export const adminCarriersGetAll = async () => {
     try {
       const carriers =await db.carrier.findMany({
       });
       return carriers
+    } catch (error) {
+      return []
+    }
+  };
+
+  export const adminMedicalConditionsGetAll = async () => {
+    try {
+      const conditions =await db.medicalCondition.findMany({
+      });
+      return conditions
     } catch (error) {
       return []
     }

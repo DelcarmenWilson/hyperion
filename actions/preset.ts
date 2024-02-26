@@ -1,21 +1,28 @@
 "use server";
+import * as z from "zod";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { PresetFormValues } from "@/types";
 import { Presets } from "@prisma/client";
+import { PresetSchema } from "@/schemas";
 
-export const presetCreate = async (values: PresetFormValues) => {
-    
+export const presetCreate = async (values: z.infer<typeof PresetSchema>) => {
+  const validatedFields = PresetSchema.safeParse(values);
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unauthorized!" };
   }
-  const { type, content } = values
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { type, content } =
+    validatedFields.data;
+
   if(!content){
     return { error: "message cannot be empty!" };
   }
-
   await db.presets.create({
     data: {
       type,

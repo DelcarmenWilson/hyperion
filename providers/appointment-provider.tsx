@@ -3,10 +3,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { AppointmentModal } from "@/components/modals/appointment-modal";
 import { Appointment, Schedule } from "@prisma/client";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import axios from "axios";
+// import { useCurrentUser } from "@/hooks/use-current-user";
+// import axios from "axios";
 
 type AppointmentContextProviderProps = {
+  initSchedule: Schedule;
+  initAppointments: Appointment[];
   children: React.ReactNode;
 };
 type AppointmentContext = {
@@ -19,28 +21,32 @@ export const AppointmentContext = createContext<AppointmentContext | null>(
   null
 );
 export default function AppointmentProvider({
+  initSchedule,
+  initAppointments,
   children,
 }: AppointmentContextProviderProps) {
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
-  const [appointments, setAppointments] = useState<Appointment[] | null>(null);
-  const user = useCurrentUser();
+  const [schedule, setSchedule] = useState<Schedule | null>(initSchedule);
+  const [appointments, setAppointments] = useState<Appointment[] | null>(
+    initAppointments
+  );
+  // const user = useCurrentUser();
 
-  useEffect(() => {
-    const intialData = async () => {
-      if (!user) return;
-      const scdResponse = await axios.post("/api/user/schedule", {
-        user: user?.id,
-      });
-      const scdData = await scdResponse.data;
-      setSchedule(scdData);
-      const appReponse = await axios.post("/api/user/appointments", {
-        user: user?.id,
-      });
-      const appData = await appReponse.data;
-      setAppointments(appData);
-    };
-    intialData();
-  }, []);
+  // useEffect(() => {
+  //   const intialData = async () => {
+  //     if (!user) return;
+  //     const scdResponse = await axios.post("/api/user/schedule", {
+  //       user: user?.id,
+  //     });
+  //     const scdData = await scdResponse.data;
+  //     setSchedule(scdData);
+  //     const appReponse = await axios.post("/api/user/appointments", {
+  //       user: user?.id,
+  //     });
+  //     const appData = await appReponse.data;
+  //     setAppointments(appData);
+  //   };
+  //   intialData();
+  // }, []);
 
   return (
     <AppointmentContext.Provider

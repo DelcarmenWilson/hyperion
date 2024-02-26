@@ -1,5 +1,7 @@
 "use client";
+import * as z from "zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { AlertCircle, Smile } from "lucide-react";
 
@@ -19,18 +21,22 @@ import {
 import { useState, useTransition } from "react";
 import { presetCreate } from "@/actions/preset";
 import { toast } from "sonner";
-import { PresetFormValues } from "@/types";
-import { Preset } from "@prisma/client";
 
-interface PresetFormProps {
+import { Preset } from "@prisma/client";
+import { PresetSchema } from "@/schemas";
+
+type PresetFormValues = z.infer<typeof PresetSchema>;
+
+type PresetFormProps = {
   type: Preset;
   content?: string;
-}
+};
 export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
   const [isPending, startTransition] = useTransition();
   const [count, setCount] = useState(content.length);
 
   const form = useForm<PresetFormValues>({
+    resolver: zodResolver(PresetSchema),
     defaultValues: {
       type: type,
       content: content,

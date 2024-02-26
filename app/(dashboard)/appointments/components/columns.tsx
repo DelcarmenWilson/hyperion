@@ -111,9 +111,9 @@ export const columns: ColumnDef<AppointmentColumn>[] = [
     header: "Comments",
   },
 
-  {
-    header: "Actions",
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
-  },
+  // {
+  //   header: "Actions",
+  //   id: "actions",
+  //   cell: ({ row }) => <CellAction data={row.original} />,
+  // },
 ];

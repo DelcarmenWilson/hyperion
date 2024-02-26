@@ -37,18 +37,13 @@ export type NavType = {
 export const AdminSidebarRoutes: NavType[] = [
   { title: "Teams", href: "/admin/teams", icon: ShieldHalf },
   { title: "Users", href: "/admin/users", icon: Users },
-  { title: "Import", href: "/admin/import", icon: Import },
+  { title: "Import", href: "/admin/import", icon: Import, master: true },
   { title: "Feedback", href: "/admin/feedback", icon: MessageSquarePlus },
-  { title: "Misc", href: "/admin/misc", icon: MilestoneIcon },  
+  { title: "Misc", href: "/admin/misc", icon: MilestoneIcon, master: true },
   {
     title: "Phone Setup",
     href: "/admin/phone",
     icon: Phone,
-  },  
-  {
-    title: "Admin",
-    href: "/admin",
-    icon: Lock,
   },
   {
     title: "Page Settings",
@@ -64,6 +59,7 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Test",
     href: "/admin/test",
     icon: TestTube,
+    master: true,
   },
 ];
 

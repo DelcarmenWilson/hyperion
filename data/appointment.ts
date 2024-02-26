@@ -32,7 +32,7 @@ export const appointmentsGetAllByUserIdUpcoming = async (agentId: string) => {
     const today = getToday();
 
     const appointments = await db.appointment.findMany({
-      where: { agentId, status: "Scheduled", createdAt: { gt: today } },
+      where: { agentId, status: "Scheduled", date: { gte: today } },
     });
 
     return appointments;

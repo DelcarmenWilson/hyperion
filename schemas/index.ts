@@ -9,7 +9,7 @@ import * as z from "zod";
 
 export const SettingsSchema = z
   .object({
-    name: z.optional(z.string()),
+    userName: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
     role: z.enum([UserRole.MASTER, UserRole.ADMIN, UserRole.USER]),
     email: z.optional(z.string().email()),
@@ -201,6 +201,14 @@ export const DevFeedbackSchema = z.object({
   comments: z.optional(z.string()),
 });
 
+
+export const LeadStatusSchema = z.object({
+  status: z.string().min(2,"*"),
+  description : z.optional(z.string()),
+});
+
+
+
 export const UserLicenseSchema = z.object({
   state: z.string().min(2,"*"),
   type : z.string().min(2,"*"),
@@ -208,8 +216,12 @@ export const UserLicenseSchema = z.object({
   dateExpires:z.string().min(3,"*"),
   comments: z.optional(z.string()),
 });
-
-
+export const UserCarrierSchema = z.object({
+  agentId: z.string().min(2,"*"),
+  carrierId : z.string().min(2,"*"),
+  comments: z.optional(z.string()),
+});
+// AMIN
 export const CarrierSchema = z.object({
   image:z.optional(z.string()),
   name : z.string().min(2,"*"),
@@ -221,3 +233,8 @@ export const ScriptSchema = z.object({
   title:z.string().min(2,"*"),
   script : z.string().min(2,"*"),
 });
+export const MedicalConditionSchema = z.object({
+  name : z.string().min(2,"*"),
+  description: z.optional(z.string()),
+});
+
