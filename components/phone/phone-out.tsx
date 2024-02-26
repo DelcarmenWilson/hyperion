@@ -1,7 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Connection } from "twilio-client";
+import { useSession } from "next-auth/react";
 import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
+import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
+import axios from "axios";
+
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhoneContext } from "@/providers/phone-provider";
+
+import { Connection } from "twilio-client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -16,18 +27,11 @@ import {
 
 import { numbers } from "@/constants/phone-numbers";
 import { PhoneType } from "@/types";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
-import { cn } from "@/lib/utils";
-import axios from "axios";
 import {
   chatSettingsUpdateCoach,
   chatSettingsUpdateRecord,
 } from "@/actions/chat-settings";
-import { toast } from "sonner";
-import { useSession } from "next-auth/react";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { usePhoneContext } from "@/providers/phone-provider";
 
 export const PhoneOut = () => {
   const { update } = useSession();
@@ -54,6 +58,18 @@ export const PhoneOut = () => {
 
   const [call, setCall] = useState<Connection>();
   const [isCallMuted, setIsCallMuted] = useState(false);
+
+  const startupClient = () => {
+    if (!user?.phoneNumbers.length) {
+      console.log("no phone number has been set up");
+      return;
+    }
+    const numbers: PhoneType[] = user.phoneNumbers.map((p) => {
+      return { value: p.phone, state: p.state };
+    });
+    setMyPhoneNumbers(numbers);
+    addDeviceListeners;
+  };
 
   const addDeviceListeners = () => {
     if (!phone) return;
@@ -157,23 +173,11 @@ export const PhoneOut = () => {
   };
 
   useEffect(() => {
-    return () => onCheckNumber();
+    onCheckNumber();
   }, []);
 
   useEffect(() => {
-    const startupClient = () => {
-      if (!user?.phoneNumbers.length) {
-        console.log("no phone number has been set up");
-        return;
-      }
-      const numbers: PhoneType[] = user.phoneNumbers.map((p) => ({
-        value: p.phone,
-        state: p.state,
-      }));
-      setMyPhoneNumbers(numbers);
-      addDeviceListeners();
-    };
-    return () => startupClient();
+    startupClient();
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { FullLeadNoConvo } from "@/types";
 
-interface usePhoneModalStore {
+type usePhoneModalStore = {
   isPhoneInOpen: boolean;
   onPhoneInOpen: () => void;
   onPhoneInClose: () => void;
@@ -10,7 +10,7 @@ interface usePhoneModalStore {
   onPhoneOutOpen: (e?: FullLeadNoConvo) => void;
   onPhoneOutClose: () => void;
   lead?: FullLeadNoConvo;
-}
+};
 
 export const usePhoneModal = create<usePhoneModalStore>((set) => ({
   isPhoneInOpen: false,
