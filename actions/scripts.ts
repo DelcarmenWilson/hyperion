@@ -1,13 +1,21 @@
 "use server";
-
+import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { ScriptSchema } from "@/schemas";
 
-export const scriptInsert = async (title: string, script: string) => {
+export const scriptInsert = async (values:z.infer<typeof ScriptSchema>) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
   }
+  const validatedFields = ScriptSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { title,script } = validatedFields.data;
 
   const newScript = await db.script.create({
     data: {
@@ -20,11 +28,18 @@ export const scriptInsert = async (title: string, script: string) => {
   return { success: newScript };
 };
 
-export const scriptUpdateById = async (id:string,title: string, script: string) => {
+export const scriptUpdateById = async (values:z.infer<typeof ScriptSchema>) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
   }
+  const validatedFields = ScriptSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id,title,script } = validatedFields.data;
 
    await db.script.update({
     where:{id},
