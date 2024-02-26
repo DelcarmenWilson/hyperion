@@ -216,4 +216,8 @@ export const CarrierSchema = z.object({
   description: z.optional(z.string()),
 });
 
-
+export const ScriptSchema = z.object({
+  id:z.optional(z.string()),
+  title:z.string().min(2,"*"),
+  script : z.string().min(2,"*"),
+});
