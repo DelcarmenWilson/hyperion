@@ -1,9 +1,8 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { Device } from "twilio-client";
 import { PhoneOutModal } from "@/components/phone/phone-out-modal";
 import { PhoneInModal } from "@/components/phone/phone-in-modal";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { Voicemail } from "@/types/phone";
 
 type PhoneContextProviderProps = {
@@ -26,23 +25,10 @@ export default function PhoneContextProvider({
   initVoicemails,
   children,
 }: PhoneContextProviderProps) {
-  const [phone, setPhone] = useState<Device>(new Device());
+  const [phone, setPhone] = useState<Device>(new Device(token));
   const [voicemails, setVoicemails] = useState<Voicemail[] | null>(
     initVoicemails
   );
-  const user = useCurrentUser();
-
-  useEffect(() => {
-    if (!user?.phoneNumbers.length) return;
-    if (token) {
-      phone.setup(token);
-      phone.setMaxListeners(3);
-    }
-    // axios.post("/api/token", { identity: user?.id }).then((response) => {
-    //   const data = response.data;
-    //   phone.setup(data.token);
-    // });
-  }, []);
 
   return (
     <PhoneContext.Provider
