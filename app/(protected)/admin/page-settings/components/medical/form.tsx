@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { CarrierSchema, LeadSchema } from "@/schemas";
+import { MedicalConditionSchema } from "@/schemas";
 import {
   Form,
   FormField,
@@ -19,20 +19,20 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { adminCarrierInsert } from "@/actions/admin";
-import { Carrier } from "@prisma/client";
+import { adminMedicalInsert } from "@/actions/admin";
+import { MedicalCondition } from "@prisma/client";
 
-type CarrierFormProps = {
-  onClose?: (e?: Carrier) => void;
+type MedicalFormProps = {
+  onClose?: (e?: MedicalCondition) => void;
 };
 
-type CarrierFormValues = z.infer<typeof CarrierSchema>;
+type MedicalFormValues = z.infer<typeof MedicalConditionSchema>;
 
-export const CarrierForm = ({ onClose }: CarrierFormProps) => {
+export const MedicalForm = ({ onClose }: MedicalFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<CarrierFormValues>({
-    resolver: zodResolver(CarrierSchema),
+  const form = useForm<MedicalFormValues>({
+    resolver: zodResolver(MedicalConditionSchema),
     defaultValues: {
       name: "",
     },
@@ -46,15 +46,15 @@ export const CarrierForm = ({ onClose }: CarrierFormProps) => {
     }
   };
 
-  const onSubmit = async (values: CarrierFormValues) => {
+  const onSubmit = async (values: MedicalFormValues) => {
     setLoading(true);
-    await adminCarrierInsert(values).then((data) => {
+    adminMedicalInsert(values).then((data) => {
       if (data.success) {
+        form.reset();
         if (onClose) onClose(data.success);
-        toast.success("Carrier created!");
+        toast.success("Medical created!");
       }
       if (data.error) {
-        form.reset();
         toast.error(data.error);
       }
     });
@@ -90,7 +90,7 @@ export const CarrierForm = ({ onClose }: CarrierFormProps) => {
               )}
             />
 
-            {/* LICENSE NUMBER*/}
+            {/* DESCRIPTION*/}
             <FormField
               control={form.control}
               name="description"

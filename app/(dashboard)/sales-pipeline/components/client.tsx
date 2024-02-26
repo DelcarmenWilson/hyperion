@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserSquare } from "lucide-react";
 import { toast } from "sonner";
+
 import { Box } from "./box";
 import { FullLead, FullPipeline } from "@/types";
 import { PageLayout } from "@/components/custom/page-layout";
@@ -20,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { pipelineDeleteById, pipelineUpdateById } from "@/actions/pipeline";
 import { Input } from "@/components/ui/input";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { useGlobalContext } from "@/providers/global-provider";
 
 type SaleClientProps = {
   data: FullLead[];
@@ -28,7 +29,7 @@ type SaleClientProps = {
 };
 
 export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
-  const { leadStatus } = usePhoneContext();
+  const { leadStatus } = useGlobalContext();
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);

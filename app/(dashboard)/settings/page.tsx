@@ -50,7 +50,7 @@ const SettingsPage = () => {
   const form = useForm<SettingsValues>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
-      name: user?.name || undefined,
+      userName: user?.name || undefined,
       email: user?.email || undefined,
       password: undefined,
       newPassword: undefined,
@@ -118,10 +118,10 @@ const SettingsPage = () => {
             <div>
               <FormField
                 control={form.control}
-                name="name"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel> user Name</FormLabel>
+                    <FormLabel> User Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}

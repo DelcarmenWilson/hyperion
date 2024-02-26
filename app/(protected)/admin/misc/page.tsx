@@ -3,12 +3,11 @@ import { NumberChange } from "./components/change-number";
 import { PhoneUpdate } from "./components/phone-update";
 import { EmailConfirm } from "./components/email-confimation";
 import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
-import { LeadStatusBox } from "@/components/lead/lead-status";
+
 import { adminLeadStatusGetAll, adminUsersGetAll } from "@/data/admin";
 
 const MiscPage = async () => {
   const users = await adminUsersGetAll();
-  const leadstatus = await adminLeadStatusGetAll();
 
   return (
     <PageLayoutAdmin title={`Misc`} description="Misc Functions">
@@ -18,7 +17,6 @@ const MiscPage = async () => {
             <TabsTrigger value="phoneChange">PHONE CHANGE</TabsTrigger>
             <TabsTrigger value="phoneUpdate">PHONES UPDATE</TabsTrigger>
             <TabsTrigger value="emailConfirm">EMAIL CONFIRM</TabsTrigger>
-            <TabsTrigger value="leadStatus">LEAD STATUS</TabsTrigger>
           </TabsList>
         </div>
 
@@ -31,9 +29,6 @@ const MiscPage = async () => {
           </TabsContent>
           <TabsContent value="emailConfirm">
             <EmailConfirm users={users} />
-          </TabsContent>
-          <TabsContent value="leadStatus">
-            <LeadStatusBox leadStatus={leadstatus} />
           </TabsContent>
         </div>
       </Tabs>

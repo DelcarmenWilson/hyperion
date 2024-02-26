@@ -47,7 +47,9 @@ export const PhoneOut = () => {
 
   const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(
-    lead?.defaultNumber || user?.phoneNumbers[0]?.phone || ""
+    lead?.defaultNumber
+      ? lead?.defaultNumber
+      : user?.phoneNumbers[0]?.phone || ""
   );
 
   const [call, setCall] = useState<Connection>();
@@ -224,7 +226,7 @@ export const PhoneOut = () => {
           On
         </div>
       </div>
-      <div className="flex items-center text-sm gap-2">
+      {/* <div className="flex items-center text-sm gap-2">
         <AlertCircle className="h-4 w-4" /> Agent coaching
         <div className="ml-auto flex gap-2">
           Off{" "}
@@ -235,7 +237,7 @@ export const PhoneOut = () => {
           />
           On
         </div>
-      </div>
+      </div> */}
       <div className="grid grid-cols-3 gap-1">
         {numbers.map((number) => (
           <Button

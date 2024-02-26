@@ -3,9 +3,9 @@ import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LeadStatus } from "@prisma/client";
+import { FullUserCarrier } from "@/types";
 
-export const columns: ColumnDef<LeadStatus>[] = [
+export const columns: ColumnDef<FullUserCarrier>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -29,18 +29,19 @@ export const columns: ColumnDef<LeadStatus>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "agentId",
+    header: "Agent Id",
   },
 
   {
-    accessorKey: "type",
-    header: "type",
+    accessorKey: "carrier",
+    header: "Carrier",
+    cell: ({ row }) => <span>{row.original.carrier.name}</span>,
   },
 
   {
-    accessorKey: "createdAt",
-    header: "Created At",
+    accessorKey: "dateExpires",
+    header: "Date Expires",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
         {format(row.original.createdAt, "MM-dd-yy")}

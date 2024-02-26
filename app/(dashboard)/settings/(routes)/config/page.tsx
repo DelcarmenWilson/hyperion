@@ -2,15 +2,22 @@ import { leadStatusGetAllByAgentId } from "@/data/lead";
 import { currentUser } from "@/lib/auth";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LeadStatusBox } from "@/components/lead/lead-status";
-import { LicenseForm } from "./components/license-form";
+import { LeadStatusClient } from "@/components/lead/status/client";
+import { LicenseClient } from "./components/license/client";
 
-import { userLicensesGetAllByUserId } from "@/data/user";
+import {
+  userCarriersGetAllByUserId,
+  userLicensesGetAllByUserId,
+} from "@/data/user";
+import { CarrierClient } from "./components/carrier/client";
+import { adminCarriersGetAll } from "@/data/admin";
 
 const ConfigPage = async () => {
   const user = await currentUser();
   const licenses = await userLicensesGetAllByUserId(user?.id!);
   const leadStatus = await leadStatusGetAllByAgentId(user?.id!);
+  const userCarriers = await userCarriersGetAllByUserId(user?.id!);
+  const carriers = await adminCarriersGetAll();
   return (
     <Tabs className="flex gap-2 item-start h-full" defaultValue="licenses">
       <TabsList className="flex flex-col w-[120px] gap-2  h-full">
@@ -26,11 +33,16 @@ const ConfigPage = async () => {
       </TabsList>
       <div className="flex-1">
         <TabsContent value="licenses">
-          <LicenseForm initLicenses={licenses} />
+          <LicenseClient initLicenses={licenses} />
         </TabsContent>
-        <TabsContent value="carriers">SMS (Future Update)</TabsContent>
+        <TabsContent value="carriers">
+          <CarrierClient
+            initUserCarriers={userCarriers}
+            initCarriers={carriers}
+          />
+        </TabsContent>
         <TabsContent value="leadStatus">
-          <LeadStatusBox leadStatus={leadStatus} />
+          <LeadStatusClient leadStatus={leadStatus} />
         </TabsContent>
       </div>
     </Tabs>

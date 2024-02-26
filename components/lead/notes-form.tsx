@@ -12,7 +12,7 @@ interface NoteFormProps {
 
 export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
   const [loading, setLoading] = useState(false);
-  const [notes, setNotes] = useState(intialNotes);
+  const [notes, setNotes] = useState(intialNotes || "");
 
   const onNotesUpdated = async () => {
     if (!notes) return;

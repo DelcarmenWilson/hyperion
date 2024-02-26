@@ -119,7 +119,7 @@ export const AppointmentForm = () => {
       OnDateSlected(new Date());
     };
     return () => initialLoad();
-  });
+  }, []);
 
   return (
     <div>
@@ -134,15 +134,6 @@ export const AppointmentForm = () => {
             {/* DATE*/}
 
             <div className="flex justify-center items-center flex-col pt-2">
-              {/* <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(e) => OnDateSlected(e!)}
-                disabled={(date) =>
-                  date < new Date() || date < new Date("1900-01-01")
-                }
-                initialFocus
-              /> */}
               <Popover open={calOpen}>
                 <PopoverTrigger asChild>
                   <Button

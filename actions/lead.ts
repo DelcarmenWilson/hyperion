@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { db } from "@/lib/db";
-import { LeadSchema } from "@/schemas";
+import { LeadSchema, LeadStatusSchema } from "@/schemas";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
@@ -404,13 +404,20 @@ export const leadUpdateByIdSale = async (
 };
 
 // LEADSTATUS
-export const leadStatusInsert = async (status: string) => {
+export const leadStatusInsert = async (values: z.infer<typeof LeadStatusSchema>) => {
   
   const user = await currentUser()
 
   if (!user) {
     return { error: "Unathenticated" };
   }
+  const validatedFields = LeadStatusSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { status,  description } = validatedFields.data;
 
   const existingStatus=await db.leadStatus.findFirst({where:{status}})
   if(existingStatus){    

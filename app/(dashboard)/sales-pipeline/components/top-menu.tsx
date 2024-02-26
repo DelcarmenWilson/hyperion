@@ -17,14 +17,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pipelineInsert, pipelineUpdateOrder } from "@/actions/pipeline";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { useGlobalContext } from "@/providers/global-provider";
 
 type TopMenuProps = {
   pipelines: FullPipeline[];
 };
 
 export const TopMenu = ({ pipelines }: TopMenuProps) => {
-  const { leadStatus } = usePhoneContext();
+  const { leadStatus } = useGlobalContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");

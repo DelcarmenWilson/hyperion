@@ -1,5 +1,6 @@
 "use client";
 
+import * as z from "zod";
 import Papa from "papaparse";
 import { useState, useTransition } from "react";
 
@@ -16,9 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ImportLeadsFormValues } from "@/types";
 import { convertLead } from "@/formulas/lead";
 import { importVendors } from "@/constants/lead";
+import { LeadSchema } from "@/schemas";
+
+type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 export const ImportLeadsForm = () => {
   const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);

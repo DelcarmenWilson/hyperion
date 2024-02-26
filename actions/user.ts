@@ -4,7 +4,11 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { MasterRegisterSchema, UserLicenseSchema } from "@/schemas";
+import {
+  MasterRegisterSchema,
+  UserCarrierSchema,
+  UserLicenseSchema,
+} from "@/schemas";
 import { RegisterSchema } from "@/schemas";
 import { SettingsSchema } from "@/schemas";
 
@@ -208,7 +212,7 @@ export const userUpdateById = async (
   return { success: "Settings Updated! " };
 };
 
-// USERLICENSES
+// USER_LICENSES
 export const userLicenseInsert = async (
   values: z.infer<typeof UserLicenseSchema>
 ) => {
@@ -227,7 +231,7 @@ export const userLicenseInsert = async (
   const existingLicense = await db.userLicense.findUnique({
     where: { licenseNumber },
   });
-  
+
   if (existingLicense) {
     return { error: "License already exist!" };
   }
@@ -243,4 +247,38 @@ export const userLicenseInsert = async (
   });
 
   return { success: license };
+};
+//USER_CARRIER
+export const userCarrierInsert = async (
+  values: z.infer<typeof UserCarrierSchema>
+) => {
+  const validatedFields = UserCarrierSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const { agentId, carrierId, comments } = validatedFields.data;
+
+  const existingLicense = await db.userCarrier.findFirst({
+    where: { carrierId },
+  });
+
+  if (existingLicense) {
+    return { error: "Carrier relationship already exist!" };
+  }
+  const carrier = await db.userCarrier.create({
+    data: {
+      agentId,
+      carrierId,
+      comments,
+      userId: user.id,
+    },
+    include: { carrier: { select: { name: true } } },
+  });
+
+  return { success: carrier };
 };

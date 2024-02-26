@@ -1,6 +1,10 @@
-import { ImportLeadsFormValues } from "@/types";
+
+import * as z from "zod";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
+import { LeadSchema } from "@/schemas";
+
+type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 const convertHeight = (data: string): string => {
   const split = data.split("");

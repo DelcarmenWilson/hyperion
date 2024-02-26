@@ -43,7 +43,7 @@ export const UserButton = () => {
         {user.role != "USER" && (
           <DropdownMenuItem className="cursor-pointer">
             <Lock className="h-4 w-4 mr-2" />
-            <Link href="/admin">Admin</Link>
+            <Link href="/admin/teams">Admin</Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem className="cursor-pointer">

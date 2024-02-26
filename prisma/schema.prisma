@@ -92,13 +92,15 @@ model User {
 model UserCarrier {
   id String @id @default(cuid())
 
+  agentId String
+
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
   carrierId String
 
-  comments  String
+  comments  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -330,11 +332,11 @@ model Lead {
 }
 
 model LeadStatus {
-  id     String @id @default(cuid())
-  status String
-  type   String @default("User Generated")
-
-  userId String
+  id          String  @id @default(cuid())
+  status      String
+  type        String  @default("User Generated")
+  description String?
+  userId      String
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -490,7 +492,7 @@ model Feedback {
 model MedicalCondition {
   id          String   @id @default(cuid())
   name        String
-  description String
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
