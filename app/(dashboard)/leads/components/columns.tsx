@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { AppointmentBox } from "@/components/lead/appointment";
+import { GeneralInfoClient } from "@/components/lead/genereal-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { DropDown } from "@/components/lead/dropdown";
 import { ExtraInfo } from "@/components/lead/extra-info";
@@ -48,7 +48,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "appointment",
     header: "",
     cell: ({ row }) => (
-      <AppointmentBox
+      <GeneralInfoClient
         lead={row.original}
         call={row.original.calls[row.original.calls.length - 1]!}
         appointment={

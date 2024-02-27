@@ -7,21 +7,9 @@ import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { Badge } from "@/components/ui/badge";
+import { FullAppointment } from "@/types";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type AppointmentColumn = {
-  id: string;
-  fullName: string;
-  email?: string;
-  phone: string;
-  dob?: Date;
-  date: Date;
-  status: string;
-  comments: string;
-};
-
-export const columns: ColumnDef<AppointmentColumn>[] = [
+export const columns: ColumnDef<FullAppointment>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -49,11 +37,13 @@ export const columns: ColumnDef<AppointmentColumn>[] = [
     header: "Appointment with",
     cell: ({ row }) => (
       <div>
-        <p className="capitalize">{row.original.fullName}</p>
-        <p className="text-primary italic font-bold">
-          {formatPhoneNumber(row.original.phone)}
+        <p className="capitalize">
+          {row.original.lead.firstName} {row.original.lead.lastName}
         </p>
-        <p className="lowercase">{row.original.email}</p>
+        <p className="text-primary italic font-bold">
+          {formatPhoneNumber(row.original.lead.cellPhone)}
+        </p>
+        <p className="lowercase">{row.original.lead.email}</p>
       </div>
     ),
   },
@@ -69,23 +59,7 @@ export const columns: ColumnDef<AppointmentColumn>[] = [
       </div>
     ),
   },
-  // {
-  //   accessorKey: "email",
-  //   header: ({ column }) => {
-  //     const sorted = column.getIsSorted() === "asc";
-  //     return (
-  //       <Button variant="ghost" onClick={() => column.toggleSorting(sorted)}>
-  //         Email
-  //         {sorted ? (
-  //           <ChevronsUpDown className="ml-2 h-4 w-4" />
-  //         ) : (
-  //           <ChevronsUpDown className="ml-2 h-4 w-4" />
-  //         )}
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  // },
+
   {
     accessorKey: "dob",
     header: "Date of birth",
@@ -94,13 +68,17 @@ export const columns: ColumnDef<AppointmentColumn>[] = [
         <p>
           D.O.B:
           <span className="text-primary italic font-bold">
-            {row.original.dob ? format(row.original.dob, "MM-dd-yy") : "N/A"}
+            {row.original.lead.dateOfBirth
+              ? format(row.original.lead.dateOfBirth, "MM-dd-yy")
+              : "N/A"}
           </span>
         </p>
         <p>
           Age:
           <span className="text-primary italic font-bold">
-            {row.original.dob ? getAge(row.original.dob!) : "N/A"}
+            {row.original.lead.dateOfBirth
+              ? getAge(row.original.lead.dateOfBirth)
+              : "N/A"}
           </span>
         </p>
       </div>

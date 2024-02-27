@@ -24,9 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/custom/date-range-picker";
-import { OverviewChart } from "./overview-chart";
 
-import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { adminChangeTeamManager } from "@/actions/admin";
 import { weekStartEnd } from "@/formulas/dates";
 
@@ -68,7 +66,6 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
     from: new Date(searchParams.get("from") as string),
     to: new Date(searchParams.get("to") as string),
   };
-  const chartData = getGraphRevenue();
 
   const [dates, setDates] = useState(from ? searchDates : weekStartEnd());
 
@@ -203,21 +200,6 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             icon={d.icon}
           />
         ))}
-      </div>
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7 mt-6">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-            <CardContent className="p-0">
-              <OverviewChart data={chartData} />
-            </CardContent>
-          </CardHeader>
-        </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Sales</CardTitle>
-          </CardHeader>
-        </Card>
       </div>
     </>
   );

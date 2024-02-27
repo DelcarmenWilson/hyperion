@@ -9,37 +9,20 @@ import {
 } from "lucide-react";
 
 import { CardBox, BoxSkeleton } from "@/components/custom/card-box";
-import {
-  AppointmentBox,
-  AppointmentBoxSkeleton,
-} from "./appointment/appointment-box";
-import { AppointmentColumn } from "./appointment/columns";
-import { AgentSummary } from "./agentsummary/agent-summary";
-import { AgentSummaryColumn } from "./agentsummary/columns";
-import { CallHistory } from "./callhistory/call-history";
 import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
-import { TurnOverRate } from "./turnover/turn-over-rate";
-import { CallHistoryColumn } from "./callhistory/columns";
 
 type DashBoardClientProps = {
   leadCount: number;
   messagesCount: number;
   outBoundCallsCount: number;
   inBoundCallsCount: number;
-  appointments: AppointmentColumn[];
-  agents: AgentSummaryColumn[];
-  callHistory: CallHistoryColumn[];
 };
 export const DashBoardClient = ({
   leadCount,
   messagesCount,
   outBoundCallsCount,
   inBoundCallsCount,
-  appointments,
-  agents,
-  callHistory,
 }: DashBoardClientProps) => {
   const user = useCurrentUser();
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -64,50 +47,37 @@ export const DashBoardClient = ({
     };
   }, [user?.id]);
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <CardBox
-          icon={Users}
-          title="Leads today"
-          value={leadCount}
-          href="/leads"
-          hrefTitle="Go to leads"
-        />
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <CardBox
+        icon={Users}
+        title="Leads today"
+        value={leadCount}
+        href="/leads"
+        hrefTitle="Go to leads"
+      />
 
-        <CardBox
-          icon={MessageSquareText}
-          title="New texts"
-          value={message}
-          href="/inbox"
-          hrefTitle="Go to inbox"
-        />
+      <CardBox
+        icon={MessageSquareText}
+        title="New texts"
+        value={message}
+        href="/inbox"
+        hrefTitle="Go to inbox"
+      />
 
-        <CardBox
-          icon={PhoneOutgoing}
-          title="Outbound calls"
-          value={outBoundCallsCount}
-          href="/calls"
-          hrefTitle="Go to calls"
-        />
-        <CardBox
-          icon={PhoneIncoming}
-          title="Inbound calls"
-          value={inBoundCallsCount}
-          href="/calls"
-          hrefTitle="Go to calls"
-        />
-      </div>
-      {/* <AppointmentBoxSkeleton /> */}
-      <AppointmentBox data={appointments} />
-      <AgentSummary initialData={agents} />
-      <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">
-        <div className="w-full lg:w-[25%] h-full">
-          <TurnOverRate />
-        </div>
-        <div className="w-full lg:w-[75%] h-full">
-          <CallHistory initialCalls={callHistory} />
-        </div>
-      </div>
+      <CardBox
+        icon={PhoneOutgoing}
+        title="Outbound calls"
+        value={outBoundCallsCount}
+        href="/calls"
+        hrefTitle="Go to calls"
+      />
+      <CardBox
+        icon={PhoneIncoming}
+        title="Inbound calls"
+        value={inBoundCallsCount}
+        href="/calls"
+        hrefTitle="Go to calls"
+      />
       <audio ref={audioRef} src="/sounds/message.mp3" />
     </div>
   );

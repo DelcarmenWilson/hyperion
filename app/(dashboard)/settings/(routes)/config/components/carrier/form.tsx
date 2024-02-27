@@ -143,7 +143,7 @@ export const CarrierForm = ({ carriers, onClose }: CarrierFormProps) => {
               render={({ field }) => (
                 <FormItem className="flex flex-col pt-2">
                   <FormLabel className="flex justify-between items-center">
-                    Number
+                    Comments
                     <FormMessage />
                   </FormLabel>
                   <FormControl>

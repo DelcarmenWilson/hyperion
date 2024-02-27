@@ -9,23 +9,8 @@ import { MoveDownLeft, MoveUpRight } from "lucide-react";
 import { AudioPlayer } from "@/components/custom/audio-player";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { FullCall } from "@/types";
-import { Lead } from "@prisma/client";
 
-export type CallHistoryColumn = {
-  id: string;
-  agentName: string;
-  from: string;
-  phone: string;
-  direction: string;
-  fullName: string;
-  email: string;
-  duration: number;
-  date: Date;
-  recordUrl: string;
-  lead?: Lead | undefined;
-};
-
-export const columns: ColumnDef<CallHistoryColumn>[] = [
+export const columns: ColumnDef<FullCall>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -108,7 +93,8 @@ export const columns: ColumnDef<CallHistoryColumn>[] = [
     header: "Date/Time",
     cell: ({ row }) => (
       <div>
-        {row.original.date && format(row.original.date, "MM-dd-yyyy hh:mm aa")}
+        {row.original.createdAt &&
+          format(row.original.createdAt, "MM-dd-yyyy hh:mm aa")}
       </div>
     ),
   },

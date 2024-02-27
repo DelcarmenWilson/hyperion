@@ -43,7 +43,7 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- make the app send a sms if you dont log in.
 -- make the app send you motivational speeches every now and then.
 --let each agent create thier own incoming and outgoing voicemail
-   --let the agent send out voicemail aon answering machin pickup
+   --let the agent send out voicemail on answering machine pickup
    --let the call get worwarded to the agents voicemail if its setup else leave the default.
 
 
@@ -52,7 +52,9 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- in the appointment for todays days should populate todays schedule but doesnt (on load)
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
------Typscript error in feedbackId client.-Dev form
+-----Typscript error in 
+    -FeedbackId client.-Dev form
+    -CallHistoryClient
 
 remvced ckeditor
 npm uninstall --save @ckeditor/ckeditor5-build-classic

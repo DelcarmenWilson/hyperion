@@ -6,24 +6,25 @@ import { pusherClient } from "@/lib/pusher";
 import { Phone } from "lucide-react";
 
 import { DashBoardTable } from "@/components/tables/dashboard-table";
-import { CallHistoryColumn, columns } from "./columns";
+import { columns } from "./columns";
 import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
+import { FullCall } from "@/types";
 
-interface AgentSummaryBoxProps {
-  initialCalls: CallHistoryColumn[];
+interface CallHistoryClientProps {
+  initialCalls: FullCall[];
 }
 
-export const CallHistory = ({ initialCalls }: AgentSummaryBoxProps) => {
+export const CallHistoryClient = ({ initialCalls }: CallHistoryClientProps) => {
   const user = useCurrentUser();
-  const [calls, setCalls] = useState<CallHistoryColumn[]>(initialCalls);
+  const [calls, setCalls] = useState<FullCall[]>(initialCalls);
   const leadId = initialCalls[0]?.lead?.id;
 
   useEffect(() => {
     if (!user?.id) return;
     pusherClient.subscribe(user?.id as string);
 
-    const callHandler = (newCall: CallHistoryColumn) => {
+    const callHandler = (newCall: FullCall) => {
       setCalls((current) => {
         if (find(current, { id: newCall.id })) {
           current.shift();

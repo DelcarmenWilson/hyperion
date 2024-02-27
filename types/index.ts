@@ -1,4 +1,3 @@
-
 import {
   Conversation,
   Message,
@@ -14,6 +13,8 @@ import {
   PhoneNumber,
   PipeLine,
   UserCarrier,
+  Gender,
+  MaritalStatus,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -76,8 +77,17 @@ export type FullLead = Lead & {
   appointments: Appointment[];
   activities: Activity[];
 };
-
-
+export type LeadGeneralInfo={
+  id: string
+  gender: Gender
+  maritalStatus: 
+    MaritalStatus,
+  dateOfBirth?: string
+  weight?: number
+  height?: string
+  income?: number
+  smoker: boolean
+};
 
 export type PhoneType = {
   value: string;
@@ -85,6 +95,16 @@ export type PhoneType = {
 };
 
 export type FullCall = Call & {
+  lead: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    cellPhone: string;
+    email: string | null;
+  } | null;
+};
+
+export type FullAppointment = Appointment & {
   lead: Lead;
 };
 
@@ -117,4 +137,8 @@ export type FullPipeline = PipeLine & {
 };
 export type FullUserCarrier = UserCarrier & {
   carrier: { name: string };
+};
+
+export type Sales = Lead & {
+  user: { firstName: string; lastName: string; image: string | null };
 };

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppointmentBox } from "../../../../../components/lead/appointment";
+import { GeneralInfoClient } from "../../../../../components/lead/genereal-info";
 import { ExtraInfo } from "../../../../../components/lead/extra-info";
 import { CallInfo } from "../../../../../components/lead/call-info";
 import { Info } from "../../../../../components/lead/info";
@@ -60,7 +60,7 @@ export const LeadClient = ({
           <CallInfo lead={lead} />
         </div>
         <div className="flex justify-around col-span-2">
-          <AppointmentBox
+          <GeneralInfoClient
             lead={lead!}
             call={lead?.calls[lead.calls.length - 1]!}
             appointment={lead?.appointments[lead.appointments.length - 1]!}
