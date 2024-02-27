@@ -43,7 +43,10 @@ export const CarrierClient = ({
         <CarrierForm carriers={initCarriers} onClose={onCarrierCreated} />
       </DrawerRight>
       <div className="flex items-center justify-between">
-        <Heading title={"Licences"} description="Manage all your carriers" />
+        <Heading
+          title={"Carrier"}
+          description="Manage all your appointed carriers"
+        />
         <Button onClick={() => setIsDrawerOpen(true)}>
           <Plus size={16} className="mr-2" /> New Carrier
         </Button>

@@ -1,0 +1,56 @@
+"use client";
+
+import { ColumnDef } from "@tanstack/react-table";
+
+import { Checkbox } from "@/components/ui/checkbox";
+import { formatter } from "@/lib/utils";
+import { Sales } from "@/types";
+import { format } from "date-fns";
+
+export const columns: ColumnDef<Sales>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        value="all"
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "agent",
+    header: "Agent",
+    cell: ({ row }) => <span>{row.original.user.firstName}</span>,
+  },
+  {
+    accessorKey: "lead",
+    header: "Lead",
+    cell: ({ row }) => <span>{row.original.firstName}</span>,
+  },
+  {
+    accessorKey: "sale",
+    header: "Sale",
+    cell: ({ row }) => formatter.format(row.original.saleAmount!),
+  },
+  {
+    accessorKey: "saleDate",
+    header: "Sale Date",
+    cell: ({ row }) => format(row.original.updatedAt, "MM-dd-yyy"),
+  },
+];

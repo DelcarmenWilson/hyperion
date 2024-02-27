@@ -10,11 +10,13 @@ import { find } from "lodash";
 import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
 
-interface AgentSummaryBoxProps {
+interface AgentSummaryClientProps {
   initialData: AgentSummaryColumn[] | null;
 }
 
-export const AgentSummary = ({ initialData }: AgentSummaryBoxProps) => {
+export const AgentSummaryClient = ({
+  initialData,
+}: AgentSummaryClientProps) => {
   const user = useCurrentUser();
   const [agents, setAgents] = useState<AgentSummaryColumn[]>(initialData!);
 

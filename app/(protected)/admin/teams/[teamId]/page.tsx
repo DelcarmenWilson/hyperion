@@ -3,11 +3,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heading } from "@/components/custom/heading";
 
 import { TeamClient } from "./components/client";
-import { UsersClient } from "./components/users";
+import { UsersClient } from "./components/users/client";
 
-import { teamsGetByIdStats } from "@/data/team";
+import { teamsGetByIdStats, teamsGetByIdYearlySales } from "@/data/team";
 import { adminUsersGetAll } from "@/data/admin";
 import { weekStartEnd } from "@/formulas/dates";
+import { OverviewChart } from "./components/overview/client";
+import { getGraphRevenue } from "@/actions/get-graph-revenue";
+import { RecentSales } from "./components/sales/client";
 
 const TeamPage = async ({
   params,
@@ -23,11 +26,12 @@ const TeamPage = async ({
   const to = searchParams.to ? searchParams.to : (week.to.toString() as string);
   const team = await teamsGetByIdStats(
     params.teamId,
-    to as string,
-    from as string
+    from as string,
+    to as string
   );
 
   const users = await adminUsersGetAll();
+  const sales = await teamsGetByIdYearlySales(from as string);
   if (!team) {
     return null;
   }
@@ -69,6 +73,12 @@ const TeamPage = async ({
   return (
     <>
       <TeamClient team={teamReport} users={users} />
+
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7 mt-6">
+        <OverviewChart data={getGraphRevenue(sales!)} />
+
+        <RecentSales sales={sales!} />
+      </div>
 
       <Card className="mt-4">
         <CardHeader>

@@ -1,24 +1,26 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
-import { AppointmentColumn, columns } from "./columns";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DashBoardTable } from "@/components/tables/dashboard-table";
-import { PageLayout } from "@/components/custom/page-layout";
 
-interface AppointmentBoxProps {
-  data: AppointmentColumn[];
+import { columns } from "./columns";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardLayout } from "@/components/custom/card-layout";
+import { FullAppointment } from "@/types";
+
+interface AppoinmentClientProps {
+  data: FullAppointment[];
 }
 
-export const AppointmentBox = ({ data }: AppointmentBoxProps) => {
+export const AppoinmentClient = ({ data }: AppoinmentClientProps) => {
   return (
-    <PageLayout title="Appointments" icon={Calendar}>
+    <CardLayout title="Appointments" icon={Calendar}>
       <DashBoardTable columns={columns} data={data} searchKey="fullName" />
-    </PageLayout>
+    </CardLayout>
   );
 };
 
-export const AppointmentBoxSkeleton = () => {
+export const AppointmentClientSkeleton = () => {
   return (
     <Card className="relative overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">

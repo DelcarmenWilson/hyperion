@@ -17,7 +17,7 @@ export const appointmentsGetAllByUserId = async (agentId: string) => {
   try {
     const appointments = await db.appointment.findMany({
       where: { agentId },
-      include: { agent: true, lead: true },
+      include: {  lead: true },
       orderBy: { createdAt: "desc" },
     });
 

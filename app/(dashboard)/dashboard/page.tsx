@@ -1,5 +1,4 @@
 import { currentUser } from "@/lib/auth";
-import { AppointmentColumn } from "./components/appointment/columns";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
 import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
@@ -8,8 +7,11 @@ import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
 import { usersGetSummaryByTeamId } from "@/data/user";
-import { CallHistoryColumn } from "./components/callhistory/columns";
 import { Suspense } from "react";
+import { AppoinmentClient } from "./components/appointment/client";
+import { AgentSummaryClient } from "./components/agentsummary/client";
+import { TurnOverRate } from "./components/turnover/turn-over-rate";
+import { CallHistoryClient } from "./components/callhistory/call-history";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -18,18 +20,6 @@ const DahsBoardPage = async () => {
 
   const appointments = await appointmentsGetAllByUserIdToday(user?.id!);
 
-  const formattedAppointments: AppointmentColumn[] = appointments.map(
-    (apt) => ({
-      id: apt.id,
-      fullName: `${apt.lead.firstName} ${apt.lead.lastName}`,
-      email: apt.lead.email!,
-      phone: apt.lead.cellPhone,
-      status: apt.status,
-      dob: apt.lead.dateOfBirth || undefined,
-      date: apt.date,
-      comments: apt.comments!,
-    })
-  );
   const agents = await usersGetSummaryByTeamId(
     user?.id!,
     user?.role!,
@@ -50,20 +40,6 @@ const DahsBoardPage = async () => {
 
   const calls = await callGetAllByAgentIdLast24Hours(user?.id!);
 
-  const formatedCallHistory: CallHistoryColumn[] = calls.map((call) => ({
-    id: call.id,
-    agentName: user?.name!,
-    phone: call.lead?.cellPhone!,
-    from: call.from,
-    direction: call.direction,
-    fullName: `${call.lead?.firstName} ${call.lead?.lastName}`,
-    email: call.lead?.email!,
-    duration: call.duration!,
-    date: call.createdAt,
-    recordUrl: call.recordUrl as string,
-    lead: call.lead || undefined,
-  }));
-
   const outBoundCallsCount = calls.filter(
     (call) => call.direction.toLowerCase() === "outbound"
   ).length;
@@ -73,18 +49,26 @@ const DahsBoardPage = async () => {
   ).length;
 
   return (
-    <Suspense fallback={<DashBoardClientSkeleton />}>
-      <DashBoardClient
-        leadCount={leadCount}
-        messagesCount={messagesCount}
-        inBoundCallsCount={inBoundCallsCount}
-        outBoundCallsCount={outBoundCallsCount}
-        appointments={formattedAppointments}
-        agents={formattedAgents}
-        callHistory={formatedCallHistory}
-      />
-      {/* <DashBoardClientSkeleton /> */}
-    </Suspense>
+    <div className="flex flex-col gap-4">
+      <Suspense fallback={<DashBoardClientSkeleton />}>
+        <DashBoardClient
+          leadCount={leadCount}
+          messagesCount={messagesCount}
+          inBoundCallsCount={inBoundCallsCount}
+          outBoundCallsCount={outBoundCallsCount}
+        />
+        <AppoinmentClient data={appointments} />
+        <AgentSummaryClient initialData={formattedAgents} />
+        <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">
+          <div className="w-full lg:w-[25%] h-full">
+            <TurnOverRate />
+          </div>
+          <div className="w-full lg:w-[75%] h-full">
+            <CallHistoryClient initialCalls={calls} />
+          </div>
+        </div>
+      </Suspense>
+    </div>
   );
 };
 

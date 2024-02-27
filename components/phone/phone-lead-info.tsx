@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 import { DropDown } from "@/components/lead/dropdown";
 import { ExtraInfo } from "@/components/lead/extra-info";
-import { AppointmentBox } from "@/components/lead/appointment";
+import { GeneralInfoClient } from "@/components/lead/genereal-info";
 import { Info } from "@/components/lead/info";
 import { CallInfo } from "@/components/lead/call-info";
 import { NotesForm } from "@/components/lead/notes-form";
@@ -67,7 +67,7 @@ export const PhoneLeadInfo = () => {
         </h3>
         <div className="grid grid-cols-3 gap-2 p-2">
           <Info lead={lead} />
-          <AppointmentBox lead={lead} showInfo />
+          <GeneralInfoClient lead={lead} showInfo />
           <CallInfo lead={lead!} showBtnCall={false} />
           <ExtraInfo lead={lead} />
           <NotesForm

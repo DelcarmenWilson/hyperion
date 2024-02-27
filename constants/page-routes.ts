@@ -23,6 +23,7 @@ import {
   Settings,
   ShieldHalf,
   TestTube,
+  ThermometerSun,
   UserSquare,
   Users,
 } from "lucide-react";
@@ -54,6 +55,10 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Scripts",
     href: "/admin/scripts",
     icon: ScrollText,
+  },{
+    title: "Shad",
+    href: "/admin/shadcn",
+    icon: ThermometerSun,
   },
   {
     title: "Test",

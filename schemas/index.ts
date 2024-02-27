@@ -132,6 +132,21 @@ export const LeadSchema = z.object({
   recievedAt: z.optional(z.string()),
 });
 
+export const LeadGeneralSchema = z.object({
+  id: z.optional(z.string()),
+  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  maritalStatus: z.enum([
+    MaritalStatus.Single,
+    MaritalStatus.Married,
+    MaritalStatus.Widowed,
+    MaritalStatus.Divorced,
+  ]),
+  dateOfBirth: z.optional(z.string()),
+  weight: z.optional(z.number()),
+  height: z.optional(z.string()),
+  income: z.number().optional(),
+  smoker: z.boolean(),
+});
 export const TwilioSchema = z.object({
   phone: z.string(),
   message: z.string(),

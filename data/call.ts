@@ -5,7 +5,17 @@ export const callGetAllByAgentId = async (userId: string) => {
   try {
     const calls = await db.call.findMany({
       where: { userId },
-      include: { lead: true },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            cellPhone: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
     return calls;
@@ -17,9 +27,7 @@ export const callGetAllByAgentId = async (userId: string) => {
 export const callGetAllByAgentIdLast24Hours = async (userId: string) => {
   try {
     const calls = await db.call.findMany({
-      where: { userId, 
-        createdAt: { gte: getLast24hrs() }
-       },
+      where: { userId, createdAt: { gte: getLast24hrs() } },
       include: { lead: true },
       orderBy: { createdAt: "desc" },
     });

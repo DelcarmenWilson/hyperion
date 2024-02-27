@@ -1,21 +1,21 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
-
-import { AppointmentColumn, columns } from "./columns";
-import { DashBoardTable } from "@/components/tables/dashboard-table";
+import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CardLayout } from "@/components/custom/card-layout";
+import { DashBoardTable } from "@/components/tables/dashboard-table";
+import { PageLayout } from "@/components/custom/page-layout";
+import { FullAppointment } from "@/types";
 
-interface AppointmentBoxProps {
-  data: AppointmentColumn[];
-}
+type AppointmentClientProps = {
+  data: FullAppointment[];
+};
 
-export const AppointmentBox = ({ data }: AppointmentBoxProps) => {
+export const AppointmentClient = ({ data }: AppointmentClientProps) => {
   return (
-    <CardLayout title="Appointments" icon={Calendar}>
+    <PageLayout title="Appointments" icon={Calendar}>
       <DashBoardTable columns={columns} data={data} searchKey="fullName" />
-    </CardLayout>
+    </PageLayout>
   );
 };
 

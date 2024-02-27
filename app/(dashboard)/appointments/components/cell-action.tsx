@@ -13,15 +13,15 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { AppointmentColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { FullAppointment } from "@/types";
 
 interface CellActionProps {
-  data: AppointmentColumn;
+  data: FullAppointment;
 }
 export const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();

@@ -29,7 +29,20 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en">
         <body className={cn("bg-secondary", poppins.className)}>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            themes={[
+              "light",
+              "dark",
+              "black",
+              "orange",
+              "purple",
+              "red",
+              "yellow",
+            ]}
+            enableSystem
+          >
             <ModalProvider />
             <Toaster richColors />
             {children}

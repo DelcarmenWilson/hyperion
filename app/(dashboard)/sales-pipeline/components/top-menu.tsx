@@ -98,7 +98,7 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
         <DialogTrigger asChild>
           <Button size="sm">Add stage</Button>
         </DialogTrigger>
-        <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
+        <DialogContent>
           <h3 className="text-2xl font-semibold py-2">Add Stage</h3>
           <div>
             <p className="text-muted-foreground">Select a Status</p>

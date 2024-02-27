@@ -108,7 +108,7 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
         height="h-auto"
       />
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
-        <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
+        <DialogContent>
           <h3 className="text-2xl font-semibold py-2">Edit Stage</h3>
           <div>
             <p className="text-muted-foreground">New Status</p>
