@@ -18,5 +18,8 @@ export const getRandomNumber = (min: number, max: number):number => {
 
 export const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'USD',  
+  
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 });

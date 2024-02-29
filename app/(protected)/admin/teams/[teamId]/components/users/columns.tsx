@@ -4,9 +4,9 @@ import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatter } from "@/lib/utils";
 import { FullUserTeamReport } from "@/types";
 import Link from "next/link";
+import { USDollar } from "@/formulas/numbers";
 
 export const columns: ColumnDef<FullUserTeamReport>[] = [
   {
@@ -68,7 +68,7 @@ export const columns: ColumnDef<FullUserTeamReport>[] = [
   {
     accessorKey: "revenue",
     header: "Revenue",
-    cell: ({ row }) => formatter.format(row.original.revenue),
+    cell: ({ row }) => USDollar.format(row.original.revenue),
   },
   {
     accessorKey: "role",

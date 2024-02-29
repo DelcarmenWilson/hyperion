@@ -91,21 +91,19 @@ export function DashBoardTable<TData, TValue>({
         />
         <div className="flex justify-between gap-x-2">
           <DropdownMenu>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
-                      Columns
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Set columns</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
+                    Columns
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Set columns</p>
+              </TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end">
               {table
                 .getAllColumns()

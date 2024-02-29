@@ -93,21 +93,19 @@ export function LeadDataTable<TData, TValue>({
         />
         <div className="flex justify-between gap-x-2">
           <DropdownMenu>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
-                      Columns
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Set columns</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
+                    Columns
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Set columns</p>
+              </TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end">
               {table
                 .getAllColumns()
@@ -130,20 +128,18 @@ export function LeadDataTable<TData, TValue>({
           </DropdownMenu>
 
           <Dialog>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Import className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Import Leads</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Import className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Import Leads</p>
+              </TooltipContent>
+            </Tooltip>
             <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
               <ImportLeadsForm />
             </DialogContent>

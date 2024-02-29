@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatter } from "@/lib/utils";
 import { Sales } from "@/types";
 import { format } from "date-fns";
+import { USDollar } from "@/formulas/numbers";
 
 export const columns: ColumnDef<Sales>[] = [
   {
@@ -46,7 +46,8 @@ export const columns: ColumnDef<Sales>[] = [
   {
     accessorKey: "sale",
     header: "Sale",
-    cell: ({ row }) => formatter.format(row.original.saleAmount!),
+    cell: ({ row }) =>
+      USDollar.format(parseInt(row.original.saleAmount as string)),
   },
   {
     accessorKey: "saleDate",

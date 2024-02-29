@@ -11,30 +11,26 @@ type FieldBoxProps = {
   name: string;
   field: string;
   maxLength?: number;
-  setField: (e: string) => void;
-  onFieldUpdate: () => void;
+  onFieldUpdate: (e?: string) => void;
 };
 export const FieldBox = ({
   name,
   field,
   maxLength = 4,
-  setField,
   onFieldUpdate,
 }: FieldBoxProps) => {
-  const [fieldOldField, setOldField] = useState(field);
   const [fieldEnabled, setFieldEnabled] = useState(false);
+  const [newField, setNewField] = useState(field);
   const onFieldChange = (num: string) => {
-    if (num != "" && !parseInt(num)) return;
-    setField(num);
+    setNewField(num);
   };
 
   const onCancel = () => {
-    setField(fieldOldField || "");
     setFieldEnabled(false);
   };
 
   const onUpdate = () => {
-    onFieldUpdate();
+    onFieldUpdate(newField);
     setFieldEnabled(false);
   };
   return (
@@ -44,11 +40,12 @@ export const FieldBox = ({
         <Input
           className="w-[60px] h-5"
           maxLength={maxLength}
-          value={field}
-          onChange={(e) => onFieldChange(e.target.value)}
+          value={newField}
+          onChange={(e) => setNewField(e.target.value)}
+          type="number"
         />
       ) : (
-        <span className={field ? "font-semibold" : "text-destructive"}>
+        <span className={field ? "font-semibold" : "text-primary"}>
           {field ? USDollar.format(parseInt(field)) : "Not set"}
         </span>
       )}

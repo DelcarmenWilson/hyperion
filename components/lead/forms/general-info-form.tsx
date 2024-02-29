@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { LeadGeneralSchema, LeadSchema } from "@/schemas";
+import { LeadGeneralSchema } from "@/schemas";
 import {
   Form,
   FormField,
@@ -29,23 +29,22 @@ import { Gender, MaritalStatus } from "@prisma/client";
 
 import { LeadGeneralInfo } from "@/types";
 import { leadUpdateByIdGeneralInfo } from "@/actions/lead";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+
 import { Switch } from "@/components/ui/switch";
 
 type GeneralInfoFormProps = {
-  lead: LeadGeneralInfo;
+  info: LeadGeneralInfo;
   onChange: (e?: LeadGeneralInfo) => void;
 };
 
 type GeneralInfoFormValues = z.infer<typeof LeadGeneralSchema>;
 
-export const GeneralInfoForm = ({ lead, onChange }: GeneralInfoFormProps) => {
+export const GeneralInfoForm = ({ info, onChange }: GeneralInfoFormProps) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<GeneralInfoFormValues>({
     resolver: zodResolver(LeadGeneralSchema),
-    defaultValues: lead,
+    defaultValues: info,
   });
 
   const onCancel = () => {
@@ -58,18 +57,24 @@ export const GeneralInfoForm = ({ lead, onChange }: GeneralInfoFormProps) => {
 
   const onSubmit = async (values: GeneralInfoFormValues) => {
     setLoading(true);
-    // await leadUpdateByIdGeneralInfo(values).then((data) => {
-    //   if (data.success) {
-    //     if (onChange) {
-    //       onChange(data.success);
-    //     }
-    //     toast.success("Lead info Updated");
-    //   }
-    //   if (data.error) {
-    //     form.reset();
-    //     toast.error(data.error);
-    //   }
-    // });
+    await leadUpdateByIdGeneralInfo(values).then((data) => {
+      if (data.success) {
+        if (onChange) {
+          onChange({
+            ...data.success,
+            dateOfBirth: data.success.dateOfBirth?.toString(),
+            weight: data.success.weight?.toString(),
+            height: data.success.height?.toString(),
+            income: data.success.income?.toString(),
+          });
+        }
+        toast.success("Lead info Updated");
+      }
+      if (data.error) {
+        form.reset();
+        toast.error(data.error);
+      }
+    });
 
     setLoading(false);
   };
@@ -152,23 +157,6 @@ export const GeneralInfoForm = ({ lead, onChange }: GeneralInfoFormProps) => {
                 render={({ field }) => (
                   <FormItem className="flex gap-x-1 items-end">
                     <FormLabel className="w-[100px]">Smoker</FormLabel>
-                    {/* <Select
-                      name="ddlSmoker"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="flex-1 h-6 p-1">
-                          <SelectValue placeholder="Select a Choice" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="true">Yes</SelectItem>
-                        <SelectItem value="false">No</SelectItem>
-                      </SelectContent>
-                    </Select> */}
-
                     <FormControl>
                       <Switch
                         checked={field.value}
@@ -269,7 +257,7 @@ export const GeneralInfoForm = ({ lead, onChange }: GeneralInfoFormProps) => {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outline">
+            <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
             <Button disabled={loading} type="submit">

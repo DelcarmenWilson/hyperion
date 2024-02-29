@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { formatter } from "@/lib/utils";
+
 import { toast } from "sonner";
 
 import CountUp from "react-countup";
@@ -27,6 +27,7 @@ import { DateRangePicker } from "@/components/custom/date-range-picker";
 
 import { adminChangeTeamManager } from "@/actions/admin";
 import { weekStartEnd } from "@/formulas/dates";
+import { USDollar } from "@/formulas/numbers";
 
 interface TeamClientProps {
   team: FullTeamReport;
@@ -57,7 +58,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
     },
     {
       title: "Total Revenue",
-      value: formatter.format(team.revenue),
+      value: USDollar.format(team.revenue),
       icon: <DollarSign />,
     },
   ];

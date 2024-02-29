@@ -24,7 +24,7 @@ export const getGraphRevenue = (sales: Sales[]) => {
   for (const sale of sales) {
     const month = sale.updatedAt.getMonth();
     if (sale.saleAmount) {
-      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + sale.saleAmount;
+      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + parseInt(sale.saleAmount);
     }
   }
   for (const month in monthlyRevenue) {

@@ -1,43 +1,34 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAge } from "@/formulas/dates";
-import { FullLead, FullLeadNoConvo, LeadGeneralInfo } from "@/types";
+import { LeadGeneralInfo } from "@/types";
 import { Appointment, Call } from "@prisma/client";
 import { format } from "date-fns";
 import { Cake, CalendarX, FilePenLine, Plus, XCircle } from "lucide-react";
 import { useState } from "react";
 import { GeneralInfoForm } from "./forms/general-info-form";
+import { TextGroup } from "@/components/reusable/input-group";
 
 type GeneralInfoClientProps = {
-  lead: FullLead | FullLeadNoConvo;
+  info: LeadGeneralInfo;
   call?: Call;
   appointment?: Appointment;
   dob?: Date;
   showInfo?: boolean;
 };
 export const GeneralInfoClient = ({
-  lead,
+  info,
   call,
   appointment,
   dob,
   showInfo = false,
 }: GeneralInfoClientProps) => {
   const [edit, setEdit] = useState(false);
-  const leadInfo: LeadGeneralInfo = {
-    id: lead.id,
-    gender: lead.gender,
-    maritalStatus: lead.maritalStatus,
-    dateOfBirth: lead.dateOfBirth?.toLocaleDateString(),
-    weight: lead.weight || undefined,
-    height: lead.height || undefined,
-    income: lead.income || undefined,
-    smoker: lead.smoker,
-  };
-  const [info, setInfo] = useState(leadInfo);
+  const [leadInfo, setLeadInfo] = useState<LeadGeneralInfo>(info);
 
   const onSetInfo = (e?: LeadGeneralInfo) => {
     if (e) {
-      setInfo(e);
+      setLeadInfo(e);
     }
     setEdit(false);
   };
@@ -70,38 +61,45 @@ export const GeneralInfoClient = ({
       {showInfo && (
         <div>
           {edit ? (
-            <GeneralInfoForm lead={info} onChange={onSetInfo} />
+            <GeneralInfoForm info={leadInfo} onChange={onSetInfo} />
           ) : (
             <div className="relative group">
-              <p>
-                Dob:{" "}
-                {leadInfo.dateOfBirth &&
-                  format(leadInfo.dateOfBirth, "MM/dd/yy")}
-                {leadInfo.dateOfBirth ? (
+              <div className="flex gap-1">
+                <TextGroup
+                  title="Dob"
+                  value={
+                    leadInfo.dateOfBirth
+                      ? format(new Date(leadInfo.dateOfBirth), "MM/dd/yy")
+                      : ""
+                  }
+                />
+                {leadInfo.dateOfBirth && (
                   <span className="font-semibold">
-                    {" "}
                     - {getAge(leadInfo.dateOfBirth)} yrs.
                   </span>
-                ) : (
-                  <span className="text-destructive">Not set</span>
                 )}
-              </p>
-              <Box title="Height" value={leadInfo.height!} />
-              <p>
-                Weight:
-                {lead.weight ? (
-                  <span>{lead.weight} lbs</span>
-                ) : (
-                  <span className="text-destructive">Not set</span>
-                )}{" "}
-              </p>
-              <p>Smoker: {leadInfo.smoker ? "Yes" : "No"}</p>
-              <Box
-                title="Income"
-                value={leadInfo.income ? leadInfo.income.toString() : ""}
+              </div>
+              <TextGroup
+                title="Height"
+                value={leadInfo.height?.toString() || ""}
               />
-              <Box title="Gender" value={leadInfo.gender} />
-              <Box title="Marital Status" value={leadInfo.maritalStatus} />
+              <div className="flex gap-1">
+                <TextGroup
+                  title="Weight"
+                  value={leadInfo.weight?.toString() || ""}
+                />
+                lbs
+              </div>
+              <p>Smoker: {leadInfo.smoker ? "Yes" : "No"}</p>
+              <TextGroup
+                title="Income"
+                value={leadInfo.income?.toString() || ""}
+              />
+              <TextGroup title="Gender" value={leadInfo.gender} />
+              <TextGroup
+                title="Marital Status"
+                value={leadInfo.maritalStatus}
+              />
               <Button
                 className="absolute translate-y-1/2 top-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
                 onClick={() => setEdit(true)}
@@ -120,21 +118,5 @@ export const GeneralInfoClient = ({
         </Button>
       )} */}
     </div>
-  );
-};
-type BoxProps = {
-  title: string;
-  value: string;
-};
-const Box = ({ title, value }: BoxProps) => {
-  return (
-    <p>
-      {title}:
-      {value ? (
-        <span> {value}</span>
-      ) : (
-        <span className="text-destructive"> Not set</span>
-      )}
-    </p>
   );
 };

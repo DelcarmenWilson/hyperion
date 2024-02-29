@@ -296,11 +296,11 @@ model Lead {
   gender           Gender        @default(NA)
   maritalStatus    MaritalStatus @default(Single)
   email            String?
-  dateOfBirth      DateTime?
-  weight           Int?
+  dateOfBirth      String?       @default("")
+  weight           String?
   height           String?
-  income           Int?
-  policyAmount     Int?
+  income           String?
+  policyAmount     String?
   smoker           Boolean       @default(false)
   currentlyInsured Boolean       @default(false)
   currentInsuranse String?
@@ -309,10 +309,10 @@ model Lead {
   type   String @default("General")
   status String @default("New")
 
-  quote      Int?
-  saleAmount Int?
-  commision  Int?
-  costOfLead Int?
+  quote      String?
+  saleAmount String?
+  commision  String?
+  costOfLead String?
 
   defaultNumber String
   notes         String?

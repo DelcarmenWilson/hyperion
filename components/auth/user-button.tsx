@@ -14,9 +14,11 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { LogoutButton } from "./logout-button";
+import { useRouter } from "next/navigation";
 
 export const UserButton = () => {
   const user = useCurrentUser();
+  const router = useRouter();
   if (!user) {
     return null;
   }
@@ -41,14 +43,20 @@ export const UserButton = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {user.role != "USER" && (
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => router.push("/admin/teams")}
+          >
             <Lock className="h-4 w-4 mr-2" />
-            <Link href="/admin/teams">Admin</Link>
+            Admin
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/settings")}
+        >
           <Cog className="h-4 w-4 mr-2" />
-          <Link href="/settings">Settings</Link>
+          Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <LogoutButton>

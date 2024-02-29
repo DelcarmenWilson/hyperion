@@ -77,16 +77,37 @@ export type FullLead = Lead & {
   appointments: Appointment[];
   activities: Activity[];
 };
-export type LeadGeneralInfo={
-  id: string
-  gender: Gender
-  maritalStatus: 
-    MaritalStatus,
-  dateOfBirth?: string
-  weight?: number
-  height?: string
-  income?: number
-  smoker: boolean
+
+export type LeadMainInfo = {
+  id: string;   
+  firstName: string ;
+  lastName: string ;
+  cellPhone: string ;
+  email?: string ;
+  address?: string ;
+  city?: string ;
+  state: string ;
+  zipCode?: string ;  
+  quote?: string ;
+};
+export type LeadGeneralInfo = {
+  id: string;
+  gender: Gender;
+  maritalStatus: MaritalStatus;
+  dateOfBirth?: string;
+  weight?: string ;
+  height?: string ;
+  income?: string;
+  smoker: boolean;
+};
+
+export type LeadSaleInfo = {
+  id: string;
+  createdAt:Date;
+  vendor:string
+  saleAmount?: string ;
+  commision?: string ;
+  costOfLead?: string;
 };
 
 export type PhoneType = {

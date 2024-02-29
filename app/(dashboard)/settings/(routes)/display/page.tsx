@@ -1,7 +1,7 @@
-import { ThemeToggleHp } from "@/components/custom/theme-toggle-hp";
+import { ThemeClient } from "@/components/custom/theme-client";
 
 const DisplayPage = () => {
-  return <ThemeToggleHp />;
+  return <ThemeClient />;
 };
 
 export default DisplayPage;

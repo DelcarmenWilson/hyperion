@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone, User } from "lucide-react";
-import { formatter } from "@/lib/utils";
+
 import { capitalize } from "@/formulas/text";
 import { format } from "date-fns";
 import { Team } from "@prisma/client";
@@ -25,6 +25,7 @@ import {
 import { UserRoles } from "@/constants/user";
 import { adminChangeTeam, adminChangeUserRole } from "@/actions/admin";
 import { toast } from "sonner";
+import { USDollar } from "@/formulas/numbers";
 
 type UserClientProps = {
   user: FullUserReport;
@@ -33,7 +34,10 @@ type UserClientProps = {
 
 export const UserClient = ({ user, teams }: UserClientProps) => {
   const router = useRouter();
-  const ap = user.leads.reduce((sum, lead) => sum + lead.saleAmount!, 0);
+  const ap = user.leads.reduce(
+    (sum, lead) => sum + parseInt(lead.saleAmount as string),
+    0
+  );
   const data = [
     {
       title: "Calls",
@@ -52,7 +56,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
     },
     {
       title: "Annual Premuim",
-      value: formatter.format(ap),
+      value: USDollar.format(ap),
       icon: <DollarSign />,
     },
   ];

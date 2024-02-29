@@ -119,10 +119,10 @@ export const LeadSchema = z.object({
   ]),
   email: z.string().email(),
   dateOfBirth: z.optional(z.string()),
-  weight: z.optional(z.number()),
+  weight: z.optional(z.string()),
   height: z.optional(z.string()),
-  income: z.optional(z.number()),
-  policyAmount: z.optional(z.number()),
+  income: z.optional(z.string()),
+  policyAmount: z.optional(z.string()),
   smoker: z.optional(z.boolean()),
   currentlyInsured: z.optional(z.boolean()),
   currentInsuranse: z.optional(z.string()),
@@ -131,7 +131,17 @@ export const LeadSchema = z.object({
   conversationId: z.optional(z.string()),
   recievedAt: z.optional(z.string()),
 });
-
+export const LeadMainSchema = z.object({
+  id: z.optional(z.string()),
+  firstName:z.string(),
+  lastName:z.string(),
+  cellPhone:z.string(),
+  email: z.optional(z.string()),
+  address:z.string(),
+  city: z.optional(z.string()),
+  state:z.string(),
+  zipCode: z.optional(z.string()),
+});
 export const LeadGeneralSchema = z.object({
   id: z.optional(z.string()),
   gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
@@ -142,10 +152,17 @@ export const LeadGeneralSchema = z.object({
     MaritalStatus.Divorced,
   ]),
   dateOfBirth: z.optional(z.string()),
-  weight: z.optional(z.number()),
+  weight: z.optional(z.string()),
   height: z.optional(z.string()),
-  income: z.number().optional(),
+  income: z.optional(z.string()),
   smoker: z.boolean(),
+});
+export const LeadSaleSchema = z.object({
+  id: z.optional(z.string()),
+  vendor:z.string(),
+  saleAmount: z.optional(z.string()),
+  commision: z.optional(z.string()),
+  costOfLead: z.optional(z.string()),
 });
 export const TwilioSchema = z.object({
   phone: z.string(),

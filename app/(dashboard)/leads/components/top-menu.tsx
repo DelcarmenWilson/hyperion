@@ -23,21 +23,19 @@ export const TopMenu = ({ setIsOpen }: TopMenuProps) => {
               GENERATE CSV
             </Button> */}
       <Dialog>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                <Button variant="outlineprimary" size="sm">
-                  <Paperclip className="h-4 w-4 mr-2" />
-                  UPLOAD CSV FILE
-                </Button>
-              </DialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Import Leads</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="outlineprimary" size="sm">
+                <Paperclip className="h-4 w-4 mr-2" />
+                UPLOAD CSV FILE
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Import Leads</p>
+          </TooltipContent>
+        </Tooltip>
         <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
           <ImportLeadsForm />
         </DialogContent>
