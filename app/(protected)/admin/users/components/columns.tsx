@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { User } from "@prisma/client";
-import { formatter } from "@/lib/utils";
+
 import Link from "next/link";
 
 export const columns: ColumnDef<User>[] = [

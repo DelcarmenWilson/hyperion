@@ -72,12 +72,12 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       state: capitalize(d["State"]),
       gender: "NA",
       maritalStatus: "Single",
-      weight: parseInt(a["Weight"]),
+      weight: a["Weight"],
       height: a["Height"],
       smoker: a["IsSmoker"] == "No" ? false : true,
       zipCode: d["Zip"],
       recievedAt: d["Received Date"],
-      policyAmount: parseInt(a["DesiredCoverageAmount"]),
+      policyAmount: a["DesiredCoverageAmount"],
       vendor: vendor,
     };
     mapped.push(newobj);
@@ -104,9 +104,9 @@ const MediaAlphaLeads = (
       zipCode: d["postal_code"],
       gender: d["gender"],
       maritalStatus: capitalize(d["marriage"]) as any,
-      weight: parseInt(d["weight"]),
+      weight: d["weight"],
       height: `${d["height_feet"]}'${d["height_inches"] || "0"}`,
-      income: parseInt(d["income"]),
+      income: d["income"],
       smoker: d["tobacco_use"] == "No" ? false : true,
       vendor: vendor,
       recievedAt: d["received_at"],
@@ -167,9 +167,9 @@ const ProspectForLeads = (
       maritalStatus: "Single",
       currentlyInsured: d["currently insured"] == "No" ? false : true,
       currentInsuranse: d["current ins.company"],
-      income: parseInt(d["family income"]),
+      income: d["family income"],
       vendor: vendor,
-      policyAmount: parseInt(d["Policy Amount"]),
+      policyAmount: d["Policy Amount"],
     };
     mapped.push(newobj);
   });
@@ -196,7 +196,7 @@ const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
       maritalStatus: "Single",
       type: convertType(d["Policy Type"]),
       recievedAt: d["Date Requested"],
-      policyAmount: parseInt(d["Amount Requested"]),
+      policyAmount: d["Amount Requested"],
       vendor: vendor,
     };
     mapped.push(newobj);

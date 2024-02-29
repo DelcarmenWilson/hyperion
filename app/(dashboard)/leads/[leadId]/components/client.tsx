@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Calendar,
   Folder,
@@ -12,23 +13,39 @@ import {
   Video,
 } from "lucide-react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GeneralInfoClient } from "../../../../../components/lead/genereal-info";
-import { ExtraInfo } from "../../../../../components/lead/extra-info";
-import { CallInfo } from "../../../../../components/lead/call-info";
-import { Info } from "../../../../../components/lead/info";
-import { NotesForm } from "../../../../../components/lead/notes-form";
-import { Sms } from "./sms";
+import { toast } from "sonner";
+
+import {
+  FullConversation,
+  FullLead,
+  LeadGeneralInfo,
+  LeadMainInfo,
+  LeadSaleInfo,
+} from "@/types";
+
 import { formatPhoneNumber } from "@/formulas/phones";
-import { DropDown } from "../../../../../components/lead/dropdown";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropDown } from "@/components/lead/dropdown";
+import { Button } from "@/components/ui/button";
+import { GeneralInfoClient } from "@/components/lead/general-info";
+import { SaleInfoClient } from "@/components/lead/sale-info";
+import { CallInfo } from "@/components/lead/call-info";
+import { MainInfoClient } from "@/components/lead/main-info";
+import { NotesForm } from "@/components/lead/notes-form";
+import { Sms } from "./sms";
 import { CallHistory } from "./call-history/call-history";
-import { FullConversation, FullLead } from "@/types";
+
 import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityLog } from "./activity-log/activity-log";
-import { CardLayout } from "@/components/custom/card-layout";
-import { TopMenu } from "./top-menu";
+
 import { PageLayout } from "@/components/custom/page-layout";
+import { TopMenu } from "./top-menu";
+
 import { Body } from "./message-client";
+import { PhoneSwitcher } from "./phone-switcher";
+
+import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
 
 type LeadClientProps = {
   lead: FullLead;
@@ -41,6 +58,54 @@ export const LeadClient = ({
   conversation,
   nextPrev,
 }: LeadClientProps) => {
+  const [edit, setEdit] = useState(false);
+  const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
+  const leadMainInfo: LeadMainInfo = {
+    id: lead.id,
+    firstName: lead.firstName,
+    lastName: lead.lastName,
+    cellPhone: lead.cellPhone,
+    email: lead.email || undefined,
+    address: lead.address || undefined,
+    city: lead.city || undefined,
+    state: lead.state,
+    zipCode: lead.zipCode || undefined,
+    quote: lead.quote || undefined,
+  };
+
+  const leadInfo: LeadGeneralInfo = {
+    id: lead.id,
+    gender: lead.gender,
+    maritalStatus: lead.maritalStatus,
+    dateOfBirth: lead.dateOfBirth || undefined,
+    weight: lead.weight || undefined,
+    height: lead.height || undefined,
+    income: lead.income || undefined,
+    smoker: lead.smoker,
+  };
+
+  const leadSale: LeadSaleInfo = {
+    id: lead.id,
+    createdAt: lead.createdAt,
+    vendor: lead.vendor,
+    saleAmount: lead.saleAmount || undefined,
+    commision: lead.commision || undefined,
+    costOfLead: lead.costOfLead || undefined,
+  };
+  const onSetDefaultNumber = (e: string) => {
+    if (e != defaultNumber) {
+      setDefaultNumber(e);
+      leadUpdateByIdDefaultNumber(lead.id, e).then((data) => {
+        if (data.success) {
+          toast.success(data.success);
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+    }
+    setEdit(false);
+  };
   return (
     <PageLayout
       icon={User}
@@ -54,19 +119,19 @@ export const LeadClient = ({
             <div className="absolute top-0 right-0">
               <DropDown lead={lead} />
             </div>
-            <Info lead={lead} />
+            <MainInfoClient info={leadMainInfo} />
           </div>
           <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
           <CallInfo lead={lead} />
         </div>
         <div className="flex justify-around col-span-2">
           <GeneralInfoClient
-            lead={lead!}
+            info={leadInfo}
             call={lead?.calls[lead.calls.length - 1]!}
             appointment={lead?.appointments[lead.appointments.length - 1]!}
             showInfo
           />
-          <ExtraInfo lead={lead} />
+          <SaleInfoClient info={leadSale} />
         </div>
       </div>
       <div className="text-sm font-light px-4">
@@ -74,15 +139,33 @@ export const LeadClient = ({
         <p>
           -Type: <span className="font-bold">unknown</span>
         </p>
-        <p className="flex gap-2">
-          <span>
-            Caller Id for calls /texts{" "}
-            <span className="font-bold">
-              {formatPhoneNumber(lead.defaultNumber)}
-            </span>
-          </span>
-          <Pencil className="h-4 w-4 ml-2 text-primary" />
-        </p>
+        <div className="flex items-center gap-2 group">
+          <span>Caller Id for calls /texts</span>
+          {edit ? (
+            <PhoneSwitcher
+              number={defaultNumber}
+              onSetDefaultNumber={onSetDefaultNumber}
+            />
+          ) : (
+            <>
+              <span className="font-bold">
+                {formatPhoneNumber(defaultNumber)}
+              </span>
+              <Button
+                className="opacity-0 group-hover:opacity-100"
+                variant="link"
+                size="sm"
+                onClick={() => setEdit(true)}
+              >
+                <Pencil size={16} />
+                {/* <Pencil
+                className="h-4 w-4 ml-2 text-primary cursor-pointer opacity-0 group-hover:opacity-100"
+                onClick={() => setEdit(true)}
+              /> */}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* TABS */}

@@ -6,8 +6,8 @@ import { DataTable } from "@/components/custom/data-table";
 import { columns } from "./columns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIntials } from "@/formulas/text";
-import { formatter } from "@/lib/utils";
 import { format } from "date-fns";
+import { USDollar } from "@/formulas/numbers";
 
 type RecentSalesProps = {
   sales: Sales[];
@@ -35,7 +35,7 @@ export const RecentSales = ({ sales }: RecentSalesProps) => {
                 {format(sale.updatedAt, "MM-dd-yyy")}
               </div>
               <div className="font-medium">
-                +{formatter.format(sale.saleAmount!)}
+                +{USDollar.format(parseInt(sale.saleAmount!))}
               </div>
             </div>
           ))}

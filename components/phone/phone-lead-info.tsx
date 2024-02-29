@@ -7,13 +7,14 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { cn } from "@/lib/utils";
 
 import { DropDown } from "@/components/lead/dropdown";
-import { ExtraInfo } from "@/components/lead/extra-info";
-import { GeneralInfoClient } from "@/components/lead/genereal-info";
-import { Info } from "@/components/lead/info";
+import { SaleInfoClient } from "@/components/lead/sale-info";
+import { GeneralInfoClient } from "@/components/lead/general-info";
+import { MainInfoClient } from "@/components/lead/main-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { NotesForm } from "@/components/lead/notes-form";
 import { PhoneScript } from "./phone-script";
 import { Button } from "../ui/button";
+import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
 
 export const PhoneLeadInfo = () => {
   const { lead } = usePhoneModal();
@@ -31,6 +32,38 @@ export const PhoneLeadInfo = () => {
   if (!lead) {
     return null;
   }
+  const leadMainInfo: LeadMainInfo = {
+    id: lead.id,
+    firstName: lead.firstName,
+    lastName: lead.lastName,
+    cellPhone: lead.cellPhone,
+    email: lead.email || undefined,
+    address: lead.address || undefined,
+    city: lead.city || undefined,
+    state: lead.state,
+    zipCode: lead.zipCode || undefined,
+    quote: lead.quote || undefined,
+  };
+
+  const leadInfo: LeadGeneralInfo = {
+    id: lead.id,
+    gender: lead.gender,
+    maritalStatus: lead.maritalStatus,
+    dateOfBirth: lead.dateOfBirth || undefined,
+    weight: lead.weight || undefined,
+    height: lead.height || undefined,
+    income: lead.income || undefined,
+    smoker: lead.smoker,
+  };
+
+  const leadSale: LeadSaleInfo = {
+    id: lead.id,
+    createdAt: lead.createdAt,
+    vendor: lead.vendor,
+    saleAmount: lead.saleAmount || undefined,
+    commision: lead.commision || undefined,
+    costOfLead: lead.costOfLead || undefined,
+  };
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">
       <div className="flex items-center justify-center w-[44px] h-full overflow-hidden relative px-2">
@@ -66,10 +99,10 @@ export const PhoneLeadInfo = () => {
           <DropDown lead={lead} />
         </h3>
         <div className="grid grid-cols-3 gap-2 p-2">
-          <Info lead={lead} />
-          <GeneralInfoClient lead={lead} showInfo />
+          <MainInfoClient info={leadMainInfo} />
+          <GeneralInfoClient info={leadInfo} showInfo />
           <CallInfo lead={lead!} showBtnCall={false} />
-          <ExtraInfo lead={lead} />
+          <SaleInfoClient info={leadSale} />
           <NotesForm
             leadId={lead?.id as string}
             intialNotes={lead?.notes as string}

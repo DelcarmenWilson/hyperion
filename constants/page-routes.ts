@@ -55,10 +55,12 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Scripts",
     href: "/admin/scripts",
     icon: ScrollText,
-  },{
+  },
+  {
     title: "Shad",
     href: "/admin/shadcn",
     icon: ThermometerSun,
+    master: true,
   },
   {
     title: "Test",

@@ -201,7 +201,7 @@ export const PhoneOut = () => {
       <div className="flex justify-between items-center">
         <span className="w-40">Caller Id</span>
         <Select
-          name="ddlState"
+          name="ddlPhoneNumbers"
           disabled={!!call}
           defaultValue={selectedNumber}
           onValueChange={(e) => setSelectedNumber(e)}

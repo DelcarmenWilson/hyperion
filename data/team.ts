@@ -91,7 +91,9 @@ export const teamsGetByIdYearlySales = async (from: string) => {
     const sales = await db.lead.findMany({
       where: {
         status: "Sold",
-        saleAmount: { gt: 10 },
+        NOT: {
+          saleAmount:null
+        },
         updatedAt: {
           lte: toDate,
           gte: fromDate,

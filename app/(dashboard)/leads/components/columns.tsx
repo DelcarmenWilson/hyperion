@@ -2,13 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { GeneralInfoClient } from "@/components/lead/genereal-info";
+import { GeneralInfoClient } from "@/components/lead/general-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { DropDown } from "@/components/lead/dropdown";
-import { ExtraInfo } from "@/components/lead/extra-info";
-import { Info } from "@/components/lead/info";
+import { SaleInfoClient } from "@/components/lead/sale-info";
+import { MainInfoClient } from "@/components/lead/main-info";
 import { NotesForm } from "@/components/lead/notes-form";
-import { FullLead } from "@/types";
+import { FullLead, LeadGeneralInfo, LeadMainInfo, LeadSaleInfo } from "@/types";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
@@ -29,7 +29,21 @@ export const columns: ColumnDef<FullLead>[] = [
   {
     accessorKey: "fullName",
     header: "",
-    cell: ({ row }) => <Info lead={row.original} />,
+    cell: ({ row }) => {
+      const leadMainInfo: LeadMainInfo = {
+        id: row.original.id,
+        firstName: row.original.firstName,
+        lastName: row.original.lastName,
+        cellPhone: row.original.cellPhone,
+        email: row.original.email || undefined,
+        address: row.original.address || undefined,
+        city: row.original.city || undefined,
+        state: row.original.state,
+        zipCode: row.original.zipCode || undefined,
+        quote: row.original.quote || undefined,
+      };
+      return <MainInfoClient info={leadMainInfo} />;
+    },
   },
   {
     accessorKey: "notes",
@@ -47,19 +61,41 @@ export const columns: ColumnDef<FullLead>[] = [
   {
     accessorKey: "appointment",
     header: "",
-    cell: ({ row }) => (
-      <GeneralInfoClient
-        lead={row.original}
-        call={row.original.calls[row.original.calls.length - 1]!}
-        appointment={
-          row.original.appointments[row.original.appointments.length - 1]!
-        }
-      />
-    ),
+    cell: ({ row }) => {
+      const leadInfo: LeadGeneralInfo = {
+        id: row.original.id,
+        gender: row.original.gender,
+        maritalStatus: row.original.maritalStatus,
+        dateOfBirth: row.original.dateOfBirth || undefined,
+        weight: row.original.weight || undefined,
+        height: row.original.height || undefined,
+        income: row.original.income || undefined,
+        smoker: row.original.smoker,
+      };
+      return (
+        <GeneralInfoClient
+          info={leadInfo}
+          call={row.original.calls[row.original.calls.length - 1]!}
+          appointment={
+            row.original.appointments[row.original.appointments.length - 1]!
+          }
+        />
+      );
+    },
   },
   {
     accessorKey: "extra info",
     header: "",
-    cell: ({ row }) => <ExtraInfo lead={row.original} />,
+    cell: ({ row }) => {
+      const leadSale: LeadSaleInfo = {
+        id: row.original.id,
+        createdAt: row.original.createdAt,
+        vendor: row.original.vendor,
+        saleAmount: row.original.saleAmount || undefined,
+        commision: row.original.commision || undefined,
+        costOfLead: row.original.costOfLead || undefined,
+      };
+      return <SaleInfoClient info={leadSale} />;
+    },
   },
 ];

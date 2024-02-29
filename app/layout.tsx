@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import "./globals.css";
+import "./themes/themes.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
+import { ThemeSwitcher } from "@/components/custom/theme-switcher";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,6 +21,12 @@ export const metadata: Metadata = {
   description: "Hyper Eye On",
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
 export default async function RootLayout({
   children,
 }: {
@@ -32,20 +40,22 @@ export default async function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
-            themes={[
-              "light",
-              "dark",
-              "black",
-              "orange",
-              "purple",
-              "red",
-              "yellow",
-            ]}
+            // themes={[
+            //   "light",
+            //   "dark",
+            //   "black",
+            //   "orange",
+            //   "purple",
+            //   "red",
+            //   "yellow",
+            // ]}
             enableSystem
+            disableTransitionOnChange
           >
             <ModalProvider />
             <Toaster richColors />
             {children}
+            <ThemeSwitcher />
           </ThemeProvider>
         </body>
       </html>

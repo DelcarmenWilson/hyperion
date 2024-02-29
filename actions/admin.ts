@@ -50,6 +50,7 @@ export const adminUpdateLeadNumbers = async (userId: string) => {
 
   return { success: "phone numbers have been updated" };
 };
+
 export const adminUpdateUserNumber = async (agentId: string) => {
   const phoneNumbers = await db.phoneNumber.findMany({ where: { agentId } });
   if (!phoneNumbers.length) {
@@ -172,7 +173,7 @@ export const adminLeadStatusInsert = async (status: string) => {
   if (!user) {
     return { error: "Unathenticated" };
   }
-  if (user.role != "MASTER") {
+  if (user.role == "USER") {
     return { error: "Unauthorized" };
   }
 
@@ -201,7 +202,7 @@ export const adminCarrierInsert = async (
   if (!user) {
     return { error: "Unathenticated" };
   }
-  if (user.role != "MASTER") {
+  if (user.role == "USER") {
     return { error: "Unauthorized" };
   }
   const validatedFields = CarrierSchema.safeParse(values);
@@ -237,7 +238,7 @@ export const adminMedicalInsert = async (
   if (!user) {
     return { error: "Unathenticated" };
   }
-  if (user.role != "MASTER") {
+  if (user.role == "USER") {
     return { error: "Unauthorized" };
   }
   const validatedFields = MedicalConditionSchema.safeParse(values);
