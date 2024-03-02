@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FullFeedback } from "@/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { format } from "date-fns";
 
 export const columns: ColumnDef<FullFeedback>[] = [
   {
@@ -48,6 +49,18 @@ export const columns: ColumnDef<FullFeedback>[] = [
   {
     accessorKey: "status",
     header: "Status",
+  },
+  {
+    accessorKey: "user",
+    header: "User",
+    cell: ({ row }) => <p>{row.original.user.firstName}</p>,
+  },
+  {
+    accessorKey: "createdAt",
+    header: "CreatedAt",
+    cell: ({ row }) => (
+      <span>{format(row.original.createdAt, "MM-dd-yyyy")}</span>
+    ),
   },
   {
     header: "Actions",

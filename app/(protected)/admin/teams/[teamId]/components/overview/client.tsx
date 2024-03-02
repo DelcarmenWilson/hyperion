@@ -16,7 +16,7 @@ type OverviewChartProps = {
 };
 export const OverviewChart = ({ data }: OverviewChartProps) => {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-2">
       <CardHeader>
         <CardTitle>Overview</CardTitle>
         <CardContent className="p-0">

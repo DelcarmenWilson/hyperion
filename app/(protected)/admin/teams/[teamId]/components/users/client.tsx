@@ -36,7 +36,7 @@ export const UsersClient = ({ users, teamId }: UserClientProps) => {
   };
   return (
     <>
-      <div className="flex items-end gap-2 w-1/2 mb-2">
+      <div className="flex flex-col lg:flex-row items-end gap-2 mb-2">
         <DateRangePicker
           setDate={onDateSelected}
           date={dates}

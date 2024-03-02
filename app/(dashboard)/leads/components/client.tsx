@@ -96,7 +96,7 @@ export const LeadClient = ({ leads }: LeadClientProps) => {
               defaultValue={status}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a status a Team" />
+                <SelectValue placeholder="Select a status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="%">All</SelectItem>

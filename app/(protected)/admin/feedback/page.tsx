@@ -1,7 +1,7 @@
-import { DataTable } from "@/components/tables/data-table";
+import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
+import { FeedbacksClient } from "./components/client";
+
 import { feedbackGetAll } from "@/actions/feedback";
-import { columns } from "./components/columns";
-import { PageLayoutAdmin } from "../../../../components/custom/page-layout-admin";
 
 const FeedbackPage = async () => {
   const feedbacks = await feedbackGetAll();
@@ -10,7 +10,7 @@ const FeedbackPage = async () => {
       title={`User Feedback (${feedbacks.length})`}
       description="Manage feedback and bugs"
     >
-      <DataTable columns={columns} data={feedbacks} searchKey="headLine" />
+      <FeedbacksClient feedbacks={feedbacks} />
     </PageLayoutAdmin>
   );
 };

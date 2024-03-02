@@ -40,7 +40,7 @@ export const columns: ColumnDef<FullLead>[] = [
         city: row.original.city || undefined,
         state: row.original.state,
         zipCode: row.original.zipCode || undefined,
-        quote: row.original.quote || undefined,
+        quote: row.original.quote,
       };
       return <MainInfoClient info={leadMainInfo} />;
     },
@@ -91,9 +91,9 @@ export const columns: ColumnDef<FullLead>[] = [
         id: row.original.id,
         createdAt: row.original.createdAt,
         vendor: row.original.vendor,
-        saleAmount: row.original.saleAmount || undefined,
-        commision: row.original.commision || undefined,
-        costOfLead: row.original.costOfLead || undefined,
+        saleAmount: row.original.saleAmount,
+        commision: row.original.commision,
+        costOfLead: row.original.costOfLead,
       };
       return <SaleInfoClient info={leadSale} />;
     },

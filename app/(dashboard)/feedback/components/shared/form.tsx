@@ -1,4 +1,4 @@
-"use-client";
+"use client";
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

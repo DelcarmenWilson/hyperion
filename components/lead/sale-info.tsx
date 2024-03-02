@@ -57,26 +57,20 @@ export const SaleInfoClient = ({ info }: ExtraInfoProps) => {
           <TextGroup
             title="Coverage amount"
             value={
-              saleInfo.saleAmount
-                ? USDollar.format(parseInt(saleInfo.saleAmount))
-                : ""
+              saleInfo.saleAmount ? USDollar.format(saleInfo.saleAmount) : ""
             }
           />
 
           <TextGroup
             title="Ap"
             value={
-              saleInfo.commision
-                ? USDollar.format(parseInt(saleInfo.commision))
-                : ""
+              saleInfo.commision ? USDollar.format(saleInfo.commision) : ""
             }
           />
           <TextGroup
             title="Cost of lead"
             value={
-              saleInfo.costOfLead
-                ? USDollar.format(parseInt(saleInfo.costOfLead))
-                : ""
+              saleInfo.costOfLead ? USDollar.format(saleInfo.costOfLead) : ""
             }
           />
           <Button

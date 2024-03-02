@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       calls: user.calls.length,
       appointments: user.appointments.length,
       conversations: user.conversations.length,
-      revenue: user.leads.reduce((sum, lead) => sum + parseInt(lead.saleAmount as string), 0),
+      revenue: user.leads.reduce((sum, lead) => sum + lead.saleAmount, 0),
     }));
 
     return NextResponse.json(userReport);

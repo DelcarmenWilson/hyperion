@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { CheckIcon, Moon, MoonIcon, Sun, SunIcon } from "lucide-react";
+import { CheckIcon, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ export function ThemeClient() {
   }, []);
   return (
     <>
-      <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+      <div className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
         <div className="space-y-0.5">
           <h3 className="flex items-center gap-2">
             <span className="font-semibold">Theme</span>
@@ -33,24 +33,7 @@ export function ThemeClient() {
           <p className="text-muted-foreground">Set Page Theme</p>
         </div>
         <div>
-          {/* <RadioGroup
-            defaultValue={theme}
-            className="flex gap-3"
-            onValueChange={setTheme}
-          >
-            {themes.map((theme) => (
-              <div
-                key={theme}
-                className="flex items-center space-x-2 cursor-pointer"
-              >
-                <RadioGroupItem value={theme} id={theme} />
-                <Label className="cursor-pointer" htmlFor={theme}>
-                  {capitalize(theme)}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup> */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {mounted ? (
               <>
                 <Button
@@ -59,7 +42,7 @@ export function ThemeClient() {
                   onClick={() => setMode("light")}
                   className={cn(mode === "light" && "border-2 border-primary")}
                 >
-                  <SunIcon className="mr-1 -translate-x-1" />
+                  <Sun className="mr-1" />
                   Light
                 </Button>
                 <Button
@@ -68,7 +51,7 @@ export function ThemeClient() {
                   onClick={() => setMode("dark")}
                   className={cn(mode === "dark" && "border-2 border-primary")}
                 >
-                  <MoonIcon className="mr-1 -translate-x-1" />
+                  <Moon className="mr-1" />
                   Dark
                 </Button>
               </>
@@ -120,14 +103,14 @@ export function ThemeClient() {
           })} */}
         </div>
       </div>
-      <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+      <div className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
         <div className="space-y-0.5">
           <h3 className="flex items-center gap-2">
             <span className="font-semibold">Color</span>
           </h3>
           <p className="text-muted-foreground">Set Page Color</p>
         </div>
-        <div className="mr-2 hidden items-center space-x-0.5 lg:flex">
+        <div className="flex flex-wrap mr-2 items-center space-x-0.5">
           {mounted ? (
             <>
               {themes.map((theme) => {
