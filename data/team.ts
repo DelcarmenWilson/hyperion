@@ -81,27 +81,29 @@ export const teamsGetByIdStats = async (
   }
 };
 
-export const teamsGetByIdYearlySales = async (from: string) => {
+export const teamsGetByIdSales = async (
+  id: string,
+  from: string,
+  to: string
+) => {
   try {
-    const currentDate = new Date(from);
-
-    const fromDate = new Date(currentDate.getFullYear(), 0, 1);
-    const toDate = new Date(currentDate.getFullYear(), 11, 31);
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
 
     const sales = await db.lead.findMany({
       where: {
+        user: { teamId: id },
         status: "Sold",
-        NOT: {
-          saleAmount:null
-        },
+        saleAmount: { gt: 1 },
         updatedAt: {
           lte: toDate,
           gte: fromDate,
         },
       },
-      include: { user: { select: { firstName: true,lastName:true,image:true } } },
+      include: {
+        user: { select: { firstName: true, lastName: true, image: true } },
+      },
     });
-
     return sales;
   } catch (error: any) {
     return null;

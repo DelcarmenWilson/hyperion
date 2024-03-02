@@ -160,9 +160,9 @@ export const LeadGeneralSchema = z.object({
 export const LeadSaleSchema = z.object({
   id: z.optional(z.string()),
   vendor:z.string(),
-  saleAmount: z.optional(z.string()),
-  commision: z.optional(z.string()),
-  costOfLead: z.optional(z.string()),
+  saleAmount: z.number(),
+  commision: z.number(),
+  costOfLead: z.number(),
 });
 export const TwilioSchema = z.object({
   phone: z.string(),
@@ -255,9 +255,12 @@ export const UserCarrierSchema = z.object({
 });
 // AMIN
 export const CarrierSchema = z.object({
+  id:z.optional(z.string()),
   image:z.optional(z.string()),
   name : z.string().min(2,"*"),
   description: z.optional(z.string()),
+  website:z.optional(z.string()),
+  portal:z.optional(z.string()),
 });
 
 export const ScriptSchema = z.object({

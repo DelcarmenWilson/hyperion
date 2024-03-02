@@ -88,7 +88,7 @@ export type LeadMainInfo = {
   city?: string ;
   state: string ;
   zipCode?: string ;  
-  quote?: string ;
+  quote: number ;
 };
 export type LeadGeneralInfo = {
   id: string;
@@ -105,9 +105,9 @@ export type LeadSaleInfo = {
   id: string;
   createdAt:Date;
   vendor:string
-  saleAmount?: string ;
-  commision?: string ;
-  costOfLead?: string;
+  saleAmount: number ;
+  commision: number ;
+  costOfLead: number;
 };
 
 export type PhoneType = {

@@ -171,8 +171,8 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
         </div>
       </div>
       <Separator />
-      <div className="grid grid-cols-2 mt-2 p-2">
-        <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 mt-2 p-2">
+        <div className="grid grid-cols-3 gap-2">
           <div>
             <p>Organization</p>
             <Input
@@ -182,7 +182,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             />
           </div>
         </div>
-        <div className="flex items-end gap-2 w-1/2 mb-2">
+        <div className="flex flex-col lg:flex-row justify-end items-end gap-2">
           <DateRangePicker
             setDate={onDateSelected}
             date={dates}
@@ -192,7 +192,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
         </div>
       </div>
       <Separator />
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 mt-6">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 mt-4">
         {data.map((d) => (
           <Overview
             key={d.title}

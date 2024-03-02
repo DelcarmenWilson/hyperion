@@ -1,6 +1,8 @@
 fix the issue where whne you close the dialer the window is giving an error on chrome
 be able to text any number
-
+-- the default number select is small in the leads client page
+--messed up the team report in the admin
+-- see if we can merge the image upload into one route.. user && upload
 
 change the the default phone number per person for saundra
 
@@ -49,17 +51,14 @@ tab called blueprint > personalized businees plan for the indivdual.
 
 
 -----BUGS
--- in the appointment for todays days should populate todays schedule but doesnt (on load)
+-- in the appointment for todays days should populate todays schedule but doesnt (on load) -- check
+--profile image wont update in setting after upload
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 -----Typscript error in 
     -FeedbackId client.-Dev form
     -CallHistoryClient
-
-remvced ckeditor
-npm uninstall --save @ckeditor/ckeditor5-build-classic
-npm uninstall --save @ckeditor/ckeditor5-react
-npm install --save @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic
+    -Admin/carrier/carrierId/form
 
 
 

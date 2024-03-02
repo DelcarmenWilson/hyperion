@@ -31,7 +31,7 @@ export const MainInfoClient = ({ info }: MainInfoProps) => {
     }
     setEdit(false);
   };
-  const onQuoteUpdated = (e?: string) => {
+  const onQuoteUpdated = (e?: number) => {
     if (!e) {
       return;
     }

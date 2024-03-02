@@ -228,6 +228,38 @@ export const adminCarrierInsert = async (
 
   return { success: carrier };
 };
+export const adminCarrierUpdateById = async (
+  values: z.infer<typeof CarrierSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role == "USER") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = CarrierSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id,name, description,website,portal } = validatedFields.data;
+
+  const existingCarrier = await db.carrier.findUnique({ where: { id } });
+  if (!existingCarrier) {
+    return { error: "Carrier does not exists" };
+  }
+
+ await db.carrier.update({where: { id },
+    data: {
+      name, description,website,portal
+    },
+  });
+
+  return { success: "Carrier updated" };
+};
 
 //MEDICAL CONDITIONS
 export const adminMedicalInsert = async (

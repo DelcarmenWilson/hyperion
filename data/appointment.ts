@@ -46,7 +46,7 @@ export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
     let today = getToday();
 
     const appointments = await db.appointment.findMany({
-      where: { agentId, status: "scheduled", createdAt: { lt: today } },
+      where: { agentId, status: "scheduled", createdAt: today },
       include: { agent: true, lead: true },
     });
 

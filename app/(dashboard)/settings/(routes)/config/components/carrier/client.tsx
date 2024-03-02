@@ -51,7 +51,7 @@ export const CarrierClient = ({
           <Plus size={16} className="mr-2" /> New Carrier
         </Button>
       </div>
-      <DataTable columns={columns} data={carriers!} searchKey="carrierNumber" />
+      <DataTable columns={columns} data={carriers!} searchKey="agentId" />
     </>
   );
 };

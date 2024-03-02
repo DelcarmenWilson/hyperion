@@ -58,12 +58,7 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
     await leadUpdateByIdSaleInfo(values).then((data) => {
       if (data.success) {
         if (onChange) {
-          onChange({
-            ...data.success,
-            saleAmount: data.success.saleAmount?.toString(),
-            commision: data.success.commision?.toString(),
-            costOfLead: data.success.costOfLead?.toString(),
-          });
+          onChange(data.success);
         }
         toast.success("Lead info Updated");
       }

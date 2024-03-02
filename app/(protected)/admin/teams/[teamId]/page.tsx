@@ -5,7 +5,7 @@ import { Heading } from "@/components/custom/heading";
 import { TeamClient } from "./components/client";
 import { UsersClient } from "./components/users/client";
 
-import { teamsGetByIdStats, teamsGetByIdYearlySales } from "@/data/team";
+import { teamsGetByIdStats, teamsGetByIdSales } from "@/data/team";
 import { adminUsersGetAll } from "@/data/admin";
 import { weekStartEnd } from "@/formulas/dates";
 import { OverviewChart } from "./components/overview/client";
@@ -22,8 +22,8 @@ const TeamPage = async ({
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const week = weekStartEnd();
-  const from = searchParams.from ? searchParams.from : week.from.toString();
-  const to = searchParams.to ? searchParams.to : (week.to.toString() as string);
+  const from = searchParams.from || week.from.toString();
+  const to = searchParams.to || week.to.toString();
   const team = await teamsGetByIdStats(
     params.teamId,
     from as string,
@@ -31,7 +31,11 @@ const TeamPage = async ({
   );
 
   const users = await adminUsersGetAll();
-  const sales = await teamsGetByIdYearlySales(from as string);
+  const sales = await teamsGetByIdSales(
+    params.teamId,
+    from as string,
+    to as string
+  );
   if (!team) {
     return null;
   }
@@ -53,15 +57,7 @@ const TeamPage = async ({
       (sum, user) => sum + user.conversations.length,
       0
     ),
-    revenue: team.users.reduce(
-      (sum, user) =>
-        sum +
-        user.leads.reduce(
-          (sum, lead) => sum + parseInt(lead.saleAmount as string),
-          0
-        ),
-      0
-    ),
+    revenue: sales?.reduce((sum, sale) => sum + sale.saleAmount, 0) || 0,
   };
 
   const userReport: FullUserTeamReport[] = team.users.map((user) => ({
@@ -72,18 +68,15 @@ const TeamPage = async ({
     calls: user.calls.length,
     appointments: user.appointments.length,
     conversations: user.conversations.length,
-    revenue: user.leads.reduce(
-      (sum, lead) => sum + parseInt(lead.saleAmount as string),
-      0
-    ),
+    revenue: user.leads.reduce((sum, lead) => sum + lead.saleAmount, 0),
   }));
+
   return (
     <>
       <TeamClient team={teamReport} users={users} />
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7 mt-6">
+      <div className="grid gap-y-4 lg:gap-4 grid-cols-1 lg:grid-cols-3 mt-4">
         <OverviewChart data={getGraphRevenue(sales!)} />
-
         <RecentSales sales={sales!} />
       </div>
 

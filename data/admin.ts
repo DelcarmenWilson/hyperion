@@ -34,6 +34,16 @@ export const adminUsersGetAll = async () => {
     }
   };
 
+  export const adminCarrierGetById = async (id:string) => {
+    try {
+      const carrier =await db.carrier.findUnique({where:{id}
+      });
+      return carrier
+    } catch (error) {
+      return null
+    }
+  };
+
   export const adminMedicalConditionsGetAll = async () => {
     try {
       const conditions =await db.medicalCondition.findMany({

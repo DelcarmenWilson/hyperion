@@ -1,31 +1,13 @@
 "use client";
-
 import { useState } from "react";
-import {
-  Calendar,
-  Folder,
-  List,
-  Mail,
-  MessageSquareMore,
-  Pencil,
-  PhoneCall,
-  User,
-  Video,
-} from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import { toast } from "sonner";
 
-import {
-  FullConversation,
-  FullLead,
-  LeadGeneralInfo,
-  LeadMainInfo,
-  LeadSaleInfo,
-} from "@/types";
+import { FullLead, LeadGeneralInfo, LeadMainInfo, LeadSaleInfo } from "@/types";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropDown } from "@/components/lead/dropdown";
 import { Button } from "@/components/ui/button";
 import { GeneralInfoClient } from "@/components/lead/general-info";
@@ -33,31 +15,16 @@ import { SaleInfoClient } from "@/components/lead/sale-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { NotesForm } from "@/components/lead/notes-form";
-import { Sms } from "./sms";
-import { CallHistory } from "./call-history/call-history";
 
-import { CalendarEvents } from "./calendar-events/calendar-events";
-import { ActivityLog } from "./activity-log/activity-log";
-
-import { PageLayout } from "@/components/custom/page-layout";
-import { TopMenu } from "./top-menu";
-
-import { Body } from "./message-client";
 import { PhoneSwitcher } from "./phone-switcher";
 
 import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
 
 type LeadClientProps = {
   lead: FullLead;
-  conversation?: FullConversation;
-  nextPrev?: { prev: string | null; next: string | null } | null;
 };
 
-export const LeadClient = ({
-  lead,
-  conversation,
-  nextPrev,
-}: LeadClientProps) => {
+export const LeadClient = ({ lead }: LeadClientProps) => {
   const [edit, setEdit] = useState(false);
   const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
   const leadMainInfo: LeadMainInfo = {
@@ -70,7 +37,7 @@ export const LeadClient = ({
     city: lead.city || undefined,
     state: lead.state,
     zipCode: lead.zipCode || undefined,
-    quote: lead.quote || undefined,
+    quote: lead.quote,
   };
 
   const leadInfo: LeadGeneralInfo = {
@@ -88,9 +55,9 @@ export const LeadClient = ({
     id: lead.id,
     createdAt: lead.createdAt,
     vendor: lead.vendor,
-    saleAmount: lead.saleAmount || undefined,
-    commision: lead.commision || undefined,
-    costOfLead: lead.costOfLead || undefined,
+    saleAmount: lead.saleAmount,
+    commision: lead.commision,
+    costOfLead: lead.costOfLead,
   };
   const onSetDefaultNumber = (e: string) => {
     if (e != defaultNumber) {
@@ -107,11 +74,7 @@ export const LeadClient = ({
     setEdit(false);
   };
   return (
-    <PageLayout
-      icon={User}
-      title={`View Lead - ${lead.firstName}`}
-      topMenu={<TopMenu nextPrev={nextPrev!} />}
-    >
+    <>
       {/*DATA  */}
       <div className="grid grid-cols-1 lg:grid-cols-5 ">
         <div className="grid grid-cols-1 lg:grid-cols-3 col-span-3 gap-2">
@@ -167,102 +130,6 @@ export const LeadClient = ({
           )}
         </div>
       </div>
-
-      {/* TABS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[400px]">
-        {/* ACTIVITY */}
-        <Tabs
-          defaultValue="activity"
-          className="pt-2 border border-t-0 border-b-0"
-        >
-          <div className="w-full text-center">
-            {lead && (
-              <TabsList className="w-full flex-wrap justify-evenly h-auto">
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="activity"
-                >
-                  <List className="w-4 h-4" />
-                  ACTIVITY LOG
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="call"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                  CALL HISTORY
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="events"
-                >
-                  <Calendar className="w-4 h-4" />
-                  CALENDAR EVENTS
-                </TabsTrigger>
-
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="meetings"
-                >
-                  <Video className="w-4 h-4" />
-                  MEETINGS
-                </TabsTrigger>
-              </TabsList>
-            )}
-          </div>
-
-          <div className="px-2">
-            <TabsContent value="activity">
-              <ActivityLog activities={lead.activities!} />
-            </TabsContent>
-            <TabsContent value="call">
-              <CallHistory leadId={lead.id} initialCalls={lead.calls!} />
-            </TabsContent>
-            <TabsContent value="events">
-              <CalendarEvents appointments={lead.appointments!} />
-            </TabsContent>
-            <TabsContent value="meetings">MEETINGS</TabsContent>
-          </div>
-        </Tabs>
-        {/* ACTIONS */}
-        <Tabs defaultValue="sms" className="pt-2 border border-t-0 border-b-0">
-          <div className="w-full text-center">
-            {lead && (
-              <TabsList className="w-full flex-wrap justify-evenly h-auto">
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="sms"
-                >
-                  <MessageSquareMore className="w-4 h-4" />
-                  SMS History
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="email"
-                >
-                  <Mail className="w-4 h-4" />
-                  SEND EMAIL
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex flex-col justify-center gap-2"
-                  value="documents"
-                >
-                  <Folder className="w-4 h-4" />
-                  DOCUMENTS
-                </TabsTrigger>
-              </TabsList>
-            )}
-          </div>
-
-          <div className="px-2">
-            <TabsContent value="sms">
-              <Body initialData={conversation!} />
-            </TabsContent>
-            <TabsContent value="email">SEND EMAIL</TabsContent>
-            <TabsContent value="documents">DOCUMENTS</TabsContent>
-          </div>
-        </Tabs>
-      </div>
-    </PageLayout>
+    </>
   );
 };

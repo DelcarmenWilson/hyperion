@@ -42,7 +42,7 @@ export const PhoneLeadInfo = () => {
     city: lead.city || undefined,
     state: lead.state,
     zipCode: lead.zipCode || undefined,
-    quote: lead.quote || undefined,
+    quote: lead.quote,
   };
 
   const leadInfo: LeadGeneralInfo = {
@@ -60,9 +60,9 @@ export const PhoneLeadInfo = () => {
     id: lead.id,
     createdAt: lead.createdAt,
     vendor: lead.vendor,
-    saleAmount: lead.saleAmount || undefined,
-    commision: lead.commision || undefined,
-    costOfLead: lead.costOfLead || undefined,
+    saleAmount: lead.saleAmount,
+    commision: lead.commision,
+    costOfLead: lead.costOfLead,
   };
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">

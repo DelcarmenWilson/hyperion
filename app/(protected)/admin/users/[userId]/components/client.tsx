@@ -34,10 +34,7 @@ type UserClientProps = {
 
 export const UserClient = ({ user, teams }: UserClientProps) => {
   const router = useRouter();
-  const ap = user.leads.reduce(
-    (sum, lead) => sum + parseInt(lead.saleAmount as string),
-    0
-  );
+  const ap = user.leads.reduce((sum, lead) => sum + lead.saleAmount, 0);
   const data = [
     {
       title: "Calls",

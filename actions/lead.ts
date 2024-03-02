@@ -225,7 +225,7 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
   return { success: "Lead notes have been updated" };
 };
 
-export const leadUpdateByIdQuote = async (id: string, quote: string) => {
+export const leadUpdateByIdQuote = async (id: string, quote: number) => {
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
@@ -246,7 +246,7 @@ export const leadUpdateByIdQuote = async (id: string, quote: string) => {
       quote,
     },
   });
-  activityInsert(id, "Quote", "Quote updated", user.id, existingLead.quote as string);
+  activityInsert(id, "Quote", "Quote updated", user.id, existingLead.quote.toString());
   return { success: "Lead quote has been updated" };
 };
 

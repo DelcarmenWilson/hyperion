@@ -20,7 +20,7 @@ const ConfigPage = async () => {
   const carriers = await adminCarriersGetAll();
   return (
     <Tabs className="flex gap-2 item-start h-full" defaultValue="licenses">
-      <TabsList className="flex flex-col w-[120px] gap-2  h-full">
+      <TabsList className="flex flex-col w-[120px] gap-2 h-full">
         <TabsTrigger className="w-full" value="licenses">
           Licenses
         </TabsTrigger>

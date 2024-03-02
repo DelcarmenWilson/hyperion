@@ -70,7 +70,6 @@ export const MainInfoForm = ({ info, onChange }: MainInfoFormProps) => {
             address: data.success.address?.toString(),
             city: data.success.city?.toString(),
             zipCode: data.success.zipCode?.toString(),
-            quote: data.success.quote?.toString(),
           });
         }
         toast.success("Lead info Updated");
