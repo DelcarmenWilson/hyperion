@@ -2,7 +2,7 @@
 
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { DrawerRight } from "../custom/drawer-right";
-import PhoneShell from "@/components/phone/phone-shell";
+import PhoneShell from "@/components/phone/addins/shell";
 
 export const PhoneOutModal = () => {
   const { isPhoneOutOpen: isDialerOpen, onPhoneOutClose: onDialerClose } =

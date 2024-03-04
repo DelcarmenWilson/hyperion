@@ -9,6 +9,8 @@ import {
 } from "@/data/admin";
 import { LeadStatusClient } from "./components/leadstatus/client";
 import { MedicalClient } from "./components/medical/client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();
@@ -17,11 +19,18 @@ const PageSettings = async () => {
   return (
     <PageLayoutAdmin title="Page Settings" description="">
       <Tabs defaultValue="carriers" className="pt-2">
-        <TabsList>
-          <TabsTrigger value="carriers">Carriers</TabsTrigger>
-          <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
-          <TabsTrigger value="medical">Conditions</TabsTrigger>
-        </TabsList>
+        <div className=" flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="carriers">Carriers</TabsTrigger>
+            <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
+            <TabsTrigger value="medical">Conditions</TabsTrigger>
+          </TabsList>
+          <Button variant="outlineprimary" asChild>
+            <Link href="/test" target="_blank">
+              Landing page sample
+            </Link>
+          </Button>
+        </div>
         <div className="px-2">
           <TabsContent value="carriers">
             <CarrierClient initCarriers={carriers} />

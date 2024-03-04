@@ -16,7 +16,7 @@ import { CallInfo } from "@/components/lead/call-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { NotesForm } from "@/components/lead/notes-form";
 
-import { PhoneSwitcher } from "./phone-switcher";
+import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
 

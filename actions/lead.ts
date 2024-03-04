@@ -39,7 +39,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     dateOfBirth,
   } = validatedFields.data;
 
-  const existingLead = await db.lead.findMany({
+  const existingLead = await db.lead.findUnique({
     where: {
       cellPhone: reFormatPhoneNumber(cellPhone),
     },
@@ -49,11 +49,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
     homePhone == cellPhone;
   }
 
-  if (existingLead.length) {
-    return { error: "Lead already exist" };
-  }
-
-  const st = states.find(
+    const st = states.find(
     (e) =>
       e.state.toLowerCase() == state.toLowerCase() ||
       e.abv.toLowerCase() == state.toLowerCase()
@@ -65,8 +61,28 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
 
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
-
-  const newLead = await db.lead.create({
+  let newLead
+  if(existingLead){
+     newLead = await db.leadDuplicates.create({
+      data: {
+        firstName,
+        lastName,
+        address,
+        city,
+        state,
+        zipCode,
+        homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
+        cellPhone: reFormatPhoneNumber(cellPhone),
+        gender: gender,
+        maritalStatus: maritalStatus,
+        email,
+        dateOfBirth,
+        userId: user.id,
+      },
+    });
+  }
+  else{
+   newLead = await db.lead.create({
     data: {
       firstName,
       lastName,
@@ -84,7 +100,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
       userId: user.id,
     },
   });
-
+}
   return { success: newLead };
 };
 
@@ -93,6 +109,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
   if (!user) {
     return { error: "Unauthorized" };
   }
+  let duplicates=0
   const phoneNumbers = await db.phoneNumber.findMany({
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
@@ -130,37 +147,71 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
         e.abv.toLowerCase() == state.toLowerCase()
     );
     const phoneNumber = phoneNumbers.find((e) => e.state == state);
-    await db.lead.create({
-      data: {
-        firstName,
-        lastName,
-        address,
-        city,
-        state: st?.abv ? st.abv : state,
-        zipCode,
-        homePhone,
-        cellPhone,
-        gender,
-        maritalStatus,
-        email,
-        dateOfBirth,
-        weight,
-        height,
-        income,
-        policyAmount,
-        smoker,
-        currentlyInsured,
-        currentInsuranse,
-        type,
-        vendor,
-        recievedAt:
-          Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
-        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
-        userId: user?.id,
-      },
-    });
+    const existingLead=await db.lead.findUnique({where:{cellPhone}})
+    if(existingLead){
+      duplicates++
+      await db.leadDuplicates.create({
+        data: {
+          firstName,
+          lastName,
+          address,
+          city,
+          state: st?.abv ? st.abv : state,
+          zipCode,
+          homePhone,
+          cellPhone,
+          gender,
+          maritalStatus,
+          email,
+          dateOfBirth,
+          weight,
+          height,
+          income,
+          policyAmount,
+          smoker,
+          currentlyInsured,
+          currentInsuranse,
+          type,
+          vendor,
+          recievedAt:
+            Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
+          userId: user?.id,
+        },
+      });
+    }else{
+
+      await db.lead.create({
+        data: {
+          firstName,
+          lastName,
+          address,
+          city,
+          state: st?.abv ? st.abv : state,
+          zipCode,
+          homePhone,
+          cellPhone,
+          gender,
+          maritalStatus,
+          email,
+          dateOfBirth,
+          weight,
+          height,
+          income,
+          policyAmount,
+          smoker,
+          currentlyInsured,
+          currentInsuranse,
+          type,
+          vendor,
+          recievedAt:
+            Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
+          defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+          userId: user?.id,
+        },
+      });
+    }
   }
-  return { success: `${values.length} Leads have been imported` };
+  return { success: `${values.length} Leads have been imported - duplicates(${duplicates})` };
 };
 
 export const leadUpdateById = async (

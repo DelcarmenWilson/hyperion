@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Theme, themes } from "@/constants/themes";
+import { themes } from "@/constants/themes";
 
 export function ThemeClient() {
   const [mounted, setMounted] = useState(false);
@@ -62,45 +62,6 @@ export function ThemeClient() {
               </>
             )}
           </div>
-          {/* {themes.map((theme) => {
-            const isActive = config.theme === theme.name;
-
-            return mounted ? (
-              <Button
-                variant={"outline"}
-                size="sm"
-                key={theme.name}
-                onClick={() => {
-                  setConfig({
-                    ...config,
-                    theme: theme.name,
-                  });
-                }}
-                className={cn(
-                  "justify-start",
-                  isActive && "border-2 border-primary"
-                )}
-                style={
-                  {
-                    "--theme-primary": `hsl(${
-                      theme?.activeColor[mode === "dark" ? "dark" : "light"]
-                    })`,
-                  } as React.CSSProperties
-                }
-              >
-                <span
-                  className={cn(
-                    "mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]"
-                  )}
-                >
-                  {isActive && <CheckIcon className="h-4 w-4 text-white" />}
-                </span>
-                {theme.label}
-              </Button>
-            ) : (
-              <Skeleton className="h-8 w-full" key={theme.name} />
-            );
-          })} */}
         </div>
       </div>
       <div className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
@@ -114,7 +75,6 @@ export function ThemeClient() {
           {mounted ? (
             <>
               {themes.map((theme) => {
-                // const theme = themes.find((theme) => theme.name === color);
                 const isActive = config.theme === theme.name;
 
                 if (!theme) {

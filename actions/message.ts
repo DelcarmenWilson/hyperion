@@ -23,8 +23,8 @@ export const messageInsert = async (
       content,
       hasSeen,
       senderId,
-      sid,
-    },
+      sid,      
+    },include:{}
   });
 
   const conversation=await db.conversation.update({where:{id:conversationId},data:{lastMessage:content}})
@@ -32,5 +32,5 @@ export const messageInsert = async (
   await pusherServer.trigger(conversationId, "messages:new", newMessage);
   await pusherServer.trigger(senderId, "messages:new", conversation);
 
-  return { success: "Message Created!" };
+  return { success: newMessage };
 };

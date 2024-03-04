@@ -60,11 +60,4 @@ tab called blueprint > personalized businees plan for the indivdual.
     -CallHistoryClient
     -Admin/carrier/carrierId/form
 
-
-
-git checkout master
-git pull
-git merge --no-ff --no-commit teams
-
-git commit -m teams
-git push
+-- transcription has been turned of as of 3-2-24
