@@ -51,18 +51,16 @@ export const DrawerRight = ({
                   className={cn("pointer-events-auto w-screen", size)}
                 >
                   <div className="flex flex-col h-full overflow-y-auto bg-background  py-2 shadow-xl">
-                    <div className="px-2 sm:px-2">
-                      <div className="flex items-center justify-between">
-                        <p className=" font-semibold text-xl">{title}</p>
-                        <div className="flex h-7 items-center">
-                          <Button size="sm" onClick={onClose}>
-                            <span className="sr-only">Close panel</span>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+                    <div className=" flex items-center justify-between px-2">
+                      <p className=" font-semibold text-xl">{title}</p>
+                      <Button size="sm" onClick={onClose}>
+                        <span className="sr-only">Close panel</span>
+                        <X size={16} />
+                      </Button>
                     </div>
-                    <ScrollArea className="flex-1 p-2">{children}</ScrollArea>
+                    <ScrollArea className="flex-1 h-full p-2">
+                      {children}
+                    </ScrollArea>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

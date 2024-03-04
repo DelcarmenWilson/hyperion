@@ -4,11 +4,12 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pause, Play } from "lucide-react";
 
-interface AudioPlayerProps {
+type AudioPlayerProps = {
   src: string;
-}
+  onListened?: () => void;
+};
 
-export const AudioPlayer = ({ src }: AudioPlayerProps) => {
+export const AudioPlayer = ({ src, onListened }: AudioPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const onPlayPause = () => {
@@ -19,6 +20,9 @@ export const AudioPlayer = ({ src }: AudioPlayerProps) => {
       audioRef.current.play();
       audioRef.current.onended = (ev) => {
         setPlaying(false);
+        if (onListened) {
+          onListened();
+        }
       };
     }
     setPlaying((state) => !state);

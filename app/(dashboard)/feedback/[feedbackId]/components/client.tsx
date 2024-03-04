@@ -1,11 +1,7 @@
 "use client";
 import { MessageSquarePlus } from "lucide-react";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-
 import { Feedback, User } from "@prisma/client";
-import { format } from "date-fns";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedbackForm } from "../../components/shared/form";
 import { PageLayout } from "@/components/custom/page-layout";
 import { DevFeedbackForm } from "./dev-feedback-form";

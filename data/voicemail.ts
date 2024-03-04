@@ -10,7 +10,7 @@ export const voicemailGetUnHeard = async (userId: string) => {
         recordUrl: true,
         updatedAt: true,
         lead: { select: { firstName: true, lastName: true } },
-      },
+      }, orderBy:{createdAt:"desc"}
     });
 
     return voicemails;

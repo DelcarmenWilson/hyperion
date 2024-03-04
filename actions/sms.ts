@@ -1,5 +1,5 @@
 "use server";
-
+import * as z from "zod";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -9,6 +9,7 @@ import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio-config";
+import { SmsMessageSchema } from "@/schemas";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -108,11 +109,18 @@ export const smsCreateInitial = async (leadId: string) => {
   return { success: "Inital message sent!" };
 };
 
-export const smsCreate = async (leadId: string, message: string) => {
+export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
   }
+  const validatedFields = SmsMessageSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const { leadId,content } =
+  validatedFields.data;
+
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!lead) {
@@ -128,26 +136,26 @@ export const smsCreate = async (leadId: string, message: string) => {
   if (!convoid) {
     convoid = (await conversationInsert(user.id, lead.id)).success;
   }
+ 
+  // const result = await client.messages.create({
+  //   body: message,
+  //   from: lead.defaultNumber,
+  //   to: lead.cellPhone || (lead.homePhone as string),
+  // });
 
-  await messageInsert({
+  // if (!result) {
+  //   return { error: "Message was not sent!" };
+  // }
+
+  const newMessage= await messageInsert({
     role: "assistant",
-    content: message,
+    content,
     conversationId: convoid!,
     senderId: user.id,
     hasSeen: false,
   });
 
-  const result = await client.messages.create({
-    body: message,
-    from: lead.defaultNumber,
-    to: lead.cellPhone || (lead.homePhone as string),
-  });
-
-  if (!result) {
-    return { error: "Message was not sent!" };
-  }
-
-  return { success: "Message sent!" };
+  return { success: newMessage.success };
 };
 
 export const smsSend = async (

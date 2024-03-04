@@ -1,6 +1,5 @@
 "use client";
 
-import { Modal } from "@/components/custom/modal";
 import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 import { useEffect } from "react";
 

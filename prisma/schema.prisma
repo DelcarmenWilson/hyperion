@@ -289,7 +289,7 @@ model Lead {
   state            String
   zipCode          String?
   homePhone        String?
-  cellPhone        String
+  cellPhone        String        @unique
   gender           Gender        @default(NA)
   maritalStatus    MaritalStatus @default(Single)
   email            String?
@@ -325,6 +325,38 @@ model Lead {
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
   updatedBy  String?
+  updatedAt  DateTime @updatedAt
+}
+
+model LeadDuplicates {
+  id               String        @id @default(cuid())
+  firstName        String
+  lastName         String
+  address          String?
+  city             String?
+  state            String
+  zipCode          String?
+  homePhone        String?
+  cellPhone        String?
+  gender           Gender        @default(NA)
+  maritalStatus    MaritalStatus @default(Single)
+  email            String?
+  dateOfBirth      String?       @default("")
+  weight           String?
+  height           String?
+  income           String?
+  policyAmount     String?
+  smoker           Boolean       @default(false)
+  currentlyInsured Boolean       @default(false)
+  currentInsuranse String?
+
+  vendor String @default("Manually_Created")
+  type   String @default("General")
+
+  userId String
+
+  recievedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 

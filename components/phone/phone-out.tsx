@@ -17,13 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { PhoneSwitcher } from "./addins/switcher";
 
 import { numbers } from "@/constants/phone-numbers";
 import { PhoneType } from "@/types";
@@ -40,8 +34,8 @@ export const PhoneOut = () => {
   const { phone } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
-  // PHONE VARIABLES
 
+  // PHONE VARIABLES
   const [toName, setToName] = useState(lead ? leadFullName : "New Call");
   const [toNumber, setToNumber] = useState(
     formatPhoneNumber(lead?.cellPhone as string) || ""
@@ -200,7 +194,12 @@ export const PhoneOut = () => {
       </div>
       <div className="flex justify-between items-center">
         <span className="w-40">Caller Id</span>
-        <Select
+        <PhoneSwitcher
+          number={selectedNumber}
+          onSetDefaultNumber={setSelectedNumber}
+          controls={false}
+        />
+        {/* <Select
           name="ddlPhoneNumbers"
           disabled={!!call}
           defaultValue={selectedNumber}
@@ -216,7 +215,7 @@ export const PhoneOut = () => {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select> */}
       </div>
       <div className="flex  items-center text-sm gap-2">
         <AlertCircle className="h-4 w-4" /> Call recording

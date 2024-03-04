@@ -98,8 +98,8 @@ export const voicemailResponse = async () => {
   twiml.record({
     action: "/api/voice/voicemail",
     timeout: 5,
-    transcribe: true,
-    transcribeCallback: "/api/voice/transcribe",
+    // transcribe: true,
+    // transcribeCallback: "/api/voice/transcribe",
   });
   twiml.say(
     { voice: "alice" },

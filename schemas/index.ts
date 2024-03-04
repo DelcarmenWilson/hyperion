@@ -185,6 +185,12 @@ export const MessageSchema = z.object({
   sid: z.optional(z.string()),
 });
 
+
+export const SmsMessageSchema = z.object({
+  leadId: z.optional(z.string()),
+  content: z.string(),
+});
+
 export const PresetSchema = z.object({
   type: z.enum([
     Preset.Birthday,

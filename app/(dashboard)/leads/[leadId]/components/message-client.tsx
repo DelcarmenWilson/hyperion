@@ -1,15 +1,15 @@
-import { PaperPlaneIcon } from "@radix-ui/react-icons";
-import { PictureInPicture } from "lucide-react";
+import { PictureInPicture, Send } from "lucide-react";
 
 import { FullConversation } from "@/types";
 
 import { MessageBox } from "@/components/reusable/message-box";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-interface BodyProps {
-  initialData: FullConversation;
-}
+type BodyProps = {
+  initialData?: FullConversation;
+};
 
 export const Body = ({ initialData }: BodyProps) => {
   return (
@@ -35,12 +35,12 @@ export const Body = ({ initialData }: BodyProps) => {
             />
           ))}
         </ScrollArea>
-        <div className="flex items-center p-4 border w-full gap-2">
+        <div className="flex items-center p-2 w-full gap-2">
           <PictureInPicture className="h-5 w-5" />
           <Input className="flex-1" />
-          <div className="rounded-full bg-primary text-accent p-2">
-            <PaperPlaneIcon className=" h-5 w-5" />
-          </div>
+          <Button className="rounded-full" size="icon">
+            <Send size={16} />
+          </Button>
         </div>
       </div>
     </div>
