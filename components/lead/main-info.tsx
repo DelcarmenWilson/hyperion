@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { FilePenLine } from "lucide-react";
+import { FilePenLine, MessageSquare } from "lucide-react";
 
 import { LeadMainInfo } from "@/types";
 import { formatPhoneNumber } from "@/formulas/phones";
@@ -19,8 +19,9 @@ import { leadUpdateByIdQuote } from "@/actions/lead";
 
 type MainInfoProps = {
   info: LeadMainInfo;
+  conversationId?: string;
 };
-export const MainInfoClient = ({ info }: MainInfoProps) => {
+export const MainInfoClient = ({ info, conversationId }: MainInfoProps) => {
   const router = useRouter();
   const [edit, setEdit] = useState(false);
   const [leadInfo, setLeadInfo] = useState<LeadMainInfo>(info);
@@ -47,15 +48,15 @@ export const MainInfoClient = ({ info }: MainInfoProps) => {
       });
     }
   };
-  const onSendInitialSms = async () => {
+  const onSendInitialSms = () => {
     if (!info) return;
-    await smsCreateInitial(info.id).then((data) => {
+    smsCreateInitial(info.id).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);
       }
       if (data?.success) {
-        toast.error(data.success);
+        toast.success(data.success);
       }
     });
   };
@@ -97,9 +98,9 @@ export const MainInfoClient = ({ info }: MainInfoProps) => {
       />
 
       {/* <div>
-        {!lead.conversation?.id && (
+        {!conversationId && (
           <Button
-            disabled={lead.status == "Do_Not_Call"}
+            disabled={leadInfo.status == "Do_Not_Call"}
             variant="outlineprimary"
             size="xs"
             onClick={onSendInitialSms}

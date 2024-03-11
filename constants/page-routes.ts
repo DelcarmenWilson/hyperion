@@ -26,6 +26,7 @@ import {
   ThermometerSun,
   UserSquare,
   Users,
+  Voicemail,
 } from "lucide-react";
 export type NavType = {
   title: string;
@@ -67,6 +68,11 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/test",
     icon: TestTube,
     master: true,
+  },
+  {
+    title: "Voicemail",
+    href: "/admin/voicemail",
+    icon: Voicemail,
   },
 ];
 

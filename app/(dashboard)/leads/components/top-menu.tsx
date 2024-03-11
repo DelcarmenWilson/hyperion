@@ -1,27 +1,37 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DownloadCloud, Paperclip, Plus } from "lucide-react";
+import { Paperclip, Plus } from "lucide-react";
 import { ImportLeadsForm } from "./import/import-leads-form";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
 
-type TopMenuProps = {
-  setIsOpen: (e: boolean) => void;
-};
-export const TopMenu = ({ setIsOpen }: TopMenuProps) => {
+import { DrawerRight } from "@/components/custom/drawer-right";
+import { NewLeadForm } from "./new-lead-form";
+
+export const TopMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       {/* <Button variant="outlineprimary" size="sm">
               <DownloadCloud className="h-4 w-4 mr-2" />
               GENERATE CSV
             </Button> */}
+
+      <DrawerRight
+        title="New Lead"
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      >
+        <NewLeadForm onClose={() => setIsOpen(false)} />
+      </DrawerRight>
+
       <Dialog>
         <Tooltip>
           <TooltipTrigger asChild>

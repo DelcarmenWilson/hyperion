@@ -13,14 +13,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -31,35 +23,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { SlidersHorizontal } from "lucide-react";
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useRef } from "react";
 import { DataTablePagination } from "./data-table-pagination";
-
-interface DataTableProps<TData, TValue> {
+import { DataTableFilter } from "./data-table-filter";
+type DataTableLeadProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
   headers?: boolean;
-}
+  hidden?: VisibilityState;
+  placeHolder?: string;
+};
 
-export function DataTableHeadless<TData, TValue>({
+export function DataTableLead<TData, TValue>({
   columns,
   data,
-  searchKey,
   headers = false,
-}: DataTableProps<TData, TValue>) {
+  hidden = {},
+  placeHolder = "Search",
+}: DataTableLeadProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [filtering, setFiltering] = React.useState("");
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>(hidden);
   const [rowSelection, setRowSelection] = React.useState({});
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -78,57 +67,36 @@ export function DataTableHeadless<TData, TValue>({
       sorting,
       columnFilters,
       columnVisibility,
+      // columnVisibility: {
+      //   firstName: false,
+      //   lastName: false,
+      //   cellPhone: false,
+      //   email: false,
+      //   status: false,
+      //   vendor: false,
+      //   state: false,
+      // },
       rowSelection,
+      globalFilter: filtering,
     },
+    onGlobalFilterChange: setFiltering,
   });
 
   return (
     <div className="px-1">
-      <div ref={topRef} className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Search"
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+      <div ref={topRef} className="pb-2">
+        <DataTableFilter
+          table={table}
+          filtering={filtering}
+          setFiltering={setFiltering}
+          placeHolder={placeHolder}
         />
-        <div className="flex justify-between gap-x-2">
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
-                    Columns
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Set columns</p>
-              </TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {/* <Input
+          placeholder="Search"
+          value={filtering}
+          onChange={(event) => setFiltering(event.target.value)}
+          className="max-w-sm"
+        /> */}
       </div>
       <div className="rounded-md border">
         <Table>

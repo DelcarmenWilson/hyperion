@@ -38,6 +38,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     state: lead.state,
     zipCode: lead.zipCode || undefined,
     quote: lead.quote,
+    status: lead.status,
   };
 
   const leadInfo: LeadGeneralInfo = {
@@ -82,7 +83,10 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
             <div className="absolute top-0 right-0">
               <DropDown lead={lead} />
             </div>
-            <MainInfoClient info={leadMainInfo} />
+            <MainInfoClient
+              info={leadMainInfo}
+              conversationId={lead.conversation?.id as string}
+            />
           </div>
           <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
           <CallInfo lead={lead} />

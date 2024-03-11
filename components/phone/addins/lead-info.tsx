@@ -15,10 +15,13 @@ import { PhoneScript } from "./script";
 import { Button } from "../../ui/button";
 import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
 
-export const PhoneLeadInfo = () => {
+type PhoneLeadInfo = {
+  open?: boolean;
+};
+export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const { lead } = usePhoneModal();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
 
   // const OnToggleOpen = () => {
   //   if (isOpen) {
@@ -42,6 +45,7 @@ export const PhoneLeadInfo = () => {
     state: lead.state,
     zipCode: lead.zipCode || undefined,
     quote: lead.quote,
+    status: lead.status,
   };
 
   const leadInfo: LeadGeneralInfo = {
@@ -67,7 +71,7 @@ export const PhoneLeadInfo = () => {
     <div className="flex flex-1 justify-start relative overflow-hidden">
       <div className="flex items-center justify-center w-[44px] h-full overflow-hidden relative px-2">
         <Button
-          className="rotate-90"
+          className={cn("rotate-90", open && "hidden")}
           variant={isOpen ? "default" : "outline"}
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -107,7 +111,7 @@ export const PhoneLeadInfo = () => {
             intialNotes={lead?.notes as string}
           />
         </div>
-        <PhoneScript />
+        {!open && <PhoneScript />}
       </div>
     </div>
   );

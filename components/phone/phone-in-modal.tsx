@@ -8,7 +8,6 @@ import {
   X,
 } from "lucide-react";
 import axios from "axios";
-import { Connection } from "twilio-client";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -23,17 +22,20 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone-provider";
 import { PhoneAgents } from "@/constants/phone";
+import { cn } from "@/lib/utils";
+import { PhoneLeadInfo } from "./addins/lead-info";
 
 export const PhoneInModal = () => {
-  const { isPhoneInOpen, onPhoneInClose, onPhoneInOpen } = usePhoneModal();
-  const { phone } = usePhoneContext();
+  const { isPhoneInOpen, onPhoneInClose, onPhoneInOpen, onSetLead, lead } =
+    usePhoneModal();
+  const { phone, call, setCall } = usePhoneContext();
   const [agent, setAgent] = useState("");
+  const [showLeadInfo, setShowLeadInfo] = useState(false);
 
   // PHONE VARIABLES
-  const [call, setInComingCall] = useState<Connection>();
+  // const [call, setInComingCall] = useState<Connection>();
   const [isCallAccepted, setIsCallAccepted] = useState(false);
-  const [fromNumber, setFromNumber] = useState("");
-  const [fromName, setFromName] = useState("");
+  const [from, setFrom] = useState<{ name: string; number: string }>();
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
 
@@ -47,7 +49,7 @@ export const PhoneInModal = () => {
       console.log(error);
     });
 
-    phone.on("incoming", async function (call: Connection) {
+    phone.on("incoming", async function (call: any) {
       call.on("disconnect", function (error: any) {
         onIncomingCallDisconnect();
       });
@@ -59,23 +61,23 @@ export const PhoneInModal = () => {
       });
 
       const data = response.data;
-      const fullName = data.firstName
-        ? `${data.firstName} ${data.lastName}`
-        : "Unknown Caller";
-      setFromName(fullName);
-      setFromNumber(data.cellPhone || call.parameters.From);
+      onSetLead(data);
+
+      setFrom({
+        name: data.firstName
+          ? `${data.firstName} ${data.lastName}`
+          : "Unknown Caller",
+        number: data.cellPhone || call.parameters.From,
+      });
 
       onPhoneInOpen();
-      setInComingCall(call);
+      setCall(call);
     });
   }
 
   const onIncomingCallDisconnect = () => {
     call?.disconnect();
-    setInComingCall(undefined);
     setIsCallAccepted(false);
-    setFromName("");
-    setFromNumber("");
     setRunning(false);
     setTime(0);
     onPhoneInClose();
@@ -89,7 +91,6 @@ export const PhoneInModal = () => {
 
   const onIncomingCallReject = () => {
     call?.reject();
-    setInComingCall(undefined);
     setIsCallAccepted(false);
     onPhoneInClose();
   };
@@ -109,9 +110,33 @@ export const PhoneInModal = () => {
   useEffect(() => {
     addDeviceListeners();
   }, []);
+
+  // useEffect(() => {
+  //   const test = async () => {
+  //     const response = await axios.post("/api/leads/details", {
+  //       phone: "+13478030962",
+  //     });
+
+  //     const data = response.data;
+
+  //     onSetLead(data);
+
+  //     setFrom({
+  //       name: data.firstName
+  //         ? `${data.firstName} ${data.lastName}`
+  //         : "Unknown Caller",
+  //       phone: data.cellPhone || "+3478030962",
+  //     });
+  //   };
+  //   test();
+  // }, []);
   return (
     <Transition.Root show={isPhoneInOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onPhoneInClose}>
+      <Dialog
+        as="div"
+        className="relative z-50 pointer-events-none"
+        onClose={() => {}}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"
@@ -123,31 +148,66 @@ export const PhoneInModal = () => {
         >
           <div className="fixed inset-0 bg-black bg-opacity-40" />
         </Transition.Child>
+
         <div className="fixed inset-0 overflow-hidden pointer-events-none ">
-          <div className="flex justify-center items-center w-full h-full overflow-hidden pointer-events-none ">
-            <div className="pointer-events-none">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-500"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-500"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+          <div
+            className={cn(
+              "flex justify-center  w-full h-full overflow-hidden pointer-events-none p-10",
+              showLeadInfo ? "" : "items-center"
+            )}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-500"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-500"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Panel
+                className={cn(
+                  "pointer-events-auto w-screen",
+                  showLeadInfo ? " min-w-full" : "w-[400px]"
+                )}
               >
-                <Dialog.Panel className="pointer-events-auto w-[400px] ">
+                {showLeadInfo ? (
+                  <div className="flex flex-col gap-2 overflow-y-auto bg-white p-2 shadow-xl rounded-md text-sm relative">
+                    <div className=" flex gap-2 absolute top-2 left-2 z-50">
+                      <Button size="sm" onClick={() => setShowLeadInfo(false)}>
+                        Return to call
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="gap-2"
+                        onClick={onIncomingCallDisconnect}
+                      >
+                        <PhoneOff size={16} /> Hang Up
+                      </Button>
+                    </div>
+                    <PhoneLeadInfo open={true} />
+                  </div>
+                ) : (
                   <div className="flex flex-col gap-2 overflow-y-auto bg-white p-2 shadow-xl rounded-md text-sm">
-                    <div className="flex items-center justify-center gap-2">
-                      <PhoneIncoming className="w-4 h-4" />
-                      <span>
-                        Incoming call from{" "}
-                        <span className="text-primary font-bold italic">
-                          {fromNumber}
-                        </span>
+                    <div className="flex items-center gap-2">
+                      <PhoneIncoming size={16} />
+                      Incoming call from
+                      <span className="text-primary font-bold italic">
+                        {from?.number}
                       </span>
+                      {lead && (
+                        <Button
+                          size="sm"
+                          className="ml-auto"
+                          onClick={() => setShowLeadInfo(true)}
+                        >
+                          Show Lead
+                        </Button>
+                      )}
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Lead name: {fromName}</span>
+                      <span>Lead name: {from?.name}</span>
                       <span className="text-primary font-bold">
                         {formatSecondsToTime(time)}
                       </span>
@@ -155,27 +215,27 @@ export const PhoneInModal = () => {
                     {!isCallAccepted ? (
                       <div className="flex flex-col gap-2">
                         <Button
-                          className="flex justify-center items-center gap-2"
+                          className="gap-2"
                           onClick={onIncomingCallAccept}
                         >
-                          <Phone className="w-4 h-4" /> Answer
+                          <Phone size={16} /> Answer
                         </Button>
 
                         <Button
                           variant="destructive"
-                          className="flex justify-center items-center gap-2"
+                          className="gap-2"
                           onClick={onIncomingCallReject}
                         >
-                          <PhoneOff className="w-4 h-4" /> Reject
+                          <PhoneOff size={16} /> Reject
                         </Button>
                       </div>
                     ) : (
                       <Button
                         variant="destructive"
-                        className="flex justify-center items-center gap-2"
+                        className="gap-2"
                         onClick={onIncomingCallDisconnect}
                       >
-                        <PhoneOff className="w-4 h-4" /> Hang Up
+                        <PhoneOff size={16} /> Hang Up
                       </Button>
                     )}
 
@@ -194,14 +254,14 @@ export const PhoneInModal = () => {
                     <Button
                       variant="secondary"
                       disabled={!agent}
-                      className="flex justify-center items-center gap-2"
+                      className="gap-2"
                     >
-                      <PhoneForwarded className="w-4 h-4" /> Forward Call
+                      <PhoneForwarded size={16} /> Forward Call
                     </Button>
                   </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
+                )}
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
         </div>
       </Dialog>

@@ -88,7 +88,9 @@ export type LeadMainInfo = {
   city?: string ;
   state: string ;
   zipCode?: string ;  
+  status:string;
   quote: number ;
+
 };
 export type LeadGeneralInfo = {
   id: string;
