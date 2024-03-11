@@ -37,14 +37,16 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
 
   const onHyperChatToggle = () => {
     setAutoChat((state) => !state);
-    conversationUpdateByIdAutoChat(lead.id, !autoChat).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
+    conversationUpdateByIdAutoChat(conversation?.id as string, !autoChat).then(
+      (data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+        }
       }
-      if (data.success) {
-        toast.success(data.success);
-      }
-    });
+    );
   };
 
   const onDelete = async () => {
@@ -62,57 +64,65 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
     }
   };
   return (
-    <>
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="rounded-full" size="icon">
-            <ChevronDown className="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-60" align="center">
+    // <Button
+    //   disabled={lead.status == "Do_Not_Call"}
+    //   className="cursor-pointer rounded-full"
+    //   size="icon"
+    //   onClick={() => useAppointment.onOpen(lead)}
+    // >
+    //   <Calendar size={16} />
+    // </Button>
+    // <>
+    //   <AlertModal
+    //     isOpen={alertOpen}
+    //     onClose={() => setAlertOpen(false)}
+    //     onConfirm={onDelete}
+    //     loading={loading}
+    //   />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="rounded-full" size="icon">
+          <ChevronDown className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-60" align="center">
+        <DropdownMenuItem
+          disabled={lead.status == "Do_Not_Call"}
+          className="cursor-pointer"
+          onClick={() => useAppointment.onOpen(lead)}
+        >
+          <Calendar className="h-4 w-4 mr-2" />
+          New Appointment
+        </DropdownMenuItem>
+        {conversation?.id && (
           <DropdownMenuItem
-            disabled={lead.status == "Do_Not_Call"}
-            className="cursor-pointer"
-            onClick={() => useAppointment.onOpen(lead)}
+            className={cn(
+              " text-background cursor-pointer",
+              autoChat ? "bg-primary" : "bg-destructive"
+            )}
+            onClick={onHyperChatToggle}
           >
-            <Calendar className="h-4 w-4 mr-2" />
-            New Appointment
-          </DropdownMenuItem>
-          {conversation?.id && (
-            <DropdownMenuItem
-              className={cn(
-                " text-background cursor-pointer",
-                autoChat ? "bg-primary" : "bg-destructive"
+            <div className="flex items-center justify-between gap-2">
+              {autoChat ? (
+                <Check className="w-4 h-4 " />
+              ) : (
+                <X className="w-4 h-4 " />
               )}
-              onClick={onHyperChatToggle}
-            >
-              <div className="flex items-center justify-between gap-2">
-                {autoChat ? (
-                  <Check className="w-4 h-4 " />
-                ) : (
-                  <X className="w-4 h-4 " />
-                )}
-                <span>Hyper Chat</span>
-                <span>{autoChat ? "ON" : "OFF"}</span>
-              </div>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
+              <span>Hyper Chat</span>
+              <span>{autoChat ? "ON" : "OFF"}</span>
+            </div>
+          </DropdownMenuItem>
+        )}
+        {/* <DropdownMenuSeparator />
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={() => setAlertOpen(true)}
           >
             <Trash className="h-4 w-4 mr-2" />
             Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+          </DropdownMenuItem> */}
+      </DropdownMenuContent>
+    </DropdownMenu>
+    // </>
   );
 };

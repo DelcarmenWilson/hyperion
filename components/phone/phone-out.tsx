@@ -11,8 +11,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { usePhoneContext } from "@/providers/phone-provider";
 
-import { Connection } from "twilio-client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -26,20 +24,26 @@ import {
   chatSettingsUpdateCoach,
   chatSettingsUpdateRecord,
 } from "@/actions/chat-settings";
+import { toFinite } from "lodash";
 
 export const PhoneOut = () => {
   const { update } = useSession();
   const user = useCurrentUser();
   const { lead } = usePhoneModal();
-  const { phone } = usePhoneContext();
+  const { phone, call, setCall } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
 
   // PHONE VARIABLES
-  const [toName, setToName] = useState(lead ? leadFullName : "New Call");
-  const [toNumber, setToNumber] = useState(
-    formatPhoneNumber(lead?.cellPhone as string) || ""
-  );
+
+  const [to, setTo] = useState<{ name: string; number: string }>({
+    name: lead ? leadFullName : "New Call",
+    number: formatPhoneNumber(lead?.cellPhone as string) || "",
+  });
+  // const [toName, setToName] = useState(lead ? leadFullName : "New Call");
+  // const [toNumber, setToNumber] = useState(
+  //   formatPhoneNumber(lead?.cellPhone as string) || ""
+  // );
   const [record, setRecord] = useState(user?.record);
   const [coach, setCoach] = useState(false);
 
@@ -50,7 +54,6 @@ export const PhoneOut = () => {
       : user?.phoneNumbers[0]?.phone || ""
   );
 
-  const [call, setCall] = useState<Connection>();
   const [isCallMuted, setIsCallMuted] = useState(false);
 
   const startupClient = () => {
@@ -77,19 +80,23 @@ export const PhoneOut = () => {
   const onStarted = () => {
     if (!phone) return;
     if (!lead) {
-      setToNumber((state) => formatPhoneNumber(state));
+      setTo((state) => {
+        return { ...state, number: formatPhoneNumber(state.number) };
+      });
       axios
-        .post("/api/leads/details", { phone: reFormatPhoneNumber(toNumber) })
+        .post("/api/leads/details", { phone: reFormatPhoneNumber(to.number) })
         .then((response) => {
           const { id, cellPhone, firstName, lastName } = response.data;
           if (id) {
-            setToName(`${firstName} ${lastName}`);
+            setTo((state) => {
+              return { ...state, name: `${firstName} ${lastName}` };
+            });
           }
         });
     }
 
     const call = phone.connect({
-      To: reFormatPhoneNumber(toNumber),
+      To: reFormatPhoneNumber(to.number),
       AgentNumber: selectedNumber as string,
       Recording: record ? "record-from-answer-dual" : "do-not-record",
       Coach: coach ? "on" : "off",
@@ -102,25 +109,29 @@ export const PhoneOut = () => {
 
   const onDisconnect = () => {
     call?.disconnect();
-    setCall(undefined);
+    setCall(null);
   };
 
   const onNumberClick = (num: string) => {
     if (call) {
       call.sendDigits(num);
     } else {
-      setToNumber((state) => (state += num));
+      setTo((state) => {
+        return { ...state, number: (state.number += num) };
+      });
       onCheckNumber();
     }
   };
 
   const onNumberTyped = (num: string) => {
-    setToNumber(num);
+    setTo((state) => {
+      return { ...state, number: num };
+    });
     setDisabled(num.length > 9 ? true : false);
   };
 
   const onCheckNumber = () => {
-    if (toNumber.length > 9) {
+    if (to.number.length > 9) {
       setDisabled(true);
     }
   };
@@ -161,8 +172,7 @@ export const PhoneOut = () => {
   };
 
   const onReset = () => {
-    setToName("");
-    setToNumber("");
+    setTo({ name: "", number: "" });
     setDisabled(false);
   };
 
@@ -176,18 +186,18 @@ export const PhoneOut = () => {
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      {toName}
+      {to.name}
       <div className="relative">
         <Input
           placeholder="Phone Number"
-          value={toNumber}
+          value={to.number}
           maxLength={10}
           onChange={(e) => onNumberTyped(e.target.value)}
         />
         <X
           className={cn(
             "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
-            toNumber.length == 0 ? "opacity-0" : "opacity-100"
+            to.number.length == 0 ? "opacity-0" : "opacity-100"
           )}
           onClick={onReset}
         />

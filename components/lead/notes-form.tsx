@@ -5,10 +5,10 @@ import { leadUpdateByIdNotes } from "@/actions/lead";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface NoteFormProps {
+type NoteFormProps = {
   leadId: string;
   intialNotes: string;
-}
+};
 
 export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
   const [loading, setLoading] = useState(false);

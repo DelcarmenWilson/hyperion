@@ -4,7 +4,14 @@ import { getAge } from "@/formulas/dates";
 import { LeadGeneralInfo } from "@/types";
 import { Appointment, Call } from "@prisma/client";
 import { format } from "date-fns";
-import { Cake, CalendarX, FilePenLine, Plus, XCircle } from "lucide-react";
+import {
+  Cake,
+  CalendarX,
+  FilePenLine,
+  Phone,
+  Plus,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { GeneralInfoForm } from "./forms/general-info-form";
 import { TextGroup } from "@/components/reusable/input-group";
@@ -35,18 +42,22 @@ export const GeneralInfoClient = ({
   return (
     <div className="flex flex-col gap-2 text-sm">
       {call && (
-        <p>Last Called: {format(call.createdAt, "MM-dd-yy HH:mm aaaa")}</p>
+        <div className="flex items-center  gap-1">
+          <Badge className="gap-1 w-fit">
+            <Phone size={16} /> Last Call
+          </Badge>
+          {format(call.createdAt, "MM-dd-yy hh:mm aaaa")}
+        </div>
       )}
 
       {appointment && (
         <div>
-          <div className="flex gap-1">
-            <CalendarX className="h-4 w-4" />
-            Appt: on {format(appointment.date, "MM-dd-yy HH:mm aaaa")}
+          <div className="flex items-center  gap-1">
+            <Badge className="gap-1 w-fit">
+              <CalendarX size={16} /> Appt Set
+            </Badge>
+            {format(appointment.date, "MM-dd-yy hh:mm aaaa")}
           </div>
-          <Badge className="flex gap-1 w-fit">
-            Appt Set <XCircle className="h-4 w-4" />
-          </Badge>
         </div>
       )}
 

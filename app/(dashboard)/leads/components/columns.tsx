@@ -15,19 +15,57 @@ export const columns: ColumnDef<FullLead>[] = [
     id: "select",
     cell: ({ row }) => (
       <div className="flex flex-col justify-center items-center gap-2">
-        <DropDown lead={row.original} />
+        <DropDown
+          lead={row.original}
+          conversation={row.original.conversation!}
+        />
       </div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
   {
+    id: "firstName",
+    accessorKey: "firstName",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+
+  {
+    id: "lastName",
     accessorKey: "lastName",
-    header: "",
-    cell: () => <div />,
+    enableGlobalFilter: true,
+    enableHiding: true,
   },
   {
-    accessorKey: "fullName",
+    id: "cellPhone",
+    accessorKey: "cellPhone",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
+    id: "email",
+    accessorKey: "email",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
+    id: "status",
+    accessorKey: "status",
+    enableHiding: true,
+  },
+  {
+    id: "vendor",
+    accessorKey: "vendor",
+    enableHiding: true,
+  },
+  {
+    id: "state",
+    accessorKey: "state",
+    enableHiding: true,
+  },
+  {
+    accessorKey: "mainInfo",
     header: "",
     cell: ({ row }) => {
       const leadMainInfo: LeadMainInfo = {
@@ -40,9 +78,15 @@ export const columns: ColumnDef<FullLead>[] = [
         city: row.original.city || undefined,
         state: row.original.state,
         zipCode: row.original.zipCode || undefined,
+        status: row.original.status,
         quote: row.original.quote,
       };
-      return <MainInfoClient info={leadMainInfo} />;
+      return (
+        <MainInfoClient
+          info={leadMainInfo}
+          conversationId={row.original.conversation?.id as string}
+        />
+      );
     },
   },
   {

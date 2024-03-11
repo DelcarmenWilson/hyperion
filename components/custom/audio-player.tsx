@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Pause, Play } from "lucide-react";
 
 type AudioPlayerProps = {
-  src: string;
+  src: string | undefined;
   onListened?: () => void;
 };
 

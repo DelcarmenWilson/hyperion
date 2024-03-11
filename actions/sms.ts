@@ -137,15 +137,15 @@ export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
     convoid = (await conversationInsert(user.id, lead.id)).success;
   }
  
-  // const result = await client.messages.create({
-  //   body: message,
-  //   from: lead.defaultNumber,
-  //   to: lead.cellPhone || (lead.homePhone as string),
-  // });
+  const result = await client.messages.create({
+    body: content,
+    from: lead.defaultNumber,
+    to: lead.cellPhone || (lead.homePhone as string),
+  });
 
-  // if (!result) {
-  //   return { error: "Message was not sent!" };
-  // }
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
 
   const newMessage= await messageInsert({
     role: "assistant",

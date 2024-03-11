@@ -10,6 +10,7 @@ type usePhoneModalStore = {
   onPhoneOutOpen: (e?: FullLeadNoConvo) => void;
   onPhoneOutClose: () => void;
   lead?: FullLeadNoConvo;
+  onSetLead: (e?: FullLeadNoConvo) => void;
 };
 
 export const usePhoneModal = create<usePhoneModalStore>((set) => ({
@@ -19,4 +20,5 @@ export const usePhoneModal = create<usePhoneModalStore>((set) => ({
   isPhoneOutOpen: false,
   onPhoneOutOpen: (e) => set({ isPhoneOutOpen: true, lead: e }),
   onPhoneOutClose: () => set({ isPhoneOutOpen: false }),
+  onSetLead: (e) => set({ lead: e }),
 }));
