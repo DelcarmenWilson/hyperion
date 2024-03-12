@@ -69,11 +69,6 @@ export const AdminSidebarRoutes: NavType[] = [
     icon: TestTube,
     master: true,
   },
-  {
-    title: "Voicemail",
-    href: "/admin/voicemail",
-    icon: Voicemail,
-  },
 ];
 
 export const MainSidebarRoutes: NavType[] = [

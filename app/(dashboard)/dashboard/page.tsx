@@ -12,6 +12,8 @@ import { AppoinmentClient } from "./components/appointment/client";
 import { AgentSummaryClient } from "./components/agentsummary/client";
 import { TurnOverRate } from "./components/turnover/turn-over-rate";
 import { CallHistoryClient } from "./components/callhistory/call-history";
+import { QuoteClient } from "./components/quote-client";
+import { adminQuotesGetRandom } from "@/data/admin";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -48,6 +50,8 @@ const DahsBoardPage = async () => {
     (call) => call.direction.toLowerCase() === "inbound"
   ).length;
 
+  const quote = await adminQuotesGetRandom();
+
   return (
     <div className="flex flex-col gap-4">
       <Suspense fallback={<DashBoardClientSkeleton />}>
@@ -57,6 +61,7 @@ const DahsBoardPage = async () => {
           inBoundCallsCount={inBoundCallsCount}
           outBoundCallsCount={outBoundCallsCount}
         />
+        <QuoteClient quote={quote!} />
         <AppoinmentClient data={appointments} />
         <AgentSummaryClient initialData={formattedAgents} />
         <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">

@@ -3,11 +3,9 @@ import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Carrier } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Quote } from "@prisma/client";
 
-export const columns: ColumnDef<Carrier>[] = [
+export const columns: ColumnDef<Quote>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -31,13 +29,13 @@ export const columns: ColumnDef<Carrier>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "quote",
+    header: "Quote",
   },
 
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "author",
+    header: "Author",
   },
 
   {
@@ -47,15 +45,6 @@ export const columns: ColumnDef<Carrier>[] = [
       <span className="text-primary italic font-bold">
         {format(row.original.createdAt, "MM-dd-yy")}
       </span>
-    ),
-  },
-  {
-    header: "Actions",
-    id: "actions",
-    cell: ({ row }) => (
-      <Button size="sm" asChild>
-        <Link href={`/admin/carrier/${row.original.id}`}>Details</Link>
-      </Button>
     ),
   },
 ];

@@ -7,7 +7,17 @@ import { NextResponse } from "next/server";
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
 export async function POST(req: Request) {  
-  return new NextResponse(await voicemailResponse(), { status: 200 });
+  const body = await req.formData();
+  const j: any = formatObject(body);
+  const phonenumber = await db.phoneNumber.findFirst({
+    where: { phone: j.to },
+  });
+  const settings = await db.chatSettings.findUnique({
+    where: { userId: phonenumber?.agentId! },
+  });
+  j.voicemailIn=settings?.voicemailIn
+
+  return new NextResponse(await voicemailResponse(j), { status: 200 });
 }
 
 //TODO - this is the old function that works with the gather.. still need to implemetn this one

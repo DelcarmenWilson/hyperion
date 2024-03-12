@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Table } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,7 @@ export function DataTableFilter<TData>({
   placeHolder,
 }: DataTableFilter<TData>) {
   const { leadStatus } = useGlobalContext();
+
   const OnFilter = (column: string, filter: string) => {
     if (filter == "%") {
       filter = "";
@@ -34,6 +35,9 @@ export function DataTableFilter<TData>({
     table.getColumn(column)?.setFilterValue(filter);
   };
 
+  useEffect(() => {
+    OnFilter("status", "New");
+  }, []);
   return (
     <div className="grid grid-cols-4 gap-2 mt-2">
       <Input

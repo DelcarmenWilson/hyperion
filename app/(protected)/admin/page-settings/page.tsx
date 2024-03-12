@@ -6,16 +6,19 @@ import {
   adminCarriersGetAll,
   adminLeadStatusGetAll,
   adminMedicalConditionsGetAll,
+  adminQuotesGetAll,
 } from "@/data/admin";
 import { LeadStatusClient } from "./components/leadstatus/client";
 import { MedicalClient } from "./components/medical/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { QuoteClient } from "./components/quote/client";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();
   const leadstatus = await adminLeadStatusGetAll();
   const medical = await adminMedicalConditionsGetAll();
+  const quotes = await adminQuotesGetAll();
   return (
     <PageLayoutAdmin title="Page Settings" description="">
       <Tabs defaultValue="carriers" className="pt-2">
@@ -24,6 +27,7 @@ const PageSettings = async () => {
             <TabsTrigger value="carriers">Carriers</TabsTrigger>
             <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
             <TabsTrigger value="medical">Conditions</TabsTrigger>
+            <TabsTrigger value="quotes">Quotes</TabsTrigger>
           </TabsList>
           <Button variant="outlineprimary" asChild>
             <Link href="/test" target="_blank">
@@ -40,9 +44,11 @@ const PageSettings = async () => {
             <LeadStatusClient initStatus={leadstatus} />
           </TabsContent>
           <TabsContent value="medical">
-            <MedicalClient initMedical={medical} />
+            <MedicalClient initMedicals={medical} />
           </TabsContent>
-          {/* <TabsContent value="chatSettings">ChatSettingsBox</TabsContent> */}
+          <TabsContent value="quotes">
+            <QuoteClient initQuotes={quotes} />
+          </TabsContent>
         </div>
       </Tabs>
     </PageLayoutAdmin>

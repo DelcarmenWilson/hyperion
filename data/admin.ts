@@ -43,7 +43,7 @@ export const adminUsersGetAll = async () => {
       return null
     }
   };
-
+//MEDICAL CONDITIONS
   export const adminMedicalConditionsGetAll = async () => {
     try {
       const conditions =await db.medicalCondition.findMany({
@@ -51,5 +51,25 @@ export const adminUsersGetAll = async () => {
       return conditions
     } catch (error) {
       return []
+    }
+  };
+//QUOTES
+  export const adminQuotesGetAll = async () => {
+    try {
+      const quotes =await db.quote.findMany({
+      });
+      return quotes
+    } catch (error) {
+      return []
+    }
+  };
+  export const adminQuotesGetRandom = async () => {
+    try {
+      const quotes =await db.quote.findMany({
+      });
+      const random=Math.floor(Math.random()*quotes.length)
+      return quotes[random]
+    } catch (error) {
+      return null
     }
   };
