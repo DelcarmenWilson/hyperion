@@ -52,6 +52,8 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
       currentCall: "",
+      voicemailIn:"",
+      voicemailOut:""
     };
     mapped.push(newobj);
   });
