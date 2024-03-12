@@ -5,23 +5,23 @@ import { Plus } from "lucide-react";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { DataTable } from "@/components/custom/data-table";
 import { Heading } from "@/components/custom/heading";
-import { MedicalCondition } from "@prisma/client";
+import { Quote } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 
-import { MedicalForm } from "./form";
+import { QuoteForm } from "./form";
 import { columns } from "./columns";
 
-type MedicalClientProps = {
-  initMedicals: MedicalCondition[];
+type QuoteClientProps = {
+  initQuotes: Quote[];
 };
 
-export const MedicalClient = ({ initMedicals }: MedicalClientProps) => {
+export const QuoteClient = ({ initQuotes }: QuoteClientProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [medical, setMedical] = useState(initMedicals);
-  const onMedicalCreated = (e?: MedicalCondition) => {
+  const [quotes, setQuote] = useState(initQuotes);
+  const onQuoteCreated = (e?: Quote) => {
     if (e) {
-      setMedical((medical) => {
-        return [...medical, e];
+      setQuote((quote) => {
+        return [...quote, e];
       });
     }
     setIsDrawerOpen(false);
@@ -29,20 +29,20 @@ export const MedicalClient = ({ initMedicals }: MedicalClientProps) => {
   return (
     <>
       <DrawerRight
-        title={"New Medical Condition"}
+        title={"New Quote"}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <MedicalForm onClose={onMedicalCreated} />
+        <QuoteForm onClose={onQuoteCreated} />
       </DrawerRight>
       <div className="flex justify-between items-end">
-        <Heading title="Medical" description="Manage all medical conditions" />
+        <Heading title="Quote" description="Manage all quotes" />
         <Button onClick={() => setIsDrawerOpen(true)}>
-          <Plus size={16} className="mr-2" /> New Medical
+          <Plus size={16} className="mr-2" /> New Quote
         </Button>
       </div>
 
-      <DataTable columns={columns} data={medical} searchKey="name" />
+      <DataTable columns={columns} data={quotes} searchKey="name" />
     </>
   );
 };

@@ -148,9 +148,11 @@ model ChatSettings {
   record   Boolean @default(false)
   coach    Boolean @default(false)
 
-  currentCall String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  currentCall  String?
+  voicemailIn  String?
+  voicemailOut String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Presets {
@@ -542,6 +544,15 @@ model Script {
   title  String
   script String @db.LongText
   userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quote {
+  id     String @id @default(cuid())
+  quote  String @db.LongText
+  author String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

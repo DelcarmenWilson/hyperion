@@ -40,7 +40,7 @@ export const columns: ColumnDef<MedicalCondition>[] = [
 
   {
     accessorKey: "createdAt",
-    header: "created At",
+    header: "Created At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
         {format(row.original.createdAt, "MM-dd-yy")}

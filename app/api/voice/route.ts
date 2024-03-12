@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     j.recording = settings?.record
       ? "record-from-answer-dual"
       : "do-not-record";
+      j.voicemailIn=settings?.voicemailIn
     j.agentId = phonenumber?.agentId;
   }
 

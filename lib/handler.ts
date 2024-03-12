@@ -6,6 +6,7 @@ import { isAValidPhoneNumber } from "@/formulas/phones";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
+const sitebase = "https://insect-pro-luckily.ngrok-free.app/public";
 
 export const tokenGenerator = (identity: string) => {
   const accessToken = new AccessToken(
@@ -28,7 +29,8 @@ export const tokenGenerator = (identity: string) => {
 };
 
 export const voiceResponse = async (requestBody: any) => {
-  const { agentId, agentNumber, direction, recording, to } = requestBody;
+  const { agentId, agentNumber, direction, recording, to, voicemailIn } =
+    requestBody;
 
   const params = {
     callerId: agentNumber,
@@ -67,6 +69,7 @@ export const actionResponse = async () => {
   const twiml = new VoiceResponse();
 
   const gather = twiml.gather({ action: "/api/voice/callback", numDigits: 1 });
+
   gather.say(
     { voice: "alice" },
     "The person you are trying to reach is unavailable. If you would like to receive a callback, press 1."
@@ -87,13 +90,20 @@ export const actionResponse = async () => {
   return twiml.toString();
 };
 
-export const voicemailResponse = async () => {
+export const voicemailResponse = async (requestBody: any) => {
+  const { voicemailIn } = requestBody;
+
   const twiml = new VoiceResponse();
   twiml.pause("1");
-  twiml.say(
-    { voice: "alice" },
-    "The person you are trying to reach is unavailable. Please leave a voicemail after the beep"
-  );
+  if (voicemailIn) {
+    twiml.play(voicemailIn);
+  } else {
+    twiml.say(
+      { voice: "alice" },
+      "The person you are trying to reach is unavailable. Please leave a voicemail after the beep"
+    );
+  }
+
   twiml.pause("1");
   twiml.record({
     action: "/api/voice/voicemail",
@@ -101,10 +111,7 @@ export const voicemailResponse = async () => {
     // transcribe: true,
     // transcribeCallback: "/api/voice/transcribe",
   });
-  twiml.say(
-    { voice: "alice" },
-    "Your mesage has been saved. Goodbye."
-  );
-  twiml.hangup()
+  twiml.say({ voice: "alice" }, "Your mesage has been saved. Goodbye.");
+  twiml.hangup();
   return twiml.toString();
 };

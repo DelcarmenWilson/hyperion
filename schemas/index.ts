@@ -174,6 +174,16 @@ export const ChatSchema = z.object({
   message: z.string(),
 });
 
+export const ChatUserSchema = z.object({
+  userId: z.string(),
+  defaultPrompt: z.optional(z.string()),
+  defaultFunction: z.optional(z.string()),
+  autoChat: z.boolean(),
+  record: z.boolean(),
+  coach: z.boolean(),
+  leadInfo: z.boolean(),
+});
+
 export const TeamSchema = z.object({ name: z.string().min(1) });
 
 export const MessageSchema = z.object({
@@ -279,3 +289,7 @@ export const MedicalConditionSchema = z.object({
   description: z.optional(z.string()),
 });
 
+export const QuoteSchema = z.object({
+  quote : z.string().min(2,"*"),
+  author: z.string(),
+});

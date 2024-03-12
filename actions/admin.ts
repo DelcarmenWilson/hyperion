@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { CarrierSchema, MedicalConditionSchema } from "@/schemas";
+import { CarrierSchema, MedicalConditionSchema, QuoteSchema } from "@/schemas";
 
 export const admin = async () => {
   const role = await currentRole();
@@ -294,4 +294,38 @@ export const adminMedicalInsert = async (
   });
 
   return { success: condition };
+};
+
+//QUOTES
+export const adminQuoteInsert = async (
+  values: z.infer<typeof QuoteSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role == "USER") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = QuoteSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { quote, author } = validatedFields.data;
+
+  const existingQuote= await db.quote.findFirst({ where: { quote } });
+  if (existingQuote) {
+    return { error: "Quote already exists" };
+  }
+
+  const newQuote = await db.quote.create({
+    data: {
+      quote,
+      author    },
+  });
+
+  return { success: newQuote };
 };
