@@ -27,6 +27,8 @@ export const convertLead = (
   vendor: string
 ): ImportLeadsFormValues[] => {
   switch (vendor) {
+    case "Avalanche_Leads":
+      return Avalanche_Leads(result, vendor);
     case "Media_Alpha":
       return MediaAlphaLeads(result, vendor);
     case "Prospect_For_Leads":
@@ -79,6 +81,34 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       recievedAt: d["Received Date"],
       policyAmount: a["DesiredCoverageAmount"],
       vendor: vendor,
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
+const Avalanche_Leads = (
+  result: any,
+  vendor: string
+): ImportLeadsFormValues[] => {
+  let mapped: ImportLeadsFormValues[] = [];
+  result.data.map((d: any) => {
+    const newobj: ImportLeadsFormValues = {
+      id: "",
+      firstName: capitalize(d["First_Name"]),
+      lastName: capitalize(d["Last_Name"]),
+      email: d["Email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["Primary_Phone"]),
+      cellPhone: reFormatPhoneNumber(d["Primary_Phone"]),
+      dateOfBirth: d["DOB"].trim(),
+      address: capitalize(d["Address"]),
+      city: capitalize(d["City"]),
+      state: capitalize(d["State"]),
+      zipCode: d["Zip"],
+      gender: d["Gender"],      
+      maritalStatus: "Single",
+      height:"",
+      vendor: vendor,
+      recievedAt: d["Date_Posted"],
     };
     mapped.push(newobj);
   });
@@ -175,7 +205,6 @@ const ProspectForLeads = (
   });
   return mapped;
 };
-//TODO - this has to be fixed
 const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   result.data.map((d: any) => {

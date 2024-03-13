@@ -21,6 +21,7 @@ export const publicRoutes = [
   "/api/voice/result",
   "/api/voice/transcribe",
   "/api/voice/voicemail",
+  "/assets/voicemail/in",
 ];
 // export const publicRoutes = ["/", "/new-verification","/api/:path*"];
 

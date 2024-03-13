@@ -2,20 +2,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 
-import { allVendors } from "@/constants/lead";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-// import { leadUpdateByIdVendor } from "@/actions/lead";
-
-import { toast } from "sonner";
 import { LeadSaleInfo } from "@/types";
-import { FieldBox } from "./field-box";
 import { TextGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
 import { FilePenLine } from "lucide-react";
