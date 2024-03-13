@@ -117,6 +117,7 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
                 render={({ field }) => (
                   <FormItem className="flex gap-x-1 items-end">
                     <FormLabel className="w-[100px]">Sale Amount</FormLabel>
+                    <FormMessage />
                     <FormControl>
                       <Input
                         {...field}

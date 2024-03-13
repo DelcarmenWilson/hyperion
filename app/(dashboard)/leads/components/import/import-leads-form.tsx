@@ -20,10 +20,13 @@ import {
 import { convertLead } from "@/formulas/lead";
 import { importVendors } from "@/constants/lead";
 import { LeadSchema } from "@/schemas";
+import { useRouter } from "next/navigation";
+import { Router } from "lucide-react";
 
 type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 
 export const ImportLeadsForm = () => {
+  const router = useRouter();
   const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
   const [vendor, setVendor] = useState(importVendors[0].value);
@@ -42,7 +45,6 @@ export const ImportLeadsForm = () => {
           fullName: `${lead.firstName} ${lead.lastName}`,
           email: lead.email,
           cellPhone: lead.cellPhone,
-          // dob: lead.dateOfBirth ? format(lead.dateOfBirth, "MM/dd/yy") : "",
           dob: lead.dateOfBirth || "",
           address: lead.address,
           city: lead.city,
@@ -59,6 +61,7 @@ export const ImportLeadsForm = () => {
         if (data?.success) {
           onCancel();
           toast.success(data.success);
+          router.refresh();
         }
         if (data?.error) {
           toast.error(data.error);

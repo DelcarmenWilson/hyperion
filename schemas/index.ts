@@ -160,9 +160,9 @@ export const LeadGeneralSchema = z.object({
 export const LeadSaleSchema = z.object({
   id: z.optional(z.string()),
   vendor:z.string(),
-  saleAmount: z.number(),
-  commision: z.number(),
-  costOfLead: z.number(),
+  saleAmount: z.coerce.number(),
+  commision: z.coerce.number(),
+  costOfLead: z.coerce.number()
 });
 export const TwilioSchema = z.object({
   phone: z.string(),
