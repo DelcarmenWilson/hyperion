@@ -5,14 +5,20 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 
 import { cn } from "@/lib/utils";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { Button } from "@/components/ui/button";
+
 import { DropDown } from "@/components/lead/dropdown";
 import { SaleInfoClient } from "@/components/lead/sale-info";
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { NotesForm } from "@/components/lead/notes-form";
+import { ExpensesWrapperClient } from "@/components/lead/expenses/client";
+import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
+
 import { PhoneScript } from "./script";
-import { Button } from "../../ui/button";
 import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
 
 type PhoneLeadInfo = {
@@ -20,16 +26,7 @@ type PhoneLeadInfo = {
 };
 export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const { lead } = usePhoneModal();
-
   const [isOpen, setIsOpen] = useState(open);
-
-  // const OnToggleOpen = () => {
-  //   if (isOpen) {
-  //     onClose();
-  //   } else {
-  //     onOpen();
-  //   }
-  // };
 
   if (!lead) {
     return null;
@@ -91,26 +88,49 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           isOpen && "w-full right-0"
         )}
       >
-        <h3 className="text-center text-2xl font-bold ">
-          <span className="text-primary">
-            {lead.firstName} {lead.lastName}
-          </span>
-          {" | "}
-          <span className="italic text-muted-foreground mr-2">
-            {lead.gender.substring(0, 1)} {lead.maritalStatus}
-          </span>
-          <DropDown lead={lead} />
-        </h3>
-        <div className="grid grid-cols-3 gap-2 p-2">
-          <MainInfoClient info={leadMainInfo} />
-          <GeneralInfoClient info={leadInfo} showInfo />
-          <CallInfo lead={lead!} showBtnCall={false} />
-          <SaleInfoClient info={leadSale} />
-          <NotesForm
-            leadId={lead?.id as string}
-            intialNotes={lead?.notes as string}
-          />
-        </div>
+        <Tabs defaultValue="general" className="h-full">
+          <h3 className="text-center text-2xl font-bold ">
+            <span className="text-primary">
+              {lead.firstName} {lead.lastName}
+            </span>
+            {" | "}
+            <span className="italic text-muted-foreground mr-2">
+              {lead.gender.substring(0, 1)} {lead.maritalStatus}
+            </span>
+            <DropDown lead={lead} />
+          </h3>
+          <TabsList className="flex w-full h-auto">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="general">
+            <div className="grid grid-cols-3 gap-2 p-2">
+              <MainInfoClient info={leadMainInfo} />
+              <GeneralInfoClient info={leadInfo} showInfo />
+              <CallInfo lead={lead!} showBtnCall={false} />
+              <SaleInfoClient info={leadSale} />
+              <NotesForm
+                leadId={lead?.id as string}
+                intialNotes={lead?.notes as string}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="beneficiaries">
+            <BeneficiariesClient
+              leadId={lead.id}
+              initBeneficiaries={lead.beneficiaries!}
+            />
+          </TabsContent>
+          <TabsContent value="expenses">
+            <ExpensesWrapperClient
+              leadId={lead.id}
+              initExpenses={lead.expenses!}
+            />
+          </TabsContent>
+        </Tabs>
+
         {!open && <PhoneScript />}
       </div>
     </div>

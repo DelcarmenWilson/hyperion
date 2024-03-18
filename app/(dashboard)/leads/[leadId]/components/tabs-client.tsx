@@ -14,7 +14,7 @@ import { FullConversation, FullLead } from "@/types";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { CallHistory } from "./call-history/call-history";
+import { CallHistoryClient } from "./call-history/client";
 
 import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityList } from "./activity-log/list";
@@ -78,7 +78,7 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
               <ActivityList initActivities={lead.activities!} />
             </TabsContent>
             <TabsContent value="call">
-              <CallHistory leadId={lead.id} initialCalls={lead.calls!} />
+              <CallHistoryClient leadId={lead.id} initialCalls={lead.calls!} />
             </TabsContent>
             <TabsContent value="events">
               <CalendarEvents appointments={lead.appointments!} />

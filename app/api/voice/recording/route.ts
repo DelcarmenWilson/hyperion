@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   const j: any = formatObject(body);
 
-  const results = (await client.calls.get(j.callSid).fetch()).toJSON();
+  const recording = (await client.recordings.get(j.recordingSid).fetch()).toJSON();
 
   const call = await db.call.update({
     where: { id: j.callSid },
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       recordStatus: j.recordingStatus,
       recordStartTime: new Date(j.recordingStartTime),
       recordDuration: parseInt(j.recordingDuration),
-      price: results.price,
+      recordPrice: recording.price,    
     },
   });
 

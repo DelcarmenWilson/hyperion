@@ -37,20 +37,14 @@ export const voiceResponse = async (requestBody: any) => {
     record: recording,
     recordingStatusCallback: "/api/voice/recording",
     action: "/api/voice/action",
+    timeout:10
   };
 
   const twiml = new VoiceResponse();
-
   let dial = twiml.dial(params);
 
   switch (direction) {
     case "inbound":
-      // twiml.say({voice:"alice"},"Thank you for calling strongside financial, please hold")
-      // twiml.pause({length:1})
-      // twiml.say({voice:"alice"},"For english press 1")
-      // twiml.pause({length:1})
-      // twiml.say({voice:"alice"},"Para español oprima 2")
-      // twiml.gather({})
       dial.client(agentId);
       break;
     case "outbound":
@@ -96,13 +90,15 @@ export const voicemailResponse = async (requestBody: any) => {
   const twiml = new VoiceResponse();
   twiml.pause("1");
   if (voicemailIn) {
-    twiml.play(voicemailIn);
+         twiml.play(voicemailIn);
+     //twiml.play({},'/sounds/message.mp3');
   } else {
+    console.log(voicemailIn)
     twiml.say(
       { voice: "alice" },
-      "The person you are trying to reach is unavailable. Please leave a voicemail after the beep"
+      "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
     );
-  }
+   }
 
   twiml.pause("1");
   twiml.record({
@@ -115,3 +111,12 @@ export const voicemailResponse = async (requestBody: any) => {
   twiml.hangup();
   return twiml.toString();
 };
+
+export const hangupReponse= async () => {
+
+  const twiml = new VoiceResponse();
+  twiml.hangup();
+  return twiml.toString();
+};
+
+

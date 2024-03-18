@@ -85,6 +85,7 @@ export const columns: ColumnDef<FullLead>[] = [
         <MainInfoClient
           info={leadMainInfo}
           conversationId={row.original.conversation?.id as string}
+          showInfo
         />
       );
     },

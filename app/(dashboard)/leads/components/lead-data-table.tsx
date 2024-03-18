@@ -38,7 +38,6 @@ import { ImportLeadsForm } from "./import/import-leads-form";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 

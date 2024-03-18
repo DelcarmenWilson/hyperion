@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Check, HelpCircle, Phone } from "lucide-react";
+import { Check, HelpCircle, Phone, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ import { TwilioNumber } from "@/types/twilio";
 import { DataTableHeadless } from "@/components/tables/data-table-headless";
 import { columns } from "./columns";
 
-export const PurchasePhoneNumbers = () => {
+export const PurchaseNumbers = () => {
   const [phoneNumbers, setPhoneNumbers] = useState<TwilioNumber[]>([]);
   const [option, setOption] = useState("state");
   const [state, setState] = useState("");
@@ -116,12 +116,18 @@ export const PurchasePhoneNumbers = () => {
         </div>
         <div className="col-span-2 gap-2">
           <h4 className="font-bold text-primary">Phone numbers list</h4>
-          <DataTableHeadless
-            columns={columns}
-            data={phoneNumbers}
-            searchKey="locality"
-            headers
-          />
+          {phoneNumbers.length ? (
+            <DataTableHeadless
+              columns={columns}
+              data={phoneNumbers}
+              searchKey="locality"
+              headers
+            />
+          ) : (
+            <p className="flex items-center justify-center gap-2 text-3xl">
+              <Search /> Search Phone Numbers
+            </p>
+          )}
         </div>
       </div>
     </CardLayout>

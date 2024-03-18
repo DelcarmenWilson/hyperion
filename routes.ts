@@ -9,6 +9,7 @@ export const publicRoutes = [
   "/api/appointments/reminder",
   "/api/organizations",
   "/api/leads/details",
+  "/api/quote",
   "/api/sms/in",
   "/api/sms/result",
   "/api/sms/out",
@@ -21,9 +22,8 @@ export const publicRoutes = [
   "/api/voice/result",
   "/api/voice/transcribe",
   "/api/voice/voicemail",
-  "/assets/voicemail/in",
 ];
-// export const publicRoutes = ["/", "/new-verification","/api/:path*"];
+
 
 /**
  * An array of routes that are used for authentications

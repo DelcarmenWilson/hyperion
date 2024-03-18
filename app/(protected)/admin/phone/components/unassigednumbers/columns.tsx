@@ -2,12 +2,16 @@
 import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { CellAction } from "./cell-action";
-import { Checkbox } from "@/components/ui/checkbox";
-import { formatPhoneNumber } from "@/formulas/phones";
-import { FullPhoneNumber } from "@/types";
 
-export const columns: ColumnDef<FullPhoneNumber>[] = [
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+import { formatPhoneNumber } from "@/formulas/phones";
+import { PhoneNumber } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { AssignNumberForm } from "./form";
+
+export const columns: ColumnDef<PhoneNumber>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -29,13 +33,6 @@ export const columns: ColumnDef<FullPhoneNumber>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },
-  {
-    accessorKey: "firstName",
-    header: "Agent",
-    cell: ({ row }) => (
-      <span>{`${row.original.agent?.firstName} ${row.original.agent?.lastName}`}</span>
-    ),
   },
   {
     accessorKey: "phone",
@@ -68,6 +65,22 @@ export const columns: ColumnDef<FullPhoneNumber>[] = [
         {row.original.status === "Inactive" &&
           ` since ${format(row.original.updatedAt, "MM-dd-yy")}`}
       </div>
+    ),
+  },
+  {
+    header: "Actions",
+    id: "actions",
+    cell: ({ row }) => (
+      <>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="sm">Assign</Button>
+          </DialogTrigger>
+          <DialogContent className="p-0 max-h-[96%] max-w-[500px]">
+            <AssignNumberForm phoneNumber={row.original} />
+          </DialogContent>
+        </Dialog>
+      </>
     ),
   },
 ];

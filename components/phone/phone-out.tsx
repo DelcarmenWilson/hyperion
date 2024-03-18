@@ -24,7 +24,6 @@ import {
   chatSettingsUpdateCoach,
   chatSettingsUpdateRecord,
 } from "@/actions/chat-settings";
-import { toFinite } from "lodash";
 
 export const PhoneOut = () => {
   const { update } = useSession();

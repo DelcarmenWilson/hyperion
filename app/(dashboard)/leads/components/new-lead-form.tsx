@@ -8,9 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { states } from "@/constants/states";
-
-import { LeadSchema } from "@/schemas";
 import {
   Form,
   FormField,
@@ -28,6 +25,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Gender, MaritalStatus } from "@prisma/client";
+
+import { states } from "@/constants/states";
+import { LeadSchema } from "@/schemas";
 import { leadInsert } from "@/actions/lead";
 
 type NewLeadFormProps = {

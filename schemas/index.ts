@@ -164,6 +164,38 @@ export const LeadSaleSchema = z.object({
   commision: z.coerce.number(),
   costOfLead: z.coerce.number()
 });
+export const LeadBeneficiarySchema = z.object({
+  id: z.optional(z.string()),
+  leadId:z.string(),  
+  type:z.optional(z.string()),
+  firstName: z.string().min(3, "First name must be at least 3 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  address: z.optional(z.string()),  
+  city: z.optional(z.string()),  
+  state: z.optional(z.string()),  
+  zipCode: z.optional(z.string()),  
+  cellPhone: z.optional(z.string()),
+  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  email: z.optional(z.string().email()),
+  dateOfBirth: z.optional(z.string()),  
+  notes: z.optional(z.string()),
+});
+export const LeadConditionSchema = z.object({
+  id: z.optional(z.string()),
+  leadId: z.string(),
+  conditionId:z.string(),
+  diagnosed: z.string(),
+  medications:z.string(),
+  notes:z.optional(z.string()),
+});
+
+export const LeadExpenseSchema = z.object({
+  leadId: z.string(),
+  type: z.string(),
+  name:z.string(),
+  value: z.coerce.number(),
+  notes:z.optional(z.string()),
+});
 export const TwilioSchema = z.object({
   phone: z.string(),
   message: z.string(),

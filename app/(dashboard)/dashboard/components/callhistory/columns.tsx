@@ -2,13 +2,14 @@
 import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
-// import { CellAction } from "./cell-action";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { MoveDownLeft, MoveUpRight } from "lucide-react";
+import { PhoneOutgoing, X } from "lucide-react";
 import { AudioPlayer } from "@/components/custom/audio-player";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { FullCall } from "@/types";
+import { getPhoneStatusText } from "@/formulas/phone";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -49,11 +50,13 @@ export const columns: ColumnDef<FullCall>[] = [
         </p>
         <p className="flex gap-2 items-center">
           {row.original.direction.toLowerCase() === "inbound" ? (
-            <MoveDownLeft className="h-4 w-4" />
+            getPhoneStatusText(row.original.status as string)
           ) : (
-            <MoveUpRight className="h-4 w-4" />
+            <>
+              <PhoneOutgoing size={16} />
+              {row.original.direction}
+            </>
           )}
-          {row.original.direction}
         </p>
       </div>
     ),

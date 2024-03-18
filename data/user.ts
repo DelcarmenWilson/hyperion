@@ -3,7 +3,7 @@ import { UserRole } from "@prisma/client";
 
 export const userGetAll = async () => {
   try {
-    const users = await db.user.findMany();
+    const users = await db.user.findMany({orderBy:{firstName:"asc"}});
 
     return users;
   } catch {

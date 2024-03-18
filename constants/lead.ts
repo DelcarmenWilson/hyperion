@@ -67,3 +67,30 @@ export const allVendors: VendorType[] = [
 ];
 
 export const importVendors: VendorType[] = allVendors.slice(1);
+
+type LeadExpenseType={
+  leadId:string
+  name:string
+  type:string  
+  isDefault:boolean
+}
+export const defaultLeadExpenses: LeadExpenseType[] = [
+  {
+    leadId:"",   
+    name: "Rent/Mortgage",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Car",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Employment",
+    type: "Income", 
+    isDefault:true
+  },   
+];

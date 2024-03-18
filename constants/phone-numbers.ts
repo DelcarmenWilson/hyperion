@@ -2,7 +2,7 @@ type NumberType={
     value:string;
     letters:string;
 }
-export const numbers:NumberType[] =[
+ export const numbers:NumberType[] =[
     {
       value: "1",
       letters: "",
@@ -52,3 +52,5 @@ export const numbers:NumberType[] =[
       letters: " ",
     },
   ];
+
+  
