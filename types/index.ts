@@ -17,6 +17,8 @@ import {
   MaritalStatus,
   LeadBeneficiary,
   LeadExpense,
+  LeadMedicalCondition,
+  MedicalCondition,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -78,6 +80,7 @@ export type FullLeadNoConvo = Lead & {
   activities?: Activity[];
   beneficiaries?:LeadBeneficiary[],
   expenses?:LeadExpense[]
+  conditions?:FullLeadMedicalCondition[]
 };
 
 export type FullLead = Lead & {
@@ -85,6 +88,12 @@ export type FullLead = Lead & {
   calls: Call[];
   appointments: Appointment[];
   activities: Activity[];
+  beneficiaries?:LeadBeneficiary[],
+  expenses?:LeadExpense[]
+  conditions?:FullLeadMedicalCondition[]
+};
+export type FullLeadMedicalCondition = LeadMedicalCondition & {
+  condition:MedicalCondition
 };
 
 export type LeadMainInfo = {

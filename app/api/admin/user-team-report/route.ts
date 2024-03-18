@@ -1,7 +1,5 @@
 import { teamsGetById } from "@/data/team";
-import { currentRole } from "@/lib/auth";
 import { FullUserTeamReport } from "@/types";
-import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

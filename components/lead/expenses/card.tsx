@@ -58,7 +58,7 @@ export const ExpenseIncomeCard = ({
       <div className="flex gap-2 justify-end">
         {!expense.isDefault && (
           <Button variant="destructive" size="icon" onClick={onExpenseDelete}>
-            <Trash />
+            <Trash size={16} />
           </Button>
         )}
         <Button
@@ -66,7 +66,7 @@ export const ExpenseIncomeCard = ({
           size="icon"
           onClick={onExpenseUpdate}
         >
-          <Check />
+          <Check size={16} />
         </Button>
       </div>
     </div>

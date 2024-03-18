@@ -2,19 +2,20 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { LeadMedicalCondition } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { ConditionForm } from "./form";
 
-import { leadBeneficiaryDeleteById } from "@/actions/lead";
+import { leadConditionDeleteById } from "@/actions/lead";
 import { toast } from "sonner";
 
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Edit, Trash } from "lucide-react";
+import { FullLeadMedicalCondition } from "@/types";
+import { format } from "date-fns";
 
 type ConditionCardProps = {
-  initCondition: LeadMedicalCondition;
+  initCondition: FullLeadMedicalCondition;
   onConditionDeleted: (e: string) => void;
 };
 export const ConditionCard = ({
@@ -26,12 +27,12 @@ export const ConditionCard = ({
   const [isOpen, setIsOpen] = useState(false);
   const [condition, setCondition] = useState(initCondition);
 
-  const onConditionUpdated = (e: LeadMedicalCondition) => {
+  const onConditionUpdated = (e: FullLeadMedicalCondition) => {
     setCondition(e);
   };
 
   const onDeleteCondition = () => {
-    leadBeneficiaryDeleteById(condition.id).then((data) => {
+    leadConditionDeleteById(condition.id).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
@@ -62,15 +63,15 @@ export const ConditionCard = ({
         />
       </DrawerRight>
       <div className="grid grid-cols-4 mb-1 items-center gap-2">
-        <span>{condition.conditionId}</span>
-        <span>{condition.diagnosed}</span>
+        <span>{condition.condition.name}</span>
+        <span>{format(condition.diagnosed, "MM-dd-yy")}</span>
         <span>{condition.medications}</span>
 
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-2">
           <Button
             variant="destructive"
             size="icon"
-            onClick={() => setAlertOpen(false)}
+            onClick={() => setAlertOpen(true)}
           >
             <Trash size={16} />
           </Button>
