@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { LeadMedicalCondition } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+
 import { ConditionForm } from "./form";
 import { ConditionCard } from "./card";
-import { Button } from "@/components/ui/button";
+import { FullLeadMedicalCondition } from "@/types";
 
 type ConditionsClientProp = {
   leadId: string;
-  initConditions: LeadMedicalCondition[];
+  initConditions: FullLeadMedicalCondition[];
 };
 
 export const ConditionsClient = ({
@@ -17,9 +18,9 @@ export const ConditionsClient = ({
 }: ConditionsClientProp) => {
   const [isOpen, setIsOpen] = useState(false);
   const [conditions, setConditions] =
-    useState<LeadMedicalCondition[]>(initConditions);
+    useState<FullLeadMedicalCondition[]>(initConditions);
 
-  const onConditionInserted = (e: LeadMedicalCondition) => {
+  const onConditionInserted = (e: FullLeadMedicalCondition) => {
     setConditions((conditions) => [...conditions, e]);
     setIsOpen(false);
   };
@@ -46,8 +47,14 @@ export const ConditionsClient = ({
           <p className=" text-2xl font-semibold">Medical Conditions</p>
           <Button onClick={() => setIsOpen(true)}>Add Condition</Button>
         </div>
+        <div className="grid grid-cols-4 mb-1 items-center gap-2">
+          <span>Condition</span>
+          <span>Date diagnosed</span>
+          <span>Medications</span>
+          <span>Actions</span>
+        </div>
         {conditions.length ? (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+          <div>
             {conditions.map((condition) => (
               <ConditionCard
                 key={condition.id}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,14 +30,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { MedicalCondition } from "@prisma/client";
 
 import { LeadConditionSchema } from "@/schemas";
-import { LeadMedicalCondition } from "@prisma/client";
+
 import { leadConditionInsert, leadConditionUpdateById } from "@/actions/lead";
-import { adminMedicalConditionsGetAll } from "@/data/admin";
+import { FullLeadMedicalCondition } from "@/types";
 
 type ConditionFormProps = {
   leadId?: string;
-  condition?: LeadMedicalCondition;
-  onConditionChange: (e: LeadMedicalCondition) => void;
+  condition?: FullLeadMedicalCondition;
+  onConditionChange: (e: FullLeadMedicalCondition) => void;
   onClose?: () => void;
 };
 
@@ -111,9 +112,9 @@ export const ConditionForm = ({
   };
 
   useEffect(() => {
-    adminMedicalConditionsGetAll().then((data) => {
-      console.log(data);
-      setConditions(data);
+    axios.post("/api/admin/conditions").then((response) => {
+      console.log(response.data);
+      setConditions(response.data);
     });
   }, []);
   return (

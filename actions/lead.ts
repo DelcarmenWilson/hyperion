@@ -667,7 +667,7 @@ export const leadConditionInsert = async (
   }
 
   const newLeadCondition=  await db.leadMedicalCondition.create({
-    data: {leadId, conditionId,diagnosed,medications,notes},
+    data: {leadId, conditionId,diagnosed,medications,notes},include:{condition:true}
   });
 
   return { success: newLeadCondition };
@@ -700,7 +700,7 @@ export const leadConditionUpdateById =  async (values: z.infer<typeof LeadCondit
     const modifiedCondition = await db.leadMedicalCondition.update({where:{id},
         data: {
           conditionId,diagnosed,medications,notes
-        },
+        },include:{condition:true}
       });
     return { success: modifiedCondition };
   };

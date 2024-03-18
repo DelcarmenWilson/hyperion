@@ -28,7 +28,7 @@ const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
         <TabsList className="flex w-full h-auto">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
-          {/* <TabsTrigger value="conditions">Conditions</TabsTrigger> */}
+          <TabsTrigger value="conditions">Conditions</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>

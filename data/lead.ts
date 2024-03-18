@@ -18,9 +18,11 @@ export const leadsGetAllByAgentId = async (userId: string) => {
       include: {
         conversation: true,
         appointments: { where: { status: "scheduled" } },
-        // appointments: { where: { status: "scheduled" } },
         calls: true,
         activities: true,
+        beneficiaries:true,
+        expenses:true,
+        conditions:{include:{condition:true}}
       },
     });
     return leads;
@@ -37,14 +39,12 @@ export const leadGetById = async (id: string) => {
       },
       include: {
         conversation: true,
-        // appointments: { where: { status: "scheduled" } },
         appointments: { orderBy: { date: "desc" } },
         calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,
-        // conditions: { include: { condition: true } },
-        conditions: true,
+         conditions: { include: { condition: true } },
       },
     });
 
