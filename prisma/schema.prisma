@@ -319,15 +319,64 @@ model Lead {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  conversation Conversation?
-  appointments Appointment[]
-  calls        Call[]
-  activities   Activity[]
+  beneficiaries LeadBeneficiary[]
+  conditions    LeadMedicalCondition[]
+  expenses      LeadExpense[]
+  conversation  Conversation?
+  appointments  Appointment[]
+  calls         Call[]
+  activities    Activity[]
 
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
   updatedBy  String?
   updatedAt  DateTime @updatedAt
+}
+
+model LeadBeneficiary {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type        String   @default("Primary")
+  firstName   String
+  lastName    String
+  address     String   @default("")
+  city        String   @default("")
+  state       String
+  zipCode     String   @default("")
+  cellPhone   String   @default("")
+  gender      Gender   @default(NA)
+  email       String   @default("")
+  dateOfBirth String   @default("")
+  notes       String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LeadMedicalCondition {
+  id          String           @id @default(cuid())
+  leadId      String
+  lead        Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  conditionId String
+  condition   MedicalCondition @relation("LeadToCondition", fields: [conditionId], references: [id])
+  diagnosed   String           @default("")
+  medications String           @default("")
+  notes       String           @default("")
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model LeadExpense {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type      String   @default("Expense")
+  name      String
+  value     Int      @default(0)
+  isDefault Boolean  @default(false)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LeadDuplicates {
@@ -390,19 +439,19 @@ model Call {
   direction String  @default("inbound")
   status    String?
   duration  Int?
+  price     String?
 
   recordId        String?
   recordUrl       String?
   recordStartTime DateTime?
   recordStatus    String?
   recordDuration  Int?
+  recordPrice     String?
 
   transcriptionId   String?
   transcriptionUrl  String?
   transcriptionText String?
   listened          Boolean @default(true)
-
-  price String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -516,11 +565,12 @@ model Feedback {
 // ADMIN TABLES
 
 model MedicalCondition {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String                 @id @default(cuid())
+  name           String
+  description    String?
+  leadConditions LeadMedicalCondition[] @relation("LeadToCondition")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
 }
 
 model Carrier {
@@ -550,9 +600,10 @@ model Script {
 }
 
 model Quote {
-  id     String @id @default(cuid())
-  quote  String @db.LongText
+  id     String  @id @default(cuid())
+  quote  String  @db.LongText
   author String
+  active Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

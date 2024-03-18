@@ -51,7 +51,7 @@ export const Header = ({ conversation }: HeaderProps) => {
           size="sm"
           onClick={() => router.push("/inbox")}
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft size={16} className="mr-2" />
           GO BACK
         </Button>
       </div>

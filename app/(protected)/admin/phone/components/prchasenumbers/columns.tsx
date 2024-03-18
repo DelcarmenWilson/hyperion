@@ -2,9 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
 import { TwilioNumber } from "@/types/twilio";
-import { FileImage, Image, MessageCircle, Phone, X } from "lucide-react";
+import { FileImage, MessageCircle, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PurchaseForm } from "./form";
 
 export const columns: ColumnDef<TwilioNumber>[] = [
   {
@@ -82,18 +86,19 @@ export const columns: ColumnDef<TwilioNumber>[] = [
     ),
   },
   {
-    header: "",
+    header: "Actions",
     id: "actions",
     cell: ({ row }) => (
-      <Button
-        onClick={
-          row.original.onPurchase
-            ? row.original.onPurchase(row.original.phoneNumber)!
-            : () => {}
-        }
-      >
-        Details
-      </Button>
+      <>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="sm">Details</Button>
+          </DialogTrigger>
+          <DialogContent className="p-0 max-h-[96%] max-w-[600px]">
+            <PurchaseForm phoneNumber={row.original} />
+          </DialogContent>
+        </Dialog>
+      </>
     ),
   },
 ];

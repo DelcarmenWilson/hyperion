@@ -20,8 +20,13 @@ import { leadUpdateByIdQuote } from "@/actions/lead";
 type MainInfoProps = {
   info: LeadMainInfo;
   conversationId?: string;
+  showInfo?: boolean;
 };
-export const MainInfoClient = ({ info, conversationId }: MainInfoProps) => {
+export const MainInfoClient = ({
+  info,
+  conversationId,
+  showInfo = false,
+}: MainInfoProps) => {
   const router = useRouter();
   const [edit, setEdit] = useState(false);
   const [leadInfo, setLeadInfo] = useState<LeadMainInfo>(info);
@@ -63,11 +68,20 @@ export const MainInfoClient = ({ info, conversationId }: MainInfoProps) => {
 
   return (
     <div className="flex flex-col gap-1 text-sm">
-      <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+      {showInfo && (
+        <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+      )}
+
       <p className="flex items-center gap-2 text-primary">
-        <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
-          {formatPhoneNumber(info.cellPhone)}
-        </Link>
+        {showInfo ? (
+          <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
+            {formatPhoneNumber(info.cellPhone)}
+          </Link>
+        ) : (
+          <span className="font-extrabold italic">
+            {formatPhoneNumber(info.cellPhone)}
+          </span>
+        )}
         <CopyButton value={info.cellPhone} />
       </p>
       {edit ? (

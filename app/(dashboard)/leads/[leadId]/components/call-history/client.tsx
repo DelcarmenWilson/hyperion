@@ -3,15 +3,18 @@ import { useEffect, useState } from "react";
 import { find } from "lodash";
 import { pusherClient } from "@/lib/pusher";
 
-import { CallBox } from "./call-box";
+import { CallHistoryCard } from "./card";
 import { Call } from "@prisma/client";
 
-interface CallHistoryBoxProps {
+interface CallHistoryClientProps {
   leadId: string;
   initialCalls: Call[];
 }
 
-export const CallHistory = ({ leadId, initialCalls }: CallHistoryBoxProps) => {
+export const CallHistoryClient = ({
+  leadId,
+  initialCalls,
+}: CallHistoryClientProps) => {
   const [calls, setCalls] = useState<Call[]>(initialCalls);
 
   useEffect(() => {
@@ -40,7 +43,7 @@ export const CallHistory = ({ leadId, initialCalls }: CallHistoryBoxProps) => {
         <span>Recording</span>
       </div>
       {calls?.map((call) => (
-        <CallBox key={call.id} call={call} />
+        <CallHistoryCard key={call.id} call={call} />
       ))}
       {!calls.length && (
         <p className="text-muted-foreground text-center mt-2">No calls found</p>

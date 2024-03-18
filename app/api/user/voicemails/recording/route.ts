@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getFileExtension } from "@/formulas/text";
 
+
 export const POST = async (req: any, res: any) => {
   const user = await currentUser();
   if (!user) {
@@ -23,7 +24,8 @@ export const POST = async (req: any, res: any) => {
   const ext = getFileExtension(file.name);
   const filename = `/${filePath}/${user.id}.${ext}`;
   try {
-    await writeFile(path.join(process.cwd(), `public${filename}`), buffer);
+     await writeFile(path.join(process.cwd(), `public${filename}`), buffer);     
+
     if (type == "in") {
       await db.chatSettings.update({
         where: { userId: user.id },

@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(script);
   } catch (error) {
-    console.log("[LEADSTATUS_POST]", error);
+    console.log("SCRIPT_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

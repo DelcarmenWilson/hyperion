@@ -39,6 +39,51 @@ export const phoneNumberInsert = async (phone: string, state: string) => {
   return { success: "Phone number was purchased!" };
 };
 
+export const phoneNumberInsertTwilio = async (
+  phone: string,
+  state: string,
+  agentId: string | null
+) => {
+  // const user = await currentUser();
+  // if (!user) {
+  //   return { error: "Unauthenticated!" };
+  // }
+
+  const existingPhoneNumber = await db.phoneNumber.findFirst({
+    where: { phone },
+  });
+
+  if (existingPhoneNumber) {
+    return { error: "Phone number already exists" };
+  }
+
+  let status = "Unassigned";
+  if (agentId == "unassigned") {
+    agentId = null;
+  } else {
+    const usernumber = await db.phoneNumber.findFirst({
+      where: { agentId },
+    });
+    status = usernumber ? "Active" : "Default";
+  }
+  var date = new Date();
+  date.setDate(date.getDate() + 30);
+  const newPhoneNumber = await db.phoneNumber.create({
+    data: {
+      phone: reFormatPhoneNumber(phone),
+      state,
+      agentId,
+      status,
+      renewAt: date,
+    },
+  });
+
+  if (!newPhoneNumber) {
+    return { error: "Phone number was not purchased!" };
+  }
+
+  return { success: newPhoneNumber.id };
+};
 export const phoneNumberUpdateByIdActivate = async (id: string) => {
   const user = await currentUser();
   if (!user) {
@@ -46,19 +91,17 @@ export const phoneNumberUpdateByIdActivate = async (id: string) => {
   }
 
   const existingNumber = await db.phoneNumber.findUnique({
-    where: { id,agentId:user.id },
+    where: { id, agentId: user.id },
   });
 
   if (!existingNumber) {
     return { error: "Unauthorized!" };
   }
- 
+
   await db.phoneNumber.update({
     where: { id: existingNumber.id },
-    data: { status:"Active"},
+    data: { status: "Active" },
   });
-
- 
 
   return { success: "Phone number has been activated!" };
 };
@@ -70,7 +113,7 @@ export const phoneNumberUpdateByIdDeactivate = async (id: string) => {
   }
 
   const userPhoneNumbers = await db.phoneNumber.findMany({
-    where: { agentId: user.id,status:{not:"Inactive"} },
+    where: { agentId: user.id, status: { not: "Inactive" } },
   });
   const thisNumber = userPhoneNumbers.find((e) => e.id == id);
 
@@ -87,7 +130,7 @@ export const phoneNumberUpdateByIdDeactivate = async (id: string) => {
 
   await db.phoneNumber.update({
     where: { id: thisNumber?.id },
-    data: { status:"Inactive"},
+    data: { status: "Inactive" },
   });
 
   if (status == "Default") {
@@ -100,6 +143,7 @@ export const phoneNumberUpdateByIdDeactivate = async (id: string) => {
 
   return { success: "Phone number has been deactivated!" };
 };
+
 export const phoneNumberUpdateByIdDefault = async (id: string) => {
   const user = await currentUser();
   if (!user) {
@@ -107,25 +151,56 @@ export const phoneNumberUpdateByIdDefault = async (id: string) => {
   }
 
   const thisNumber = await db.phoneNumber.findUnique({
-    where: { id,agentId: user.id },
+    where: { id, agentId: user.id },
   });
 
-  const defaultNumber=await db.phoneNumber.findFirst({where: {agentId:user.id, status:"Default" },})
-
+  const defaultNumber = await db.phoneNumber.findFirst({
+    where: { agentId: user.id, status: "Default" },
+  });
 
   if (!thisNumber) {
     return { error: "Unauthorized!" };
   }
- 
+
   await db.phoneNumber.update({
-    where: {id:defaultNumber?.id },
-    data: { status:"Active"},
+    where: { id: defaultNumber?.id },
+    data: { status: "Active" },
   });
 
   await db.phoneNumber.update({
     where: { id: thisNumber?.id },
-    data: { status:"Default"},
+    data: { status: "Default" },
   });
 
   return { success: "Phone number is now default!" };
+};
+
+export const phoneNumberUpdateByIdAssign = async (
+  id: string,
+  agentId: string
+) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
+  const thisNumber = await db.phoneNumber.findUnique({
+    where: { id },
+  });
+
+  if (!thisNumber) {
+    return { error: "Number does not exist!" };
+  }
+  const usernumber = await db.phoneNumber.findFirst({
+    where: { agentId },
+  });
+
+  var date = new Date();
+  date.setDate(date.getDate() + 30);
+  await db.phoneNumber.update({
+    where: { id: thisNumber?.id },
+    data: { status: usernumber ? "Active" : "Default", agentId, renewAt: date },
+  });
+
+  return { success: "Phone number is now assigned!" };
 };

@@ -170,6 +170,7 @@ export const convertCalls = (result: any): Call[] => {
         transcriptionUrl:d["transcriptionUrl"],
         listened:d["listened"]=="f"?false:true,
       price: d["price"],
+      recordPrice:d["recordPrice"],
     };
     mapped.push(newobj);
   });

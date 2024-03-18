@@ -1,13 +1,19 @@
-import { phoneNumbersGetAll } from "@/data/phonenumbers";
-import { AgentNumbers } from "./components/agent-numbers";
-import { PurchasePhoneNumbers } from "./components/purchase-phone-numbers";
+import {
+  phoneNumbersGetAssigned,
+  phoneNumbersGetUnassigned,
+} from "@/data/phonenumbers";
+import { AgentNumbersClient } from "./components/agentnumbers/client";
+import { PurchaseNumbers } from "./components/prchasenumbers/client";
+import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
 
 const PhonePage = async () => {
-  const phoneNumbers = await phoneNumbersGetAll();
+  const phoneNumbers = await phoneNumbersGetAssigned();
+  const unasignedNumbers = await phoneNumbersGetUnassigned();
   return (
     <div className="flex flex-col gap-2 mt-2">
-      <PurchasePhoneNumbers />
-      <AgentNumbers phoneNumbers={phoneNumbers} />
+      <PurchaseNumbers />
+      <UnassignedNumbersClient phoneNumbers={unasignedNumbers} />
+      <AgentNumbersClient phoneNumbers={phoneNumbers} />
     </div>
   );
 };

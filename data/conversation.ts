@@ -33,7 +33,7 @@ export const conversationGetById = async (conversationId: string) => {
       where: { id: conversationId, agentId: user.id },
       include: {
         lead: {
-          include: { calls: true, appointments: true, activities: true },
+          include: { calls: true, appointments: true, activities: true,beneficiaries:true,expenses:true },
         },
         messages: true,
       },

@@ -329,3 +329,17 @@ export const adminQuoteInsert = async (
 
   return { success: newQuote };
 };
+
+export const adminQuoteUpdateActive = async () => {  
+  const quotes = await db.quote.findMany({});
+  const random=Math.floor(Math.random()*quotes.length)
+  const randomQuote=quotes[random]     
+
+  const activeQuote=quotes.find(e=>e.active)
+  if(activeQuote){
+    await db.quote.update({where:{id:activeQuote.id},data:{active:false}})
+  }
+  await db.quote.update({where:{id:randomQuote.id},data:{active:true}}) 
+
+  return { success: "Random quote has been set." };
+};

@@ -15,6 +15,8 @@ import {
   UserCarrier,
   Gender,
   MaritalStatus,
+  LeadBeneficiary,
+  LeadExpense,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -64,11 +66,18 @@ export type LeadConversationType = Conversation & {
   lead: Lead;
   messages: Message[];
 };
+export type HalfLeadNoConvo = Lead & {
+  calls: Call[];
+  appointments: Appointment[];
+  activities: Activity[];
+};
 
 export type FullLeadNoConvo = Lead & {
   calls: Call[];
   appointments: Appointment[];
-  activities: Activity[];
+  activities?: Activity[];
+  beneficiaries?:LeadBeneficiary[],
+  expenses?:LeadExpense[]
 };
 
 export type FullLead = Lead & {

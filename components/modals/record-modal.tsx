@@ -59,18 +59,26 @@ export const RecordModal = ({
     mediaRef.current = null;
     audioChunksRef.current = [];
 
-    const streamData = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false,
-    });
-    const medaiRecorder = new MediaRecorder(streamData);
-    mediaRef.current = medaiRecorder;
-    medaiRecorder.start();
-    medaiRecorder.ondataavailable = (event: any) => {
-      if (typeof event.data === "undefined") return;
-      if (event.data.size === 0) return;
-      audioChunksRef.current.push(event.data);
-    };
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          echoCancellation: true,
+        },
+      })
+      .then((stream) => {
+        const medaiRecorder = new MediaRecorder(stream, {
+          audioBitsPerSecond: 128000,
+          mimeType: "audio/wav",
+        });
+        mediaRef.current = medaiRecorder;
+        medaiRecorder.ondataavailable = (event: any) => {
+          if (typeof event.data === "undefined") return;
+          if (event.data.size === 0) return;
+          audioChunksRef.current.push(event.data);
+        };
+
+        medaiRecorder.start();
+      });
   };
   const stopRecording = () => {
     if (!mediaRef.current) return;
@@ -80,10 +88,12 @@ export const RecordModal = ({
     });
     mediaRef.current.stop();
     mediaRef.current.onstop = async () => {
-      const audioBlob = new Blob(audioChunksRef.current);
+      const audioBlob = new Blob(audioChunksRef.current, {
+        type: "audio/wav",
+      });
       const audioUrl = URL.createObjectURL(audioBlob);
       setAudio(audioUrl);
-      setFile(new File([audioBlob], "newrecording.mp3"));
+      setFile(new File([audioBlob], "newrecording.wav"));
     };
 
     setIsRecording(false);

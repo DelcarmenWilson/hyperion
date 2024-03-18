@@ -4,13 +4,15 @@ import { ClipboardList } from "lucide-react";
 import { DataTableHeadless } from "@/components/tables/data-table-headless";
 
 import { CardLayout } from "@/components/custom/card-layout";
-import { columns } from "./agent-columns";
+import { columns } from "./columns";
 import { FullPhoneNumber } from "@/types";
 
-type AgentNumbersProps = {
+type AgentNumbersClientProps = {
   phoneNumbers: FullPhoneNumber[];
 };
-export const AgentNumbers = ({ phoneNumbers }: AgentNumbersProps) => {
+export const AgentNumbersClient = ({
+  phoneNumbers,
+}: AgentNumbersClientProps) => {
   return (
     <CardLayout title="Agent Numbers" icon={ClipboardList}>
       <DataTableHeadless

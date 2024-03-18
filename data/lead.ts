@@ -41,6 +41,10 @@ export const leadGetById = async (id: string) => {
         appointments: { orderBy: { date: "desc" } },
         calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
+        expenses: true,
+        beneficiaries: true,
+        // conditions: { include: { condition: true } },
+        conditions: true,
       },
     });
 
@@ -113,11 +117,10 @@ export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
 export const leadStatusGetAllByAgentId = async (userId: string) => {
   try {
     const leadStatus = await db.leadStatus.findMany({
-      where: {userId},
+      where: { userId },
     });
     return leadStatus;
   } catch {
     return [];
   }
 };
-

@@ -62,9 +62,6 @@ export const ChatClient = ({ data }: ChatClientProps) => {
         return { ...state, out: e };
       });
     }
-    // setImage(e);
-    // update();
-    // revalidatePath("/");
     router.refresh();
 
     toast.success("Recording has been updated");

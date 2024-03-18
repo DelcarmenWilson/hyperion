@@ -1,10 +1,14 @@
+import { User } from "lucide-react";
 import { leadGetById, leadGetPrevNextById } from "@/data/lead";
 import { LeadClient } from "./components/client";
 // import { conversationGetByLeadId } from "@/data/conversation";
 import { PageLayout } from "@/components/custom/page-layout";
-import { User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopMenu } from "./components/top-menu";
 import { LeadTabsClient } from "./components/tabs-client";
+import { ExpensesWrapperClient } from "@/components/lead/expenses/client";
+import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
+import { ConditionsClient } from "@/components/lead/conditions/client";
 
 const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
   const lead = await leadGetById(params.leadId);
@@ -17,8 +21,40 @@ const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
       title={`View Lead - ${lead.firstName}`}
       topMenu={<TopMenu nextPrev={prevNext} />}
     >
-      <LeadClient lead={lead} />
-      <LeadTabsClient lead={lead} />
+      <Tabs defaultValue="general" className="h-full">
+        <p className="text-center font-semibold text-primary text-3xl">
+          {lead.firstName} {lead.lastName}
+        </p>
+        <TabsList className="flex w-full h-auto">
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
+          {/* <TabsTrigger value="conditions">Conditions</TabsTrigger> */}
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="general">
+          <LeadClient lead={lead} />
+        </TabsContent>
+        <TabsContent value="beneficiaries">
+          <BeneficiariesClient
+            leadId={lead.id}
+            initBeneficiaries={lead.beneficiaries}
+          />
+        </TabsContent>
+        <TabsContent value="conditions">
+          <ConditionsClient leadId={lead.id} initConditions={lead.conditions} />
+        </TabsContent>
+        <TabsContent value="expenses">
+          <ExpensesWrapperClient
+            leadId={lead.id}
+            initExpenses={lead.expenses}
+          />
+        </TabsContent>
+        <TabsContent value="activity">
+          <LeadTabsClient lead={lead} />
+        </TabsContent>
+      </Tabs>
     </PageLayout>
   );
 };

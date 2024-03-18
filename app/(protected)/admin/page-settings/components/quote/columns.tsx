@@ -32,12 +32,14 @@ export const columns: ColumnDef<Quote>[] = [
     accessorKey: "quote",
     header: "Quote",
   },
-
   {
     accessorKey: "author",
     header: "Author",
   },
-
+  {
+    accessorKey: "active",
+    header: "Active",
+  },
   {
     accessorKey: "createdAt",
     header: "Created At",

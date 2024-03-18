@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
 import { client } from "@/lib/twilio-config";
 import { NextResponse } from "next/server";
+const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -10,11 +11,17 @@ export async function POST(req: Request) {
   const j: any = formatObject(body);
 
   const results = (await client.calls.get(j.callSid).fetch()).toJSON();
-
+  const existingCall = await db.call.findUnique({ where: { id: j.callSid } });
+  if (!existingCall) {
+    console.log("CALL_RESULT_POST_ERROR");
+    return new NextResponse("Error", { status: 200 });
+  }
   const call = await db.call.update({
     where: { id: j.callSid },
     data: {
-      status: j.callStatus,
+      status: callStatus.includes(existingCall.status as string)
+        ? existingCall.status
+        : j.callStatus,
       duration: parseInt(j.callDuration),
       price: results.price,
     },
