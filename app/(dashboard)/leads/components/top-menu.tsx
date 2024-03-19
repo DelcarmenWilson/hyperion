@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Paperclip, Plus } from "lucide-react";
-import { ImportLeadsForm } from "./import/import-leads-form";
+
+import { Button } from "@/components/ui/button";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -10,9 +11,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useState } from "react";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
+import { ImportLeadsForm } from "./import/import-leads-form";
 import { NewLeadForm } from "./new-lead-form";
 
 export const TopMenu = () => {
@@ -38,7 +39,7 @@ export const TopMenu = () => {
             <DialogTrigger asChild>
               <Button variant="outlineprimary" size="sm">
                 <Paperclip className="h-4 w-4 mr-2" />
-                UPLOAD CSV FILE
+                Upload Csv File
               </Button>
             </DialogTrigger>
           </TooltipTrigger>

@@ -9,7 +9,7 @@ import { FullLead, FullPipeline } from "@/types";
 import { PageLayout } from "@/components/custom/page-layout";
 import { TopMenu } from "./top-menu";
 import { PipeLine } from "@prisma/client";
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Select,
@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { pipelineDeleteById, pipelineUpdateById } from "@/actions/pipeline";
 import { Input } from "@/components/ui/input";
-import { useGlobalContext } from "@/providers/global-provider";
+import { useGlobalContext } from "@/providers/global";
 
 type SaleClientProps = {
   data: FullLead[];

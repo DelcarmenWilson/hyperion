@@ -81,9 +81,9 @@ export const MedicalForm = ({ onClose }: MedicalFormProps) => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Americo"
+                      placeholder="Dui"
                       disabled={loading}
-                      autoComplete="Name"
+                      autoComplete="off"
                     />
                   </FormControl>
                 </FormItem>
@@ -106,6 +106,7 @@ export const MedicalForm = ({ onClose }: MedicalFormProps) => {
                       placeholder="Description"
                       disabled={loading}
                       autoComplete="Description"
+                      rows={5}
                     />
                   </FormControl>
                 </FormItem>

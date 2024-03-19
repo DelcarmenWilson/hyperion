@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { ImageModal } from "@/components/modals/image-modal";
+import { ImageModal } from "@/components/modals/image";
 import { adminCarrierUpdateById } from "@/actions/admin";
 
 type CarrierFormProps = {

@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { FullAppointment } from "@/types";
 

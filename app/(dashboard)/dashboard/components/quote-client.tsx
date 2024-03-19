@@ -11,10 +11,10 @@ export const QuoteClient = ({ quote }: QuoteClientProps) => {
       {/* <Button className="absolute top-2 right-2" size="icon">
         <X size={16} />
       </Button> */}
-      <p className="font-medium italic text-5xl p-20">
+      <p className="font-medium italic p-4 text-3xl lg:text-5xl lg:p-20">
         &quot;{quote.quote}&quot;
       </p>
-      <div className="text-end font-bold text-3xl text-primary italic pr-3">
+      <div className="text-end font-bold text-2xl lg:text-3xl text-primary italic pr-3">
         - {quote.author}
       </div>
     </div>

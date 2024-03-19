@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pipelineInsert, pipelineUpdateOrder } from "@/actions/pipeline";
-import { useGlobalContext } from "@/providers/global-provider";
+import { useGlobalContext } from "@/providers/global";
 
 type TopMenuProps = {
   pipelines: FullPipeline[];

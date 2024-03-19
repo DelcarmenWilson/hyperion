@@ -9,7 +9,7 @@ import axios from "axios";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -15,11 +15,12 @@ import { GeneralInfoClient } from "@/components/lead/general-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { NotesForm } from "@/components/lead/notes-form";
-import { ExpensesWrapperClient } from "@/components/lead/expenses/client";
+import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
 import { PhoneScript } from "./script";
 import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
+import { ConditionsClient } from "@/components/lead/conditions/client";
 
 type PhoneLeadInfo = {
   open?: boolean;
@@ -102,6 +103,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           <TabsList className="flex w-full h-auto">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
+            <TabsTrigger value="conditions">Conditions</TabsTrigger>
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
           </TabsList>
 
@@ -123,11 +125,14 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
               initBeneficiaries={lead.beneficiaries!}
             />
           </TabsContent>
-          <TabsContent value="expenses">
-            <ExpensesWrapperClient
+          <TabsContent value="conditions">
+            <ConditionsClient
               leadId={lead.id}
-              initExpenses={lead.expenses!}
+              initConditions={lead.conditions!}
             />
+          </TabsContent>
+          <TabsContent value="expenses">
+            <ExpensesClient leadId={lead.id} initExpenses={lead.expenses!} />
           </TabsContent>
         </Tabs>
 

@@ -44,7 +44,7 @@ export const UsersClient = ({ users, teamId }: UserClientProps) => {
         />
         <Button onClick={onUpdate}>Update</Button>
       </div>
-      <DataTable columns={columns} data={initalUsers} searchKey="userName" />
+      <DataTable columns={columns} data={initalUsers} />
     </>
   );
 };

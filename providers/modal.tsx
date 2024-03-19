@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { MasterAccountModal } from "@/components/modals/master-account-modal";
+import { MasterAccountModal } from "@/components/modals/master-account";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);

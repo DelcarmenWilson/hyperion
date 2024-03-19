@@ -1,4 +1,4 @@
-import { ThemeClient } from "@/components/custom/theme-client";
+import { ThemeClient } from "@/components/custom/theme/client";
 
 const DisplayPage = () => {
   return <ThemeClient />;

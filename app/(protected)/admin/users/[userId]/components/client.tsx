@@ -11,9 +11,9 @@ import { Team } from "@prisma/client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { CardCountUp } from "@/components/custom/card-count-up";
+import { CardCountUp } from "@/components/custom/card/count-up";
 import { FullUserReport } from "@/types";
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
 import { Button } from "@/components/ui/button";
 import {
   Select,

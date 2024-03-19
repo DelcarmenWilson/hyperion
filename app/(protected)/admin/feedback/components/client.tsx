@@ -46,11 +46,7 @@ export const FeedbacksClient = ({ feedbacks }: FeedbacksClientProps) => {
           </SelectContent>
         </Select>
       </div>
-      <DataTable
-        columns={columns}
-        data={currentFeedbacks}
-        searchKey="headLine"
-      />
+      <DataTable columns={columns} data={currentFeedbacks} />
     </>
   );
 };

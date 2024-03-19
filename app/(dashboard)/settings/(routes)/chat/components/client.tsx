@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { defaultChat } from "@/placeholder/chat";
 import { ChatUserSchema } from "@/schemas";
-import { RecordModal } from "@/components/modals/record-modal";
+import { RecordModal } from "@/components/modals/record";
 import { AudioPlayer } from "@/components/custom/audio-player";
 
 type ChatClientProps = {

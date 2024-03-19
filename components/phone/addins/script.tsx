@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
-import { useGlobalContext } from "@/providers/global-provider";
+import { useGlobalContext } from "@/providers/global";
 import { replaceScript } from "@/formulas/script";
 import { cn } from "@/lib/utils";
 import { Button } from "../../ui/button";

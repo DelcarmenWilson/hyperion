@@ -25,7 +25,7 @@ export const adminLeadStatusGetAll = async () => {
 // CARRIERS
 export const adminCarriersGetAll = async () => {
   try {
-    const carriers = await db.carrier.findMany({});
+    const carriers = await db.carrier.findMany({orderBy:{name:"asc"}});
     return carriers;
   } catch (error) {
     return [];
@@ -43,7 +43,7 @@ export const adminCarrierGetById = async (id: string) => {
 //MEDICAL CONDITIONS
 export const adminMedicalConditionsGetAll = async () => {
   try {
-    const conditions = await db.medicalCondition.findMany({});
+    const conditions = await db.medicalCondition.findMany({orderBy:{name:"asc"}});
     return conditions;
   } catch (error) {
     return [];

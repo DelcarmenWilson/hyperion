@@ -16,7 +16,7 @@ export default async function SetupLayout({
       redirect("/login");
     } else {
       if (user.role == "MASTER") {
-        redirect(`/admin`);
+        redirect(`/admin/teams`);
       } else {
         redirect(`/dashboard`);
       }

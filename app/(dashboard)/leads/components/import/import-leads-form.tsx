@@ -21,7 +21,6 @@ import { convertLead } from "@/formulas/lead";
 import { importVendors } from "@/constants/lead";
 import { LeadSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
-import { Router } from "lucide-react";
 
 type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
 

@@ -5,7 +5,7 @@ import { Calendar } from "lucide-react";
 import { columns } from "./columns";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
 import { FullAppointment } from "@/types";
 
 interface AppoinmentClientProps {
@@ -15,7 +15,7 @@ interface AppoinmentClientProps {
 export const AppoinmentClient = ({ data }: AppoinmentClientProps) => {
   return (
     <CardLayout title="Appointments" icon={Calendar}>
-      <DashBoardTable columns={columns} data={data} searchKey="fullName" />
+      <DashBoardTable columns={columns} data={data} />
     </CardLayout>
   );
 };
@@ -32,7 +32,7 @@ export const AppointmentClientSkeleton = () => {
         </div>
       </div>
       <CardContent className="items-center space-y-0 pb-2">
-        {/* <DashBoardTable columns={columns} data={data} searchKey="fullName" /> */}
+        {/* <DashBoardTable columns={columns} data={data}/> */}
       </CardContent>
     </Card>
   );

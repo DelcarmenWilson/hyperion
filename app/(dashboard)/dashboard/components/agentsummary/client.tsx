@@ -1,18 +1,19 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
+import { pusherClient } from "@/lib/pusher";
+
+import { find } from "lodash";
 import { AgentSummaryColumn, columns } from "./columns";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { pusherClient } from "@/lib/pusher";
+import { CardLayout } from "@/components/custom/card/layout";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { find } from "lodash";
-import { CardLayout } from "@/components/custom/card-layout";
 import { TopMenu } from "./top-menu";
 
-interface AgentSummaryClientProps {
+type AgentSummaryClientProps = {
   initialData: AgentSummaryColumn[] | null;
-}
+};
 
 export const AgentSummaryClient = ({
   initialData,
@@ -52,7 +53,7 @@ export const AgentSummaryClient = ({
         <Button size="sm">INVITE USER</Button>
       </div>
 
-      <DashBoardTable columns={columns} data={agents} searchKey="username" />
+      <DashBoardTable columns={columns} data={agents} />
     </CardLayout>
   );
 };

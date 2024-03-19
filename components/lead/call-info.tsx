@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
-import { useGlobalContext } from "@/providers/global-provider";
+import { useGlobalContext } from "@/providers/global";
 
 interface CallInfoProps {
   lead: FullLead | FullLeadNoConvo;

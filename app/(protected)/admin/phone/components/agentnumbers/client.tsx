@@ -1,9 +1,7 @@
 "use client";
 import { ClipboardList } from "lucide-react";
-
-import { DataTableHeadless } from "@/components/tables/data-table-headless";
-
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
+import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { FullPhoneNumber } from "@/types";
 
@@ -15,12 +13,7 @@ export const AgentNumbersClient = ({
 }: AgentNumbersClientProps) => {
   return (
     <CardLayout title="Agent Numbers" icon={ClipboardList}>
-      <DataTableHeadless
-        data={phoneNumbers}
-        columns={columns}
-        searchKey="firstName"
-        headers
-      />
+      <DataTable data={phoneNumbers} columns={columns} headers />
     </CardLayout>
   );
 };

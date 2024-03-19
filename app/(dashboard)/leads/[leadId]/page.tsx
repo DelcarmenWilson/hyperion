@@ -6,7 +6,7 @@ import { PageLayout } from "@/components/custom/page-layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopMenu } from "./components/top-menu";
 import { LeadTabsClient } from "./components/tabs-client";
-import { ExpensesWrapperClient } from "@/components/lead/expenses/client";
+import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 
@@ -46,10 +46,7 @@ const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
           <ConditionsClient leadId={lead.id} initConditions={lead.conditions} />
         </TabsContent>
         <TabsContent value="expenses">
-          <ExpensesWrapperClient
-            leadId={lead.id}
-            initExpenses={lead.expenses}
-          />
+          <ExpensesClient leadId={lead.id} initExpenses={lead.expenses} />
         </TabsContent>
         <TabsContent value="activity">
           <LeadTabsClient lead={lead} />

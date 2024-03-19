@@ -7,9 +7,9 @@ import {
   MainSideBar,
   MainSidebarSkeleton,
 } from "@/components/reusable/main-sidebar";
-import AppointmentProvider from "@/providers/appointment-provider";
-import PhoneContextProvider from "@/providers/phone-provider";
-import GlobalContextProvider from "@/providers/global-provider";
+import AppointmentProvider from "@/providers/appointment";
+import PhoneContextProvider from "@/providers/phone";
+import GlobalContextProvider from "@/providers/global";
 import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
 import { scriptGetOne } from "@/data/script";
 import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/data/user";

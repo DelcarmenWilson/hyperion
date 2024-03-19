@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Check, HelpCircle, Phone, Search } from "lucide-react";
+import axios from "axios";
+import { Phone, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { Label } from "@/components/ui/label";
@@ -15,13 +16,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { isAValidPhoneNumber } from "@/formulas/phones";
-import { phoneNumberInsert } from "@/actions/phone";
 import { states } from "@/constants/states";
-import { CardLayout } from "@/components/custom/card-layout";
-import axios from "axios";
+import { CardLayout } from "@/components/custom/card/layout";
+import { DataTable } from "@/components/tables/data-table";
 import { TwilioNumber } from "@/types/twilio";
-import { DataTableHeadless } from "@/components/tables/data-table-headless";
 import { columns } from "./columns";
 
 export const PurchaseNumbers = () => {
@@ -117,12 +115,7 @@ export const PurchaseNumbers = () => {
         <div className="col-span-2 gap-2">
           <h4 className="font-bold text-primary">Phone numbers list</h4>
           {phoneNumbers.length ? (
-            <DataTableHeadless
-              columns={columns}
-              data={phoneNumbers}
-              searchKey="locality"
-              headers
-            />
+            <DataTable columns={columns} data={phoneNumbers} headers />
           ) : (
             <p className="flex items-center justify-center gap-2 text-3xl">
               <Search /> Search Phone Numbers

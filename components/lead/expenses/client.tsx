@@ -1,23 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { ExpenseIncome } from "./expense-income";
 
 import { LeadExpense } from "@prisma/client";
 import { leadExpenseInsertSheet } from "@/actions/lead";
 import { USDollar } from "@/formulas/numbers";
-import { cn } from "@/lib/utils";
 
-type ExpensesWrapperClientProp = {
+type ExpensesClientProp = {
   leadId: string;
   initExpenses: LeadExpense[];
 };
 
-export const ExpensesWrapperClient = ({
+export const ExpensesClient = ({
   leadId,
   initExpenses,
-}: ExpensesWrapperClientProp) => {
+}: ExpensesClientProp) => {
   const [data, setData] = useState<{
     expenses: LeadExpense[];
     income: LeadExpense[];
@@ -85,7 +86,7 @@ export const ExpensesWrapperClient = ({
             />
           </div>
           <p className="flex gap-2 items-center justify-center text-2xl mt-2">
-            <span className="italic">Expandable Income</span>
+            <span className="italic">Expendable Income - </span>
             <span
               className={cn(
                 "font-bold",
@@ -94,6 +95,7 @@ export const ExpensesWrapperClient = ({
             >
               {USDollar.format(expendableIncome)}
             </span>
+            <span> / Month</span>
           </p>
         </>
       ) : (

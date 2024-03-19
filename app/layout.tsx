@@ -2,14 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 import "./themes/themes.css";
 
 import { Toaster } from "@/components/ui/sonner";
-import { ModalProvider } from "@/providers/modal-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { cn } from "@/lib/utils";
-import { ThemeSwitcher } from "@/components/custom/theme-switcher";
+import { ModalProvider } from "@/providers/modal";
+import { ThemeProvider } from "@/providers/theme";
+import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -40,15 +40,6 @@ export default async function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
-            // themes={[
-            //   "light",
-            //   "dark",
-            //   "black",
-            //   "orange",
-            //   "purple",
-            //   "red",
-            //   "yellow",
-            // ]}
             enableSystem
             disableTransitionOnChange
           >

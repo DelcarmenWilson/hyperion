@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 import { UserLicense } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
 
-import { DataTable } from "@/components/custom/data-table";
+import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { Plus } from "lucide-react";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { LicenseForm } from "./form";
 
@@ -37,13 +37,18 @@ export const LicenseClient = ({ initLicenses }: LicenseClientProps) => {
       >
         <LicenseForm onClose={onLicensesCreated} />
       </DrawerRight>
-      <div className="flex items-center justify-between">
-        <Heading title={"Licences"} description="Manage all your licenses" />
-        <Button onClick={() => setIsDrawerOpen(true)}>
-          <Plus size={16} className="mr-2" /> New License
-        </Button>
-      </div>
-      <DataTable columns={columns} data={licenses!} searchKey="licenseNumber" />
+      <Heading title={"Licences"} description="Manage all your licenses" />
+      <DataTable
+        columns={columns}
+        data={licenses!}
+        topMenu={
+          <div className="col-span-3 text-end">
+            <Button onClick={() => setIsDrawerOpen(true)}>
+              <Plus size={16} className="mr-2" /> New License
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 };

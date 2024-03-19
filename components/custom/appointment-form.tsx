@@ -22,7 +22,7 @@ import {
   breakDownSchedule,
   generateScheduleTimes,
 } from "@/constants/schedule-times";
-import { useAppointmentContext } from "@/providers/appointment-provider";
+import { useAppointmentContext } from "@/providers/appointment";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";

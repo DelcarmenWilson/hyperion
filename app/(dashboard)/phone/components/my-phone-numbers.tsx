@@ -3,7 +3,7 @@ import { ClipboardList } from "lucide-react";
 
 import { columns } from "./columns";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
 import { PhoneNumber } from "@prisma/client";
 import { ItemProps } from "@/types/item";
 import { PhoneLegendItems } from "@/constants/phone";
@@ -21,7 +21,7 @@ export const MyPhoneNumbers = ({ phoneNumbers }: MyPhoneNumbers) => {
           <Item key={item.title} title={item.title} text={item.text} />
         ))}
       </ul>
-      <DashBoardTable data={phoneNumbers} columns={columns} searchKey="phone" />
+      <DashBoardTable data={phoneNumbers} columns={columns} />
     </CardLayout>
   );
 };

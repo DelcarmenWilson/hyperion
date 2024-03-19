@@ -20,21 +20,24 @@ const PageSettings = async () => {
   const medical = await adminMedicalConditionsGetAll();
   const quotes = await adminQuotesGetAll();
   return (
-    <PageLayoutAdmin title="Page Settings" description="">
-      <Tabs defaultValue="carriers" className="pt-2">
-        <div className=" flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="carriers">Carriers</TabsTrigger>
-            <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
-            <TabsTrigger value="medical">Conditions</TabsTrigger>
-            <TabsTrigger value="quotes">Quotes</TabsTrigger>
-          </TabsList>
-          <Button variant="outlineprimary" asChild>
-            <Link href="/test" target="_blank">
-              Landing page sample
-            </Link>
-          </Button>
-        </div>
+    <PageLayoutAdmin
+      title="Page Settings"
+      description=""
+      topMenu={
+        <Button variant="outlineprimary" asChild>
+          <Link href="/test" target="_blank">
+            Landing page sample
+          </Link>
+        </Button>
+      }
+    >
+      <Tabs defaultValue="carriers" className="mx-2">
+        <TabsList className="flex w-full">
+          <TabsTrigger value="carriers">Carriers</TabsTrigger>
+          <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
+          <TabsTrigger value="medical">Conditions</TabsTrigger>
+          <TabsTrigger value="quotes">Quotes</TabsTrigger>
+        </TabsList>
         <div className="px-2">
           <TabsContent value="carriers">
             <CarrierClient initCarriers={carriers} />

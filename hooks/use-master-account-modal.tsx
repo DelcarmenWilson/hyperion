@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-interface MasterAccountModalStore {
+type MasterAccountModalStore = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-}
+};
 
 export const useMasterAccountModal = create<MasterAccountModalStore>((set) => ({
   isOpen: false,

@@ -60,7 +60,7 @@ export const initialLeads = async (values: Lead[]) => {
     skipDuplicates: true,
   });
   return {
-    success: `${leads.count} leads ot of ${values.length} have been imported`,
+    success: `${leads.count} leads out of ${values.length} have been imported`,
   };
 };
 

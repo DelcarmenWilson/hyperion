@@ -14,7 +14,7 @@ type AppointmentClientProps = {
 export const AppointmentClient = ({ data }: AppointmentClientProps) => {
   return (
     <PageLayout title="Appointments" icon={Calendar}>
-      <DashBoardTable columns={columns} data={data} searchKey="fullName" />
+      <DashBoardTable columns={columns} data={data} />
     </PageLayout>
   );
 };
@@ -31,7 +31,7 @@ export const AppointmentBoxSkeleton = () => {
         </div>
       </div>
       <CardContent className="items-center space-y-0 pb-2">
-        {/* <DashBoardTable columns={columns} data={data} searchKey="fullName" /> */}
+        {/* <DashBoardTable columns={columns} data={data} /> */}
       </CardContent>
     </Card>
   );

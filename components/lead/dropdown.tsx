@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import { FullLeadNoConvo } from "@/types";
 import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
 import { Conversation } from "@prisma/client";

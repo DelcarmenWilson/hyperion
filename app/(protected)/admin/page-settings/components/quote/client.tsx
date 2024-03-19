@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Plus, Shuffle } from "lucide-react";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { DataTable } from "@/components/custom/data-table";
+import { DataTable } from "@/components/tables/data-table";
 import { Heading } from "@/components/custom/heading";
 import { Quote } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -44,19 +44,23 @@ export const QuoteClient = ({ initQuotes }: QuoteClientProps) => {
       >
         <QuoteForm onClose={onQuoteCreated} />
       </DrawerRight>
-      <div className="flex justify-between items-end">
-        <Heading title="Quote" description="Manage all quotes" />
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onSetRandomQuote}>
-            <Shuffle size={16} className="mr-2" /> Set Random Quote
-          </Button>
-          <Button onClick={() => setIsDrawerOpen(true)}>
-            <Plus size={16} className="mr-2" /> New Quote
-          </Button>
-        </div>
-      </div>
 
-      <DataTable columns={columns} data={quotes} searchKey="name" />
+      <Heading title="Quotes" description="Manage all quotes" />
+
+      <DataTable
+        columns={columns}
+        data={quotes}
+        topMenu={
+          <div className="flex col-span-3 gap-2 justify-end">
+            <Button variant="outline" onClick={onSetRandomQuote}>
+              <Shuffle size={16} className="mr-2" /> Set Random Quote
+            </Button>
+            <Button onClick={() => setIsDrawerOpen(true)}>
+              <Plus size={16} className="mr-2" /> New Quote
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 };
