@@ -13,7 +13,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import {
   phoneNumberUpdateByIdActivate,
   phoneNumberUpdateByIdDeactivate,

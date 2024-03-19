@@ -11,7 +11,7 @@ const UsersPage = async () => {
       title={`Users (${users.length})`}
       description="Manage all users"
     >
-      <DataTable columns={columns} data={users} searchKey="userName" />
+      <DataTable columns={columns} data={users} />
     </PageLayoutAdmin>
   );
 };

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { FullAppointment } from "@/types";
 

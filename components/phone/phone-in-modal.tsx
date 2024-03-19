@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { formatSecondsToTime } from "@/formulas/numbers";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
 import { cn } from "@/lib/utils";
 import { PhoneLeadInfo } from "./addins/lead-info";

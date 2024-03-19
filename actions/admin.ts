@@ -281,7 +281,7 @@ export const adminMedicalInsert = async (
 
   const {  name, description } = validatedFields.data;
 
-  const existingCondition = await db.carrier.findFirst({ where: { name } });
+  const existingCondition = await db.medicalCondition.findFirst({ where: { name } });
   if (existingCondition) {
     return { error: "Condition already exists" };
   }
@@ -294,6 +294,20 @@ export const adminMedicalInsert = async (
   });
 
   return { success: condition };
+};
+export const adminMedicalImport = async (values: z.infer<typeof MedicalConditionSchema>[]) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  
+  const conditions = await db.medicalCondition.createMany({
+    data: values,
+    skipDuplicates: true,
+  });
+  return {
+    success: `${conditions.count} condtions out of ${values.length} have been imported`,
+  };
 };
 
 //QUOTES

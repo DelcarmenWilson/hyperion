@@ -7,7 +7,7 @@ import { Phone } from "lucide-react";
 
 import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { columns } from "./columns";
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
 
@@ -40,7 +40,7 @@ export const CallHistoryClient = ({ initialCalls }: CallHistoryClientProps) => {
   }, [leadId, user?.id]);
   return (
     <CardLayout title="Call history" icon={Phone} topMenu={<TopMenu />}>
-      <DashBoardTable columns={columns} data={calls} searchKey="fullName" />
+      <DashBoardTable columns={columns} data={calls} />
     </CardLayout>
   );
 };

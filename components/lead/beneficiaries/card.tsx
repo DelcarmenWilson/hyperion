@@ -11,7 +11,7 @@ import { leadBeneficiaryDeleteById } from "@/actions/lead";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { getAge } from "@/formulas/dates";
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 
 type BeneficiaryCardProps = {
   initBeneficiary: LeadBeneficiary;

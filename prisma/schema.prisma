@@ -566,7 +566,7 @@ model Feedback {
 
 model MedicalCondition {
   id             String                 @id @default(cuid())
-  name           String
+  name           String                 @unique
   description    String?
   leadConditions LeadMedicalCondition[] @relation("LeadToCondition")
   createdAt      DateTime               @default(now())

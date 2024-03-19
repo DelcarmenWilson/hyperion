@@ -1,15 +1,15 @@
 "use client";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-import { UserButton } from "@/components/auth/user-button";
-import { AdminSidebarRoutes } from "@/constants/page-routes";
 import { useSidebar } from "@/store/use-sidebar";
+import { UserButton } from "@/components/auth/user-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IconLink } from "@/components/reusable/icon-link";
-import { ThemeToggle } from "@/components/custom/theme-toggle";
+import { ThemeToggle } from "@/components/custom/theme/toggle";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { AdminSidebarRoutes } from "@/constants/page-routes";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 export const AdminSidebar = () => {

@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { isAValidPhoneNumber } from "@/formulas/phones";
 import { phoneNumberInsert } from "@/actions/phone";
 import { states } from "@/constants/states";
-import { CardLayout } from "@/components/custom/card-layout";
+import { CardLayout } from "@/components/custom/card/layout";
 import { PhonePurcahseItems } from "@/constants/phone";
 import { ItemProps } from "@/types/item";
 

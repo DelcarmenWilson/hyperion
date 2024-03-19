@@ -2,7 +2,7 @@ import { currentUser } from "@/lib/auth";
 import { Users } from "lucide-react";
 
 import { PageLayout } from "@/components/custom/page-layout";
-import { DataTableLead } from "@/components/tables/data-table-lead";
+import { DataTable } from "@/components/tables/data-table";
 
 import { columns } from "./components/columns";
 import { TopMenu } from "./components/top-menu";
@@ -14,7 +14,7 @@ const LeadsPage = async () => {
 
   return (
     <PageLayout title="View Leads" icon={Users} topMenu={<TopMenu />}>
-      <DataTableLead
+      <DataTable
         columns={columns}
         data={leads}
         hidden={{
@@ -27,6 +27,8 @@ const LeadsPage = async () => {
           state: false,
         }}
         placeHolder="Search First | Last | Phone | Email"
+        paginationType="advance"
+        filterType="lead"
       />
     </PageLayout>
   );

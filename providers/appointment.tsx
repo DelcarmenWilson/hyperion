@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { AppointmentModal } from "@/components/modals/appointment-modal";
+import { AppointmentModal } from "@/components/modals/appointment";
 import { Appointment, Schedule } from "@prisma/client";
 // import { useCurrentUser } from "@/hooks/use-current-user";
 // import axios from "axios";

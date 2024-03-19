@@ -4,8 +4,7 @@ import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 import { useEffect } from "react";
 
 export default function Home() {
-  const onOpen = useMasterAccountModal((state) => state.onOpen);
-  const isOpen = useMasterAccountModal((state) => state.isOpen);
+  const { onOpen, isOpen } = useMasterAccountModal();
 
   useEffect(() => {
     if (!isOpen) {

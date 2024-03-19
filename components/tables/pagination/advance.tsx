@@ -15,15 +15,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface DataTablePaginationProps<TData> {
+type AdvancePaginationProps<TData> = {
   table: Table<TData>;
   div?: React.RefObject<HTMLDivElement>;
-}
+};
 
-export function DataTablePagination<TData>({
+export function AdvancePagination<TData>({
   table,
   div,
-}: DataTablePaginationProps<TData>) {
+}: AdvancePaginationProps<TData>) {
   const onPrevNextClick = (direction: string) => {
     if (direction == "prev") {
       table.previousPage();
@@ -31,7 +31,6 @@ export function DataTablePagination<TData>({
       table.nextPage();
     }
     div?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    console.log(div);
   };
   const onFirstLastClick = (pageNum: number) => {
     table.setPageIndex(pageNum);

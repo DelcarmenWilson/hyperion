@@ -83,14 +83,51 @@ export const defaultLeadExpenses: LeadExpenseType[] = [
   },
   {
     leadId:"",   
-    name: "Car",
+    name: "Vehicle Expenses",
     type: "Expense", 
     isDefault:true
   },
   {
     leadId:"",   
-    name: "Employment",
+    name: "Utilities",
+    type: "Expense", 
+    isDefault:true
+  },
+  
+  {
+    leadId:"",   
+    name: "Groceries",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Entertainment",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Taxes",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Credit Cards",
+    type: "Expense", 
+    isDefault:true
+  },
+  {
+    leadId:"",   
+    name: "Salary",
     type: "Income", 
     isDefault:true
   },   
+  {
+    leadId:"",   
+    name: "Retirement Plan",
+    type: "Income", 
+    isDefault:true
+  }, 
 ];

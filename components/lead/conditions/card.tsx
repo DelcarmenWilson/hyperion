@@ -9,7 +9,7 @@ import { ConditionForm } from "./form";
 import { leadConditionDeleteById } from "@/actions/lead";
 import { toast } from "sonner";
 
-import { AlertModal } from "@/components/modals/alert-modal";
+import { AlertModal } from "@/components/modals/alert";
 import { Edit, Trash } from "lucide-react";
 import { FullLeadMedicalCondition } from "@/types";
 import { format } from "date-fns";

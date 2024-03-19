@@ -73,7 +73,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
         lastName,
         address,
         city,
-        state:st?.abv||state,
+        state: st?.abv || state,
         zipCode,
         homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
         cellPhone: reFormatPhoneNumber(cellPhone),
@@ -91,7 +91,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
         lastName,
         address,
         city,
-        state:st?.abv||state,
+        state: st?.abv || state,
         zipCode,
         homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
         cellPhone: reFormatPhoneNumber(cellPhone),
@@ -504,7 +504,9 @@ export const leadUpdateByIdSaleInfo = async (
 };
 
 //LEAD BENFICIARIES
-export const leadBeneficiaryInsert = async (values: z.infer<typeof LeadBeneficiarySchema>) => {
+export const leadBeneficiaryInsert = async (
+  values: z.infer<typeof LeadBeneficiarySchema>
+) => {
   const validatedFields = LeadBeneficiarySchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -527,40 +529,49 @@ export const leadBeneficiaryInsert = async (values: z.infer<typeof LeadBeneficia
     gender,
     email,
     dateOfBirth,
-    notes
+    notes,
   } = validatedFields.data;
 
   const existingBeneficiery = await db.leadBeneficiary.findFirst({
     where: {
-      leadId,firstName
+      leadId,
+      firstName,
     },
   });
 
-  if(existingBeneficiery){
-    return {error:"Benficiary already exists!"}
+  if (existingBeneficiery) {
+    return { error: "Benficiary already exists!" };
   }
-    
+
   const newBeneficiary = await db.leadBeneficiary.create({
-      data: {
-        leadId,
-        type,
-        firstName,
-        lastName,
-        address,
-        city,
-        state:state as string,
-        zipCode,
-        cellPhone: reFormatPhoneNumber(cellPhone as string),
-        gender: gender,
-        email,
-        dateOfBirth,
-        notes
-      },
-    });
-    await activityInsert(leadId,"Beneficiary","Beneficiary Added",user.id,firstName)
+    data: {
+      leadId,
+      type,
+      firstName,
+      lastName,
+      address,
+      city,
+      state: state as string,
+      zipCode,
+      cellPhone: reFormatPhoneNumber(cellPhone as string),
+      gender: gender,
+      email,
+      dateOfBirth,
+      notes,
+    },
+  });
+  await activityInsert(
+    leadId,
+    "Beneficiary",
+    "Beneficiary Added",
+    user.id,
+    firstName
+  );
   return { success: newBeneficiary };
 };
-export const leadBeneficiaryUpdateById = async (values: z.infer<typeof LeadBeneficiarySchema>) => {
+export const leadBeneficiaryUpdateById = async (
+  values: z.infer<typeof LeadBeneficiarySchema>
+) => {
   const validatedFields = LeadBeneficiarySchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -583,40 +594,40 @@ export const leadBeneficiaryUpdateById = async (values: z.infer<typeof LeadBenef
     gender,
     email,
     dateOfBirth,
-    notes
+    notes,
   } = validatedFields.data;
 
   const existingBeneficiery = await db.leadBeneficiary.findUnique({
     where: {
-      id
+      id,
     },
   });
 
-  if(!existingBeneficiery){
-    return {error:"Benficiary does not exists!"}
+  if (!existingBeneficiery) {
+    return { error: "Benficiary does not exists!" };
   }
-    
-  const modifiedBeneficiary = await db.leadBeneficiary.update({where:{id},
-      data: {
-        type,
-        firstName,
-        lastName,
-        address,
-        city,
-        state,
-        zipCode,
-        cellPhone: reFormatPhoneNumber(cellPhone as string),
-        gender: gender,
-        email,
-        dateOfBirth,
-        notes
-      },
-    });
+
+  const modifiedBeneficiary = await db.leadBeneficiary.update({
+    where: { id },
+    data: {
+      type,
+      firstName,
+      lastName,
+      address,
+      city,
+      state,
+      zipCode,
+      cellPhone: reFormatPhoneNumber(cellPhone as string),
+      gender: gender,
+      email,
+      dateOfBirth,
+      notes,
+    },
+  });
   return { success: modifiedBeneficiary };
 };
 
-export const leadBeneficiaryDeleteById = async (id:string) => {
-  
+export const leadBeneficiaryDeleteById = async (id: string) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -624,21 +635,28 @@ export const leadBeneficiaryDeleteById = async (id:string) => {
 
   const existingBeneficiery = await db.leadBeneficiary.findUnique({
     where: {
-      id
+      id,
     },
   });
 
-  if(!existingBeneficiery){
-    return {error:"Benficiary does not exists!"}
+  if (!existingBeneficiery) {
+    return { error: "Benficiary does not exists!" };
   }
-    
-  const modifiedBeneficiary=await db.leadBeneficiary.delete({where:{id}});
 
-  await activityInsert(modifiedBeneficiary.leadId,"Beneficiary","Beneficiary Removed",user.id,modifiedBeneficiary.firstName)
+  const modifiedBeneficiary = await db.leadBeneficiary.delete({
+    where: { id },
+  });
+
+  await activityInsert(
+    modifiedBeneficiary.leadId,
+    "Beneficiary",
+    "Beneficiary Removed",
+    user.id,
+    modifiedBeneficiary.firstName
+  );
 
   return { success: "Beneficiary Deleted" };
 };
-
 
 //LEAD MEDICAL CONDITIONS
 export const leadConditionInsert = async (
@@ -648,7 +666,8 @@ export const leadConditionInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { leadId, conditionId,diagnosed,medications,notes } = validatedFields.data;
+  const { leadId, conditionId, diagnosed, medications, notes } =
+    validatedFields.data;
 
   const user = await currentUser();
 
@@ -661,67 +680,88 @@ export const leadConditionInsert = async (
     return { error: "Lead does not exists" };
   }
 
-  const existingCondition = await db.leadMedicalCondition.findFirst({ where: { leadId:conditionId } });
+  const existingCondition = await db.leadMedicalCondition.findFirst({
+    where: { leadId: conditionId },
+  });
   if (existingCondition) {
     return { error: "Lead condition already exists" };
   }
 
-  const newLeadCondition=  await db.leadMedicalCondition.create({
-    data: {leadId, conditionId,diagnosed,medications,notes},include:{condition:true}
+  const newLeadCondition = await db.leadMedicalCondition.create({
+    data: { leadId, conditionId, diagnosed, medications, notes },
+    include: { condition: true },
   });
-
+  await activityInsert(
+    leadId,
+    "Condition",
+    "Condition created",
+    user.id,
+    newLeadCondition.condition.name
+  );
   return { success: newLeadCondition };
 };
 
-export const leadConditionUpdateById =  async (values: z.infer<typeof LeadConditionSchema>) => {
-    const validatedFields = LeadConditionSchema.safeParse(values);
-    if (!validatedFields.success) {
-      return { error: "Invalid fields!" };
-    }
-    const user = await currentUser();
-    if (!user) {
-      return { error: "Unauthorized" };
-    }
-  
-    const {
-      id,conditionId,diagnosed,medications,notes
-    } = validatedFields.data;
-  
-    const existingCondition = await db.leadMedicalCondition.findUnique({
-      where: {
-        id
-      },
-    });
-  
-    if(!existingCondition){
-      return {error:"Condition does not exists!"}
-    }
-      
-    const modifiedCondition = await db.leadMedicalCondition.update({where:{id},
-        data: {
-          conditionId,diagnosed,medications,notes
-        },include:{condition:true}
-      });
-    return { success: modifiedCondition };
-  };
+export const leadConditionUpdateById = async (
+  values: z.infer<typeof LeadConditionSchema>
+) => {
+  const validatedFields = LeadConditionSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
 
-export const leadConditionDeleteById = async (
-  id: string) => {
+  const { id, conditionId, diagnosed, medications, notes } =
+    validatedFields.data;
+
+  const existingCondition = await db.leadMedicalCondition.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!existingCondition) {
+    return { error: "Condition does not exists!" };
+  }
+
+  const modifiedCondition = await db.leadMedicalCondition.update({
+    where: { id },
+    data: {
+      conditionId,
+      diagnosed,
+      medications,
+      notes,
+    },
+    include: { condition: true },
+  });
+  return { success: modifiedCondition };
+};
+
+export const leadConditionDeleteById = async (id: string) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
   }
 
-  const existingConditionExpense = await db.leadMedicalCondition.findUnique({ where: { id } });
-  if (!existingConditionExpense) {
+  const existingCondition = await db.leadMedicalCondition.findUnique({
+    where: { id },
+  });
+  if (!existingCondition) {
     return { error: "Condition no longer exists" };
   }
 
   await db.leadMedicalCondition.delete({
     where: { id },
   });
-
+  await activityInsert(
+    existingCondition.leadId,
+    "Condition",
+    "Condition deleted",
+    user.id
+  );
   return { success: "Condition deleted!" };
 };
 
@@ -737,7 +777,9 @@ export const leadExpenseInsertSheet = async (leadId: string) => {
   if (!existingLead) {
     return { error: "Lead does not exists" };
   }
-  const existingLeadExpenses = await db.leadExpense.findFirst();
+  const existingLeadExpenses = await db.leadExpense.findFirst({
+    where: { leadId },
+  });
 
   if (existingLeadExpenses) {
     return { error: "Lead Sheet already exists" };
@@ -751,7 +793,7 @@ export const leadExpenseInsertSheet = async (leadId: string) => {
   });
 
   const newLeadExpenses = await db.leadExpense.findMany({
-    where: { id: leadId },
+    where: { leadId },
   });
 
   return { success: newLeadExpenses };
@@ -763,7 +805,7 @@ export const leadExpenseInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { leadId, type, name, value,notes } = validatedFields.data;
+  const { leadId, type, name, value, notes } = validatedFields.data;
 
   const user = await currentUser();
 
@@ -776,8 +818,8 @@ export const leadExpenseInsert = async (
     return { error: "Lead does not exists" };
   }
 
-  const newLeadExpense=  await db.leadExpense.create({
-    data: {leadId,type,name,value,notes},
+  const newLeadExpense = await db.leadExpense.create({
+    data: { leadId, type, name, value, notes },
   });
 
   return { success: newLeadExpense };
@@ -810,8 +852,7 @@ export const leadExpenseUpdateById = async (
   return { success: `${modifiedExpense.type} updated!` };
 };
 
-export const leadExpenseDeleteById = async (
-  id: string) => {
+export const leadExpenseDeleteById = async (id: string) => {
   const user = await currentUser();
 
   if (!user) {

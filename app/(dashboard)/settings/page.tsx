@@ -35,7 +35,7 @@ import { UserRole } from "@prisma/client";
 
 import { SettingsSchema } from "@/schemas";
 import { userUpdateById } from "@/actions/user";
-import { ProfileImageModal } from "@/components/modals/profile-image-modal";
+import { ProfileImageModal } from "@/components/modals/profile-image";
 
 type SettingsValues = z.infer<typeof SettingsSchema>;
 

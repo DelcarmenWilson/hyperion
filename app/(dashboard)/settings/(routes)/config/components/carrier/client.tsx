@@ -5,7 +5,7 @@ import { Carrier } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
 
-import { DataTable } from "@/components/custom/data-table";
+import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { Plus } from "lucide-react";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -42,16 +42,23 @@ export const CarrierClient = ({
       >
         <CarrierForm carriers={initCarriers} onClose={onCarrierCreated} />
       </DrawerRight>
-      <div className="flex items-center justify-between">
-        <Heading
-          title={"Carrier"}
-          description="Manage all your appointed carriers"
-        />
-        <Button onClick={() => setIsDrawerOpen(true)}>
-          <Plus size={16} className="mr-2" /> New Carrier
-        </Button>
-      </div>
-      <DataTable columns={columns} data={carriers!} searchKey="agentId" />
+
+      <Heading
+        title={"Carrier"}
+        description="Manage all your appointed carriers"
+      />
+
+      <DataTable
+        columns={columns}
+        data={carriers!}
+        topMenu={
+          <div className="col-span-3 text-end">
+            <Button onClick={() => setIsDrawerOpen(true)}>
+              <Plus size={16} className="mr-2" /> New Carrier
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 };

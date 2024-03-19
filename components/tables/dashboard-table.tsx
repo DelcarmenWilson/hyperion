@@ -16,13 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
   Table,
   TableBody,
   TableCell,
@@ -31,27 +24,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { SlidersHorizontal } from "lucide-react";
+import { SimpleFilter } from "./filter/simple";
+import { TableColumns } from "./table-columns";
+import { SimplePagination } from "./pagination/simple";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
-interface DataTableProps<TData, TValue> {
+type DashBoardTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
-}
+  placeHolder?: string;
+};
 
 export function DashBoardTable<TData, TValue>({
   columns,
   data,
-  searchKey,
-}: DataTableProps<TData, TValue>) {
+  placeHolder = "Search",
+}: DashBoardTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [filtering, setFiltering] = React.useState("");
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -75,55 +64,21 @@ export function DashBoardTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter: filtering,
     },
+    onGlobalFilterChange: setFiltering,
   });
 
   return (
     <div className="px-1">
       <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Search"
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+        <SimpleFilter
+          filtering={filtering}
+          setFiltering={setFiltering}
+          placeHolder={placeHolder}
         />
         <div className="flex justify-between gap-x-2">
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
-                    <SlidersHorizontal className="mr-2 h-3 w-3 opacity-70" />
-                    Columns
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Set columns</p>
-              </TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <TableColumns table={table} />
         </div>
       </div>
       <div className="rounded-md border">
@@ -176,30 +131,7 @@ export function DashBoardTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <SimplePagination table={table} />
     </div>
   );
 }

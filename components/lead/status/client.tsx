@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 import { LeadStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
-import { DataTable } from "@/components/custom/data-table";
+import { DataTable } from "@/components/tables/data-table";
+import { DrawerRight } from "@/components/custom/drawer-right";
 import { columns } from "./columns";
 
-import { useGlobalContext } from "@/providers/global-provider";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { useGlobalContext } from "@/providers/global";
 import { LeadStatusForm } from "./form";
-import { Plus } from "lucide-react";
 
 type LeadStatusClientProps = {
   leadStatus: LeadStatus[];
@@ -37,14 +37,18 @@ export const LeadStatusClient = ({ leadStatus }: LeadStatusClientProps) => {
       >
         <LeadStatusForm onClose={onStatusCreated} />
       </DrawerRight>
-      <div className="flex justify-between items-end">
-        <Heading title={`Lead Status`} description="Manage lead status" />
-        <Button onClick={() => setIsDrawerOpen(true)}>
-          <Plus size={16} className="mr-2" /> New Status
-        </Button>
-      </div>
-
-      <DataTable columns={columns} data={leadStatus} searchKey="status" />
+      <Heading title={`Lead Status`} description="Manage lead status" />
+      <DataTable
+        columns={columns}
+        data={leadStatus}
+        topMenu={
+          <div className="col-span-3 text-end">
+            <Button onClick={() => setIsDrawerOpen(true)}>
+              <Plus size={16} className="mr-2" /> New Status
+            </Button>
+          </div>
+        }
+      />
     </>
   );
 };

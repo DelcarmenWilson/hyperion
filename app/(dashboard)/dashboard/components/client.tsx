@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { CardBox, BoxSkeleton } from "@/components/custom/card-box";
+import { CardBox, BoxSkeleton } from "@/components/custom/card/box";
 import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
 

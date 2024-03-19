@@ -2,7 +2,7 @@
 import { MessageSquare, Phone, Voicemail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PhoneOut } from "@/components/phone/phone-out";
-import { usePhoneContext } from "@/providers/phone-provider";
+import { usePhoneContext } from "@/providers/phone";
 import { VoicemailList } from "@/components/phone/voicemail/list";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
 import { SmsClient } from "../sms/client";

@@ -1,10 +1,14 @@
+
+--add all the medical conditions (ADMIN)
+--add all the carrier conditions after medical conditions
+
+-- make the quote change automatically with cron job 
 fix the issue where whne you close the dialer the window is giving an error on chrome
 be able to text any number
 -- the default number select is small in the leads client page
 --messed up the team report in the admin
 -- see if we can merge the image upload into one route.. user && upload
 
-change the the default phone number per person for saundra
 
 create messaging between us
 be able to change agents to spanish speaking
@@ -55,9 +59,5 @@ tab called blueprint > personalized businees plan for the indivdual.
 --profile image wont update in setting after upload
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
------Typscript error in 
-    -FeedbackId client.-Dev form
-    -CallHistoryClient
-    -Admin/carrier/carrierId/form
 
 -- transcription has been turned of as of 3-2-24

@@ -13,7 +13,7 @@ const TeamsPage = async () => {
       description="Manage teams for your organization."
       topMenu={<TeamForm />}
     >
-      <DataTable data={teams} columns={columns} searchKey="name" />
+      <DataTable data={teams} columns={columns} />
     </PageLayoutAdmin>
   );
 };
