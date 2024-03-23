@@ -21,7 +21,7 @@ export const feedbackInsert = async (
 
   const { headLine, page, feedback } = validatedFields.data;
 
-  await db.feedback.create({
+  const newFeedback=await db.feedback.create({
     data: {
       userId: user.id,
       headLine,
@@ -30,7 +30,7 @@ export const feedbackInsert = async (
     },
   });
 
-  return { success: "Feedback has been created" };
+  return { success: newFeedback.id };
 };
 
 
@@ -94,7 +94,7 @@ export const feedbackUpdateById = async (
     },
   });
 
-  return { success: "Feedback has been created" };
+  return { success: "Feedback has been updated" };
 };
 
 export const feedbackUpdateByIdDev = async (

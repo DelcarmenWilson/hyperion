@@ -4,6 +4,7 @@ import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Feedback } from "@prisma/client";
+import { Paperclip } from "lucide-react";
 
 type FeedbackCardProps = {
   feedback: Feedback;
@@ -23,7 +24,10 @@ export const FeedbackCard = ({ feedback }: FeedbackCardProps) => {
           {format(feedback.createdAt, "MM-dd-yy")}
         </span>
       </p>
-      <span>{feedback.page}</span>
+      <div className="flex justify-between items-center w-full">
+        <span>{feedback.page}</span>
+        {feedback.images && <Paperclip size={16} />}
+      </div>
       <p className="text-center text-sm font-semibold w-full overflow-hidden text-ellipsis">
         {feedback.headLine}
       </p>

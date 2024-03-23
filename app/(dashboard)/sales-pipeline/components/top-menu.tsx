@@ -90,7 +90,7 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
   };
 
   return (
-    <div className="flex gap-2 mr-6">
+    <div className="flex gap-2">
       <Button size="sm" onClick={() => router.refresh()}>
         <RefreshCcw className="w-4 h-4" />
       </Button>
