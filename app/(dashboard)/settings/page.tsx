@@ -36,6 +36,7 @@ import { UserRole } from "@prisma/client";
 import { SettingsSchema } from "@/schemas";
 import { userUpdateById } from "@/actions/user";
 import { ProfileImageModal } from "@/components/modals/profile-image";
+import { Eye, EyeOff } from "lucide-react";
 
 type SettingsValues = z.infer<typeof SettingsSchema>;
 
@@ -47,6 +48,9 @@ const SettingsPage = () => {
   const [image, setImage] = useState(user?.image);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<SettingsValues>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
@@ -54,7 +58,7 @@ const SettingsPage = () => {
       email: user?.email || undefined,
       password: undefined,
       newPassword: undefined,
-      role: user?.role || undefined,
+      role: user?.role,
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });
@@ -162,8 +166,36 @@ const SettingsPage = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel> Password</FormLabel>
-                        <FormControl>
+                        <FormLabel> Current Password</FormLabel>
+                        <FormControl className="relative">
+                          <div className="w-full flex items-center">
+                            <Input
+                              disabled={isPending}
+                              {...field}
+                              placeholder="******"
+                              type={showCurrentPassword ? "text" : "password"}
+                              autoComplete="new-password"
+                            />
+
+                            <Button
+                              onClick={() =>
+                                setShowCurrentPassword(!showCurrentPassword)
+                              }
+                              size="sm"
+                              variant="ghost"
+                              type="button"
+                              className="absolute right-0"
+                              tabIndex={-1}
+                            >
+                              {showCurrentPassword ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        {/* <FormControl>
                           <Input
                             {...field}
                             placeholder="******"
@@ -171,7 +203,7 @@ const SettingsPage = () => {
                             type="password"
                             autoComplete="new-password"
                           />
-                        </FormControl>
+                        </FormControl> */}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -183,7 +215,33 @@ const SettingsPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel> New Password</FormLabel>
-                        <FormControl>
+                        <FormControl className="relative">
+                          <div className="w-full flex items-center">
+                            <Input
+                              disabled={isPending}
+                              {...field}
+                              placeholder="******"
+                              type={showPassword ? "text" : "password"}
+                              autoComplete="new-password"
+                            />
+
+                            <Button
+                              onClick={() => setShowPassword(!showPassword)}
+                              size="sm"
+                              variant="ghost"
+                              type="button"
+                              className="absolute right-0"
+                              tabIndex={-1}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        {/* <FormControl>
                           <Input
                             {...field}
                             placeholder="******"
@@ -191,7 +249,7 @@ const SettingsPage = () => {
                             type="password"
                             autoComplete="new-password"
                           />
-                        </FormControl>
+                        </FormControl> */}
                         <FormMessage />
                       </FormItem>
                     )}

@@ -28,6 +28,7 @@ import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { adminChangeTeamManager } from "@/actions/admin";
 import { weekStartEnd } from "@/formulas/dates";
 import { USDollar } from "@/formulas/numbers";
+import { DatesFilter } from "@/components/reusable/dates-filter";
 
 interface TeamClientProps {
   team: FullTeamReport;
@@ -182,14 +183,15 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             />
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row justify-end items-end gap-2">
+        <DatesFilter link={`/admin/teams/${team.id}`} />
+        {/* <div className="flex flex-col lg:flex-row justify-end items-end gap-2">
           <DateRangePicker
             setDate={onDateSelected}
             date={dates}
             className="flex"
           />
           <Button onClick={onUpdate}>Update</Button>
-        </div>
+        </div> */}
       </div>
       <Separator />
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 mt-4">

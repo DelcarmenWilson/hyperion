@@ -33,8 +33,11 @@ export default async function DashBoardLayout({
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken(user.id);
   const licenses = await userLicensesGetAllByUserId(user.id);
-  const schedule = await scheduleGetByUserId(user.id);
-  const appointments = await appointmentsGetAllByUserIdUpcoming(user.id);
+  const schedule = await scheduleGetByUserId(user.id, user.role);
+  const appointments = await appointmentsGetAllByUserIdUpcoming(
+    user.id,
+    user.role
+  );
 
   return (
     <>

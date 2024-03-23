@@ -5,8 +5,9 @@ import { pipelineGetAllByAgentId } from "@/actions/pipeline";
 
 const SalesPage = async () => {
   const user = await currentUser();
-  const leads = await leadsGetAllByAgentId(user?.id!);
-  const pipelines = await pipelineGetAllByAgentId(user?.id!);
+  if (!user) return null;
+  const leads = await leadsGetAllByAgentId(user.id!);
+  const pipelines = await pipelineGetAllByAgentId(user.id!);
   return <SalesClient data={leads} pipelines={pipelines} />;
 };
 

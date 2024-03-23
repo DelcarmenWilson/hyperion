@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { User } from "@prisma/client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -68,12 +69,15 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     header: "Role",
+    cell: ({ row }) => row.original.role.toLowerCase(),
   },
   {
     accessorKey: "action",
     header: "Action",
     cell: ({ row }) => (
-      <Link href={`/admin/users/${row.original.id}`}>Details</Link>
+      <Button size="sm" asChild>
+        <Link href={`/admin/users/${row.original.id}`}>Details</Link>
+      </Button>
     ),
   },
 ];

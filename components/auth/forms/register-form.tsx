@@ -29,9 +29,9 @@ import { Team } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { userInsert } from "@/actions/user";
 
-interface RegisterFormProps {
+type RegisterFormProps = {
   teams: Team[];
-}
+};
 export const RegisterForm = ({ teams }: RegisterFormProps) => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");

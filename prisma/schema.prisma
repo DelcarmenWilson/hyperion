@@ -17,6 +17,8 @@ enum UserRole {
   MASTER
   ADMIN
   USER
+  ASSISTANT
+  STUDENT
 }
 
 enum Preset {
@@ -68,6 +70,9 @@ model User {
 
   teamOwned Team? @relation("UserToTeam")
 
+  assitantId String? @unique
+  assitant   User?   @relation("AssitantToUser", fields: [assitantId], references: [id])
+
   leads         Lead[]
   calls         Call[]
   conversations Conversation[]
@@ -83,7 +88,9 @@ model User {
   chatSettings ChatSettings?
   schedule     Schedule?
 
-  feedbacks Feedback[]
+  feedbacks   Feedback[]
+  // ONE TO ONE RELATIONS
+  assitantRel User?      @relation("AssitantToUser")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -318,6 +325,8 @@ model Lead {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+
+  assistant String?
 
   beneficiaries LeadBeneficiary[]
   conditions    LeadMedicalCondition[]

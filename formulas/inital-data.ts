@@ -30,6 +30,7 @@ export const convertUsers = (result: any): User[] => {
       role: d["role"],
       isTwoFactorEnabled: d["isTwoFactorEnabled"] == "f" ? false : true,
       teamId: d["teamId"],
+      assitantId: d["assitantId"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };
@@ -52,8 +53,8 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
       currentCall: "",
-      voicemailIn:"",
-      voicemailOut:""
+      voicemailIn: "",
+      voicemailOut: "",
     };
     mapped.push(newobj);
   });
@@ -91,8 +92,8 @@ export const convertSchedules = (result: any): Schedule[] => {
       thursday: d["thursday"],
       friday: d["friday"],
       saturday: d["saturday"],
-      createdAt:new Date(),
-      updatedAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     mapped.push(newobj);
   });
@@ -123,21 +124,22 @@ export const convertLeads = (result: any): Lead[] => {
       createdAt: new Date(d["createdAt"]),
       updatedBy: d["updatedBy"],
       updatedAt: new Date(d["updatedAt"]),
-      commision: d["commision"] ,
+      commision: d["commision"],
       costOfLead: d["costOfLead"],
       currentInsuranse: d["currentInsuranse"],
       currentlyInsured: d["currentlyInsured"] == "f" ? false : true,
       height: d["height"],
-      income: d["income"] ,
+      income: d["income"],
       policyAmount: d["policyAmount"],
-      quote: d["quote"] ,
+      quote: d["quote"],
       recievedAt: new Date(d["recievedAt"]),
       saleAmount: d["saleAmount"],
       smoker: d["smoker"] == "f" ? false : true,
       type: d["type"],
       vendor: d["vendor"],
-      weight: d["weight"] ,
+      weight: d["weight"],
       status: d["status"],
+      assistant: d["assistant"],
     };
     mapped.push(newobj);
   });
@@ -157,7 +159,9 @@ export const convertCalls = (result: any): Call[] => {
       from: d["from"],
       type: d["type"],
       recordId: d["recordId"],
-      recordStartTime: d["recordStartTime"]?new Date(d["recordStartTime"]):null,
+      recordStartTime: d["recordStartTime"]
+        ? new Date(d["recordStartTime"])
+        : null,
       recordStatus: d["recordStatus"],
       recordUrl: d["recordUrl"],
       direction: d["direction"],
@@ -165,12 +169,12 @@ export const convertCalls = (result: any): Call[] => {
       recordDuration: d["recordDuration"]
         ? parseInt(d["recordDuration"])
         : null,
-        transcriptionId:d["transcriptionId"],
-        transcriptionText:d["transcriptionText"],
-        transcriptionUrl:d["transcriptionUrl"],
-        listened:d["listened"]=="f"?false:true,
+      transcriptionId: d["transcriptionId"],
+      transcriptionText: d["transcriptionText"],
+      transcriptionUrl: d["transcriptionUrl"],
+      listened: d["listened"] == "f" ? false : true,
       price: d["price"],
-      recordPrice:d["recordPrice"],
+      recordPrice: d["recordPrice"],
     };
     mapped.push(newobj);
   });
@@ -237,7 +241,7 @@ export const convertPhoneNumbers = (result: any): PhoneNumber[] => {
   let mapped: PhoneNumber[] = [];
   result.data.map((d: any) => {
     const newobj: PhoneNumber = {
-      id: d["id"], 
+      id: d["id"],
       phone: d["phone"],
       state: d["state"],
       agentId: d["agentId"],

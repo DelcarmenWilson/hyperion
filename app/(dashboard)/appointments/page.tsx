@@ -1,11 +1,20 @@
 import React from "react";
 import { currentUser } from "@/lib/auth";
 import { AppointmentClient } from "./components/client";
-import { appointmentsGetAllByUserId } from "@/data/appointment";
+import { appointmentsGetByUserIdFiltered } from "@/data/appointment";
+import { weekStartEnd } from "@/formulas/dates";
 
-const AppointmentsPage = async () => {
+const AppointmentsPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
   const user = await currentUser();
-  const appointments = await appointmentsGetAllByUserId(user?.id!);
+  if (!user) return null;
+  const week = weekStartEnd();
+  const from = (searchParams.from || week.from.toString()) as string;
+  const to = (searchParams.to || week.to.toString()) as string;
+  const appointments = await appointmentsGetByUserIdFiltered(user.id, from, to);
 
   return <AppointmentClient data={appointments} />;
 };

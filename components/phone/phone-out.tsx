@@ -34,23 +34,17 @@ export const PhoneOut = () => {
   const [disabled, setDisabled] = useState(false);
 
   // PHONE VARIABLES
-
   const [to, setTo] = useState<{ name: string; number: string }>({
     name: lead ? leadFullName : "New Call",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
-  // const [toName, setToName] = useState(lead ? leadFullName : "New Call");
-  // const [toNumber, setToNumber] = useState(
-  //   formatPhoneNumber(lead?.cellPhone as string) || ""
-  // );
   const [record, setRecord] = useState(user?.record);
   const [coach, setCoach] = useState(false);
 
-  const [myPhoneNumbers, setMyPhoneNumbers] = useState<PhoneType[]>([]);
   const [selectedNumber, setSelectedNumber] = useState(
-    lead?.defaultNumber
-      ? lead?.defaultNumber
-      : user?.phoneNumbers[0]?.phone || ""
+    user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
+      user?.phoneNumbers[0]?.phone ||
+      ""
   );
 
   const [isCallMuted, setIsCallMuted] = useState(false);
@@ -60,10 +54,12 @@ export const PhoneOut = () => {
       console.log("no phone number has been set up");
       return;
     }
-    const numbers: PhoneType[] = user.phoneNumbers.map((p) => {
-      return { value: p.phone, state: p.state };
-    });
-    setMyPhoneNumbers(numbers);
+    // const leadNumber =
+    //   user.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
+    //   user?.phoneNumbers[0]?.phone ||
+    //   "";
+    // console.log(user.phoneNumbers, lead?.defaultNumber, leadNumber);
+    // setSelectedNumber(leadNumber);
     addDeviceListeners;
   };
 
@@ -206,25 +202,7 @@ export const PhoneOut = () => {
         <PhoneSwitcher
           number={selectedNumber}
           onSetDefaultNumber={setSelectedNumber}
-          controls={false}
         />
-        {/* <Select
-          name="ddlPhoneNumbers"
-          disabled={!!call}
-          defaultValue={selectedNumber}
-          onValueChange={(e) => setSelectedNumber(e)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Smart local Id" />
-          </SelectTrigger>
-          <SelectContent>
-            {myPhoneNumbers.map((phone) => (
-              <SelectItem key={phone.value} value={phone.value}>
-                {formatPhoneNumber(phone.value)} | {phone.state}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select> */}
       </div>
       <div className="flex  items-center text-sm gap-2">
         <AlertCircle className="h-4 w-4" /> Call recording

@@ -1,5 +1,7 @@
 import { getYesterday } from "@/formulas/dates";
 import { db } from "@/lib/db";
+import { UserRole } from "@prisma/client";
+import { userGetByAssistant } from "./user";
 
 export const leadsGetAll = async () => {
   try {
@@ -14,15 +16,18 @@ export const leadsGetAll = async () => {
 export const leadsGetAllByAgentId = async (userId: string) => {
   try {
     const leads = await db.lead.findMany({
-      where: { userId },
+      where: { OR: [
+        { userId},
+        { assistant: userId }
+      ], },
       include: {
         conversation: true,
         appointments: { where: { status: "scheduled" } },
         calls: true,
         activities: true,
-        beneficiaries:true,
-        expenses:true,
-        conditions:{include:{condition:true}}
+        beneficiaries: true,
+        expenses: true,
+        conditions: { include: { condition: true } },
       },
     });
     return leads;
@@ -44,7 +49,7 @@ export const leadGetById = async (id: string) => {
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,
-         conditions: { include: { condition: true } },
+        conditions: { include: { condition: true } },
       },
     });
 
@@ -54,12 +59,13 @@ export const leadGetById = async (id: string) => {
   }
 };
 
-export const leadGetPrevNextById = async (id: string) => {
+export const leadGetPrevNextById = async (id: string, userId: string) => {
   try {
     const prev = await db.lead.findMany({
       take: 1,
       select: { id: true },
       where: {
+        userId,
         id: {
           lt: id,
         },
@@ -73,6 +79,7 @@ export const leadGetPrevNextById = async (id: string) => {
       take: 1,
       select: { id: true },
       where: {
+        userId,
         id: {
           gt: id,
         },
@@ -114,8 +121,14 @@ export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
   }
 };
 
-export const leadStatusGetAllByAgentId = async (userId: string) => {
+export const leadStatusGetAllByAgentId = async (
+  userId: string,
+  role: UserRole = "USER"
+) => {
   try {
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
     const leadStatus = await db.leadStatus.findMany({
       where: { userId },
     });

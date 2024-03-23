@@ -3,9 +3,10 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { PageLayout } from "@/components/custom/page-layout";
 import { FullAppointment } from "@/types";
+import { DataTable } from "@/components/tables/data-table";
+import { DatesFilter } from "@/components/reusable/dates-filter";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
@@ -14,7 +15,12 @@ type AppointmentClientProps = {
 export const AppointmentClient = ({ data }: AppointmentClientProps) => {
   return (
     <PageLayout title="Appointments" icon={Calendar}>
-      <DashBoardTable columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={data}
+        headers
+        topMenu={<DatesFilter link="/appointments" />}
+      />
     </PageLayout>
   );
 };

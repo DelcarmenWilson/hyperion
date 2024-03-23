@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
@@ -20,22 +20,18 @@ type PhoneSwitcherProps = {
 
 export const PhoneSwitcher = ({
   number,
-  controls = true,
+  controls,
   onSetDefaultNumber,
 }: PhoneSwitcherProps) => {
   const user = useCurrentUser();
 
-  const [selectedNumber, setSelectedNumber] = useState(
-    number || user?.phoneNumbers[0]?.phone || ""
-  );
-
+  const [selectedNumber, setSelectedNumber] = useState(number);
   const onSelect = (e: string) => {
     setSelectedNumber(e);
     if (!controls) {
       onSetDefaultNumber(e);
     }
   };
-
   return (
     <>
       <Select

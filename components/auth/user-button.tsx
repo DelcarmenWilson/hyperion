@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import { Cog, Lock, LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,13 +34,14 @@ export const UserButton = () => {
         <DropdownMenuLabel className="flex flex-col">
           <span>
             {user.name}
-            {user.role != "USER" && ` - [${user.role.toLocaleLowerCase()}]`}
+            {(user.role == "MASTER" || user.role == "ADMIN") &&
+              ` - [${user.role.toLocaleLowerCase()}]`}
           </span>
 
           <span className="text-muted-foreground text-xs">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {user.role != "USER" && (
+        {(user.role == "MASTER" || user.role == "ADMIN") && (
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={() => router.push("/admin/teams")}

@@ -10,16 +10,22 @@ import { MainSidebarRoutes } from "@/constants/page-routes";
 // import { ThemeToggle } from "../custom/theme-toggle";
 import { UserButton } from "../auth/user-button";
 import { Skeleton } from "../ui/skeleton";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 export const MainSideBar = () => {
   const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
+  const role = useCurrentRole();
   const pathname = usePathname();
   const router = useRouter();
 
-  const routes = MainSidebarRoutes.map((route) => {
+  const allRoutes = MainSidebarRoutes.map((route) => {
     route.active = pathname === route.href;
     return route;
   });
+  let routes = allRoutes;
+  if (role == "ASSISTANT") {
+    routes = allRoutes.filter((e) => e.assistant);
+  }
 
   return (
     <aside
@@ -29,10 +35,6 @@ export const MainSideBar = () => {
         "fixed left-0 flex flex-col w-60 h-full bg-background border-r z-50 py-2 transition ease-in-out",
         collapsed && "w-[70px]"
       )}
-      // className={cn(
-      //   "fixed left-0 flex flex-col w-60 h-full bg-background border-r border-[#2D2E35] z-50 py-2 transition-opacity opacity-15 ease-out delay-75 hover:opacity-100",
-      //   collapsed && "w-[70px]"
-      // )}
     >
       <div
         className="flex items-center justify-center gap-2 p-2 cursor-pointer"

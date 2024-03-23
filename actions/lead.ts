@@ -488,7 +488,8 @@ export const leadUpdateByIdSaleInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  const status = saleAmount ? "Sold" : existingLead.status;
+  const status = saleAmount>0 ? "Sold" : existingLead.status;
+  const assistant= saleAmount>0 ? null : existingLead.status;
   const leadInfo = await db.lead.update({
     where: { id },
     data: {
@@ -497,6 +498,7 @@ export const leadUpdateByIdSaleInfo = async (
       commision,
       costOfLead,
       status,
+      assistant
     },
   });
   activityInsert(leadInfo.id!, "sale", "Sale info updated", user.id);

@@ -77,6 +77,79 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
   return { success: "Account created continue to login" };
 };
 
+export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>) => {
+  const validatedFields = RegisterSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id, team, userName, password, email, firstName, lastName } =
+    validatedFields.data;
+
+
+    const existingUser =await db.user.findUnique({where:{id}})
+    if (!existingUser) {
+      return { error: "Agent does not exists!" };
+    }
+
+    if(existingUser.assitantId){
+      return { error: "Agent already has an assitant!" };
+    }
+  const existingAssistant = await userGetByEmail(email);
+
+  if (existingAssistant) {
+    return { error: "Email already in use!" };
+  }
+
+
+  
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const assistant = await db.user.create({
+    data: {
+      teamId: team,
+      userName,
+      password: hashedPassword,
+      email,
+      firstName,
+      lastName,
+      //TODO dont forget to remove this after fixing token
+      emailVerified: new Date(),
+      role:"ASSISTANT"
+    },
+  });
+
+  //TODO
+  // const verificationToken = await generateVerificationToken(email);
+  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  // return { success: "Confirmation Email sent!" };
+
+  //ASSIGN ASISTANT TO AGENT
+  await db.user.update({ where: { id }, data: { assitantId:assistant.id} } );
+  //CREATE CHAT SETTINGS
+  await chatSettingsInsert(assistant);
+  const hours = "09:00-17:00,12:00-13:00";
+  await db.schedule.create({
+    data: {
+      userId: assistant.id,
+      title: "Book an Appointment with #first_name".replace(
+        "#first_name",
+        assistant.firstName
+      ),
+      subTitle:
+        "Pick the time that best works for you. I am looking forward to connecting with you.",
+      monday: hours,
+      tuesday: hours,
+      wednesday: hours,
+      thursday: hours,
+      friday: hours,
+      saturday: "Not Available",
+      sunday: "Not Available",
+    },
+  });
+
+  return { success: "Asistant account created" };
+};
+
 export const userMasterInsert = async (
   values: z.infer<typeof MasterRegisterSchema>
 ) => {

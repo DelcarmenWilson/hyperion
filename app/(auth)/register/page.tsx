@@ -1,8 +1,8 @@
-import { RegisterForm } from "@/components/auth/register-form";
-import { db } from "@/lib/db";
+import { RegisterForm } from "@/components/auth/forms/register-form";
+import { teamsGetAll } from "@/data/team";
 
 const RegisterPage = async () => {
-  const teams = await db.team.findMany();
+  const teams = await teamsGetAll();
 
   return <RegisterForm teams={teams} />;
 };

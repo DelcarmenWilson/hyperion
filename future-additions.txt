@@ -1,5 +1,4 @@
 
---add all the medical conditions (ADMIN)
 --add all the carrier conditions after medical conditions
 
 -- make the quote change automatically with cron job 
@@ -25,7 +24,7 @@ tab called blueprint > personalized businees plan for the indivdual.
 
 -- dont let agent send out text if they dont have the default prompt and message
 -- find a way to incorporate the sadcn calender in new lead form
---get chat gpt to return a specific date and time almost done
+-- get chat gpt to return a specific date and time almost done
     -- need to convert iso date to local date time
 
 -- need to be able to send email 

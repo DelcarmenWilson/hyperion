@@ -12,9 +12,9 @@ import { ConditionsClient } from "@/components/lead/conditions/client";
 
 const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
   const lead = await leadGetById(params.leadId);
-  const prevNext = await leadGetPrevNextById(params.leadId);
-  // const conversation = await conversationGetByLeadId(params.leadId);
   if (!lead) return null;
+  const prevNext = await leadGetPrevNextById(params.leadId, lead.userId);
+  // const conversation = await conversationGetByLeadId(params.leadId);
   return (
     <PageLayout
       icon={User}

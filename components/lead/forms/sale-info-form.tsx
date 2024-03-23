@@ -60,7 +60,7 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
         if (onChange) {
           onChange(data.success);
         }
-        toast.success("Lead info Updated");
+        toast.success("Lead Sale Info Updated");
       }
       if (data.error) {
         form.reset();

@@ -112,6 +112,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
             <PhoneSwitcher
               number={defaultNumber}
               onSetDefaultNumber={onSetDefaultNumber}
+              controls
             />
           ) : (
             <>

@@ -11,7 +11,7 @@ export const SettingsSchema = z
   .object({
     userName: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.MASTER, UserRole.ADMIN, UserRole.USER]),
+    role: z.enum([UserRole.MASTER, UserRole.ADMIN, UserRole.USER,UserRole.ASSISTANT,UserRole.STUDENT]),
     email: z.optional(z.string().email()),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
@@ -68,6 +68,7 @@ export const MasterRegisterSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
+  id:z.string().optional(),
   team: z.string().min(5, { message: "*" }),
   npn: z.string().min(4, { message: "*" }),
   userName: z.string().min(1, {
