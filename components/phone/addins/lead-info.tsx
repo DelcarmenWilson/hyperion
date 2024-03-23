@@ -21,12 +21,14 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PhoneScript } from "./script";
 import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 type PhoneLeadInfo = {
   open?: boolean;
 };
 export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const { lead } = usePhoneModal();
+  const role = useCurrentRole();
   const [isOpen, setIsOpen] = useState(open);
 
   if (!lead) {
@@ -136,7 +138,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           </TabsContent>
         </Tabs>
 
-        {!open && <PhoneScript />}
+        {!open && role != "ASSISTANT" && <PhoneScript />}
       </div>
     </div>
   );

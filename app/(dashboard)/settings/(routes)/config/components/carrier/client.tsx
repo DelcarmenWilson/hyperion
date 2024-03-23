@@ -15,11 +15,13 @@ import { FullUserCarrier } from "@/types";
 type CarrierClientProps = {
   initCarriers: Carrier[];
   initUserCarriers: FullUserCarrier[];
+  role: string;
 };
 
 export const CarrierClient = ({
   initCarriers,
   initUserCarriers,
+  role,
 }: CarrierClientProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [carriers, setCarriers] = useState(initUserCarriers);
@@ -51,11 +53,14 @@ export const CarrierClient = ({
       <DataTable
         columns={columns}
         data={carriers!}
+        headers
         topMenu={
           <div className="col-span-3 text-end">
-            <Button onClick={() => setIsDrawerOpen(true)}>
-              <Plus size={16} className="mr-2" /> New Carrier
-            </Button>
+            {role != "ASSISTANT" && (
+              <Button onClick={() => setIsDrawerOpen(true)}>
+                <Plus size={16} className="mr-2" /> New Carrier
+              </Button>
+            )}
           </div>
         }
       />

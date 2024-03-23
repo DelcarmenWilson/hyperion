@@ -10,7 +10,8 @@ import { TopMenu } from "./components/top-menu";
 import { leadsGetAllByAgentId } from "@/data/lead";
 const LeadsPage = async () => {
   const user = await currentUser();
-  const leads = await leadsGetAllByAgentId(user?.id!);
+  if (!user) return null;
+  const leads = await leadsGetAllByAgentId(user.id);
 
   return (
     <PageLayout title="View Leads" icon={Users} topMenu={<TopMenu />}>

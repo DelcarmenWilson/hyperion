@@ -14,10 +14,12 @@ import { adminCarriersGetAll } from "@/data/admin";
 
 const ConfigPage = async () => {
   const user = await currentUser();
-  const licenses = await userLicensesGetAllByUserId(user?.id!);
-  const leadStatus = await leadStatusGetAllByAgentId(user?.id!);
-  const userCarriers = await userCarriersGetAllByUserId(user?.id!);
+  if (!user) return null;
+  const licenses = await userLicensesGetAllByUserId(user.id, user.role);
+  const leadStatus = await leadStatusGetAllByAgentId(user.id, user.role);
+  const userCarriers = await userCarriersGetAllByUserId(user.id, user.role);
   const carriers = await adminCarriersGetAll();
+
   return (
     <Tabs className="flex gap-2 item-start h-full" defaultValue="licenses">
       <TabsList className="flex flex-col w-[120px] gap-2 h-full">
@@ -33,16 +35,17 @@ const ConfigPage = async () => {
       </TabsList>
       <div className="flex-1">
         <TabsContent value="licenses">
-          <LicenseClient initLicenses={licenses} />
+          <LicenseClient initLicenses={licenses} role={user.role} />
         </TabsContent>
         <TabsContent value="carriers">
           <CarrierClient
             initUserCarriers={userCarriers}
             initCarriers={carriers}
+            role={user.role}
           />
         </TabsContent>
         <TabsContent value="leadStatus">
-          <LeadStatusClient leadStatus={leadStatus} />
+          <LeadStatusClient leadStatus={leadStatus} role={user.role} />
         </TabsContent>
       </div>
     </Tabs>

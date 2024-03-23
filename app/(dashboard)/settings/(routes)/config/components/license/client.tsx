@@ -13,9 +13,10 @@ import { LicenseForm } from "./form";
 
 type LicenseClientProps = {
   initLicenses: UserLicense[];
+  role: string;
 };
 
-export const LicenseClient = ({ initLicenses }: LicenseClientProps) => {
+export const LicenseClient = ({ initLicenses, role }: LicenseClientProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [licenses, setLicenses] = useState(initLicenses);
 
@@ -41,11 +42,14 @@ export const LicenseClient = ({ initLicenses }: LicenseClientProps) => {
       <DataTable
         columns={columns}
         data={licenses!}
+        headers
         topMenu={
           <div className="col-span-3 text-end">
-            <Button onClick={() => setIsDrawerOpen(true)}>
-              <Plus size={16} className="mr-2" /> New License
-            </Button>
+            {role != "ASSISTANT" && (
+              <Button onClick={() => setIsDrawerOpen(true)}>
+                <Plus size={16} className="mr-2" /> New License
+              </Button>
+            )}
           </div>
         }
       />

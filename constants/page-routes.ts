@@ -34,6 +34,7 @@ export type NavType = {
   active?: boolean;
   icon?: LucideIcon;
   master?: boolean;
+  assistant?: boolean;
 };
 
 export const AdminSidebarRoutes: NavType[] = [
@@ -76,11 +77,13 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Dashboard",
     href: "/dashboard",
     icon: Home,
+    assistant: true,
   },
   {
     title: "Leads",
     href: "/leads",
     icon: Users,
+    assistant: true,
   },
   {
     title: "Inbox",
@@ -91,6 +94,7 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Sales Pipeline",
     href: "/sales-pipeline",
     icon: UserSquare,
+    assistant: true,
   },
   // {
   //   title: "Reports",
@@ -122,6 +126,7 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Appointments",
     href: "/appointments",
     icon: Calendar,
+    assistant: true,
   },
   {
     title: "Sms",
@@ -137,6 +142,7 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Account settings",
     href: "/settings",
     icon: Settings,
+    assistant: true,
   },
   // {
   //   title: "Billing",
@@ -146,10 +152,11 @@ export const MainSidebarRoutes: NavType[] = [
 ];
 
 export const SettingsNavbarRoutes: NavType[] = [
-  { title: "Profile", href: "/settings" },
+  { title: "Profile", href: "/settings", assistant: true },
   {
     title: "Config",
     href: "/settings/config",
+    assistant: true,
   },
   {
     title: "Chat",
@@ -159,12 +166,13 @@ export const SettingsNavbarRoutes: NavType[] = [
     title: "Availability",
     href: "/settings/availability",
   },
-  {
-    title: "Notifications",
-    href: "/settings/notifications",
-  },
+  // {
+  //   title: "Notifications",
+  //   href: "/settings/notifications",
+  // },
   {
     title: "Display",
     href: "/settings/display",
+    assistant: true,
   },
 ];

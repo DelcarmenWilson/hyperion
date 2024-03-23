@@ -29,7 +29,7 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState(
-    leadStatus ? leadStatus[0].status : "New"
+    leadStatus ? leadStatus[0].id : undefined
   );
   const [stages, setStages] = useState(pipelines);
 

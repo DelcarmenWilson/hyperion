@@ -24,52 +24,59 @@ export const concateDate = (date: Date, time: string): Date => {
   return date;
 };
 
-export const weekStartEnd = (): {from:Date,to:Date} => {
-  const curr = new Date;
-  const first = curr.getDate() - curr.getDay(); 
+export const weekStartEnd = (): { from: Date; to: Date } => {
+  const curr = new Date();
+  const first = curr.getDate() - curr.getDay();
   const last = first + 6;
-  
-  const firstday = new Date(curr.setDate(first))
-  const lastday = new Date(curr.setDate(last))
 
-  return {from:firstday,to:lastday};
+  const firstDay = new Date(curr.setDate(first));
+  const lastDay = new Date(curr.setDate(last));
+
+  return { from: firstDay, to: lastDay };
+};
+export const monthStartEnd = (): { from: Date; to: Date } => {
+  const curr = new Date();
+
+  const firstDay = new Date(curr.getFullYear(), curr.getMonth(), 1);
+  const lastDay = new Date(curr.getFullYear(), curr.getMonth() + 1, 0);
+
+  return { from: firstDay, to: lastDay };
 };
 
-export const getLocalTime=(abv:string)=>{
-  let date=new Date()
-  const utcHours=date.getUTCHours()
-  const offset=states.find(e=>e.abv==abv)
-
+export const getLocalTime = (abv: string) => {
+  let date = new Date();
+  const utcHours = date.getUTCHours();
+  const offset = states.find((e) => e.abv == abv);
 
   // date.getUTCDate()
   //   date.setHours(offset?.offset||0)
-  
- return utcHours
-  return format(date.getUTCDate(),"hh:mm aa")
-}
 
-export const getTommorrow=():Date=>{
+  return utcHours;
+  return format(date.getUTCDate(), "hh:mm aa");
+};
+
+export const getTommorrow = (): Date => {
   let tommorrow = new Date();
-  tommorrow.setHours(0,0)
+  tommorrow.setHours(0, 0);
   tommorrow.setDate(tommorrow.getDate() + 1);
-  return tommorrow
-}
+  return tommorrow;
+};
 
-export const getToday=():Date=>{
+export const getToday = (): Date => {
   let today = new Date();
-  today.setHours(0,0)
-  return today
-}
+  today.setHours(0, 0);
+  return today;
+};
 
-export const getYesterday=():Date=>{
+export const getYesterday = (): Date => {
   let yesterday = new Date();
-  yesterday.setHours(0,0)
+  yesterday.setHours(0, 0);
   yesterday.setDate(yesterday.getDate() - 1);
-  return yesterday
-}
+  return yesterday;
+};
 
-export const getLast24hrs=():Date=>{
+export const getLast24hrs = (): Date => {
   let yesterday = new Date();
-  yesterday.setHours(yesterday.getHours()-24)
-  return yesterday
-}
+  yesterday.setHours(yesterday.getHours() - 24);
+  return yesterday;
+};

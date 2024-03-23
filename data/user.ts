@@ -10,6 +10,14 @@ export const userGetAll = async () => {
     return [];
   }
 };
+export const userGetAllByRole = async (role:UserRole) => {
+  try {
+    const users = await db.user.findMany({where:{role},orderBy:{firstName:"asc"}});
+    return users;
+  } catch {
+    return [];
+  }
+};
 
 export const userGetByEmail = async (email: string) => {
   try {
@@ -33,6 +41,18 @@ export const userGetById = async (id: string) => {
     return null;
   }
 };
+export const userGetByAssistant = async (assitantId: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { assitantId },
+    });
+
+    return user?.id;
+  } catch {
+    return null;
+  }
+};
+
 export const userGetByIdDefault = async (id: string) => {
   try {
     const user = await db.user.findUnique({
@@ -103,18 +123,27 @@ export const usersGetSummaryByTeamId = async (
 };
 
 // USER LICENSES
-export const userLicensesGetAllByUserId = async (userId: string) => {
+export const userLicensesGetAllByUserId = async (userId: string,
+  role: UserRole = "USER"
+) => {
   try {
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
     const licenses = await db.userLicense.findMany({ where: { userId } });
-
     return licenses;
   } catch {
     return [];
   }
 };
 // USER LICENSES
-export const userCarriersGetAllByUserId = async (userId: string) => {
+export const userCarriersGetAllByUserId = async (userId: string,
+  role: UserRole = "USER"
+) => {
   try {
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
     const carriers = await db.userCarrier.findMany({
       where: { userId },
       include: { carrier: { select: { name: true } } },

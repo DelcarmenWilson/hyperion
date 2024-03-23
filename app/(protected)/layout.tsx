@@ -9,7 +9,7 @@ type ProtectedLayoutProps = {
 const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
   const role = await currentRole();
 
-  if (role == "USER") {
+  if (role != "MASTER" && role != "ADMIN") {
     redirect("/dashboard");
   }
   return (
