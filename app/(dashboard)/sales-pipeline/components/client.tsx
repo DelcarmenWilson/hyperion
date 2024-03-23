@@ -1,13 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserSquare } from "lucide-react";
 import { toast } from "sonner";
 
-import { Box } from "./box";
+import { PipelineCard } from "./card";
 import { FullLead, FullPipeline } from "@/types";
-import { PageLayout } from "@/components/custom/page-layout";
-import { TopMenu } from "./top-menu";
 import { PipeLine } from "@prisma/client";
 import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -143,22 +140,16 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
           </Button>
         </DialogContent>
       </Dialog>
-      <PageLayout
-        title="Sales Pipeline"
-        icon={UserSquare}
-        topMenu={<TopMenu pipelines={pipelines} />}
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {pipelines?.map((pipeline) => (
-            <Box
-              key={pipeline.id}
-              pipeline={pipeline}
-              sendPipeline={sendPipeline}
-              leads={data.filter((e) => e.status == pipeline.status.status)}
-            />
-          ))}
-        </div>
-      </PageLayout>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {pipelines?.map((pipeline) => (
+          <PipelineCard
+            key={pipeline.id}
+            pipeline={pipeline}
+            sendPipeline={sendPipeline}
+            leads={data.filter((e) => e.status == pipeline.status.status)}
+          />
+        ))}
+      </div>
     </>
   );
 };

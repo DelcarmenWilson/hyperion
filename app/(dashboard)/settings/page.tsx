@@ -1,12 +1,13 @@
 "use client";
 import * as z from "zod";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
 import { useSession } from "next-auth/react";
 import { revalidatePath } from "next/cache";
+import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
 
 import { toast } from "sonner";
 
@@ -35,8 +36,7 @@ import { UserRole } from "@prisma/client";
 
 import { SettingsSchema } from "@/schemas";
 import { userUpdateById } from "@/actions/user";
-import { ProfileImageModal } from "@/components/modals/profile-image";
-import { Eye, EyeOff } from "lucide-react";
+import { ImageModal } from "@/components/modals/image";
 
 type SettingsValues = z.infer<typeof SettingsSchema>;
 
@@ -63,9 +63,9 @@ const SettingsPage = () => {
     },
   });
 
-  const onImageUpdated = (e: string) => {
+  const onImageUpdated = (e: string[], files: File[]) => {
     setProfileOpen(false);
-    setImage(e);
+    setImage(e.at(0) as string);
     update();
     revalidatePath("/");
     router.refresh();
@@ -93,7 +93,11 @@ const SettingsPage = () => {
 
   return (
     <>
-      <ProfileImageModal
+      <ImageModal
+        title="Change Profile image?"
+        type="user"
+        id={user?.id}
+        filePath="assets/users"
         isOpen={profileOpen}
         onClose={() => setProfileOpen(false)}
         onImageUpdate={onImageUpdated}

@@ -9,12 +9,12 @@ import { usePhoneModal } from "@/hooks/use-phone-modal";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-interface LeadBoxProps {
+type LeadCardProps = {
   lead: FullLead;
   bg?: string;
-}
+};
 
-export const LeadBox = ({ lead, bg }: LeadBoxProps) => {
+export const LeadCard = ({ lead, bg }: LeadCardProps) => {
   const usePm = usePhoneModal();
   return (
     <div className="border-b">

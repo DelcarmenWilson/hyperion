@@ -65,9 +65,9 @@ export const CarrierForm = ({ carrier }: CarrierFormProps) => {
     setLoading(false);
   };
 
-  const onImageUpdated = (e: string) => {
+  const onImageUpdated = (e: string[], files?: File[] | undefined) => {
     setModalOpen(false);
-    setImage(e);
+    setImage(e.at(0) as string);
     router.refresh();
 
     toast.success("Carrier Image has been updated");
@@ -86,8 +86,8 @@ export const CarrierForm = ({ carrier }: CarrierFormProps) => {
       <div className="flex justify-center items-center w-full my-4">
         <div className="relative text-center overflow-hidden rounded-md group">
           <Image
-            width={80}
-            height={80}
+            width={250}
+            height={250}
             className="rounded-md shadow-sm shadow-white h-auto w-[250px]"
             src={image || "/assets/defaults/teamImage.jpg"}
             alt="Team Image"

@@ -562,7 +562,8 @@ model Feedback {
   headLine String
   page     String
 
-  feedback String @db.LongText
+  feedback String  @db.LongText
+  images   String? @db.LongText
 
   status   String  @default("New")
   comments String? @db.LongText

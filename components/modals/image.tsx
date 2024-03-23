@@ -5,52 +5,66 @@ import { Modal } from "@/components/custom/modal";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import axios from "axios";
+import { cn } from "@/lib/utils";
 
 type ImageModalProps = {
   title: string;
+  description?: string;
   type: string;
   id?: string;
   filePath: string;
+  multi?: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onImageUpdate: (e: string) => void;
+  onImageUpdate: (e: string[], files: File[]) => void;
 };
 export const ImageModal = ({
   title,
+  description = "Previous image will be replaced",
   type,
   id,
   filePath,
+  multi = false,
   isOpen,
   onClose,
   onImageUpdate,
 }: ImageModalProps) => {
-  const [selectedImage, setSelectedImage] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File>();
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>();
   const [uploading, setUploading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const width = multi ? 80 : 250;
+  const height = multi ? 80 : 150;
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const file = e.target.files[0];
+      const files = e.target.files;
+      let sf: string[] = [],
+        fl: File[] = [];
+      for (let index = 0; index < files.length; index++) {
+        sf.push(URL.createObjectURL(files[index]));
+        fl.push(files[index]);
+      }
 
-      setSelectedImage(URL.createObjectURL(file));
-      setSelectedFile(file);
+      setSelectedImages(sf);
+      setSelectedFiles(fl);
     }
   };
   const onUpload = () => {
     setUploading(true);
     try {
-      if (!selectedFile) return;
-      const formData = new FormData();
-      formData.append("image", selectedFile);
-      formData.append("filePath", filePath);
-      formData.append("id", id as string);
-      formData.append("type", type);
-      axios.post("/api/upload/image", formData).then(() => {
-        onImageUpdate(selectedImage);
-        setSelectedImage("");
-        setSelectedFile(undefined);
-      });
+      if (!selectedFiles?.length) return;
+      if (id) {
+        const formData = new FormData();
+        formData.append("image", selectedFiles[0]);
+        formData.append("filePath", filePath);
+        formData.append("id", id as string);
+        formData.append("type", type);
+        axios.post("/api/upload/image", formData);
+      }
+      onImageUpdate(selectedImages, selectedFiles);
+      setSelectedImages([]);
+      setSelectedFiles(undefined);
     } catch (error: any) {
       console.log(error.response?.data);
     }
@@ -66,7 +80,7 @@ export const ImageModal = ({
   return (
     <Modal
       title={title}
-      description="Previous image will be replaced"
+      description={description}
       isOpen={isOpen}
       onClose={onClose}
       height="min-h-[400px]"
@@ -77,23 +91,35 @@ export const ImageModal = ({
             type="file"
             accept="image/png, image/jpeg"
             hidden
-            multiple={false}
+            multiple={multi}
             onChange={onFileChange}
           />
           <div className="min-w-40 max-w-md aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
-            {selectedImage ? (
-              <Image
-                width={80}
-                height={80}
-                className="h-auto w-[250px]"
-                src={selectedImage}
-                alt="Profile Image"
-              />
+            {selectedImages.length ? (
+              // <Image
+              //   width={80}
+              //   height={80}
+              //   className="h-auto w-[250px]"
+              //   src={selectedImage}
+              //   alt="Profile Image"
+              // />
+              <div className={cn("grid-cols-4 gap-2", multi ? "grid " : "")}>
+                {selectedImages.map((img, index) => (
+                  <Image
+                    key={index}
+                    width={width}
+                    height={height}
+                    className={`h-[${height}px] w-[${width}px]`}
+                    src={img}
+                    alt={`Image${index}`}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="flex flex-col gap-2 justify-center items-center ">
-                <ImageIcon className="w-8 h-8" />
-                <span className=" text-lg text-muted-foreground">
-                  Select Image
+                <ImageIcon size={26} />
+                <span className="text-lg text-muted-foreground">
+                  Select Image{multi && "(s)"}
                 </span>
               </div>
             )}
@@ -104,7 +130,7 @@ export const ImageModal = ({
         <Button disabled={uploading} variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        {selectedFile && (
+        {selectedFiles && (
           <Button disabled={uploading} onClick={onUpload}>
             {uploading ? "Uploading..." : "Upload"}
           </Button>
