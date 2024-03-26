@@ -16,11 +16,9 @@ const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
     <>
       <AdminSidebar />
       <div className="flex flex-col ml-[70px] h-full ">
-        {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
-        <div className="flex flex-col flex-1 w-full px-4 mb-4 overflow-hidden overflow-y-auto">
+        <div className="flex flex-col flex-1 w-full lg:px-4 lg:mb-4 overflow-hidden overflow-y-auto">
           {children}
         </div>
-        {/* </ScrollArea> */}
       </div>
     </>
   );

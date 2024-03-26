@@ -1,7 +1,6 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -81,7 +80,7 @@ export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
           className="flex flex-col overflow-hidden space-6 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="flex justify-between items-end mb-2 gap-4">
+          <div className="flex flex-col-reverse lg:flex-row justify-between items-end mb-2 gap-4">
             {/* TITLE */}
             <FormField
               control={form.control}

@@ -2,7 +2,7 @@ import { User } from "lucide-react";
 import { leadGetById, leadGetPrevNextById } from "@/data/lead";
 import { LeadClient } from "./components/client";
 // import { conversationGetByLeadId } from "@/data/conversation";
-import { PageLayout } from "@/components/custom/page-layout";
+import { PageLayout } from "@/components/custom/layout/page-layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TopMenu } from "./components/top-menu";
 import { LeadTabsClient } from "./components/tabs-client";
@@ -25,7 +25,7 @@ const LeadsPage = async ({ params }: { params: { leadId: string } }) => {
         <p className="text-center font-semibold text-primary text-3xl">
           {lead.firstName} {lead.lastName}
         </p>
-        <TabsList className="flex w-full h-auto">
+        <TabsList className="flex flex-col lg:flex-row w-full h-auto">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
           <TabsTrigger value="conditions">Conditions</TabsTrigger>

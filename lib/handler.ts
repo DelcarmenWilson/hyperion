@@ -6,7 +6,6 @@ import { isAValidPhoneNumber } from "@/formulas/phones";
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
-const sitebase = "https://insect-pro-luckily.ngrok-free.app/public";
 
 export const tokenGenerator = (identity: string) => {
   const accessToken = new AccessToken(
@@ -113,7 +112,6 @@ export const voicemailResponse = async (requestBody: any) => {
 };
 
 export const hangupReponse= async () => {
-
   const twiml = new VoiceResponse();
   twiml.hangup();
   return twiml.toString();

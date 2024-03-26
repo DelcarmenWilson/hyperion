@@ -1,6 +1,6 @@
 import { callGetAllByAgentId } from "@/data/call";
 import { currentUser } from "@/lib/auth";
-import { CallHistoryClient } from "../dashboard/components/callhistory/call-history";
+import { CallHistoryClient } from "../../../components/reusable/callhistory/client";
 
 const CallPage = async () => {
   const user = await currentUser();

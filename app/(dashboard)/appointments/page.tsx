@@ -1,6 +1,9 @@
 import React from "react";
 import { currentUser } from "@/lib/auth";
-import { AppointmentClient } from "./components/client";
+import { Calendar } from "lucide-react";
+
+import { PageLayout } from "@/components/custom/layout/page-layout";
+import { AppointmentClient } from "@/components/lead/appointments/client";
 import { appointmentsGetByUserIdFiltered } from "@/data/appointment";
 import { weekStartEnd } from "@/formulas/dates";
 
@@ -16,7 +19,11 @@ const AppointmentsPage = async ({
   const to = (searchParams.to || week.to.toString()) as string;
   const appointments = await appointmentsGetByUserIdFiltered(user.id, from, to);
 
-  return <AppointmentClient data={appointments} />;
+  return (
+    <PageLayout title="Appointments" icon={Calendar}>
+      <AppointmentClient data={appointments} />
+    </PageLayout>
+  );
 };
 
 export default AppointmentsPage;

@@ -19,7 +19,7 @@ export const RecentSales = ({ sales }: RecentSalesProps) => {
         <CardTitle>Recent Sales</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
+        <div className="space-y-2">
           {sales.map((sale) => (
             <div
               key={sale.id}

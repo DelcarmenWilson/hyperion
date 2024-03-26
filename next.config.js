@@ -7,7 +7,8 @@ const nextConfig = {
         headers: [
           {
             key: "content-type",
-            value: "text/xml;application/xml;text/html",
+            value: "text/xml;application/xml;text/html;",
+            value: "text/plain;charset=UTF-8",
           },
         ],
       },

@@ -43,11 +43,11 @@ export const ConditionsClient = ({
         />
       </DrawerRight>
       <div>
-        <div className="flex justify-between items-center border-b p-2 mb-2">
+        <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
           <p className=" text-2xl font-semibold">Medical Conditions</p>
           <Button onClick={() => setIsOpen(true)}>Add Condition</Button>
         </div>
-        <div className="grid grid-cols-4 mb-1 items-center gap-2">
+        <div className="grid grid-cols-2 lg:grid-cols-4 mb-1 items-center gap-2">
           <span>Condition</span>
           <span>Date diagnosed</span>
           <span>Medications</span>

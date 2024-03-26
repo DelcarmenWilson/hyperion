@@ -82,7 +82,7 @@ export function AvailabilityClient({
           control={form.control}
           name="type"
           render={({ field }) => (
-            <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+            <FormItem className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
               <div className="space-y-0.5">
                 <FormLabel>Schedule Type</FormLabel>
                 <FormDescription>Set prefer scheduling type</FormDescription>

@@ -30,6 +30,7 @@ export const DatesFilter = ({ link }: DatesFilterProps) => {
     router.push(
       `${link}?from=${dates.from.toLocaleDateString()}&to=${dates.to.toLocaleDateString()}`
     );
+    router.refresh();
   };
 
   return (

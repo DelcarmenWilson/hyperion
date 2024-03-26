@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { CarrierClient } from "./components/carrier/client";
-import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import {
   adminCarriersGetAll,
   adminLeadStatusGetAll,

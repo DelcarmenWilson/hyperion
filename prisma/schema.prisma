@@ -618,3 +618,35 @@ model Quote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// FACEBOOK
+
+model Campaign {
+  id        String    @id @default(cuid())
+  name      String
+  objective String
+  status    String    @default("PAUSED")
+  startTime DateTime?
+  stopTime  DateTime?
+
+  ads       AdSet[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdSet {
+  id               String    @id @default(cuid())
+  campaignId       String    @unique
+  campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name             String
+  optimizationGoal String
+  bidAmount        Int
+  dailyBudget      Int
+  // targeting - this is an array may need to create another table for this
+  startTime        DateTime?
+  stopTime         DateTime?
+  status           String    @default("PAUSED")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

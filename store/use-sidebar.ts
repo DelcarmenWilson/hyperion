@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface SidebarStore {
+type SidebarStore ={
   collapsed: boolean;
   onExpand: () => void;
   onCollapse: () => void;

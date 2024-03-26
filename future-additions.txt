@@ -1,13 +1,10 @@
-
 --add all the carrier conditions after medical conditions
 
 -- make the quote change automatically with cron job 
-fix the issue where whne you close the dialer the window is giving an error on chrome
-be able to text any number
--- the default number select is small in the leads client page
+--fix the issue where whne you close the dialer the window is giving an error on chrome
+--be able to text any number
+--the default number select is small in the leads client page
 --messed up the team report in the admin
--- see if we can merge the image upload into one route.. user && upload
-
 
 create messaging between us
 be able to change agents to spanish speaking
@@ -51,8 +48,6 @@ tab called blueprint > personalized businees plan for the indivdual.
    --let the agent send out voicemail on answering machine pickup
    --let the call get worwarded to the agents voicemail if its setup else leave the default.
 
-
-
 -----BUGS
 -- in the appointment for todays days should populate todays schedule but doesnt (on load) -- check
 --profile image wont update in setting after upload
@@ -60,3 +55,8 @@ tab called blueprint > personalized businees plan for the indivdual.
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
 -- transcription has been turned of as of 3-2-24
+
+reset link
+`${domain}/new-password?token=${token}`;
+
+https://hperioncrm.com/new-password?token=bbb9d0cc-487a-4582-847d-71bf5bd746c9

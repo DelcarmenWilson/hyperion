@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { FeedbacksClient } from "./components/client";
 
 import { feedbackGetAll } from "@/actions/feedback";
