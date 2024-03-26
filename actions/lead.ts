@@ -450,13 +450,15 @@ export const leadUpdateByIdGeneralInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-
+  let dob=dateOfBirth;
+  if(dob){
+dob=new Date(dob).toString()}
   const leadInfo = await db.lead.update({
     where: { id },
     data: {
       gender,
       maritalStatus,
-      dateOfBirth,
+      dateOfBirth:dob,
       weight,
       height,
       income,

@@ -71,7 +71,7 @@ export const ExpensesClient = ({
     <div>
       {data.expenses.length ? (
         <>
-          <div className=" grid grid-cols-2 gap-4">
+          <div className=" grid lg:grid-cols-2 gap-4">
             <ExpenseIncome
               leadId={leadId}
               type="Expense"
@@ -85,7 +85,7 @@ export const ExpensesClient = ({
               onExpenseUpdated={onExpenseUpdated}
             />
           </div>
-          <p className="flex gap-2 items-center justify-center text-2xl mt-2">
+          <p className="flex flex-col lg:flex-row gap-2 items-center justify-center text-2xl mt-2">
             <span className="italic">Expendable Income - </span>
             <span
               className={cn(

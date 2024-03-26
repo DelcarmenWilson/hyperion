@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+import { X } from "lucide-react";
+import axios from "axios";
+
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,8 +35,6 @@ import { MainSidebarRoutes } from "@/constants/page-routes";
 import { feedbackInsert, feedbackUpdateById } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { X } from "lucide-react";
-import axios from "axios";
 import { ImageModal } from "@/components/modals/image";
 
 type FeedbackFormValues = z.infer<typeof FeedbackSchema>;
@@ -64,9 +65,9 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(FeedbackSchema),
     defaultValues: feedback || {
-      headLine: "aaaa",
+      headLine: "",
       page: "Dashboard",
-      feedback: "aaaaaa",
+      feedback: "",
     },
   });
 

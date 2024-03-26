@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/custom/modal";
+import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 
 type AlertModalProps = {

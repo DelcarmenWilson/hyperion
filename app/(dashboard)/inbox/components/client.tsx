@@ -7,7 +7,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 import { Conversation } from "@prisma/client";
-import { PageLayout } from "@/components/custom/page-layout";
+import { PageLayout } from "@/components/custom/layout/page-layout";
 import { MessagesSquare } from "lucide-react";
 
 type InboxClientProps = {

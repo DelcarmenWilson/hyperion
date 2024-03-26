@@ -1,7 +1,7 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
 import { ImageIcon } from "lucide-react";
-import { Modal } from "@/components/custom/modal";
+import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import axios from "axios";

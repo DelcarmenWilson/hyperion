@@ -1,6 +1,6 @@
 "use client";
 
-import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useState } from "react";

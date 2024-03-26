@@ -61,7 +61,7 @@ export const SaleInfoClient = ({ info }: ExtraInfoProps) => {
             }
           />
           <Button
-            className="absolute  bottom-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
+            className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
             onClick={() => setEdit(true)}
           >
             <FilePenLine size={16} />

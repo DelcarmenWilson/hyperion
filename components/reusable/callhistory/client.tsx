@@ -5,17 +5,21 @@ import { find } from "lodash";
 import { pusherClient } from "@/lib/pusher";
 import { Phone } from "lucide-react";
 
-import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { columns } from "./columns";
 import { CardLayout } from "@/components/custom/card/layout";
+import { DataTable } from "@/components/tables/data-table";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
 
 interface CallHistoryClientProps {
   initialCalls: FullCall[];
+  duration?: number;
 }
 
-export const CallHistoryClient = ({ initialCalls }: CallHistoryClientProps) => {
+export const CallHistoryClient = ({
+  initialCalls,
+  duration = 0,
+}: CallHistoryClientProps) => {
   const user = useCurrentUser();
   const [calls, setCalls] = useState<FullCall[]>(initialCalls);
   const leadId = initialCalls[0]?.lead?.id;
@@ -39,8 +43,12 @@ export const CallHistoryClient = ({ initialCalls }: CallHistoryClientProps) => {
     };
   }, [leadId, user?.id]);
   return (
-    <CardLayout title="Call history" icon={Phone} topMenu={<TopMenu />}>
-      <DashBoardTable columns={columns} data={calls} />
+    <CardLayout
+      title="Call History"
+      icon={Phone}
+      topMenu={<TopMenu duration={duration} />}
+    >
+      <DataTable columns={columns} data={calls} headers search={false} />
     </CardLayout>
   );
 };

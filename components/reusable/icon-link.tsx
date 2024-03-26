@@ -26,11 +26,11 @@ export const IconLink = ({
         variant={active ? "default" : "ghost"}
         size="sm"
         className={cn(
-          "w-full flex items-center  mb-2",
+          "w-full flex items-center group mb-2",
           collapsed ? "justify-center" : "justify-start"
         )}
       >
-        <Icon className="w-4 h-4" />
+        <Icon size={16} className="group-hover:animate-spin" />
         {!collapsed && <span className="ml-2">{title}</span>}
       </Button>
     </Link>

@@ -1,26 +1,27 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
-
 import { columns } from "./columns";
-import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CardLayout } from "@/components/custom/card/layout";
 import { FullAppointment } from "@/types";
+import { DataTable } from "@/components/tables/data-table";
+import { DatesFilter } from "@/components/reusable/dates-filter";
 
-interface AppoinmentClientProps {
+type AppointmentClientProps = {
   data: FullAppointment[];
-}
+};
 
-export const AppoinmentClient = ({ data }: AppoinmentClientProps) => {
+export const AppointmentClient = ({ data }: AppointmentClientProps) => {
   return (
-    <CardLayout title="Appointments" icon={Calendar}>
-      <DashBoardTable columns={columns} data={data} />
-    </CardLayout>
+    <DataTable
+      columns={columns}
+      data={data}
+      headers
+      topMenu={<DatesFilter link="/appointments" />}
+    />
   );
 };
 
-export const AppointmentClientSkeleton = () => {
+export const AppointmentBoxSkeleton = () => {
   return (
     <Card className="relative overflow-hidden w-full">
       <div className="flex justify-between items-center mb-2">
@@ -32,7 +33,7 @@ export const AppointmentClientSkeleton = () => {
         </div>
       </div>
       <CardContent className="items-center space-y-0 pb-2">
-        {/* <DashBoardTable columns={columns} data={data}/> */}
+        {/* <DashBoardTable columns={columns} data={data} /> */}
       </CardContent>
     </Card>
   );

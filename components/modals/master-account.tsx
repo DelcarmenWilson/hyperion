@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
-import { Modal } from "@/components/custom/modal";
+import { Modal } from "@/components/modals/modal";
 import {
   Form,
   FormControl,

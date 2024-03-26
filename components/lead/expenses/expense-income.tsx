@@ -74,7 +74,7 @@ export const ExpenseIncome = ({
         />
       </DrawerRight>
       <div>
-        <div className="flex justify-between items-center border-b p-2 mb-2">
+        <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
           <div className="">
             <span className="text-2xl font-semibold">{type}</span>
             <span className=" text-md text-muted-foreground">

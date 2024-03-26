@@ -50,7 +50,7 @@ export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
   };
 
   return (
-    <div className="grid grid-cols-5 items-center gap-2 mb-2">
+    <div className="grid grid-cols-2 lg:grid-cols-5 items-center gap-2 mb-2">
       <div className="flex justify-between gap-2 text-sm text-muted-foreground">
         <p>{day}</p>
         <div>
@@ -63,7 +63,7 @@ export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
         </div>
       </div>
       {available ? (
-        <div className="grid col-span-4 grid-cols-4 items-center gap-2">
+        <div className="grid col-span-4 grid-cols-2 lg:grid-cols-4 items-center gap-2">
           <Input
             name="txtWorkFrom"
             disabled={disabled}

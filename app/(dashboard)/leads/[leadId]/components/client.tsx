@@ -91,7 +91,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
           <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
           <CallInfo lead={lead} />
         </div>
-        <div className="flex justify-around col-span-2">
+        <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
           <GeneralInfoClient
             info={leadInfo}
             call={lead?.calls[lead.calls.length - 1]!}

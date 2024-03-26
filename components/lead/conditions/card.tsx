@@ -62,7 +62,7 @@ export const ConditionCard = ({
           onConditionChange={onConditionUpdated}
         />
       </DrawerRight>
-      <div className="grid grid-cols-4 mb-1 items-center gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 mb-1 items-center gap-2">
         <span>{condition.condition.name}</span>
         <span>{format(condition.diagnosed, "MM-dd-yy")}</span>
         <span>{condition.medications}</span>

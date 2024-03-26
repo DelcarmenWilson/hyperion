@@ -44,11 +44,13 @@ export const columns: ColumnDef<FullCall>[] = [
     cell: ({ row }) => (
       <div>
         <p className="text-primary font-bold italic">
-          {row.original?.lead
-            ? formatPhoneNumber(row.original?.lead.cellPhone)
-            : formatPhoneNumber(row.original?.from)}
+          {formatPhoneNumber(
+            row.original?.lead
+              ? row.original?.lead.cellPhone
+              : row.original?.from
+          )}
         </p>
-        <p className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center">
           {row.original.direction.toLowerCase() === "inbound" ? (
             getPhoneStatusText(row.original.status as string)
           ) : (
@@ -57,7 +59,7 @@ export const columns: ColumnDef<FullCall>[] = [
               {row.original.direction}
             </>
           )}
-        </p>
+        </div>
       </div>
     ),
   },

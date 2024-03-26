@@ -97,7 +97,7 @@ export const MainInfoClient = ({
             </address>
           )}
           <Button
-            className="absolute translate-y-1/2 top-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
+            className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
             onClick={() => setEdit(true)}
           >
             <FilePenLine size={16} />

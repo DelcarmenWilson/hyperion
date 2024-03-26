@@ -1,7 +1,7 @@
 import { teamsGetAll } from "@/data/team";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
-import { PageLayoutAdmin } from "@/components/custom/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { TeamForm } from "./components/team-form";
 
 const TeamsPage = async () => {

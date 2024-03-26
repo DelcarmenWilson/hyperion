@@ -8,12 +8,16 @@ import { leadsGetByAgentIdTodayCount } from "@/data/lead";
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
 import { usersGetSummaryByTeamId } from "@/data/user";
 import { Suspense } from "react";
-import { AppoinmentClient } from "./components/appointment/client";
+
+import { AppointmentClient } from "@/components/lead/appointments/client";
 import { AgentSummaryClient } from "./components/agentsummary/client";
 import { TurnOverRate } from "./components/turnover/turn-over-rate";
-import { CallHistoryClient } from "./components/callhistory/call-history";
+import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
 import { adminQuotesGetActive } from "@/data/admin";
+import { CardLayout } from "@/components/custom/card/layout";
+import { Calendar } from "lucide-react";
+import { PageLayout } from "@/components/custom/layout/page-layout";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();
@@ -62,7 +66,9 @@ const DahsBoardPage = async () => {
           outBoundCallsCount={outBoundCallsCount}
         />
         <QuoteClient quote={quote!} />
-        <AppoinmentClient data={appointments} />
+        <PageLayout title="Appointments" icon={Calendar}>
+          <AppointmentClient data={appointments} />
+        </PageLayout>
         <AgentSummaryClient initialData={formattedAgents} />
         <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">
           <div className="w-full lg:w-[25%] h-full">

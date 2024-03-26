@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { useSearchParams } from "next/navigation";
 
-import { newVerification } from "@/actions/new-verification";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
+import { userUpdateEmailVerification } from "@/actions/user";
 
 export const NewVerificationForm = () => {
   const searchParams = useSearchParams();
@@ -20,7 +20,7 @@ export const NewVerificationForm = () => {
       setError("Missing token!");
       return;
     }
-    newVerification(token)
+    userUpdateEmailVerification(token)
       .then((data) => {
         setSuccess(data.success);
         setError(data.error);

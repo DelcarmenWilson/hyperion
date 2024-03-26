@@ -1,16 +1,18 @@
 "use client";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { useSidebar } from "@/store/use-sidebar";
+import { useCurrentRole } from "@/hooks/user-current-role";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
 import { IconLink, IconLinkSkeleton } from "./icon-link";
-import { useSidebar } from "@/store/use-sidebar";
-import { cn } from "@/lib/utils";
 import { MainSidebarRoutes } from "@/constants/page-routes";
 // import { ThemeToggle } from "../custom/theme-toggle";
 import { UserButton } from "../auth/user-button";
 import { Skeleton } from "../ui/skeleton";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export const MainSideBar = () => {
   const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
@@ -27,31 +29,51 @@ export const MainSideBar = () => {
     routes = allRoutes.filter((e) => e.assistant);
   }
 
+  const onToggle = () => {
+    if (collapsed) {
+      onExpand();
+    } else {
+      onCollapse();
+    }
+  };
+
   return (
     <aside
-      onMouseOver={onExpand}
-      onMouseLeave={onCollapse}
+      // onMouseOver={onExpand}
+      // onMouseLeave={onCollapse}
       className={cn(
         "fixed left-0 flex flex-col w-60 h-full bg-background border-r z-50 py-2 transition ease-in-out",
         collapsed && "w-[70px]"
       )}
     >
-      <div
-        className="flex items-center justify-center gap-2 p-2 cursor-pointer"
-        onClick={() => router.push("/")}
-      >
-        <Image
-          src="/logo3.png"
-          alt="logo"
-          width="40"
-          height="40"
-          className="w-[40px] aspect-square"
+      <div className="relative">
+        {/* <div className="absolute top-0 right-0 opacity-50 hover:opacity-100 z-50 cursor-pointer"> */}
+        <ArrowRight
+          className={cn(
+            "absolute top-0 right-0 opacity-50 hover:opacity-100 z-50 cursor-pointer transition-all ease-in-out",
+            !collapsed && "rotate-180"
+          )}
+          size={20}
+          onClick={onToggle}
         />
-        {!collapsed && (
-          <span className="transition font-semibold text-2xl delay-1000">
-            Hyperion
-          </span>
-        )}
+        {/* </div> */}
+        <div
+          className="flex items-center justify-center gap-2 p-2 cursor-pointer opacity-80 hover:animate-pulse"
+          onClick={() => router.push("/")}
+        >
+          <Image
+            src="/logo3.png"
+            alt="logo"
+            width="30"
+            height="30"
+            className="w-[30px] aspect-square"
+          />
+          {!collapsed && (
+            <span className="transition font-semibold text-2xl delay-1000">
+              Hyperion
+            </span>
+          )}
+        </div>
       </div>
       <Separator />
 

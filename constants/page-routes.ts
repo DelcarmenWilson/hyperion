@@ -5,6 +5,7 @@ import {
   Computer,
   ComputerIcon,
   DollarSign,
+  Facebook,
   Globe2,
   Home,
   Import,
@@ -69,6 +70,11 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/test",
     icon: TestTube,
     master: true,
+  },
+  {
+    title: "Facebook",
+    href: "/admin/facebook",
+    icon: Facebook,
   },
 ];
 

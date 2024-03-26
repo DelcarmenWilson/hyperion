@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { CardCountUp } from "@/components/custom/card/count-up";
-import { FullUserReport } from "@/types";
+import { FullCall, FullUserReport } from "@/types";
 import { CardLayout } from "@/components/custom/card/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,19 +26,23 @@ import { UserRoles } from "@/constants/user";
 import { adminChangeTeam, adminChangeUserRole } from "@/actions/admin";
 import { toast } from "sonner";
 import { USDollar } from "@/formulas/numbers";
+import { DatesFilter } from "@/components/reusable/dates-filter";
+import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 
 type UserClientProps = {
   user: FullUserReport;
+  calls: FullCall[];
   teams: Team[];
 };
 
-export const UserClient = ({ user, teams }: UserClientProps) => {
+export const UserClient = ({ user, calls, teams }: UserClientProps) => {
   const router = useRouter();
   const ap = user.leads.reduce((sum, lead) => sum + lead.saleAmount, 0);
+  const duration = calls.reduce((sum, call) => sum + call.duration!, 0);
   const data = [
     {
       title: "Calls",
-      value: user.calls.length.toString(),
+      value: calls.length.toString(),
       icon: <Phone />,
     },
     {
@@ -155,6 +159,9 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
                 </DialogContent>
               </Dialog>
             </span>
+            <div className="ml-auto">
+              <DatesFilter link={`/admin/users/${user.id}`} />
+            </div>
           </div>
         </div>
       </div>
@@ -246,8 +253,7 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
           </div>
         </CardLayout>
         <CardLayout title="Phone Numbers" icon={Phone}>
-          <p className="col-span-3 text-center">Phone Numbers</p>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2 text-sm">
             <span>Phone</span>
             <span>State</span>
             <span>Status</span>
@@ -263,7 +269,8 @@ export const UserClient = ({ user, teams }: UserClientProps) => {
           </div>
         </CardLayout>
       </div>
-      <Separator />
+      <Separator className="my-2" />
+      <CallHistoryClient initialCalls={calls} duration={duration} />
     </>
   );
 };

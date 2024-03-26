@@ -33,6 +33,7 @@ type DataTableProps<TData, TValue> = {
   data: TData[];
   topMenu?: React.ReactElement | null;
   headers?: boolean;
+  search?: boolean;
   hidden?: VisibilityState;
   placeHolder?: string;
   striped?: boolean;
@@ -45,6 +46,7 @@ export function DataTable<TData, TValue>({
   data,
   topMenu,
   headers = false,
+  search = true,
   hidden = {},
   placeHolder = "Search",
   striped = false,
@@ -87,11 +89,15 @@ export function DataTable<TData, TValue>({
     <div className="p-1">
       <div ref={topRef} className="pb-2">
         <div className="grid grid-cols-4 gap-2 mt-2">
-          <SimpleFilter
-            filtering={filtering}
-            setFiltering={setFiltering}
-            placeHolder={placeHolder}
-          />
+          <div>
+            {search && (
+              <SimpleFilter
+                filtering={filtering}
+                setFiltering={setFiltering}
+                placeHolder={placeHolder}
+              />
+            )}
+          </div>
           {filterType == "lead" && <LeadFilter table={table} />}
           {topMenu}
         </div>

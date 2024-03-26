@@ -4,7 +4,7 @@ import { writeFile } from "fs/promises";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getFileExtension } from "@/formulas/text";
-
+  
 
 export const POST = async (req: any, res: any) => {
   const user = await currentUser();
@@ -24,8 +24,18 @@ export const POST = async (req: any, res: any) => {
   const ext = getFileExtension(file.name);
   const filename = `/${filePath}/${user.id}.${ext}`;
   try {
-     await writeFile(path.join(process.cwd(), `public${filename}`), buffer);     
-
+    const fname=`public${filename}`
+     await writeFile(path.join(process.cwd(), fname), buffer);  
+    //  var ffmpeg=require('ffmpeg')
+    //  var process=new ffmpeg(fname) 
+    //  process.then(function (audio:any){
+    //   audio.fnExtractSoundToMp3(fname,function (error:any,file:any){
+    //     if(!error)
+    //     console.log('Audio file:' + file)
+    //   })
+    //  },function(err:any){
+    //   console.log('Error: '+err)
+    //  });
     if (type == "in") {
       await db.chatSettings.update({
         where: { userId: user.id },

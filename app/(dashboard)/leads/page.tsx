@@ -1,7 +1,7 @@
 import { currentUser } from "@/lib/auth";
 import { Users } from "lucide-react";
 
-import { PageLayout } from "@/components/custom/page-layout";
+import { PageLayout } from "@/components/custom/layout/page-layout";
 import { DataTable } from "@/components/tables/data-table";
 
 import { columns } from "./components/columns";

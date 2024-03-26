@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AudioLinesIcon, Mic, Pause } from "lucide-react";
 
-import { Modal } from "@/components/custom/modal";
+import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 import { AudioPlayer } from "@/components/custom/audio-player";
 
@@ -68,7 +68,6 @@ export const RecordModal = ({
       .then((stream) => {
         const medaiRecorder = new MediaRecorder(stream, {
           audioBitsPerSecond: 128000,
-          mimeType: "audio/wav",
         });
         mediaRef.current = medaiRecorder;
         medaiRecorder.ondataavailable = (event: any) => {
@@ -89,11 +88,11 @@ export const RecordModal = ({
     mediaRef.current.stop();
     mediaRef.current.onstop = async () => {
       const audioBlob = new Blob(audioChunksRef.current, {
-        type: "audio/wav",
+        type: "audio/mp3",
       });
       const audioUrl = URL.createObjectURL(audioBlob);
       setAudio(audioUrl);
-      setFile(new File([audioBlob], "newrecording.wav"));
+      setFile(new File([audioBlob], "newrecording.mp3"));
     };
 
     setIsRecording(false);

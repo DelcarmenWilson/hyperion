@@ -1,16 +1,16 @@
+import { LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LucideIcon } from "lucide-react";
-import Link from "next/link";
 
-interface CardBoxProps {
+type CardBoxProps = {
   icon: LucideIcon;
   title: string;
   value: number;
   href: string;
   hrefTitle: string;
-}
+};
 export const CardBox = ({
   icon: Icon,
   title,
@@ -19,10 +19,10 @@ export const CardBox = ({
   hrefTitle,
 }: CardBoxProps) => {
   return (
-    <Card className="relative  overflow-hidden w-full">
+    <Card className="relative overflow-hidden w-full group">
       <div className="flex justify-between items-center mb-2">
         <div className="bg-accent p-4 rounded-br-lg">
-          <Icon className="h-5 w-5 text-primary" />
+          <Icon size={20} className="text-primary group-hover:animate-bounce" />
         </div>
         <CardTitle className=" text-sm text-muted-foreground text-right mr-6">
           <span className="text-sm text-muted-foreground block">{title}</span>
@@ -32,8 +32,11 @@ export const CardBox = ({
 
       <Separator />
       <CardContent className="flex p-2">
-        <Link href={href} className="text-primary flex hover:font-semibold">
-          <Icon className="h4 w-4 mr-1" />
+        <Link
+          href={href}
+          className="text-primary flex items-center hover:font-semibold gap-1"
+        >
+          <Icon size={16} />
           <span>{hrefTitle}</span>
         </Link>
       </CardContent>

@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { Badge } from "@/components/ui/badge";
 import { FullAppointment } from "@/types";
+import Link from "next/link";
 
 export const columns: ColumnDef<FullAppointment>[] = [
   {
@@ -40,9 +41,13 @@ export const columns: ColumnDef<FullAppointment>[] = [
         <p className="capitalize">
           {row.original.lead.firstName} {row.original.lead.lastName}
         </p>
-        <p className="text-primary italic font-bold">
+
+        <Link
+          className="text-primary font-bold opacity-80 hover:underline italic"
+          href={`/leads/${row.original.lead.id}`}
+        >
           {formatPhoneNumber(row.original.lead.cellPhone)}
-        </p>
+        </Link>
         <p className="lowercase">{row.original.lead.email}</p>
       </div>
     ),
@@ -105,9 +110,9 @@ export const columns: ColumnDef<FullAppointment>[] = [
     header: "Comments",
   },
 
-  // {
-  //   header: "Actions",
-  //   id: "actions",
-  //   cell: ({ row }) => <CellAction data={row.original} />,
-  // },
+  {
+    header: "Actions",
+    id: "actions",
+    cell: ({ row }) => <CellAction data={row.original} />,
+  },
 ];

@@ -21,7 +21,7 @@ export const PageLayout = ({
       <div className="flex flex-col justify-between lg:items-center mb-1 lg:flex-row ">
         <div className="flex items-center gap-2 mb-1">
           <div className="bg-accent p-4 rounded-br-lg">
-            <Icon className="h-5 w-5 text-primary" />
+            <Icon size={20} className="text-primary" />
           </div>
           <CardTitle className=" text-sm text-muted-foreground">
             {title}

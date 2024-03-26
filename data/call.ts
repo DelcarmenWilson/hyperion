@@ -36,6 +36,25 @@ export const callGetAllByAgentIdLast24Hours = async (userId: string) => {
     return [];
   }
 };
+export const callGetAllByAgentIdFiltered = async (
+  userId: string,
+  from: string,
+  to: string
+) => {
+  try {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    const calls = await db.call.findMany({
+      where: { userId, createdAt: { lte: toDate, gte: fromDate } },
+      include: { lead: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return calls;
+  } catch {
+    return [];
+  }
+};
 
 export const callGetAllByLeadId = async (leadId: string) => {
   try {

@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 import { NewPasswordSchema } from "@/schemas";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
@@ -18,8 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { useSearchParams } from "next/navigation";
-import { newPassword } from "@/actions/new-password";
+import { userUpdatePassword } from "@/actions/user";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
@@ -37,11 +37,15 @@ export const NewPasswordForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
+    if (!token) {
+      setError("Missing token!");
+      return;
+    }
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      newPassword(values, token).then((data) => {
+      userUpdatePassword(values, token).then((data) => {
         setError(data?.error);
         setSuccess(data?.success);
       });
