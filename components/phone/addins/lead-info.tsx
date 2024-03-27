@@ -138,7 +138,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           </TabsContent>
         </Tabs>
 
-        {!open && role != "ASSISTANT" && <PhoneScript />}
+        {!open && <PhoneScript />}
       </div>
     </div>
   );
