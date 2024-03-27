@@ -8,7 +8,7 @@ const nextConfig = {
           {
             key: "content-type",
             value: "text/xml;application/xml;text/html;",
-            value: "text/plain;charset=UTF-8",
+            // value: "text/plain;charset=UTF-8",
           },
         ],
       },

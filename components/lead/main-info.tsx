@@ -82,7 +82,7 @@ export const MainInfoClient = ({
             {formatPhoneNumber(info.cellPhone)}
           </span>
         )}
-        <CopyButton value={info.cellPhone} />
+        <CopyButton value={info.cellPhone} message="Lead phone#" />
       </p>
       {edit ? (
         <MainInfoForm info={leadInfo} onChange={onSetInfo} />
