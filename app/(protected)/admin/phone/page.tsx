@@ -3,7 +3,7 @@ import {
   phoneNumbersGetUnassigned,
 } from "@/data/phonenumbers";
 import { AgentNumbersClient } from "./components/agentnumbers/client";
-import { PurchaseNumbers } from "./components/prchasenumbers/client";
+import { PurchaseNumbers } from "./components/purchasenumbers/client";
 import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
 
 const PhonePage = async () => {

@@ -69,7 +69,9 @@ export const PhoneOut = () => {
       console.log("ready");
     });
 
-    phone.on("error", function (error: any) {});
+    phone.on("error", function (error: any) {
+      console.log(error);
+    });
   };
 
   const onStarted = () => {
@@ -204,18 +206,20 @@ export const PhoneOut = () => {
           onSetDefaultNumber={setSelectedNumber}
         />
       </div>
-      <div className="flex  items-center text-sm gap-2">
-        <AlertCircle className="h-4 w-4" /> Call recording
-        <div className="ml-auto flex gap-2">
-          Off
-          <Switch
-            disabled={!!call}
-            checked={record}
-            onCheckedChange={onRecordUpdate}
-          />
-          On
+      {user?.role != "ASSISTANT" && (
+        <div className="flex  items-center text-sm gap-2">
+          <AlertCircle className="h-4 w-4" /> Call recording
+          <div className="ml-auto flex gap-2">
+            Off
+            <Switch
+              disabled={!!call}
+              checked={record}
+              onCheckedChange={onRecordUpdate}
+            />
+            On
+          </div>
         </div>
-      </div>
+      )}
       {/* <div className="flex items-center text-sm gap-2">
         <AlertCircle className="h-4 w-4" /> Agent coaching
         <div className="ml-auto flex gap-2">

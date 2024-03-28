@@ -177,14 +177,43 @@ export const PhoneInModal = () => {
                       <Button size="sm" onClick={() => setShowLeadInfo(false)}>
                         Return to call
                       </Button>
-                      <Button
+                      {!isCallAccepted ? (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="gap-2"
+                            onClick={onIncomingCallAccept}
+                          >
+                            <Phone size={16} /> Answer
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="gap-2"
+                            onClick={onIncomingCallReject}
+                          >
+                            <PhoneOff size={16} /> Reject
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="gap-2"
+                          onClick={onIncomingCallDisconnect}
+                        >
+                          <PhoneOff size={16} /> Hang Up
+                        </Button>
+                      )}
+                      {/* <Button
                         size="sm"
                         variant="destructive"
                         className="gap-2"
                         onClick={onIncomingCallDisconnect}
                       >
                         <PhoneOff size={16} /> Hang Up
-                      </Button>
+                      </Button> */}
                     </div>
                     <PhoneLeadInfo open={true} />
                   </div>

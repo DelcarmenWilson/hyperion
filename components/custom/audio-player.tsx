@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pause, Play } from "lucide-react";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 type AudioPlayerProps = {
   src: string | undefined;
@@ -10,6 +11,7 @@ type AudioPlayerProps = {
 };
 
 export const AudioPlayer = ({ src, onListened }: AudioPlayerProps) => {
+  const role = useCurrentRole();
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const onPlayPause = () => {
@@ -27,6 +29,7 @@ export const AudioPlayer = ({ src, onListened }: AudioPlayerProps) => {
     }
     setPlaying((state) => !state);
   };
+  if (role == "ASSISTANT") return null;
   return (
     <div>
       <audio ref={audioRef} src={src} />
