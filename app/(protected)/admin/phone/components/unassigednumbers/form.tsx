@@ -24,9 +24,10 @@ type AssignNumberFormProps = {
 export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
   const router = useRouter();
   const [users, setUsers] = useState<User[] | null>(null);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUser, setSelectedUser] = useState(phoneNumber.agentId || "");
 
   const onAssignNumber = () => {
+    if (!selectedUser || selectedUser == phoneNumber.agentId) return;
     phoneNumberUpdateByIdAssign(phoneNumber.id, selectedUser).then((data) => {
       if (data.error) {
         toast.error(data.error);
@@ -65,8 +66,7 @@ export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
           <span>{format(phoneNumber.renewAt, "MM-dd-yy")}</span>
         </div>
       </div>
-      <div className="text-sm">
-        <p className="font-semibold">User</p>
+      <div className="flex gap-2 text-sm my-2">
         <Select
           name="ddlUser"
           //   disabled={loading}
@@ -84,15 +84,14 @@ export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
             ))}
           </SelectContent>
         </Select>
+        {selectedUser && selectedUser != phoneNumber.agentId && (
+          <div className="text-end">
+            <Button className="w-fit" onClick={onAssignNumber}>
+              Assign Number
+            </Button>
+          </div>
+        )}
       </div>
-      {/* {JSON.stringify(phoneNumber)} */}
-      {selectedUser && (
-        <div className="text-end">
-          <Button className="w-fit" onClick={onAssignNumber}>
-            Assign Number
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

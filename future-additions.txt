@@ -54,7 +54,8 @@ tab called blueprint > personalized businees plan for the indivdual.
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
--- transcription has been turned of as of 3-2-24
+-- transcription has been turned off as of 3-2-24
+-- call action turned off as of 3-27-24
 
 reset link
 `${domain}/new-password?token=${token}`;

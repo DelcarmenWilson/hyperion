@@ -35,8 +35,8 @@ export const voiceResponse = async (requestBody: any) => {
     callerId: agentNumber,
     record: recording,
     recordingStatusCallback: "/api/voice/recording",
-    action: "/api/voice/action",
-    timeout:10
+    // action: "/api/voice/action",
+    // timeout:10
   };
 
   const twiml = new VoiceResponse();
