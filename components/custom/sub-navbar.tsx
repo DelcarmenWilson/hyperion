@@ -1,15 +1,18 @@
 "use client";
 import Link from "next/link";
-import { useCurrentRole } from "@/hooks/user-current-role";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { SettingsNavbarRoutes } from "@/constants/page-routes";
+import { NavType } from "@/constants/page-routes";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
-export const NavBar = () => {
+type SubNavBarProps = {
+  intialRoutes: NavType[];
+};
+export const SubNavBar = ({ intialRoutes }: SubNavBarProps) => {
   const role = useCurrentRole();
   const pathname = usePathname();
-  const allRoutes = SettingsNavbarRoutes.map((route) => {
+  const allRoutes = intialRoutes.map((route) => {
     route.active = pathname === route.href;
     return route;
   });

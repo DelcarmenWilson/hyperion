@@ -1,13 +1,18 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import { forIn } from "lodash";
 import { PipeLine } from "@prisma/client";
+import { userGetByAssistant } from "@/data/user";
 
 // TODO DATA- should be moved
 export const pipelineGetAllByAgentId = async (userId: string) => {
   try {
+    const role = await currentRole();
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
     const pipelines = await db.pipeLine.findMany({
       where: { userId },
       include: { status: { select: { status: true } } },
@@ -25,9 +30,12 @@ export const pipelineInsert = async (statusId: string, name: string) => {
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-
+  let userId=user.id;
+  if (user.role=="ASSISTANT") {
+    userId = (await userGetByAssistant(userId)) as string;
+  }
   const pipelines = await db.pipeLine.findMany({
-    where: { userId: user.id },
+    where: { userId },
   });
 
   const exisitingStatus = pipelines.find(

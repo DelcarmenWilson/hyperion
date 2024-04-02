@@ -14,12 +14,8 @@ import { LeadStatusForm } from "./form";
 
 type LeadStatusClientProps = {
   leadStatus: LeadStatus[];
-  role: string;
 };
-export const LeadStatusClient = ({
-  leadStatus,
-  role,
-}: LeadStatusClientProps) => {
+export const LeadStatusClient = ({ leadStatus }: LeadStatusClientProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { setLeadStatus } = useGlobalContext();
 
@@ -48,11 +44,9 @@ export const LeadStatusClient = ({
         headers
         topMenu={
           <div className="col-span-3 text-end">
-            {role != "ASSISTANT" && (
-              <Button onClick={() => setIsDrawerOpen(true)}>
-                <Plus size={16} className="mr-2" /> New Status
-              </Button>
-            )}
+            <Button onClick={() => setIsDrawerOpen(true)}>
+              <Plus size={16} className="mr-2" /> New Status
+            </Button>
           </div>
         }
       />

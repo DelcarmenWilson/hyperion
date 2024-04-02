@@ -105,11 +105,12 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
         height="h-auto"
       />
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
-        <DialogContent>
+        <DialogContent className="flex flex-col justify-start h-[60%] w-full">
           <h3 className="text-2xl font-semibold py-2">Edit Stage</h3>
-          <div>
-            <p className="text-muted-foreground">New Status</p>
-
+          <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
+            <p className="text-base text-muted-foreground xl:min-w-12">
+              Status
+            </p>
             <Select
               name="ddlStatus"
               disabled={loading}
@@ -127,7 +128,9 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-muted-foreground">New title</p>
+          </div>
+          <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
+            <p className="text-base text-muted-foreground xl:min-w-12">Title</p>
             <Input
               disabled={loading}
               placeholder="New leads"

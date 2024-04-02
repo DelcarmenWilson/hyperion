@@ -4,29 +4,28 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useSidebar } from "@/store/use-sidebar";
 import { useCurrentRole } from "@/hooks/user-current-role";
+import { ArrowRight } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { UserButton } from "@/components/auth/user-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { IconLink, IconLinkSkeleton } from "./icon-link";
-import { MainSidebarRoutes } from "@/constants/page-routes";
-// import { ThemeToggle } from "../custom/theme-toggle";
-import { UserButton } from "../auth/user-button";
-import { Skeleton } from "../ui/skeleton";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
 
-export const MainSideBar = () => {
+export const MainSideBar = ({ main = false }: { main?: boolean }) => {
   const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
   const role = useCurrentRole();
   const pathname = usePathname();
   const router = useRouter();
+  const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
 
-  const allRoutes = MainSidebarRoutes.map((route) => {
-    route.active = pathname === route.href;
-    return route;
-  });
   let routes = allRoutes;
-  if (role == "ASSISTANT") {
+  if (main && role == "ASSISTANT") {
     routes = allRoutes.filter((e) => e.assistant);
+  }
+  if (!main && role != "MASTER") {
+    routes = allRoutes.filter((e) => !e.master);
   }
 
   const onToggle = () => {
@@ -83,7 +82,7 @@ export const MainSideBar = () => {
             key={route.href}
             title={route.title}
             href={route.href}
-            active={route.active!}
+            active={pathname.includes(route.href)}
             icon={route.icon!}
           />
         ))}

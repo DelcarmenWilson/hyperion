@@ -53,7 +53,7 @@ export const LeadStatusForm = ({ onClose }: LeadStatusFormProps) => {
       if (data.success) {
         form.reset();
         if (onClose) onClose(data.success);
-        toast.success("Carrier created!");
+        toast.success("New lead status created!");
       }
       if (data.error) {
         toast.error(data.error);

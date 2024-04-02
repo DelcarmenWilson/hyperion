@@ -42,7 +42,7 @@ export default async function DashBoardLayout({
   return (
     <>
       <Suspense fallback={<MainSidebarSkeleton />}>
-        <MainSideBar />
+        <MainSideBar main />
       </Suspense>
       <div className="flex flex-col ml-[70px] h-full ">
         <NavBar />
