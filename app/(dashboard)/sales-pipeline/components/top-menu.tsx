@@ -98,11 +98,12 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
         <DialogTrigger asChild>
           <Button size="sm">Add stage</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="flex flex-col justify-start h-[60%] w-full">
           <h3 className="text-2xl font-semibold py-2">Add Stage</h3>
-          <div>
-            <p className="text-muted-foreground">Select a Status</p>
-
+          <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
+            <p className="text-base text-muted-foreground xl:min-w-12">
+              Status
+            </p>
             <Select
               name="ddlStatus"
               disabled={loading}
@@ -120,7 +121,9 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-muted-foreground">Stage title</p>
+          </div>
+          <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">
+            <p className="text-base text-muted-foreground xl:min-w-12">Title</p>
             <Input
               disabled={loading}
               placeholder="New leads"

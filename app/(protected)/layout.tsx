@@ -1,6 +1,6 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { AdminSidebar } from "./components/sidebar";
+import { MainSideBar } from "@/components/reusable/main-sidebar";
 import { currentRole } from "@/lib/auth";
 
 type ProtectedLayoutProps = {
@@ -14,7 +14,7 @@ const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
   }
   return (
     <>
-      <AdminSidebar />
+      <MainSideBar />
       <div className="flex flex-col ml-[70px] h-full ">
         <div className="flex flex-col flex-1 w-full lg:px-4 lg:mb-4 overflow-hidden overflow-y-auto">
           {children}

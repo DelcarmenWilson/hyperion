@@ -48,7 +48,7 @@ const ConfigPage = async () => {
           />
         </TabsContent>
         <TabsContent value="leadStatus">
-          <LeadStatusClient leadStatus={leadStatus} role={user.role} />
+          <LeadStatusClient leadStatus={leadStatus} />
         </TabsContent>
       </div>
     </Tabs>

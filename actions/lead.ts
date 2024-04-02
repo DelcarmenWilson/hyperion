@@ -17,6 +17,7 @@ import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
 import { activityInsert } from "./activity";
 import { defaultLeadExpenses } from "@/constants/lead";
+import { userGetByAssistant } from "@/data/user";
 
 export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   const validatedFields = LeadSchema.safeParse(values);
@@ -889,10 +890,14 @@ export const leadStatusInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
+  let userId=user.id;
+  if (user.role=="ASSISTANT") {
+    userId = (await userGetByAssistant(userId)) as string;
+  }
 
   const { status, description } = validatedFields.data;
 
-  const existingStatus = await db.leadStatus.findFirst({ where: { status } });
+  const existingStatus = await db.leadStatus.findFirst({ where: { status,userId } });
   if (existingStatus) {
     return { error: "Status already exists" };
   }
@@ -900,7 +905,8 @@ export const leadStatusInsert = async (
   const leadStatus = await db.leadStatus.create({
     data: {
       status,
-      userId: user.id,
+      description,
+      userId
     },
   });
 

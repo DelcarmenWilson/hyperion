@@ -1,6 +1,7 @@
 import { Cog } from "lucide-react";
-import { NavBar } from "./components/navbar";
 import { PageLayout } from "@/components/custom/layout/page-layout";
+import { SubNavBar } from "@/components/custom/sub-navbar";
+import { SettingsNavbarRoutes } from "@/constants/page-routes";
 
 export default function SettingsLayout({
   children,
@@ -11,7 +12,7 @@ export default function SettingsLayout({
     <PageLayout
       icon={Cog}
       title="Settings"
-      topMenu={<NavBar />}
+      topMenu={<SubNavBar intialRoutes={SettingsNavbarRoutes} />}
       justify={false}
     >
       {children}
