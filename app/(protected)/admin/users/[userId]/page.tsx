@@ -3,8 +3,9 @@ import React from "react";
 import { UserClient } from "./components/client";
 import { teamsGetAllByOrganization } from "@/data/team";
 import { weekStartEnd } from "@/formulas/dates";
-import { callGetAllByAgentIdFiltered } from "@/data/call";
+import { callsGetAllByAgentIdFiltered, callsGetAllShared } from "@/data/call";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
+import { SharedCallsClient } from "./components/shared-calls/client";
 
 const UserPage = async ({
   params,
@@ -19,11 +20,14 @@ const UserPage = async ({
   const from = searchParams.from || week.from.toString();
   const to = searchParams.to || week.to.toString();
 
-  const calls = await callGetAllByAgentIdFiltered(
+  const calls = await callsGetAllByAgentIdFiltered(
     params.userId,
     from as string,
     to as string
   );
+  const duration = calls.reduce((sum, call) => sum + call.duration!, 0);
+
+  const sharedCalls = await callsGetAllShared();
 
   const user = await userGetByIdReport(params.userId);
   const teams = await teamsGetAllByOrganization(
@@ -36,8 +40,9 @@ const UserPage = async ({
 
   return (
     <>
-      <UserClient user={user} calls={calls} teams={teams} />
-      {/* <CallHistoryClient initialCalls={calls} /> */}
+      <UserClient user={user} callsLength={calls.length} teams={teams} />
+      <SharedCallsClient calls={sharedCalls} />
+      <CallHistoryClient initialCalls={calls} duration={duration} />
     </>
   );
 };

@@ -8,8 +8,25 @@ import { toast } from "sonner";
 type CopyButtonProps = {
   value: string;
   message?: string;
+  text?: string;
+  size?: "default" | "sm" | "xs" | "lg" | "icon";
+  variant?:
+    | "default"
+    | "destructive"
+    | "outlinedestructive"
+    | "outline"
+    | "outlineprimary"
+    | "secondary"
+    | "ghost"
+    | "link";
 };
-export const CopyButton = ({ value, message }: CopyButtonProps) => {
+export const CopyButton = ({
+  value,
+  message,
+  text,
+  size = "sm",
+  variant = "ghost",
+}: CopyButtonProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const onCopy = () => {
     if (!value) return;
@@ -25,12 +42,14 @@ export const CopyButton = ({ value, message }: CopyButtonProps) => {
   const Icon = isCopied ? CheckCheck : Copy;
   return (
     <Button
-      size="sm"
-      variant="ghost"
+      className="gap-2"
+      size={size}
+      variant={variant}
       onClick={onCopy}
       disabled={!value || isCopied}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="w-4 h-4" />
+      {text}
     </Button>
   );
 };

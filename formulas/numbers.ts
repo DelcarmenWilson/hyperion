@@ -38,8 +38,6 @@ export const formatSecondsToHours = (sec_num: number) => {
   if (seconds > 0) {
     ss = `${seconds} second${seconds > 1 ? "s" : ""} `;
   }
-console.log(sec_num,hours,minutes,seconds,`${hh}${mm}${ss}`)
-
   return `${hh}${mm}${ss}`;
 };
 

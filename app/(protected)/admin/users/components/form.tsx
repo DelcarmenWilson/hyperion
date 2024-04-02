@@ -94,7 +94,7 @@ export const AssistantForm = ({
         className="flex flex-col flex-1 overflow-hidden"
       >
         <div className="p-2">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             {/* TEAM */}
             <FormField
               control={form.control}
@@ -102,7 +102,6 @@ export const AssistantForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between">
-                    {" "}
                     Team
                     <FormMessage />
                   </FormLabel>
@@ -162,29 +161,6 @@ export const AssistantForm = ({
                 </FormItem>
               )}
             />
-            {/* NPN# */}
-            {/* <FormField
-              control={form.control}
-              name="npn"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex justify-between">
-                    Npn #
-                    <FormMessage />
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isPending}
-                      {...field}
-                      placeholder="123456"
-                      autoComplete="npn"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
-          </div>
-          <div className="grid grid-cols-2 gap-2 mb-2">
             <FormField
               control={form.control}
               name="firstName"
@@ -192,7 +168,12 @@ export const AssistantForm = ({
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input disabled={isPending} {...field} placeholder="John" />
+                    <Input
+                      id="txtFirstName"
+                      disabled={isPending}
+                      {...field}
+                      placeholder="John"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -206,7 +187,12 @@ export const AssistantForm = ({
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input disabled={isPending} {...field} placeholder="doe" />
+                    <Input
+                      id="txtLastName"
+                      disabled={isPending}
+                      {...field}
+                      placeholder="doe"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,9 +208,11 @@ export const AssistantForm = ({
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
+                    id="txtUsername"
                     disabled={isPending}
                     {...field}
-                    placeholder="John doe"
+                    placeholder="j.doe"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -240,10 +228,12 @@ export const AssistantForm = ({
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    id="txtEmail"
                     disabled={isPending}
                     {...field}
                     placeholder="john.doe@example.com"
                     type="email"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -259,11 +249,12 @@ export const AssistantForm = ({
                 <FormControl className="relative">
                   <div className="w-full flex items-center">
                     <Input
+                      id="txtPassword"
                       disabled={isPending}
                       {...field}
                       placeholder="******"
                       type={show ? "text" : "password"}
-                      autoComplete="password"
+                      autoComplete="new-password"
                     />
 
                     <Button

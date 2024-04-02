@@ -10,15 +10,18 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { DataTable } from "@/components/tables/data-table";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
+import { DatesFilter } from "../dates-filter";
 
-interface CallHistoryClientProps {
+type CallHistoryClientProps = {
   initialCalls: FullCall[];
   duration?: number;
-}
+  showDate?: boolean;
+};
 
 export const CallHistoryClient = ({
   initialCalls,
   duration = 0,
+  showDate = false,
 }: CallHistoryClientProps) => {
   const user = useCurrentUser();
   const [calls, setCalls] = useState<FullCall[]>(initialCalls);
@@ -46,7 +49,13 @@ export const CallHistoryClient = ({
     <CardLayout
       title="Call History"
       icon={Phone}
-      topMenu={<TopMenu duration={duration} />}
+      topMenu={
+        showDate ? (
+          <DatesFilter link="/calls" />
+        ) : (
+          <TopMenu duration={duration} />
+        )
+      }
     >
       <DataTable columns={columns} data={calls} headers search={false} />
     </CardLayout>

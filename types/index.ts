@@ -143,6 +143,9 @@ export type FullCall = Call & {
     cellPhone: string;
     email: string | null;
   } | null;
+  user?:{
+    firstName:string
+  }
 };
 
 export type FullAppointment = Appointment & {

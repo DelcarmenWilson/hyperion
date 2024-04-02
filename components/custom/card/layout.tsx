@@ -17,7 +17,7 @@ export const CardLayout = ({
   children,
 }: CardLayoutProps) => {
   return (
-    <Card className="flex flex-col relative w-full">
+    <Card className="flex flex-col relative w-full mb-4">
       <div className="flex justify-between items-start lg:items-center mb-2">
         <div className="flex items-center gap-2">
           <div className="bg-accent p-4 rounded-br-lg">
@@ -27,9 +27,11 @@ export const CardLayout = ({
             {title}
           </CardTitle>
         </div>
-        <div className="flex flex-col lg:flex-row gap-2 mr-6">{topMenu}</div>
+        <div className="flex flex-col flex-1 lg:flex-row gap-2 mr-6">
+          {topMenu}
+        </div>
       </div>
-      <CardContent className="flex-1 items-center space-y-0 gap-2 py-2">
+      <CardContent className="flex flex-col flex-1 items-center space-y-0 gap-2 py-2">
         {children}
       </CardContent>
     </Card>

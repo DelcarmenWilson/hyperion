@@ -14,6 +14,7 @@ export const columns: ColumnDef<User>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
+        id="cbxMaster"
         value="all"
         checked={
           table.getIsAllPageRowsSelected() ||
@@ -26,6 +27,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Checkbox
+          id={`cbx_${row.original.id}`}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
@@ -42,8 +44,8 @@ export const columns: ColumnDef<User>[] = [
       <div className=" flex justify-center items-center gap-1">
         <Image
           width={40}
-          height={50}
-          className="rounded-full shadow-sm shadow-white w-[40px] aspect-square"
+          height={40}
+          className="rounded-full shadow-sm shadow-white  aspect-square"
           src={row.original.image || "/assets/defaults/teamImage.jpg"}
           alt="Team Image"
         />

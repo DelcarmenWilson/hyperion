@@ -7,10 +7,11 @@ import { Separator } from "@/components/ui/separator";
 import { Body } from "./body";
 import { Form } from "./form";
 import { Header } from "./header";
+import { CardLayout } from "@/components/custom/card/layout";
 
-interface ConversationClientProps {
+type ConversationClientProps = {
   conversation: FullConversation;
-}
+};
 
 const ConversationClient = ({ conversation }: ConversationClientProps) => {
   return (

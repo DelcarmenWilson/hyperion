@@ -10,9 +10,9 @@ import { Team } from "@prisma/client";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+
 import { CardCountUp } from "@/components/custom/card/count-up";
-import { FullCall, FullUserReport } from "@/types";
+import { FullUserReport } from "@/types";
 import { CardLayout } from "@/components/custom/card/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,22 +27,20 @@ import { adminChangeTeam, adminChangeUserRole } from "@/actions/admin";
 import { toast } from "sonner";
 import { USDollar } from "@/formulas/numbers";
 import { DatesFilter } from "@/components/reusable/dates-filter";
-import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 
 type UserClientProps = {
   user: FullUserReport;
-  calls: FullCall[];
+  callsLength: number;
   teams: Team[];
 };
 
-export const UserClient = ({ user, calls, teams }: UserClientProps) => {
+export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
   const router = useRouter();
   const ap = user.leads.reduce((sum, lead) => sum + lead.saleAmount, 0);
-  const duration = calls.reduce((sum, call) => sum + call.duration!, 0);
   const data = [
     {
       title: "Calls",
-      value: calls.length.toString(),
+      value: callsLength.toString(),
       icon: <Phone />,
     },
     {
@@ -98,16 +96,9 @@ export const UserClient = ({ user, calls, teams }: UserClientProps) => {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-2 mb-1">
-        <div className="w-full relative h-[100px] text-center group">
-          <Image
-            width={200}
-            height={100}
-            className="h-full w-full"
-            src={"/assets/defaults/teamBanner.jpg"}
-            alt="Team Banner"
-          />
-          <div className="absolute flex items-center gap-4 top-0 left-0 w-full h-full text-white p-4">
+      <div className="flex bg-user items-center justify-between gap-2 my-1">
+        <div className="w-full h-[100px] text-center group">
+          <div className="flex items-center gap-4 w-full h-full p-4">
             <Image
               width={60}
               height={60}
@@ -115,7 +106,7 @@ export const UserClient = ({ user, calls, teams }: UserClientProps) => {
               src={user?.image || "/assets/defaults/teamImage.jpg"}
               alt="Team Image"
             />
-            <span className=" text-2xl">
+            <span className=" text-2xl text-white">
               {capitalize(user?.userName)} - {user?.team?.name}
               <Dialog>
                 <DialogTrigger asChild>
@@ -165,7 +156,7 @@ export const UserClient = ({ user, calls, teams }: UserClientProps) => {
           </div>
         </div>
       </div>
-      <Separator />
+
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 my-4">
         {data.map((d) => (
           <CardCountUp
@@ -269,8 +260,6 @@ export const UserClient = ({ user, calls, teams }: UserClientProps) => {
           </div>
         </CardLayout>
       </div>
-      <Separator className="my-2" />
-      <CallHistoryClient initialCalls={calls} duration={duration} />
     </>
   );
 };

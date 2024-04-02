@@ -175,6 +175,7 @@ export const convertCalls = (result: any): Call[] => {
       listened: d["listened"] == "f" ? false : true,
       price: d["price"],
       recordPrice: d["recordPrice"],
+      shared:false
     };
     mapped.push(newobj);
   });

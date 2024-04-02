@@ -19,7 +19,7 @@ import { NewLeadForm } from "./new-lead-form";
 export const TopMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <>
+    <div className="flex justify-end gap-2 w-full">
       {/* <Button variant="outlineprimary" size="sm">
               <DownloadCloud className="h-4 w-4 mr-2" />
               GENERATE CSV
@@ -56,6 +56,6 @@ export const TopMenu = () => {
         <Plus className="h-4 w-4 mr-2" />
         CREATE LEAD
       </Button>
-    </>
+    </div>
   );
 };

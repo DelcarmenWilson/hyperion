@@ -70,7 +70,7 @@ export function DashBoardTable<TData, TValue>({
   });
 
   return (
-    <div className="px-1">
+    <div className="w-full px-1">
       <div className="flex items-center justify-between py-4">
         <SimpleFilter
           filtering={filtering}

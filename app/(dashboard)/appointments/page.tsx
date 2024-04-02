@@ -14,6 +14,7 @@ const AppointmentsPage = async ({
 }) => {
   const user = await currentUser();
   if (!user) return null;
+
   const week = weekStartEnd();
   const from = (searchParams.from || week.from.toString()) as string;
   const to = (searchParams.to || week.to.toString()) as string;
@@ -21,7 +22,7 @@ const AppointmentsPage = async ({
 
   return (
     <PageLayout title="Appointments" icon={Calendar}>
-      <AppointmentClient data={appointments} />
+      <AppointmentClient data={appointments} showDate />
     </PageLayout>
   );
 };

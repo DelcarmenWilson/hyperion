@@ -14,6 +14,7 @@ export function SimpleFilter<TData>({
   return (
     <>
       <Input
+        id="search"
         className="max-w-sm"
         placeholder={placeHolder}
         value={filtering}

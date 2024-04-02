@@ -29,3 +29,17 @@ export const callInsert = async (
     return { error: "Internal server Error!" };
   }
 };
+
+export const callUpdateByIdShare = async (id: string, shared: boolean) => {
+  try {
+    await db.call.update({
+      where: { id },
+      data: {
+        shared,
+      },
+    });
+    return { success: `Call ${shared ? "" : "un"}shared` };
+  } catch (error) {
+    return { error: "Internal server Error!" };
+  }
+};

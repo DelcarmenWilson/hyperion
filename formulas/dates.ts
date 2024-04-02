@@ -1,9 +1,9 @@
 import { states } from "@/constants/states";
-import { format } from "date-fns";
-import moment from "moment";
+import { differenceInYears, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
+
 
 export const getAge = (dateOfBirth: any) => {
-  return moment().diff(dateOfBirth, "years");
+  return differenceInYears(new Date,dateOfBirth)
 };
 
 export const concateDate = (date: Date, time: string): Date => {
@@ -26,21 +26,16 @@ export const concateDate = (date: Date, time: string): Date => {
 
 export const weekStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-  const first = curr.getDate() - curr.getDay();
-  const last = first + 6;
+  const start=startOfWeek(curr)
+  const end =endOfWeek(curr)
 
-  const firstDay = new Date(curr.setDate(first));
-  const lastDay = new Date(curr.setDate(last));
-
-  return { from: firstDay, to: lastDay };
+  return { from: start, to: end };
 };
 export const monthStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-
-  const firstDay = new Date(curr.getFullYear(), curr.getMonth(), 1);
-  const lastDay = new Date(curr.getFullYear(), curr.getMonth() + 1, 0);
-
-  return { from: firstDay, to: lastDay };
+  const start=startOfMonth(curr)
+  const end=endOfMonth(curr)
+  return { from: start, to: end };
 };
 
 export const getLocalTime = (abv: string) => {

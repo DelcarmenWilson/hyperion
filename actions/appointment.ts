@@ -5,20 +5,35 @@ import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
 import { states } from "@/constants/states";
 import { smsSend } from "./sms";
 import { format } from "date-fns";
+import { currentUser } from "@/lib/auth";
+import { userGetByAssistant } from "@/data/user";
 
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>,
   sendSms: boolean = true
 ) => {
-  const { date, agentId, leadId, comments } = values;
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  const validatedFields = AppointmentSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const { date, agentId, leadId, comments } = validatedFields.data;
+  let userId=agentId;
+  if (user.role=="ASSISTANT") {
+    userId = (await userGetByAssistant(userId)) as string;
+  }
   const conflctingApp = await db.appointment.findFirst({
-    where: { agentId,date:new Date(date), status: "Scheduled" },
+    where: { agentId:userId,date:new Date(date), status: "Scheduled" },
   });
 if(conflctingApp){
   return { error: "Conflicting time Please select another time!" };
 }
   const existingAppointment = await db.appointment.findFirst({
-    where: { leadId, agentId, status: "Scheduled" },
+    where: { leadId, agentId:userId, status: "Scheduled" },
   });
 
   if (existingAppointment) {
@@ -30,7 +45,7 @@ if(conflctingApp){
 
   const appointment = await db.appointment.create({
     data: {
-      agentId,
+      agentId:userId,
       leadId,
       date: new Date(date),
       comments,
@@ -58,6 +73,15 @@ export const appointmentInsertBook = async (
   agentId: string,
   date: Date
 ) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  const validatedFields = AppointmentLeadSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
   
   const {
     id,
@@ -68,7 +92,7 @@ export const appointmentInsertBook = async (
     gender,
     maritalStatus,
     email,
-  } = values;
+  } = validatedFields.data;
 
   let leadId = id;
 
