@@ -34,7 +34,7 @@ export const DatesFilter = ({ link }: DatesFilterProps) => {
   };
 
   return (
-    <div className=" col-span-3 flex flex-col lg:flex-row justify-end items-end gap-2">
+    <div className="w-full col-span-3 flex flex-col lg:flex-row justify-end items-end gap-2">
       <DateRangePicker setDate={onDateSelected} date={dates} className="flex" />
       <Button onClick={onUpdate}>Update</Button>
     </div>

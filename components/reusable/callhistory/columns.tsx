@@ -6,10 +6,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { PhoneOutgoing, X } from "lucide-react";
-import { AudioPlayer } from "@/components/custom/audio-player";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { FullCall } from "@/types";
 import { getPhoneStatusText } from "@/formulas/phone";
+import { CallHistoryActions } from "./actions";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -66,7 +66,7 @@ export const columns: ColumnDef<FullCall>[] = [
 
   {
     accessorKey: "fullName",
-    header: "Lead info",
+    header: "Lead Info",
     cell: ({ row }) => (
       <div>
         <p className="capitalize">
@@ -108,9 +108,12 @@ export const columns: ColumnDef<FullCall>[] = [
     header: "Recording",
     id: "actions",
     cell: ({ row }) => (
-      <div>
-        {row.original.recordUrl && <AudioPlayer src={row.original.recordUrl} />}
-      </div>
+      <CallHistoryActions
+        id={row.original.id}
+        userId={row.original.userId}
+        shared={row.original.shared}
+        recordUrl={row.original.recordUrl!}
+      />
     ),
   },
 ];

@@ -8,15 +8,19 @@ import { DatesFilter } from "@/components/reusable/dates-filter";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
+  showDate?: boolean;
 };
 
-export const AppointmentClient = ({ data }: AppointmentClientProps) => {
+export const AppointmentClient = ({
+  data,
+  showDate = false,
+}: AppointmentClientProps) => {
   return (
     <DataTable
       columns={columns}
       data={data}
       headers
-      topMenu={<DatesFilter link="/appointments" />}
+      topMenu={showDate ? <DatesFilter link="/appointments" /> : null}
     />
   );
 };

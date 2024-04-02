@@ -5,6 +5,8 @@ import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import "./themes/themes.css";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal";

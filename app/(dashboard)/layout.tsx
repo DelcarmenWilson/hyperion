@@ -47,7 +47,7 @@ export default async function DashBoardLayout({
       <div className="flex flex-col ml-[70px] h-full ">
         <NavBar />
         {/* <ScrollArea className="flex flex-col flex-1 w-full px-4 mb-4"> */}
-        <div className="flex flex-col flex-1 w-full lg:px-4 lg:mb-4 overflow-hidden overflow-y-auto">
+        <div className="flex flex-col flex-1 w-full px-1 lg:px-4 lg:mb-4 overflow-hidden overflow-y-auto">
           <GlobalContextProvider
             initUser={initUser!}
             initStatus={status}

@@ -27,6 +27,7 @@ import {
   ThermometerSun,
   UserSquare,
   Users,
+  Video,
   Voicemail,
 } from "lucide-react";
 export type NavType = {
@@ -135,6 +136,12 @@ export const MainSidebarRoutes: NavType[] = [
     assistant: true,
   },
   {
+    title: "Meetings",
+    href: "/meeting",
+    icon: Video,
+    assistant: true,
+  },
+  {
     title: "Sms",
     href: "/sms",
     icon: MessageSquare,
@@ -155,6 +162,26 @@ export const MainSidebarRoutes: NavType[] = [
   //   href: "/billing",
   //   icon: DollarSign,
   // },
+];
+
+export const MeetingsNavbarRoutes: NavType[] = [
+  { title: "Home", href: "/meeting", assistant: true },
+  {
+    title: "Upcoming",
+    href: "/meeting/upcoming",
+  },
+  {
+    title: "Previous",
+    href: "/meeting/previous",
+  },
+  {
+    title: "Recordings",
+    href: "/meeting/recordings",
+  },
+  {
+    title: "Personal Room",
+    href: "/meeting/personal-room",
+  },
 ];
 
 export const SettingsNavbarRoutes: NavType[] = [
@@ -182,3 +209,4 @@ export const SettingsNavbarRoutes: NavType[] = [
     assistant: true,
   },
 ];
+

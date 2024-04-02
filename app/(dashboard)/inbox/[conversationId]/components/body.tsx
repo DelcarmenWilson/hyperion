@@ -9,9 +9,9 @@ import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 
-interface BodyProps {
+type BodyProps = {
   initialData: FullConversation;
-}
+};
 export const Body = ({ initialData }: BodyProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -51,8 +51,6 @@ export const Body = ({ initialData }: BodyProps) => {
   }, [conversationId]);
 
   return (
-    // <ScrollArea className="flex-1 flex flex-col p-2 pr-3">
-
     <div className="flex flex-col flex-1 w-full px-4 overflow-hidden overflow-y-auto">
       {messages.map((message, i) => (
         <MessageBox
@@ -65,6 +63,5 @@ export const Body = ({ initialData }: BodyProps) => {
       <div ref={bottomRef} className="pt-24" />
       <audio ref={audioRef} src="/sounds/message.mp3" />
     </div>
-    // </ScrollArea>
   );
 };

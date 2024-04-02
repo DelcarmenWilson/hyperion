@@ -11,7 +11,7 @@ type TopMenuProps = {
 export const TopMenu = ({ nextPrev }: TopMenuProps) => {
   const router = useRouter();
   return (
-    <>
+    <div className="flex justify-end gap-2 w-full">
       <Button
         variant="outlineprimary"
         size="sm"
@@ -36,6 +36,6 @@ export const TopMenu = ({ nextPrev }: TopMenuProps) => {
         NEXT LEAD
         <ChevronRight className="h-4 w-4 ml-2" />
       </Button>
-    </>
+    </div>
   );
 };

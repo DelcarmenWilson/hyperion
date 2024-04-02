@@ -27,6 +27,7 @@ import { AdvancePagination } from "@/components/tables/pagination/advance";
 import { SimpleFilter } from "@/components/tables/filter/simple";
 import { LeadFilter } from "@/components/tables/filter/lead";
 import { SimplePagination } from "./pagination/simple";
+import { cn } from "@/lib/utils";
 
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
@@ -86,7 +87,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="p-1">
+    <div className="p-1 w-full">
       <div ref={topRef} className="pb-2">
         <div className="grid grid-cols-4 gap-2 mt-2">
           <div>
@@ -128,7 +129,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className={striped ? "even:bg-secondary" : ""}
+                  className={cn("group", striped ? "even:bg-secondary" : "")}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
