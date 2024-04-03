@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
@@ -22,6 +21,30 @@ const convertType = (data: string): string => {
       return "General";
   }
 };
+const convertGender = (gender: string): "NA" | "Male" | "Female" => {
+  switch (gender.toLocaleLowerCase()) {
+    case "male":
+      return "Male";
+    case "female":
+      return "Female";
+    default:
+      return "NA";
+  }
+};
+const convertMaritalStatus = (
+  maritalStatus: string
+): "Single" | "Married" | "Widowed" | "Divorced" => {
+  switch (maritalStatus.toLocaleLowerCase()) {
+    case "married":
+      return "Married";
+    case "widowed":
+      return "Widowed";
+    case "divorced":
+      return "Divorced";
+    default:
+      return "Single";
+  }
+};
 export const convertLead = (
   result: any,
   vendor: string
@@ -29,26 +52,85 @@ export const convertLead = (
   switch (vendor) {
     case "Avalanche_Leads":
       return Avalanche_Leads(result, vendor);
+    case "Hyperion":
+      return Hyperion(result, vendor);
+    case "Leadrilla":
+      return Leadrilla(result, vendor);
     case "Media_Alpha":
       return MediaAlphaLeads(result, vendor);
-    case "Prospect_For_Leads":
-      return ProspectForLeads(result, vendor);
     case "Mutual_Of_Omaha":
       return MutualOfOmaha(result, vendor);
     case "Prime_Time_Leads":
       return PrimeTime(result, vendor);
-    case "Leadrilla":
-      return Leadrilla(result, vendor);
+    case "Prospect_For_Leads":
+      return ProspectForLeads(result, vendor);
     default:
       return IlcLeads(result, vendor);
   }
 };
 
+const Avalanche_Leads = (
+  result: any,
+  vendor: string
+): ImportLeadsFormValues[] => {
+  let mapped: ImportLeadsFormValues[] = [];
+  result.data.map((d: any) => {
+    const newobj: ImportLeadsFormValues = {
+      id: "",
+      firstName: capitalize(d["First_Name"]),
+      lastName: capitalize(d["Last_Name"]),
+      email: d["Email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["Primary_Phone"]),
+      cellPhone: reFormatPhoneNumber(d["Primary_Phone"]),
+      dateOfBirth: d["DOB"].trim(),
+      address: capitalize(d["Address"]),
+      city: capitalize(d["City"]),
+      state: capitalize(d["State"]),
+      zipCode: d["Zip"],
+      gender: d["Gender"],
+      maritalStatus: "Single",
+      height: "",
+      vendor: vendor,
+      recievedAt: d["Date_Posted"],
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
+
+const Hyperion = (result: any, vendor: string): ImportLeadsFormValues[] => {
+  let mapped: ImportLeadsFormValues[] = [];
+  result.data.map((d: any) => {
+    const newobj: ImportLeadsFormValues = {
+      id: "",
+      firstName: capitalize(d["first_name"]),
+      lastName: capitalize(d["last_name"]),
+      email: d["email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["phone_number"].replace("p:+", "")),
+      cellPhone: reFormatPhoneNumber(d["phone_number"].replace("p:+", "")),
+      dateOfBirth: d["date_of_birth"].trim(),
+      height: d["could_you_please_provide_your_current_height_and_weight?"],
+      weight: d["could_you_please_provide_your_current_weight?"],
+      address: d["street_address"],
+      city: d["city"],
+      state: d["state"].replace(".", ""),
+      zipCode: "NA",
+      gender: convertGender(d["gender"]),
+      maritalStatus: convertMaritalStatus(d["marital_status"]),
+      type: "General",
+      recievedAt: d["created_time"],
+      policyAmount: d["how_much_insurance_coverage_will_you_like_to_get?"],
+      vendor: vendor,
+      smoker: d["are_you_a_smoker?"].toLowerCase() == "no" ? false : true,
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
 const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   const extractInfo = (data: string): any => {
-    if(!data)    
-    return {};
+    if (!data) return {};
     let exData = data
       .replaceAll('"', "")
       .replaceAll("' ", "")
@@ -56,7 +138,7 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
       .replaceAll("] [", '","')
       .replace("[", '{"')
       .replace("]", '"}');
-     return JSON.parse(exData);
+    return JSON.parse(exData);
   };
 
   result.data.map((d: any) => {
@@ -86,29 +168,27 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   });
   return mapped;
 };
-const Avalanche_Leads = (
-  result: any,
-  vendor: string
-): ImportLeadsFormValues[] => {
+const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   result.data.map((d: any) => {
+    const fullName = d["name"].split(" ");
     const newobj: ImportLeadsFormValues = {
       id: "",
-      firstName: capitalize(d["First_Name"]),
-      lastName: capitalize(d["Last_Name"]),
-      email: d["Email"].toLowerCase(),
-      homePhone: reFormatPhoneNumber(d["Primary_Phone"]),
-      cellPhone: reFormatPhoneNumber(d["Primary_Phone"]),
-      dateOfBirth: d["DOB"].trim(),
-      address: capitalize(d["Address"]),
-      city: capitalize(d["City"]),
-      state: capitalize(d["State"]),
-      zipCode: d["Zip"],
-      gender: d["Gender"],      
+      firstName: capitalize(fullName[0]),
+      lastName: capitalize(fullName[1]),
+      email: d["email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["phone"]),
+      cellPhone: reFormatPhoneNumber(d["phone"]),
+      dateOfBirth: d["birthdate"].trim(),
+      address: d["street address"],
+      city: d["city"],
+      state: d["state"],
+      zipCode: d["zip"],
+      gender: "NA",
       maritalStatus: "Single",
-      height:"",
+      type: convertType(d["product"]),
+      recievedAt: d["date purchased"],
       vendor: vendor,
-      recievedAt: d["Date_Posted"],
     };
     mapped.push(newobj);
   });
@@ -145,7 +225,6 @@ const MediaAlphaLeads = (
   });
   return mapped;
 };
-
 const MutualOfOmaha = (
   result: any,
   vendor: string
@@ -170,36 +249,6 @@ const MutualOfOmaha = (
 
       maritalStatus: "Single",
       vendor: vendor,
-    };
-    mapped.push(newobj);
-  });
-  return mapped;
-};
-const ProspectForLeads = (
-  result: any,
-  vendor: string
-): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
-  result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
-      id: "",
-      firstName: capitalize(d["first name"]),
-      lastName: capitalize(d["last name"]),
-      email: d["email"].toLowerCase(),
-      homePhone: reFormatPhoneNumber(d["home phone"]),
-      cellPhone: reFormatPhoneNumber(d["work phone"]),
-      dateOfBirth: d["date of birth"].trim(),
-      address: d["address"],
-      city: d["city"],
-      state: d["state"],
-      zipCode: d["zip"],
-      gender: d["gender"],
-      maritalStatus: "Single",
-      currentlyInsured: d["currently insured"] == "No" ? false : true,
-      currentInsuranse: d["current ins.company"],
-      income: d["family income"],
-      vendor: vendor,
-      policyAmount: d["Policy Amount"],
     };
     mapped.push(newobj);
   });
@@ -232,27 +281,31 @@ const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
   });
   return mapped;
 };
-const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
+const ProspectForLeads = (
+  result: any,
+  vendor: string
+): ImportLeadsFormValues[] => {
   let mapped: ImportLeadsFormValues[] = [];
   result.data.map((d: any) => {
-    const fullName = d["name"].split(" ");
     const newobj: ImportLeadsFormValues = {
       id: "",
-      firstName: capitalize(fullName[0]),
-      lastName: capitalize(fullName[1]),
+      firstName: capitalize(d["first name"]),
+      lastName: capitalize(d["last name"]),
       email: d["email"].toLowerCase(),
-      homePhone: reFormatPhoneNumber(d["phone"]),
-      cellPhone: reFormatPhoneNumber(d["phone"]),
-      dateOfBirth: d["birthdate"].trim(),
-      address: d["street address"],
+      homePhone: reFormatPhoneNumber(d["home phone"]),
+      cellPhone: reFormatPhoneNumber(d["work phone"]),
+      dateOfBirth: d["date of birth"].trim(),
+      address: d["address"],
       city: d["city"],
       state: d["state"],
       zipCode: d["zip"],
-      gender: "NA",
+      gender: d["gender"],
       maritalStatus: "Single",
-      type: convertType(d["product"]),
-      recievedAt: d["date purchased"],
+      currentlyInsured: d["currently insured"] == "No" ? false : true,
+      currentInsuranse: d["current ins.company"],
+      income: d["family income"],
       vendor: vendor,
+      policyAmount: d["Policy Amount"],
     };
     mapped.push(newobj);
   });

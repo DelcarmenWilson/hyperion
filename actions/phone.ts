@@ -154,18 +154,19 @@ export const phoneNumberUpdateByIdDefault = async (id: string) => {
     where: { id, agentId: user.id },
   });
 
-  const defaultNumber = await db.phoneNumber.findFirst({
-    where: { agentId: user.id, status: "Default" },
-  });
-
   if (!thisNumber) {
     return { error: "Unauthorized!" };
   }
 
+  const defaultNumber = await db.phoneNumber.findFirst({
+    where: { agentId: user.id, status: "Default" },
+  });
+  
+if(defaultNumber){
   await db.phoneNumber.update({
     where: { id: defaultNumber?.id },
     data: { status: "Active" },
-  });
+  });}
 
   await db.phoneNumber.update({
     where: { id: thisNumber?.id },

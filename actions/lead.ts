@@ -360,13 +360,18 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
   }
+
+  let userId=user.id;
+  if (user.role=="ASSISTANT") {
+    userId = (await userGetByAssistant(userId)) as string;
+  }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
   }
 
-  if (user.id != existingLead.userId) {
+  if (userId != existingLead.userId) {
     return { error: "Unauthorized" };
   }
 

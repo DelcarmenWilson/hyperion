@@ -41,6 +41,10 @@ export const allVendors: VendorType[] = [
     name: "Avalanche Leads",
   },
   {
+    value: "Hyperion",
+    name: "Hyperion",
+  },
+  {
     value: "Integrity_Leads",
     name: "Integrity Leads",
   },
