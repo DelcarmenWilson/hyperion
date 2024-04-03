@@ -5,6 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FullAppointment } from "@/types";
 import { DataTable } from "@/components/tables/data-table";
 import { DatesFilter } from "@/components/reusable/dates-filter";
+import { useEffect, useState } from "react";
+import { find } from "lodash";
+import { Subscrible } from "@/lib/subscribable-class";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
@@ -15,10 +19,26 @@ export const AppointmentClient = ({
   data,
   showDate = false,
 }: AppointmentClientProps) => {
+  const [appointments, setAppointments] = useState(data);
+  const user = useCurrentUser();
+  useEffect(() => {
+    const appointmentHandler = (appointment: FullAppointment) => {
+      console.log(appointment);
+      setAppointments((current) => {
+        if (find(current, { id: appointment.id })) {
+          return current;
+        }
+        return [...current, appointment];
+      });
+    };
+    const pusher = new Subscrible<FullAppointment>();
+    pusher.subscribe(appointmentHandler);
+  }, [user?.id]);
+
   return (
     <DataTable
       columns={columns}
-      data={data}
+      data={appointments}
       headers
       topMenu={showDate ? <DatesFilter link="/appointments" /> : null}
     />

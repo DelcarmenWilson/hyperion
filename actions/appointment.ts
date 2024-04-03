@@ -7,6 +7,8 @@ import { smsSend } from "./sms";
 import { format } from "date-fns";
 import { currentUser } from "@/lib/auth";
 import { userGetByAssistant } from "@/data/user";
+import { Subscrible } from "@/lib/subscribable-class";
+import { FullAppointment } from "@/types";
 
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>,
@@ -22,18 +24,18 @@ export const appointmentInsert = async (
     return { error: "Invalid fields!" };
   }
   const { date, agentId, leadId, comments } = validatedFields.data;
-  let userId=agentId;
-  if (user.role=="ASSISTANT") {
+  let userId = agentId;
+  if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
   }
   const conflctingApp = await db.appointment.findFirst({
-    where: { agentId:userId,date:new Date(date), status: "Scheduled" },
+    where: { agentId: userId, date: new Date(date), status: "Scheduled" },
   });
-if(conflctingApp){
-  return { error: "Conflicting time Please select another time!" };
-}
+  if (conflctingApp) {
+    return { error: "Conflicting time Please select another time!" };
+  }
   const existingAppointment = await db.appointment.findFirst({
-    where: { leadId, agentId:userId, status: "Scheduled" },
+    where: { leadId, agentId: userId, status: "Scheduled" },
   });
 
   if (existingAppointment) {
@@ -45,11 +47,11 @@ if(conflctingApp){
 
   const appointment = await db.appointment.create({
     data: {
-      agentId:userId,
+      agentId: userId,
       leadId,
       date: new Date(date),
       comments,
-    },
+    },include: { lead: true },
   });
 
   if (!appointment) {
@@ -64,6 +66,8 @@ if(conflctingApp){
         `appointment set for ${format(date, "MM-dd @ hh:mm aa")}`
       );
     }
+    const pusher=new Subscrible<FullAppointment>()
+    pusher.publish(appointment)
   }
   return { success: appointment };
 };
@@ -82,7 +86,7 @@ export const appointmentInsertBook = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  
+
   const {
     id,
     firstName,
@@ -114,7 +118,7 @@ export const appointmentInsertBook = async (
         maritalStatus,
         email,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
-        userId:agentId
+        userId: agentId,
       },
     });
 
