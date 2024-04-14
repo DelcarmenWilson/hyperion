@@ -31,6 +31,7 @@ import { feedbackUpdateByIdDev } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { format } from "date-fns";
+import { DefaultStatus } from "@/constants/texts";
 
 type DevFeedbackFormValues = z.infer<typeof DevFeedbackSchema>;
 type DevFeedbackFormProps = {
@@ -98,9 +99,11 @@ export const DevFeedbackForm = ({ feedback }: DevFeedbackFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="New">New</SelectItem>
-                      <SelectItem value="Resolved">Resolved</SelectItem>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      {DefaultStatus.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

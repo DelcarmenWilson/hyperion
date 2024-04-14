@@ -73,12 +73,14 @@ model User {
   assitantId String? @unique
   assitant   User?   @relation("AssitantToUser", fields: [assitantId], references: [id])
 
+  //LEAD COLUMNS
   leads         Lead[]
   calls         Call[]
   conversations Conversation[]
   appointments  Appointment[]
   activities    Activity[]
 
+  //USER COLUMNS
   carriers    UserCarrier[]
   licenses    UserLicense[]
   loginStatus LoginStatus[]
@@ -467,6 +469,7 @@ model Call {
   updatedAt DateTime @updatedAt
 }
 
+//LEAD CONVERSATIONS
 model Conversation {
   id String @id @default(cuid())
 
@@ -648,6 +651,24 @@ model AdSet {
   stopTime         DateTime?
   status           String    @default("PAUSED")
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//ROADMAP
+model Roadmap {
+  id String @id @default(cuid())
+
+  headLine    String
+  description String  @db.LongText
+  images      String? @db.LongText
+
+  status   String @default("Pending")
+  comments String @db.LongText
+
+  startAt   DateTime
+  endAt     DateTime
+  published Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

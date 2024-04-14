@@ -6,13 +6,14 @@ import { weekStartEnd } from "@/formulas/dates";
 import { callsGetAllByAgentIdFiltered, callsGetAllShared } from "@/data/call";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { SharedCallsClient } from "./components/shared-calls/client";
+import { ReportCallsClient } from "./components/report-calls/client";
 
 const UserPage = async ({
   params,
   searchParams,
 }: {
   params: {
-    userId: string;
+    id: string;
   };
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
@@ -21,7 +22,7 @@ const UserPage = async ({
   const to = searchParams.to || week.to.toString();
 
   const calls = await callsGetAllByAgentIdFiltered(
-    params.userId,
+    params.id,
     from as string,
     to as string
   );
@@ -29,7 +30,7 @@ const UserPage = async ({
 
   const sharedCalls = await callsGetAllShared();
 
-  const user = await userGetByIdReport(params.userId);
+  const user = await userGetByIdReport(params.id);
   const teams = await teamsGetAllByOrganization(
     user?.team?.organizationId as string
   );
@@ -41,7 +42,16 @@ const UserPage = async ({
   return (
     <>
       <UserClient user={user} callsLength={calls.length} teams={teams} />
-      <SharedCallsClient calls={sharedCalls} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+        <div className=" col-span-2">
+          <SharedCallsClient calls={sharedCalls} />
+        </div>
+        <ReportCallsClient
+          calls={calls}
+          from={from as string}
+          to={to as string}
+        />
+      </div>
       <CallHistoryClient initialCalls={calls} duration={duration} />
     </>
   );

@@ -5,7 +5,7 @@ export const pusherServer = new PusherServer({
   // appId: process.env.PUSHER_APP_ID as string,
   // key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY as string,
   // secret: process.env.PUSHER_SECRET as string,
-  //cluster: 'us2',
+  // cluster: 'us2',
 
   appId: "1740792",
   key: "902514b604c7328f1791",

@@ -9,6 +9,7 @@ import { currentUser } from "@/lib/auth";
 import { userGetByAssistant } from "@/data/user";
 import { Subscrible } from "@/lib/subscribable-class";
 import { FullAppointment } from "@/types";
+import { createPubSub } from "@/lib/subscribable-function";
 
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>,
@@ -57,18 +58,21 @@ export const appointmentInsert = async (
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-  if (sendSms) {
-    const lead = await db.lead.findUnique({ where: { id: leadId } });
-    if (lead) {
-      await smsSend(
-        lead?.defaultNumber!,
-        lead?.cellPhone!,
-        `appointment set for ${format(date, "MM-dd @ hh:mm aa")}`
-      );
-    }
-    const pusher=new Subscrible<FullAppointment>()
-    pusher.publish(appointment)
-  }
+  // if (sendSms) {
+  //   const lead = await db.lead.findUnique({ where: { id: leadId } });
+  //   if (lead) {
+  //     await smsSend(
+  //       lead?.defaultNumber!,
+  //       lead?.cellPhone!,
+  //       `appointment set for ${format(date, "MM-dd @ hh:mm aa")}`
+  //     );
+  //   }
+    
+  // }
+  const pusher= await createPubSub<{NEW_APPOINTMENT: (appointment: any) => void;}>()
+  pusher.emit("NEW_APPOINTMENT",appointment)
+  console.log(pusher)
+    // pusher.publish(appointment)
   return { success: appointment };
 };
 

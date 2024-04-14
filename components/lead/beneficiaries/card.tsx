@@ -42,30 +42,6 @@ export const BeneficiaryCard = ({
     });
   };
 
-  // const onExpenseUpdate = () => {
-  //   leadExpenseUpdateById(expense.id, name, parseInt(value)).then((data) => {
-  //     if (data.error) {
-  //       toast.error(data.error);
-  //     }
-  //     if (data.success) {
-  //       const diff = expense.value - parseInt(value);
-  //       onExpenseUpdated(diff);
-  //       toast.success(data.success);
-  //     }
-  //   });
-  // };
-
-  // const onExpenseDelete = () => {
-  //   leadExpenseDeleteById(expense.id).then((data) => {
-  //     if (data.error) {
-  //       toast.error(data.error);
-  //     }
-  //     if (data.success) {
-  //       onExpenseDeleted(expense.id);
-  //       toast.success(data.success);
-  //     }
-  //   });
-  // };
   return (
     <>
       <AlertModal

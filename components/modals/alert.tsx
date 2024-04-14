@@ -3,6 +3,8 @@ import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 
 type AlertModalProps = {
+  title?: string;
+  description?: string;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -10,6 +12,8 @@ type AlertModalProps = {
   height?: string;
 };
 export const AlertModal = ({
+  title = "Are you sure?",
+  description = "This action cannot be undone.",
   isOpen,
   onClose,
   onConfirm,

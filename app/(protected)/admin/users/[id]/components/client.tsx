@@ -244,7 +244,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
           </div>
         </CardLayout>
         <CardLayout title="Phone Numbers" icon={Phone}>
-          <div className="grid grid-cols-4 gap-2 text-sm">
+          <div className="grid grid-cols-4 gap-2 text-sm w-full">
             <span>Phone</span>
             <span>State</span>
             <span>Status</span>

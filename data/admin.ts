@@ -66,12 +66,28 @@ export const adminQuotesGetActive = async () => {
     return null;
   }
 };
-//THIS IS CURRENTLY NOT BEING USED ANOTHER AND CAN BE REMOVED
-export const adminQuotesGetRandom = async () => {
+// ROADMAP
+export const adminRoadmapsGetAll = async () => {
   try {
-    const quotes = await db.quote.findMany({});
-    const random = Math.floor(Math.random() * quotes.length);
-    return quotes[random];
+    const roadmaps = await db.roadmap.findMany({orderBy:{startAt:"asc"}});
+    return roadmaps;
+  } catch (error) {
+    return [];
+  }
+};
+export const adminRoadmapsGetAllPublished = async () => {
+  try {
+    const roadmaps = await db.roadmap.findMany({where:{published:true},orderBy:{startAt:"asc"}});
+    return roadmaps;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const adminRoadmapGetById = async (id: string) => {
+  try {
+    const roadmap = await db.roadmap.findUnique({ where: { id } });
+    return roadmap;
   } catch (error) {
     return null;
   }

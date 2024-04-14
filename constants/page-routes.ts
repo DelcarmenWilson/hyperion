@@ -1,6 +1,7 @@
 
 import {
   Calendar,
+  CarTaxiFront,
   ClipboardList,
   Cog,
   Computer,
@@ -77,6 +78,10 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Facebook",
     href: "/admin/facebook",
     icon: Facebook,
+  }, {
+    title: "Roadmap",
+    href: "/admin/roadmap",
+    icon: CarTaxiFront,
   },
 ];
 

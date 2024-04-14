@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { curve, heroBackground, robot } from "@/public/assets/index";
 import Button from "./Button";

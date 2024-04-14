@@ -7,8 +7,9 @@ import { DataTable } from "@/components/tables/data-table";
 import { DatesFilter } from "@/components/reusable/dates-filter";
 import { useEffect, useState } from "react";
 import { find } from "lodash";
-import { Subscrible } from "@/lib/subscribable-class";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { createPubSub } from "@/lib/subscribable-function";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
@@ -31,8 +32,10 @@ export const AppointmentClient = ({
         return [...current, appointment];
       });
     };
-    const pusher = new Subscrible<FullAppointment>();
-    pusher.subscribe(appointmentHandler);
+    const pusher = createPubSub<{
+      NEW_APPOINTMENT: (appointment: FullAppointment) => void;
+    }>();
+    pusher.on("NEW_APPOINTMENT", appointmentHandler);
   }, [user?.id]);
 
   return (

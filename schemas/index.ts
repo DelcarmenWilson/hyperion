@@ -323,3 +323,14 @@ export const QuoteSchema = z.object({
   quote : z.string().min(2,"*"),
   author: z.string(),
 });
+
+export const RoadmapSchema = z.object({
+  id:z.string(),
+  headLine : z.string().min(2,"*"),
+  description: z.string().min(2,"*"),  
+  status:z.string(),
+  comments:z.optional(z.string().default("")),
+  published:z.boolean(),
+  startAt:z.date(),
+  endAt:z.date(),
+});
