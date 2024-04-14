@@ -7,12 +7,8 @@ import { DevFeedbackForm } from "./components/dev-feedback-form";
 
 import { feedbackGetId } from "@/actions/feedback";
 
-const FeedBackIdPage = async ({
-  params,
-}: {
-  params: { feedbackId: string };
-}) => {
-  const feedback = await feedbackGetId(params.feedbackId);
+const FeedBackIdPage = async ({ params }: { params: { id: string } }) => {
+  const feedback = await feedbackGetId(params.id);
   if (!feedback) return null;
   return (
     <PageLayout

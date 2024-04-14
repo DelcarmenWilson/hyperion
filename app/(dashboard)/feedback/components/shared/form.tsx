@@ -2,9 +2,7 @@
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
-import { X } from "lucide-react";
 import axios from "axios";
 
 import { toast } from "sonner";
@@ -36,6 +34,7 @@ import { feedbackInsert, feedbackUpdateById } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { ImageModal } from "@/components/modals/image";
+import { ImageGrid } from "@/components/reusable/image-grid";
 
 type FeedbackFormValues = z.infer<typeof FeedbackSchema>;
 type FeedbackFormProps = {
@@ -249,26 +248,13 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
           )}
         </form>
       </Form>
-      <div className="flex flex-wrap gap-2 p-2">
-        {images.map((img, index) => (
-          <div key={index} className="relative">
-            <Image
-              width={80}
-              height={80}
-              className="h-[80px] w-[80px]"
-              src={img}
-              alt={`Image${index}`}
-            />
-            <Button
-              size="xs"
-              className="absolute top-0 right-0 rounded-full opacity-0"
-              onClick={() => onImageRemove(index)}
-            >
-              <X size={12} />
-            </Button>
-          </div>
-        ))}
-      </div>
+      <ImageGrid
+        role={role!}
+        status={feedback?.status!}
+        images={images}
+        setModalOpen={setModalOpen}
+        onImageRemove={onImageRemove}
+      />
     </>
   );
 };

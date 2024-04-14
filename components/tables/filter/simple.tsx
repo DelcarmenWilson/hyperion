@@ -19,6 +19,7 @@ export function SimpleFilter<TData>({
         placeholder={placeHolder}
         value={filtering}
         onChange={(event) => setFiltering(event.target.value)}
+        autoComplete="off"
       />
     </>
   );

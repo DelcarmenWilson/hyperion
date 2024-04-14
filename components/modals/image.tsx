@@ -56,7 +56,10 @@ export const ImageModal = ({
       if (!selectedFiles?.length) return;
       if (id) {
         const formData = new FormData();
-        formData.append("image", selectedFiles[0]);
+        // formData.append("image", selectedFiles[0]);
+        for (let index = 0; index < selectedFiles.length; index++) {
+          formData.append("image", selectedFiles[index]);
+        }
         formData.append("filePath", filePath);
         formData.append("id", id as string);
         formData.append("type", type);

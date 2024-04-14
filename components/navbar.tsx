@@ -4,7 +4,7 @@ import { MessageSquarePlus, Smartphone } from "lucide-react";
 import { usePhoneModal } from "@/hooks/use-phone-modal";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { MainNav } from "./main-nav";
+// import { MainNav } from "./main-nav";
 
 const NavBar = () => {
   const usePm = usePhoneModal();

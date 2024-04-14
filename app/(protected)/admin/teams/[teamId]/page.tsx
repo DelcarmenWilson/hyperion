@@ -9,7 +9,7 @@ import { teamsGetByIdStats, teamsGetByIdSales } from "@/data/team";
 import { adminUsersGetAll } from "@/data/admin";
 import { weekStartEnd } from "@/formulas/dates";
 import { OverviewChart } from "./components/overview/client";
-import { getGraphRevenue } from "@/actions/get-graph-revenue";
+import { convertSalesData } from "@/formulas/reports";
 import { RecentSales } from "./components/sales/client";
 
 const TeamPage = async ({
@@ -76,7 +76,7 @@ const TeamPage = async ({
       <TeamClient team={teamReport} users={users} />
 
       <div className="grid gap-y-4 lg:gap-4 grid-cols-1 lg:grid-cols-3 mt-4">
-        <OverviewChart data={getGraphRevenue(sales!)} />
+        <OverviewChart data={convertSalesData(sales!)} />
         <RecentSales sales={sales!} />
       </div>
 

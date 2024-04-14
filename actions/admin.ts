@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { CarrierSchema, MedicalConditionSchema, QuoteSchema } from "@/schemas";
+import { CarrierSchema, MedicalConditionSchema, QuoteSchema, RoadmapSchema } from "@/schemas";
 
 export const admin = async () => {
   const role = await currentRole();
@@ -356,4 +356,87 @@ export const adminQuoteUpdateActive = async () => {
   await db.quote.update({where:{id:randomQuote.id},data:{active:true}}) 
 
   return { success: "Random quote has been set." };
+};
+
+//ROADMAP
+export const adminRoadmapInsert = async (
+  values: z.infer<typeof RoadmapSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role !="ADMIN") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = RoadmapSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { headLine, description,published,comments,startAt,endAt } = validatedFields.data;
+
+  const existingRoadMap = await db.roadmap.findFirst({ where: { headLine } });
+  if (existingRoadMap) {
+    return { error: "Roadmap already exists" };
+  }
+
+  const roadmap = await db.roadmap.create({
+    data: {
+      headLine,
+      description,
+      published,
+      comments:comments?comments:"",
+      startAt,
+      endAt
+    },
+  });
+
+  return { success: roadmap };
+};
+
+export const adminRoadmapUpdateById = async (
+  values: z.infer<typeof RoadmapSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role != "ADMIN") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = RoadmapSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id,
+    headLine ,
+    description,
+    status,
+    comments,
+    startAt,
+    endAt } = validatedFields.data;
+
+  const existingRoadMap = await db.roadmap.findUnique({ where: { id } });
+  if (!existingRoadMap) {
+    return { error: "Task does not exists" };
+  }
+
+ await db.roadmap.update({where: { id },
+    data: {
+      headLine ,
+      description,
+      status,
+      comments,
+      startAt,
+      endAt 
+    },
+  });
+
+  return { success: "Task updated" };
 };

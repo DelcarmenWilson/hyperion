@@ -109,7 +109,7 @@ export const smsCreateInitial = async (leadId: string) => {
   return { success: "Inital message sent!" };
 };
 
-export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
+export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -118,8 +118,7 @@ export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { leadId,content } =
-  validatedFields.data;
+  const { leadId, content } = validatedFields.data;
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
@@ -136,7 +135,7 @@ export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
   if (!convoid) {
     convoid = (await conversationInsert(user.id, lead.id)).success;
   }
- 
+
   const result = await client.messages.create({
     body: content,
     from: lead.defaultNumber,
@@ -147,7 +146,7 @@ export const smsCreate = async ( values: z.infer<typeof SmsMessageSchema>) => {
     return { error: "Message was not sent!" };
   }
 
-  const newMessage= await messageInsert({
+  const newMessage = await messageInsert({
     role: "assistant",
     content,
     conversationId: convoid!,

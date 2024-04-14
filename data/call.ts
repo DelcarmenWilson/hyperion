@@ -1,7 +1,5 @@
 import { getLast24hrs } from "@/formulas/dates";
 import { db } from "@/lib/db";
-import { userGetByAssistant } from "./user";
-import { currentRole } from "@/lib/auth";
 
 export const callsGetAllByAgentId = async (userId: string) => {
   try {
@@ -32,10 +30,6 @@ export const callsGetAllByAgentIdFiltered = async (
   to: string
 ) => {
   try {
-    const role = await currentRole();
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
     const fromDate = new Date(from);
     const toDate = new Date(to);
 

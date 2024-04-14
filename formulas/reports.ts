@@ -1,4 +1,4 @@
-import { Sales } from "@/types";
+import { FullCall, Sales } from "@/types";
 
 type GraphData = {
   name: string;
@@ -19,7 +19,7 @@ const graphData: GraphData[] = [
   { name: "Dec", total: 0 },
 ];
 
-export const getGraphRevenue = (sales: Sales[]) => {
+export const convertSalesData = (sales: Sales[]) => {
   
   const monthlyRevenue: { [key: number]: number } = {};
 
@@ -72,3 +72,38 @@ export const getGraphRevenue = (sales: Sales[]) => {
 //   }
 //   return graphData;
 // };
+
+
+type CallReportData = {
+  day: string;
+  duration:number
+  total: number;
+};
+
+
+export const convertCallData = (calls: FullCall[]) => {
+  
+  const dailyCalls:CallReportData[]  = [];
+
+  for (const call of calls) {
+    const day = call.createdAt.toDateString()
+    const report=dailyCalls.find(e=>e.day==day)
+    if(report){
+      report.duration+=(call.duration?call.duration:0)
+      report.total+=1
+    }
+    else{
+      const newReport:CallReportData={
+        day:day,
+        duration:(call.duration?call.duration:0),
+        total:1
+      }
+      dailyCalls.push(newReport)
+    }
+      }
+  // for (const month in dailyCalls) {
+  //   graphData[parseInt(month)].total = dailyCalls[parseInt(month)];
+  // }
+  console.log(dailyCalls)
+  return dailyCalls.reverse();
+};
