@@ -1,12 +1,17 @@
-import { userGetByIdReport } from "@/data/user";
 import React from "react";
-import { UserClient } from "./components/client";
-import { teamsGetAllByOrganization } from "@/data/team";
-import { weekStartEnd } from "@/formulas/dates";
-import { callsGetAllByAgentIdFiltered, callsGetAllShared } from "@/data/call";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
+
+import { UserClient } from "./components/client";
 import { SharedCallsClient } from "./components/shared-calls/client";
 import { ReportCallsClient } from "./components/report-calls/client";
+
+import {
+  callsGetAllByAgentIdFiltered,
+  callsGetAllShared,
+} from "@/actions/call";
+import { teamsGetAllByOrganization } from "@/actions/team";
+import { userGetByIdReport } from "@/actions/user";
+import { weekStartEnd } from "@/formulas/dates";
 
 const UserPage = async ({
   params,

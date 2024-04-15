@@ -20,7 +20,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ScrollArea } from "../ui/scroll-area";
 import { MasterRegisterSchema } from "@/schemas";
-import { userMasterInsert } from "@/actions/user";
+import { userInsertMaster } from "@/actions/user";
 
 export const MasterAccountModal = () => {
   const masterModel = useMasterAccountModal();
@@ -42,7 +42,7 @@ export const MasterAccountModal = () => {
 
   const onSubmit = async (values: z.infer<typeof MasterRegisterSchema>) => {
     setLoading(true);
-    await userMasterInsert(values).then((data) => {
+    await userInsertMaster(values).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }

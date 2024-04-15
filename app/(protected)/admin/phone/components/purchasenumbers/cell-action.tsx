@@ -18,7 +18,7 @@ import {
   phoneNumberUpdateByIdActivate,
   phoneNumberUpdateByIdDeactivate,
   phoneNumberUpdateByIdDefault,
-} from "@/actions/phone";
+} from "@/actions/phonenumber";
 import { PhoneNumber } from "@prisma/client";
 
 interface CellActionProps {

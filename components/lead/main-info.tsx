@@ -19,16 +19,17 @@ import { leadUpdateByIdQuote } from "@/actions/lead";
 
 type MainInfoProps = {
   info: LeadMainInfo;
-  conversationId?: string;
+  noConvo: boolean;
   showInfo?: boolean;
 };
 export const MainInfoClient = ({
   info,
-  conversationId,
+  noConvo,
   showInfo = false,
 }: MainInfoProps) => {
   const router = useRouter();
   const [edit, setEdit] = useState(false);
+  const [initConvo, setInitConvo] = useState(noConvo);
   const [leadInfo, setLeadInfo] = useState<LeadMainInfo>(info);
 
   const onSetInfo = (e?: LeadMainInfo) => {
@@ -61,6 +62,7 @@ export const MainInfoClient = ({
         toast.error(data.error);
       }
       if (data?.success) {
+        setInitConvo(true);
         toast.success(data.success);
       }
     });
@@ -111,8 +113,8 @@ export const MainInfoClient = ({
         onFieldUpdate={onQuoteUpdated}
       />
 
-      {/* <div>
-        {!conversationId && (
+      <div>
+        {!initConvo && (
           <Button
             disabled={leadInfo.status == "Do_Not_Call"}
             variant="outlineprimary"
@@ -123,7 +125,7 @@ export const MainInfoClient = ({
             SEND SMS
           </Button>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

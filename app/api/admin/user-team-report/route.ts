@@ -1,4 +1,4 @@
-import { teamsGetById } from "@/data/team";
+import { teamsGetById } from "@/actions/team";
 import { FullUserTeamReport } from "@/types";
 import { NextResponse } from "next/server";
 

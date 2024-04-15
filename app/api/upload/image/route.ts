@@ -56,8 +56,8 @@ export const POST = async (req: any, res: any) => {
           data: { images: filenames },
         });
         break;
-      case "roadmap":
-        await db.roadmap.update({
+      case "task":
+        await db.task.update({
           where: { id: record.id },
           data: { images: filenames },
         });

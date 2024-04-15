@@ -4,7 +4,7 @@ import { Text } from "./text";
 import { WhileAway } from "./while-away";
 import { Birthday } from "./birthday";
 import { Reminder } from "./reminder";
-import { presetGetAllByAgentId } from "@/data/preset";
+import { presetGetAllByAgentId } from "@/actions/preset";
 import { currentUser } from "@/lib/auth";
 
 export const PresetClient = async () => {

@@ -14,7 +14,7 @@ export const Text = ({ presets }: TextProps) => {
     <Box
       icon={Zap}
       title="Initial Preset Texts"
-      description="Send new leads a text when they come into the systme. If ypou chose multiple template we'll choose a different one eacj time a new lead comes in."
+      description="Send new leads a text when they come into the system. If you chose multiple templates we'll choose a different one each time a new lead comes in."
       subdescription="* Delete all templates if you do not wish to use this feature"
     >
       <PresetForm type="Text" />

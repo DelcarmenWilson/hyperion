@@ -4,13 +4,13 @@ import Footer from "@/components/index/Footer";
 import Header from "@/components/index/Header";
 import Hero from "@/components/index/Hero";
 import Pricing from "@/components/index/Pricing";
-import { RoadmapList } from "@/components/index/RoadmapList";
+import { TaskList } from "@/components/index/TaskList";
 import Services from "@/components/index/Services";
-import { adminRoadmapsGetAllPublished } from "@/data/admin";
 import ButtonGradient from "@/public/assets/index/svg/ButtonGradient";
+import { tasksGetAllPublished } from "@/actions/task";
 
 const LandingPage = async () => {
-  const roadmaps = await adminRoadmapsGetAllPublished();
+  const tasks = await tasksGetAllPublished();
   return (
     <>
       <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
@@ -20,7 +20,7 @@ const LandingPage = async () => {
         <Collaboration />
         <Services />
         <Pricing />
-        <RoadmapList roadmaps={roadmaps} />
+        <TaskList tasks={tasks} />
         <Footer />
         <ButtonGradient />
       </div>

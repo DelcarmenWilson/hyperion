@@ -1,4 +1,4 @@
-import { scheduleGetByUserId } from "@/data/schedule";
+import { scheduleGetByUserId } from "@/actions/schedule";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

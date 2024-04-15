@@ -1,4 +1,4 @@
-import { conversationGetById } from "@/data/conversation";
+import { conversationGetById } from "@/actions/conversation";
 import ConversationClient from "./components/client";
 
 const ConversationPage = async ({

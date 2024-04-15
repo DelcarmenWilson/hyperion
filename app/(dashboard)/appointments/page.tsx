@@ -4,7 +4,7 @@ import { Calendar } from "lucide-react";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { AppointmentClient } from "@/components/lead/appointments/client";
-import { appointmentsGetByUserIdFiltered } from "@/data/appointment";
+import { appointmentsGetByUserIdFiltered } from "@/actions/appointment";
 import { weekStartEnd } from "@/formulas/dates";
 
 const AppointmentsPage = async ({

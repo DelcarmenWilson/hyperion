@@ -2,9 +2,8 @@
 
 import { db } from "@/lib/db";
 import { currentRole, currentUser } from "@/lib/auth";
-import { forIn } from "lodash";
 import { PipeLine } from "@prisma/client";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistant } from "@/actions/user";
 
 // TODO DATA- should be moved
 export const pipelineGetAllByAgentId = async (userId: string) => {

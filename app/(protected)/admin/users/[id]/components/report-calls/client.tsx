@@ -20,7 +20,13 @@ export const ReportCallsClient = ({
 }: ReportCallsClientProps) => {
   const report = convertCallData(calls);
   return (
-    <CardLayout title={`Calls Report -  ${from} - ${to}`} icon={ClipboardList}>
+    <CardLayout
+      title={`Calls Report -  ${format(from, "MM/dd/yy")} - ${format(
+        to,
+        "MM/dd/yy"
+      )}`}
+      icon={ClipboardList}
+    >
       <div className="grid grid-cols-3 gap-2 text-sm w-full">
         <span>Date</span>
         <span>Duration</span>

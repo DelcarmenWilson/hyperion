@@ -324,7 +324,7 @@ export const QuoteSchema = z.object({
   author: z.string(),
 });
 
-export const RoadmapSchema = z.object({
+export const TaskSchema = z.object({
   id:z.string(),
   headLine : z.string().min(2,"*"),
   description: z.string().min(2,"*"),  

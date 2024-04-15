@@ -1,8 +1,5 @@
-import {
-  callsGetAllByAgentId,
-  callsGetAllByAgentIdFiltered,
-} from "@/data/call";
 import { currentUser } from "@/lib/auth";
+import { callsGetAllByAgentIdFiltered } from "@/actions/call";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { weekStartEnd } from "@/formulas/dates";
 

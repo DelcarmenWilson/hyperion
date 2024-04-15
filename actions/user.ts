@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
+import { generateVerificationToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
+
+import { UserRole } from "@prisma/client";
 import {
   MasterRegisterSchema,
   NewPasswordSchema,
@@ -13,13 +17,145 @@ import {
 import { RegisterSchema } from "@/schemas";
 import { SettingsSchema } from "@/schemas";
 
-import { userGetByEmail, userGetById } from "@/data/user";
-import { generateVerificationToken } from "@/lib/tokens";
-import { sendVerificationEmail } from "@/lib/mail";
 import { chatSettingsInsert } from "./chat-settings";
-import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { getVerificationTokenByToken } from "@/data/verification-token";
+import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
+import { userGetByEmail, userGetById } from "@/data/user";
 
+
+//DATA
+export const userGetAll = async () => {
+  try {
+    const users = await db.user.findMany({orderBy:{firstName:"asc"}});
+
+    return users;
+  } catch {
+    return [];
+  }
+};
+export const userGetAllByRole = async (role:UserRole) => {
+  try {
+    const users = await db.user.findMany({where:{role},orderBy:{firstName:"asc"}});
+    return users;
+  } catch {
+    return [];
+  }
+};
+export const userGetByAssistant = async (assitantId: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { assitantId },
+    });
+
+    return user?.id;
+  } catch {
+    return null;
+  }
+};
+
+export const userGetByIdDefault = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { id },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+export const userGetByIdReport = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { id },
+      include: {
+        phoneNumbers: true,
+        calls: true,
+        leads: true,
+        appointments: true,
+        conversations: true,
+        team: { include: { organization: true, owner: true } },
+      },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+export const userGetByUserName = async (userName: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { userName },
+      include: { phoneNumbers: true, chatSettings: true, team: true },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+export const usersGetSummaryByTeamId = async (
+  userId: string,
+  role: UserRole,
+  teamId: string
+) => {
+  try {
+    if (role != "MASTER") return [];
+
+    const agents = await db.user.findMany({
+      where: { teamId, NOT: { id: userId } },
+      include: {
+        phoneNumbers: {
+          where: { status: "default" },
+        },
+        chatSettings: true,
+      },
+    });
+
+    return agents;
+  } catch {
+    return [];
+  }
+};
+
+// USER LICENSES
+export const userLicensesGetAllByUserId = async (userId: string,
+  role: UserRole = "USER"
+) => {
+  try {
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const licenses = await db.userLicense.findMany({ where: { userId } });
+    return licenses;
+  } catch {
+    return [];
+  }
+};
+// USER LICENSES
+export const userCarriersGetAllByUserId = async (userId: string,
+  role: UserRole = "USER"
+) => {
+  try {
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const carriers = await db.userCarrier.findMany({
+      where: { userId },
+      include: { carrier: { select: { name: true } } },
+    });
+
+    return carriers;
+  } catch {
+    return [];
+  }
+};
+
+//ACTIONS
 export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -153,7 +289,7 @@ export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>
   return { success: "Asistant account created" };
 };
 
-export const userMasterInsert = async (
+export const userInsertMaster = async (
   values: z.infer<typeof MasterRegisterSchema>
 ) => {
   const validatedFields = MasterRegisterSchema.safeParse(values);

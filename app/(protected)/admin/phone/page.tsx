@@ -1,10 +1,10 @@
-import {
-  phoneNumbersGetAssigned,
-  phoneNumbersGetUnassigned,
-} from "@/data/phonenumbers";
 import { AgentNumbersClient } from "./components/agentnumbers/client";
 import { PurchaseNumbers } from "./components/purchasenumbers/client";
 import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
+import {
+  phoneNumbersGetAssigned,
+  phoneNumbersGetUnassigned,
+} from "@/actions/phonenumber";
 
 const PhonePage = async () => {
   const phoneNumbers = await phoneNumbersGetAssigned();

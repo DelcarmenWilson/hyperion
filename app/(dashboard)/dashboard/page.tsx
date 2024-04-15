@@ -1,12 +1,12 @@
 import { currentUser } from "@/lib/auth";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
-import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
-import { callGetAllByAgentIdLast24Hours } from "@/data/call";
-import { messagesGetByAgentIdUnSeen } from "@/data/message";
-import { leadsGetByAgentIdTodayCount } from "@/data/lead";
+import { appointmentsGetAllByUserIdToday } from "@/actions/appointment";
+import { callsGetAllByAgentIdLast24Hours } from "@/actions/call";
+import { messagesGetByAgentIdUnSeen } from "@/actions/message";
+import { leadsGetByAgentIdTodayCount } from "@/actions/lead";
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
-import { usersGetSummaryByTeamId } from "@/data/user";
+import { usersGetSummaryByTeamId } from "@/actions/user";
 import { Suspense } from "react";
 
 import { AppointmentClient } from "@/components/lead/appointments/client";
@@ -14,8 +14,7 @@ import { AgentSummaryClient } from "./components/agentsummary/client";
 import { TurnOverRate } from "./components/turnover/turn-over-rate";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
-import { adminQuotesGetActive } from "@/data/admin";
-import { CardLayout } from "@/components/custom/card/layout";
+import { adminQuotesGetActive } from "@/actions/admin";
 import { Calendar } from "lucide-react";
 import { PageLayout } from "@/components/custom/layout/page-layout";
 
@@ -44,7 +43,7 @@ const DahsBoardPage = async () => {
     currentCall: agent.chatSettings?.currentCall!,
   }));
 
-  const calls = await callGetAllByAgentIdLast24Hours(user?.id!);
+  const calls = await callsGetAllByAgentIdLast24Hours(user?.id!);
 
   const outBoundCallsCount = calls.filter(
     (call) => call.direction.toLowerCase() === "outbound"

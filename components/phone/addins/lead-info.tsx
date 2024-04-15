@@ -111,7 +111,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
 
           <TabsContent value="general">
             <div className="grid grid-cols-3 gap-2 p-2">
-              <MainInfoClient info={leadMainInfo} />
+              <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient info={leadInfo} showInfo />
               <CallInfo lead={lead!} showBtnCall={false} />
               <SaleInfoClient info={leadSale} />

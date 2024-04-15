@@ -655,8 +655,8 @@ model AdSet {
   updatedAt DateTime @updatedAt
 }
 
-//ROADMAP
-model Roadmap {
+//TASK
+model Task {
   id String @id @default(cuid())
 
   headLine    String

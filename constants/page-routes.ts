@@ -13,6 +13,7 @@ import {
   Import,
   Key,
   LineChart,
+  ListTodo,
   Lock,
   LucideIcon,
   Mail,
@@ -79,9 +80,9 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/facebook",
     icon: Facebook,
   }, {
-    title: "Roadmap",
-    href: "/admin/roadmap",
-    icon: CarTaxiFront,
+    title: "Tasks",
+    href: "/admin/tasks",
+    icon: ListTodo,
   },
 ];
 
@@ -215,4 +216,3 @@ export const SettingsNavbarRoutes: NavType[] = [
     assistant: true,
   },
 ];
-

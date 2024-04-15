@@ -84,7 +84,7 @@ export const columns: ColumnDef<FullLead>[] = [
       return (
         <MainInfoClient
           info={leadMainInfo}
-          conversationId={row.original.conversation?.id as string}
+          noConvo={!!row.original.conversation?.id}
           showInfo
         />
       );
