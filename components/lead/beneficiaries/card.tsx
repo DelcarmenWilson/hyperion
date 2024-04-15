@@ -94,7 +94,7 @@ export const BeneficiaryCard = ({
             }
           />
         </div>
-        <div className="flex group gap-2 justify-end items-center mt-2 border-t pt-2">
+        <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button
             variant="destructive"
             className="opacity-0 group-hover:opacity-100"

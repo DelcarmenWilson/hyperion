@@ -31,6 +31,7 @@ export const voiceResponse = async (requestBody: any) => {
   const { agentId, agentNumber, direction, recording, to, voicemailIn } =
     requestBody;
 
+  const twiml = new VoiceResponse();
   const params = {
     callerId: agentNumber,
     record: recording,
@@ -38,23 +39,24 @@ export const voiceResponse = async (requestBody: any) => {
     // action: "/api/voice/action",
     // timeout:10
   };
-
-  const twiml = new VoiceResponse();
-  let dial = twiml.dial(params);
-
   switch (direction) {
     case "inbound":
-      dial.client(agentId);
+      const inDial = twiml.dial({
+        ...params,
+        action: "/api/voice/action",
+        timeout: 10,
+      });
+      inDial.client(agentId);
       break;
     case "outbound":
       const attr = isAValidPhoneNumber(to) ? "number" : "client";
-      dial[attr](to);
+      const outDial = twiml.dial(params);
+      outDial[attr](to);
       break;
     default:
       twiml.say({ voice: "alice" }, "Thanks for calling!");
       break;
   }
-
   return twiml.toString();
 };
 
@@ -89,15 +91,15 @@ export const voicemailResponse = async (requestBody: any) => {
   const twiml = new VoiceResponse();
   twiml.pause("1");
   if (voicemailIn) {
-         twiml.play(voicemailIn);
-     //twiml.play({},'/sounds/message.mp3');
+    twiml.play(voicemailIn);
+    //twiml.play({},'/sounds/message.mp3');
   } else {
-    console.log(voicemailIn)
+    console.log(voicemailIn);
     twiml.say(
       { voice: "alice" },
       "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
     );
-   }
+  }
 
   twiml.pause("1");
   twiml.record({
@@ -111,10 +113,8 @@ export const voicemailResponse = async (requestBody: any) => {
   return twiml.toString();
 };
 
-export const hangupReponse= async () => {
+export const hangupReponse = async () => {
   const twiml = new VoiceResponse();
   twiml.hangup();
   return twiml.toString();
 };
-
-

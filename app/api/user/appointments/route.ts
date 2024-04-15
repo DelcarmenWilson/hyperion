@@ -1,4 +1,4 @@
-import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
+import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

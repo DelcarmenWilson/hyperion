@@ -20,6 +20,11 @@ body,
 background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,84,171,1) 56%, rgba(0,212,255,1) 90%);
 
 }
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .no-visible-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;

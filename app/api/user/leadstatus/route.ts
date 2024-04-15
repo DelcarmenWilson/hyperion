@@ -1,4 +1,4 @@
-import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
+import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

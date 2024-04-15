@@ -1,9 +1,10 @@
-import { userGetAll, userGetAllByRole } from "@/data/user";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { UserTopMenu } from "./components/top-menu";
-import { teamsGetAll } from "@/data/team";
+
+import { userGetAll, userGetAllByRole } from "@/actions/user";
+import { teamsGetAll } from "@/actions/team";
 
 const UsersPage = async () => {
   const users = await userGetAll();

@@ -1,18 +1,20 @@
+import Link from "next/link";
+
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 import { CarrierClient } from "./components/carrier/client";
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { LeadStatusClient } from "./components/leadstatus/client";
+import { MedicalClient } from "./components/medical/client";
+import { QuoteClient } from "./components/quote/client";
+
 import {
   adminCarriersGetAll,
   adminLeadStatusGetAll,
   adminMedicalConditionsGetAll,
   adminQuotesGetAll,
-} from "@/data/admin";
-import { LeadStatusClient } from "./components/leadstatus/client";
-import { MedicalClient } from "./components/medical/client";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { QuoteClient } from "./components/quote/client";
+} from "@/actions/admin";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();

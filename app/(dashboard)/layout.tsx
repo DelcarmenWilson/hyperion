@@ -10,13 +10,13 @@ import {
 import AppointmentProvider from "@/providers/appointment";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
-import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
-import { scriptGetOne } from "@/data/script";
-import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/data/user";
-import { voicemailGetUnHeard } from "@/data/voicemail";
+import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead";
+import { scriptGetOne } from "@/actions/script";
+import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/actions/user";
+import { voicemailGetUnHeard } from "@/actions/voicemail";
+import { scheduleGetByUserId } from "@/actions/schedule";
+import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { getTwilioToken } from "@/data/verification-token";
-import { scheduleGetByUserId } from "@/data/schedule";
-import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
 
 export default async function DashBoardLayout({
   children,

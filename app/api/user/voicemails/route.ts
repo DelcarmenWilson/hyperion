@@ -1,5 +1,5 @@
-import { voicemailGetUnHeard } from "@/data/voicemail";
 import { NextResponse } from "next/server";
+import { voicemailGetUnHeard } from "@/actions/voicemail";
 
 export async function POST(req: Request) {
   try {

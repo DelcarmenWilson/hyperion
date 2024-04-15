@@ -5,8 +5,76 @@ import { db } from "@/lib/db";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { CarrierSchema, MedicalConditionSchema, QuoteSchema, RoadmapSchema } from "@/schemas";
+import { CarrierSchema, MedicalConditionSchema, QuoteSchema, TaskSchema } from "@/schemas";
+//DATA
+export const adminUsersGetAll = async () => {
+  try {
+    const users = await db.user.findMany({
+      select: { id: true, userName: true },
+    });
 
+    return users;
+  } catch {
+    return [];
+  }
+};
+
+// LEAD_STATUS
+export const adminLeadStatusGetAll = async () => {
+  try {
+    const status = await db.leadStatus.findMany({ where: { type: "default" } });
+    return status;
+  } catch (error) {
+    return [];
+  }
+};
+
+// CARRIERS
+export const adminCarriersGetAll = async () => {
+  try {
+    const carriers = await db.carrier.findMany({orderBy:{name:"asc"}});
+    return carriers;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const adminCarrierGetById = async (id: string) => {
+  try {
+    const carrier = await db.carrier.findUnique({ where: { id } });
+    return carrier;
+  } catch (error) {
+    return null;
+  }
+};
+//MEDICAL CONDITIONS
+export const adminMedicalConditionsGetAll = async () => {
+  try {
+    const conditions = await db.medicalCondition.findMany({orderBy:{name:"asc"}});
+    return conditions;
+  } catch (error) {
+    return [];
+  }
+};
+//QUOTES
+export const adminQuotesGetAll = async () => {
+  try {
+    const quotes = await db.quote.findMany({});
+    return quotes;
+  } catch (error) {
+    return [];
+  }
+};
+export const adminQuotesGetActive = async () => {
+  try {
+    const quote = await db.quote.findFirst({where:{active:true}});
+    return quote
+  } catch (error) {
+    return null;
+  }
+};
+
+//ACTIONS
 export const admin = async () => {
   const role = await currentRole();
   if (role === UserRole.ADMIN) {
@@ -358,85 +426,3 @@ export const adminQuoteUpdateActive = async () => {
   return { success: "Random quote has been set." };
 };
 
-//ROADMAP
-export const adminRoadmapInsert = async (
-  values: z.infer<typeof RoadmapSchema>
-) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-  if (user.role !="ADMIN") {
-    return { error: "Unauthorized" };
-  }
-  const validatedFields = RoadmapSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const { headLine, description,published,comments,startAt,endAt } = validatedFields.data;
-
-  const existingRoadMap = await db.roadmap.findFirst({ where: { headLine } });
-  if (existingRoadMap) {
-    return { error: "Roadmap already exists" };
-  }
-
-  const roadmap = await db.roadmap.create({
-    data: {
-      headLine,
-      description,
-      published,
-      comments:comments?comments:"",
-      startAt,
-      endAt
-    },
-  });
-
-  return { success: roadmap };
-};
-
-export const adminRoadmapUpdateById = async (
-  values: z.infer<typeof RoadmapSchema>
-) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-  if (user.role != "ADMIN") {
-    return { error: "Unauthorized" };
-  }
-  const validatedFields = RoadmapSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const { id,
-    headLine ,
-    description,
-    status,
-    comments,
-    startAt,
-    endAt } = validatedFields.data;
-
-  const existingRoadMap = await db.roadmap.findUnique({ where: { id } });
-  if (!existingRoadMap) {
-    return { error: "Task does not exists" };
-  }
-
- await db.roadmap.update({where: { id },
-    data: {
-      headLine ,
-      description,
-      status,
-      comments,
-      startAt,
-      endAt 
-    },
-  });
-
-  return { success: "Task updated" };
-};

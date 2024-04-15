@@ -1,10 +1,23 @@
 "use server";
 import * as z from "zod";
-import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 import { Presets } from "@prisma/client";
 import { PresetSchema } from "@/schemas";
 
+//DATA
+export const presetGetAllByAgentId = async (agentId: string) => {
+  try {
+    const presets = await db.presets.findMany({
+      where: { agentId },
+    });
+
+    return presets;
+  } catch (error: any) {
+    return [];
+  }
+};
+//ACTIONS
 export const presetCreate = async (values: z.infer<typeof PresetSchema>) => {
   const validatedFields = PresetSchema.safeParse(values);
   const user = await currentUser();

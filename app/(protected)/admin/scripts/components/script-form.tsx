@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Script } from "@prisma/client";
 
-import { scriptInsert, scriptUpdateById } from "@/actions/scripts";
+import { scriptInsert, scriptUpdateById } from "@/actions/script";
 import { ScriptSchema } from "@/schemas";
 import { Tiptap } from "@/components/reusable/tiptap";
 

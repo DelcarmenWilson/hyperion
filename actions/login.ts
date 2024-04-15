@@ -1,18 +1,19 @@
 "use server";
 import * as z from "zod";
+import { db } from "@/lib/db";
 import { AuthError } from "next-auth";
-
 import { signIn } from "@/auth";
-import { LoginSchema } from "@/schemas";
-import { userGetByEmail } from "@/data/user";
-import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import {
   generateVerificationToken,
   generateTwoFactorToken,
 } from "@/lib/tokens";
-import { db } from "@/lib/db";
+
+
+import { LoginSchema } from "@/schemas";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
+import { userGetByEmail } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 
 export const login = async (

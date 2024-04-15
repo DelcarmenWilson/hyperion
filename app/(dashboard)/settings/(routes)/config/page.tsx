@@ -1,16 +1,16 @@
-import { leadStatusGetAllByAgentId } from "@/data/lead";
 import { currentUser } from "@/lib/auth";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeadStatusClient } from "@/components/lead/status/client";
 import { LicenseClient } from "./components/license/client";
+import { CarrierClient } from "./components/carrier/client";
 
 import {
   userCarriersGetAllByUserId,
   userLicensesGetAllByUserId,
-} from "@/data/user";
-import { CarrierClient } from "./components/carrier/client";
-import { adminCarriersGetAll } from "@/data/admin";
+} from "@/actions/user";
+import { adminCarriersGetAll } from "@/actions/admin";
+import { leadStatusGetAllByAgentId } from "@/actions/lead";
 
 const ConfigPage = async () => {
   const user = await currentUser();

@@ -14,35 +14,46 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { SmsBody } from "./body";
 import { SmsForm } from "./form";
 import axios from "axios";
+import Loader from "@/components/reusable/loader";
 
-export const SmsClient = () => {
+export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const user = useCurrentUser();
   const { lead } = usePhoneModal();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
   const [disabled, setDisabled] = useState(false);
 
   // PHONE VARIABLES
-  const [toName, setToName] = useState(lead ? leadFullName : "New Sms");
-  const [toNumber, setToNumber] = useState(
-    formatPhoneNumber(lead?.cellPhone as string) || ""
-  );
-
+  const [to, setTo] = useState<{ name: string; number: string }>({
+    name: lead ? leadFullName : "New Call",
+    number: formatPhoneNumber(lead?.cellPhone as string) || "",
+  });
+  // const [toName, setToName] = useState(lead ? leadFullName : "New Sms");
+  // const [toNumber, setToNumber] = useState(
+  //   formatPhoneNumber(lead?.cellPhone as string) || ""
+  // );
   const [selectedNumber, setSelectedNumber] = useState(
-    lead?.defaultNumber
-      ? lead?.defaultNumber
-      : user?.phoneNumbers[0]?.phone || ""
+    user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
+      user?.phoneNumbers[0]?.phone ||
+      ""
   );
+  // const [selectedNumber, setSelectedNumber] = useState(
+  //   lead?.defaultNumber
+  //     ? lead?.defaultNumber
+  //     : user?.phoneNumbers[0]?.phone || ""
+  // );
 
   const onNumberTyped = (num: string) => {
-    setToNumber(num);
+    setTo((state) => {
+      return { ...state, number: num };
+    });
     setDisabled(num.length > 9 ? true : false);
   };
 
   const onReset = () => {
-    setToName("");
-    setToNumber("");
+    setTo({ name: "", number: "" });
     setDisabled(false);
   };
 
@@ -51,39 +62,47 @@ export const SmsClient = () => {
   };
 
   useEffect(() => {
-    const setData = () => {
-      console.log("made it");
-      axios
-        .post("/api/leads/messages", { leadId: lead?.id })
-        .then((response) => {
-          setMessages(response.data);
-        });
+    const setData = async () => {
+      setLoading(true);
+      const response = await axios.post("/api/leads/messages", {
+        leadId: lead?.id,
+      });
+      // .then((response) => {
+      //   setMessages(response.data);
+      // });
+      setMessages(response.data);
+      setLoading(false);
     };
-    return () => setData();
+    setData();
+    // return () => setData();
   }, [lead]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      <div className="flex justify-between items-center">
-        {lead ? `${lead?.firstName} ${lead?.lastName}` : "New Sms"}
+      {showHeader && (
+        <>
+          <div className="flex justify-between items-center">
+            {lead ? `${lead?.firstName} ${lead?.lastName}` : "New Sms"}
 
-        {/* {initialConvo && <Switch checked={initialConvo.autoChat} />} */}
-      </div>
-      <div className="relative">
-        <Input
-          placeholder="Phone Number"
-          value={toNumber}
-          maxLength={10}
-          onChange={(e) => onNumberTyped(e.target.value)}
-        />
-        <X
-          className={cn(
-            "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
-            toNumber.length == 0 ? "opacity-0" : "opacity-100"
-          )}
-          onClick={onReset}
-        />
-      </div>
+            {/* {initialConvo && <Switch checked={initialConvo.autoChat} />} */}
+          </div>
+          <div className="relative">
+            <Input
+              placeholder="Phone Number"
+              value={to.number}
+              maxLength={10}
+              onChange={(e) => onNumberTyped(e.target.value)}
+            />
+            <X
+              className={cn(
+                "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
+                to.number.length == 0 ? "opacity-0" : "opacity-100"
+              )}
+              onClick={onReset}
+            />
+          </div>
+        </>
+      )}
       <div className="flex justify-between items-center">
         <span className="w-40">Caller Id</span>
         <PhoneSwitcher
@@ -92,6 +111,7 @@ export const SmsClient = () => {
           controls={false}
         />
       </div>
+      {loading && <Loader />}
       <SmsBody
         messages={messages}
         leadName={lead?.lastName as string}

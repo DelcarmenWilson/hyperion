@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { teamCreate } from "@/actions/team";
+import { teamInsert } from "@/actions/team";
 
 export const TeamForm = () => {
   const router = useRouter();
@@ -19,7 +19,7 @@ export const TeamForm = () => {
       return;
     }
     setLoading(true);
-    teamCreate(teamName).then((data) => {
+    teamInsert(teamName).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }

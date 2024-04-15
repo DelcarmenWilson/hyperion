@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { isAValidPhoneNumber } from "@/formulas/phones";
-import { phoneNumberInsert } from "@/actions/phone";
+import { phoneNumberInsert } from "@/actions/phonenumber";
 import { states } from "@/constants/states";
 import { CardLayout } from "@/components/custom/card/layout";
 import { PhonePurcahseItems } from "@/constants/phone";

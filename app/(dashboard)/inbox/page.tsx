@@ -1,4 +1,4 @@
-import { conversationsGetByUserId } from "@/data/conversation";
+import { conversationsGetByUserId } from "@/actions/conversation";
 import { InboxColumn } from "./components/columns";
 import { InboxClient } from "./components/client";
 

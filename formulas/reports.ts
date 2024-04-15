@@ -20,13 +20,12 @@ const graphData: GraphData[] = [
 ];
 
 export const convertSalesData = (sales: Sales[]) => {
-  
   const monthlyRevenue: { [key: number]: number } = {};
 
   for (const sale of sales) {
     const month = sale.updatedAt.getMonth();
-      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + sale.saleAmount;
-      }
+    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + sale.saleAmount;
+  }
   for (const month in monthlyRevenue) {
     graphData[parseInt(month)].total = monthlyRevenue[parseInt(month)];
   }
@@ -73,37 +72,29 @@ export const convertSalesData = (sales: Sales[]) => {
 //   return graphData;
 // };
 
-
 type CallReportData = {
   day: string;
-  duration:number
+  duration: number;
   total: number;
 };
 
-
 export const convertCallData = (calls: FullCall[]) => {
-  
-  const dailyCalls:CallReportData[]  = [];
+  const dailyCalls: CallReportData[] = [];
 
   for (const call of calls) {
-    const day = call.createdAt.toDateString()
-    const report=dailyCalls.find(e=>e.day==day)
-    if(report){
-      report.duration+=(call.duration?call.duration:0)
-      report.total+=1
+    const day = call.createdAt.toDateString();
+    const report = dailyCalls.find((e) => e.day == day);
+    if (report) {
+      report.duration += call.duration ? call.duration : 0;
+      report.total += 1;
+    } else {
+      const newReport: CallReportData = {
+        day: day,
+        duration: call.duration ? call.duration : 0,
+        total: 1,
+      };
+      dailyCalls.push(newReport);
     }
-    else{
-      const newReport:CallReportData={
-        day:day,
-        duration:(call.duration?call.duration:0),
-        total:1
-      }
-      dailyCalls.push(newReport)
-    }
-      }
-  // for (const month in dailyCalls) {
-  //   graphData[parseInt(month)].total = dailyCalls[parseInt(month)];
-  // }
-  console.log(dailyCalls)
+  }
   return dailyCalls.reverse();
 };
