@@ -1,105 +1,17 @@
 "use server";
 import * as z from "zod";
 import { db } from "@/lib/db";
-import { currentUser,currentRole } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { createPubSub } from "@/lib/subscribable-function";
 
-import { UserRole } from "@prisma/client";
 import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
-import { userGetByAssistant } from "@/actions/user";
-import { getToday } from "@/formulas/dates";
+import { userGetByAssistant } from "@/data/user";
 import { states } from "@/constants/states";
+import {
+  smsSendAgentAppointmentNotification,
+  smsSendLeadAppointmentNotification,
+} from "./sms";
 
-//DATA
-export const appointmentsGetAll = async () => {
-  try {
-    const appointments = await db.appointment.findMany({
-      include: { agent: true, lead: true },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-
-export const appointmentsGetAllByUserId = async (userId: string) => {
-  try {
-    const role = await currentRole();
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const appointments = await db.appointment.findMany({
-      where: { agentId: userId },
-      include: { lead: true },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-export const appointmentsGetByUserIdFiltered = async (
-  userId: string,
-  from: string,
-  to: string
-) => {
-  try {
-    const role = await currentRole();
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
-    const appointments = await db.appointment.findMany({
-      where: { agentId: userId, date: { lte: toDate, gte: fromDate } },
-      include: { lead: true },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-
-export const appointmentsGetAllByUserIdUpcoming = async (
-  agentId: string,
-  role: UserRole = "USER"
-) => {
-  try {
-    if (role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(agentId)) as string;
-    }
-    const today = getToday();
-
-    const appointments = await db.appointment.findMany({
-      where: { agentId, status: "Scheduled", date: { gte: today } },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-
-export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
-  try {
-    let today = getToday();
-
-    const appointments = await db.appointment.findMany({
-      where: { agentId, status: "scheduled", createdAt: today },
-      include: { agent: true, lead: true },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-
-//ACTIONS
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>,
   sendSms: boolean = true
@@ -124,6 +36,7 @@ export const appointmentInsert = async (
   if (conflctingApp) {
     return { error: "Conflicting time Please select another time!" };
   }
+
   const existingAppointment = await db.appointment.findFirst({
     where: { leadId, agentId: userId, status: "Scheduled" },
   });
@@ -141,27 +54,27 @@ export const appointmentInsert = async (
       leadId,
       date: new Date(date),
       comments,
-    },include: { lead: true },
+    },
+    include: { lead: true },
   });
 
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-  // if (sendSms) {
-  //   const lead = await db.lead.findUnique({ where: { id: leadId } });
-  //   if (lead) {
-  //     await smsSend(
-  //       lead?.defaultNumber!,
-  //       lead?.cellPhone!,
-  //       `appointment set for ${format(date, "MM-dd @ hh:mm aa")}`
-  //     );
-  //   }
-    
-  // }
-  const pusher= await createPubSub<{NEW_APPOINTMENT: (appointment: any) => void;}>()
-  pusher.emit("NEW_APPOINTMENT",appointment)
-  console.log(pusher)
-    // pusher.publish(appointment)
+  const lead = await db.lead.findUnique({ where: { id: leadId } });
+  if (lead) {
+    await smsSendAgentAppointmentNotification(userId, lead, date);
+    if (sendSms) {
+      await smsSendLeadAppointmentNotification(lead, date);
+    }
+  }
+
+  const pusher = await createPubSub<{
+    NEW_APPOINTMENT: (appointment: any) => void;
+  }>();
+  pusher.emit("NEW_APPOINTMENT", appointment);
+  console.log(pusher);
+  // pusher.publish(appointment)
   return { success: appointment };
 };
 

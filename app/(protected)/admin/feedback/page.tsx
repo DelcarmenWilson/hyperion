@@ -1,10 +1,10 @@
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { FeedbacksClient } from "./components/client";
 
-import { feedbackGetAll } from "@/actions/feedback";
+import { feedbacksGetAll } from "@/data/feedback";
 
 const FeedbackPage = async () => {
-  const feedbacks = await feedbackGetAll();
+  const feedbacks = await feedbacksGetAll();
   return (
     <PageLayoutAdmin
       title={`User Feedback (${feedbacks.length})`}

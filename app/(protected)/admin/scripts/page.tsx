@@ -1,6 +1,6 @@
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { ScriptsClient } from "./components/client";
-import { scriptsGetAll } from "@/actions/script";
+import { scriptsGetAll } from "@/data/script";
 
 const ScriptsPage = async () => {
   const scripts = await scriptsGetAll();

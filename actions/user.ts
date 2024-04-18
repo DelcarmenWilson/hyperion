@@ -21,139 +21,8 @@ import { chatSettingsInsert } from "./chat-settings";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { userGetByEmail, userGetById } from "@/data/user";
-
-
-//DATA
-export const userGetAll = async () => {
-  try {
-    const users = await db.user.findMany({orderBy:{firstName:"asc"}});
-
-    return users;
-  } catch {
-    return [];
-  }
-};
-export const userGetAllByRole = async (role:UserRole) => {
-  try {
-    const users = await db.user.findMany({where:{role},orderBy:{firstName:"asc"}});
-    return users;
-  } catch {
-    return [];
-  }
-};
-export const userGetByAssistant = async (assitantId: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { assitantId },
-    });
-
-    return user?.id;
-  } catch {
-    return null;
-  }
-};
-
-export const userGetByIdDefault = async (id: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { id },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-
-export const userGetByIdReport = async (id: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { id },
-      include: {
-        phoneNumbers: true,
-        calls: true,
-        leads: true,
-        appointments: true,
-        conversations: true,
-        team: { include: { organization: true, owner: true } },
-      },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-
-export const userGetByUserName = async (userName: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { userName },
-      include: { phoneNumbers: true, chatSettings: true, team: true },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-
-export const usersGetSummaryByTeamId = async (
-  userId: string,
-  role: UserRole,
-  teamId: string
-) => {
-  try {
-    if (role != "MASTER") return [];
-
-    const agents = await db.user.findMany({
-      where: { teamId, NOT: { id: userId } },
-      include: {
-        phoneNumbers: {
-          where: { status: "default" },
-        },
-        chatSettings: true,
-      },
-    });
-
-    return agents;
-  } catch {
-    return [];
-  }
-};
-
-// USER LICENSES
-export const userLicensesGetAllByUserId = async (userId: string,
-  role: UserRole = "USER"
-) => {
-  try {
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const licenses = await db.userLicense.findMany({ where: { userId } });
-    return licenses;
-  } catch {
-    return [];
-  }
-};
-// USER LICENSES
-export const userCarriersGetAllByUserId = async (userId: string,
-  role: UserRole = "USER"
-) => {
-  try {
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const carriers = await db.userCarrier.findMany({
-      where: { userId },
-      include: { carrier: { select: { name: true } } },
-    });
-
-    return carriers;
-  } catch {
-    return [];
-  }
-};
+import { notificationSettingsInsert } from "./notification-settings";
+import { scheduleInsert } from "./schedule";
 
 //ACTIONS
 export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
@@ -186,37 +55,43 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
       emailVerified: new Date(),
     },
   });
+
+  //CREATE CHAT SETTINGS
+  await chatSettingsInsert(user);
+
+  //NOTIFICATION SETTINGS
+  await notificationSettingsInsert(user.id);
+
+  //SCHEDULE
+  const hours = "09:00-17:00,12:00-13:00";
+  await scheduleInsert({
+    userId: user.id,
+    type: "",
+    title: "Book an Appointment with #first_name".replace(
+      "#first_name",
+      user.firstName
+    ),
+    subTitle:
+      "Pick the time that best works for you. I am looking forward to connecting with you.",
+    monday: hours,
+    tuesday: hours,
+    wednesday: hours,
+    thursday: hours,
+    friday: hours,
+    saturday: "Not Available",
+    sunday: "Not Available",
+  });
+
   //TODO
   // const verificationToken = await generateVerificationToken(email);
   // await sendVerificationEmail(verificationToken.email, verificationToken.token);
   // return { success: "Confirmation Email sent!" };
-
-  //CREATE CHAT SETTINGS
-  await chatSettingsInsert(user);
-  const hours = "09:00-17:00,12:00-13:00";
-  await db.schedule.create({
-    data: {
-      userId: user.id,
-      title: "Book an Appointment with #first_name".replace(
-        "#first_name",
-        user.firstName
-      ),
-      subTitle:
-        "Pick the time that best works for you. I am looking forward to connecting with you.",
-      monday: hours,
-      tuesday: hours,
-      wednesday: hours,
-      thursday: hours,
-      friday: hours,
-      saturday: "Not Available",
-      sunday: "Not Available",
-    },
-  });
-
   return { success: "Account created continue to login" };
 };
 
-export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>) => {
+export const userInsertAssistant = async (
+  values: z.infer<typeof RegisterSchema>
+) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -225,23 +100,20 @@ export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>
   const { id, team, userName, password, email, firstName, lastName } =
     validatedFields.data;
 
+  const existingUser = await db.user.findUnique({ where: { id } });
+  if (!existingUser) {
+    return { error: "Agent does not exists!" };
+  }
 
-    const existingUser =await db.user.findUnique({where:{id}})
-    if (!existingUser) {
-      return { error: "Agent does not exists!" };
-    }
-
-    if(existingUser.assitantId){
-      return { error: "Agent already has an assitant!" };
-    }
+  if (existingUser.assitantId) {
+    return { error: "Agent already has an assitant!" };
+  }
   const existingAssistant = await userGetByEmail(email);
 
   if (existingAssistant) {
     return { error: "Email already in use!" };
   }
 
-
-  
   const hashedPassword = await bcrypt.hash(password, 10);
   const assistant = await db.user.create({
     data: {
@@ -253,7 +125,7 @@ export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>
       lastName,
       //TODO dont forget to remove this after fixing token
       emailVerified: new Date(),
-      role:"ASSISTANT"
+      role: "ASSISTANT",
     },
   });
 
@@ -263,7 +135,7 @@ export const userInsertAssistant = async (values: z.infer<typeof RegisterSchema>
   // return { success: "Confirmation Email sent!" };
 
   //ASSIGN ASISTANT TO AGENT
-  await db.user.update({ where: { id }, data: { assitantId:assistant.id} } );
+  await db.user.update({ where: { id }, data: { assitantId: assistant.id } });
   //CREATE CHAT SETTINGS
   await chatSettingsInsert(assistant);
   const hours = "09:00-17:00,12:00-13:00";
@@ -309,6 +181,7 @@ export const userInsertMaster = async (
   if (existingMaster) {
     return { error: "Master account already exist" };
   }
+  //NEW USER
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await db.user.create({
     data: {
@@ -321,11 +194,11 @@ export const userInsertMaster = async (
       role: "MASTER",
     },
   });
-
+  //NEW ORGANIZATION
   const newOrganization = await db.organization.create({
     data: { name: organization, userId: newUser.id },
   });
-
+  //NEW TEAM
   const newTeam = await db.team.create({
     data: {
       name: team,
@@ -334,34 +207,38 @@ export const userInsertMaster = async (
     },
   });
 
+  //UPDATE USER WITH NEW TEAM INFO
   await db.user.update({
     where: { id: newUser.id },
     data: {
       teamId: newTeam.id,
     },
   });
-
+  //CHAT SETTINGS
   await chatSettingsInsert(newUser);
 
+  //NOTIFICATION SETTINGS
+  await notificationSettingsInsert(newUser.id);
+
+  //SCHEDULE
   const hours = "Not Available";
 
-  await db.schedule.create({
-    data: {
-      userId: newUser.id,
-      title: "Book an Appointment with #first_name".replace(
-        "#first_name",
-        newUser.firstName
-      ),
-      subTitle:
-        "Pick the time that best works for you. I am looking forward to connecting with you.",
-      monday: hours,
-      tuesday: hours,
-      wednesday: hours,
-      thursday: hours,
-      friday: hours,
-      saturday: hours,
-      sunday: hours,
-    },
+  await scheduleInsert({
+    userId: newUser.id,
+    type: "",
+    title: "Book an Appointment with #first_name".replace(
+      "#first_name",
+      newUser.firstName
+    ),
+    subTitle:
+      "Pick the time that best works for you. I am looking forward to connecting with you.",
+    monday: hours,
+    tuesday: hours,
+    wednesday: hours,
+    thursday: hours,
+    friday: hours,
+    saturday: hours,
+    sunday: hours,
   });
 
   return { success: "Master account created" };
@@ -423,6 +300,7 @@ export const userUpdateById = async (
   });
   return { success: "Settings Updated! " };
 };
+
 export const userUpdateEmailVerification = async (token: string) => {
   if (!token) {
     return { error: "Missing token!" };

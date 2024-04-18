@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { Button } from "@/components/ui/button";
 import { TaskClient } from "./components/client";
-import { tasksGetAll } from "@/actions/task";
+import { tasksGetAll } from "@/data/task";
 
 const TaskPage = async () => {
   const tasks = await tasksGetAll();

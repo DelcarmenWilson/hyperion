@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import { format } from "date-fns";
 
 export async function POST(req: Request) {
-  
+  const body=await req.json()
+  const auth=body.auth;
+  if(!auth && auth!="hyperion"){
+    return new NextResponse("unauthorized", { status: 404 });
+  }
   const appointments = await db.appointment.findMany({
     where:{status:"Scheduled"},
     include: { lead: true },

@@ -4,12 +4,12 @@ import { Text } from "./text";
 import { WhileAway } from "./while-away";
 import { Birthday } from "./birthday";
 import { Reminder } from "./reminder";
-import { presetGetAllByAgentId } from "@/actions/preset";
+import { presetsGetAllByAgentId } from "@/data/preset";
 import { currentUser } from "@/lib/auth";
 
 export const PresetClient = async () => {
   const user = await currentUser();
-  const presets = await presetGetAllByAgentId(user?.id!);
+  const presets = await presetsGetAllByAgentId(user?.id!);
   return (
     <ScrollArea className="flex-1">
       <div className="grid grid-cols-1 lg:grid-cols-2  gap-4">

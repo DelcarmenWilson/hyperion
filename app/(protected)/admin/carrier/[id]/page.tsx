@@ -1,4 +1,4 @@
-import { adminCarrierGetById, adminCarriersGetAll } from "@/actions/admin";
+import { adminCarrierGetById, adminCarriersGetAll } from "@/data/admin";
 
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { TopMenu } from "./components/top-menu";

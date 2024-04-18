@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { userGetAll } from "@/actions/user";
+import { usersGetAll } from "@/data/user";
 
 export async function POST(req: Request) {
   try {
     // const body = await req.json();
     // const { user } = body;
     // const script = await scriptGetOne();
-    const users=await userGetAll()
+    const users=await usersGetAll()
 
     return NextResponse.json(users);
   } catch (error) {

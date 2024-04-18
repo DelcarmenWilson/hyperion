@@ -7,7 +7,7 @@ import Pricing from "@/components/index/Pricing";
 import { TaskList } from "@/components/index/TaskList";
 import Services from "@/components/index/Services";
 import ButtonGradient from "@/public/assets/index/svg/ButtonGradient";
-import { tasksGetAllPublished } from "@/actions/task";
+import { tasksGetAllPublished } from "@/data/task";
 
 const LandingPage = async () => {
   const tasks = await tasksGetAllPublished();

@@ -4,7 +4,7 @@ import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
 import {
   phoneNumbersGetAssigned,
   phoneNumbersGetUnassigned,
-} from "@/actions/phonenumber";
+} from "@/data/phonenumber";
 
 const PhonePage = async () => {
   const phoneNumbers = await phoneNumbersGetAssigned();

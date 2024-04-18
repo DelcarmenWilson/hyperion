@@ -7,7 +7,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
 import { TopMenu } from "./components/top-menu";
 
-import { leadsGetAllByAgentId } from "@/actions/lead";
+import { leadsGetAllByAgentId } from "@/data/lead";
 const LeadsPage = async () => {
   const user = await currentUser();
   if (!user) return null;

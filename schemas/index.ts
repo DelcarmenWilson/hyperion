@@ -28,6 +28,15 @@ export const SettingsSchema = z
     },
     { message: "New password is requiered", path: ["new Password"] }
   );
+  export const NotificationSettingsSchema = z
+  .object({
+    userId:z.string(),
+  phoneNumber:z.string(),
+  calls:z.boolean(),
+  appointments:z.boolean(),
+  messages:z.boolean(),
+  voicemails:z.boolean(),
+  })
 
 export const NewPasswordSchema = z.object({
   password: z.string().min(6, {

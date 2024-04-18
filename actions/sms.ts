@@ -10,6 +10,7 @@ import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio-config";
 import { SmsMessageSchema } from "@/schemas";
+import { Lead, } from "@prisma/client";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -170,6 +171,91 @@ export const smsSend = async (
     body: message,
     from: fromPhone,
     to: toPhone,
+  });
+
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
+  return { success: "Message sent!" };
+};
+
+export const smsSendAgentAppointmentNotification = async (
+  userId: string,
+  lead: Lead,
+  date: Date
+) => {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    include: {
+      notificationSettings: {
+        select: { appointments: true, phoneNumber: true },
+      },
+    },
+  });
+  if (!user) {
+    return { error: "User Not Found!" };
+  }
+
+  if (!user.notificationSettings) {
+    return { error: "Settings Not Found!" };
+  }
+  if (!user.notificationSettings.appointments) {
+    return { error: "Appointment notifications not set!" };
+  }
+  if (!user.notificationSettings.phoneNumber) {
+    return { error: "PhoneNumber not set!" };
+  }
+
+  const message = `Hi ${user.firstName},\n
+Great news! ${lead.firstName} ${
+    lead.lastName
+  } has booked an appointment for ${date.toDateString()} at ${date.toTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\nBest regards,\nStrongside Financial`;
+  const result = await client.messages.create({
+    body: message,
+    from: lead.defaultNumber,
+    to: user.notificationSettings.phoneNumber,
+  });
+
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
+  return { success: "Message sent!" };
+};
+
+export const smsSendLeadAppointmentNotification = async (
+  lead: Lead,
+  date: Date
+) => { 
+ 
+  const message = `"Hi ${lead.firstName},\n  Thanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\nBest regards,\nStrongside Financial"
+  `;
+
+  const result = await client.messages.create({
+    body: message,
+    from: lead.defaultNumber,
+    to: lead.cellPhone,
+  });
+
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
+  return { success: "Message sent!" };
+};
+
+export const smsSendAppointmentReminder = async (
+  lead: Lead,
+  date: Date
+) => {  
+  const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
+  `;
+
+  const result = await client.messages.create({
+    body: message,
+    from: lead.defaultNumber,
+    to: lead.cellPhone,
   });
 
   if (!result) {

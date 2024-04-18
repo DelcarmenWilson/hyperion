@@ -4,7 +4,8 @@ import { NumberChange } from "./components/change-number";
 import { PhoneUpdate } from "./components/phone-update";
 import { EmailConfirm } from "./components/email-confimation";
 
-import { adminUsersGetAll } from "@/actions/admin";
+import { adminUsersGetAll } from "@/data/admin";
+import { NotificationConfirm } from "./components/notification-confirm";
 
 const MiscPage = async () => {
   const users = await adminUsersGetAll();
@@ -17,6 +18,7 @@ const MiscPage = async () => {
             <TabsTrigger value="phoneChange">PHONE CHANGE</TabsTrigger>
             <TabsTrigger value="phoneUpdate">PHONES UPDATE</TabsTrigger>
             <TabsTrigger value="emailConfirm">EMAIL CONFIRM</TabsTrigger>
+            <TabsTrigger value="notificationConfirm">NOTIFICATIONS</TabsTrigger>
           </TabsList>
         </div>
 
@@ -29,6 +31,9 @@ const MiscPage = async () => {
           </TabsContent>
           <TabsContent value="emailConfirm">
             <EmailConfirm users={users} />
+          </TabsContent>
+          <TabsContent value="notificationConfirm">
+            <NotificationConfirm />
           </TabsContent>
         </div>
       </Tabs>

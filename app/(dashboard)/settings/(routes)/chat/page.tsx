@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import { chatSettingsGetById } from "@/actions/chat-settings";
+import { chatSettingsGetById } from "@/data/chat-settings";
 
 import { ChatClient } from "./components/client";
 
