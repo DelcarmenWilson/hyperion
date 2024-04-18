@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useSidebar } from "@/store/use-sidebar";
@@ -17,7 +17,6 @@ export const MainSideBar = ({ main = false }: { main?: boolean }) => {
   const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
   const role = useCurrentRole();
   const pathname = usePathname();
-  const router = useRouter();
   const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
 
   let routes = allRoutes;
@@ -38,43 +37,21 @@ export const MainSideBar = ({ main = false }: { main?: boolean }) => {
 
   return (
     <aside
-      // onMouseOver={onExpand}
-      // onMouseLeave={onCollapse}
       className={cn(
-        "fixed left-0 flex flex-col w-60 h-full bg-background border-r z-50 py-2 transition ease-in-out",
+        "flex flex-col fixed top-14 z-30 -ml-2  h-[calc(100vh-3.5rem)] w-60 shrink-0 md:sticky md:block bg-background border-r py-2 transition ease-in-out",
         collapsed && "w-[70px]"
       )}
     >
-      <div className="relative">
-        {/* <div className="absolute top-0 right-0 opacity-50 hover:opacity-100 z-50 cursor-pointer"> */}
+      <div className="border-b flex justify-end">
         <ArrowRight
           className={cn(
-            "absolute top-0 right-0 opacity-50 hover:opacity-100 z-50 cursor-pointer transition-all ease-in-out",
-            !collapsed && "rotate-180"
+            "opacity-50 hover:opacity-100 z-50 cursor-pointer transition-all ease-in-out",
+            !collapsed && "rotate-180 "
           )}
-          size={20}
+          size={30}
           onClick={onToggle}
         />
-        {/* </div> */}
-        <div
-          className="flex items-center justify-center gap-2 p-2 cursor-pointer opacity-80 hover:animate-pulse"
-          onClick={() => router.push("/")}
-        >
-          <Image
-            src="/logo3.png"
-            alt="logo"
-            width="30"
-            height="30"
-            className="w-[30px] aspect-square"
-          />
-          {!collapsed && (
-            <span className="transition font-semibold text-2xl delay-1000">
-              Hyperion
-            </span>
-          )}
-        </div>
       </div>
-      <Separator />
 
       <ScrollArea className="p-2 flex-1">
         {routes.map((route) => (
@@ -88,7 +65,6 @@ export const MainSideBar = ({ main = false }: { main?: boolean }) => {
         ))}
       </ScrollArea>
       <div className="flex flex-col mt-auto items-center space-y-4">
-        {/* <ThemeToggle /> */}
         <UserButton />
       </div>
     </aside>

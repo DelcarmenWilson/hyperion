@@ -1,5 +1,4 @@
 import { User } from "lucide-react";
-import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 import { LeadClient } from "./components/client";
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +7,7 @@ import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
+import { leadGetById, leadGetPrevNextById } from "@/data/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
   const lead = await leadGetById(params.id);

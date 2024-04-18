@@ -14,7 +14,7 @@ import {
   adminLeadStatusGetAll,
   adminMedicalConditionsGetAll,
   adminQuotesGetAll,
-} from "@/actions/admin";
+} from "@/data/admin";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();

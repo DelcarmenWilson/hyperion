@@ -1,5 +1,4 @@
 --add all the carrier conditions after medical conditions
---restart the voicemils
 --see why twilio needs a new token (perhaps its becuase of the recent changes)
 
 -- make the quote change automatically with cron job 

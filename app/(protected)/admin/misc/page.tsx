@@ -4,7 +4,7 @@ import { NumberChange } from "./components/change-number";
 import { PhoneUpdate } from "./components/phone-update";
 import { EmailConfirm } from "./components/email-confimation";
 
-import { adminUsersGetAll } from "@/actions/admin";
+import { adminUsersGetAll } from "@/data/admin";
 
 const MiscPage = async () => {
   const users = await adminUsersGetAll();

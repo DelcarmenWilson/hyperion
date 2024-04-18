@@ -5,20 +5,17 @@ import { currentUser } from "@/lib/auth";
 import { Presets } from "@prisma/client";
 import { PresetSchema } from "@/schemas";
 
-//DATA
-export const presetGetAllByAgentId = async (agentId: string) => {
+export const presetDeleteById = async (id: string) => {
   try {
-    const presets = await db.presets.findMany({
-      where: { agentId },
-    });
+    await db.presets.delete({where:{id}})
 
-    return presets;
+    return { success: "Preset deleted!" };
   } catch (error: any) {
-    return [];
+    console.log("PRESET_Delete_ERROR", error);
+    return { error: "Something went wrong!" };
   }
 };
-//ACTIONS
-export const presetCreate = async (values: z.infer<typeof PresetSchema>) => {
+export const presetInsert = async (values: z.infer<typeof PresetSchema>) => {
   const validatedFields = PresetSchema.safeParse(values);
   const user = await currentUser();
 
@@ -58,14 +55,5 @@ export const presetUpdateById = async (values: Presets) => {
   }
 };
 
-export const presetDeleteById = async (id: string) => {
-  try {
-    await db.presets.delete({where:{id}})
 
-    return { success: "Preset deleted!" };
-  } catch (error: any) {
-    console.log("PRESET_Delete_ERROR", error);
-    return { error: "Something went wrong!" };
-  }
-};
 

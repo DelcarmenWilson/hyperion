@@ -1,4 +1,4 @@
-import { adminMedicalConditionsGetAll } from "@/actions/admin";
+import { adminMedicalConditionsGetAll } from "@/data/admin";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

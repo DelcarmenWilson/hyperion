@@ -1,8 +1,7 @@
 "use server";
-
 import * as z from "zod";
-import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 import { DevFeedbackSchema, FeedbackSchema } from "@/schemas";
 
 export const feedbackInsert = async (
@@ -31,38 +30,6 @@ export const feedbackInsert = async (
   });
 
   return { success: newFeedback.id };
-};
-
-
-export const feedbackGetAll = async () => {
-  try {
-    const feedbacks = await db.feedback.findMany({
-      include:{user:true},
-    });
-    return feedbacks;
-  } catch {
-    return [];
-  }
-};
-export const feedbackGetId = async (id: string) => {
-  try {
-    const feedback = await db.feedback.findUnique({
-      where: { id },include:{user:true},
-    });
-    return feedback;
-  } catch {
-    return null;
-  }
-};
-export const feedbackGetAllByUserId = async (userId: string) => {
-  try {
-    const feedbacks = await db.feedback.findMany({
-      where: { userId }
-    });
-    return feedbacks;
-  } catch {
-    return [];
-  }
 };
 
 export const feedbackUpdateById = async (

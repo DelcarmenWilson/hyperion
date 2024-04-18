@@ -1,11 +1,11 @@
 import * as z from "zod";
 import { AppointmentLeadSchema } from "@/schemas";
 
-import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { BookAgentClient } from "./components/client";
-import { leadGetById } from "@/actions/lead";
-import { scheduleGetByUserId } from "@/actions/schedule";
-import { userGetByUserName } from "@/actions/user";
+import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
+import { leadGetById } from "@/data/lead";
+import { scheduleGetByUserId } from "@/data/schedule";
+import { userGetByUserName } from "@/data/user";
 
 const BookAgentPage = async ({
   params,

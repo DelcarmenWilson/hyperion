@@ -1,22 +1,24 @@
+import { Suspense } from "react";
 import { currentUser } from "@/lib/auth";
+import { Calendar } from "lucide-react";
+
+import { PageLayout } from "@/components/custom/layout/page-layout";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
-import { appointmentsGetAllByUserIdToday } from "@/actions/appointment";
-import { callsGetAllByAgentIdLast24Hours } from "@/actions/call";
-import { messagesGetByAgentIdUnSeen } from "@/actions/message";
-import { leadsGetByAgentIdTodayCount } from "@/actions/lead";
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
-import { usersGetSummaryByTeamId } from "@/actions/user";
-import { Suspense } from "react";
 
 import { AppointmentClient } from "@/components/lead/appointments/client";
 import { AgentSummaryClient } from "./components/agentsummary/client";
 import { TurnOverRate } from "./components/turnover/turn-over-rate";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
-import { adminQuotesGetActive } from "@/actions/admin";
-import { Calendar } from "lucide-react";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+
+import { adminQuotesGetActive } from "@/data/admin";
+import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
+import { callsGetAllByAgentIdLast24Hours } from "@/data/call";
+import { messagesGetByAgentIdUnSeen } from "@/data/message";
+import { leadsGetByAgentIdTodayCount } from "@/data/lead";
+import { usersGetSummaryByTeamId } from "@/data/user";
 
 const DahsBoardPage = async () => {
   const user = await currentUser();

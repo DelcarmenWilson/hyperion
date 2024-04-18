@@ -5,7 +5,7 @@ import { PageLayout } from "@/components/custom/layout/page-layout";
 import { FeedbackForm } from "../components/shared/form";
 import { DevFeedbackForm } from "./components/dev-feedback-form";
 
-import { feedbackGetId } from "@/actions/feedback";
+import { feedbackGetId } from "@/data/feedback";
 
 const FeedBackIdPage = async ({ params }: { params: { id: string } }) => {
   const feedback = await feedbackGetId(params.id);
