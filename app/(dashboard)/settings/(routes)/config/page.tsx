@@ -8,9 +8,10 @@ import { CarrierClient } from "./components/carrier/client";
 import {
   userCarriersGetAllByUserId,
   userLicensesGetAllByUserId,
-} from "@/actions/user";
-import { adminCarriersGetAll } from "@/actions/admin";
-import { leadStatusGetAllByAgentId } from "@/actions/lead";
+} from "@/data/user";
+import { adminCarriersGetAll } from "@/data/admin";
+import { leadStatusGetAllByAgentId } from "@/data/lead";
+import { NotificationClient } from "./components/notifications/client";
 
 const ConfigPage = async () => {
   const user = await currentUser();
@@ -35,6 +36,9 @@ const ConfigPage = async () => {
         <TabsTrigger className="w-full" value="leadStatus">
           Lead Status
         </TabsTrigger>
+        <TabsTrigger className="w-full" value="notifications">
+          Notifications
+        </TabsTrigger>
       </TabsList>
       <div className="flex-1">
         <TabsContent value="licenses">
@@ -49,6 +53,9 @@ const ConfigPage = async () => {
         </TabsContent>
         <TabsContent value="leadStatus">
           <LeadStatusClient leadStatus={leadStatus} />
+        </TabsContent>
+        <TabsContent value="notifications">
+          <NotificationClient />
         </TabsContent>
       </div>
     </Tabs>

@@ -3,13 +3,13 @@ import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
 import { UserTopMenu } from "./components/top-menu";
 
-import { userGetAll, userGetAllByRole } from "@/actions/user";
-import { teamsGetAll } from "@/actions/team";
+import { usersGetAll, usersGetAllByRole } from "@/data/user";
+import { teamsGetAll } from "@/data/team";
 
 const UsersPage = async () => {
-  const users = await userGetAll();
+  const users = await usersGetAll();
   const teams = await teamsGetAll();
-  const admins = await userGetAllByRole("ADMIN");
+  const admins = await usersGetAllByRole("ADMIN");
 
   return (
     <PageLayoutAdmin

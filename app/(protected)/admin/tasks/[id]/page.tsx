@@ -2,7 +2,7 @@ import { ListTodo } from "lucide-react";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
 
-import { taskGetById, taskGetPrevNextById } from "@/actions/task";
+import { taskGetById, taskGetPrevNextById } from "@/data/task";
 import { TaskIdForm } from "./components/form";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
 

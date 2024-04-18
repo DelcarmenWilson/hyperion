@@ -1,6 +1,6 @@
-import { conversationsGetByUserId } from "@/actions/conversation";
 import { InboxColumn } from "./components/columns";
 import { InboxClient } from "./components/client";
+import { conversationsGetByUserId } from "@/data/conversation";
 
 const InboxPage = async () => {
   const conversations = await conversationsGetByUserId();

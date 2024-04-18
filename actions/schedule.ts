@@ -1,24 +1,8 @@
 "use server";
 import * as z from "zod";
 import { db } from "@/lib/db";
-import { UserRole } from "@prisma/client";
 import { ScheduleSchema } from "@/schemas";
-import { userGetByAssistant } from "./user";
 
-//DATA
-export const scheduleGetByUserId=async(userId:string,role:UserRole="USER") => {
-  try {
-    if(role=="ASSISTANT"){
-      userId=await userGetByAssistant(userId) as string
-    }
-      const schedule = await db.schedule.findUnique({
-          where:{userId}
-      })
-      return schedule
-  } catch  {
-      return null
-  }
-}
 
 //ACTIONS
 export const scheduleUpdateByUserId = async (

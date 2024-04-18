@@ -7,18 +7,6 @@ import { User } from "@prisma/client";
 import { defaultChat } from "@/placeholder/chat";
 import { replacePresetUser } from "@/formulas/text";
 
-//DATA
-export const chatSettingsGetById = async (id: string) => {
-  try {
-    const chatsetting = await db.chatSettings.findUnique({
-      where: { userId: id },include:{user:true}
-    });
-    return chatsetting;
-  } catch {
-    return null;
-  }
-};
-//ACTIONS
 export const chatSettingsInsert = async (user: User) => {
   const prompt = replacePresetUser(defaultChat.prompt, user);
 

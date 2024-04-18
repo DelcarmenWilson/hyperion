@@ -3,8 +3,8 @@ import { currentUser } from "@/lib/auth";
 
 import { SalesClient } from "./components/client";
 import { PageLayout } from "@/components/custom/layout/page-layout";
-import { leadsGetAllByAgentId } from "@/actions/lead";
-import { pipelineGetAllByAgentId } from "@/actions/pipeline";
+import { leadsGetAllByAgentId } from "@/data/lead";
+import { pipelineGetAllByAgentId } from "@/data/pipeline";
 import { TopMenu } from "./components/top-menu";
 
 const SalesPage = async () => {

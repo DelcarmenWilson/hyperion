@@ -1,4 +1,4 @@
-import { teamsGetById } from "@/actions/team";
+import { teamGetById } from "@/data/team";
 import { FullUserTeamReport } from "@/types";
 import { NextResponse } from "next/server";
 
@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { teamId } = body;
-    const team = await teamsGetById(teamId);
+    const team = await teamGetById(teamId);
 
     if (!team) {
       return new NextResponse("Internal error", { status: 500 });

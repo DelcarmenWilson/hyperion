@@ -14,6 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 type AdvancePaginationProps<TData> = {
   table: Table<TData>;
@@ -24,6 +33,7 @@ export function AdvancePagination<TData>({
   table,
   div,
 }: AdvancePaginationProps<TData>) {
+  const [pageNumber, setPageNumber] = useState<string>();
   const onPrevNextClick = (direction: string) => {
     if (direction == "prev") {
       table.previousPage();
@@ -35,6 +45,19 @@ export function AdvancePagination<TData>({
   const onFirstLastClick = (pageNum: number) => {
     table.setPageIndex(pageNum);
     div?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const onGoToPage = () => {
+    if (!pageNumber) return;
+    let pageNum = parseInt(pageNumber);
+    if (pageNum < 0) return;
+    const size = table.getPageCount();
+    if (pageNum > size) {
+      pageNum = size;
+      setPageNumber(size.toString());
+    }
+
+    table.setPageIndex(pageNum - 1);
   };
   return (
     <div className="flex items-center justify-between px-2 my-1">
@@ -62,6 +85,20 @@ export function AdvancePagination<TData>({
               ))}
             </SelectContent>
           </Select>
+          <p className="text-sm font-medium">Got to Page</p>
+          <Input
+            value={pageNumber}
+            onChange={(e) => setPageNumber(e.target.value)}
+            className="h-8 w-[70px]"
+          />
+          <Button
+            className="hidden h-8 w-8 p-0 lg:flex"
+            disabled={!pageNumber}
+            onClick={onGoToPage}
+          >
+            <span className="sr-only">Jump to first</span>
+            <ArrowRight size={16} />
+          </Button>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -75,7 +112,7 @@ export function AdvancePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <DoubleArrowLeftIcon className="h-4 w-4" />
+            <ChevronsLeft size={16} />
           </Button>
           <Button
             variant="outline"
@@ -84,7 +121,7 @@ export function AdvancePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to previous page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <ChevronLeft size={16} />
           </Button>
           <Button
             variant="outline"
@@ -93,7 +130,7 @@ export function AdvancePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <ChevronRight size={16} />
           </Button>
           <Button
             variant="outline"
@@ -102,7 +139,7 @@ export function AdvancePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <DoubleArrowRightIcon className="h-4 w-4" />
+            <ChevronsRight size={16} />
           </Button>
         </div>
       </div>

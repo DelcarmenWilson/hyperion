@@ -1,27 +1,9 @@
 "use server";
-
 import { db } from "@/lib/db";
-import { currentRole, currentUser } from "@/lib/auth";
+import {  currentUser } from "@/lib/auth";
 import { PipeLine } from "@prisma/client";
-import { userGetByAssistant } from "@/actions/user";
+import { userGetByAssistant } from "@/data/user";
 
-// TODO DATA- should be moved
-export const pipelineGetAllByAgentId = async (userId: string) => {
-  try {
-    const role = await currentRole();
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const pipelines = await db.pipeLine.findMany({
-      where: { userId },
-      include: { status: { select: { status: true } } },
-      orderBy: { order: "asc" },
-    });
-    return pipelines;
-  } catch {
-    return [];
-  }
-};
 
 export const pipelineInsert = async (statusId: string, name: string) => {
   const user = await currentUser();

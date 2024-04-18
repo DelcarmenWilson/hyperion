@@ -1,7 +1,9 @@
 "use client";
 import * as z from "zod";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { AlertCircle, Smile } from "lucide-react";
 
@@ -9,8 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-
-import { presetKeywords } from "@/constants/texts";
 import {
   Form,
   FormControl,
@@ -18,12 +18,11 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useState, useTransition } from "react";
-import { presetCreate } from "@/actions/preset";
-import { toast } from "sonner";
 
 import { Preset } from "@prisma/client";
 import { PresetSchema } from "@/schemas";
+import { presetKeywords } from "@/constants/texts";
+import { presetInsert } from "@/actions/preset";
 
 type PresetFormValues = z.infer<typeof PresetSchema>;
 
@@ -45,7 +44,7 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
 
   const onSubmit = (values: PresetFormValues) => {
     startTransition(() => {
-      presetCreate(values).then((data) => {
+      presetInsert(values).then((data) => {
         form.reset();
         if (data.error) {
           toast.error(data.error);
