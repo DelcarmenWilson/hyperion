@@ -23,6 +23,7 @@ import { NotificationSettings } from "@prisma/client";
 
 import { NotificationSettingsSchema } from "@/schemas";
 import { notificationSettingsUpdateByUserId } from "@/actions/notification-settings";
+import { Heading } from "@/components/custom/heading";
 
 type NotificationClientValues = z.infer<typeof NotificationSettingsSchema>;
 type NotificationClientProps = {
@@ -56,127 +57,133 @@ export const NotificationClient = ({
   };
 
   return (
-    <Form {...form}>
-      <form className="space-y-6 px-1" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-          <div>
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel> Personal Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="345-457-5869"
-                      disabled={isPending}
-                      autoComplete="phoneNumber"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div>
-            <FormField
-              control={form.control}
-              name="calls"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Calls</FormLabel>
-                    <FormDescription>
-                      Enable notifications for calls
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblCalls"
-                      disabled={isPending}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+    <>
+      <Heading
+        title={"Notifications"}
+        description="Manage all your Notifications"
+      />
+      <Form {...form}>
+        <form className="px-1" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel> Personal Number</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="345-457-5869"
+                    disabled={isPending}
+                    autoComplete="phoneNumber"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            <div>
+              <FormField
+                control={form.control}
+                name="calls"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Calls</FormLabel>
+                      <FormDescription>
+                        Enable notifications for calls
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblCalls"
+                        disabled={isPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="appointments"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Appointments</FormLabel>
-                    <FormDescription>
-                      Enable notifications for appointments
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblAppointments"
-                      disabled={isPending}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="messages"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Messages</FormLabel>
-                    <FormDescription>
-                      Enable notifications for messages
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblMessages"
-                      disabled={isPending}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="voicemails"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Voicemails</FormLabel>
-                    <FormDescription>
-                      Enable notifications for voicemails
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblVoicemails"
-                      disabled={isPending}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="appointments"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Appointments</FormLabel>
+                      <FormDescription>
+                        Enable notifications for appointments
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblAppointments"
+                        disabled={isPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div>
+              <FormField
+                control={form.control}
+                name="messages"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Messages</FormLabel>
+                      <FormDescription>
+                        Enable notifications for messages
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblMessages"
+                        disabled={isPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="voicemails"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Voicemails</FormLabel>
+                      <FormDescription>
+                        Enable notifications for voicemails
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblVoicemails"
+                        disabled={isPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button disabled={isPending} type="submit">
-            Save
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <div className="flex justify-end gap-2">
+            <Button disabled={isPending} type="submit">
+              Save
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </>
   );
 };

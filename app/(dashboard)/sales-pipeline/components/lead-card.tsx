@@ -11,16 +11,21 @@ import { cn } from "@/lib/utils";
 
 type LeadCardProps = {
   lead: FullLead;
-  bg?: string;
+  indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 
-export const LeadCard = ({ lead, bg }: LeadCardProps) => {
+export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
   const usePm = usePhoneModal();
   return (
-    <div className="border-b">
-      <div className={cn("flex justify-between items-center p-2 text-xs", bg)}>
+    <div ref={indexRef} className="border-b">
+      <div
+        className={cn(
+          "flex justify-between items-center p-2 text-xs",
+          indexRef && "bg-secondary"
+        )}
+      >
         <div>
-          <p>{`${lead.firstName} ${lead.lastName}`}</p>
+          <p className=" text-sm text-bold">{`${lead.firstName} ${lead.lastName}`}</p>
           <Link
             className="text-primary italic font-bold"
             href={`/leads/${lead.id}`}
@@ -28,8 +33,9 @@ export const LeadCard = ({ lead, bg }: LeadCardProps) => {
             {formatPhoneNumber(lead.cellPhone)}
           </Link>
           <p className="flex gap-1">
-            Local
-            <Clock className="w-4 h-4" />: 12:41 pm
+            State: {lead.state}
+            {/* Local
+            <Clock size={16} />: 12:41 pm */}
           </p>
         </div>
         <div className="flex flex-col justify-between gap-2 items-end">
@@ -37,7 +43,7 @@ export const LeadCard = ({ lead, bg }: LeadCardProps) => {
             className="rounded-full w-fit"
             onClick={() => usePm.onPhoneOutOpen(lead)}
           >
-            <Phone className="w-4 h-4" />
+            <Phone size={16} />
           </Button>
           <p> Recieved {format(lead.createdAt, "MM-dd aaaa")}</p>
         </div>

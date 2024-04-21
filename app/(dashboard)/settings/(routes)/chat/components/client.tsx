@@ -142,140 +142,136 @@ export const ChatClient = ({ data }: ChatClientProps) => {
       <Form {...form}>
         <form className="space-y-6 mx-1" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mr-4 lg:mr-0">
-            <div>
-              {/* DEFAULT PROMPT */}
-              <FormField
-                control={form.control}
-                name="defaultPrompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Prompt</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="default Prompt"
-                        disabled={loading}
-                        autoComplete="defaultPrompt"
-                        rows={7}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* DEFAULT FUNCTION */}
-              <FormField
-                control={form.control}
-                name="defaultFunction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Function</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Default function"
-                        disabled={loading}
-                        autoComplete="defaultFunction"
-                        rows={7}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div>
-              {/* SEND LEAD INFO */}
-              <FormField
-                control={form.control}
-                name="leadInfo"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Lead Info</FormLabel>
-                      <FormDescription>
-                        Send lead info with the intial prompt
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblIsTwoFactor"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            {/* DEFAULT PROMPT */}
+            <FormField
+              control={form.control}
+              name="defaultPrompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="default Prompt"
+                      disabled={loading}
+                      autoComplete="defaultPrompt"
+                      rows={7}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* DEFAULT FUNCTION */}
+            <FormField
+              control={form.control}
+              name="defaultFunction"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Function</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Default function"
+                      disabled={loading}
+                      autoComplete="defaultFunction"
+                      rows={7}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* SEND LEAD INFO */}
+            <FormField
+              control={form.control}
+              name="leadInfo"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Lead Info</FormLabel>
+                    <FormDescription>
+                      Send lead info with the intial prompt
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblIsTwoFactor"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              {/* AUTO CHAT */}
-              <FormField
-                control={form.control}
-                name="autoChat"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Hyper Chat</FormLabel>
-                      <FormDescription>Automatic messaging</FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblAutoChat"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            {/* AUTO CHAT */}
+            <FormField
+              control={form.control}
+              name="autoChat"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Hyper Chat</FormLabel>
+                    <FormDescription>Automatic messaging</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblAutoChat"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              {/* RECORD */}
-              <FormField
-                control={form.control}
-                name="record"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Recording</FormLabel>
-                      <FormDescription>Recording calls</FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblRecord"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* COACH */}
-              <FormField
-                control={form.control}
-                name="coach"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Coach</FormLabel>
-                      <FormDescription>
-                        Enable coahing (future feature)
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        name="cblCoach"
-                        disabled={loading}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* RECORD */}
+            <FormField
+              control={form.control}
+              name="record"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Recording</FormLabel>
+                    <FormDescription>Recording calls</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblRecord"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* COACH */}
+            <FormField
+              control={form.control}
+              name="coach"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Coach</FormLabel>
+                    <FormDescription>
+                      Enable coahing (future feature)
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblCoach"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
           <div className="flex justify-end gap-2">
             <Button

@@ -112,3 +112,20 @@ export const pipelineUpdateById = async (pipeline: PipeLine) => {
 
   return { success: "Pipeline updated!" };
 };
+
+export const pipelineUpdateByIdIndex = async (id: string, index:number) => {
+  const user = await currentUser();
+
+  if (!user || !user.email) {
+    return { error: "Unathenticated" };
+  }
+
+  await db.pipeLine.update({
+    where: { id },
+    data: {
+      index,
+    },
+  });
+
+  return { success: "Pipeline index updated!" };
+};

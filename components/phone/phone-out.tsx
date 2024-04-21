@@ -246,12 +246,12 @@ export const PhoneOut = () => {
         ))}
       </div>
       {!call ? (
-        <Button disabled={!disabled} onClick={onStarted}>
-          <Phone className="h-4 w-4 mr-2" /> Call
+        <Button className="gap-2" disabled={!disabled} onClick={onStarted}>
+          <Phone size={16} /> Call
         </Button>
       ) : (
-        <Button variant="destructive" onClick={onDisconnect}>
-          <Phone className="h-4 w-4 mr-2" /> Hang up
+        <Button className="gap-2" variant="destructive" onClick={onDisconnect}>
+          <Phone size={16} /> Hang up
         </Button>
       )}
       {call && (
@@ -261,11 +261,11 @@ export const PhoneOut = () => {
         >
           {isCallMuted ? (
             <span className="flex gap-2">
-              <MicOff className="h-4 w-4 mr-2" /> CALL IS MUTED
+              <MicOff /> CALL IS MUTED
             </span>
           ) : (
             <span className="flex gap-2">
-              <Mic className="h-4 w-4 mr-2" /> Mute
+              <Mic /> Mute
             </span>
           )}
         </Button>
