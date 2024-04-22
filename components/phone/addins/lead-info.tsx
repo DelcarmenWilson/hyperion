@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ type PhoneLeadInfo = {
   open?: boolean;
 };
 export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
-  const { lead } = usePhoneModal();
+  const { lead } = usePhone();
   const role = useCurrentRole();
   const [isOpen, setIsOpen] = useState(open);
 
@@ -69,29 +69,25 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   };
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">
-      <div className="flex items-center justify-center w-[44px] h-full overflow-hidden relative px-2">
-        <Button
-          className={cn("rotate-90", open && "hidden")}
-          variant={isOpen ? "default" : "outline"}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          Lead Info
-        </Button>
-      </div>
+      {!open && (
+        <div className="flex items-center justify-center w-[44px] h-full overflow-hidden relative px-2">
+          <Button
+            className="rotate-90"
+            variant={isOpen ? "default" : "outline"}
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Lead Info
+          </Button>
+        </div>
+      )}
 
-      {/* <div
-        className={cn(
-          "flex flex-col w-full h-full transition-transform relative overflow-hidden",
-          isOpen && "w-0"
-        )}
-      > */}
       <div
         className={cn(
           "flex flex-col relative transition-[right] -right-full ease-in-out duration-100 w-0 h-full overflow-hidden",
           isOpen && "w-full right-0"
         )}
       >
-        <Tabs defaultValue="general" className="h-full">
+        <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
           <h3 className="text-center text-2xl font-bold ">
             <span className="text-primary">
               {lead.firstName} {lead.lastName}
@@ -109,7 +105,10 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general">
+          <TabsContent
+            className="flex-1  overflow-hidden overflow-y-auto"
+            value="general"
+          >
             <div className="grid grid-cols-3 gap-2 p-2">
               <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient info={leadInfo} showInfo />
@@ -138,7 +137,8 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           </TabsContent>
         </Tabs>
 
-        {!open && <PhoneScript />}
+        {/* {!open && <PhoneScript />} */}
+        <PhoneScript />
       </div>
     </div>
   );

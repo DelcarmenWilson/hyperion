@@ -1,6 +1,8 @@
+import * as z from "zod";
 import { db } from "@/lib/db";
 
 import { UserRole } from "@prisma/client";
+import { LeadExportSchema } from "@/schemas";
 
 import { userGetByAssistant } from "@/data/user";
 
@@ -19,10 +21,7 @@ export const leadsGetAll = async () => {
 export const leadsGetAllByAgentId = async (userId: string) => {
   try {
     const leads = await db.lead.findMany({
-      where: { OR: [
-        { userId},
-        { assistant: userId }
-      ], },
+      where: { OR: [{ userId }, { assistant: userId }] },
       include: {
         conversation: true,
         appointments: { where: { status: "scheduled" } },
@@ -32,6 +31,35 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         expenses: true,
         conditions: { include: { condition: true } },
       },
+    });
+    return leads;
+  } catch {
+    return [];
+  }
+};
+export const leadsGetAllByAgentIdFiltered = async (
+  values: z.infer<typeof LeadExportSchema>
+) => {
+  try {
+    const { userId, to, from, state, vendor } = values;
+
+    const leads = await db.lead.findMany({
+      where: {
+        userId,
+        state: state != "All" ? state : undefined,
+        vendor: vendor != "All" ? vendor : undefined,
+        createdAt: { lte: to, gte: from },
+      },
+      //where: { userId: userId },
+      // include: {
+      //   conversation: true,
+      //   appointments: { where: { status: "scheduled" } },
+      //   calls: true,
+      //   activities: true,
+      //   beneficiaries: true,
+      //   expenses: true,
+      //   conditions: { include: { condition: true } },
+      // },
     });
     return leads;
   } catch {

@@ -9,6 +9,7 @@ export const publicRoutes = [
   "/api/appointments/reminder",
   "/api/facebook",
   "/api/leads/details",
+  "/api/leads/export",
   "/api/organizations",
   "/api/quote",
   "/api/sms/in",

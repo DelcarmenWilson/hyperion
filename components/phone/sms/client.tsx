@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { PhoneSwitcher } from "../addins/switcher";
 import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { SmsBody } from "./body";
@@ -18,7 +18,7 @@ import Loader from "@/components/reusable/loader";
 
 export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const user = useCurrentUser();
-  const { lead } = usePhoneModal();
+  const { lead } = usePhone();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);

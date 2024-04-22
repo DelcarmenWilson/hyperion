@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Clock } from "lucide-react";
+import { ArrowDown, ArrowUp, Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FullLead } from "@/types";
 import { Actions } from "./actions";
 import { PipeLine } from "@prisma/client";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { pipelineUpdateByIdIndex } from "@/actions/pipeline";
 
 type PipelineCardProps = {
@@ -27,8 +27,9 @@ export const PipelineCard = ({
   leads,
   sendPipeline,
 }: PipelineCardProps) => {
-  const { onPhoneDialerOpen } = usePhoneModal();
+  const { onPhoneDialerOpen } = usePhone();
   const [index, setIndex] = useState(pipeline.index);
+  const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
 
   const onReset = () => {
@@ -36,14 +37,25 @@ export const PipelineCard = ({
     pipelineUpdateByIdIndex(pipeline.id, 0);
   };
 
-  // useEffect(() => {
-  //   if (!indexRef.current) return;
-  //   indexRef.current.scrollIntoView({
-  //     behavior: "smooth",
-  //     block: "end",
-  //     inline: "nearest",
-  //   });
-  // }, [index]);
+  const onScrollToggle = (dir: String) => {
+    if (!indexRef.current && !divRef.current) return;
+    let currentScroll = divRef.current?.scrollTop!;
+    let height = indexRef.current?.offsetHeight!;
+    const nextScroll =
+      dir == "up" ? currentScroll - height : currentScroll + height;
+    divRef.current?.scrollTo(0, nextScroll);
+  };
+  useEffect(() => {
+    // if (!indexRef.current) return;
+    // indexRef.current.scrollIntoView({
+    //   behavior: "smooth",
+    //   block: "end",
+    //   inline: "nearest",
+    // });
+    if (!indexRef.current && !divRef.current) return;
+
+    divRef.current?.scrollTo(0, indexRef.current?.offsetTop! - 15);
+  }, [index]);
   return (
     <section className="flex flex-col gap-2 glassmorphism border border-primary/50 shadow-inner h-[400px]">
       <div className="bg-primary text-background flex justify-between items-center px-2">
@@ -76,7 +88,7 @@ export const PipelineCard = ({
         </Button>
         <p>Leads: {leads.length}</p>
       </div>
-      <ScrollArea>
+      <div className="relative group h-full overflow-hidden" ref={divRef}>
         {leads.map((lead, i) => (
           <LeadCard
             key={lead.id}
@@ -84,7 +96,29 @@ export const PipelineCard = ({
             indexRef={i == index ? indexRef : null}
           />
         ))}
-      </ScrollArea>
+        {leads.length > 4 && (
+          <div className="fixed bottom-2 z-10 left-[50%] flex flex-col items-center -translate-x-1/2 opacity-0 group-hover:opacity-100 gap-1">
+            <Button
+              className="rounded-full"
+              size="icon"
+              variant="outlineprimary"
+              onClick={() => onScrollToggle("up")}
+            >
+              <ArrowUp size={14} />
+              <span className="sr-only">Scroll Up</span>
+            </Button>
+            <Button
+              className="rounded-full"
+              size="icon"
+              variant="outlineprimary"
+              onClick={() => onScrollToggle("down")}
+            >
+              <ArrowDown size={14} />
+              <span className="sr-only">Scroll Down</span>
+            </Button>
+          </div>
+        )}
+      </div>
     </section>
   );
 };

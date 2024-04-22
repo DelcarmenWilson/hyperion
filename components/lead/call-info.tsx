@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Phone } from "lucide-react";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { allLeadTypes } from "@/constants/lead";
 
 import { pusherClient } from "@/lib/pusher";
@@ -25,7 +25,7 @@ interface CallInfoProps {
   showBtnCall?: boolean;
 }
 export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
-  const usePm = usePhoneModal();
+  const usePm = usePhone();
   const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
   const { leadStatus } = useGlobalContext();

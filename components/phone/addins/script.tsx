@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { useGlobalContext } from "@/providers/global";
 import { replaceScript } from "@/formulas/script";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ import { Tiptap } from "../../reusable/tiptap";
 export const PhoneScript = () => {
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { lead } = usePhoneModal();
+  const { lead } = usePhone();
 
   const { script, user, licenses } = useGlobalContext();
 

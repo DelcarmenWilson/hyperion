@@ -10,11 +10,10 @@ import {
   X,
 } from "lucide-react";
 import { MdDialpad } from "react-icons/md";
-import axios from "axios";
 import { toast } from "sonner";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +34,7 @@ export const PhoneDialerModal = () => {
     leads,
     lead,
     pipeline,
-  } = usePhoneModal();
+  } = usePhone();
   const [index, setIndex] = useState(0);
   const indexRef = useRef<HTMLDivElement>(null);
   const [dialing, setDialing] = useState(false);
@@ -82,7 +81,6 @@ export const PhoneDialerModal = () => {
       onNextLead();
     } else {
       setDialing(false);
-      onSetLead(undefined);
       setRunning(false);
     }
   };
@@ -112,18 +110,20 @@ export const PhoneDialerModal = () => {
     if (nextIndex == leads.length) {
       onDisconnect(false);
       nextIndex = 0;
-      toast.error("No more lead available in this stage");
+      toast.error("No more leads available in this stage");
     } else {
       const newLead = leads[nextIndex];
       onSetLead(newLead);
       console.log("here");
-      if (!dial) return;
-      const newPhone =
-        user?.phoneNumbers.find((e) => e.phone == newLead?.defaultNumber)
-          ?.phone || user?.phoneNumbers[0]?.phone;
-      onStartCall(newLead.cellPhone, newPhone!);
+      if (dial) {
+        const newPhone =
+          user?.phoneNumbers.find((e) => e.phone == newLead?.defaultNumber)
+            ?.phone || user?.phoneNumbers[0]?.phone;
+        onStartCall(newLead.cellPhone, newPhone!);
+      }
     }
 
+    console.log("here", nextIndex);
     setIndex(nextIndex);
     pipelineUpdateByIdIndex(pipeline?.id!, nextIndex);
   };
@@ -132,6 +132,8 @@ export const PhoneDialerModal = () => {
     if (!pipeline) return;
     setIndex(0);
     pipelineUpdateByIdIndex(pipeline?.id!, 0);
+    if (!leads) return;
+    onSetLead(leads[0]);
   };
 
   useEffect(() => {
@@ -153,13 +155,14 @@ export const PhoneDialerModal = () => {
   useEffect(() => {
     if (!pipeline) return;
     setIndex(pipeline.index);
-  }, []);
+    if (!leads) return;
+    onSetLead(leads[pipeline.index]);
+  }, [pipeline]);
 
   useEffect(() => {
     if (!indexRef.current) return;
     indexRef.current.scrollIntoView({
       behavior: "smooth",
-      block: "end",
       inline: "nearest",
     });
   }, [index]);
@@ -226,16 +229,14 @@ export const PhoneDialerModal = () => {
                     </div>
                     <div className="flex gap-2">
                       <Button
+                        disabled={dialing}
                         variant="outlineprimary"
                         className="gap-2"
                         onClick={onReset}
                       >
                         <RefreshCcw size={16} /> Reset
                       </Button>
-                      <Button
-                        className="gap-2"
-                        onClick={() => onNextLead(index)}
-                      >
+                      <Button className="gap-2" onClick={() => onNextLead()}>
                         <ArrowRightCircle size={16} /> Next Lead
                       </Button>
                       {call && (
@@ -267,10 +268,12 @@ export const PhoneDialerModal = () => {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      {dialing && (
+                      {dialing ? (
                         <Button variant="destructive" onClick={onStopDailing}>
                           Stop Dialing
                         </Button>
+                      ) : (
+                        <Button onClick={onStartDialing}>Start Dailing</Button>
                       )}
                       <Button
                         disabled={dialing}
@@ -283,7 +286,8 @@ export const PhoneDialerModal = () => {
                   </div>
                   <div className="flex items-center justify-between text-muted-foreground">
                     <span>
-                      Stage: {pipeline?.name} - {leads.length} Leads
+                      Stage: {pipeline?.name} - {index + 1} of {leads.length}{" "}
+                      Leads
                     </span>
                     <span className="text-primary font-bold">
                       {formatSecondsToTime(time)}
@@ -302,7 +306,7 @@ export const PhoneDialerModal = () => {
                         ))}
                       </ScrollArea>
                     </div>
-                    <div className="flex-1 h-full">
+                    <div className="flex flex-col flex-1 h-full overflow-hidden">
                       {lead ? (
                         <PhoneLeadInfo open />
                       ) : (

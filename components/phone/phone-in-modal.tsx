@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
@@ -27,7 +27,7 @@ import { PhoneLeadInfo } from "./addins/lead-info";
 
 export const PhoneInModal = () => {
   const { isPhoneInOpen, onPhoneInClose, onPhoneInOpen, onSetLead, lead } =
-    usePhoneModal();
+    usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const [agent, setAgent] = useState("");
   const [showLeadInfo, setShowLeadInfo] = useState(false);

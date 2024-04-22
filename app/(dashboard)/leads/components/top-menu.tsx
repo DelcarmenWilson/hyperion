@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Paperclip, Plus } from "lucide-react";
+import { Download, Paperclip, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -15,9 +15,11 @@ import {
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { ImportLeadsForm } from "./import/import-leads-form";
 import { NewLeadForm } from "./new-lead-form";
+import { ExportLeadForm } from "./export-lead-form";
 
 export const TopMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   return (
     <div className="flex justify-end gap-2 w-full">
       {/* <Button variant="outlineprimary" size="sm">
@@ -32,7 +34,13 @@ export const TopMenu = () => {
       >
         <NewLeadForm onClose={() => setIsOpen(false)} />
       </DrawerRight>
-
+      <DrawerRight
+        title="Export Leads"
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+      >
+        <ExportLeadForm onClose={() => setIsExportOpen(false)} />
+      </DrawerRight>
       <Dialog>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -43,7 +51,7 @@ export const TopMenu = () => {
               </Button>
             </DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent side="bottom">
             <p>Import Leads</p>
           </TooltipContent>
         </Tooltip>
@@ -51,9 +59,17 @@ export const TopMenu = () => {
           <ImportLeadsForm />
         </DialogContent>
       </Dialog>
-
-      <Button size="sm" onClick={() => setIsOpen(true)}>
-        <Plus className="h-4 w-4 mr-2" />
+      <Button
+        className="gap-2"
+        variant="outlineprimary"
+        size="sm"
+        onClick={() => setIsExportOpen(true)}
+      >
+        <Download size={16} />
+        EXPORT LEADS
+      </Button>
+      <Button className="gap-2" size="sm" onClick={() => setIsOpen(true)}>
+        <Plus size={16} />
         CREATE LEAD
       </Button>
     </div>

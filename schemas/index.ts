@@ -206,6 +206,14 @@ export const LeadExpenseSchema = z.object({
   value: z.coerce.number(),
   notes:z.optional(z.string()),
 });
+export const LeadExportSchema = z.object({
+  userId:z.string(),
+  type: z.string(),
+  from:z.date(),
+  to: z.date(),
+  state:z.string(),
+  vendor:z.string()
+});
 export const TwilioSchema = z.object({
   phone: z.string(),
   message: z.string(),
