@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -50,27 +49,18 @@ type ExportLeadFormValues = z.infer<typeof LeadExportSchema>;
 
 export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
   const user = useCurrentUser();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const month = monthStartEnd();
 
   const form = useForm<ExportLeadFormValues>({
     resolver: zodResolver(LeadExportSchema),
-    // defaultValues: {
-    //   userId: user?.id as string,
-    //   type: "Excel",
-    //   from: month.from,
-    //   to: new Date(),
-    //   state: "All",
-    //   vendor: "All",
-    // },
     defaultValues: {
       userId: user?.id as string,
-      type: "Pdf",
+      type: "Excel",
       from: month.from,
       to: new Date(),
-      state: "NY",
-      vendor: "Hyperion",
+      state: "All",
+      vendor: "All",
     },
   });
 
@@ -93,16 +83,6 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
         if (values.type == "Excel") exportLeadsToExcel(data);
         else exportLeadsToPdf(data);
       }
-      // if (data.success) {
-      //   const newLead = data.success;
-      //   router.refresh();
-      //   router.push(`/leads/${newLead.id}`);
-      //   toast.success("Lead created!");
-      // }
-      // if (data.error) {
-      //   form.reset();
-      //   toast.error(data.error);
-      // }
     });
 
     setLoading(false);
@@ -123,15 +103,6 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel> File Type</FormLabel>
-                    {/* <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Excel"
-                        disabled={true}
-                        autoComplete="Type"
-                        type="text"
-                      />
-                    </FormControl> */}
                     <Select
                       name="ddlFileType"
                       disabled={loading}
