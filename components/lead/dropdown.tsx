@@ -5,7 +5,16 @@ import { toast } from "sonner";
 
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { Calendar, Check, ChevronDown, Trash, X } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  Download,
+  FileBarChart,
+  FileText,
+  Trash,
+  X,
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -22,6 +31,7 @@ import { AlertModal } from "@/components/modals/alert";
 import { FullLeadNoConvo } from "@/types";
 import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
 import { Conversation } from "@prisma/client";
+import { exportLeadsToExcel, exportLeadsToPdf } from "@/lib/xlsx";
 
 type DropDownDrops = {
   lead: FullLeadNoConvo;
@@ -63,6 +73,12 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
       setAlertOpen(false);
     }
   };
+
+  const preExport = (fileType: string) => {
+    const leads: FullLeadNoConvo[] = [lead];
+    if (fileType == "Excel") exportLeadsToExcel(leads);
+    else exportLeadsToPdf(leads);
+  };
   return (
     // <Button
     //   disabled={lead.status == "Do_Not_Call"}
@@ -82,7 +98,7 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="rounded-full" size="icon">
-          <ChevronDown className="w-4 h-4" />
+          <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60" align="center">
@@ -113,6 +129,35 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
             </div>
           </DropdownMenuItem>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenu>
+          <DropdownMenuTrigger className="w-full">
+            <DropdownMenuItem
+              className="w-full cursor-pointer gap-2"
+              onClick={() => preExport("Excel")}
+            >
+              <Download size={16} />
+              Export
+            </DropdownMenuItem>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-60" align="start">
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => preExport("Excel")}
+            >
+              <FileBarChart size={16} />
+              Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => preExport("Pdf")}
+            >
+              <FileText size={16} />
+              Pdf
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* <DropdownMenuSeparator />
           <DropdownMenuItem
             className="cursor-pointer"

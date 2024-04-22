@@ -1,12 +1,12 @@
 "use client";
 
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { DrawerRight } from "../custom/drawer-right";
 import PhoneShell from "@/components/phone/addins/shell";
 
 export const PhoneOutModal = () => {
   const { isPhoneOutOpen: isDialerOpen, onPhoneOutClose: onDialerClose } =
-    usePhoneModal();
+    usePhone();
   return (
     <DrawerRight
       title="Dialer"

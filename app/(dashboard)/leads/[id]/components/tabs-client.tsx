@@ -21,7 +21,7 @@ import { ActivityList } from "./activity-log/list";
 
 import { Body } from "./message-client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { useEffect } from "react";
 import { SmsClient } from "@/components/phone/sms/client";
 
@@ -31,7 +31,7 @@ type LeadTabsClientProps = {
 };
 
 export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
-  const phone = usePhoneModal();
+  const phone = usePhone();
   useEffect(() => {
     phone.lead = lead;
   }, []);

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 
-type usePhoneModalStore = {
+type phoneStore = {
   isPhoneInOpen: boolean;
   onPhoneInOpen: () => void;
   onPhoneInClose: () => void;
@@ -22,7 +22,7 @@ type usePhoneModalStore = {
   onSetLeads: (e?: FullLead[]) => void;
 };
 
-export const usePhoneModal = create<usePhoneModalStore>((set) => ({
+export const usePhone = create<phoneStore>((set) => ({
   isPhoneInOpen: false,
   onPhoneInOpen: () => set({ isPhoneInOpen: true }),
   onPhoneInClose: () => set({ isPhoneInOpen: false }),

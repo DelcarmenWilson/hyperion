@@ -2,8 +2,9 @@ import { states } from "@/constants/states";
 import { differenceInYears, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
 
 
-export const getAge = (dateOfBirth: any) => {
-  return differenceInYears(new Date,dateOfBirth)
+export const getAge = (dateOfBirth: any):string => {
+  if(!dateOfBirth) return "NA"
+  return differenceInYears(new Date,dateOfBirth).toString()
 };
 
 export const concateDate = (date: Date, time: string): Date => {

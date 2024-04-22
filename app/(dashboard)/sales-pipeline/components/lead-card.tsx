@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { Clock, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { FullLead } from "@/types";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ type LeadCardProps = {
 };
 
 export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
-  const usePm = usePhoneModal();
+  const usePm = usePhone();
   return (
     <div ref={indexRef} className="border-b">
       <div

@@ -1,0 +1,107 @@
+import { formatPhoneNumber } from "@/formulas/phones";
+import { Lead } from "@prisma/client";
+import { format } from "date-fns";
+import xlsx, { IJsonSheet } from "json-as-xlsx";
+import { jsPDF } from "jspdf";
+
+export function exportLeadsToExcel(leads: Lead[]) {
+  let columns: IJsonSheet[] = [
+    {
+      sheet: "Leads",
+      columns: [
+        { label: "Lead Id", value: "id" },
+        { label: "First Name", value: "firstName" },
+        { label: "Last Name", value: "lastName" },
+        { label: "Address", value: "address" },
+        { label: "City", value: "city" },
+        { label: "State", value: "state" },
+        { label: "Zip Code", value: "zipCode" },
+        { label: "Home Phone", value: "homePhone" },
+        { label: "Cell Phone", value: "cellPhone" },
+        { label: "Gender", value: "gender" },
+        { label: "Marital Status", value: "maritalStatus" },
+        { label: "Email", value: "email" },
+        { label: "DateOfBirth", value: "dateOfBirth" },
+        { label: "Weight", value: "weight" },
+        { label: "Height", value: "height" },
+        { label: "Income", value: "income" },
+        { label: "Policy Amount", value: "policyAmount" },
+        { label: "Smoker", value: "smoker" },
+        { label: "Currently Insured", value: "currentlyInsured" },
+        { label: "Current Insuranse", value: "currentInsuranse" },
+        { label: "Vendor", value: "vendor" },
+        { label: "Type", value: "type" },
+        { label: "Status", value: "status" },
+        { label: "Quote", value: "quote" },
+        { label: "SaleAmount", value: "saleAmount" },
+        { label: "Commision", value: "commision" },
+        { label: "CostOfLead", value: "costOfLead" },
+        { label: "DefaultNumber", value: "defaultNumber" },
+        { label: "Notes", value: "notes" },
+        { label: "Recieved Date", value: "recievedAt" },
+        { label: "Created Date", value: "createdAt" },
+        { label: "Updated Date", value: "updatedAt" },
+      ],
+      content: leads,
+    },
+  ];
+  let settings = {
+    fileName: "Hyperion Leads",
+  };
+  xlsx(columns, settings);
+}
+export function exportLeadsToPdf(leads: Lead[]) {
+  const doc = new jsPDF();
+  doc.deletePage(1);
+  leads.forEach((lead) => {
+    const page = doc.addPage();
+    page
+      .setFontSize(25)
+      .setFont("Arial", undefined, "bold")
+      .text(`Hyperion Lead - ${lead.firstName} ${lead.lastName}`, 10, 10);
+
+    page
+      .setFontSize(18)
+      .setFont("Arial", undefined, "normal")
+      .text(
+        [
+          `Lead Id: ${lead.id}`,
+          `First Name: ${lead.firstName}`,
+          `Last Name: ${lead.lastName}`,
+          `Address: ${lead.address}`,
+          `City: ${lead.city}`,
+          `State: ${lead.state}`,
+          `Zip Code: ${lead.zipCode}`,
+          `Home Phone: ${formatPhoneNumber(lead.homePhone!)}`,
+          `Cell Phone: ${formatPhoneNumber(lead.cellPhone!)}`,
+          `Gender: ${lead.gender}`,
+          `Marital Status: ${lead.maritalStatus}`,
+          `Email: ${lead.email}`,
+          `DateOfBirth: ${lead.dateOfBirth}`,
+          `Weight: ${lead.weight}`,
+          `Height: ${lead.height}`,
+          `Income: ${lead.income}`,
+          `Policy Amount: ${lead.policyAmount}`,
+          `Smoker: ${lead.smoker}`,
+          `Currently Insured: ${lead.currentlyInsured}`,
+          `Current Insuranse: ${lead.currentInsuranse}`,
+          `Vendor: ${lead.vendor}`,
+          `Type: ${lead.type}`,
+          `Status: ${lead.status}`,
+          `Quote: ${lead.quote}`,
+          `SaleAmount: ${lead.saleAmount}`,
+          `Commision: ${lead.commision}`,
+          `CostOfLead: ${lead.costOfLead}`,
+        //   `DefaultNumber: ${lead.defaultNumber}`,
+          `Notes: ${lead.notes}`,
+          `Recieved Date: ${format(lead.recievedAt,"MM-dd-yy")}`,
+          `Created Date: ${format(lead.createdAt,"MM-dd-yy")}`,
+          `Updated Date: ${format(lead.updatedAt,"MM-dd-yy")}`,
+        ],
+        10,
+        20,{lineHeightFactor:1.25}
+      );
+  });
+  doc.save("Hyperion_Leads.pdf");
+  
+}

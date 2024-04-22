@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ import {
 export const PhoneOut = () => {
   const { update } = useSession();
   const user = useCurrentUser();
-  const { lead } = usePhoneModal();
+  const { lead } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);

@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Phone } from "lucide-react";
 
-import { usePhoneModal } from "@/hooks/use-phone-modal";
+import { usePhone } from "@/hooks/use-phone";
 
 import { FullConversation } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ interface HeaderProps {
 }
 export const Header = ({ conversation }: HeaderProps) => {
   const router = useRouter();
-  const usePm = usePhoneModal();
+  const usePm = usePhone();
 
   const lead = conversation.lead;
   const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
