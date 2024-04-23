@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +28,10 @@ export const ConditionsClient = ({
   const onConditionDeleted = (id: string) => {
     setConditions((conditions) => conditions.filter((e) => e.id !== id));
   };
+
+  useEffect(() => {
+    setConditions(initConditions);
+  }, [initConditions]);
 
   return (
     <>

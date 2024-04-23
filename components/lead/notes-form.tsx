@@ -1,9 +1,10 @@
 "use client";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { leadUpdateByIdNotes } from "@/actions/lead";
-import { useState } from "react";
-import { toast } from "sonner";
 
 type NoteFormProps = {
   leadId: string;
@@ -27,6 +28,9 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
     });
     setLoading(false);
   };
+  useEffect(() => {
+    setNotes(intialNotes);
+  }, [intialNotes]);
 
   return (
     <div className="flex flex-col">

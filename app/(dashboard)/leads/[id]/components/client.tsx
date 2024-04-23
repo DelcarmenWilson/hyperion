@@ -56,9 +56,10 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     id: lead.id,
     createdAt: lead.createdAt,
     vendor: lead.vendor,
-    saleAmount: lead.saleAmount,
+    ap: lead.ap,
     commision: lead.commision,
-    costOfLead: lead.costOfLead,
+    coverageAmount: lead.coverageAmount,
+    carrier: lead.carrier,
   };
   const onSetDefaultNumber = (e: string) => {
     if (e != defaultNumber) {
@@ -89,7 +90,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
             />
           </div>
           <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
-          <CallInfo lead={lead} />
+          <CallInfo info={lead} />
         </div>
         <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
           <GeneralInfoClient

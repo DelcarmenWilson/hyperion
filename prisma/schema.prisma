@@ -332,10 +332,11 @@ model Lead {
   type   String @default("General")
   status String @default("New")
 
-  quote      Int @default(0)
-  saleAmount Int @default(0)
-  commision  Int @default(0)
-  costOfLead Int @default(0)
+  quote          String @default("0.00")
+  ap             String @default("0.00")
+  commision      String @default("0.00")
+  coverageAmount String @default("0.00")
+  carrier        String @default("NA")
 
   defaultNumber String
   notes         String?

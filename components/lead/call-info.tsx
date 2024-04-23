@@ -21,12 +21,14 @@ import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
 import { useGlobalContext } from "@/providers/global";
 
 interface CallInfoProps {
-  lead: FullLead | FullLeadNoConvo;
+  info: FullLead | FullLeadNoConvo;
   showBtnCall?: boolean;
 }
-export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
+export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhone();
-  const leadcount = lead.calls?.filter((e) => e.direction == "outbound");
+  const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
+  const leadcount = info.calls?.filter((e) => e.direction == "outbound");
+
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
   const { leadStatus } = useGlobalContext();
 
@@ -67,6 +69,10 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
     };
   }, [lead.id]);
 
+  useEffect(() => {
+    setLead(info);
+  }, [info]);
+
   return (
     <div className="flex flex-col gap-2">
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
@@ -90,42 +96,46 @@ export const CallInfo = ({ lead, showBtnCall = true }: CallInfoProps) => {
           )}
         </div>
       )}
-      <div>
-        <p className="text-muted-foreground">Type</p>
-        <Select
-          name="ddlLeadType"
-          defaultValue={lead.type}
-          onValueChange={onTypeUpdated}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Lead Type" />
-          </SelectTrigger>
-          <SelectContent>
-            {allLeadTypes.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <p className="text-muted-foreground">Status</p>
-        <Select
-          disabled={lead.status == "Do_Not_Call"}
-          name="ddlLeadStatus"
-          defaultValue={lead.status}
-          onValueChange={onStatusUpdated}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Disposition" />
-          </SelectTrigger>
-          <SelectContent>
-            {leadStatus?.map((status) => (
-              <SelectItem key={status.id} value={status.status}>
-                {status.status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="text-muted-foreground text-sm space-y-2">
+        <div className="flex items-center gap-2">
+          <p>Type</p>
+          <Select
+            name="ddlLeadType"
+            defaultValue={lead.type}
+            onValueChange={onTypeUpdated}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Lead Type" />
+            </SelectTrigger>
+            <SelectContent className="max-h-80">
+              {allLeadTypes.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <p>Status</p>
+          <Select
+            disabled={lead.status == "Do_Not_Call"}
+            name="ddlLeadStatus"
+            defaultValue={lead.status}
+            onValueChange={onStatusUpdated}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Disposition" />
+            </SelectTrigger>
+            <SelectContent className="max-h-80">
+              {leadStatus?.map((status) => (
+                <SelectItem key={status.id} value={status.status}>
+                  {status.status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div>
         {/* <Badge

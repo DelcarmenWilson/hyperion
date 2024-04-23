@@ -100,7 +100,7 @@ export const columns: ColumnDef<FullLead>[] = [
   {
     accessorKey: "call",
     header: "",
-    cell: ({ row }) => <CallInfo lead={row.original} />,
+    cell: ({ row }) => <CallInfo info={row.original} />,
   },
 
   {
@@ -136,9 +136,10 @@ export const columns: ColumnDef<FullLead>[] = [
         id: row.original.id,
         createdAt: row.original.createdAt,
         vendor: row.original.vendor,
-        saleAmount: row.original.saleAmount,
+        ap: row.original.ap,
         commision: row.original.commision,
-        costOfLead: row.original.costOfLead,
+        coverageAmount: row.original.coverageAmount,
+        carrier: row.original.carrier,
       };
       return <SaleInfoClient info={leadSale} />;
     },

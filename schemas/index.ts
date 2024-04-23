@@ -170,9 +170,10 @@ export const LeadGeneralSchema = z.object({
 export const LeadSaleSchema = z.object({
   id: z.optional(z.string()),
   vendor:z.string(),
-  saleAmount: z.coerce.number(),
-  commision: z.coerce.number(),
-  costOfLead: z.coerce.number()
+  ap: z.string(),
+  commision: z.string(),
+  coverageAmount: z.string(),
+  carrier:z.string()
 });
 export const LeadBeneficiarySchema = z.object({
   id: z.optional(z.string()),

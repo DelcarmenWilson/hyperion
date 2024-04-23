@@ -1,7 +1,12 @@
+IN SALE INFO
+--add carrier to sale info
+
 --add all the carrier conditions after medical conditions
 --see why twilio needs a new token (perhaps its becuase of the recent changes)
+--hide export functionalities from assitants
+--close export form after it is completed
 
--- make the quote change automatically with cron job 
+--make the quote change automatically with cron job 
 --fix the issue where whne you close the dialer the window is giving an error on chrome
 --be able to text any number
 --the default number select is small in the leads client page

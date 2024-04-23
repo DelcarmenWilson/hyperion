@@ -57,7 +57,7 @@ export const formatTimeToSeconds = (time: string) => {
 export const USDollar = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
-
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
+

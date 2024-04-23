@@ -303,7 +303,7 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
   return { success: "Lead notes have been updated" };
 };
 
-export const leadUpdateByIdQuote = async (id: string, quote: number) => {
+export const leadUpdateByIdQuote = async (id: string, quote: string) => {
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
@@ -324,13 +324,7 @@ export const leadUpdateByIdQuote = async (id: string, quote: number) => {
       quote,
     },
   });
-  activityInsert(
-    id,
-    "Quote",
-    "Quote updated",
-    user.id,
-    existingLead.quote.toString()
-  );
+  activityInsert(id, "Quote", "Quote updated", user.id, existingLead.quote);
   return { success: "Lead quote has been updated" };
 };
 
@@ -364,8 +358,8 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
     return { error: "Unauthenticated" };
   }
 
-  let userId=user.id;
-  if (user.role=="ASSISTANT") {
+  let userId = user.id;
+  if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
   }
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
@@ -459,15 +453,16 @@ export const leadUpdateByIdGeneralInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  let dob=dateOfBirth;
-  if(dob){
-dob=new Date(dob).toString()}
+  let dob = dateOfBirth;
+  if (dob) {
+    dob = new Date(dob).toString();
+  }
   const leadInfo = await db.lead.update({
     where: { id },
     data: {
       gender,
       maritalStatus,
-      dateOfBirth:dob,
+      dateOfBirth: dob,
       weight,
       height,
       income,
@@ -484,8 +479,7 @@ export const leadUpdateByIdSaleInfo = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id, vendor, saleAmount, commision, costOfLead } =
-    validatedFields.data;
+  const { id, vendor, ap, commision, coverageAmount } = validatedFields.data;
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
@@ -499,17 +493,17 @@ export const leadUpdateByIdSaleInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  const status = saleAmount>0 ? "Sold" : existingLead.status;
-  const assistant= saleAmount>0 ? null : existingLead.status;
+  const status = parseInt(ap) > 0 ? "Sold" : existingLead.status;
+  const assistant = parseInt(ap) > 0 ? null : existingLead.assistant;
   const leadInfo = await db.lead.update({
     where: { id },
     data: {
       vendor,
-      saleAmount,
+      ap,
       commision,
-      costOfLead,
+      coverageAmount,
       status,
-      assistant
+      assistant,
     },
   });
   activityInsert(leadInfo.id!, "sale", "Sale info updated", user.id);
@@ -898,14 +892,16 @@ export const leadStatusInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  let userId=user.id;
-  if (user.role=="ASSISTANT") {
+  let userId = user.id;
+  if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
   }
 
   const { status, description } = validatedFields.data;
 
-  const existingStatus = await db.leadStatus.findFirst({ where: { status,userId } });
+  const existingStatus = await db.leadStatus.findFirst({
+    where: { status, userId },
+  });
   if (existingStatus) {
     return { error: "Status already exists" };
   }
@@ -914,7 +910,7 @@ export const leadStatusInsert = async (
     data: {
       status,
       description,
-      userId
+      userId,
     },
   });
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export const MainInfoClient = ({
     }
     setEdit(false);
   };
-  const onQuoteUpdated = (e?: number) => {
+  const onQuoteUpdated = (e?: string) => {
     if (!e) {
       return;
     }
@@ -67,6 +67,10 @@ export const MainInfoClient = ({
       }
     });
   };
+
+  useEffect(() => {
+    setLeadInfo(info);
+  }, [info]);
 
   return (
     <div className="flex flex-col gap-1 text-sm">

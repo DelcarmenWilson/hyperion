@@ -29,6 +29,7 @@ import { allVendors } from "@/constants/lead";
 
 import { LeadSaleInfo } from "@/types";
 import { leadUpdateByIdSaleInfo } from "@/actions/lead";
+import { useGlobalContext } from "@/providers/global";
 
 type SaleInfoFormProps = {
   saleInfo: LeadSaleInfo;
@@ -110,13 +111,44 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
                 )}
               />
 
+              {/* CARRIER */}
+              {/* <FormField
+                control={form.control}
+                name="carrier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Carrier</FormLabel>
+                    <Select
+                      name="ddlCarrier"
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-6 p-1">
+                          <SelectValue placeholder="Select a carrier" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {allVendors.map((vendor) => (
+                          <SelectItem key={vendor.name} value={vendor.value}>
+                            {vendor.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+
               {/* SALE AMOUNT */}
               <FormField
                 control={form.control}
-                name="saleAmount"
+                name="ap"
                 render={({ field }) => (
                   <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Sale Amount</FormLabel>
+                    <FormLabel className="w-[100px]">Ap</FormLabel>
                     <FormMessage />
                     <FormControl>
                       <Input
@@ -124,7 +156,7 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
                         className="flex-1 h-6"
                         placeholder="120"
                         disabled={loading}
-                        autoComplete="saleAmount"
+                        autoComplete="ap"
                         type="number"
                       />
                     </FormControl>
@@ -156,17 +188,17 @@ export const SaleInfoForm = ({ saleInfo, onChange }: SaleInfoFormProps) => {
               {/* COST OF LEAD */}
               <FormField
                 control={form.control}
-                name="costOfLead"
+                name="coverageAmount"
                 render={({ field }) => (
                   <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Cost Lead</FormLabel>
+                    <FormLabel className="w-[100px]">Coverage Amount</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         className="flex-1 h-6"
                         placeholder="7"
                         disabled={loading}
-                        autoComplete="costOfLead"
+                        autoComplete="coverageAmount"
                         type="number"
                       />
                     </FormControl>

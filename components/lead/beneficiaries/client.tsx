@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { LeadBeneficiary } from "@prisma/client";
 import { BeneficiaryForm } from "./form";
@@ -29,6 +29,10 @@ export const BeneficiariesClient = ({
       beneficiaries.filter((e) => e.id !== id)
     );
   };
+
+  useEffect(() => {
+    setBeneficiaries(initBeneficiaries);
+  }, [initBeneficiaries]);
 
   return (
     <>

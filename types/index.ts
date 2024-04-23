@@ -20,6 +20,7 @@ import {
   LeadMedicalCondition,
   MedicalCondition,
 } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type HalfUser = {
   id: string;
@@ -107,7 +108,7 @@ export type LeadMainInfo = {
   state: string ;
   zipCode?: string ;  
   status:string;
-  quote: number ;
+  quote: string ;
 
 };
 export type LeadGeneralInfo = {
@@ -125,9 +126,10 @@ export type LeadSaleInfo = {
   id: string;
   createdAt:Date;
   vendor:string
-  saleAmount: number ;
-  commision: number ;
-  costOfLead: number;
+  ap: string ;
+  commision: string ;
+  coverageAmount: string;
+  carrier:string
 };
 
 export type PhoneType = {
