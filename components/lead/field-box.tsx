@@ -9,21 +9,18 @@ import { USDollar } from "@/formulas/numbers";
 
 type FieldBoxProps = {
   name: string;
-  field: number;
+  field: string;
   maxLength?: number;
-  onFieldUpdate: (e?: number) => void;
+  onFieldUpdate: (e?: string) => void;
 };
 export const FieldBox = ({
   name,
   field,
-  maxLength = 4,
+  maxLength = 6,
   onFieldUpdate,
 }: FieldBoxProps) => {
   const [fieldEnabled, setFieldEnabled] = useState(false);
   const [newField, setNewField] = useState(field);
-  const onFieldChange = (num: string) => {
-    setNewField(parseInt(num));
-  };
 
   const onCancel = () => {
     setFieldEnabled(false);
@@ -41,12 +38,12 @@ export const FieldBox = ({
           className="w-[60px] h-5"
           maxLength={maxLength}
           value={newField}
-          onChange={(e) => onFieldChange(e.target.value)}
+          onChange={(e) => setNewField(e.target.value)}
           type="number"
         />
       ) : (
         <span className={field ? "font-semibold" : "text-primary"}>
-          {field ? USDollar.format(field) : "Not set"}
+          {field ? `$${field}` : "Not set"}
         </span>
       )}
       {fieldEnabled ? (

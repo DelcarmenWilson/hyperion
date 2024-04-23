@@ -94,7 +94,7 @@ export const teamGetByIdSales = async (
       where: {
         user: { teamId: id },
         status: "Sold",
-        saleAmount: { gt: 1 },
+        ap: { not:"0.00"},
         updatedAt: {
           lte: toDate,
           gte: fromDate,

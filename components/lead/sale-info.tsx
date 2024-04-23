@@ -1,13 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { FilePenLine } from "lucide-react";
 
 import { LeadSaleInfo } from "@/types";
 import { TextGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
-import { FilePenLine } from "lucide-react";
 import { SaleInfoForm } from "./forms/sale-info-form";
-import { USDollar } from "@/formulas/numbers";
 
 type ExtraInfoProps = {
   info: LeadSaleInfo;
@@ -22,6 +21,10 @@ export const SaleInfoClient = ({ info }: ExtraInfoProps) => {
     }
     setEdit(false);
   };
+
+  useEffect(() => {
+    setSaleInfo(info);
+  }, [info]);
   if (!info) {
     return null;
   }
@@ -41,24 +44,15 @@ export const SaleInfoClient = ({ info }: ExtraInfoProps) => {
               {saleInfo.vendor.replace("_", " ")}
             </p>
           </div>
-          <TextGroup
-            title="Coverage amount"
-            value={
-              saleInfo.saleAmount ? USDollar.format(saleInfo.saleAmount) : ""
-            }
-          />
+          <TextGroup title="Ap" value={saleInfo.ap ? `$${saleInfo.ap}` : ""} />
 
           <TextGroup
-            title="Ap"
-            value={
-              saleInfo.commision ? USDollar.format(saleInfo.commision) : ""
-            }
+            title="Commision"
+            value={saleInfo.commision ? `$${saleInfo.commision}` : ""}
           />
           <TextGroup
-            title="Cost of lead"
-            value={
-              saleInfo.costOfLead ? USDollar.format(saleInfo.costOfLead) : ""
-            }
+            title="Coverage Amount"
+            value={saleInfo.coverageAmount ? saleInfo.coverageAmount : ""}
           />
           <Button
             className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"

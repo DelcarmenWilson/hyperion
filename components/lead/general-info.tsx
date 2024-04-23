@@ -1,9 +1,4 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { getAge } from "@/formulas/dates";
-import { LeadGeneralInfo } from "@/types";
-import { Appointment, Call } from "@prisma/client";
-import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import {
   Cake,
   CalendarX,
@@ -12,9 +7,17 @@ import {
   Plus,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
-import { GeneralInfoForm } from "./forms/general-info-form";
+import { format } from "date-fns";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { TextGroup } from "@/components/reusable/input-group";
+import { GeneralInfoForm } from "./forms/general-info-form";
+
+import { LeadGeneralInfo } from "@/types";
+import { Appointment, Call } from "@prisma/client";
+
+import { getAge } from "@/formulas/dates";
 
 type GeneralInfoClientProps = {
   info: LeadGeneralInfo;
@@ -39,6 +42,9 @@ export const GeneralInfoClient = ({
     }
     setEdit(false);
   };
+  useEffect(() => {
+    setLeadInfo(info);
+  }, [info]);
   return (
     <div className="flex flex-col gap-2 text-sm">
       {call && (

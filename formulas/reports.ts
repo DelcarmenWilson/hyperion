@@ -24,7 +24,7 @@ export const convertSalesData = (sales: Sales[]) => {
 
   for (const sale of sales) {
     const month = sale.updatedAt.getMonth();
-    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + sale.saleAmount;
+    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + parseFloat(sale.ap);
   }
   for (const month in monthlyRevenue) {
     graphData[parseInt(month)].total = monthlyRevenue[parseInt(month)];

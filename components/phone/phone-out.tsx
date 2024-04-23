@@ -208,7 +208,7 @@ export const PhoneOut = () => {
       </div>
       {user?.role != "ASSISTANT" && (
         <div className="flex  items-center text-sm gap-2">
-          <AlertCircle className="h-4 w-4" /> Call recording
+          <AlertCircle size={16} /> Call recording
           <div className="ml-auto flex gap-2">
             Off
             <Switch
@@ -256,17 +256,18 @@ export const PhoneOut = () => {
       )}
       {call && (
         <Button
+          className="gap-2"
           variant={isCallMuted ? "destructive" : "outlinedestructive"}
           onClick={onCallMuted}
         >
           {isCallMuted ? (
-            <span className="flex gap-2">
-              <MicOff /> CALL IS MUTED
-            </span>
+            <>
+              <MicOff size={16} /> Muted
+            </>
           ) : (
-            <span className="flex gap-2">
-              <Mic /> Mute
-            </span>
+            <>
+              <Mic size={16} /> Mute
+            </>
           )}
         </Button>
       )}

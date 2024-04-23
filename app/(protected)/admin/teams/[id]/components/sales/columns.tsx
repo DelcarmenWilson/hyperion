@@ -46,7 +46,8 @@ export const columns: ColumnDef<Sales>[] = [
   {
     accessorKey: "sale",
     header: "Sale",
-    cell: ({ row }) => USDollar.format(row.original.saleAmount),
+
+    cell: ({ row }) => `${row.original.ap}`,
   },
   {
     accessorKey: "saleDate",

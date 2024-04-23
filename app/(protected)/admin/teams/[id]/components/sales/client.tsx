@@ -33,9 +33,7 @@ export const RecentSales = ({ sales }: RecentSalesProps) => {
               </Avatar>
               <p>{sale.firstName}</p>
               <p>{format(sale.updatedAt, "MM-dd-yyy")}</p>
-              <p className="font-medium text-end">
-                +{USDollar.format(sale.saleAmount)}
-              </p>
+              <p className="font-medium text-end">{`+$${sale.ap}`}</p>
             </div>
           ))}
         </div>

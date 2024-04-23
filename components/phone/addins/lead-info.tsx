@@ -63,9 +63,10 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     id: lead.id,
     createdAt: lead.createdAt,
     vendor: lead.vendor,
-    saleAmount: lead.saleAmount,
+    ap: lead.ap,
     commision: lead.commision,
-    costOfLead: lead.costOfLead,
+    coverageAmount: lead.coverageAmount,
+    carrier: lead.carrier,
   };
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">
@@ -88,7 +89,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
         )}
       >
         <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-          <h3 className="text-center text-2xl font-bold ">
+          <h3 className="text-center text-2xl bg-secondary font-bold ">
             <span className="text-primary">
               {lead.firstName} {lead.lastName}
             </span>
@@ -106,13 +107,13 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           </TabsList>
 
           <TabsContent
-            className="flex-1  overflow-hidden overflow-y-auto"
+            className="flex-1 overflow-hidden overflow-y-auto"
             value="general"
           >
             <div className="grid grid-cols-3 gap-2 p-2">
               <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient info={leadInfo} showInfo />
-              <CallInfo lead={lead!} showBtnCall={false} />
+              <CallInfo info={lead!} showBtnCall={false} />
               <SaleInfoClient info={leadSale} />
               <NotesForm
                 leadId={lead?.id as string}
