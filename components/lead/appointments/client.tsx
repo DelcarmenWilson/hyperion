@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { find } from "lodash";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { createPubSub } from "@/lib/subscribable-function";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
@@ -32,10 +31,6 @@ export const AppointmentClient = ({
         return [...current, appointment];
       });
     };
-    const pusher = createPubSub<{
-      NEW_APPOINTMENT: (appointment: FullAppointment) => void;
-    }>();
-    pusher.on("NEW_APPOINTMENT", appointmentHandler);
   }, [user?.id]);
 
   return (

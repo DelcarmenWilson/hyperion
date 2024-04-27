@@ -58,6 +58,7 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
     task?.images ? task.images.split(",") : []
   );
   const [modalOpen, setModalOpen] = useState(false);
+  const isMaster = role != "MASTER" && task?.status != "Resolved";
 
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(TaskSchema),
@@ -307,7 +308,7 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
                 />
               </div>
 
-              {role != "MASTER" && task?.status != "Resolved" && (
+              {isMaster && (
                 <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
                   <Button onClick={onCancel} type="button" variant="outline">
                     Cancel
@@ -321,47 +322,11 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
           </Form>
         </div>
         <ImageGrid
-          role={role!}
-          status={task?.status!}
+          enableButton={isMaster}
           images={images}
           setModalOpen={setModalOpen}
           onImageRemove={onImageRemove}
         />
-        {/* <div>
-          <div className=" flex justify-between items-center">
-            <p>Attachments</p>
-            {role != "MASTER" && task?.status != "Resolved" && (
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => setModalOpen(true)}
-              >
-                <Plus size={15} className="mr-1" /> Add Attachments
-              </Button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2 p-2">
-            {images.map((img, index) => (
-              <div key={index} className="relative">
-                <Image
-                  width={80}
-                  height={80}
-                  className="h-[80px] w-[80px]"
-                  src={img}
-                  alt={`Image${index}`}
-                />
-                <Button
-                  size="xs"
-                  className="absolute top-0 right-0 rounded-full opacity-0"
-                  onClick={() => onImageRemove(index)}
-                >
-                  <X size={12} />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
     </>
   );

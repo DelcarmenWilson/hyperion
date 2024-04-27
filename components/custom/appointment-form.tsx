@@ -139,12 +139,12 @@ export const AppointmentForm = () => {
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-[280px] justify-start text-left font-normal",
+                      "w-[280px] justify-start text-left font-normal gap-2",
                       !date && "text-muted-foreground"
                     )}
                     onClick={() => setCalOpen(true)}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon size={16} />
                     {date ? format(date, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>

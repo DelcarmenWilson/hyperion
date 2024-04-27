@@ -61,7 +61,8 @@ export async function POST(req: Request) {
     await pusherServer.trigger(j.agentId, "call:coach", agent);
   }
   if (lead?.id) {
-    await pusherServer.trigger(lead?.id, "call:new", newCall);
+     await pusherServer.trigger(lead?.id, "call:new", newCall);
+
   }
 
   const reponse = await voiceResponse(j);

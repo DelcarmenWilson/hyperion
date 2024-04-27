@@ -47,7 +47,7 @@ export const columns: ColumnDef<Sales>[] = [
     accessorKey: "sale",
     header: "Sale",
 
-    cell: ({ row }) => `${row.original.ap}`,
+    cell: ({ row }) => `${row.original.policy?.ap}`,
   },
   {
     accessorKey: "saleDate",

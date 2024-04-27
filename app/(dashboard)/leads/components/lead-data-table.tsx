@@ -131,7 +131,7 @@ export function LeadDataTable<TData, TValue>({
               <TooltipTrigger asChild>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon">
-                    <Import className="h-4 w-4" />
+                    <Import size={16} />
                   </Button>
                 </DialogTrigger>
               </TooltipTrigger>

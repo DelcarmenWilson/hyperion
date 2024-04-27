@@ -10,7 +10,7 @@ import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio-config";
 import { SmsMessageSchema } from "@/schemas";
-import { Lead, } from "@prisma/client";
+import { Lead } from "@prisma/client";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -119,7 +119,7 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { leadId, content } = validatedFields.data;
+  const { leadId, content, images, type } = validatedFields.data;
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
@@ -138,9 +138,10 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   }
 
   const result = await client.messages.create({
-    body: content,
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
+    mediaUrl: images ? [`https://hperioncrm.com${images}`] : undefined,
+    body: content,
   });
 
   if (!result) {
@@ -151,6 +152,7 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     role: "assistant",
     content,
     conversationId: convoid!,
+    attachment:images,
     senderId: user.id,
     hasSeen: false,
   });
@@ -210,12 +212,13 @@ export const smsSendAgentAppointmentNotification = async (
   const message = `Hi ${user.firstName},\n
 Great news! ${lead.firstName} ${
     lead.lastName
-  } has booked an appointment for ${date.toDateString()} at ${date.toTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\nBest regards,\nStrongside Financial`;
-  const result = await client.messages.create({
-    body: message,
-    from: lead.defaultNumber,
-    to: user.notificationSettings.phoneNumber,
-  });
+  } has booked an appointment for ${date.toDateString()} at ${date.toLocaleTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\nBest regards,\nStrongside Financial`;
+
+  const result = await smsSend(
+    lead.defaultNumber,
+    user.notificationSettings.phoneNumber,
+    message
+  );
 
   if (!result) {
     return { error: "Message was not sent!" };
@@ -227,16 +230,13 @@ Great news! ${lead.firstName} ${
 export const smsSendLeadAppointmentNotification = async (
   lead: Lead,
   date: Date
-) => { 
- 
-  const message = `"Hi ${lead.firstName},\n  Thanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\nBest regards,\nStrongside Financial"
+) => {
+  const message = `"Hi ${
+    lead.firstName
+  },\n  Thanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toLocaleTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\nBest regards,\nStrongside Financial"
   `;
 
-  const result = await client.messages.create({
-    body: message,
-    from: lead.defaultNumber,
-    to: lead.cellPhone,
-  });
+  const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
 
   if (!result) {
     return { error: "Message was not sent!" };
@@ -245,18 +245,11 @@ export const smsSendLeadAppointmentNotification = async (
   return { success: "Message sent!" };
 };
 
-export const smsSendAppointmentReminder = async (
-  lead: Lead,
-  date: Date
-) => {  
+export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
   const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
   `;
 
-  const result = await client.messages.create({
-    body: message,
-    from: lead.defaultNumber,
-    to: lead.cellPhone,
-  });
+  const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
 
   if (!result) {
     return { error: "Message was not sent!" };

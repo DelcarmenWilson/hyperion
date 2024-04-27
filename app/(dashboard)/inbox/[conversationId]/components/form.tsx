@@ -62,7 +62,7 @@ export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
           type="submit"
           className="rounded-full"
         >
-          <Send className="h-4 w-4" />
+          <Send size={16} />
         </Button>
       </form>
     </div>

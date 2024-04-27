@@ -29,7 +29,8 @@
     ".next/types/**/*.ts",
     "app/(testing)/components/line-chart.js",
     "types",
-    "app/api/user/voicemails"
+    "app/api/user/voicemails",
+    "lib/events.js"
   ],
   "exclude": ["node_modules"]
 }

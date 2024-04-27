@@ -9,7 +9,12 @@ import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
 import { scriptGetOne } from "@/data/script";
-import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/data/user";
+import {
+  userCarriersGetAllByUserId,
+  userGetByIdDefault,
+  userLicensesGetAllByUserId,
+  userTemplatesGetAllByUserId,
+} from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGetByUserId } from "@/data/schedule";
 import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
@@ -30,11 +35,13 @@ export default async function DashBoardLayout({
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken(user.id);
   const licenses = await userLicensesGetAllByUserId(user.id);
+  const carriers = await userCarriersGetAllByUserId(user.id);
   const schedule = await scheduleGetByUserId(user.id, user.role);
   const appointments = await appointmentsGetAllByUserIdUpcoming(
     user.id,
     user.role
   );
+  const templates = await userTemplatesGetAllByUserId(user.id);
 
   return (
     <div className="relative flex h-full flex-col">
@@ -50,6 +57,8 @@ export default async function DashBoardLayout({
               initStatus={status}
               intScript={script!}
               initLicenses={licenses}
+              initCarriers={carriers}
+              initTemplates={templates}
             >
               <PhoneContextProvider initVoicemails={voicemails} token={token!}>
                 <AppointmentProvider

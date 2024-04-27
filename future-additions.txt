@@ -1,10 +1,18 @@
-IN SALE INFO
---add carrier to sale info
+Jhonni 
+    - working on prompt enginering
+    - working on workflow
+
+
+IN SALE
+-- finish the intake form
+-- fix the dailer(big task)
+
+MISC 
+--lokk to where to add vender,ssn and received date for the lead
 
 --add all the carrier conditions after medical conditions
 --see why twilio needs a new token (perhaps its becuase of the recent changes)
 --hide export functionalities from assitants
---close export form after it is completed
 
 --make the quote change automatically with cron job 
 --fix the issue where whne you close the dialer the window is giving an error on chrome
@@ -33,7 +41,6 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- need to be able to send email 
 -- get an original sound sampler to ebay chime
 -- dont forget to uncomment the inbox client in the inbox
--- incorporate intake form
 
 -- get agent couching working
 -- be able to  foward to another agent

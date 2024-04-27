@@ -13,7 +13,7 @@ export const messageInsert = async (
     return { error: "Invalid fields!" };
   }
 
-  const { role, content,conversationId,senderId,hasSeen,sid } = validatedFields.data;
+  const { role, content,conversationId,attachment,senderId,hasSeen,sid } = validatedFields.data;
 
  
   const newMessage = await db.message.create({
@@ -21,6 +21,7 @@ export const messageInsert = async (
       conversationId,
       role,
       content,
+      attachment,
       hasSeen,
       senderId,
       sid,      

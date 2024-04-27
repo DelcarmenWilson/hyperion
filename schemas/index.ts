@@ -167,18 +167,21 @@ export const LeadGeneralSchema = z.object({
   income: z.optional(z.string()),
   smoker: z.boolean(),
 });
-export const LeadSaleSchema = z.object({
-  id: z.optional(z.string()),
-  vendor:z.string(),
+export const LeadPolicySchema = z.object({
+  leadId: z.string(),
+  carrier:z.string(),
+  policyNumber:z.string(),
+  status:z.string(),
   ap: z.string(),
   commision: z.string(),
   coverageAmount: z.string(),
-  carrier:z.string()
+  startDate:z.optional(z.date()),
 });
 export const LeadBeneficiarySchema = z.object({
   id: z.optional(z.string()),
   leadId:z.string(),  
-  type:z.optional(z.string()),
+  type:z.string(),
+  relationship:z.string(),  
   firstName: z.string().min(3, "First name must be at least 3 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   address: z.optional(z.string()),  
@@ -189,6 +192,9 @@ export const LeadBeneficiarySchema = z.object({
   gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
   email: z.optional(z.string().email()),
   dateOfBirth: z.optional(z.string()),  
+  ssn: z.optional(z.string()),  
+  share: z.optional(z.string()),  
+
   notes: z.optional(z.string()),
 });
 export const LeadConditionSchema = z.object({
@@ -241,6 +247,7 @@ export const MessageSchema = z.object({
   role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
   conversationId: z.string(),
+  attachment:z.optional(z.string()),
   senderId: z.string(),
   hasSeen: z.boolean(),
   sid: z.optional(z.string()),
@@ -249,6 +256,8 @@ export const MessageSchema = z.object({
 export const SmsMessageSchema = z.object({
   leadId: z.optional(z.string()),
   content: z.string(),
+  images:z.optional(z.string()),
+  type:z.string()
 });
 
 export const PresetSchema = z.object({
@@ -316,6 +325,13 @@ export const UserCarrierSchema = z.object({
   agentId: z.string().min(2,"*"),
   carrierId : z.string().min(2,"*"),
   comments: z.optional(z.string()),
+});
+export const UserTemplateSchema = z.object({
+  id: z.optional(z.string()),
+  name: z.string(),
+  description: z.optional(z.string()),
+  attachment: z.optional(z.string()),
+  message: z.optional(z.string()),
 });
 // AMIN
 export const CarrierSchema = z.object({

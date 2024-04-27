@@ -117,7 +117,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
       feedbackInsert(values).then((data) => {
         if (data.success) {
           formData.append("id", data.success);
-          axios.post("/api/upload/image", formData);
+          axios.post("/api/upload/images", formData);
           toast.success("Feedback has been created");
           router.refresh();
         }
@@ -249,8 +249,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
         </form>
       </Form>
       <ImageGrid
-        role={role!}
-        status={feedback?.status!}
+        enableButton={role != "MASTER" && feedback?.status != "Resolved"}
         images={images}
         setModalOpen={setModalOpen}
         onImageRemove={onImageRemove}

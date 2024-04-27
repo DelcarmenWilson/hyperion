@@ -1,48 +1,50 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
+import { format } from "date-fns";
+import { toast } from "sonner";
+
+import { FullLeadMedicalCondition } from "@/types";
 
 import { Button } from "@/components/ui/button";
-
 import { DrawerRight } from "@/components/custom/drawer-right";
+import { AlertModal } from "@/components/modals/alert";
+import { CardData } from "@/components/reusable/card-data";
+
 import { ConditionForm } from "./form";
 
 import { leadConditionDeleteById } from "@/actions/lead";
-import { toast } from "sonner";
-
-import { AlertModal } from "@/components/modals/alert";
-import { Edit, Trash } from "lucide-react";
-import { FullLeadMedicalCondition } from "@/types";
-import { format } from "date-fns";
 
 type ConditionCardProps = {
   initCondition: FullLeadMedicalCondition;
-  onConditionDeleted: (e: string) => void;
 };
-export const ConditionCard = ({
-  initCondition,
-  onConditionDeleted,
-}: ConditionCardProps) => {
+export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
+  const [condition, setCondition] = useState(initCondition);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [condition, setCondition] = useState(initCondition);
-
-  const onConditionUpdated = (e: FullLeadMedicalCondition) => {
-    setCondition(e);
-  };
 
   const onDeleteCondition = () => {
+    setLoading(true);
     leadConditionDeleteById(condition.id).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
       if (data.success) {
-        onConditionDeleted(condition.id);
+        emitter.emit("conditionDeleted", condition.id);
         toast.success(data.success);
       }
     });
+    setAlertOpen(false);
+    setLoading(false);
   };
-
+  useEffect(() => {
+    setCondition(initCondition);
+    const onConditionUpdated = (e: FullLeadMedicalCondition) => {
+      if (e.id == condition.id) setCondition(e);
+    };
+    emitter.on("conditionUpdated", (info) => onConditionUpdated(info));
+  }, [initCondition]);
   return (
     <>
       <AlertModal
@@ -50,34 +52,35 @@ export const ConditionCard = ({
         onClose={() => setAlertOpen(false)}
         onConfirm={onDeleteCondition}
         loading={loading}
+        height="auto"
       />
       <DrawerRight
         title="Edit Beneficiary"
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >
-        <ConditionForm
-          condition={condition}
-          onClose={() => setIsOpen(false)}
-          onConditionChange={onConditionUpdated}
-        />
+        <ConditionForm condition={condition} onClose={() => setIsOpen(false)} />
       </DrawerRight>
-      <div className="grid grid-cols-2 lg:grid-cols-4 mb-1 items-center gap-2">
-        <span>{condition.condition.name}</span>
-        <span>{format(condition.diagnosed, "MM-dd-yy")}</span>
-        <span>{condition.medications}</span>
+      <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
+        <h3 className="text-2xl text-primary font-semibold text-center">
+          {condition.condition.name}
+        </h3>
 
-        <div className="flex gap-2">
+        <CardData
+          title="Date Diagnosed"
+          value={format(condition.diagnosed, "MM-dd-yy")}
+        />
+        <CardData title="Medications" value={condition.medications} />
+
+        <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button
             variant="destructive"
-            size="icon"
+            className="opacity-0 group-hover:opacity-100"
             onClick={() => setAlertOpen(true)}
           >
-            <Trash size={16} />
+            Delete
           </Button>
-          <Button size="icon" onClick={() => setIsOpen(true)}>
-            <Edit size={16} />
-          </Button>
+          <Button onClick={() => setIsOpen(true)}>Edit</Button>
         </div>
       </div>
     </>

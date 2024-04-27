@@ -49,7 +49,8 @@ const TeamPage = async ({
       (sum, user) => sum + user.conversations.length,
       0
     ),
-    revenue: sales?.reduce((sum, sale) => sum + parseInt(sale.ap), 0) || 0,
+    revenue:
+      sales?.reduce((sum, sale) => sum + parseInt(sale.policy?.ap!), 0) || 0,
   };
 
   const userReport: FullUserTeamReport[] = team.users.map((user) => ({
@@ -60,7 +61,10 @@ const TeamPage = async ({
     calls: user.calls.length,
     appointments: user.appointments.length,
     conversations: user.conversations.length,
-    revenue: user.leads.reduce((sum, lead) => sum + parseInt(lead.ap), 0),
+    revenue: user.leads.reduce(
+      (sum, lead) => sum + parseInt(lead.policy?.ap!),
+      0
+    ),
   }));
 
   return (

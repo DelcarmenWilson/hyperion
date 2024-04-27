@@ -22,8 +22,8 @@ export const Actions = ({ pipeline, sendPipeline, onReset }: ActionProps) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-4 w-4" />
+          <Button className="gap-2" variant="ghost" size="icon">
+            <MoreVertical size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-60" align="center">

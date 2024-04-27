@@ -61,8 +61,12 @@ export const MedicalClient = ({ initMedicals }: MedicalClientProps) => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DialogTrigger asChild>
-                      <Button variant="outlineprimary" size="sm">
-                        <Paperclip className="h-4 w-4 mr-2" />
+                      <Button
+                        className="gap-2"
+                        variant="outlineprimary"
+                        size="sm"
+                      >
+                        <Paperclip size={16} />
                         Upload Csv File
                       </Button>
                     </DialogTrigger>

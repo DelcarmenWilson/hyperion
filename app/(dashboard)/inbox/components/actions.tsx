@@ -31,7 +31,7 @@ export const Actions = ({ id }: ActionsProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Button size="icon" className="rounded-full">
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-60" align="start">
@@ -39,26 +39,16 @@ export const Actions = ({ id }: ActionsProps) => {
             Actions
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer" onClick={onDelete}>
-            <Trash className="h-4 w-4 mr-2" /> Delete
+          <DropdownMenuItem className="cursor-pointer gap-2" onClick={onDelete}>
+            <Trash size={16} />
+            Delete
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
-            <CircleSlash className="h-4 w-4 mr-2" /> Block
+          <DropdownMenuItem className="cursor-pointer gap-2">
+            <CircleSlash size={16} /> Block
           </DropdownMenuItem>
           <DropdownMenuSeparator />
         </DropdownMenuContent>
       </DropdownMenu>
-      {/* <Button size="icon" className="rounded-full">
-        <ChevronDown className="h-4 w-4" />
-      </Button>
-
-      <Button variant="destructive" size="icon" onClick={onDelete}>
-        <Trash className="h-4 w-4" />
-      </Button>
-
-      <Button variant="secondary" size="icon">
-        <CircleSlash className="h-4 w-4" />
-      </Button> */}
     </div>
   );
 };

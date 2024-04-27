@@ -176,34 +176,6 @@ export const NewLeadForm = ({ onClose }: NewLeadFormProps) => {
                         autoComplete="DateOfBirth"
                       />
                     </FormControl>
-
-                    {/* <Popover>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            value={
-                              field.value
-                                ? format(field.value, "MM-dd-yy")
-                                : "Pick a date"
-                            }
-                          />
-                          <PopoverTrigger asChild>
-                            <CalendarIcon className="absolute h-4 w-4 opacity-50 right-2 top-0 translate-y-1/2 cursor-pointer" />
-                          </PopoverTrigger>
-                        </div>
-                      </FormControl>
-                      <PopoverContent className="w-auto p-0" align="end">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover> */}
                     <FormMessage />
                   </FormItem>
                 )}

@@ -9,19 +9,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Button } from "@/components/ui/button";
 
-import { DropDown } from "@/components/lead/dropdown";
-import { SaleInfoClient } from "@/components/lead/sale-info";
+import { LeadDropDown } from "@/components/lead/dropdown";
+import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { CallInfo } from "@/components/lead/call-info";
-import { NotesForm } from "@/components/lead/notes-form";
+import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
 import { PhoneScript } from "./script";
-import { LeadMainInfo, LeadGeneralInfo, LeadSaleInfo } from "@/types";
+import { LeadMainInfo, LeadGeneralInfo, LeadPolicyInfo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
+import { LeadHeader } from "@/components/lead/header";
 
 type PhoneLeadInfo = {
   open?: boolean;
@@ -34,6 +35,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   if (!lead) {
     return null;
   }
+  const leadName = `${lead.firstName} ${lead.lastName}`;
   const leadMainInfo: LeadMainInfo = {
     id: lead.id,
     firstName: lead.firstName,
@@ -59,14 +61,17 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     smoker: lead.smoker,
   };
 
-  const leadSale: LeadSaleInfo = {
-    id: lead.id,
-    createdAt: lead.createdAt,
-    vendor: lead.vendor,
-    ap: lead.ap,
-    commision: lead.commision,
-    coverageAmount: lead.coverageAmount,
-    carrier: lead.carrier,
+  const leadPolicy: LeadPolicyInfo = {
+    leadId: lead.id,
+    carrier: lead.policy?.carrier!,
+    policyNumber: lead.policy?.policyNumber!,
+    status: lead.policy?.status!,
+    ap: lead.policy?.ap!,
+    commision: lead.policy?.commision!,
+    coverageAmount: lead.policy?.coverageAmount!,
+    startDate: lead.policy?.startDate!,
+    createdAt: lead.policy?.createdAt!,
+    updatedAt: lead.policy?.updatedAt!,
   };
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">
@@ -89,7 +94,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
         )}
       >
         <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-          <h3 className="text-center text-2xl bg-secondary font-bold ">
+          {/* <h3 className="text-center text-2xl bg-secondary font-bold ">
             <span className="text-primary">
               {lead.firstName} {lead.lastName}
             </span>
@@ -97,8 +102,9 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             <span className="italic text-muted-foreground mr-2">
               {lead.gender.substring(0, 1)} {lead.maritalStatus}
             </span>
-            <DropDown lead={lead} />
-          </h3>
+            <LeadDropDown lead={lead} />
+          </h3> */}
+          <LeadHeader lead={lead} />
           <TabsList className="flex w-full h-auto">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
@@ -112,9 +118,9 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           >
             <div className="grid grid-cols-3 gap-2 p-2">
               <MainInfoClient info={leadMainInfo} noConvo={false} />
-              <GeneralInfoClient info={leadInfo} showInfo />
+              <GeneralInfoClient leadName={leadName} info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />
-              <SaleInfoClient info={leadSale} />
+              <PolicyInfoClient leadName={leadName} info={leadPolicy} />
               <NotesForm
                 leadId={lead?.id as string}
                 intialNotes={lead?.notes as string}

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { useGlobalContext } from "@/providers/global";
+
 import { LeadStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
@@ -9,22 +11,14 @@ import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { columns } from "./columns";
 
-import { useGlobalContext } from "@/providers/global";
 import { LeadStatusForm } from "./form";
 
-type LeadStatusClientProps = {
-  leadStatus: LeadStatus[];
-};
-export const LeadStatusClient = ({ leadStatus }: LeadStatusClientProps) => {
+export const LeadStatusClient = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { setLeadStatus } = useGlobalContext();
+  const { leadStatus, setLeadStatus } = useGlobalContext();
 
-  const onStatusCreated = (e?: LeadStatus) => {
-    if (e) {
-      setLeadStatus((status) => {
-        return [...status!, e];
-      });
-    }
+  const onStatusCreated = (newStatus?: LeadStatus) => {
+    if (newStatus) setLeadStatus((status) => [...status!, newStatus]);
     setIsDrawerOpen(false);
   };
 
@@ -40,7 +34,7 @@ export const LeadStatusClient = ({ leadStatus }: LeadStatusClientProps) => {
       <Heading title={`Lead Status`} description="Manage lead status" />
       <DataTable
         columns={columns}
-        data={leadStatus}
+        data={leadStatus?.filter((e) => e.type != "default")!}
         headers
         topMenu={
           <div className="col-span-3 text-end">

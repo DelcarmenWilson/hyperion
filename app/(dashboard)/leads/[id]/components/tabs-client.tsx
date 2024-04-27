@@ -51,21 +51,21 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
                   className="flex flex-col justify-center gap-2"
                   value="activity"
                 >
-                  <List className="w-4 h-4" />
+                  <List size={16} />
                   ACTIVITY LOG
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex flex-col justify-center gap-2"
                   value="call"
                 >
-                  <PhoneCall className="w-4 h-4" />
+                  <PhoneCall size={16} />
                   CALL HISTORY
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex flex-col justify-center gap-2"
                   value="events"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Calendar size={16} />
                   CALENDAR EVENTS
                 </TabsTrigger>
 
@@ -73,7 +73,7 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
                   className="flex flex-col justify-center gap-2"
                   value="meetings"
                 >
-                  <Video className="w-4 h-4" />
+                  <Video size={16} />
                   MEETINGS
                 </TabsTrigger>
               </TabsList>
@@ -102,21 +102,21 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
                   className="flex flex-col justify-center gap-2"
                   value="sms"
                 >
-                  <MessageSquareMore className="w-4 h-4" />
+                  <MessageSquareMore size={16} />
                   SMS History
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex flex-col justify-center gap-2"
                   value="email"
                 >
-                  <Mail className="w-4 h-4" />
+                  <Mail size={16} />
                   SEND EMAIL
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex flex-col justify-center gap-2"
                   value="documents"
                 >
-                  <Folder className="w-4 h-4" />
+                  <Folder size={16} />
                   DOCUMENTS
                 </TabsTrigger>
               </TabsList>

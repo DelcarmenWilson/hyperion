@@ -67,9 +67,7 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    if (onClose) onClose();
   };
 
   const onSubmit = async (values: ExportLeadFormValues) => {
@@ -82,10 +80,13 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
       } else {
         if (values.type == "Excel") exportLeadsToExcel(data);
         else exportLeadsToPdf(data);
+
+        toast.success("Leads exported succesfully!");
       }
     });
 
     setLoading(false);
+    if (onClose) onClose();
   };
   return (
     <div>

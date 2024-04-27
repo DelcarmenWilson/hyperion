@@ -108,7 +108,7 @@ export const PurchasePhoneNumbers = () => {
             ))}
           </div>
           <span className="flex items-center gap-2 font-bold text-primary">
-            <HelpCircle className="w-4 h-4" />
+            <HelpCircle size={16} />
             Looking for even more information about phone numbers in Hyperion?
           </span>
         </div>
@@ -120,7 +120,7 @@ export const PurchasePhoneNumbers = () => {
 export const Item = ({ text }: ItemProps) => {
   return (
     <span className="flex items-center gap-2">
-      <Check className="w-4 h-4" />
+      <Check size={16} />
       {text}
     </span>
   );

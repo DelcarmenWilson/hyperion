@@ -48,7 +48,7 @@ export const CopyButton = ({
       onClick={onCopy}
       disabled={!value || isCopied}
     >
-      <Icon className="w-4 h-4" />
+      <Icon size={16} />
       {text}
     </Button>
   );

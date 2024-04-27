@@ -2,29 +2,32 @@ import React from "react";
 import Image from "next/image";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type ImageGridProps = {
-  role: string;
-  status: string;
   images: string[];
   setModalOpen?: (e: boolean) => void;
   onImageRemove?: (e: number) => void;
   header?: boolean;
+  enableButton?: boolean;
+  smSize?: number;
+  bgSize?: number;
 };
 export const ImageGrid = ({
-  role,
-  status,
   images,
   setModalOpen,
   onImageRemove,
   header = true,
+  enableButton = false,
+  smSize = 80,
+  bgSize = 550,
 }: ImageGridProps) => {
   return (
     <div>
       {header && (
         <div className="flex px-2 justify-between items-center">
           <p>Attachments</p>
-          {role != "MASTER" && status != "Resolved" && (
+          {enableButton && (
             <Button
               type="button"
               variant="secondary"
@@ -39,20 +42,81 @@ export const ImageGrid = ({
         </div>
       )}
 
-      {images.length > 1 ? (
+      {!images.length ? null : (
+        <>
+          {images.length > 1 ? (
+            <div className="flex flex-wrap gap-2 p-2">
+              {images.map((img, index) => (
+                <div key={index} className="relative group">
+                  <Image
+                    width={smSize}
+                    height={smSize}
+                    className={`h-[${smSize}px] w-[${smSize}px]`}
+                    src={img}
+                    alt={`Image${index}`}
+                  />
+                  <Button
+                    size="xs"
+                    className="absolute top-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
+                    type="button"
+                    onClick={() => {
+                      if (onImageRemove) onImageRemove(index);
+                    }}
+                  >
+                    <X size={12} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "relative group",
+                bgSize == 550
+                  ? "h-full w-full"
+                  : `h-[${bgSize}px] w-[${bgSize}px]`
+              )}
+            >
+              <Image
+                width={bgSize}
+                height={bgSize}
+                className={
+                  bgSize == 550
+                    ? "h-full w-full"
+                    : `h-[${bgSize}px] w-[${bgSize}px]`
+                }
+                src={images[0]}
+                alt="Image Grid"
+              />
+              <Button
+                size="xs"
+                className="absolute top-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
+                type="button"
+                onClick={() => {
+                  if (onImageRemove) onImageRemove(0);
+                }}
+              >
+                <X size={12} />
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* {images.length > 1 ? (
         <div className="flex flex-wrap gap-2 p-2">
           {images.map((img, index) => (
-            <div key={index} className="relative">
+            <div key={index} className="relative group">
               <Image
-                width={80}
-                height={80}
-                className="h-[80px] w-[80px]"
+                width={size}
+                height={size}
+                className={`h-[${size}px] w-[${size}px]`}
                 src={img}
                 alt={`Image${index}`}
               />
               <Button
                 size="xs"
-                className="absolute top-0 right-0 rounded-full opacity-0"
+                className="absolute top-0 right-0 rounded-full opacity-0 group-hover:opacity-100"
                 onClick={() => {
                   if (onImageRemove) onImageRemove(index);
                 }}
@@ -83,9 +147,9 @@ export const ImageGrid = ({
             </Button>
           </div>
         </div>
-      )}
+      )} */}
 
-      {header && !images.length && (
+      {header && !images?.length && (
         <p className="text-center mt-10 w-full text-muted-foreground">
           No Attachments found
         </p>

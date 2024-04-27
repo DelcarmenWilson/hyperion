@@ -22,6 +22,24 @@ export const conversationsGetByUserId = async () => {
     return [];
   }
 };
+// export const conversationGetById = async (conversationId: string) => {
+//   try {
+//     const user = await currentUser();
+//     if (!user?.email) {
+//       return null;
+//     }
+//     const conversation = await db.conversation.findUnique({
+//       where: { id: conversationId, agentId: user.id },
+//       include: {
+//         lead: true,
+//         messages:true
+//       },
+//     });
+//     return conversation;
+//   } catch (error) {
+//     return null;
+//   }
+// };
 export const conversationGetById = async (conversationId: string) => {
   try {
     const user = await currentUser();
@@ -32,7 +50,15 @@ export const conversationGetById = async (conversationId: string) => {
       where: { id: conversationId, agentId: user.id },
       include: {
         lead: {
-          include: { calls: true, appointments: true, activities: true,beneficiaries:true,expenses:true },
+          include: {
+            calls: true,
+            appointments: true,
+            activities: true,
+            beneficiaries: true,
+            expenses: true,
+            conditions: { include: { condition: true } },
+            policy: true,
+          },
         },
         messages: true,
       },
@@ -47,7 +73,7 @@ export const conversationGetByLeadId = async (leadId: string) => {
     const conversation = await db.conversation.findFirst({
       where: { leadId },
       include: {
-        lead:  {
+        lead: {
           include: { calls: true, appointments: true, activities: true },
         },
         messages: true,

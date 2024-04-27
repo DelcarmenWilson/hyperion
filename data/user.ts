@@ -3,16 +3,19 @@ import { UserRole } from "@prisma/client";
 
 export const usersGetAll = async () => {
   try {
-    const users = await db.user.findMany({orderBy:{firstName:"asc"}});
+    const users = await db.user.findMany({ orderBy: { firstName: "asc" } });
 
     return users;
   } catch {
     return [];
   }
 };
-export const usersGetAllByRole = async (role:UserRole) => {
+export const usersGetAllByRole = async (role: UserRole) => {
   try {
-    const users = await db.user.findMany({where:{role},orderBy:{firstName:"asc"}});
+    const users = await db.user.findMany({
+      where: { role },
+      orderBy: { firstName: "asc" },
+    });
     return users;
   } catch {
     return [];
@@ -45,8 +48,8 @@ export const userGetByAssistant = async (assitantId: string) => {
     const user = await db.user.findUnique({
       where: { assitantId },
     });
-
-    return user?.id;
+    if (!user) return null;
+    return user.id;
   } catch {
     return null;
   }
@@ -71,7 +74,7 @@ export const userGetByIdReport = async (id: string) => {
       include: {
         phoneNumbers: true,
         calls: true,
-        leads: true,
+        leads: {include:{policy:true}},
         appointments: true,
         conversations: true,
         team: { include: { organization: true, owner: true } },
@@ -122,7 +125,8 @@ export const usersGetSummaryByTeamId = async (
 };
 
 // USER LICENSES
-export const userLicensesGetAllByUserId = async (userId: string,
+export const userLicensesGetAllByUserId = async (
+  userId: string,
   role: UserRole = "USER"
 ) => {
   try {
@@ -135,8 +139,10 @@ export const userLicensesGetAllByUserId = async (userId: string,
     return [];
   }
 };
-// USER LICENSES
-export const userCarriersGetAllByUserId = async (userId: string,
+
+// USER CARRIERS
+export const userCarriersGetAllByUserId = async (
+  userId: string,
   role: UserRole = "USER"
 ) => {
   try {
@@ -149,6 +155,21 @@ export const userCarriersGetAllByUserId = async (userId: string,
     });
 
     return carriers;
+  } catch {
+    return [];
+  }
+};
+
+// USER TEMPLATES
+export const userTemplatesGetAllByUserId = async (
+  userId: string
+) => {
+  try {
+    const templates = await db.userTemplate.findMany({
+      where: { userId },
+    });
+
+    return templates;
   } catch {
     return [];
   }

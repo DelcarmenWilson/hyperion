@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="p-1 w-full">
       <div ref={topRef} className="pb-2">
-        <div className="grid grid-cols-4 gap-2 mt-2">
+        <div className="grid grid-cols-4 gap-2">
           <div>
             {search && (
               <SimpleFilter

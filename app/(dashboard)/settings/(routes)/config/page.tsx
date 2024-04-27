@@ -5,22 +5,16 @@ import { LeadStatusClient } from "@/components/lead/status/client";
 import { LicenseClient } from "./components/license/client";
 import { CarrierClient } from "./components/carrier/client";
 
-import {
-  userCarriersGetAllByUserId,
-  userLicensesGetAllByUserId,
-} from "@/data/user";
-import { adminCarriersGetAll } from "@/data/admin";
-import { leadStatusGetAllByAgentId } from "@/data/lead";
 import { NotificationClient } from "./components/notifications/client";
 import { notificationSettingsGetByUserId } from "@/data/notification-settings";
+import { UserTemplateClient } from "./components/templates/client";
 
+import { adminCarriersGetAll } from "@/data/admin";
 const ConfigPage = async () => {
   const user = await currentUser();
   if (!user) return null;
-  const licenses = await userLicensesGetAllByUserId(user.id, user.role);
-  const leadStatus = await leadStatusGetAllByAgentId(user.id, user.role);
-  const userCarriers = await userCarriersGetAllByUserId(user.id, user.role);
   const carriers = await adminCarriersGetAll();
+
   const notificationSettings = await notificationSettingsGetByUserId(user.id);
 
   return (
@@ -38,23 +32,25 @@ const ConfigPage = async () => {
         <TabsTrigger className="w-full" value="leadStatus">
           Lead Status
         </TabsTrigger>
+        <TabsTrigger className="w-full" value="templates">
+          Templates
+        </TabsTrigger>
         <TabsTrigger className="w-full" value="notifications">
           Notifications
         </TabsTrigger>
       </TabsList>
       <div className="flex-1">
         <TabsContent value="licenses">
-          <LicenseClient initLicenses={licenses} role={user.role} />
+          <LicenseClient />
         </TabsContent>
         <TabsContent value="carriers">
-          <CarrierClient
-            initUserCarriers={userCarriers}
-            initCarriers={carriers}
-            role={user.role}
-          />
+          <CarrierClient adminCarriers={carriers} />
         </TabsContent>
         <TabsContent value="leadStatus">
-          <LeadStatusClient leadStatus={leadStatus} />
+          <LeadStatusClient />
+        </TabsContent>
+        <TabsContent value="templates">
+          <UserTemplateClient />
         </TabsContent>
         <TabsContent value="notifications">
           <NotificationClient notificationSettings={notificationSettings!} />

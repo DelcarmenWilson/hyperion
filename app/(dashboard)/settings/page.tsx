@@ -192,9 +192,9 @@ const SettingsPage = () => {
                               tabIndex={-1}
                             >
                               {showCurrentPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff size={16} />
                               ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye size={16} />
                               )}
                             </Button>
                           </div>
@@ -238,9 +238,9 @@ const SettingsPage = () => {
                               tabIndex={-1}
                             >
                               {showPassword ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff size={16} />
                               ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye size={16} />
                               )}
                             </Button>
                           </div>

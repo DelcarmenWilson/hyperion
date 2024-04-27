@@ -3,10 +3,18 @@ export type ItemProps = {
   text: string;
 };
 
-export type FileRecord = {
+export type FileRecords = {
   files:File[]
   path: string;
   id: string;
   type: string;
   fileNames?: string[];
 };
+
+export type FileRecord = {
+  file:File
+  path: string;
+  id: string;
+  type: string;
+};
+
