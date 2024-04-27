@@ -69,7 +69,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -79,15 +79,6 @@ export const CellAction = ({ data }: CellActionProps) => {
             Copy Id
             <CopyButton value={data.id} message="Appointment Id" />
           </DropdownMenuItem>
-
-          {/* <DropdownMenuItem onClick={() => setIsDrawerOpen(true)}>
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setAlertOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

@@ -43,24 +43,24 @@ export const UserButton = () => {
         <DropdownMenuSeparator />
         {(user.role == "MASTER" || user.role == "ADMIN") && (
           <DropdownMenuItem
-            className="cursor-pointer"
+            className="cursor-pointer gap-2"
             onClick={() => router.push("/admin/teams")}
           >
-            <Lock className="h-4 w-4 mr-2" />
+            <Lock size={16} />
             Admin
           </DropdownMenuItem>
         )}
         <DropdownMenuItem
-          className="cursor-pointer"
+          className="cursor-pointer gap-2"
           onClick={() => router.push("/settings")}
         >
-          <Cog className="h-4 w-4 mr-2" />
+          <Cog size={16} />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <LogoutButton>
-          <DropdownMenuItem>
-            <LogOut className="h-4 w-4 mr-2" />
+          <DropdownMenuItem className="gap-2">
+            <LogOut size={16} />
             LogOut
           </DropdownMenuItem>
         </LogoutButton>

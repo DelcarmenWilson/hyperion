@@ -10,7 +10,7 @@ import {
   LeadExpenseSchema,
   LeadGeneralSchema,
   LeadMainSchema,
-  LeadSaleSchema,
+  LeadPolicySchema,
   LeadSchema,
   LeadStatusSchema,
 } from "@/schemas";
@@ -286,11 +286,12 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     return { error: "Lead does not exist" };
   }
 
-  await db.lead.update({
+  const newNote = await db.lead.update({
     where: { id },
     data: {
       notes,
     },
+    select: { id: true, notes: true },
   });
 
   activityInsert(
@@ -300,7 +301,8 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     user.id,
     existingLead.notes as string
   );
-  return { success: "Lead notes have been updated" };
+  return { success: newNote };
+  // return { success: "Lead notes have been updated" };
 };
 
 export const leadUpdateByIdQuote = async (id: string, quote: string) => {
@@ -472,19 +474,29 @@ export const leadUpdateByIdGeneralInfo = async (
   activityInsert(leadInfo.id!, "general", "General info updated", user.id);
   return { success: leadInfo };
 };
-export const leadUpdateByIdSaleInfo = async (
-  values: z.infer<typeof LeadSaleSchema>
+export const leadUpdateByIdPolicyInfo = async (
+  values: z.infer<typeof LeadPolicySchema>
 ) => {
-  const validatedFields = LeadSaleSchema.safeParse(values);
+  const validatedFields = LeadPolicySchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id, vendor, ap, commision, coverageAmount } = validatedFields.data;
+  const {
+    leadId,
+    carrier,
+    policyNumber,
+    status,
+    ap,
+    commision,
+    coverageAmount,
+    startDate,
+  } = validatedFields.data;
+
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
   }
-  const existingLead = await db.lead.findUnique({ where: { id } });
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
@@ -493,21 +505,42 @@ export const leadUpdateByIdSaleInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  const status = parseInt(ap) > 0 ? "Sold" : existingLead.status;
-  const assistant = parseInt(ap) > 0 ? null : existingLead.assistant;
-  const leadInfo = await db.lead.update({
-    where: { id },
-    data: {
-      vendor,
-      ap,
-      commision,
-      coverageAmount,
-      status,
-      assistant,
-    },
-  });
-  activityInsert(leadInfo.id!, "sale", "Sale info updated", user.id);
-  return { success: leadInfo };
+  if (parseInt(ap) > 0) {
+    await db.lead.update({
+      where: { id: leadId },
+      data: { status: "Sold", assistant: null },
+    });
+  }
+  const existingPolicy = await db.leadPolicy.findUnique({ where: { leadId } });
+  let leadPolicyInfo;
+  if (!existingPolicy) {
+    leadPolicyInfo = await db.leadPolicy.create({
+      data: {
+        leadId,
+        carrier,
+        policyNumber,
+        status,
+        ap,
+        commision,
+        coverageAmount,
+        startDate,
+      },
+    });
+  } else {
+    leadPolicyInfo = await db.leadPolicy.update({
+      where: { leadId },
+      data: {
+        carrier,
+        policyNumber,
+        ap,
+        commision,
+        coverageAmount,
+        startDate,
+      },
+    });
+  }
+  activityInsert(leadPolicyInfo.leadId, "sale", "policy info updated", user.id);
+  return { success: leadPolicyInfo };
 };
 
 //LEAD BENFICIARIES
@@ -526,6 +559,7 @@ export const leadBeneficiaryInsert = async (
   const {
     leadId,
     type,
+    relationship,
     firstName,
     lastName,
     address,
@@ -536,6 +570,8 @@ export const leadBeneficiaryInsert = async (
     gender,
     email,
     dateOfBirth,
+    share,
+    ssn,
     notes,
   } = validatedFields.data;
 
@@ -554,6 +590,7 @@ export const leadBeneficiaryInsert = async (
     data: {
       leadId,
       type,
+      relationship,
       firstName,
       lastName,
       address,
@@ -564,6 +601,8 @@ export const leadBeneficiaryInsert = async (
       gender: gender,
       email,
       dateOfBirth,
+      share,
+      ssn,
       notes,
     },
   });
@@ -591,6 +630,7 @@ export const leadBeneficiaryUpdateById = async (
   const {
     id,
     type,
+    relationship,
     firstName,
     lastName,
     address,
@@ -601,6 +641,8 @@ export const leadBeneficiaryUpdateById = async (
     gender,
     email,
     dateOfBirth,
+    share,
+    ssn,
     notes,
   } = validatedFields.data;
 
@@ -618,6 +660,7 @@ export const leadBeneficiaryUpdateById = async (
     where: { id },
     data: {
       type,
+      relationship,
       firstName,
       lastName,
       address,
@@ -628,6 +671,8 @@ export const leadBeneficiaryUpdateById = async (
       gender: gender,
       email,
       dateOfBirth,
+      share,
+      ssn,
       notes,
     },
   });

@@ -92,7 +92,7 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
   return (
     <div className="flex gap-2 ml-auto mr-6 lg:mr-0">
       <Button size="sm" onClick={() => router.refresh()}>
-        <RefreshCcw className="w-4 h-4" />
+        <RefreshCcw size={16} />
       </Button>
       <Dialog open={stageOpen} onOpenChange={setStageOpen}>
         <DialogTrigger asChild>

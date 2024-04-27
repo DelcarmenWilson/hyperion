@@ -61,48 +61,6 @@ export const PresetData = ({ preset }: PresetDataProps) => {
   };
 
   return (
-    // <div>
-    //   <Form {...form}>
-    //     <form
-    //       onSubmit={form.handleSubmit(onSubmit)}
-    //       className="flex items-center gap-2 lg:gap-4 w-full"
-    //     >
-    //       <div className="flex-1">
-    //         <FormField
-    //           control={form.control}
-    //           name="content"
-    //           render={({ field }) => (
-    //             <FormItem>
-    //               <FormControl>
-    //                 <Textarea
-    //                   disabled={isPending}
-    //                   {...field}
-    //                   placeholder="message"
-    //                   required
-    //                   rows={3}
-    //                 />
-    //               </FormControl>
-    //               <FormMessage />
-    //             </FormItem>
-    //           )}
-    //         />
-    //       </div>
-    //       <div className="flex flex-col gap-2">
-    //         <Button variant="outlineprimary" size="icon" type="submit">
-    //           <Check className="h-4 w-4" />
-    //         </Button>
-    //         <Button
-    //           variant="outlinedestructive"
-    //           size="icon"
-    //           onClick={() => setEditing(false)}
-    //         >
-    //           <X className="h4 w-4" />
-    //         </Button>
-    //       </div>
-    //     </form>
-    //   </Form>
-    //   <Separator className="my-2" />
-    // </div>
     <div>
       {!editing ? (
         <div className="flex gap-2">
@@ -115,10 +73,10 @@ export const PresetData = ({ preset }: PresetDataProps) => {
               size="icon"
               onClick={() => setEditing(true)}
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil size={16} />
             </Button>
             <Button variant="outlinedestructive" size="icon" onClick={onDelete}>
-              <Trash className="h4 w-4" />
+              <Trash size={16} />
             </Button>
           </div>
         </div>
@@ -150,7 +108,7 @@ export const PresetData = ({ preset }: PresetDataProps) => {
             </div>
             <div className="flex flex-col gap-2">
               <Button variant="outlineprimary" size="icon" type="submit">
-                <Check className="h-4 w-4" />
+                <Check size={16} />
               </Button>
               <Button
                 variant="outlinedestructive"

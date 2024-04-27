@@ -83,6 +83,7 @@ model User {
   //USER COLUMNS
   carriers    UserCarrier[]
   licenses    UserLicense[]
+  templates   UserTemplate[]
   loginStatus LoginStatus[]
 
   presets              Presets[]
@@ -123,10 +124,24 @@ model UserLicense {
 
   state         String
   type          String
-  licenseNumber String   @unique
+  licenseNumber String
   dateExpires   DateTime
 
   comments  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserTemplate {
+  id String @id @default(cuid())
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  name        String
+  description String?
+  attachment  String?
+  message     String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -319,6 +334,7 @@ model Lead {
   gender           Gender        @default(NA)
   maritalStatus    MaritalStatus @default(Single)
   email            String?
+  ssn              String        @default("")
   dateOfBirth      String?       @default("")
   weight           String?
   height           String?
@@ -332,11 +348,11 @@ model Lead {
   type   String @default("General")
   status String @default("New")
 
-  quote          String @default("0.00")
-  ap             String @default("0.00")
-  commision      String @default("0.00")
-  coverageAmount String @default("0.00")
-  carrier        String @default("NA")
+  quote             String @default("0.00")
+  apOld             String @default("0.00")
+  commisionOld      String @default("0.00")
+  coverageAmountOld String @default("0.00")
+  carrierOld        String @default("NA")
 
   defaultNumber String
   notes         String?
@@ -353,6 +369,7 @@ model Lead {
   appointments  Appointment[]
   calls         Call[]
   activities    Activity[]
+  policy        LeadPolicy?
 
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -360,24 +377,41 @@ model Lead {
   updatedAt  DateTime @updatedAt
 }
 
+model LeadPolicy {
+  leadId         String    @unique
+  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  carrier        String
+  policyNumber   String    @default("NA")
+  ap             String    @default("0.00")
+  commision      String    @default("0.00")
+  coverageAmount String    @default("0.00")
+  startDate      DateTime?
+  status         String    @default("Pending")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
 model LeadBeneficiary {
-  id          String   @id @default(cuid())
-  leadId      String
-  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  type        String   @default("Primary")
-  firstName   String
-  lastName    String
-  address     String   @default("")
-  city        String   @default("")
-  state       String
-  zipCode     String   @default("")
-  cellPhone   String   @default("")
-  gender      Gender   @default(NA)
-  email       String   @default("")
-  dateOfBirth String   @default("")
-  notes       String   @default("")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type         String   @default("Primary")
+  relationship String   @default("")
+  firstName    String
+  lastName     String
+  address      String   @default("")
+  city         String   @default("")
+  state        String
+  zipCode      String   @default("")
+  cellPhone    String   @default("")
+  gender       Gender   @default(NA)
+  email        String   @default("noemail@email.com")
+  dateOfBirth  String   @default("")
+  share        String   @default("")
+  ssn          String   @default("")
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model LeadMedicalCondition {
@@ -512,7 +546,8 @@ model Message {
 
   role MessageRole @default(user)
 
-  content String @db.LongText
+  content    String  @db.LongText
+  attachment String?
 
   sid    String?
   status String  @default("sent")

@@ -4,17 +4,21 @@ import { Pencil } from "lucide-react";
 
 import { toast } from "sonner";
 
-import { FullLead, LeadGeneralInfo, LeadMainInfo, LeadSaleInfo } from "@/types";
+import {
+  FullLead,
+  LeadGeneralInfo,
+  LeadMainInfo,
+  LeadPolicyInfo,
+} from "@/types";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
-import { DropDown } from "@/components/lead/dropdown";
 import { Button } from "@/components/ui/button";
 import { GeneralInfoClient } from "@/components/lead/general-info";
-import { SaleInfoClient } from "@/components/lead/sale-info";
+import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { MainInfoClient } from "@/components/lead/main-info";
-import { NotesForm } from "@/components/lead/notes-form";
+import { NotesForm } from "@/components/lead/forms/notes-form";
 
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
@@ -26,7 +30,9 @@ type LeadClientProps = {
 
 export const LeadClient = ({ lead }: LeadClientProps) => {
   const [edit, setEdit] = useState(false);
+  const leadName = `${lead.firstName} ${lead.lastName}`;
   const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
+
   const leadMainInfo: LeadMainInfo = {
     id: lead.id,
     firstName: lead.firstName,
@@ -52,15 +58,19 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     smoker: lead.smoker,
   };
 
-  const leadSale: LeadSaleInfo = {
-    id: lead.id,
+  const leadPolicy: LeadPolicyInfo = {
+    leadId: lead.id,
+    carrier: lead.policy?.carrier!,
+    policyNumber: lead.policy?.policyNumber!,
+    status: lead.policy?.status!,
+    ap: lead.policy?.ap!,
+    commision: lead.policy?.commision!,
+    coverageAmount: lead.policy?.coverageAmount!,
+    startDate: lead.policy?.startDate!,
     createdAt: lead.createdAt,
-    vendor: lead.vendor,
-    ap: lead.ap,
-    commision: lead.commision,
-    coverageAmount: lead.coverageAmount,
-    carrier: lead.carrier,
+    updatedAt: lead.policy?.updatedAt!,
   };
+
   const onSetDefaultNumber = (e: string) => {
     if (e != defaultNumber) {
       setDefaultNumber(e);
@@ -75,31 +85,28 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     }
     setEdit(false);
   };
+
   return (
     <>
       {/*DATA  */}
       <div className="grid grid-cols-1 lg:grid-cols-5 ">
         <div className="grid grid-cols-1 lg:grid-cols-3 col-span-3 gap-2">
-          <div className="relative">
-            <div className="absolute top-0 right-0">
-              <DropDown lead={lead} />
-            </div>
-            <MainInfoClient
-              info={leadMainInfo}
-              noConvo={lead.conversation?.id ? true : false}
-            />
-          </div>
+          <MainInfoClient
+            info={leadMainInfo}
+            noConvo={lead.conversation?.id ? true : false}
+          />
           <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
           <CallInfo info={lead} />
         </div>
         <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
           <GeneralInfoClient
+            leadName={leadName}
             info={leadInfo}
             call={lead?.calls[lead.calls.length - 1]!}
             appointment={lead?.appointments[lead.appointments.length - 1]!}
             showInfo
           />
-          <SaleInfoClient info={leadSale} />
+          <PolicyInfoClient leadName={leadName} info={leadPolicy} />
         </div>
       </div>
       <div className="text-sm font-light px-4">
@@ -127,10 +134,6 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
                 onClick={() => setEdit(true)}
               >
                 <Pencil size={16} />
-                {/* <Pencil
-                className="h-4 w-4 ml-2 text-primary cursor-pointer opacity-0 group-hover:opacity-100"
-                onClick={() => setEdit(true)}
-              /> */}
               </Button>
             </>
           )}

@@ -2,6 +2,9 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { useGlobalContext } from "@/providers/global";
+import { useCurrentRole } from "@/hooks/user-current-role";
+
 import { UserLicense } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
@@ -11,21 +14,13 @@ import { columns } from "./columns";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { LicenseForm } from "./form";
 
-type LicenseClientProps = {
-  initLicenses: UserLicense[];
-  role: string;
-};
-
-export const LicenseClient = ({ initLicenses, role }: LicenseClientProps) => {
+export const LicenseClient = () => {
+  const { licenses, setLicenses } = useGlobalContext();
+  const role = useCurrentRole();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [licenses, setLicenses] = useState(initLicenses);
 
-  const onLicensesCreated = (e?: UserLicense) => {
-    if (e) {
-      setLicenses((licenses) => {
-        return [...licenses, e];
-      });
-    }
+  const onLicensesCreated = (newLicense?: UserLicense) => {
+    if (newLicense) setLicenses((lc) => [...lc!, newLicense]);
     setIsDrawerOpen(false);
   };
 

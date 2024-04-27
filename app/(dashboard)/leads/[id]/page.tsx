@@ -8,11 +8,13 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
 import { leadGetById, leadGetPrevNextById } from "@/data/lead";
+import { LeadHeader } from "@/components/lead/header";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
   const lead = await leadGetById(params.id);
   if (!lead) return null;
-  const prevNext = await leadGetPrevNextById(params.id, lead.userId);
+  // const prevNext = await leadGetPrevNextById(params.id, lead.userId);
+  const prevNext = await leadGetPrevNextById(params.id);
   return (
     <PageLayout
       icon={User}
@@ -20,9 +22,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
       topMenu={<PrevNextMenu href="leads" btnText="lead" prevNext={prevNext} />}
     >
       <Tabs defaultValue="general" className="h-full">
-        <p className="text-center font-semibold text-primary text-3xl">
-          {lead.firstName} {lead.lastName}
-        </p>
+        <LeadHeader lead={lead} />
         <TabsList className="flex flex-col lg:flex-row w-full h-auto">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>

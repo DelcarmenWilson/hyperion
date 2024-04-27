@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Copy, Server } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -32,7 +32,7 @@ export const ApiAlert = ({
   };
   return (
     <Alert>
-      <Server className="h-4 w-4" />
+      <Server size={16} />
       <AlertTitle className="flex items-center gap-x-2">
         {title}
         <Badge variant={variantMap[variant]}>{textMap[variant]}</Badge>
@@ -42,7 +42,7 @@ export const ApiAlert = ({
           {description}
         </code>
         <Button variant="outline" size="icon" onClick={onCopy}>
-          <Copy className="h-4 w-4" />
+          <Copy size={16} />
         </Button>
       </AlertDescription>
     </Alert>

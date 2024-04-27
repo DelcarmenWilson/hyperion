@@ -4,18 +4,23 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { CallInfo } from "@/components/lead/call-info";
-import { DropDown } from "@/components/lead/dropdown";
-import { SaleInfoClient } from "@/components/lead/sale-info";
+import { LeadDropDown } from "@/components/lead/dropdown";
+import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { MainInfoClient } from "@/components/lead/main-info";
-import { NotesForm } from "@/components/lead/notes-form";
-import { FullLead, LeadGeneralInfo, LeadMainInfo, LeadSaleInfo } from "@/types";
+import { NotesForm } from "@/components/lead/forms/notes-form";
+import {
+  FullLead,
+  LeadGeneralInfo,
+  LeadMainInfo,
+  LeadPolicyInfo,
+} from "@/types";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
     id: "select",
     cell: ({ row }) => (
       <div className="flex flex-col justify-center items-center gap-2">
-        <DropDown
+        <LeadDropDown
           lead={row.original}
           conversation={row.original.conversation!}
         />
@@ -119,6 +124,7 @@ export const columns: ColumnDef<FullLead>[] = [
       };
       return (
         <GeneralInfoClient
+          leadName={`${row.original.firstName} ${row.original.lastName}`}
           info={leadInfo}
           call={row.original.calls[row.original.calls.length - 1]!}
           appointment={
@@ -132,16 +138,19 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "extra info",
     header: "",
     cell: ({ row }) => {
-      const leadSale: LeadSaleInfo = {
-        id: row.original.id,
+      const leadPolicy: LeadPolicyInfo = {
+        leadId: row.original.id,
+        ap: row.original.policy?.ap!,
+        carrier: row.original.policy?.carrier!,
+        policyNumber: row.original.policy?.policyNumber!,
+        status: row.original.policy?.status!,
+        commision: row.original.policy?.commision!,
+        coverageAmount: row.original.policy?.coverageAmount!,
         createdAt: row.original.createdAt,
-        vendor: row.original.vendor,
-        ap: row.original.ap,
-        commision: row.original.commision,
-        coverageAmount: row.original.coverageAmount,
-        carrier: row.original.carrier,
+        updatedAt: row.original.policy?.updatedAt!,
       };
-      return <SaleInfoClient info={leadSale} />;
+      const leadName = `${row.original.firstName} ${row.original.lastName}`;
+      return <PolicyInfoClient leadName={leadName} info={leadPolicy} />;
     },
   },
 ];

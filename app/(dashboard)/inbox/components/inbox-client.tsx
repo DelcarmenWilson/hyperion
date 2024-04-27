@@ -6,16 +6,16 @@ import React from "react";
 export const InboxClient2 = () => {
   return (
     <div className="flex gap-2 pt-4 mr-4">
-      <Button variant="outlineprimary" size="sm">
-        <AlarmClock className="h-4 w-4 mr-2" />
+      <Button className="gap-2" variant="outlineprimary" size="sm">
+        <AlarmClock size={16} />
         VIEW SCHEDULED TEXTS
       </Button>
-      <Button variant="outlineprimary" size="sm">
-        <MessageSquareText className="h-4 w-4 mr-2" />
+      <Button className="gap-2" variant="outlineprimary" size="sm">
+        <MessageSquareText size={16} />
         VIEW SENT TEXTS
       </Button>
-      <Button variant="outlineprimary" className="relative" size="sm">
-        <CircleSlash className="h-4 w-4 mr-2" />
+      <Button variant="outlineprimary" className="relative gap-2" size="sm">
+        <CircleSlash size={16} />
         VIEW REJECTED TEXTS
         <Badge
           variant="destructive"

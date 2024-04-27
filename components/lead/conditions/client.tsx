@@ -1,11 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import { DrawerRight } from "@/components/custom/drawer-right";
-import { Button } from "@/components/ui/button";
+import { emitter } from "@/lib/event-emmiter";
 
-import { ConditionForm } from "./form";
-import { ConditionCard } from "./card";
 import { FullLeadMedicalCondition } from "@/types";
+import { DrawerRight } from "@/components/custom/drawer-right";
+
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
+import { DataTable } from "@/components/tables/data-table";
+import { ConditionsList } from "./list";
+import { ConditionForm } from "./form";
+import { columns } from "./columns";
 
 type ConditionsClientProp = {
   leadId: string;
@@ -16,37 +20,68 @@ export const ConditionsClient = ({
   leadId,
   initConditions,
 }: ConditionsClientProp) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(false);
   const [conditions, setConditions] =
     useState<FullLeadMedicalCondition[]>(initConditions);
-
-  const onConditionInserted = (e: FullLeadMedicalCondition) => {
-    setConditions((conditions) => [...conditions, e]);
-    setIsOpen(false);
-  };
 
   const onConditionDeleted = (id: string) => {
     setConditions((conditions) => conditions.filter((e) => e.id !== id));
   };
+  const onConditionInserted = (newCondition: FullLeadMedicalCondition) => {
+    const existing = conditions.find((e) => e.id == newCondition.id);
+    if (existing == undefined)
+      setConditions((conditions) => [...conditions, newCondition]);
+  };
 
   useEffect(() => {
     setConditions(initConditions);
+    emitter.on("conditionInserted", (info) => onConditionInserted(info));
+    emitter.on("conditionDeleted", (id) => onConditionDeleted(id));
+    return () => {
+      emitter.off("conditionInserted", (info) => onConditionInserted(info));
+      emitter.off("conditionDeleted", (id) => onConditionDeleted(id));
+    };
   }, [initConditions]);
 
   return (
     <>
       <DrawerRight
         title="New Condition"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
       >
-        <ConditionForm
-          leadId={leadId}
-          onClose={() => setIsOpen(false)}
-          onConditionChange={onConditionInserted}
-        />
+        <ConditionForm leadId={leadId} onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
-      <div>
+      {isList ? (
+        <DataTable
+          columns={columns}
+          data={conditions}
+          headers
+          topMenu={
+            <ListGridTopMenu
+              text="Add Condition"
+              isList={isList}
+              setIsList={setIsList}
+              setIsDrawerOpen={setIsDrawerOpen}
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center p-1">
+            <h4 className="text-2xl font-semibold">Medical Conditions</h4>
+            <ListGridTopMenu
+              text="Add Condition"
+              setIsDrawerOpen={setIsDrawerOpen}
+              isList={isList}
+              setIsList={setIsList}
+            />
+          </div>
+          <ConditionsList conditions={conditions} />
+        </>
+      )}
+      {/* <div>
         <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
           <p className=" text-2xl font-semibold">Medical Conditions</p>
           <Button onClick={() => setIsOpen(true)}>Add Condition</Button>
@@ -60,11 +95,7 @@ export const ConditionsClient = ({
         {conditions.length ? (
           <div>
             {conditions.map((condition) => (
-              <ConditionCard
-                key={condition.id}
-                initCondition={condition}
-                onConditionDeleted={onConditionDeleted}
-              />
+              <ConditionCard key={condition.id} initCondition={condition} />
             ))}
           </div>
         ) : (
@@ -72,7 +103,7 @@ export const ConditionsClient = ({
             <p className="font-semibold text-center">No Conditions Found</p>
           </div>
         )}
-      </div>
+      </div> */}
     </>
   );
 };

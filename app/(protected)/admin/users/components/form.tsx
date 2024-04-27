@@ -264,11 +264,7 @@ export const AssistantForm = ({
                       type="button"
                       className="absolute right-0"
                     >
-                      {show ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
+                      {show ? <EyeOff size={16} /> : <Eye size={16} />}
                     </Button>
                   </div>
                 </FormControl>

@@ -4,15 +4,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 
+import { emitter } from "@/lib/event-emmiter";
+
 import { FilePenLine, MessageSquare } from "lucide-react";
 
-import { LeadMainInfo } from "@/types";
-import { formatPhoneNumber } from "@/formulas/phones";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { MainInfoForm } from "./forms/main-info-form";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { FieldBox } from "./field-box";
+
+import { LeadMainInfo } from "@/types";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 import { smsCreateInitial } from "@/actions/sms";
 import { leadUpdateByIdQuote } from "@/actions/lead";
@@ -28,15 +32,12 @@ export const MainInfoClient = ({
   showInfo = false,
 }: MainInfoProps) => {
   const router = useRouter();
-  const [edit, setEdit] = useState(false);
   const [initConvo, setInitConvo] = useState(noConvo);
   const [leadInfo, setLeadInfo] = useState<LeadMainInfo>(info);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const onSetInfo = (e?: LeadMainInfo) => {
-    if (e) {
-      setLeadInfo(e);
-    }
-    setEdit(false);
+  const onSetInfo = (e: LeadMainInfo) => {
+    if (e.id == info.id) setLeadInfo(e);
   };
   const onQuoteUpdated = (e?: string) => {
     if (!e) {
@@ -69,30 +70,38 @@ export const MainInfoClient = ({
   };
 
   useEffect(() => {
-    setLeadInfo(info);
+    emitter.on("mainInfoUpdated", (info) => onSetInfo(info));
   }, [info]);
 
   return (
-    <div className="flex flex-col gap-1 text-sm">
-      {showInfo && (
-        <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
-      )}
-
-      <p className="flex items-center gap-2 text-primary">
-        {showInfo ? (
-          <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
-            {formatPhoneNumber(info.cellPhone)}
-          </Link>
-        ) : (
-          <span className="font-extrabold italic">
-            {formatPhoneNumber(info.cellPhone)}
-          </span>
+    <>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+          <h3 className="text-2xl font-semibold py-2">
+            Demographics -
+            <span className="text-primary">
+              {`${leadInfo.firstName} ${leadInfo.lastName}`}
+            </span>
+          </h3>
+          <MainInfoForm info={leadInfo} onClose={() => setDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
+      <div className="space-y-1 text-sm">
+        {showInfo && (
+          <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
         )}
-        <CopyButton value={info.cellPhone} message="Lead phone#" />
-      </p>
-      {edit ? (
-        <MainInfoForm info={leadInfo} onChange={onSetInfo} />
-      ) : (
+        <p className="flex items-center gap-2 text-primary">
+          {showInfo ? (
+            <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
+              {formatPhoneNumber(info.cellPhone)}
+            </Link>
+          ) : (
+            <span className="font-extrabold italic">
+              {formatPhoneNumber(info.cellPhone)}
+            </span>
+          )}
+          <CopyButton value={info.cellPhone} message="Lead phone#" />
+        </p>
         <div className="relative group">
           <p>{leadInfo.email}</p>
 
@@ -104,32 +113,32 @@ export const MainInfoClient = ({
           )}
           <Button
             className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-            onClick={() => setEdit(true)}
+            onClick={() => setDialogOpen(true)}
           >
             <FilePenLine size={16} />
           </Button>
         </div>
-      )}
+        <FieldBox
+          name="Quote"
+          field={leadInfo.quote!}
+          onFieldUpdate={onQuoteUpdated}
+        />
 
-      <FieldBox
-        name="Quote"
-        field={leadInfo.quote!}
-        onFieldUpdate={onQuoteUpdated}
-      />
-
-      <div>
-        {!initConvo && (
-          <Button
-            disabled={leadInfo.status == "Do_Not_Call"}
-            variant="outlineprimary"
-            size="xs"
-            onClick={onSendInitialSms}
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            SEND SMS
-          </Button>
-        )}
+        <div>
+          {!initConvo && (
+            <Button
+              className="gap-2"
+              disabled={leadInfo.status == "Do_Not_Call"}
+              variant="outlineprimary"
+              size="xs"
+              onClick={onSendInitialSms}
+            >
+              <MessageSquare size={16} />
+              SEND SMS
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };

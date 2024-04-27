@@ -85,33 +85,36 @@ export const CellAction = ({ data }: CellActionProps) => {
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="h-8 w-8 gap-2 p-0">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          <DropdownMenuItem onClick={onCopy}>
-            <Copy className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="gap-2" onClick={onCopy}>
+            <Copy size={16} />
             Copy number
           </DropdownMenuItem>
 
           {data.status != "Default" && data.status != "Inactive" && (
-            <DropdownMenuItem onClick={onSetDefault}>
-              <Phone className="mr-2 h-4 w-4" />
+            <DropdownMenuItem className="gap-2" onClick={onSetDefault}>
+              <Phone size={16} />
               Set default
             </DropdownMenuItem>
           )}
           {data.status === "Inactive" ? (
-            <DropdownMenuItem onClick={onActivate}>
-              <ShieldMinus className="mr-2 h-4 w-4" />
+            <DropdownMenuItem className="gap-2" onClick={onActivate}>
+              <ShieldMinus size={16} />
               Activate
             </DropdownMenuItem>
           ) : (
-            <DropdownMenuItem onClick={() => setAlertOpen(true)}>
-              <ShieldMinus className="mr-2 h-4 w-4" />
+            <DropdownMenuItem
+              className="gap-2"
+              onClick={() => setAlertOpen(true)}
+            >
+              <ShieldMinus size={16} />
               Deactivate
             </DropdownMenuItem>
           )}

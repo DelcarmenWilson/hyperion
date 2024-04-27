@@ -12,6 +12,7 @@ type DrawerRightProps = {
   title: string;
   isOpen: boolean;
   onClose: () => void;
+  scroll?: boolean;
   children: React.ReactNode;
   size?: string;
 };
@@ -19,6 +20,7 @@ export const DrawerRight = ({
   title,
   isOpen,
   onClose,
+  scroll = true,
   children,
   size = "max-w-sm",
 }: DrawerRightProps) => {
@@ -50,7 +52,7 @@ export const DrawerRight = ({
                 <Dialog.Panel
                   className={cn("pointer-events-auto w-screen", size)}
                 >
-                  <div className="flex flex-col h-full overflow-y-auto bg-background  py-2 shadow-xl">
+                  <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
                     <div className=" flex items-center justify-between px-2">
                       <p className=" font-semibold text-xl">{title}</p>
                       <Button size="sm" onClick={onClose}>
@@ -58,9 +60,13 @@ export const DrawerRight = ({
                         <X size={16} />
                       </Button>
                     </div>
-                    <ScrollArea className="flex-1 h-full p-2">
-                      {children}
-                    </ScrollArea>
+                    {scroll ? (
+                      <ScrollArea className="flex-1 h-full p-2">
+                        {children}
+                      </ScrollArea>
+                    ) : (
+                      <div className="flex-1 h-full p-2">{children}</div>
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

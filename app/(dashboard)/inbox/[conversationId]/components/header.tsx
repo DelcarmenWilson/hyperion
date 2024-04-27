@@ -4,20 +4,19 @@ import { ArrowLeft, Phone } from "lucide-react";
 
 import { usePhone } from "@/hooks/use-phone";
 
-import { FullConversation } from "@/types";
+import { FullLeadNoConvo } from "@/types";
 import { Button } from "@/components/ui/button";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { DropDown } from "@/components/lead/dropdown";
+import { LeadDropDown } from "@/components/lead/dropdown";
 
 interface HeaderProps {
-  conversation: FullConversation;
+  lead: FullLeadNoConvo;
 }
-export const Header = ({ conversation }: HeaderProps) => {
+export const Header = ({ lead }: HeaderProps) => {
   const router = useRouter();
   const usePm = usePhone();
 
-  const lead = conversation.lead;
   const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
     0,
     1
@@ -31,7 +30,7 @@ export const Header = ({ conversation }: HeaderProps) => {
       </div>
       <div className="flex flex-1 items-center gap-2">
         <span className="text-lg">
-          {fullName} {formatPhoneNumber(conversation.lead.cellPhone)}
+          {fullName} {formatPhoneNumber(lead.cellPhone)}
         </span>
         <Button
           disabled={lead.status == "Do_Not_Call"}
@@ -40,10 +39,10 @@ export const Header = ({ conversation }: HeaderProps) => {
           size="icon"
           onClick={() => usePm.onPhoneOutOpen(lead)}
         >
-          <Phone className="w-4 h-4" />
+          <Phone size={16} />
         </Button>
 
-        <DropDown lead={lead} />
+        <LeadDropDown lead={lead} />
       </div>
       <div className="flex items-center gap-2">
         <Button

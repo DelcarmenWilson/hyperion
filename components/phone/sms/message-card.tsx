@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { FullMessage } from "@/types";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 interface MessageCardProps {
   data: FullMessage;
@@ -29,7 +30,17 @@ export const MessageCard = ({ data, username }: MessageCardProps) => {
         <span className="hidden group-hover:block text-sm italic">
           {username} {format(new Date(data.createdAt), "p")}
         </span>
-        <div className={message}>{data.content}</div>
+        <div className={message}>
+          {data.attachment && (
+            <Image
+              height={100}
+              width={100}
+              src={data.attachment}
+              alt="Chat Image"
+            />
+          )}
+          {data.content}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { LeadExportSchema } from "@/schemas";
 import { userGetByAssistant } from "@/data/user";
 
 import { getYesterday } from "@/formulas/dates";
+import { currentUser } from "@/lib/auth";
 
 export const leadsGetAll = async () => {
   try {
@@ -30,6 +31,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         beneficiaries: true,
         expenses: true,
         conditions: { include: { condition: true } },
+        policy:true  
       },
     });
     return leads;
@@ -81,6 +83,7 @@ export const leadGetById = async (id: string) => {
         expenses: true,
         beneficiaries: true,
         conditions: { include: { condition: true } },
+        policy:true        
       },
     });
 
@@ -90,8 +93,15 @@ export const leadGetById = async (id: string) => {
   }
 };
 
-export const leadGetPrevNextById = async (id: string, userId: string) => {
+export const leadGetPrevNextById = async (id: string) => {
   try {
+    const user=await currentUser()
+    if(!user)
+      return null
+let userId=user.id
+if(user.role=="ASSISTANT"){
+  userId=(await userGetByAssistant(userId))as string
+}
     const prev = await db.lead.findMany({
       take: 1,
       select: { id: true },
@@ -143,6 +153,10 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
 // LEADSTATUS
 export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
   try {
+    
+     const temp=(await userGetByAssistant(userId))as string
+     if(temp)userId=temp
+    
     const leadStatus = await db.leadStatus.findMany({
       where: { OR: [{ userId }, { type: { equals: "default" } }] },
     });

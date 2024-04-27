@@ -22,7 +22,6 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-
   const [disabled, setDisabled] = useState(false);
 
   // PHONE VARIABLES
@@ -30,20 +29,12 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
     name: lead ? leadFullName : "New Call",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
-  // const [toName, setToName] = useState(lead ? leadFullName : "New Sms");
-  // const [toNumber, setToNumber] = useState(
-  //   formatPhoneNumber(lead?.cellPhone as string) || ""
-  // );
+
   const [selectedNumber, setSelectedNumber] = useState(
     user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone ||
       ""
   );
-  // const [selectedNumber, setSelectedNumber] = useState(
-  //   lead?.defaultNumber
-  //     ? lead?.defaultNumber
-  //     : user?.phoneNumbers[0]?.phone || ""
-  // );
 
   const onNumberTyped = (num: string) => {
     setTo((state) => {
@@ -117,7 +108,7 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
         leadName={lead?.lastName as string}
         userName={user?.name as string}
       />
-      <SmsForm leadId={lead?.id as string} onNewMessage={onNewMessage} />
+      <SmsForm onNewMessage={onNewMessage} />
     </div>
   );
 };

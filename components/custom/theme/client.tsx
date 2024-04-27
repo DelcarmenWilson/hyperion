@@ -113,7 +113,7 @@ export function ThemeClient() {
                           )}
                         >
                           {isActive && (
-                            <CheckIcon className="h-4 w-4 text-white" />
+                            <CheckIcon size={16} className="text-white" />
                           )}
                         </span>
                         <span className="sr-only">{theme.label}</span>
