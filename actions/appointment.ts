@@ -2,7 +2,6 @@
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { createPubSub } from "@/lib/subscribable-function";
 
 import { AppointmentLeadSchema, AppointmentSchema } from "@/schemas";
 import { userGetByAssistant } from "@/data/user";
@@ -69,11 +68,6 @@ export const appointmentInsert = async (
     }
   }
 
-  const pusher = await createPubSub<{
-    NEW_APPOINTMENT: (appointment: any) => void;
-  }>();
-  pusher.emit("NEW_APPOINTMENT", appointment);
-  console.log(pusher);
   // pusher.publish(appointment)
   return { success: appointment };
 };

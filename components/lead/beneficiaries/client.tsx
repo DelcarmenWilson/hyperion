@@ -1,10 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { emitter } from "@/lib/event-emmiter";
+
 import { LeadBeneficiary } from "@prisma/client";
+
+import { DrawerRight } from "@/components/custom/drawer-right";
+import { DataTable } from "@/components/tables/data-table";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { BeneficiaryForm } from "./form";
-import { Button } from "@/components/ui/button";
-import { BeneficiaryCard } from "./card";
+import { BeneficiariesList } from "./list";
+import { columns } from "./columns";
 
 type BeneficiariesClientProp = {
   leadId: string;
@@ -15,59 +20,68 @@ export const BeneficiariesClient = ({
   leadId,
   initBeneficiaries,
 }: BeneficiariesClientProp) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [beneficiaries, setBeneficiaries] =
     useState<LeadBeneficiary[]>(initBeneficiaries);
-
-  const onBeneficiaryInserted = (e: LeadBeneficiary) => {
-    setBeneficiaries((beneficiaries) => [...beneficiaries, e]);
-    setIsOpen(false);
-  };
-
-  const onBeneficiaryDeleted = (id: string) => {
-    setBeneficiaries((beneficiaries) =>
-      beneficiaries.filter((e) => e.id !== id)
-    );
-  };
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(false);
 
   useEffect(() => {
     setBeneficiaries(initBeneficiaries);
+    const onBeneficiaryInserted = (newBeneficiary: LeadBeneficiary) => {
+      const existing = beneficiaries.find((e) => e.id == newBeneficiary.id);
+      if (existing == undefined)
+        setBeneficiaries((beneficiaries) => [...beneficiaries, newBeneficiary]);
+    };
+
+    const onBeneficiaryDeleted = (id: string) => {
+      setBeneficiaries((beneficiaries) =>
+        beneficiaries.filter((e) => e.id !== id)
+      );
+    };
+    emitter.on("beneficiaryInserted", (info) => onBeneficiaryInserted(info));
+    emitter.on("beneficiaryDeleted", (id) => onBeneficiaryDeleted(id));
   }, [initBeneficiaries]);
 
   return (
     <>
       <DrawerRight
         title="New Beneficiary"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
       >
         <BeneficiaryForm
           leadId={leadId}
-          onClose={() => setIsOpen(false)}
-          onBeneficiaryChange={onBeneficiaryInserted}
+          onClose={() => setIsDrawerOpen(false)}
         />
       </DrawerRight>
-      <div>
-        <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
-          <p className=" text-2xl font-semibold">Beneficiaries</p>
-          <Button onClick={() => setIsOpen(true)}>Add Beneficiary</Button>
-        </div>
-        {beneficiaries.length ? (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
-            {beneficiaries.map((beneficiary) => (
-              <BeneficiaryCard
-                key={beneficiary.id}
-                initBeneficiary={beneficiary}
-                onBeneficiaryDeleted={onBeneficiaryDeleted}
-              />
-            ))}
+      {isList ? (
+        <DataTable
+          columns={columns}
+          data={beneficiaries}
+          headers
+          topMenu={
+            <ListGridTopMenu
+              text="Add Beneficiary"
+              isList={isList}
+              setIsList={setIsList}
+              setIsDrawerOpen={setIsDrawerOpen}
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center p-1">
+            <h4 className="text-2xl font-semibold">Beneficiaries</h4>
+            <ListGridTopMenu
+              text="Add Beneficiary"
+              setIsDrawerOpen={setIsDrawerOpen}
+              isList={isList}
+              setIsList={setIsList}
+            />
           </div>
-        ) : (
-          <div>
-            <p className="font-semibold text-center">No Benefieries Found</p>
-          </div>
-        )}
-      </div>
+          <BeneficiariesList beneficiaries={beneficiaries} />
+        </>
+      )}
     </>
   );
 };

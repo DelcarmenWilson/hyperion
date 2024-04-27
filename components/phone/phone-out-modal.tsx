@@ -12,6 +12,7 @@ export const PhoneOutModal = () => {
       title="Dialer"
       isOpen={isDialerOpen}
       onClose={onDialerClose}
+      scroll={false}
       size="w-auto"
     >
       <PhoneShell />

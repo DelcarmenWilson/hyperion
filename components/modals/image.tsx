@@ -63,7 +63,7 @@ export const ImageModal = ({
         formData.append("filePath", filePath);
         formData.append("id", id as string);
         formData.append("type", type);
-        axios.post("/api/upload/image", formData);
+        axios.post("/api/upload/images", formData);
       }
       onImageUpdate(selectedImages, selectedFiles);
       setSelectedImages([]);

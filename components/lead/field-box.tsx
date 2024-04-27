@@ -49,11 +49,11 @@ export const FieldBox = ({
       {fieldEnabled ? (
         <div className="flex gap-1">
           <Button variant="link" size="sm" onClick={onCancel}>
-            <X className="h-4 w-4" />
+            <X size={16} />
           </Button>
 
           <Button variant="link" size="sm" onClick={onUpdate}>
-            <Check className="h-4 w-4" />
+            <Check size={16} />
           </Button>
         </div>
       ) : (
@@ -63,7 +63,7 @@ export const FieldBox = ({
           className="opacity-0 group-hover:opacity-100"
           onClick={() => setFieldEnabled(true)}
         >
-          <Pencil className="h-4 w-4" />
+          <Pencil size={16} />
         </Button>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { includes } from "lodash";
 
 export const teamsGetAll = async () => {
   try {
@@ -35,7 +36,7 @@ export const teamGetById = async (id: string) => {
             calls: true,
             appointments: true,
             conversations: true,
-            leads: true,
+            leads: { include: { policy: true } },
           },
         },
         organization: true,
@@ -68,7 +69,10 @@ export const teamGetByIdStats = async (
             conversations: {
               where: { createdAt: { lte: toDate, gte: fromDate } },
             },
-            leads: { where: { createdAt: { lte: toDate, gte: fromDate } } },
+            leads: {
+              include: { policy: true },
+              where: { createdAt: { lte: toDate, gte: fromDate } },
+            },
           },
         },
         organization: true,
@@ -94,7 +98,7 @@ export const teamGetByIdSales = async (
       where: {
         user: { teamId: id },
         status: "Sold",
-        ap: { not:"0.00"},
+        policy: { ap: { not: "0.00" } },
         updatedAt: {
           lte: toDate,
           gte: fromDate,
@@ -102,6 +106,7 @@ export const teamGetByIdSales = async (
       },
       include: {
         user: { select: { firstName: true, lastName: true, image: true } },
+        policy: true,
       },
     });
     return sales;
@@ -109,4 +114,3 @@ export const teamGetByIdSales = async (
     return null;
   }
 };
-

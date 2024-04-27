@@ -8,16 +8,16 @@ import { Task } from "@prisma/client";
 import { TaskForm } from "./form";
 import { columns } from "./columns";
 import { TaskList } from "./list";
-import { TopMenu } from "./top-menu";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 
 type TaskClientProps = {
   initTasks: Task[];
 };
 
 export const TaskClient = ({ initTasks }: TaskClientProps) => {
+  const [tasks, setTasks] = useState(initTasks);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(false);
-  const [tasks, setTasks] = useState(initTasks);
   const onTaskCreated = (e?: Task) => {
     if (e) {
       setTasks((tasks) => {
@@ -29,7 +29,7 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
   return (
     <>
       <DrawerRight
-        title={"New Task"}
+        title="New Task"
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
@@ -41,7 +41,8 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
           data={tasks}
           headers
           topMenu={
-            <TopMenu
+            <ListGridTopMenu
+              text="New Task"
               isList={isList}
               setIsList={setIsList}
               setIsDrawerOpen={setIsDrawerOpen}
@@ -51,7 +52,8 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
       ) : (
         <>
           <div className="p-2">
-            <TopMenu
+            <ListGridTopMenu
+              text="New Task"
               setIsDrawerOpen={setIsDrawerOpen}
               isList={isList}
               setIsList={setIsList}

@@ -8,7 +8,7 @@ export const TextGroup = ({ title, value }: BoxProps) => {
     <p>
       {title}:
       {value ? (
-        <span> {value}</span>
+        <span className="font-bold"> {value}</span>
       ) : (
         <span className="text-primary"> Not set</span>
       )}

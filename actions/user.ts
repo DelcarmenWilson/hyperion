@@ -13,6 +13,7 @@ import {
   NewPasswordSchema,
   UserCarrierSchema,
   UserLicenseSchema,
+  UserTemplateSchema,
 } from "@/schemas";
 import { RegisterSchema } from "@/schemas";
 import { SettingsSchema } from "@/schemas";
@@ -404,8 +405,8 @@ export const userLicenseInsert = async (
   const { state, type, licenseNumber, dateExpires, comments } =
     validatedFields.data;
 
-  const existingLicense = await db.userLicense.findUnique({
-    where: { licenseNumber },
+  const existingLicense = await db.userLicense.findFirst({
+    where: { state,licenseNumber },
   });
 
   if (existingLicense) {
@@ -457,4 +458,41 @@ export const userCarrierInsert = async (
   });
 
   return { success: carrier };
+};
+
+
+
+//USER_TEMPLATE
+export const userTemplateInsert = async (
+  values: z.infer<typeof UserTemplateSchema>
+) => {
+  const validatedFields = UserTemplateSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const { name,message,description,attachment } = validatedFields.data;
+
+  const exisitingTemplate = await db.userTemplate.findFirst({
+    where: { name,userId:user.id },
+  });
+
+  if (exisitingTemplate) {
+    return { error: "Template with the same name already exist!" };
+  }
+  const template = await db.userTemplate.create({
+    data: {
+      userId: user.id,
+      name,
+      message:message!,
+      description,
+      attachment
+    },
+  });
+
+  return { success: template };
 };

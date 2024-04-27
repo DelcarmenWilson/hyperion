@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { emitter } from "@/lib/event-emmiter";
+
 import { Phone } from "lucide-react";
 import { usePhone } from "@/hooks/use-phone";
 import { allLeadTypes } from "@/constants/lead";
@@ -32,7 +34,7 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
   const [callCount, setCallCount] = useState(leadcount?.length || 0);
   const { leadStatus } = useGlobalContext();
 
-  const onStatusUpdated = (e: any) => {
+  const onStatusUpdated = (e: string) => {
     leadUpdateByIdStatus(lead.id, e).then((data) => {
       if (data.error) {
         toast.success(data.error);
@@ -58,9 +60,7 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
     pusherClient.subscribe(lead.id as string);
 
     const callHandler = () => {
-      setCallCount((current) => {
-        return current + 1;
-      });
+      setCallCount((count) => count + 1);
     };
     pusherClient.bind("call:new", callHandler);
     return () => {
@@ -71,6 +71,16 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
 
   useEffect(() => {
     setLead(info);
+    const onLeadStatusChanged = (leadId: string, newStatus: string) => {
+      if (leadId == lead.id) {
+        setLead((lead) => {
+          return { ...lead, status: newStatus };
+        });
+      }
+    };
+    emitter.on("leadStatusChanged", (leadId, newStatus) =>
+      onLeadStatusChanged(leadId, newStatus)
+    );
   }, [info]);
 
   return (
@@ -81,11 +91,12 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
       {showBtnCall && (
         <div className="relative w-fit">
           <Button
+            className="gap-2"
             disabled={lead.status == "Do_Not_Call"}
             onClick={() => usePm.onPhoneOutOpen(lead)}
             size="sm"
           >
-            <Phone className="w-4 h-4 mr-2" />
+            <Phone size={16} />
             CLICK TO CALL
           </Button>
 
@@ -137,21 +148,7 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
           </Select>
         </div>
       </div>
-      <div>
-        {/* <Badge
-          className="flex gap-1 w-fit mb-2 "
-          variant="outlinedestructive"
-        >
-          <MessageSquareWarning className="w-4 h-4" />
-          <span> No SMS drips</span>
-          <XCircle className="w-4 h-4" />
-        </Badge>
-        <Badge className="flex gap-1 w-fit" variant="outlinedestructive">
-          <MessageSquareWarning className="w-4 h-4" />
-          <span> No email drips</span>
-          <XCircle className="w-4 h-4" />
-        </Badge> */}
-      </div>
+      <div></div>
     </div>
   );
 };

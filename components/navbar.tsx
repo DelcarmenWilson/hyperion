@@ -64,7 +64,7 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
             </a>
           </nav> */}
         </div>
-        <button
+        {/* <button
           className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-9 py-2 mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
           type="button"
           aria-haspopup="dialog"
@@ -102,7 +102,7 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
             ></path>
           </svg>
           <span className="sr-only">Toggle Menu</span>
-        </button>
+        </button> */}
         {showPhone && (
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <Button asChild>
@@ -110,7 +110,7 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
                 className="flex items-center justify-center gap-2"
                 href="/feedback"
               >
-                <MessageSquarePlus className="w-4 h-4" />
+                <MessageSquarePlus size={16} />
                 Feedback
               </Link>
             </Button>
@@ -119,34 +119,12 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
               size="icon"
               onClick={() => usePm.onPhoneOutOpen()}
             >
-              <Smartphone className="w-4 h-4" />
+              <Smartphone size={16} />
             </Button>
           </div>
         )}
       </div>
     </header>
-    // <div className="flex items-center sticky w-full top-0 z-10 py-2 px-4">
-    // <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-    //   <div>{/* <MainNav /> */}</div>
-    //   <div className="ml-auto flex items-center space-x-4">
-    //     <Button asChild>
-    //       <Link
-    //         className="flex items-center justify-center gap-2"
-    //         href="/feedback"
-    //       >
-    //         <MessageSquarePlus className="w-4 h-4" />
-    //         Feedback
-    //       </Link>
-    //     </Button>
-    //     <Button
-    //       className="rounded-full"
-    //       size="icon"
-    //       onClick={() => usePm.onPhoneOutOpen()}
-    //     >
-    //       <Smartphone className="w-4 h-4" />
-    //     </Button>
-    //   </div>
-    // </div>
   );
 };
 

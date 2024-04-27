@@ -82,7 +82,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -93,24 +93,28 @@ export const CellAction = ({ data }: CellActionProps) => {
               Start Convo
             </DropdownMenuItem>
           )} */}
-          <DropdownMenuItem onClick={onCopy}>
-            <Copy className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="gap-2" onClick={onCopy}>
+            <Copy size={16} />
             Copy Id
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Calendar className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="gap-2">
+            <Calendar size={16} />
             Appointment
           </DropdownMenuItem>
           <DropdownMenuItem
+            className="gap-2"
             onClick={() => {
               router.push(`/leads/${data.id}`);
             }}
           >
-            <Eye className="mr-2 h-4 w-4" />
+            <Eye size={16} />
             View
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setAlertOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" />
+          <DropdownMenuItem
+            className="gap-2"
+            onClick={() => setAlertOpen(true)}
+          >
+            <Trash size={16} />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

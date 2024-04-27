@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+import { emitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -39,8 +40,7 @@ import {
 type BeneficiaryFormProps = {
   leadId?: string;
   beneficiary?: LeadBeneficiary;
-  onBeneficiaryChange: (e: LeadBeneficiary) => void;
-  onClose?: () => void;
+  onClose: () => void;
 };
 
 type BeneficiaryFormValues = z.infer<typeof LeadBeneficiarySchema>;
@@ -48,10 +48,8 @@ type BeneficiaryFormValues = z.infer<typeof LeadBeneficiarySchema>;
 export const BeneficiaryForm = ({
   leadId,
   beneficiary,
-  onBeneficiaryChange,
   onClose,
 }: BeneficiaryFormProps) => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const btnTitle = beneficiary ? "Update" : "Add";
 
@@ -77,13 +75,10 @@ export const BeneficiaryForm = ({
     if (leadId) {
       leadBeneficiaryInsert(values).then((data) => {
         if (data.success) {
-          const newBeneficiary = data.success;
-          onBeneficiaryChange(newBeneficiary);
-          router.refresh();
+          emitter.emit("beneficiaryInserted", data.success);
           toast.success(" Beneficiary Added!");
-          if (onClose) {
-            onClose();
-          }
+
+          onClose();
         }
         if (data.error) {
           form.reset();
@@ -93,13 +88,9 @@ export const BeneficiaryForm = ({
     } else {
       leadBeneficiaryUpdateById(values).then((data) => {
         if (data.success) {
-          const newBeneficiary = data.success;
-          onBeneficiaryChange(newBeneficiary);
-          router.refresh();
+          emitter.emit("beneficiaryUpdated", data.success);
           toast.success(" Beneficiary Updated!");
-          if (onClose) {
-            onClose();
-          }
+          onClose();
         }
         if (data.error) {
           toast.error(data.error);
@@ -141,14 +132,56 @@ export const BeneficiaryForm = ({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Primary">Primary</SelectItem>
-                        <SelectItem value="Secondary">Secondary</SelectItem>
-                        <SelectItem value="Tertiary">Tertiary</SelectItem>
+                        <SelectItem value="Contingent">Contingent</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>
                 )}
               />
-
+              {/* RELATIONSHIP */}
+              <FormField
+                control={form.control}
+                name="relationship"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center justify-between">
+                      Relationship
+                      <FormMessage />
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Son"
+                        disabled={loading}
+                        autoComplete="off"
+                        type="text"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* SHARE */}
+              <FormField
+                control={form.control}
+                name="share"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center justify-between">
+                      Share
+                      <FormMessage />
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="50%"
+                        disabled={loading}
+                        autoComplete="off"
+                        type="text"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               {/* FIRSTNAME */}
               <FormField
                 control={form.control}
@@ -246,8 +279,7 @@ export const BeneficiaryForm = ({
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="flex flex-col">
+
               {/* CELLPHONE */}
               <FormField
                 control={form.control}
@@ -292,8 +324,30 @@ export const BeneficiaryForm = ({
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="flex flex-col">
+
+              {/* SSN */}
+              <FormField
+                control={form.control}
+                name="ssn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center justify-between">
+                      Ssn #
+                      <FormMessage />
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="565856985"
+                        disabled={loading}
+                        autoComplete="off"
+                        type="text"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
               {/* ADDRESS */}
               <FormField
                 control={form.control}

@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
+import { emitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -27,18 +28,17 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
+import { FullLeadMedicalCondition } from "@/types";
 import { MedicalCondition } from "@prisma/client";
 
 import { LeadConditionSchema } from "@/schemas";
 
 import { leadConditionInsert, leadConditionUpdateById } from "@/actions/lead";
-import { FullLeadMedicalCondition } from "@/types";
 
 type ConditionFormProps = {
   leadId?: string;
   condition?: FullLeadMedicalCondition;
-  onConditionChange: (e: FullLeadMedicalCondition) => void;
-  onClose?: () => void;
+  onClose: () => void;
 };
 
 type ConditionFormValues = z.infer<typeof LeadConditionSchema>;
@@ -46,13 +46,11 @@ type ConditionFormValues = z.infer<typeof LeadConditionSchema>;
 export const ConditionForm = ({
   leadId,
   condition,
-  onConditionChange,
   onClose,
 }: ConditionFormProps) => {
-  const router = useRouter();
+  const [conditions, setConditions] = useState<MedicalCondition[]>();
   const [loading, setLoading] = useState(false);
   const btnTitle = condition ? "Update" : "Add";
-  const [conditions, setConditions] = useState<MedicalCondition[]>();
 
   const form = useForm<ConditionFormValues>({
     resolver: zodResolver(LeadConditionSchema),
@@ -67,9 +65,7 @@ export const ConditionForm = ({
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
   const onSubmit = async (values: ConditionFormValues) => {
@@ -78,13 +74,9 @@ export const ConditionForm = ({
     if (leadId) {
       leadConditionInsert(values).then((data) => {
         if (data.success) {
-          const newCondition = data.success;
-          onConditionChange(newCondition);
-          router.refresh();
+          emitter.emit("conditionInserted", data.success);
           toast.success(" Condition Added!");
-          if (onClose) {
-            onClose();
-          }
+          onClose();
         }
         if (data.error) {
           form.reset();
@@ -94,13 +86,9 @@ export const ConditionForm = ({
     } else {
       leadConditionUpdateById(values).then((data) => {
         if (data.success) {
-          const newCondition = data.success;
-          onConditionChange(newCondition);
-          router.refresh();
+          emitter.emit("conditionUpdated", data.success);
           toast.success(" Condition Updated!");
-          if (onClose) {
-            onClose();
-          }
+          onClose();
         }
         if (data.error) {
           toast.error(data.error);
@@ -113,7 +101,6 @@ export const ConditionForm = ({
 
   useEffect(() => {
     axios.post("/api/admin/conditions").then((response) => {
-      console.log(response.data);
       setConditions(response.data);
     });
   }, []);

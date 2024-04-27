@@ -37,25 +37,19 @@ export const PipelineCard = ({
     pipelineUpdateByIdIndex(pipeline.id, 0);
   };
 
-  const onScrollToggle = (dir: String) => {
-    if (!indexRef.current && !divRef.current) return;
-    let currentScroll = divRef.current?.scrollTop!;
-    let height = indexRef.current?.offsetHeight!;
-    const nextScroll =
-      dir == "up" ? currentScroll - height : currentScroll + height;
-    divRef.current?.scrollTo(0, nextScroll);
-  };
-  useEffect(() => {
-    // if (!indexRef.current) return;
-    // indexRef.current.scrollIntoView({
-    //   behavior: "smooth",
-    //   block: "end",
-    //   inline: "nearest",
-    // });
-    if (!indexRef.current && !divRef.current) return;
+  // const onScrollToggle = (dir: String) => {
+  //   if (!indexRef.current && !divRef.current) return;
+  //   let currentScroll = divRef.current?.scrollTop!;
+  //   let height = indexRef.current?.offsetHeight!;
+  //   const nextScroll =
+  //     dir == "up" ? currentScroll - height : currentScroll + height;
+  //   divRef.current?.scrollTo(0, nextScroll);
+  // };
+  // useEffect(() => {
+  //   if (!indexRef.current && !divRef.current) return;
 
-    divRef.current?.scrollTo(0, indexRef.current?.offsetTop! - 15);
-  }, [index]);
+  //   divRef.current?.scrollTo(0, indexRef.current?.offsetTop! - 15);
+  // }, [index]);
   return (
     <section className="flex flex-col gap-2 glassmorphism border border-primary/50 shadow-inner h-[400px]">
       <div className="bg-primary text-background flex justify-between items-center px-2">
@@ -88,7 +82,7 @@ export const PipelineCard = ({
         </Button>
         <p>Leads: {leads.length}</p>
       </div>
-      <div className="relative group h-full overflow-hidden" ref={divRef}>
+      <div className="relative group h-full overflow-y-auto" ref={divRef}>
         {leads.map((lead, i) => (
           <LeadCard
             key={lead.id}
@@ -96,7 +90,7 @@ export const PipelineCard = ({
             indexRef={i == index ? indexRef : null}
           />
         ))}
-        {leads.length > 4 && (
+        {/* {leads.length > 4 && (
           <div className="fixed bottom-2 z-10 left-[50%] flex flex-col items-center -translate-x-1/2 opacity-0 group-hover:opacity-100 gap-1">
             <Button
               className="rounded-full"
@@ -117,7 +111,7 @@ export const PipelineCard = ({
               <span className="sr-only">Scroll Down</span>
             </Button>
           </div>
-        )}
+        )} */}
       </div>
     </section>
   );

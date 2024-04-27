@@ -19,8 +19,8 @@ import {
   LeadExpense,
   LeadMedicalCondition,
   MedicalCondition,
+  LeadPolicy,
 } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export type HalfUser = {
   id: string;
@@ -37,7 +37,7 @@ export type FullUser = User & {
 export type FullUserReport = User & {
   phoneNumbers: PhoneNumber[];
   calls: Call[];
-  leads: Lead[];
+  leads: LeadPolicyType[];
   conversations: Conversation[];
   appointments: Appointment[];
   team?: FullTeam | null;
@@ -65,6 +65,9 @@ export type FullConversation = Conversation & {
   messages: FullMessage[];
 };
 
+export type LeadPolicyType = Lead & {
+  policy?: LeadPolicy|null;
+};
 export type LeadConversationType = Conversation & {
   lead: Lead;
   messages: Message[];
@@ -82,6 +85,7 @@ export type FullLeadNoConvo = Lead & {
   beneficiaries?:LeadBeneficiary[],
   expenses?:LeadExpense[]
   conditions?:FullLeadMedicalCondition[]
+  policy:LeadPolicy|null;
 };
 
 export type FullLead = Lead & {
@@ -89,9 +93,10 @@ export type FullLead = Lead & {
   calls: Call[];
   appointments: Appointment[];
   activities: Activity[];
-  beneficiaries?:LeadBeneficiary[],
-  expenses?:LeadExpense[]
-  conditions?:FullLeadMedicalCondition[]
+  beneficiaries?:LeadBeneficiary[];
+  expenses?:LeadExpense[];
+  conditions?:FullLeadMedicalCondition[];
+  policy:LeadPolicy|null;
 };
 export type FullLeadMedicalCondition = LeadMedicalCondition & {
   condition:MedicalCondition
@@ -122,14 +127,17 @@ export type LeadGeneralInfo = {
   smoker: boolean;
 };
 
-export type LeadSaleInfo = {
-  id: string;
-  createdAt:Date;
-  vendor:string
+export type LeadPolicyInfo = {
+  leadId: string;
+  carrier:string
+  policyNumber:string
+  status:string;
   ap: string ;
   commision: string ;
   coverageAmount: string;
-  carrier:string
+  startDate?:Date;
+  createdAt:Date;
+  updatedAt:Date;
 };
 
 export type PhoneType = {
@@ -187,4 +195,5 @@ export type FullUserCarrier = UserCarrier & {
 
 export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
+  policy?:LeadPolicy| null;
 };

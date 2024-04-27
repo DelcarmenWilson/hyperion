@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import {
+  BookText,
   Calendar,
   Check,
   ChevronDown,
@@ -20,28 +21,36 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 
 import { AlertModal } from "@/components/modals/alert";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { IntakeForm } from "@/components/lead/forms/intake-form";
 import { FullLeadNoConvo } from "@/types";
 import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
 import { Conversation } from "@prisma/client";
 import { exportLeadsToExcel, exportLeadsToPdf } from "@/lib/xlsx";
 
-type DropDownDrops = {
+type DropDownProps = {
   lead: FullLeadNoConvo;
   conversation?: Conversation;
 };
 
-export const DropDown = ({ lead, conversation }: DropDownDrops) => {
+export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const router = useRouter();
   const useAppointment = useAppointmentModal();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
@@ -80,94 +89,93 @@ export const DropDown = ({ lead, conversation }: DropDownDrops) => {
     else exportLeadsToPdf(leads);
   };
   return (
-    // <Button
-    //   disabled={lead.status == "Do_Not_Call"}
-    //   className="cursor-pointer rounded-full"
-    //   size="icon"
-    //   onClick={() => useAppointment.onOpen(lead)}
-    // >
-    //   <Calendar size={16} />
-    // </Button>
-    // <>
-    //   <AlertModal
-    //     isOpen={alertOpen}
-    //     onClose={() => setAlertOpen(false)}
-    //     onConfirm={onDelete}
-    //     loading={loading}
-    //   />
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="rounded-full" size="icon">
-          <ChevronDown size={16} />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-60" align="center">
-        <DropdownMenuItem
-          disabled={lead.status == "Do_Not_Call"}
-          className="cursor-pointer"
-          onClick={() => useAppointment.onOpen(lead)}
-        >
-          <Calendar className="h-4 w-4 mr-2" />
-          New Appointment
-        </DropdownMenuItem>
-        {conversation?.id && (
+    <>
+      {/* <Button
+      disabled={lead.status == "Do_Not_Call"}
+      className="cursor-pointer rounded-full"
+      size="icon"
+      onClick={() => useAppointment.onOpen(lead)}
+    >
+      <Calendar size={16} />
+    </Button>
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        onConfirm={onDelete}
+        loading={loading}
+      /> */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
+          <h3 className="text-2xl font-semibold py-2">
+            Intake Form -{" "}
+            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
+          </h3>
+          <IntakeForm lead={lead} />
+        </DialogContent>
+      </Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="rounded-full" size="icon">
+            <ChevronDown size={16} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="center">
           <DropdownMenuItem
-            className={cn(
-              " text-background cursor-pointer",
-              autoChat ? "bg-primary" : "bg-destructive"
-            )}
-            onClick={onHyperChatToggle}
+            disabled={lead.status == "Do_Not_Call"}
+            className="cursor-pointer gap-2"
+            onClick={() => useAppointment.onOpen(lead)}
           >
-            <div className="flex items-center justify-between gap-2">
-              {autoChat ? (
-                <Check className="w-4 h-4 " />
-              ) : (
-                <X className="w-4 h-4 " />
-              )}
-              <span>Hyper Chat</span>
-              <span>{autoChat ? "ON" : "OFF"}</span>
-            </div>
+            <Calendar size={16} />
+            New Appointment
           </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenu>
-          <DropdownMenuTrigger className="w-full">
-            <DropdownMenuItem
-              className="w-full cursor-pointer gap-2"
-              onClick={() => preExport("Excel")}
-            >
-              <Download size={16} />
-              Export
-            </DropdownMenuItem>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60" align="start">
-            <DropdownMenuItem
-              className="cursor-pointer gap-2"
-              onClick={() => preExport("Excel")}
-            >
-              <FileBarChart size={16} />
-              Excel
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer gap-2"
-              onClick={() => preExport("Pdf")}
-            >
-              <FileText size={16} />
-              Pdf
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => setAlertOpen(true)}
+            className="cursor-pointer gap-2"
+            onClick={() => setDialogOpen(true)}
           >
-            <Trash className="h-4 w-4 mr-2" />
-            Delete
-          </DropdownMenuItem> */}
-      </DropdownMenuContent>
-    </DropdownMenu>
-    // </>
+            <BookText size={16} />
+            Intake Form
+          </DropdownMenuItem>
+          {conversation?.id && (
+            <DropdownMenuItem
+              className={cn(
+                " text-background cursor-pointer fap-2",
+                autoChat ? "bg-primary" : "bg-destructive"
+              )}
+              onClick={onHyperChatToggle}
+            >
+              <div className="flex items-center justify-between gap-2">
+                {autoChat ? <Check size={16} /> : <X size={16} />}
+                <span>Hyper Chat</span>
+                <span>{autoChat ? "ON" : "OFF"}</span>
+              </div>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenu>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem
+                    className="cursor-pointer gap-2"
+                    onClick={() => preExport("Excel")}
+                  >
+                    <FileBarChart size={16} />
+                    Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer gap-2"
+                    onClick={() => preExport("Pdf")}
+                  >
+                    <FileText size={16} />
+                    Pdf
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };

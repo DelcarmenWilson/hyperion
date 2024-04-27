@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  Cake,
-  CalendarX,
-  FilePenLine,
-  Phone,
-  Plus,
-  XCircle,
-} from "lucide-react";
+import { Cake, CalendarX, FilePenLine, Phone, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
+import { emitter } from "@/lib/event-emmiter";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TextGroup } from "@/components/reusable/input-group";
@@ -20,120 +16,125 @@ import { Appointment, Call } from "@prisma/client";
 import { getAge } from "@/formulas/dates";
 
 type GeneralInfoClientProps = {
+  leadName: string;
   info: LeadGeneralInfo;
   call?: Call;
   appointment?: Appointment;
   dob?: Date;
   showInfo?: boolean;
 };
+
 export const GeneralInfoClient = ({
+  leadName,
   info,
   call,
   appointment,
   dob,
   showInfo = false,
 }: GeneralInfoClientProps) => {
-  const [edit, setEdit] = useState(false);
-  const [leadInfo, setLeadInfo] = useState<LeadGeneralInfo>(info);
+  const [generalInfo, setGeneralInfo] = useState<LeadGeneralInfo>(info);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const onSetInfo = (e?: LeadGeneralInfo) => {
-    if (e) {
-      setLeadInfo(e);
-    }
-    setEdit(false);
+  const onSetInfo = (e: LeadGeneralInfo) => {
+    if (e.id == info.id) setGeneralInfo(e);
   };
-  useEffect(() => {
-    setLeadInfo(info);
-  }, [info]);
-  return (
-    <div className="flex flex-col gap-2 text-sm">
-      {call && (
-        <div className="flex items-center  gap-1">
-          <Badge className="gap-1 w-fit">
-            <Phone size={16} /> Last Call
-          </Badge>
-          {format(call.createdAt, "MM-dd-yy hh:mm aaaa")}
-        </div>
-      )}
 
-      {appointment && (
-        <div>
+  useEffect(() => {
+    setGeneralInfo(info);
+    emitter.on("generalInfoUpdated", (info) => onSetInfo(info));
+  }, [info]);
+
+  return (
+    <>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+          <h4 className="text-2xl font-semibold py-2">
+            General Info - <span className="text-primary">{leadName}</span>
+          </h4>
+          <GeneralInfoForm
+            info={generalInfo}
+            onClose={() => setDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+      <div className="flex flex-col gap-2 text-sm">
+        {call && (
           <div className="flex items-center  gap-1">
             <Badge className="gap-1 w-fit">
-              <CalendarX size={16} /> Appt Set
+              <Phone size={16} /> Last Call
             </Badge>
-            {format(appointment.date, "MM-dd-yy hh:mm aaaa")}
+            {format(call.createdAt, "MM-dd-yy hh:mm aaaa")}
           </div>
-        </div>
-      )}
+        )}
 
-      {dob && (
-        <div className="flex items-center gap-1 w-fit">
-          <Cake className="h-4 w-4 mr-1" />
-          <XCircle className="h-4 w-4 mr-1" />
-          Birthday: {format(dob!, "MM/dd/yy")}
-        </div>
-      )}
+        {appointment && (
+          <div>
+            <div className="flex items-center  gap-1">
+              <Badge className="gap-1 w-fit">
+                <CalendarX size={16} /> Appt Set
+              </Badge>
+              {format(appointment.date, "MM-dd-yy hh:mm aaaa")}
+            </div>
+          </div>
+        )}
 
-      {showInfo && (
-        <div>
-          {edit ? (
-            <GeneralInfoForm info={leadInfo} onChange={onSetInfo} />
-          ) : (
+        {dob && (
+          <div className="flex items-center gap-1 w-fit">
+            <Cake size={16} />
+            <XCircle size={16} />
+            Birthday: {format(dob!, "MM/dd/yy")}
+          </div>
+        )}
+
+        {showInfo && (
+          <div>
             <div className="relative group">
               <div className="flex gap-1">
                 <TextGroup
                   title="Dob"
                   value={
-                    leadInfo.dateOfBirth
-                      ? format(new Date(leadInfo.dateOfBirth), "MM/dd/yy")
+                    generalInfo.dateOfBirth
+                      ? format(new Date(generalInfo.dateOfBirth), "MM/dd/yy")
                       : ""
                   }
                 />
-                {leadInfo.dateOfBirth && (
+                {generalInfo.dateOfBirth && (
                   <span className="font-semibold">
-                    - {getAge(leadInfo.dateOfBirth)} yrs.
+                    - {getAge(generalInfo.dateOfBirth)} yrs.
                   </span>
                 )}
               </div>
               <TextGroup
                 title="Height"
-                value={leadInfo.height?.toString() || ""}
+                value={generalInfo.height?.toString() || ""}
               />
               <div className="flex gap-1">
                 <TextGroup
                   title="Weight"
-                  value={leadInfo.weight?.toString() || ""}
+                  value={generalInfo.weight?.toString() || ""}
                 />
                 lbs
               </div>
-              <p>Smoker: {leadInfo.smoker ? "Yes" : "No"}</p>
+              <p>Smoker: {generalInfo.smoker ? "Yes" : "No"}</p>
               <TextGroup
                 title="Income"
-                value={leadInfo.income?.toString() || ""}
+                value={generalInfo.income?.toString() || ""}
               />
-              <TextGroup title="Gender" value={leadInfo.gender} />
+              <TextGroup title="Gender" value={generalInfo.gender} />
               <TextGroup
                 title="Marital Status"
-                value={leadInfo.maritalStatus}
+                value={generalInfo.maritalStatus}
               />
               <Button
                 className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-                onClick={() => setEdit(true)}
+                onClick={() => setDialogOpen(true)}
               >
                 <FilePenLine size={16} />
               </Button>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* {showInfo && (
-        <Button className="flex gap-1 w-fit" variant="secondary">
-          <Plus className="h-4 w-4" />
-          NEW FIELD
-        </Button>
-      )} */}
-    </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };

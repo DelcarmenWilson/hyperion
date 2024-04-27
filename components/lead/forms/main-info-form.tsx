@@ -1,6 +1,8 @@
 import * as z from "zod";
 import { useState } from "react";
 
+import { emitter } from "@/lib/event-emmiter";
+
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { LeadGeneralSchema, LeadMainSchema } from "@/schemas";
+import { LeadMainSchema } from "@/schemas";
 import {
   Form,
   FormField,
@@ -25,25 +27,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Gender, MaritalStatus } from "@prisma/client";
 
-import { LeadGeneralInfo, LeadMainInfo } from "@/types";
-import {
-  leadUpdateByIdGeneralInfo,
-  leadUpdateByIdMainInfo,
-} from "@/actions/lead";
+import { LeadMainInfo } from "@/types";
+import { leadUpdateByIdMainInfo } from "@/actions/lead";
 
-import { Switch } from "@/components/ui/switch";
 import { states } from "@/constants/states";
 
 type MainInfoFormProps = {
   info: LeadMainInfo;
-  onChange: (e?: LeadMainInfo) => void;
+  onClose: () => void;
 };
 
 type MainInfoFormValues = z.infer<typeof LeadMainSchema>;
 
-export const MainInfoForm = ({ info, onChange }: MainInfoFormProps) => {
+export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<MainInfoFormValues>({
@@ -54,25 +51,23 @@ export const MainInfoForm = ({ info, onChange }: MainInfoFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onChange) {
-      onChange();
-    }
+    onClose();
   };
 
   const onSubmit = async (values: MainInfoFormValues) => {
     setLoading(true);
     await leadUpdateByIdMainInfo(values).then((data) => {
       if (data.success) {
-        if (onChange) {
-          onChange({
-            ...data.success,
-            email: data.success.email?.toString(),
-            address: data.success.address?.toString(),
-            city: data.success.city?.toString(),
-            zipCode: data.success.zipCode?.toString(),
-          });
-        }
-        toast.success("Lead info Updated");
+        emitter.emit("mainInfoUpdated", {
+          ...data.success,
+          email: data.success.email?.toString(),
+          address: data.success.address?.toString(),
+          city: data.success.city?.toString(),
+          zipCode: data.success.zipCode?.toString(),
+        });
+
+        toast.success("Lead demographic info updated");
+        onClose();
       }
       if (data.error) {
         form.reset();
@@ -83,128 +78,121 @@ export const MainInfoForm = ({ info, onChange }: MainInfoFormProps) => {
     setLoading(false);
   };
   return (
-    <div>
+    <div className="h-full overflow-y-auto">
       <Form {...form}>
         <form
-          className="space-1 px-2 w-full"
+          className="space-y-2 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div>
-            <div className="flex flex-col gap-1">
-              {/* EMAIL */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="jon.doe@example.com"
-                        disabled={loading}
-                        autoComplete="email"
-                        type="email"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* EMAIL */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="jon.doe@example.com"
+                    disabled={loading}
+                    autoComplete="email"
+                    type="email"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* ADDRESS */}
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="123 main street"
-                        disabled={loading}
-                        autoComplete="address"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* ADDRESS */}
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="123 main street"
+                    disabled={loading}
+                    autoComplete="address"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* CITY */}
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[50px]"> City</FormLabel>
+          {/* CITY */}
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel> City</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Queens"
+                    disabled={loading}
+                    autoComplete="address-level2"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+            {/* STATE */}
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State</FormLabel>
+                  <Select
+                    name="ddlState"
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    autoComplete="address-level2"
+                  >
                     <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="Queens"
-                        disabled={loading}
-                        autoComplete="address-level2"
-                      />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a State" />
+                      </SelectTrigger>
                     </FormControl>
-                  </FormItem>
-                )}
-              />
+                    <SelectContent className="w-full">
+                      {states.map((state) => (
+                        <SelectItem key={state.abv} value={state.abv}>
+                          {state.state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* STATE */}
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[50px]">State</FormLabel>
-                    <Select
-                      name="ddlState"
+            {/* ZIPCODE */}
+            <FormField
+              control={form.control}
+              name="zipCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Zip Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="15468"
                       disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      autoComplete="address-level2"
-                    >
-                      <FormControl>
-                        <SelectTrigger className="flex-1 h-6 p-1">
-                          <SelectValue placeholder="Select a State" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {states.map((state) => (
-                          <SelectItem key={state.abv} value={state.abv}>
-                            {state.state}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* ZIPCODE */}
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[50px]">Zip Code</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="15468"
-                        disabled={loading}
-                        autoComplete="postal-code"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      autoComplete="postal-code"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             <Button onClick={onCancel} type="button" variant="outlineprimary">

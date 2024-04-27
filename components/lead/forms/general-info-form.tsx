@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -34,12 +35,12 @@ import { Switch } from "@/components/ui/switch";
 
 type GeneralInfoFormProps = {
   info: LeadGeneralInfo;
-  onChange: (e?: LeadGeneralInfo) => void;
+  onClose: () => void;
 };
 
 type GeneralInfoFormValues = z.infer<typeof LeadGeneralSchema>;
 
-export const GeneralInfoForm = ({ info, onChange }: GeneralInfoFormProps) => {
+export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<GeneralInfoFormValues>({
@@ -50,25 +51,21 @@ export const GeneralInfoForm = ({ info, onChange }: GeneralInfoFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onChange) {
-      onChange();
-    }
+    onClose();
   };
 
   const onSubmit = async (values: GeneralInfoFormValues) => {
     setLoading(true);
     await leadUpdateByIdGeneralInfo(values).then((data) => {
       if (data.success) {
-        if (onChange) {
-          onChange({
-            ...data.success,
-            dateOfBirth: data.success.dateOfBirth?.toString(),
-            weight: data.success.weight?.toString(),
-            height: data.success.height?.toString(),
-            income: data.success.income?.toString(),
-          });
-        }
-        toast.success("Lead info Updated");
+        emitter.emit("generalInfoUpdated", {
+          ...data.success,
+          dateOfBirth: data.success.dateOfBirth?.toString(),
+          weight: data.success.weight?.toString(),
+          height: data.success.height?.toString(),
+          income: data.success.income?.toString(),
+        });
+        onClose();
       }
       if (data.error) {
         form.reset();
@@ -79,183 +76,177 @@ export const GeneralInfoForm = ({ info, onChange }: GeneralInfoFormProps) => {
     setLoading(false);
   };
   return (
-    <div>
+    <div className="h-full overflow-y-auto">
       <Form {...form}>
         <form
-          className="space-1 px-2 w-full"
+          className="space-y-2 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div>
-            <div className="flex flex-col gap-1">
-              {/* DATE OF BIRTH */}
-              <FormField
-                control={form.control}
-                name="dateOfBirth"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Date of birth</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="Dob"
-                        disabled={loading}
-                        type="date"
-                        autoComplete="DateOfBirth"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* DATE OF BIRTH */}
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Date of birth</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="flex-1 h-6"
+                    placeholder="Dob"
+                    disabled={loading}
+                    type="date"
+                    autoComplete="DateOfBirth"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* WEIGHT */}
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Weight</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="120"
-                        disabled={loading}
-                        autoComplete="Weight"
-                        type="number"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* WEIGHT */}
+          <FormField
+            control={form.control}
+            name="weight"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Weight</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="flex-1 h-6"
+                    placeholder="120"
+                    disabled={loading}
+                    autoComplete="Weight"
+                    type="number"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* HEIGHT */}
-              <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]"> Height</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="5'2"
-                        disabled={loading}
-                        autoComplete="Height"
-                        type="text"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* HEIGHT */}
+          <FormField
+            control={form.control}
+            name="height"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]"> Height</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="flex-1 h-6"
+                    placeholder="5'2"
+                    disabled={loading}
+                    autoComplete="Height"
+                    type="text"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* SMOKER */}
-              <FormField
-                control={form.control}
-                name="smoker"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Smoker</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* SMOKER */}
+          <FormField
+            control={form.control}
+            name="smoker"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Smoker</FormLabel>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* INCOME */}
-              <FormField
-                control={form.control}
-                name="income"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Income</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="flex-1 h-6"
-                        placeholder="12000"
-                        disabled={loading}
-                        autoComplete="Income"
-                        type="number"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* INCOME */}
+          <FormField
+            control={form.control}
+            name="income"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Income</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="flex-1 h-6"
+                    placeholder="12000"
+                    disabled={loading}
+                    autoComplete="Income"
+                    type="number"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              {/* GENDER */}
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Gender</FormLabel>
-                    <Select
-                      name="ddlGender"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="flex-1 h-6 p-1">
-                          <SelectValue placeholder="Select a Gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={Gender.Male}>Male</SelectItem>
-                        <SelectItem value={Gender.Female}>Female</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* GENDER */}
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Gender</FormLabel>
+                <Select
+                  name="ddlGender"
+                  disabled={loading}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="flex-1 h-6 p-1">
+                      <SelectValue placeholder="Select a Gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={Gender.Male}>Male</SelectItem>
+                    <SelectItem value={Gender.Female}>Female</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              {/* MARITAL STATUS */}
-              <FormField
-                control={form.control}
-                name="maritalStatus"
-                render={({ field }) => (
-                  <FormItem className="flex gap-x-1 items-end">
-                    <FormLabel className="w-[100px]">Marital Status</FormLabel>
-                    <Select
-                      name="ddlMaritalStatus"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="flex-1 h-6 p-1">
-                          <SelectValue placeholder="Select a Marital status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={MaritalStatus.Single}>
-                          Single
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Married}>
-                          Married
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Divorced}>
-                          Divorced
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Widowed}>
-                          Widowed
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+          {/* MARITAL STATUS */}
+          <FormField
+            control={form.control}
+            name="maritalStatus"
+            render={({ field }) => (
+              <FormItem className="flex gap-x-1 items-end">
+                <FormLabel className="w-[100px]">Marital Status</FormLabel>
+                <Select
+                  name="ddlMaritalStatus"
+                  disabled={loading}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="flex-1 h-6 p-1">
+                      <SelectValue placeholder="Select a Marital status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={MaritalStatus.Single}>Single</SelectItem>
+                    <SelectItem value={MaritalStatus.Married}>
+                      Married
+                    </SelectItem>
+                    <SelectItem value={MaritalStatus.Divorced}>
+                      Divorced
+                    </SelectItem>
+                    <SelectItem value={MaritalStatus.Widowed}>
+                      Widowed
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel

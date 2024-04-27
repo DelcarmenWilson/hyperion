@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 import { Body } from "./body";
 import { Form } from "./form";
 import { Header } from "./header";
-import { CardLayout } from "@/components/custom/card/layout";
 
 type ConversationClientProps = {
   conversation: FullConversation;
@@ -22,7 +21,7 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
             <MessageSquare className="h-5 w-5 text-primary" />
           </div>
         </div>
-        <Header conversation={conversation} />
+        <Header lead={conversation.lead} />
       </div>
       <Separator />
       <CardContent className="flex flex-col flex-1  gap-2 overflow-hidden">

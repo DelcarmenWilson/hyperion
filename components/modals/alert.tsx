@@ -30,8 +30,8 @@ export const AlertModal = ({
   }
   return (
     <Modal
-      title="Are you sure?"
-      description="This action cannot be undone."
+      title={title}
+      description={description}
       isOpen={isOpen}
       onClose={onClose}
       height={height}

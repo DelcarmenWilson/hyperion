@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { useState } from "react";
-import { PictureInPicture, Send } from "lucide-react";
+import { Plus, Send } from "lucide-react";
+import { useGlobalContext } from "@/providers/global";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -19,36 +20,65 @@ import {
 } from "@/components/ui/form";
 
 import { smsCreate } from "@/actions/sms";
-import { Message } from "@prisma/client";
+import { Message, UserTemplate } from "@prisma/client";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ImageGrid } from "@/components/reusable/image-grid";
+import { usePhone } from "@/hooks/use-phone";
+import { replacePreset } from "@/formulas/text";
+import { TemplateList } from "../addins/template-list";
 
 type SmsFormProps = {
-  leadId: string;
   onNewMessage: (e: Message) => void;
 };
 
 type SmsFormValues = z.infer<typeof SmsMessageSchema>;
 
-export const SmsForm = ({ leadId, onNewMessage }: SmsFormProps) => {
+export const SmsForm = ({ onNewMessage }: SmsFormProps) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { lead } = usePhone();
+  const { user } = useGlobalContext();
+
+  const [attachment, setAttachment] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<SmsFormValues>({
     resolver: zodResolver(SmsMessageSchema),
     defaultValues: {
-      leadId,
+      leadId: lead?.id,
       content: "",
+      type: "sms",
     },
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    // if (onClose) {
-    //   onClose();
-    // }
+    setAttachment([]);
   };
-
+  const OnSetAttachment = (tp: UserTemplate) => {
+    if (tp.attachment) {
+      setAttachment([tp.attachment]);
+      form.setValue("images", tp.attachment);
+    }
+    if (tp.message) {
+      const message = replacePreset(tp.message, user!, lead!);
+      form.setValue("content", message);
+    }
+    setDialogOpen(false);
+  };
+  const onAttachmentRemove = (e: number) => {
+    setAttachment([]);
+    form.setValue("images", undefined);
+  };
   const onSubmit = async (values: SmsFormValues) => {
-    if (!leadId) {
+    if (!lead?.id) {
       toast.error("Lead id is not supplied");
     }
     setLoading(true);
@@ -61,47 +91,83 @@ export const SmsForm = ({ leadId, onNewMessage }: SmsFormProps) => {
       }
       form.reset();
     });
-
     setLoading(false);
   };
   return (
-    <div>
-      <Form {...form}>
-        <form
-          className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="flex items-center p-2 w-full gap-2">
-            {/* <PictureInPicture size={16} /> */}
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="message"
-                      disabled={loading}
-                      autoComplete="Message"
-                      type="text"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+    <>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        {/* <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-[70%]"> */}
+        <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
+          <h3 className="text-2xl font-semibold text-primary">Templates</h3>
+          <TemplateList OnSetAttachment={OnSetAttachment} />
+        </DialogContent>
+      </Dialog>
+      <div>
+        <Form {...form}>
+          <form
+            className="space-6 px-2 w-full"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <ImageGrid
+              images={attachment}
+              header={false}
+              bgSize={40}
+              onImageRemove={onAttachmentRemove}
             />
-            <Button
-              className="rounded-md"
-              size="icon"
-              disabled={loading}
-              type="submit"
-            >
-              <Send size={16} />
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+            <div className="flex items-center p-2 w-full">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon">
+                    <Plus size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-60" align="center">
+                  {/* <DropdownMenuItem
+                      className="cursor-pointer gap-2"
+                      onClick={() => OnSetAttachment(tp)}
+                    >
+                      {tp.name}
+                    </DropdownMenuItem> */}
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer gap-2"
+                    onClick={() => setDialogOpen(true)}
+                  >
+                    Templates
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="message"
+                        disabled={loading}
+                        autoComplete="Message"
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                className="rounded-md"
+                size="icon"
+                disabled={loading}
+                type="submit"
+              >
+                <Send size={16} />
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </>
   );
 };
