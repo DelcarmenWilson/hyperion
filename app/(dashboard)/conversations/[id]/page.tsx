@@ -26,7 +26,7 @@ const ConversationPage = async ({ params }: { params: { id: string } }) => {
     })
   );
   return (
-    <Card className="flex h-full overflow-hidden p-0">
+    <Card className="flex flex-col h-full overflow-hidden p-0">
       <CardContent className="flex gap-2 overflow-hidden p-0">
         <ConversationsClient convos={formattedConversations} />
         <ConversationClient conversation={conversation!} />

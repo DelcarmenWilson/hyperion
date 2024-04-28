@@ -33,6 +33,7 @@ export const PhoneOut = () => {
   const { phone, call, setCall } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
@@ -189,7 +190,12 @@ export const PhoneOut = () => {
         <Button
           variant="outlineprimary"
           size="sm"
-          onClick={() => emitter.emit("toggleLeadInfo")}
+          onClick={() =>
+            setIsOpen((open) => {
+              emitter.emit("toggleLeadInfo", !open);
+              return !open;
+            })
+          }
         >
           LEAD INFO
         </Button>

@@ -30,9 +30,9 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const [isOpen, setIsOpen] = useState(open);
 
   useEffect(() => {
-    emitter.on("toggleLeadInfo", () => setIsOpen((open) => !open));
+    emitter.on("toggleLeadInfo", (open) => setIsOpen(open));
     return () => {
-      emitter.off("toggleLeadInfo", () => setIsOpen((open) => !open));
+      emitter.off("toggleLeadInfo", (open) => setIsOpen(open));
     };
   }, []);
 

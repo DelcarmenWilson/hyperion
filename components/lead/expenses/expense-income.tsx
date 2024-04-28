@@ -87,11 +87,15 @@ export const ExpenseIncome = ({
             size == "full" && "lg:flex-row"
           )}
         >
-          <div className="">
+          <div
+            className={cn(
+              "flex flex-col gap-2 items-center ",
+              size == "full" && "lg:flex-row"
+            )}
+          >
             <span className="text-2xl font-semibold">{type}</span>
             <span className=" text-md text-muted-foreground">
-              {" "}
-              - {USDollar.format(total)} / Month
+              {USDollar.format(total)} / Month
             </span>
           </div>
           <Button onClick={() => setIsOpen(true)}>Add {type}</Button>

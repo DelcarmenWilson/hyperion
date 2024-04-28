@@ -76,7 +76,7 @@ export const BeneficiariesClient = ({
           <div
             className={cn(
               "flex justify-between items-center p-1",
-              size == "sm" && "flex-col"
+              size == "sm" && "flex-col text-center"
             )}
           >
             <h4 className="text-2xl font-semibold">Beneficiaries</h4>

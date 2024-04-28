@@ -47,9 +47,14 @@ export const Header = ({ lead }: HeaderProps) => {
       </div>
       <div className="flex items-center gap-2">
         <Button
-          variant="outlineprimary"
+          variant={isOpen ? "default" : "outlineprimary"}
           size="sm"
-          onClick={() => emitter.emit("toggleLeadInfo")}
+          onClick={() =>
+            setIsOpen((open) => {
+              emitter.emit("toggleLeadInfo", !open);
+              return !open;
+            })
+          }
         >
           LEAD INFO
         </Button>

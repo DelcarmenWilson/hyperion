@@ -13,8 +13,8 @@ type SmsBodyProps = {
 
 export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
   const [messages, setMessages] = useState(initMessages);
-  console.log(initMessages, leadName, userName);
   const bottomRef = useRef<HTMLDivElement>(null);
+
   const ScrollDown = () => {
     if (bottomRef.current) {
       const parent = bottomRef.current.parentElement?.parentElement;
@@ -37,7 +37,6 @@ export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
     };
   }, [initMessages]);
   return (
-    // <div className="flex flex-col flex-1 w-full px-4 overflow-hidden overflow-y-auto">
     <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">
       {!messages?.length && (
         <p className="text-center text-muted-foreground">
@@ -53,6 +52,5 @@ export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
       ))}
       <div ref={bottomRef} className="pt-2" />
     </ScrollArea>
-    // </div>
   );
 };

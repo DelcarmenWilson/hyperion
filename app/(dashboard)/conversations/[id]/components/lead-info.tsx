@@ -34,11 +34,11 @@ export const ConversationLeadInfo = ({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    emitter.on("toggleLeadInfo", () => setIsOpen((open) => !open));
+    emitter.on("toggleLeadInfo", (open) => setIsOpen(open));
     return () => {
-      emitter.off("toggleLeadInfo", () => setIsOpen((open) => !open));
+      emitter.off("toggleLeadInfo", (open) => setIsOpen(open));
     };
-  }, [isOpen]);
+  }, []);
 
   if (!lead) {
     return null;
