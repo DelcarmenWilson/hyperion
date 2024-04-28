@@ -20,7 +20,7 @@ type EventMap = {
   messageInserted: [info: Message];
   policyInfoUpdated: [info: LeadPolicyInfo];
   //TOGGLE EVENTS
-  toggleLeadInfo:[]
+  toggleLeadInfo:[open:boolean]
 //NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];

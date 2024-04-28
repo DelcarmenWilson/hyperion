@@ -25,6 +25,7 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [disabled, setDisabled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
@@ -73,7 +74,12 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
             <Button
               variant="outlineprimary"
               size="sm"
-              onClick={() => emitter.emit("toggleLeadInfo")}
+              onClick={() =>
+                setIsOpen((open) => {
+                  emitter.emit("toggleLeadInfo", !open);
+                  return !open;
+                })
+              }
             >
               LEAD INFO
             </Button>
