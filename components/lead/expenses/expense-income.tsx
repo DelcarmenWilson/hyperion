@@ -1,24 +1,28 @@
 "use client";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
+import { cn } from "@/lib/utils";
 
+import { LeadExpense } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { LeadExpense } from "@prisma/client";
+
 import { ExpenseForm } from "./form";
 import { ExpenseIncomeCard } from "./card";
+
 import { USDollar } from "@/formulas/numbers";
 
 type ExpenseIncomeProps = {
   leadId: string;
   type: string;
   initExpenses: LeadExpense[];
-  onExpenseUpdated: (type: string, newVal: number) => void;
+  size?: string;
 };
 export const ExpenseIncome = ({
   leadId,
   type,
   initExpenses,
-  onExpenseUpdated,
+  size = "full",
 }: ExpenseIncomeProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [expenses, setExpenses] = useState(initExpenses);
@@ -32,7 +36,10 @@ export const ExpenseIncome = ({
     });
     let totalExp = total + e.value;
     setTotal(totalExp);
-    onExpenseUpdated(type, totalExp);
+    // onExpenseUpdated(type, totalExp);
+
+    emitter.emit("expenseUpdated", type, totalExp);
+
     setIsOpen(false);
   };
 
@@ -56,7 +63,7 @@ export const ExpenseIncome = ({
     }
     const expenseTotal = total + diff;
     setTotal(expenseTotal);
-    onExpenseUpdated(type, expenseTotal);
+    emitter.emit("expenseUpdated", type, expenseTotal);
   };
 
   return (
@@ -74,7 +81,12 @@ export const ExpenseIncome = ({
         />
       </DrawerRight>
       <div>
-        <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
+        <div
+          className={cn(
+            "flex flex-col justify-between items-center border-b p-2 mb-2",
+            size == "full" && "lg:flex-row"
+          )}
+        >
           <div className="">
             <span className="text-2xl font-semibold">{type}</span>
             <span className=" text-md text-muted-foreground">

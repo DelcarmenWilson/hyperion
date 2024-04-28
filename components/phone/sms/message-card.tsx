@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import { FullMessage } from "@/types";
-import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { format } from "date-fns";
+
+import { FullMessage } from "@/types";
 
 interface MessageCardProps {
   data: FullMessage;
@@ -10,37 +10,27 @@ interface MessageCardProps {
 }
 
 export const MessageCard = ({ data, username }: MessageCardProps) => {
-  const session = useSession();
-
   const isOwn = data.role != "user";
-
-  const container = cn(isOwn && "order-2 ", "mb-2");
-
-  const body = cn("flex flex-col mb-2 group", isOwn && "items-end");
-
-  const message = cn(
-    "text-sm max-w-[60%]",
-    isOwn ? "bg-primary text-background" : "bg-accent",
-    "rounded-md py-2 px-3 text-wrap  break-words"
-  );
-
   return (
-    <div>
-      <div className={body}>
-        <span className="hidden group-hover:block text-sm italic">
-          {username} {format(new Date(data.createdAt), "p")}
-        </span>
-        <div className={message}>
-          {data.attachment && (
-            <Image
-              height={100}
-              width={100}
-              src={data.attachment}
-              alt="Chat Image"
-            />
-          )}
-          {data.content}
-        </div>
+    <div className={cn("flex flex-col mb-2 group", isOwn && "items-end")}>
+      <span className="hidden group-hover:block text-sm italic">
+        {username} {format(data.createdAt, "p")}
+      </span>
+      <div
+        className={cn(
+          "text-sm max-w-[60%] rounded-md py-2 px-3 text-wrap  break-words",
+          isOwn ? "bg-primary text-background" : "bg-accent"
+        )}
+      >
+        {data.attachment && (
+          <Image
+            height={100}
+            width={100}
+            src={data.attachment}
+            alt="Chat Image"
+          />
+        )}
+        {data.content}
       </div>
     </div>
   );

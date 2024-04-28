@@ -10,12 +10,11 @@ export const POST = async (req: any, res: any) => {
   const user = await currentUser();
   if (!user) {
     return NextResponse.json({ error: "Auauthenticated" }, { status: 400 });
-  }
-  
+  } 
 
   const formData = await req.formData();
 
-  let record: FileRecords = {
+  const record: FileRecords = {
     files: formData.getAll("image"),
     path: formData.get("filePath"),
     id: formData.get("id"),
@@ -69,9 +68,9 @@ export const POST = async (req: any, res: any) => {
         });
         break;
     }
-    return NextResponse.json({ Message: "Success", status: 201 });
+    return NextResponse.json({ Message: "Success", status: 200 });
   } catch (error) {
-    console.log("Error occured ", error);
+    console.log("IMAGES UPLOAD ERROR ", error);
     return NextResponse.json({ Message: "Failed", status: 500 });
   }
 };

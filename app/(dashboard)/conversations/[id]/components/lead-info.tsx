@@ -1,14 +1,10 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { usePhone } from "@/hooks/use-phone";
 import { emitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { Button } from "@/components/ui/button";
 
 import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { GeneralInfoClient } from "@/components/lead/general-info";
@@ -18,27 +14,36 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
-import { PhoneScript } from "./script";
-import { LeadMainInfo, LeadGeneralInfo, LeadPolicyInfo } from "@/types";
+import {
+  LeadMainInfo,
+  LeadGeneralInfo,
+  LeadPolicyInfo,
+  FullLeadNoConvo,
+} from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
-import { LeadHeader } from "@/components/lead/header";
-type PhoneLeadInfo = {
-  open?: boolean;
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+type ConversationLeadInfoProps = {
+  lead: FullLeadNoConvo;
+  size?: string;
 };
-export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
-  const { lead } = usePhone();
-  const [isOpen, setIsOpen] = useState(open);
+export const ConversationLeadInfo = ({
+  lead,
+  size = "full",
+}: ConversationLeadInfoProps) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     emitter.on("toggleLeadInfo", () => setIsOpen((open) => !open));
     return () => {
       emitter.off("toggleLeadInfo", () => setIsOpen((open) => !open));
     };
-  }, []);
+  }, [isOpen]);
 
   if (!lead) {
     return null;
   }
+
   const leadName = `${lead.firstName} ${lead.lastName}`;
   const leadMainInfo: LeadMainInfo = {
     id: lead.id,
@@ -78,27 +83,32 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     updatedAt: lead.policy?.updatedAt!,
   };
   return (
-    <div className="flex flex-1 justify-start relative overflow-hidden">
-      <div
-        className={cn(
-          "flex  flex-col relative transition-[right] -right-full ease-in-out duration-500 h-full w-0 overflow-hidden",
-          isOpen && "w-full right-0"
-        )}
-      >
-        <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-          <LeadHeader lead={lead} />
-          <TabsList className="flex w-full h-auto">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
-            <TabsTrigger value="conditions">Conditions</TabsTrigger>
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          </TabsList>
+    <div
+      className={cn(
+        "flex flex-col relative transition-[right] -right-full ease-in-out duration-100 w-0 h-full overflow-hidden",
+        isOpen && "w-[250px] right-0"
+      )}
+    >
+      <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
+        <h4 className="text-center text-2xl text-primary bg-secondary font-bold ">
+          {lead.firstName} {lead.lastName}
+        </h4>
 
-          <TabsContent
-            className="flex-1 overflow-hidden overflow-y-auto"
-            value="general"
-          >
-            <div className="grid grid-cols-3 gap-2 p-2">
+        <TabsList className="flex flex-wrap w-full h-auto">
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
+          <TabsTrigger value="conditions">Conditions</TabsTrigger>
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+        </TabsList>
+
+        <ScrollArea className="pe-3">
+          <TabsContent value="general">
+            <div
+              className={cn(
+                "grid  gap-2 p-2",
+                size == "full" ? "grid-cols-3" : "grid-cols-1"
+              )}
+            >
               <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient leadName={leadName} info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />
@@ -113,21 +123,25 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             <BeneficiariesClient
               leadId={lead.id}
               initBeneficiaries={lead.beneficiaries!}
+              size="sm"
             />
           </TabsContent>
           <TabsContent value="conditions">
             <ConditionsClient
               leadId={lead.id}
               initConditions={lead.conditions!}
+              size="sm"
             />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesClient leadId={lead.id} initExpenses={lead.expenses!} />
+            <ExpensesClient
+              leadId={lead.id}
+              initExpenses={lead.expenses!}
+              size="sm"
+            />
           </TabsContent>
-        </Tabs>
-
-        <PhoneScript />
-      </div>
+        </ScrollArea>
+      </Tabs>
     </div>
   );
 };

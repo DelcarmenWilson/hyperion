@@ -59,7 +59,16 @@ export type FullPhoneNumber = PhoneNumber & {
 export type FullMessage = Message & {
   sender?: User | null;
 };
-
+export type ShortConversation = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  disposition: string;
+  cellPhone: string;
+  message: string;
+  updatedAt: Date;
+  unread: number;
+};
 export type FullConversation = Conversation & {
   lead: FullLeadNoConvo;
   messages: FullMessage[];

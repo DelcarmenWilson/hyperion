@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
-    const conversation=await db.conversation.findFirst({where:{leadId}})
+    const conversation=await db.conversation.findFirst({where:{leadId,agentId:user.id}})
     if(!conversation)
     return NextResponse.json([]);
   

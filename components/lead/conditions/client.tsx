@@ -10,15 +10,18 @@ import { DataTable } from "@/components/tables/data-table";
 import { ConditionsList } from "./list";
 import { ConditionForm } from "./form";
 import { columns } from "./columns";
+import { cn } from "@/lib/utils";
 
 type ConditionsClientProp = {
   leadId: string;
   initConditions: FullLeadMedicalCondition[];
+  size?: string;
 };
 
 export const ConditionsClient = ({
   leadId,
   initConditions,
+  size = "full",
 }: ConditionsClientProp) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(false);
@@ -69,41 +72,24 @@ export const ConditionsClient = ({
         />
       ) : (
         <>
-          <div className="flex justify-between items-center p-1">
+          <div
+            className={cn(
+              "flex justify-between items-center p-1",
+              size == "sm" && "flex-col"
+            )}
+          >
             <h4 className="text-2xl font-semibold">Medical Conditions</h4>
             <ListGridTopMenu
               text="Add Condition"
               setIsDrawerOpen={setIsDrawerOpen}
               isList={isList}
               setIsList={setIsList}
+              size={size}
             />
           </div>
-          <ConditionsList conditions={conditions} />
+          <ConditionsList conditions={conditions} size={size} />
         </>
       )}
-      {/* <div>
-        <div className="flex flex-col lg:flex-row justify-between items-center border-b p-2 mb-2">
-          <p className=" text-2xl font-semibold">Medical Conditions</p>
-          <Button onClick={() => setIsOpen(true)}>Add Condition</Button>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 mb-1 items-center gap-2">
-          <span>Condition</span>
-          <span>Date diagnosed</span>
-          <span>Medications</span>
-          <span>Actions</span>
-        </div>
-        {conditions.length ? (
-          <div>
-            {conditions.map((condition) => (
-              <ConditionCard key={condition.id} initCondition={condition} />
-            ))}
-          </div>
-        ) : (
-          <div>
-            <p className="font-semibold text-center">No Conditions Found</p>
-          </div>
-        )}
-      </div> */}
     </>
   );
 };

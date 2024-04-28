@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
 
+import { emitter } from "@/lib/event-emmiter";
+
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,13 +36,9 @@ import { usePhone } from "@/hooks/use-phone";
 import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "../addins/template-list";
 
-type SmsFormProps = {
-  onNewMessage: (e: Message) => void;
-};
-
 type SmsFormValues = z.infer<typeof SmsMessageSchema>;
 
-export const SmsForm = ({ onNewMessage }: SmsFormProps) => {
+export const SmsForm = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { lead } = usePhone();
   const { user } = useGlobalContext();
@@ -84,7 +82,7 @@ export const SmsForm = ({ onNewMessage }: SmsFormProps) => {
     setLoading(true);
     await smsCreate(values).then((data) => {
       if (data.success) {
-        onNewMessage(data.success);
+        emitter.emit("messageInserted", data.success);
       }
       if (data.error) {
         toast.error(data.error);

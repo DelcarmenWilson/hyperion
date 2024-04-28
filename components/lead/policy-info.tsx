@@ -27,6 +27,9 @@ export const PolicyInfoClient = ({ leadName, info }: PolicyInfoClientProps) => {
       if (e.leadId == info.leadId) setPolicyInfo(e);
     };
     emitter.on("policyInfoUpdated", (info) => onSetInfo(info));
+    return () => {
+      emitter.off("policyInfoUpdated", (info) => onSetInfo(info));
+    };
   }, [info]);
 
   return (

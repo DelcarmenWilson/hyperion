@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
 import { toast } from "sonner";
+import { emitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -183,7 +184,16 @@ export const PhoneOut = () => {
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      {to.name}
+      <div className="flex justify-between items-center">
+        {to.name}
+        <Button
+          variant="outlineprimary"
+          size="sm"
+          onClick={() => emitter.emit("toggleLeadInfo")}
+        >
+          LEAD INFO
+        </Button>
+      </div>
       <div className="relative">
         <Input
           placeholder="Phone Number"
