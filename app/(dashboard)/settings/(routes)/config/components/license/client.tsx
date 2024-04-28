@@ -1,29 +1,55 @@
 "use client";
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { UserLicense } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/custom/heading";
 
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { LicenseForm } from "./form";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
+import { LicenseList } from "./list";
 
 export const LicenseClient = () => {
   const { licenses, setLicenses } = useGlobalContext();
   const role = useCurrentRole();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(false);
 
-  const onLicensesCreated = (newLicense?: UserLicense) => {
-    if (newLicense) setLicenses((lc) => [...lc!, newLicense]);
-    setIsDrawerOpen(false);
-  };
+  useEffect(() => {
+    const onLicenseDeleted = (id: string) => {
+      setLicenses((licenses) => {
+        if (!licenses) return licenses;
+        return licenses.filter((e) => e.id !== id);
+      });
+    };
+    const onLicenseInserted = (newLicense: UserLicense) => {
+      const existing = licenses?.find((e) => e.id == newLicense.id);
+      if (existing == undefined)
+        setLicenses((licenses) => [...licenses!, newLicense]);
+    };
 
+    const onLicenseUpdated = (updatedLicense: UserLicense) => {
+      setLicenses((licenses) => {
+        if (!licenses) return licenses;
+        return licenses
+          .filter((e) => e.id != updatedLicense.id)
+          .concat(updatedLicense);
+      });
+    };
+    emitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
+    emitter.on("licenseInserted", (info) => onLicenseInserted(info));
+    emitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
+    return () => {
+      emitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
+      emitter.on("licenseInserted", (info) => onLicenseInserted(info));
+      emitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
+    };
+  }, []);
   return (
     <>
       <DrawerRight
@@ -31,23 +57,39 @@ export const LicenseClient = () => {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <LicenseForm onClose={onLicensesCreated} />
+        <LicenseForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
-      <Heading title={"Licences"} description="Manage all your licenses" />
-      <DataTable
-        columns={columns}
-        data={licenses!}
-        headers
-        topMenu={
-          <div className="col-span-3 text-end">
-            {role != "ASSISTANT" && (
-              <Button onClick={() => setIsDrawerOpen(true)}>
-                <Plus size={16} className="mr-2" /> New License
-              </Button>
-            )}
+      {isList ? (
+        <DataTable
+          columns={columns}
+          data={licenses!}
+          headers
+          title="Licences"
+          topMenu={
+            <ListGridTopMenu
+              text="Add License"
+              isList={isList}
+              setIsList={setIsList}
+              setIsDrawerOpen={setIsDrawerOpen}
+              showButton={role != "ASSISTANT"}
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center p-1">
+            <h4 className="text-2xl font-semibold">Licenses</h4>
+            <ListGridTopMenu
+              text="Add License"
+              setIsDrawerOpen={setIsDrawerOpen}
+              isList={isList}
+              setIsList={setIsList}
+              showButton={role != "ASSISTANT"}
+            />
           </div>
-        }
-      />
+          <LicenseList licenses={licenses!} />
+        </>
+      )}
     </>
   );
 };

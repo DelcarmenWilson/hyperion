@@ -38,7 +38,8 @@ import { IntakeForm } from "@/components/lead/forms/intake-form";
 import { FullLeadNoConvo } from "@/types";
 import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
 import { Conversation } from "@prisma/client";
-import { exportLeadsToExcel, exportLeadsToPdf } from "@/lib/xlsx";
+import { exportLeads } from "@/lib/xlsx";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -47,6 +48,7 @@ type DropDownProps = {
 
 export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const router = useRouter();
+  const role = useCurrentRole();
   const useAppointment = useAppointmentModal();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
 
@@ -84,9 +86,11 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   };
 
   const preExport = (fileType: string) => {
-    const leads: FullLeadNoConvo[] = [lead];
-    if (fileType == "Excel") exportLeadsToExcel(leads);
-    else exportLeadsToPdf(leads);
+    if (role == "ASSISTANT") {
+      toast.error("Not Authorized");
+      return;
+    }
+    exportLeads(fileType, [lead]);
   };
   return (
     <>
@@ -151,29 +155,27 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenu>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem
-                    className="cursor-pointer gap-2"
-                    onClick={() => preExport("Excel")}
-                  >
-                    <FileBarChart size={16} />
-                    Excel
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer gap-2"
-                    onClick={() => preExport("Pdf")}
-                  >
-                    <FileText size={16} />
-                    Pdf
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
-          </DropdownMenu>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2"
+                  onClick={() => preExport("Excel")}
+                >
+                  <FileBarChart size={16} />
+                  Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2"
+                  onClick={() => preExport("Pdf")}
+                >
+                  <FileText size={16} />
+                  Pdf
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

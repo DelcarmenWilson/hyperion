@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  title?: string;
   topMenu?: React.ReactElement | null;
   headers?: boolean;
   search?: boolean;
@@ -45,6 +46,7 @@ type DataTableProps<TData, TValue> = {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  title,
   topMenu,
   headers = false,
   search = true,
@@ -90,7 +92,9 @@ export function DataTable<TData, TValue>({
     <div className="p-1 w-full">
       <div ref={topRef} className="pb-2">
         <div className="grid grid-cols-4 gap-2">
-          <div>
+          <div className="flex items-center gap-2">
+            {title && <h4 className="text-2xl font-semibold">{title}</h4>}
+
             {search && (
               <SimpleFilter
                 filtering={filtering}

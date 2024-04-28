@@ -54,11 +54,12 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   useEffect(() => {
     const setData = async () => {
       setLoading(true);
-      const response = await axios.post("/api/leads/messages", {
-        leadId: lead?.id,
-      });
-      console.log(response.data);
-      setMessages(response.data);
+      if (lead) {
+        const response = await axios.post("/api/leads/messages", {
+          leadId: lead?.id,
+        });
+        setMessages(response.data);
+      }
       setLoading(false);
     };
     setData();
@@ -66,23 +67,25 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   }, [lead]);
 
   return (
-    <div className="flex flex-col gap-2 p-2 overflow-hidden">
+    <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
       {showHeader && (
         <>
           <div className="flex justify-between items-center">
             {to.name}
-            <Button
-              variant="outlineprimary"
-              size="sm"
-              onClick={() =>
-                setIsOpen((open) => {
-                  emitter.emit("toggleLeadInfo", !open);
-                  return !open;
-                })
-              }
-            >
-              LEAD INFO
-            </Button>
+            {lead && (
+              <Button
+                variant="outlineprimary"
+                size="sm"
+                onClick={() =>
+                  setIsOpen((open) => {
+                    emitter.emit("toggleLeadInfo", !open);
+                    return !open;
+                  })
+                }
+              >
+                LEAD INFO
+              </Button>
+            )}
 
             {/* {initialConvo && <Switch checked={initialConvo.autoChat} />} */}
           </div>

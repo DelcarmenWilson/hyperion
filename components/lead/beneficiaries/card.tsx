@@ -28,16 +28,15 @@ export const BeneficiaryCard = ({ initBeneficiary }: BeneficiaryCardProps) => {
 
   const onDeleteBenficiary = () => {
     setLoading(true);
-    emitter.emit("beneficiaryDeleted", beneficiary.id);
-    // leadBeneficiaryDeleteById(beneficiary.id).then((data) => {
-    //   if (data.error) {
-    //     toast.error(data.error);
-    //   }
-    //   if (data.success) {
-    //     emitter.emit("beneficiaryDeleted", beneficiary.id);
-    //     toast.success(data.success);
-    //   }
-    // });
+    leadBeneficiaryDeleteById(beneficiary.id).then((data) => {
+      if (data.error) {
+        toast.error(data.error);
+      }
+      if (data.success) {
+        emitter.emit("beneficiaryDeleted", beneficiary.id);
+        toast.success(data.success);
+      }
+    });
     setAlertOpen(false);
     setLoading(false);
   };

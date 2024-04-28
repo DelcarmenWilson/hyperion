@@ -65,7 +65,9 @@ export const DrawerRight = ({
                         {children}
                       </ScrollArea>
                     ) : (
-                      <div className="flex-1 h-full p-2">{children}</div>
+                      <div className="flex flex-col flex-1 h-full p-2 overflow-hidden">
+                        {children}
+                      </div>
                     )}
                   </div>
                 </Dialog.Panel>

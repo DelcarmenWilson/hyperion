@@ -39,7 +39,7 @@ import { monthStartEnd } from "@/formulas/dates";
 
 import { states } from "@/constants/states";
 import { importVendors } from "@/constants/lead";
-import { exportLeadsToExcel, exportLeadsToPdf } from "@/lib/xlsx";
+import { exportLeads } from "@/lib/xlsx";
 
 type ExportLeadFormProps = {
   onClose?: () => void;
@@ -78,8 +78,7 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
       if (!data.length) {
         toast.error("No data return");
       } else {
-        if (values.type == "Excel") exportLeadsToExcel(data);
-        else exportLeadsToPdf(data);
+        exportLeads(values.type, data);
 
         toast.success("Leads exported succesfully!");
       }

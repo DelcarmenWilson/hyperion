@@ -9,11 +9,9 @@ import { NotificationClient } from "./components/notifications/client";
 import { notificationSettingsGetByUserId } from "@/data/notification-settings";
 import { UserTemplateClient } from "./components/templates/client";
 
-import { adminCarriersGetAll } from "@/data/admin";
 const ConfigPage = async () => {
   const user = await currentUser();
   if (!user) return null;
-  const carriers = await adminCarriersGetAll();
 
   const notificationSettings = await notificationSettingsGetByUserId(user.id);
 
@@ -44,7 +42,7 @@ const ConfigPage = async () => {
           <LicenseClient />
         </TabsContent>
         <TabsContent value="carriers">
-          <CarrierClient adminCarriers={carriers} />
+          <CarrierClient />
         </TabsContent>
         <TabsContent value="leadStatus">
           <LeadStatusClient />

@@ -127,7 +127,7 @@ model UserLicense {
   licenseNumber String
   dateExpires   DateTime
 
-  comments  String?
+  comments  String?  @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -54,6 +54,7 @@ export const TopMenu = () => {
           <ImportLeadsForm />
         </DialogContent>
       </Dialog>
+
       <Button
         className="gap-2"
         variant="outlineprimary"
@@ -63,6 +64,7 @@ export const TopMenu = () => {
         <Download size={16} />
         EXPORT LEADS
       </Button>
+
       <Button className="gap-2" size="sm" onClick={() => setIsOpen(true)}>
         <Plus size={16} />
         CREATE LEAD

@@ -1,27 +1,60 @@
 "use client";
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
 
 import { LeadStatus } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/custom/heading";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { columns } from "./columns";
-
 import { LeadStatusForm } from "./form";
+import { LeadStatusList } from "./list";
 
 export const LeadStatusClient = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { leadStatus, setLeadStatus } = useGlobalContext();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(false);
 
-  const onStatusCreated = (newStatus?: LeadStatus) => {
-    if (newStatus) setLeadStatus((status) => [...status!, newStatus]);
-    setIsDrawerOpen(false);
-  };
+  useEffect(() => {
+    const onUserLeadStatusDeleted = (id: string) => {
+      setLeadStatus((leadStatus) => {
+        if (!leadStatus) return leadStatus;
+        return leadStatus.filter((e) => e.id !== id);
+      });
+    };
+    const onUserLeadStatusInserted = (newLeadStatus: LeadStatus) => {
+      const existing = leadStatus?.find((e) => e.id == newLeadStatus.id);
+      if (existing == undefined)
+        setLeadStatus((leadStatus) => [...leadStatus!, newLeadStatus]);
+    };
 
+    const onUserLeadStatusUpdated = (updatedLeadStatus: LeadStatus) => {
+      setLeadStatus((leadStatus) => {
+        if (!leadStatus) return leadStatus;
+        return leadStatus
+          .filter((e) => e.id != updatedLeadStatus.id)
+          .concat(updatedLeadStatus);
+      });
+    };
+    emitter.on("userLeadStatusDeleted", (id) => onUserLeadStatusDeleted(id));
+    emitter.on("userLeadStatusInserted", (info) =>
+      onUserLeadStatusInserted(info)
+    );
+    emitter.on("userLeadStatusUpdated", (info) =>
+      onUserLeadStatusUpdated(info)
+    );
+    return () => {
+      emitter.on("userLeadStatusDeleted", (id) => onUserLeadStatusDeleted(id));
+      emitter.on("userLeadStatusInserted", (info) =>
+        onUserLeadStatusInserted(info)
+      );
+      emitter.on("userLeadStatusUpdated", (info) =>
+        onUserLeadStatusUpdated(info)
+      );
+    };
+  }, []);
   return (
     <>
       <DrawerRight
@@ -29,21 +62,40 @@ export const LeadStatusClient = () => {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <LeadStatusForm onClose={onStatusCreated} />
+        <LeadStatusForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
-      <Heading title={`Lead Status`} description="Manage lead status" />
-      <DataTable
-        columns={columns}
-        data={leadStatus?.filter((e) => e.type != "default")!}
-        headers
-        topMenu={
-          <div className="col-span-3 text-end">
-            <Button onClick={() => setIsDrawerOpen(true)}>
-              <Plus size={16} className="mr-2" /> New Status
-            </Button>
+
+      {isList ? (
+        <DataTable
+          columns={columns}
+          data={leadStatus?.filter((e) => e.type != "default")!}
+          headers
+          title="Lead Status"
+          topMenu={
+            <ListGridTopMenu
+              text="Add Status"
+              isList={isList}
+              setIsList={setIsList}
+              setIsDrawerOpen={setIsDrawerOpen}
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center p-1">
+            <h4 className="text-2xl font-semibold">Lead Status</h4>
+            <ListGridTopMenu
+              text="Add Status"
+              setIsDrawerOpen={setIsDrawerOpen}
+              isList={isList}
+              setIsList={setIsList}
+            />
           </div>
-        }
-      />
+          <LeadStatusList
+            leadStatus={leadStatus?.filter((e) => e.type != "default")!}
+          />
+        </>
+      )}
     </>
   );
 };

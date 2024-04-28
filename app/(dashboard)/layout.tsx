@@ -19,6 +19,7 @@ import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGetByUserId } from "@/data/schedule";
 import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
 import { getTwilioToken } from "@/data/verification-token";
+import { adminCarriersGetAll } from "@/data/admin";
 
 export default async function DashBoardLayout({
   children,
@@ -36,6 +37,7 @@ export default async function DashBoardLayout({
   const token = await getTwilioToken(user.id);
   const licenses = await userLicensesGetAllByUserId(user.id);
   const carriers = await userCarriersGetAllByUserId(user.id);
+  const availableCarriers = await adminCarriersGetAll();
   const schedule = await scheduleGetByUserId(user.id, user.role);
   const appointments = await appointmentsGetAllByUserIdUpcoming(
     user.id,
@@ -57,6 +59,7 @@ export default async function DashBoardLayout({
               initStatus={status}
               intScript={script!}
               initLicenses={licenses}
+              initAvailableCarriers={availableCarriers}
               initCarriers={carriers}
               initTemplates={templates}
             >

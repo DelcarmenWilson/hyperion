@@ -14,7 +14,11 @@ const LeadsPage = async () => {
   const leads = await leadsGetAllByAgentId(user.id);
 
   return (
-    <PageLayout title="View Leads" icon={Users} topMenu={<TopMenu />}>
+    <PageLayout
+      title="View Leads"
+      icon={Users}
+      topMenu={user.role != "ASSISTANT" && <TopMenu />}
+    >
       <DataTable
         columns={columns}
         data={leads}
