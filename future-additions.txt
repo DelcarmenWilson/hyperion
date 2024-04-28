@@ -18,11 +18,10 @@ add appoinment reminder send to the client to the sms
 --just a reminder from suandra reminder that we have an appointment schedule such and such time
 
 MISC 
---lokk to where to add vender,ssn and received date for the lead
+--look to where to add vender,ssn and received date for the lead
 
 --add all the carrier conditions after medical conditions
 --see why twilio needs a new token (perhaps its becuase of the recent changes)
---hide export functionalities from assitants
 
 --make the quote change automatically with cron job 
 --fix the issue where whne you close the dialer the window is giving an error on chrome

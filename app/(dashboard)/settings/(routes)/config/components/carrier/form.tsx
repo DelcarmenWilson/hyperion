@@ -1,6 +1,7 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,49 +28,61 @@ import {
 
 import { UserCarrierSchema } from "@/schemas";
 
-import { Carrier } from "@prisma/client";
-import { userCarrierInsert } from "@/actions/user";
+import { userCarrierInsert, userCarrierUpdateById } from "@/actions/user";
 import { Textarea } from "@/components/ui/textarea";
 import { FullUserCarrier } from "@/types";
+import { useGlobalContext } from "@/providers/global";
 
 type CarrierFormProps = {
-  carriers: Carrier[];
-  onClose?: (e?: FullUserCarrier) => void;
+  carrier?: FullUserCarrier;
+  onClose: () => void;
 };
 
 type CarrierFormValues = z.infer<typeof UserCarrierSchema>;
 
-export const CarrierForm = ({ carriers, onClose }: CarrierFormProps) => {
+export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
+  const { availableCarriers } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<CarrierFormValues>({
     resolver: zodResolver(UserCarrierSchema),
-    defaultValues: {
+    //@ts-ignore
+    defaultValues: carrier || {
       agentId: "",
-      carrierId: carriers[0].id,
+      carrierId: availableCarriers ? availableCarriers[0].id : "",
     },
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
   const onSubmit = async (values: CarrierFormValues) => {
     setLoading(true);
-    userCarrierInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("Carrier created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    if (carrier)
+      userCarrierUpdateById(values).then((data) => {
+        if (data.success) {
+          emitter.emit("carrierUpdated", data.success);
+          toast.success("Carrier created!");
+          onClose();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+    else
+      userCarrierInsert(values).then((data) => {
+        if (data.success) {
+          emitter.emit("carrierInserted", data.success);
+          toast.success("Carrier created!");
+          onClose();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
     setLoading(false);
   };
   return (
@@ -103,7 +116,7 @@ export const CarrierForm = ({ carriers, onClose }: CarrierFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {carriers.map((carrier) => (
+                      {availableCarriers?.map((carrier) => (
                         <SelectItem key={carrier.id} value={carrier.id}>
                           {carrier.name}
                         </SelectItem>

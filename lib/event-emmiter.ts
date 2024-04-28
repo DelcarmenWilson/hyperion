@@ -1,24 +1,39 @@
 import {
   FullLeadMedicalCondition,
+  FullUserCarrier,
   LeadGeneralInfo,
   LeadMainInfo,
   LeadPolicyInfo,
 } from "@/types";
-import { LeadBeneficiary, Message } from "@prisma/client";
+import { LeadBeneficiary, LeadStatus, Message, UserLicense, UserTemplate } from "@prisma/client";
 
 type EventMap = {
+  beneficiaryDeleted: [id: string];
   beneficiaryInserted: [info: LeadBeneficiary];
   beneficiaryUpdated: [info: LeadBeneficiary];
-  beneficiaryDeleted: [id: string];
+  carrierDeleted: [id: string];  
+  carrierInserted: [info: FullUserCarrier];
+  carrierUpdated: [info: FullUserCarrier];
+  conditionDeleted: [id: string];  
   conditionInserted: [info: FullLeadMedicalCondition];
   conditionUpdated: [info: FullLeadMedicalCondition];
-  conditionDeleted: [id: string];  
   expenseUpdated: [type: string,total:number];
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];
+  licenseDeleted: [id: string];  
+  licenseInserted: [info: UserLicense];
+  licenseUpdated: [info: UserLicense];
   mainInfoUpdated: [info: LeadMainInfo];
   messageInserted: [info: Message];
-  policyInfoUpdated: [info: LeadPolicyInfo];
+  policyInfoUpdated: [info: LeadPolicyInfo]; 
+  templateDeleted: [id: string]; 
+  templateInserted: [info: UserTemplate];
+  templateUpdated: [info: UserTemplate];  
+  templateSelected: [info: UserTemplate];
+   
+  userLeadStatusDeleted: [id: string];
+  userLeadStatusInserted: [info: LeadStatus];
+  userLeadStatusUpdated: [info: LeadStatus];
   //TOGGLE EVENTS
   toggleLeadInfo:[open:boolean]
 //NEW EVENTS

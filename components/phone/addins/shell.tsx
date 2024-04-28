@@ -44,18 +44,26 @@ const PhoneShell = () => {
                 )} */}
           </TabsTrigger>
         </TabsList>
-        <TabsContent className="flex flex-col overflow-hidden" value="phone">
-          <PhoneOut />
-        </TabsContent>
-        <TabsContent className="flex flex-col overflow-hidden" value="sms">
-          <SmsClient />
-        </TabsContent>
-        <TabsContent
-          className="flex flex-col overflow-hidden"
-          value="voicemail"
-        >
-          <VoicemailList initVoicemails={voicemails} />
-        </TabsContent>
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
+          <TabsContent
+            className="flex flex-col m-0 overflow-hidden"
+            value="phone"
+          >
+            <PhoneOut />
+          </TabsContent>
+          <TabsContent
+            className="flex flex-col m-0 overflow-hidden"
+            value="sms"
+          >
+            <SmsClient />
+          </TabsContent>
+          <TabsContent
+            className="flex flex-col m-0 overflow-hidden"
+            value="voicemail"
+          >
+            <VoicemailList initVoicemails={voicemails} />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

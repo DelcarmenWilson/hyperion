@@ -1,32 +1,53 @@
 "use client";
-import { useState } from "react";
-
-import { Carrier } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/custom/heading";
-
-import { DataTable } from "@/components/tables/data-table";
-import { columns } from "./columns";
-import { Plus } from "lucide-react";
-import { DrawerRight } from "@/components/custom/drawer-right";
-import { CarrierForm } from "./form";
-import { FullUserCarrier } from "@/types";
+import { useEffect, useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 import { useGlobalContext } from "@/providers/global";
 import { useCurrentRole } from "@/hooks/user-current-role";
+import { FullUserCarrier } from "@/types";
 
-type CarrierClientProps = {
-  adminCarriers: Carrier[];
-};
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
+import { DrawerRight } from "@/components/custom/drawer-right";
+import { DataTable } from "@/components/tables/data-table";
+import { columns } from "./columns";
+import { CarrierForm } from "./form";
+import { CarrierList } from "./list";
 
-export const CarrierClient = ({ adminCarriers }: CarrierClientProps) => {
+export const CarrierClient = () => {
   const { carriers, setCarriers } = useGlobalContext();
   const role = useCurrentRole();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(false);
 
-  const onCarrierCreated = (newCarrier?: FullUserCarrier) => {
-    if (newCarrier) setCarriers((cr) => [...cr!, newCarrier]);
-    setIsDrawerOpen(false);
-  };
+  useEffect(() => {
+    const onCarrierDeleted = (id: string) => {
+      setCarriers((carriers) => {
+        if (!carriers) return carriers;
+        return carriers.filter((e) => e.id !== id);
+      });
+    };
+    const onCarrierInserted = (newCarrier: FullUserCarrier) => {
+      const existing = carriers?.find((e) => e.id == newCarrier.id);
+      if (existing == undefined)
+        setCarriers((carriers) => [...carriers!, newCarrier]);
+    };
+
+    const onCarrierUpdated = (updatedCarrier: FullUserCarrier) => {
+      setCarriers((carriers) => {
+        if (!carriers) return carriers;
+        return carriers
+          .filter((e) => e.id != updatedCarrier.id)
+          .concat(updatedCarrier);
+      });
+    };
+    emitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
+    emitter.on("carrierInserted", (info) => onCarrierInserted(info));
+    emitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
+    return () => {
+      emitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
+      emitter.on("carrierInserted", (info) => onCarrierInserted(info));
+      emitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
+    };
+  }, []);
 
   return (
     <>
@@ -35,28 +56,39 @@ export const CarrierClient = ({ adminCarriers }: CarrierClientProps) => {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <CarrierForm carriers={adminCarriers} onClose={onCarrierCreated} />
+        <CarrierForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
-
-      <Heading
-        title={"Carrier"}
-        description="Manage all your appointed carriers"
-      />
-
-      <DataTable
-        columns={columns}
-        data={carriers!}
-        headers
-        topMenu={
-          <div className="col-span-3 text-end">
-            {role != "ASSISTANT" && (
-              <Button onClick={() => setIsDrawerOpen(true)}>
-                <Plus size={16} className="mr-2" /> New Carrier
-              </Button>
-            )}
+      {isList ? (
+        <DataTable
+          columns={columns}
+          data={carriers!}
+          headers
+          title="Carrier"
+          topMenu={
+            <ListGridTopMenu
+              text="Add Carrier"
+              isList={isList}
+              setIsList={setIsList}
+              setIsDrawerOpen={setIsDrawerOpen}
+              showButton={role != "ASSISTANT"}
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center p-1">
+            <h4 className="text-2xl font-semibold">Carriers</h4>
+            <ListGridTopMenu
+              text="Add Carrier"
+              setIsDrawerOpen={setIsDrawerOpen}
+              isList={isList}
+              setIsList={setIsList}
+              showButton={role != "ASSISTANT"}
+            />
           </div>
-        }
-      />
+          <CarrierList carriers={carriers!} />
+        </>
+      )}
     </>
   );
 };

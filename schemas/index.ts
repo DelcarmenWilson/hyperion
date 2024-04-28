@@ -310,21 +310,25 @@ export const DevFeedbackSchema = z.object({
 
 
 export const LeadStatusSchema = z.object({
+  id:z.optional(z.string()),
   status: z.string().min(2,"*"),
   description : z.optional(z.string()),
 });
 
 export const UserLicenseSchema = z.object({
+  id: z.optional(z.string()),
   state: z.string().min(2,"*"),
   type : z.string().min(2,"*"),
   licenseNumber: z.string().min(3,"*"),
-  dateExpires:z.string().min(3,"*"),
-  comments: z.optional(z.string()),
+  dateExpires:z.date(),
+  // comments: z.string().nullish(),
+  comments: z.string().nullish().transform( x => x ?? undefined )
 });
 export const UserCarrierSchema = z.object({
+  id: z.optional(z.string()),
   agentId: z.string().min(2,"*"),
   carrierId : z.string().min(2,"*"),
-  comments: z.optional(z.string()),
+  comments: z.string().nullish().transform( x => x ?? undefined )
 });
 export const UserTemplateSchema = z.object({
   id: z.optional(z.string()),

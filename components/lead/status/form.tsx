@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -20,20 +21,26 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { LeadStatus } from "@prisma/client";
-import { leadStatusInsert } from "@/actions/lead";
+import { userLeadStatusInsert, userLeadStatusUpdateById } from "@/actions/user";
 
 type LeadStatusFormProps = {
-  onClose?: (e?: LeadStatus) => void;
+  leadStatus?: LeadStatus;
+  onClose: () => void;
 };
 
 type LeadStatusFormValues = z.infer<typeof LeadStatusSchema>;
 
-export const LeadStatusForm = ({ onClose }: LeadStatusFormProps) => {
+export const LeadStatusForm = ({
+  leadStatus,
+  onClose,
+}: LeadStatusFormProps) => {
   const [loading, setLoading] = useState(false);
+  const btnText = leadStatus ? "Update" : "Create";
 
   const form = useForm<LeadStatusFormValues>({
     resolver: zodResolver(LeadStatusSchema),
-    defaultValues: {
+    //@ts-ignore
+    defaultValues: leadStatus || {
       status: "",
       description: "",
     },
@@ -49,16 +56,28 @@ export const LeadStatusForm = ({ onClose }: LeadStatusFormProps) => {
 
   const onSubmit = async (values: LeadStatusFormValues) => {
     setLoading(true);
-    leadStatusInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("New lead status created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    if (leadStatus)
+      userLeadStatusUpdateById(values).then((data) => {
+        if (data.success) {
+          emitter.emit("userLeadStatusUpdated", data.success);
+          toast.success("Lead Status updated!");
+          onCancel();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+    else
+      userLeadStatusInsert(values).then((data) => {
+        if (data.success) {
+          emitter.emit("userLeadStatusInserted", data.success);
+          toast.success("New lead status created!");
+          onCancel();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
     setLoading(false);
   };
   return (
@@ -118,7 +137,7 @@ export const LeadStatusForm = ({ onClose }: LeadStatusFormProps) => {
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              Create
+              {btnText}
             </Button>
           </div>
         </form>

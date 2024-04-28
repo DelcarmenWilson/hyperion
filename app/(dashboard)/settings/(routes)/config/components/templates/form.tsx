@@ -1,6 +1,7 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,31 +23,33 @@ import { UserTemplate } from "@prisma/client";
 
 import { Textarea } from "@/components/ui/textarea";
 import { UserTemplateSchema } from "@/schemas";
-import { userTemplateInsert } from "@/actions/user";
+import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
 import { ImageUpload } from "@/components/custom/image-upload";
 import axios from "axios";
 import { KeyworkSelect } from "@/components/custom/keyword-select";
 
-type UserTemplateFormProps = {
-  onClose?: (e?: UserTemplate) => void;
+type TemplateFormProps = {
+  template?: UserTemplate;
+  onClose: () => void;
 };
 
-type UserTemplateFormValues = z.infer<typeof UserTemplateSchema>;
+type TemplateFormValues = z.infer<typeof UserTemplateSchema>;
 
-export const UserTemplateForm = ({ onClose }: UserTemplateFormProps) => {
+export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string>();
   const [selectedFile, setSelectedFile] = useState<File>();
+  const btnText = template ? "Update" : "Create";
 
-  const form = useForm<UserTemplateFormValues>({
+  const form = useForm<TemplateFormValues>({
     resolver: zodResolver(UserTemplateSchema),
-    defaultValues: {},
+    //@ts-ignore
+    defaultValues: template || {},
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) onClose();
+    onClose();
   };
   const onSetKeyWord = (e: string) => {
     const msg = form.getValues("message");
@@ -54,15 +57,16 @@ export const UserTemplateForm = ({ onClose }: UserTemplateFormProps) => {
   };
   const onImageUpdate = (file: File) => {
     setSelectedFile(file);
-    setSelectedImage(URL.createObjectURL(file));
+    form.setValue("attachment", URL.createObjectURL(file));
   };
-  const onSubmit = async (values: UserTemplateFormValues) => {
+  const onSubmit = async (values: TemplateFormValues) => {
     setLoading(true);
 
     if (selectedFile) {
       const formData = new FormData();
       formData.append("image", selectedFile);
       formData.append("filePath", "assets/templates");
+      if (template?.attachment) formData.append("oldFile", template.attachment);
       const response = await axios.post("/api/upload/image", formData);
       const data = await response.data;
       if (data.success) {
@@ -72,29 +76,42 @@ export const UserTemplateForm = ({ onClose }: UserTemplateFormProps) => {
         toast.error("Image was not able to be uploaded!");
       }
     }
-    userTemplateInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("Template created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    if (template)
+      userTemplateUpdateById(values).then((data) => {
+        if (data.success) {
+          emitter.emit("templateUpdated", data.success);
+          onCancel();
+          toast.success("Template created!");
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+    else
+      userTemplateInsert(values).then((data) => {
+        if (data.success) {
+          emitter.emit("templateInserted", data.success);
+          onCancel();
+          toast.success("Template created!");
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+
     setLoading(false);
   };
   return (
     <div>
-      <ImageUpload
-        selectedImage={selectedImage as string}
-        onImageUpdate={onImageUpdate}
-      />
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <ImageUpload
+            selectedImage={form.getValues("attachment")!}
+            onImageUpdate={onImageUpdate}
+          />
           <div className="flex flex-col gap-2">
             {/* NAME */}
             <FormField
@@ -169,7 +186,7 @@ export const UserTemplateForm = ({ onClose }: UserTemplateFormProps) => {
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              Create
+              {btnText}
             </Button>
           </div>
         </form>

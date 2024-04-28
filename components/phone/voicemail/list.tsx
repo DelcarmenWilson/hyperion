@@ -3,6 +3,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Voicemail } from "@/types/phone";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { VoicemailCard } from "./card";
 import { voicemailUpdateByIdListened } from "@/actions/voicemail";
 
@@ -27,22 +34,26 @@ export const VoicemailList = ({ initVoicemails }: VoicemailListProps) => {
   };
   return (
     <div className="text-sm">
-      <div className="grid grid-cols-4 items-center text-muted-foreground">
-        <span>From</span>
-        <span>Recording</span>
-        <span>Date/Time</span>
-        <span>Actions</span>
-      </div>
-
-      <div className="grid grid-cols-4 items-center py-1">
-        {voicemails?.map((vm) => (
-          <VoicemailCard key={vm.id} voicemail={vm} onUpdate={onUpdate} />
-        ))}
-      </div>
-      {!voicemails?.length && (
+      {!voicemails?.length ? (
         <p className="text-muted-foreground text-center p-4">
           No Pending Voicemails
         </p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>From</TableHead>
+              <TableHead>Recording</TableHead>
+              <TableHead>Date/Time</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {voicemails.map((vm) => (
+              <VoicemailCard key={vm.id} voicemail={vm} onUpdate={onUpdate} />
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

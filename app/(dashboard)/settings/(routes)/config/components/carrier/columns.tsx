@@ -28,17 +28,16 @@ export const columns: ColumnDef<FullUserCarrier>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "agentId",
-    header: "Agent Id",
-  },
 
   {
     accessorKey: "carrier",
     header: "Carrier",
     cell: ({ row }) => <span>{row.original.carrier.name}</span>,
   },
-
+  {
+    accessorKey: "agentId",
+    header: "Agent Id",
+  },
   {
     accessorKey: "dateExpires",
     header: "Date Expires",

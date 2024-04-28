@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { useState } from "react";
+import { emitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -28,20 +29,25 @@ import { UserLicenseSchema } from "@/schemas";
 
 import { UserLicense } from "@prisma/client";
 import { states } from "@/constants/states";
-import { userLicenseInsert } from "@/actions/user";
+import { userLicenseInsert, userLicenseUpdateById } from "@/actions/user";
+import ReactDatePicker from "react-datepicker";
+import { Textarea } from "@/components/ui/textarea";
 
 type LicenseFormProps = {
-  onClose?: (e?: UserLicense) => void;
+  license?: UserLicense;
+  onClose: () => void;
 };
 
 type LicenseFormValues = z.infer<typeof UserLicenseSchema>;
 
-export const LicenseForm = ({ onClose }: LicenseFormProps) => {
+export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
   const [loading, setLoading] = useState(false);
+  const btnText = license ? "Update" : "Create";
 
   const form = useForm<LicenseFormValues>({
     resolver: zodResolver(UserLicenseSchema),
-    defaultValues: {
+    //@ts-ignore
+    defaultValues: license || {
       state: "",
       type: "",
       licenseNumber: "",
@@ -52,23 +58,34 @@ export const LicenseForm = ({ onClose }: LicenseFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
   const onSubmit = async (values: LicenseFormValues) => {
     setLoading(true);
-    userLicenseInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("License created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+
+    if (license)
+      userLicenseUpdateById(values).then((data) => {
+        if (data.success) {
+          emitter.emit("licenseUpdated", data.success);
+          toast.success("License updated!");
+          onCancel();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
+    else
+      userLicenseInsert(values).then((data) => {
+        if (data.success) {
+          emitter.emit("licenseInserted", data.success);
+          toast.success("License created!");
+          onCancel();
+        }
+        if (data.error) {
+          toast.error(data.error);
+        }
+      });
     setLoading(false);
   };
   return (
@@ -169,12 +186,42 @@ export const LicenseForm = ({ onClose }: LicenseFormProps) => {
                     <FormMessage />
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       {...field}
                       placeholder="12/05/2025"
                       disabled={loading}
                       type="date"
                       autoComplete="expiraionDate"
+                    /> */}
+                    <ReactDatePicker
+                      selected={field.value}
+                      onChange={field.onChange}
+                      dateFormat="MM-d-yyyy"
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholderText="12/05/2025"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* TYPE */}
+            <FormField
+              control={form.control}
+              name="comments"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between items-center">
+                    Comments
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Leave some comments"
+                      disabled={loading}
+                      autoComplete="Type"
+                      rows={5}
                     />
                   </FormControl>
                 </FormItem>
@@ -186,7 +233,7 @@ export const LicenseForm = ({ onClose }: LicenseFormProps) => {
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              Create
+              {btnText}
             </Button>
           </div>
         </form>

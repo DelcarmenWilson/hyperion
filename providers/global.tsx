@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState } from "react";
 import {
+  Carrier,
   LeadStatus,
   Script,
   User,
@@ -15,6 +16,7 @@ type GlobalContextProviderProps = {
   intScript: Script;
   initLicenses: UserLicense[];
   initCarriers: FullUserCarrier[];
+  initAvailableCarriers: Carrier[];
   initTemplates: UserTemplate[];
   children: React.ReactNode;
 };
@@ -30,6 +32,8 @@ type GlobalContext = {
   setLicenses: React.Dispatch<React.SetStateAction<UserLicense[] | null>>;
   carriers: FullUserCarrier[] | null;
   setCarriers: React.Dispatch<React.SetStateAction<FullUserCarrier[] | null>>;
+  availableCarriers: Carrier[] | null;
+  setAvailableCarriers: React.Dispatch<React.SetStateAction<Carrier[] | null>>;
   templates: UserTemplate[] | null;
   setTemplates: React.Dispatch<React.SetStateAction<UserTemplate[] | null>>;
 };
@@ -42,6 +46,7 @@ export default function GlobalContextProvider({
   intScript,
   initLicenses,
   initCarriers,
+  initAvailableCarriers,
   initTemplates,
   children,
 }: GlobalContextProviderProps) {
@@ -51,6 +56,9 @@ export default function GlobalContextProvider({
   const [licenses, setLicenses] = useState<UserLicense[] | null>(initLicenses);
   const [carriers, setCarriers] = useState<FullUserCarrier[] | null>(
     initCarriers
+  );
+  const [availableCarriers, setAvailableCarriers] = useState<Carrier[] | null>(
+    initAvailableCarriers
   );
   const [templates, setTemplates] = useState<UserTemplate[] | null>(
     initTemplates
@@ -69,6 +77,8 @@ export default function GlobalContextProvider({
         setLicenses,
         carriers,
         setCarriers,
+        availableCarriers,
+        setAvailableCarriers,
         templates,
         setTemplates,
       }}

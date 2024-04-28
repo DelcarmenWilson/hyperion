@@ -184,7 +184,8 @@ export const PhoneOut = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    // <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
       <div className="flex justify-between items-center">
         {to.name}
         <Button

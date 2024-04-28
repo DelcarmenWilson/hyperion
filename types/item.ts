@@ -8,6 +8,7 @@ export type FileRecords = {
   path: string;
   id: string;
   type: string;
+  oldFile?:string;
   fileNames?: string[];
 };
 
@@ -16,5 +17,6 @@ export type FileRecord = {
   path: string;
   id: string;
   type: string;
+  oldFile?:string;
 };
 

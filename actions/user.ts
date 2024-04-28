@@ -9,6 +9,7 @@ import { sendVerificationEmail } from "@/lib/mail";
 
 import { UserRole } from "@prisma/client";
 import {
+  LeadStatusSchema,
   MasterRegisterSchema,
   NewPasswordSchema,
   UserCarrierSchema,
@@ -21,7 +22,7 @@ import { SettingsSchema } from "@/schemas";
 import { chatSettingsInsert } from "./chat-settings";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
-import { userGetByEmail, userGetById } from "@/data/user";
+import { userGetByAssistant, userGetByEmail, userGetById } from "@/data/user";
 import { notificationSettingsInsert } from "./notification-settings";
 import { scheduleInsert } from "./schedule";
 
@@ -389,7 +390,138 @@ export const userUpdatePassword = async (
   return { success: "Password updated!" };
 };
 
+// LEADSTATUS
+export const userLeadStatusDeleteById = async (id: string) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const existingStatus = await db.leadStatus.findUnique({
+    where: { id },
+  });
+  if (!existingStatus) {
+    return { error: "Status does not exists" };
+  }
+  if (user.id != existingStatus?.userId) {
+    return { error: "Unauthorized" };
+  }
+  const leads = await db.lead.findMany({
+    where: { status: existingStatus.status },
+  });
+
+  if (leads.length > 0) {
+    return { error: `(${leads.length}) lead${leads.length>1?"s are":" is"} still using this status!` };
+  }
+
+  await db.leadStatus.delete({
+    where: { id },
+  });
+
+  return { success: "Lead Status deleted!" };
+};
+export const userLeadStatusInsert = async (
+  values: z.infer<typeof LeadStatusSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const validatedFields = LeadStatusSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  let userId = user.id;
+  if (user.role == "ASSISTANT") {
+    userId = (await userGetByAssistant(userId)) as string;
+  }
+
+  const { status, description } = validatedFields.data;
+
+  const existingStatus = await db.leadStatus.findFirst({
+    where: { status, userId },
+  });
+  if (existingStatus) {
+    return { error: "Status already exists" };
+  }
+
+  const leadStatus = await db.leadStatus.create({
+    data: {
+      status,
+      description,
+      userId,
+    },
+  });
+
+  return { success: leadStatus };
+};
+
+export const userLeadStatusUpdateById = async (
+  values: z.infer<typeof LeadStatusSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const validatedFields = LeadStatusSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  //TODO - see if jhoni is ok with this being down by the assistant
+  // let userId = user.id;
+  // if (user.role == "ASSISTANT") {
+  //   userId = (await userGetByAssistant(userId)) as string;
+  // }
+
+  const { id, status, description } = validatedFields.data;
+
+  const existingStatus = await db.leadStatus.findUnique({
+    where: { id },
+  });
+  if (!existingStatus) {
+    return { error: "Status does not exists!" };
+  }
+  if (user.id != existingStatus?.userId) {
+    return { error: "Unauthorized!" };
+  }
+
+  const leadStatus = await db.leadStatus.update({
+    where: { id },
+    data: {
+      status,
+      description,
+    },
+  });
+
+  return { success: leadStatus };
+};
 // USER_LICENSES
+export const userLicenseDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+
+  const existingLicense = await db.userLicense.findUnique({
+    where: { id },
+  });
+
+  if (!existingLicense) {
+    return { error: "License does not exist!" };
+  }
+
+  if (user.id != existingLicense?.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.userLicense.delete({ where: { id } });
+
+  return { success: "License Deleted" };
+};
 export const userLicenseInsert = async (
   values: z.infer<typeof UserLicenseSchema>
 ) => {
@@ -400,13 +532,13 @@ export const userLicenseInsert = async (
 
   const user = await currentUser();
   if (!user) {
-    return { error: "Unauthorized" };
+    return { error: "Unauthenticated" };
   }
   const { state, type, licenseNumber, dateExpires, comments } =
     validatedFields.data;
 
   const existingLicense = await db.userLicense.findFirst({
-    where: { state,licenseNumber },
+    where: { state, licenseNumber },
   });
 
   if (existingLicense) {
@@ -425,7 +557,66 @@ export const userLicenseInsert = async (
 
   return { success: license };
 };
+export const userLicenseUpdateById = async (
+  values: z.infer<typeof UserLicenseSchema>
+) => {
+  const validatedFields = UserLicenseSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const { id, state, type, licenseNumber, dateExpires, comments } =
+    validatedFields.data;
+
+  const existingLicense = await db.userLicense.findUnique({
+    where: { id },
+  });
+
+  if (!existingLicense) {
+    return { error: "License does not exist!" };
+  }
+  const license = await db.userLicense.update({
+    where: { id },
+    data: {
+      state,
+      type,
+      licenseNumber,
+      dateExpires: new Date(dateExpires),
+      comments,
+      userId: user.id,
+    },
+  });
+
+  return { success: license };
+};
 //USER_CARRIER
+export const userCarrierDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+
+  const existingCarrier = await db.userCarrier.findUnique({
+    where: { id },
+  });
+
+  if (!existingCarrier) {
+    return { error: "Carrier does not exist!" };
+  }
+
+  if (user.id != existingCarrier?.userId) {
+    return { error: "Unauthorized" };
+  }
+  await db.userCarrier.delete({
+    where: { id },
+  });
+
+  return { success: "Carrier Deleted" };
+};
 export const userCarrierInsert = async (
   values: z.infer<typeof UserCarrierSchema>
 ) => {
@@ -436,7 +627,7 @@ export const userCarrierInsert = async (
 
   const user = await currentUser();
   if (!user) {
-    return { error: "Unauthorized" };
+    return { error: "Unauthenticated" };
   }
   const { agentId, carrierId, comments } = validatedFields.data;
 
@@ -459,10 +650,67 @@ export const userCarrierInsert = async (
 
   return { success: carrier };
 };
+export const userCarrierUpdateById = async (
+  values: z.infer<typeof UserCarrierSchema>
+) => {
+  const validatedFields = UserCarrierSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
 
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const { id, agentId, carrierId, comments } = validatedFields.data;
 
+  const existingCarrier = await db.userCarrier.findFirst({
+    where: { carrierId },
+  });
+
+  if (!existingCarrier) {
+    return { error: "Carrier does not exist!" };
+  }
+  const carrier = await db.userCarrier.update({
+    where: { id },
+    data: {
+      agentId,
+      carrierId,
+      comments,
+      userId: user.id,
+    },
+    include: { carrier: { select: { name: true } } },
+  });
+
+  return { success: carrier };
+};
 
 //USER_TEMPLATE
+export const userTemplateDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+
+  const exisitingTemplate = await db.userTemplate.findUnique({
+    where: { id },
+  });
+
+  if (!exisitingTemplate) {
+    return { error: "Template does not exist!" };
+  }
+
+  if (user.id != exisitingTemplate.userId) {
+    return { error: "Unauthorized" };
+  }
+  await db.userTemplate.delete({
+    where: {
+      id,
+    },
+  });
+
+  return { success: "Template deleted!" };
+};
 export const userTemplateInsert = async (
   values: z.infer<typeof UserTemplateSchema>
 ) => {
@@ -475,10 +723,10 @@ export const userTemplateInsert = async (
   if (!user) {
     return { error: "Unauthorized" };
   }
-  const { name,message,description,attachment } = validatedFields.data;
+  const { name, message, description, attachment } = validatedFields.data;
 
   const exisitingTemplate = await db.userTemplate.findFirst({
-    where: { name,userId:user.id },
+    where: { name, userId: user.id },
   });
 
   if (exisitingTemplate) {
@@ -488,9 +736,43 @@ export const userTemplateInsert = async (
     data: {
       userId: user.id,
       name,
-      message:message!,
+      message: message!,
       description,
-      attachment
+      attachment,
+    },
+  });
+
+  return { success: template };
+};
+export const userTemplateUpdateById = async (
+  values: z.infer<typeof UserTemplateSchema>
+) => {
+  const validatedFields = UserTemplateSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const { id, name, message, description, attachment } = validatedFields.data;
+
+  const exisitingTemplate = await db.userTemplate.findUnique({
+    where: { id },
+  });
+
+  if (!exisitingTemplate) {
+    return { error: "Template does not exist!" };
+  }
+  const template = await db.userTemplate.update({
+    where: { id },
+    data: {
+      userId: user.id,
+      name,
+      message: message!,
+      description,
+      attachment,
     },
   });
 

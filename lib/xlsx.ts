@@ -3,8 +3,17 @@ import { Lead } from "@prisma/client";
 import { format } from "date-fns";
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { jsPDF } from "jspdf";
-
-export function exportLeadsToExcel(leads: Lead[]) {
+export const exportLeads = (fileType: string, leads: Lead[]) => {
+  switch (fileType.toLowerCase()) {
+    case "excel":
+      exportLeadsToExcel(leads);
+      break;
+    default:
+      exportLeadsToPdf(leads);
+      break;
+  }
+};
+function exportLeadsToExcel(leads: Lead[]) {
   let columns: IJsonSheet[] = [
     {
       sheet: "Leads",
@@ -51,7 +60,7 @@ export function exportLeadsToExcel(leads: Lead[]) {
   };
   xlsx(columns, settings);
 }
-export function exportLeadsToPdf(leads: Lead[]) {
+function exportLeadsToPdf(leads: Lead[]) {
   const doc = new jsPDF();
   doc.deletePage(1);
   leads.forEach((lead) => {
@@ -94,16 +103,16 @@ export function exportLeadsToPdf(leads: Lead[]) {
           `Ap: ${lead.apOld}`,
           `Commision: ${lead.commisionOld}`,
           `CoverageAmount: ${lead.coverageAmountOld}`,
-        //   `DefaultNumber: ${lead.defaultNumber}`,
+          //   `DefaultNumber: ${lead.defaultNumber}`,
           `Notes: ${lead.notes}`,
-          `Recieved Date: ${format(lead.recievedAt,"MM-dd-yy")}`,
-          `Created Date: ${format(lead.createdAt,"MM-dd-yy")}`,
-          `Updated Date: ${format(lead.updatedAt,"MM-dd-yy")}`,
+          `Recieved Date: ${format(lead.recievedAt, "MM-dd-yy")}`,
+          `Created Date: ${format(lead.createdAt, "MM-dd-yy")}`,
+          `Updated Date: ${format(lead.updatedAt, "MM-dd-yy")}`,
         ],
         10,
-        20,{lineHeightFactor:1.25}
+        20,
+        { lineHeightFactor: 1.25 }
       );
   });
   doc.save("Hyperion_Leads.pdf");
-  
 }

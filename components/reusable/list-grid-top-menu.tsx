@@ -9,6 +9,7 @@ type ListGridTopMenuProps = {
   setIsList: (e: boolean) => void;
   setIsDrawerOpen: (e: boolean) => void;
   size?: string;
+  showButton?: boolean;
 };
 export const ListGridTopMenu = ({
   text,
@@ -16,6 +17,7 @@ export const ListGridTopMenu = ({
   setIsList,
   setIsDrawerOpen,
   size = "full",
+  showButton = true,
 }: ListGridTopMenuProps) => {
   return (
     <div className="flex gap-2 justify-end col-span-3 text-end">
@@ -37,9 +39,11 @@ export const ListGridTopMenu = ({
           </Button>
         </>
       )}
-      <Button className="gap-2" onClick={() => setIsDrawerOpen(true)}>
-        <Plus size={16} /> {text}
-      </Button>
+      {showButton && (
+        <Button className="gap-2" onClick={() => setIsDrawerOpen(true)}>
+          <Plus size={16} /> {text}
+        </Button>
+      )}
     </div>
   );
 };
