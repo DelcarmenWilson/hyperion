@@ -100,10 +100,15 @@ export const MainSidebarRoutes: NavType[] = [
     assistant: true,
   },
   {
-    title: "Inbox",
-    href: "/inbox",
+    title: "Conversations",
+    href: "/conversations",
     icon: MessagesSquare,
   },
+  // {
+  //   title: "Inbox",
+  //   href: "/inbox",
+  //   icon: MessagesSquare,
+  // },
   {
     title: "Sales Pipeline",
     href: "/sales-pipeline",

@@ -152,7 +152,7 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     role: "assistant",
     content,
     conversationId: convoid!,
-    attachment:images,
+    attachment: images,
     senderId: user.id,
     hasSeen: false,
   });
@@ -209,10 +209,9 @@ export const smsSendAgentAppointmentNotification = async (
     return { error: "PhoneNumber not set!" };
   }
 
-  const message = `Hi ${user.firstName},\n
-Great news! ${lead.firstName} ${
+  const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
-  } has booked an appointment for ${date.toDateString()} at ${date.toLocaleTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\nBest regards,\nStrongside Financial`;
+  } has booked an appointment for ${date.toDateString()} at ${date.toLocaleTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
   const result = await smsSend(
     lead.defaultNumber,
@@ -228,12 +227,13 @@ Great news! ${lead.firstName} ${
 };
 
 export const smsSendLeadAppointmentNotification = async (
+  userId: string,
   lead: Lead,
   date: Date
 ) => {
-  const message = `"Hi ${
+  const message = `Hi ${
     lead.firstName
-  },\n  Thanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toLocaleTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\nBest regards,\nStrongside Financial"
+  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toLocaleTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
@@ -241,6 +241,22 @@ export const smsSendLeadAppointmentNotification = async (
   if (!result) {
     return { error: "Message was not sent!" };
   }
+  const existingConversation = await db.conversation.findFirst({
+    where: {
+      lead: { id: lead.id },
+    },
+  });
+  let convoid = existingConversation?.id;
+  if (!convoid) {
+    convoid = (await conversationInsert(userId, lead.id)).success;
+  }
+  await messageInsert({
+    role: "assistant",
+    content: message,
+    conversationId: convoid!,
+    senderId: userId,
+    hasSeen: true,
+  });
 
   return { success: "Message sent!" };
 };

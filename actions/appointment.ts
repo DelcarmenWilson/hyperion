@@ -46,12 +46,12 @@ export const appointmentInsert = async (
       data: { status: "Rescheduled" },
     });
   }
-
+const appointmentDate=new Date(date)
   const appointment = await db.appointment.create({
     data: {
       agentId: userId,
       leadId,
-      date: new Date(date),
+      date: appointmentDate,
       comments,
     },
     include: { lead: true },
@@ -62,9 +62,9 @@ export const appointmentInsert = async (
   }
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   if (lead) {
-    await smsSendAgentAppointmentNotification(userId, lead, date);
+    await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
     if (sendSms) {
-      await smsSendLeadAppointmentNotification(lead, date);
+      await smsSendLeadAppointmentNotification(userId,lead, appointmentDate);
     }
   }
 

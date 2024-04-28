@@ -10,10 +10,13 @@ import { SmsClient } from "../sms/client";
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
   return (
-    <div className="flex flex-1 border-t">
+    <div className="flex flex-1 border-t h-full overflow-hidden">
       <PhoneLeadInfo />
-      <Tabs className="w-[400px] h-full border-s" defaultValue="phone">
-        <TabsList className="w-full  h-auto">
+      <Tabs
+        className="w-[400px] flex flex-col h-full border-s"
+        defaultValue="phone"
+      >
+        <TabsList className="w-full h-auto">
           <TabsTrigger
             className="flex-1 flex-col justify-center gap-2"
             value="phone"
@@ -41,13 +44,16 @@ const PhoneShell = () => {
                 )} */}
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="phone">
+        <TabsContent className="flex flex-col overflow-hidden" value="phone">
           <PhoneOut />
         </TabsContent>
-        <TabsContent value="sms">
+        <TabsContent className="flex flex-col overflow-hidden" value="sms">
           <SmsClient />
         </TabsContent>
-        <TabsContent value="voicemail">
+        <TabsContent
+          className="flex flex-col overflow-hidden"
+          value="voicemail"
+        >
           <VoicemailList initVoicemails={voicemails} />
         </TabsContent>
       </Tabs>

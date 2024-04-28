@@ -1,17 +1,25 @@
 "use client";
-import { LeadBeneficiary } from "@prisma/client";
+import { cn } from "@/lib/utils";
 import { BeneficiaryCard } from "./card";
+import { LeadBeneficiary } from "@prisma/client";
 
 type BeneficiariesListProps = {
   beneficiaries: LeadBeneficiary[];
+  size?: string;
 };
 export const BeneficiariesList = ({
   beneficiaries,
+  size = "full",
 }: BeneficiariesListProps) => {
   return (
     <>
       {beneficiaries.length ? (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-2 overflow-y-auto",
+            size == "full" && "lg:grid-cols-4"
+          )}
+        >
           {beneficiaries.map((beneficiary) => (
             <BeneficiaryCard
               key={beneficiary.id}
@@ -21,7 +29,7 @@ export const BeneficiariesList = ({
         </div>
       ) : (
         <div>
-          <p className="font-semibold text-center">No Benefieries Found</p>
+          <p className="font-semibold text-center">No Beneficiaries Found</p>
         </div>
       )}
     </>

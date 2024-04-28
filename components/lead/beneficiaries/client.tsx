@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { emitter } from "@/lib/event-emmiter";
 
+import { cn } from "@/lib/utils";
 import { LeadBeneficiary } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -14,11 +15,13 @@ import { columns } from "./columns";
 type BeneficiariesClientProp = {
   leadId: string;
   initBeneficiaries: LeadBeneficiary[];
+  size?: string;
 };
 
 export const BeneficiariesClient = ({
   leadId,
   initBeneficiaries,
+  size = "full",
 }: BeneficiariesClientProp) => {
   const [beneficiaries, setBeneficiaries] =
     useState<LeadBeneficiary[]>(initBeneficiaries);
@@ -70,16 +73,22 @@ export const BeneficiariesClient = ({
         />
       ) : (
         <>
-          <div className="flex justify-between items-center p-1">
+          <div
+            className={cn(
+              "flex justify-between items-center p-1",
+              size == "sm" && "flex-col"
+            )}
+          >
             <h4 className="text-2xl font-semibold">Beneficiaries</h4>
             <ListGridTopMenu
               text="Add Beneficiary"
               setIsDrawerOpen={setIsDrawerOpen}
               isList={isList}
               setIsList={setIsList}
+              size={size}
             />
           </div>
-          <BeneficiariesList beneficiaries={beneficiaries} />
+          <BeneficiariesList beneficiaries={beneficiaries} size={size} />
         </>
       )}
     </>

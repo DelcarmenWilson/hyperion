@@ -60,8 +60,8 @@ export const DashBoardClient = ({
         icon={MessageSquareText}
         title="New texts"
         value={message}
-        href="/inbox"
-        hrefTitle="Go to inbox"
+        href="/conversations"
+        hrefTitle="Go to conversations"
       />
 
       <CardBox

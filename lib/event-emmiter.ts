@@ -4,7 +4,7 @@ import {
   LeadMainInfo,
   LeadPolicyInfo,
 } from "@/types";
-import { LeadBeneficiary } from "@prisma/client";
+import { LeadBeneficiary, Message } from "@prisma/client";
 
 type EventMap = {
   beneficiaryInserted: [info: LeadBeneficiary];
@@ -12,14 +12,19 @@ type EventMap = {
   beneficiaryDeleted: [id: string];
   conditionInserted: [info: FullLeadMedicalCondition];
   conditionUpdated: [info: FullLeadMedicalCondition];
-  conditionDeleted: [id: string];
+  conditionDeleted: [id: string];  
+  expenseUpdated: [type: string,total:number];
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];
   mainInfoUpdated: [info: LeadMainInfo];
+  messageInserted: [info: Message];
   policyInfoUpdated: [info: LeadPolicyInfo];
-
+  //TOGGLE EVENTS
+  toggleLeadInfo:[]
+//NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];
+
 };
 
 type Listener<T extends Array<any>> = (...args: T) => void;

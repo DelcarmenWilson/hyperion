@@ -2,10 +2,20 @@ Jhonni
     - working on prompt enginering
     - working on workflow
 
+--error when trying to upload an image for the templates
+--revisit the expense sheet(not calculating properly)
+    -- need to send income to back end
 
 IN SALE
 -- finish the intake form
 -- fix the dailer(big task)
+
+
+add appoinment reminder send to the client to the sms
+-- fixed the time for the appoitment reminder
+
+--send agent and client reminder 30 minutes proir to the app
+--just a reminder from suandra reminder that we have an appointment schedule such and such time
 
 MISC 
 --lokk to where to add vender,ssn and received date for the lead

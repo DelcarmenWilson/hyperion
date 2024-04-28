@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { emitter } from "@/lib/event-emmiter";
 
 import { Message } from "@prisma/client";
 import { Switch } from "@/components/ui/switch";
@@ -15,6 +16,7 @@ import { SmsBody } from "./body";
 import { SmsForm } from "./form";
 import axios from "axios";
 import Loader from "@/components/reusable/loader";
+import { Button } from "@/components/ui/button";
 
 export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const user = useCurrentUser();
@@ -26,7 +28,7 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
-    name: lead ? leadFullName : "New Call",
+    name: lead ? leadFullName : "New Sms",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
 
@@ -48,19 +50,13 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
     setDisabled(false);
   };
 
-  const onNewMessage = (e: Message) => {
-    setMessages((messages) => [...messages, e]);
-  };
-
   useEffect(() => {
     const setData = async () => {
       setLoading(true);
       const response = await axios.post("/api/leads/messages", {
         leadId: lead?.id,
       });
-      // .then((response) => {
-      //   setMessages(response.data);
-      // });
+      console.log(response.data);
       setMessages(response.data);
       setLoading(false);
     };
@@ -69,11 +65,18 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   }, [lead]);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-2 p-2 overflow-hidden">
       {showHeader && (
         <>
           <div className="flex justify-between items-center">
-            {lead ? `${lead?.firstName} ${lead?.lastName}` : "New Sms"}
+            {to.name}
+            <Button
+              variant="outlineprimary"
+              size="sm"
+              onClick={() => emitter.emit("toggleLeadInfo")}
+            >
+              LEAD INFO
+            </Button>
 
             {/* {initialConvo && <Switch checked={initialConvo.autoChat} />} */}
           </div>
@@ -102,13 +105,16 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
           controls={false}
         />
       </div>
-      {loading && <Loader />}
-      <SmsBody
-        messages={messages}
-        leadName={lead?.lastName as string}
-        userName={user?.name as string}
-      />
-      <SmsForm onNewMessage={onNewMessage} />
+      {loading ? (
+        <Loader />
+      ) : (
+        <SmsBody
+          initMessages={messages}
+          leadName={lead?.lastName as string}
+          userName={user?.name as string}
+        />
+      )}
+      <SmsForm />
     </div>
   );
 };

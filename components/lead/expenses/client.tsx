@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { emitter } from "@/lib/event-emmiter";
 
 import { Button } from "@/components/ui/button";
 import { ExpenseIncome } from "./expense-income";
@@ -13,11 +14,13 @@ import { USDollar } from "@/formulas/numbers";
 type ExpensesClientProp = {
   leadId: string;
   initExpenses: LeadExpense[];
+  size?: string;
 };
 
 export const ExpensesClient = ({
   leadId,
   initExpenses,
+  size = "full",
 }: ExpensesClientProp) => {
   const [data, setData] = useState<{
     expenses: LeadExpense[];
@@ -55,38 +58,54 @@ export const ExpensesClient = ({
   const onExpenseUpdated = (type: string, newValue: number) => {
     let expenseTotal = total.expenses;
     let incomeTotal = total.income;
-    if (type == "Expense") {
-      expenseTotal = newValue;
-    } else {
-      incomeTotal = newValue;
-    }
+    if (type == "Expense") expenseTotal = newValue;
+    else incomeTotal = newValue;
+
     calculateIncome(expenseTotal, incomeTotal);
   };
   useEffect(() => {
     const expenseTotal = data.expenses.reduce((sum, exp) => sum + exp.value, 0);
     const incomeTotal = data.income.reduce((sum, inc) => sum + inc.value, 0);
     calculateIncome(expenseTotal, incomeTotal);
+    emitter.on("expenseUpdated", (type, total) =>
+      onExpenseUpdated(type, total)
+    );
+    return () => {
+      emitter.on("expenseUpdated", (type, total) =>
+        onExpenseUpdated(type, total)
+      );
+    };
   }, [data]);
   return (
     <div>
       {data.expenses.length ? (
         <>
-          <div className=" grid lg:grid-cols-2 gap-4">
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-4",
+              size == "full" && "lg:grid-cols-2"
+            )}
+          >
             <ExpenseIncome
               leadId={leadId}
               type="Expense"
               initExpenses={data.expenses}
-              onExpenseUpdated={onExpenseUpdated}
+              size={size}
             />
             <ExpenseIncome
               leadId={leadId}
               type="Income"
               initExpenses={data.income}
-              onExpenseUpdated={onExpenseUpdated}
+              size={size}
             />
           </div>
-          <p className="flex flex-col lg:flex-row gap-2 items-center justify-center text-2xl mt-2">
-            <span className="italic">Expendable Income - </span>
+          <p
+            className={cn(
+              "flex flex-col  items-center justify-center text-lg gap-2 mt-2",
+              size == "full" && "lg:flex-row"
+            )}
+          >
+            <span className="italic">Expendable Income</span>
             <span
               className={cn(
                 "font-bold",

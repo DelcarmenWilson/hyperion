@@ -38,7 +38,9 @@ export const IntakeForm = ({ lead }: IntakeFormProps) => {
         <div className="grid grid-cols-3 gap-2">
           <TextGroup
             label="Date of Birth"
-            value={format(lead.dateOfBirth!, "MM-dd-yyyy")}
+            value={
+              lead.dateOfBirth ? format(lead.dateOfBirth!, "MM-dd-yyyy") : "N/A"
+            }
           />
           <TextGroup label="Place of Birth" value="NEED TO FILL" />
           <TextGroup label="State" value="NEED TO FILL" />
