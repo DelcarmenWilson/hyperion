@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { useState } from "react";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -75,7 +75,7 @@ export const BeneficiaryForm = ({
     if (leadId) {
       leadBeneficiaryInsert(values).then((data) => {
         if (data.success) {
-          emitter.emit("beneficiaryInserted", data.success);
+          userEmitter.emit("beneficiaryInserted", data.success);
           toast.success(" Beneficiary Added!");
 
           onClose();
@@ -88,7 +88,7 @@ export const BeneficiaryForm = ({
     } else {
       leadBeneficiaryUpdateById(values).then((data) => {
         if (data.success) {
-          emitter.emit("beneficiaryUpdated", data.success);
+          userEmitter.emit("beneficiaryUpdated", data.success);
           toast.success(" Beneficiary Updated!");
           onClose();
         }

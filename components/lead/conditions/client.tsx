@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { FullLeadMedicalCondition } from "@/types";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -39,11 +39,11 @@ export const ConditionsClient = ({
 
   useEffect(() => {
     setConditions(initConditions);
-    emitter.on("conditionInserted", (info) => onConditionInserted(info));
-    emitter.on("conditionDeleted", (id) => onConditionDeleted(id));
+    userEmitter.on("conditionInserted", (info) => onConditionInserted(info));
+    userEmitter.on("conditionDeleted", (id) => onConditionDeleted(id));
     return () => {
-      emitter.off("conditionInserted", (info) => onConditionInserted(info));
-      emitter.off("conditionDeleted", (id) => onConditionDeleted(id));
+      userEmitter.off("conditionInserted", (info) => onConditionInserted(info));
+      userEmitter.off("conditionDeleted", (id) => onConditionDeleted(id));
     };
   }, [initConditions]);
 

@@ -206,3 +206,5 @@ export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
   policy?:LeadPolicy| null;
 };
+
+

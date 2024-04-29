@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
 import { toast } from "sonner";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -193,7 +193,7 @@ export const PhoneOut = () => {
           size="sm"
           onClick={() =>
             setIsOpen((open) => {
-              emitter.emit("toggleLeadInfo", !open);
+              userEmitter.emit("toggleLeadInfo", !open);
               return !open;
             })
           }

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -43,7 +43,7 @@ export const TemplateCard = ({
         if (template.attachment) {
           axios.put("/api/upload/image", { oldFile: template.attachment });
         }
-        emitter.emit("templateDeleted", template.id);
+        userEmitter.emit("templateDeleted", template.id);
         toast.success(data.success);
       }
     });
@@ -56,7 +56,7 @@ export const TemplateCard = ({
     const onTemplateUpdated = (e: UserTemplate) => {
       if (e.id == template.id) setTemplate(e);
     };
-    emitter.on("templateUpdated", (info) => onTemplateUpdated(info));
+    userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
   }, [initTemplate]);
   return (
     <>
@@ -109,7 +109,7 @@ export const TemplateCard = ({
             className="mt-auto"
             variant="outlineprimary"
             size="sm"
-            onClick={() => emitter.emit("templateSelected", template)}
+            onClick={() => userEmitter.emit("templateSelected", template)}
           >
             Select
           </Button>

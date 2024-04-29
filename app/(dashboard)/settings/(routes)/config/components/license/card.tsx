@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -32,7 +32,7 @@ export const LicenseCard = ({ initLicense }: LicenseCardProps) => {
         toast.error(data.error);
       }
       if (data.success) {
-        emitter.emit("licenseDeleted", license.id);
+        userEmitter.emit("licenseDeleted", license.id);
         toast.success(data.success);
       }
     });
@@ -45,7 +45,7 @@ export const LicenseCard = ({ initLicense }: LicenseCardProps) => {
     const onLicenseUpdated = (e: UserLicense) => {
       if (e.id == license.id) setLicense(e);
     };
-    emitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
+    userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
   }, [initLicense]);
   return (
     <>

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
 
 import { LeadExpense } from "@prisma/client";
@@ -38,7 +38,7 @@ export const ExpenseIncome = ({
     setTotal(totalExp);
     // onExpenseUpdated(type, totalExp);
 
-    emitter.emit("expenseUpdated", type, totalExp);
+    userEmitter.emit("expenseUpdated", type, totalExp);
 
     setIsOpen(false);
   };
@@ -63,7 +63,7 @@ export const ExpenseIncome = ({
     }
     const expenseTotal = total + diff;
     setTotal(expenseTotal);
-    emitter.emit("expenseUpdated", type, expenseTotal);
+    userEmitter.emit("expenseUpdated", type, expenseTotal);
   };
 
   return (

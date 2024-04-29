@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 import { LeadBeneficiary } from "@prisma/client";
@@ -41,8 +41,10 @@ export const BeneficiariesClient = ({
         beneficiaries.filter((e) => e.id !== id)
       );
     };
-    emitter.on("beneficiaryInserted", (info) => onBeneficiaryInserted(info));
-    emitter.on("beneficiaryDeleted", (id) => onBeneficiaryDeleted(id));
+    userEmitter.on("beneficiaryInserted", (info) =>
+      onBeneficiaryInserted(info)
+    );
+    userEmitter.on("beneficiaryDeleted", (id) => onBeneficiaryDeleted(id));
   }, [initBeneficiaries]);
 
   return (

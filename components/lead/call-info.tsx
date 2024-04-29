@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Phone } from "lucide-react";
 import { usePhone } from "@/hooks/use-phone";
@@ -78,7 +78,7 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
         });
       }
     };
-    emitter.on("leadStatusChanged", (leadId, newStatus) =>
+    userEmitter.on("leadStatusChanged", (leadId, newStatus) =>
       onLeadStatusChanged(leadId, newStatus)
     );
   }, [info]);

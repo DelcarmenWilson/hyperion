@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { FilePenLine, MessageSquare } from "lucide-react";
 
@@ -70,7 +70,7 @@ export const MainInfoClient = ({
   };
 
   useEffect(() => {
-    emitter.on("mainInfoUpdated", (info) => onSetInfo(info));
+    userEmitter.on("mainInfoUpdated", (info) => onSetInfo(info));
   }, [info]);
 
   return (

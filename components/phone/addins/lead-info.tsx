@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePhone } from "@/hooks/use-phone";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 
@@ -30,9 +30,9 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const [isOpen, setIsOpen] = useState(open);
 
   useEffect(() => {
-    emitter.on("toggleLeadInfo", (open) => setIsOpen(open));
+    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
     return () => {
-      emitter.off("toggleLeadInfo", (open) => setIsOpen(open));
+      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
     };
   }, []);
 

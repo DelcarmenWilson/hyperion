@@ -1,5 +1,6 @@
 import {
   FullLeadMedicalCondition,
+  FullTeam,
   FullUserCarrier,
   LeadGeneralInfo,
   LeadMainInfo,
@@ -7,7 +8,7 @@ import {
 } from "@/types";
 import { LeadBeneficiary, LeadStatus, Message, UserLicense, UserTemplate } from "@prisma/client";
 
-type EventMap = {
+type UserEvents = {
   beneficiaryDeleted: [id: string];
   beneficiaryInserted: [info: LeadBeneficiary];
   beneficiaryUpdated: [info: LeadBeneficiary];
@@ -42,6 +43,12 @@ type EventMap = {
 
 };
 
+type AdminEvents = {
+  teamDeleted: [id: string];
+  teamInserted: [info: FullTeam];
+  teamUpdated: [info: FullTeam];
+}
+
 type Listener<T extends Array<any>> = (...args: T) => void;
 class EventEmmitter<EventMap extends Record<string, Array<any>>> {
   private eventListeners: {
@@ -70,6 +77,11 @@ class EventEmmitter<EventMap extends Record<string, Array<any>>> {
 }
 
 declare global {
-  var emitter: EventEmmitter<EventMap> | undefined;
+  var userEmitter: EventEmmitter<UserEvents> | undefined;
+  var adminEmitter: EventEmmitter<AdminEvents> | undefined;
 }
-export const emitter = globalThis.emitter || new EventEmmitter<EventMap>();
+
+export const userEmitter = globalThis.userEmitter || new EventEmmitter<UserEvents>();
+export const adminEmitter = globalThis.adminEmitter || new EventEmmitter<AdminEvents>();
+
+

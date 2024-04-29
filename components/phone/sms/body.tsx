@@ -1,5 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { Message } from "@prisma/client";
 import { MessageCard } from "./message-card";
 import { pusherClient } from "@/lib/pusher";
@@ -31,9 +31,9 @@ export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
         setMessages((messages) => [...messages!, newMessage]);
       ScrollDown();
     };
-    emitter.on("messageInserted", (info) => onSetsetMessages(info));
+    userEmitter.on("messageInserted", (info) => onSetsetMessages(info));
     return () => {
-      emitter.on("messageInserted", (info) => onSetsetMessages(info));
+      userEmitter.on("messageInserted", (info) => onSetsetMessages(info));
     };
   }, [initMessages]);
   return (

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { FilePenLine } from "lucide-react";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TextGroup } from "@/components/reusable/input-group";
@@ -26,9 +26,9 @@ export const PolicyInfoClient = ({ leadName, info }: PolicyInfoClientProps) => {
     const onSetInfo = (e: LeadPolicyInfo) => {
       if (e.leadId == info.leadId) setPolicyInfo(e);
     };
-    emitter.on("policyInfoUpdated", (info) => onSetInfo(info));
+    userEmitter.on("policyInfoUpdated", (info) => onSetInfo(info));
     return () => {
-      emitter.off("policyInfoUpdated", (info) => onSetInfo(info));
+      userEmitter.off("policyInfoUpdated", (info) => onSetInfo(info));
     };
   }, [info]);
 

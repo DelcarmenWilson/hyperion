@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -70,11 +70,11 @@ export const PolicyInfoForm = ({
     setLoading(true);
     leadUpdateByIdPolicyInfo(values).then((data) => {
       if (data.success) {
-        emitter.emit("policyInfoUpdated", {
+        userEmitter.emit("policyInfoUpdated", {
           ...data.success,
           startDate: data.success?.startDate || undefined,
         });
-        emitter.emit("leadStatusChanged", data.success.leadId, "Sold");
+        userEmitter.emit("leadStatusChanged", data.success.leadId, "Sold");
 
         toast.success("Lead Policy Info Updated");
         onClose();

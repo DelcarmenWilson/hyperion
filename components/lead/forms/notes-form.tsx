@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +22,11 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
     setLoading(true);
     await leadUpdateByIdNotes(leadId, notes).then((data) => {
       if (data.success) {
-        emitter.emit("newNote", data.success.id, data.success.notes as string);
+        userEmitter.emit(
+          "newNote",
+          data.success.id,
+          data.success.notes as string
+        );
         toast.success("Lead notes have been updated");
       }
       if (data.error) {
@@ -36,7 +40,7 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
     const onSetNotes = (newLeadId: string, newNotes: string) => {
       if (leadId == newLeadId) setNotes(newNotes);
     };
-    emitter.on("newNote", (leadId, notes) => onSetNotes(leadId, notes));
+    userEmitter.on("newNote", (leadId, notes) => onSetNotes(leadId, notes));
   }, [intialNotes]);
 
   return (

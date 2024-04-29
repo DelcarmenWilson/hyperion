@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -67,7 +67,7 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
     if (license)
       userLicenseUpdateById(values).then((data) => {
         if (data.success) {
-          emitter.emit("licenseUpdated", data.success);
+          userEmitter.emit("licenseUpdated", data.success);
           toast.success("License updated!");
           onCancel();
         }
@@ -78,7 +78,7 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
     else
       userLicenseInsert(values).then((data) => {
         if (data.success) {
-          emitter.emit("licenseInserted", data.success);
+          userEmitter.emit("licenseInserted", data.success);
           toast.success("License created!");
           onCancel();
         }

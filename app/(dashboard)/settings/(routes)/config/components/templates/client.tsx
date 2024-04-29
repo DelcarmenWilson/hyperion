@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
 import { UserTemplate } from "@prisma/client";
@@ -41,9 +41,9 @@ export const UserTemplateClient = () => {
     };
 
     return () => {
-      emitter.on("templateDeleted", (id) => onTemplateDeleted(id));
-      emitter.on("templateInserted", (info) => onTemplateInserted(info));
-      emitter.on("templateUpdated", (info) => onTemplateUpdated(info));
+      userEmitter.on("templateDeleted", (id) => onTemplateDeleted(id));
+      userEmitter.on("templateInserted", (info) => onTemplateInserted(info));
+      userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
     };
   }, []);
   return (

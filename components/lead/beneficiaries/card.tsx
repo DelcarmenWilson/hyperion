@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -33,7 +33,7 @@ export const BeneficiaryCard = ({ initBeneficiary }: BeneficiaryCardProps) => {
         toast.error(data.error);
       }
       if (data.success) {
-        emitter.emit("beneficiaryDeleted", beneficiary.id);
+        userEmitter.emit("beneficiaryDeleted", beneficiary.id);
         toast.success(data.success);
       }
     });
@@ -46,7 +46,7 @@ export const BeneficiaryCard = ({ initBeneficiary }: BeneficiaryCardProps) => {
     const onBeneficiaryUpdated = (e: LeadBeneficiary) => {
       if (e.id == beneficiary.id) setBeneficiary(e);
     };
-    emitter.on("beneficiaryUpdated", (info) => onBeneficiaryUpdated(info));
+    userEmitter.on("beneficiaryUpdated", (info) => onBeneficiaryUpdated(info));
   }, [initBeneficiary]);
   return (
     <>
