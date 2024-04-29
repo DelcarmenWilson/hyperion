@@ -10,7 +10,7 @@ import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio-config";
 import { SmsMessageSchema } from "@/schemas";
-import { Lead } from "@prisma/client";
+import { HyperionLead, Lead } from "@prisma/client";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -270,6 +270,16 @@ export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
   if (!result) {
     return { error: "Message was not sent!" };
   }
+
+  return { success: "Message sent!" };
+};
+
+export const smsSendNewHyperionLeadNotifications = async (lead: HyperionLead,) => {
+
+  const message = `A new lead has been added hyperion:\n ${lead.firstName} ${lead.lastName}\n${lead.city}, ${lead.state},\n DOB: ${lead.dateOfBirth}.`;
+
+await smsSend('+18623527091', '+19177548025', message);
+await smsSend('+18624659687', '+13478030962', message);
 
   return { success: "Message sent!" };
 };

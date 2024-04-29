@@ -9,6 +9,7 @@ import {
   DollarSign,
   Facebook,
   Globe2,
+  Heading,
   Home,
   Import,
   Key,
@@ -76,9 +77,9 @@ export const AdminSidebarRoutes: NavType[] = [
     master: true,
   },
   {
-    title: "Facebook",
-    href: "/admin/facebook",
-    icon: Facebook,
+    title: "Hp Leads",
+    href: "/admin/hyperion-leads",
+    icon: Heading,
   }, {
     title: "Tasks",
     href: "/admin/tasks",

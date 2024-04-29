@@ -6,7 +6,7 @@ import {
   LeadMainInfo,
   LeadPolicyInfo,
 } from "@/types";
-import { LeadBeneficiary, LeadStatus, Message, UserLicense, UserTemplate } from "@prisma/client";
+import { HyperionLead, LeadBeneficiary, LeadStatus, Message, UserLicense, UserTemplate } from "@prisma/client";
 
 type UserEvents = {
   beneficiaryDeleted: [id: string];
@@ -44,6 +44,9 @@ type UserEvents = {
 };
 
 type AdminEvents = {
+  hyperionLeadDeleted: [id: string];
+  hyperionLeadInserted: [info: HyperionLead];
+  hyperionLeadUpdated: [info: HyperionLead];
   teamDeleted: [id: string];
   teamInserted: [info: FullTeam];
   teamUpdated: [info: FullTeam];
