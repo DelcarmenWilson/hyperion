@@ -11,7 +11,13 @@ export const SettingsSchema = z
   .object({
     userName: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
-    role: z.enum([UserRole.MASTER, UserRole.ADMIN, UserRole.USER,UserRole.ASSISTANT,UserRole.STUDENT]),
+    role: z.enum([
+      UserRole.MASTER,
+      UserRole.ADMIN,
+      UserRole.USER,
+      UserRole.ASSISTANT,
+      UserRole.STUDENT,
+    ]),
     email: z.optional(z.string().email()),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
@@ -28,15 +34,14 @@ export const SettingsSchema = z
     },
     { message: "New password is requiered", path: ["new Password"] }
   );
-  export const NotificationSettingsSchema = z
-  .object({
-    userId:z.string(),
-  phoneNumber:z.string(),
-  calls:z.boolean(),
-  appointments:z.boolean(),
-  messages:z.boolean(),
-  voicemails:z.boolean(),
-  })
+export const NotificationSettingsSchema = z.object({
+  userId: z.string(),
+  phoneNumber: z.string(),
+  calls: z.boolean(),
+  appointments: z.boolean(),
+  messages: z.boolean(),
+  voicemails: z.boolean(),
+});
 
 export const NewPasswordSchema = z.object({
   password: z.string().min(6, {
@@ -77,7 +82,7 @@ export const MasterRegisterSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
-  id:z.string().optional(),
+  id: z.string().optional(),
   team: z.string().min(5, { message: "*" }),
   npn: z.string().min(4, { message: "*" }),
   userName: z.string().min(1, {
@@ -120,7 +125,7 @@ export const LeadSchema = z.object({
   zipCode: z.string(),
   homePhone: z.optional(z.string()),
   cellPhone: z.string().min(10, "required"),
-  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
     MaritalStatus.Married,
@@ -136,25 +141,25 @@ export const LeadSchema = z.object({
   smoker: z.optional(z.boolean()),
   currentlyInsured: z.optional(z.boolean()),
   currentInsuranse: z.optional(z.string()),
-  type:z.optional(z.string()),
+  type: z.optional(z.string()),
   vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
   recievedAt: z.optional(z.string()),
 });
 export const LeadMainSchema = z.object({
   id: z.optional(z.string()),
-  firstName:z.string(),
-  lastName:z.string(),
-  cellPhone:z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  cellPhone: z.string(),
   email: z.optional(z.string()),
-  address:z.string(),
+  address: z.string(),
   city: z.optional(z.string()),
-  state:z.string(),
+  state: z.string(),
   zipCode: z.optional(z.string()),
 });
 export const LeadGeneralSchema = z.object({
   id: z.optional(z.string()),
-  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
     MaritalStatus.Married,
@@ -169,57 +174,57 @@ export const LeadGeneralSchema = z.object({
 });
 export const LeadPolicySchema = z.object({
   leadId: z.string(),
-  carrier:z.string(),
-  policyNumber:z.string(),
-  status:z.string(),
+  carrier: z.string(),
+  policyNumber: z.string(),
+  status: z.string(),
   ap: z.string(),
   commision: z.string(),
   coverageAmount: z.string(),
-  startDate:z.optional(z.date()),
+  startDate: z.optional(z.date()),
 });
 export const LeadBeneficiarySchema = z.object({
   id: z.optional(z.string()),
-  leadId:z.string(),  
-  type:z.string(),
-  relationship:z.string(),  
+  leadId: z.string(),
+  type: z.string(),
+  relationship: z.string(),
   firstName: z.string().min(3, "First name must be at least 3 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  address: z.optional(z.string()),  
-  city: z.optional(z.string()),  
-  state: z.optional(z.string()),  
-  zipCode: z.optional(z.string()),  
+  address: z.optional(z.string()),
+  city: z.optional(z.string()),
+  state: z.optional(z.string()),
+  zipCode: z.optional(z.string()),
   cellPhone: z.optional(z.string()),
-  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   email: z.optional(z.string().email()),
-  dateOfBirth: z.optional(z.string()),  
-  ssn: z.optional(z.string()),  
-  share: z.optional(z.string()),  
+  dateOfBirth: z.optional(z.string()),
+  ssn: z.optional(z.string()),
+  share: z.optional(z.string()),
 
   notes: z.optional(z.string()),
 });
 export const LeadConditionSchema = z.object({
   id: z.optional(z.string()),
   leadId: z.string(),
-  conditionId:z.string(),
+  conditionId: z.string(),
   diagnosed: z.string(),
-  medications:z.string(),
-  notes:z.optional(z.string()),
+  medications: z.string(),
+  notes: z.optional(z.string()),
 });
 
 export const LeadExpenseSchema = z.object({
   leadId: z.string(),
   type: z.string(),
-  name:z.string(),
+  name: z.string(),
   value: z.coerce.number(),
-  notes:z.optional(z.string()),
+  notes: z.optional(z.string()),
 });
 export const LeadExportSchema = z.object({
-  userId:z.string(),
+  userId: z.string(),
   type: z.string(),
-  from:z.date(),
+  from: z.date(),
   to: z.date(),
-  state:z.string(),
-  vendor:z.string()
+  state: z.string(),
+  vendor: z.string(),
 });
 export const TwilioSchema = z.object({
   phone: z.string(),
@@ -247,7 +252,7 @@ export const MessageSchema = z.object({
   role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
   conversationId: z.string(),
-  attachment:z.optional(z.string()),
+  attachment: z.optional(z.string()),
   senderId: z.string(),
   hasSeen: z.boolean(),
   sid: z.optional(z.string()),
@@ -256,8 +261,8 @@ export const MessageSchema = z.object({
 export const SmsMessageSchema = z.object({
   leadId: z.optional(z.string()),
   content: z.string(),
-  images:z.optional(z.string()),
-  type:z.string()
+  images: z.optional(z.string()),
+  type: z.string(),
 });
 
 export const PresetSchema = z.object({
@@ -284,7 +289,7 @@ export const AppointmentLeadSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   state: z.string(),
   cellPhone: z.string(),
-  gender: z.enum([Gender.NA,Gender.Male, Gender.Female]),
+  gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
     MaritalStatus.Married,
@@ -295,40 +300,45 @@ export const AppointmentLeadSchema = z.object({
 });
 
 export const FeedbackSchema = z.object({
-  id:z.optional(z.string()),
-  userId:z.optional(z.string()),
+  id: z.optional(z.string()),
+  userId: z.optional(z.string()),
   headLine: z.string().min(3),
   page: z.string(),
   feedback: z.string().min(5),
 });
 
 export const DevFeedbackSchema = z.object({
-  id:z.optional(z.string()),
+  id: z.optional(z.string()),
   status: z.string(),
   comments: z.optional(z.string()),
 });
 
-
 export const LeadStatusSchema = z.object({
-  id:z.optional(z.string()),
-  status: z.string().min(2,"*"),
-  description : z.optional(z.string()),
+  id: z.optional(z.string()),
+  status: z.string().min(2, "*"),
+  description: z.optional(z.string()),
 });
 
 export const UserLicenseSchema = z.object({
   id: z.optional(z.string()),
-  state: z.string().min(2,"*"),
-  type : z.string().min(2,"*"),
-  licenseNumber: z.string().min(3,"*"),
-  dateExpires:z.date(),
+  state: z.string().min(2, "*"),
+  type: z.string().min(2, "*"),
+  licenseNumber: z.string().min(3, "*"),
+  dateExpires: z.date(),
   // comments: z.string().nullish(),
-  comments: z.string().nullish().transform( x => x ?? undefined )
+  comments: z
+    .string()
+    .nullish()
+    .transform((x) => x ?? undefined),
 });
 export const UserCarrierSchema = z.object({
   id: z.optional(z.string()),
-  agentId: z.string().min(2,"*"),
-  carrierId : z.string().min(2,"*"),
-  comments: z.string().nullish().transform( x => x ?? undefined )
+  agentId: z.string().min(2, "*"),
+  carrierId: z.string().min(2, "*"),
+  comments: z
+    .string()
+    .nullish()
+    .transform((x) => x ?? undefined),
 });
 export const UserTemplateSchema = z.object({
   id: z.optional(z.string()),
@@ -339,66 +349,59 @@ export const UserTemplateSchema = z.object({
 });
 // AMIN
 export const CarrierSchema = z.object({
-  id:z.optional(z.string()),
-  image:z.optional(z.string()),
-  name : z.string().min(2,"*"),
+  id: z.optional(z.string()),
+  image: z.optional(z.string()),
+  name: z.string().min(2, "*"),
   description: z.optional(z.string()),
-  website:z.optional(z.string()),
-  portal:z.optional(z.string()),
+  website: z.optional(z.string()),
+  portal: z.optional(z.string()),
 });
 
 export const ScriptSchema = z.object({
-  id:z.optional(z.string()),
-  title:z.string().min(2,"*"),
-  script : z.string().min(2,"*"),
+  id: z.optional(z.string()),
+  title: z.string().min(2, "*"),
+  script: z.string().min(2, "*"),
 });
 export const MedicalConditionSchema = z.object({
-  name : z.string().min(2,"*"),
+  name: z.string().min(2, "*"),
   description: z.optional(z.string()),
 });
 
 export const QuoteSchema = z.object({
-  quote : z.string().min(2,"*"),
+  quote: z.string().min(2, "*"),
   author: z.string(),
 });
 
 export const TaskSchema = z.object({
-  id:z.string(),
-  headLine : z.string().min(2,"*"),
-  description: z.string().min(2,"*"),  
-  status:z.string(),
-  comments:z.optional(z.string().default("")),
-  published:z.boolean(),
-  startAt:z.date(),
-  endAt:z.date(),
+  id: z.string(),
+  headLine: z.string().min(2, "*"),
+  description: z.string().min(2, "*"),
+  status: z.string(),
+  comments: z.optional(z.string().default("")),
+  published: z.boolean(),
+  startAt: z.date(),
+  endAt: z.date(),
 });
 
 // HYEPRION LEADS
 
-export const HyperionLeadSchema = z.object({
-
-  id: z.string(),
-  formId: z.string(),
-  adName: z.string(),
-  campaignName: z.string(),
-  
-    firstName: z.string().min(3, "First name must be at least 3 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  address: z.string(),
-  city: z.string(),
-  state: z.string(),
-  cellPhone: z.string().min(10, "required"),
-  gender: z.string(),
-  maritalStatus: z.string(),
-  email: z.string().email(),
-  dateOfBirth: z.date(),
-  weight: z.string(),
-  height: z.string(),
-  policyAmount:  z.string(),
-  smoker: z.string(),
- 
+export const HyperionLeadSchema = z.object({  
+  id: z.optional(z.string()),
+  formId: z.optional(z.string()),
+  adName: z.optional(z.string()),
+  campaignName: z.optional(z.string()),
+  firstName: z.string(),
+  lastName: z.string(),
+  address: z.optional(z.string()),
+  city: z.optional(z.string()),
+  state: z.optional(z.string()),
+  cellPhone: z.optional(z.string()),
+  gender: z.optional(z.string()),
+  maritalStatus: z.optional(z.string()),
+  email: z.optional(z.string()),
+  dateOfBirth: z.optional(z.string()),
+  weight: z.optional(z.string()),
+  height: z.optional(z.string()),
+  policyAmount: z.optional(z.string()),
+  smoker: z.optional(z.string()),
 });
-
-  
- 
- 
