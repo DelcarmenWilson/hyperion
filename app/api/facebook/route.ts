@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { formatObject } from "@/formulas/objects";
 import { hyperionLeadInsert } from "@/actions/hyperion";
 
 export async function GET(req: NextRequest) {
@@ -24,29 +23,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.formData();
-    const j: any = formatObject(body);
-
-    const newLead = await hyperionLeadInsert({
-      id: j.iD,
-      formId: j.formId,
-      adName: j.adName,
-      campaignName: j.campaignName,
-      firstName: j.firstName,
-      lastName: j.lastName,
-      address: j.streeAddress,
-      city: j.city,
-      state: j.state,
-      cellPhone: j.phoneNumber,
-      gender: j.gender,
-      maritalStatus: j.maritalStatus,
-      email: j.email,
-      dateOfBirth: new Date(j.dateOfBirth),
-      weight: j.couldYouPleaseProvideYourCurrentWeight,
-      height: j.couldYouPleaseProvideYourCurrentHeightAndWeight,
-      policyAmount: j.howMuchInsuranceCoverageWillYouLikeToGet,
-      smoker: j.areYouASmoker,
-    });
+    const j = await req.json();
+    const newLead = await hyperionLeadInsert({...j})
+    
     if (newLead.error) {
       return new NextResponse(newLead.error, { status: 500 });
     }

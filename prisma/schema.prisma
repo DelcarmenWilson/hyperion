@@ -707,7 +707,7 @@ model AdSet {
 }
 
 model HyperionLead {
-  id            String   @id @unique
+  id            String   @unique
   formId        String
   adName        String
   campaignName  String
@@ -720,7 +720,7 @@ model HyperionLead {
   gender        String
   maritalStatus String
   email         String
-  dateOfBirth   DateTime
+  dateOfBirth   String
   weight        String
   height        String
   policyAmount  String
