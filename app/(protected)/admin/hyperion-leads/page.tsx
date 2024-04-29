@@ -1,0 +1,17 @@
+import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { HyperionLeadClient } from "./components/client";
+import { hyperionLeadsGetAll } from "@/data/hyperion";
+
+const UsersPage = async () => {
+  const leads = await hyperionLeadsGetAll();
+  return (
+    <PageLayoutAdmin
+      title="Hyperion Leads"
+      description="Manage all Hyperion Leads"
+    >
+      <HyperionLeadClient initLeads={leads} />
+    </PageLayoutAdmin>
+  );
+};
+
+export default UsersPage;
