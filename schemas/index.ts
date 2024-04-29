@@ -372,3 +372,33 @@ export const TaskSchema = z.object({
   startAt:z.date(),
   endAt:z.date(),
 });
+
+// HYEPRION LEADS
+
+export const HyperionLeadSchema = z.object({
+
+  id: z.string(),
+  formId: z.string(),
+  adName: z.string(),
+  campaignName: z.string(),
+  
+    firstName: z.string().min(3, "First name must be at least 3 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  address: z.string(),
+  city: z.string(),
+  state: z.string(),
+  cellPhone: z.string().min(10, "required"),
+  gender: z.string(),
+  maritalStatus: z.string(),
+  email: z.string().email(),
+  dateOfBirth: z.date(),
+  weight: z.string(),
+  height: z.string(),
+  policyAmount:  z.string(),
+  smoker: z.string(),
+ 
+});
+
+  
+ 
+ 

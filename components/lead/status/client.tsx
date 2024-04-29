@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
 
@@ -38,19 +38,23 @@ export const LeadStatusClient = () => {
           .concat(updatedLeadStatus);
       });
     };
-    emitter.on("userLeadStatusDeleted", (id) => onUserLeadStatusDeleted(id));
-    emitter.on("userLeadStatusInserted", (info) =>
+    userEmitter.on("userLeadStatusDeleted", (id) =>
+      onUserLeadStatusDeleted(id)
+    );
+    userEmitter.on("userLeadStatusInserted", (info) =>
       onUserLeadStatusInserted(info)
     );
-    emitter.on("userLeadStatusUpdated", (info) =>
+    userEmitter.on("userLeadStatusUpdated", (info) =>
       onUserLeadStatusUpdated(info)
     );
     return () => {
-      emitter.on("userLeadStatusDeleted", (id) => onUserLeadStatusDeleted(id));
-      emitter.on("userLeadStatusInserted", (info) =>
+      userEmitter.on("userLeadStatusDeleted", (id) =>
+        onUserLeadStatusDeleted(id)
+      );
+      userEmitter.on("userLeadStatusInserted", (info) =>
         onUserLeadStatusInserted(info)
       );
-      emitter.on("userLeadStatusUpdated", (info) =>
+      userEmitter.on("userLeadStatusUpdated", (info) =>
         onUserLeadStatusUpdated(info)
       );
     };

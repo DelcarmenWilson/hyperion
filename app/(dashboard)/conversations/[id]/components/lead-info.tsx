@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 
@@ -34,9 +34,9 @@ export const ConversationLeadInfo = ({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    emitter.on("toggleLeadInfo", (open) => setIsOpen(open));
+    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
     return () => {
-      emitter.off("toggleLeadInfo", (open) => setIsOpen(open));
+      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
     };
   }, []);
 

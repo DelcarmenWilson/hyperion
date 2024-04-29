@@ -38,15 +38,12 @@ export const TeamForm = () => {
       </DialogTrigger>
       <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
         <h3 className="text-2xl font-semibold py-2">Create Team</h3>
-        <div>
-          <p className="text-muted-foreground">Create a New Team</p>
-          <Input
-            disabled={loading}
-            placeholder="Team Name"
-            onChange={(e) => setTeamName(e.target.value)}
-            value={teamName}
-          />
-        </div>
+        <Input
+          disabled={loading}
+          placeholder="Team Name"
+          onChange={(e) => setTeamName(e.target.value)}
+          value={teamName}
+        />
         <Button disabled={loading} onClick={onTeamInsert}>
           Create
         </Button>

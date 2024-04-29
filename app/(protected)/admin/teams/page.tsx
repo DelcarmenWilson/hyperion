@@ -1,8 +1,7 @@
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
-import { DataTable } from "@/components/tables/data-table";
-import { columns } from "./components/columns";
-import { TeamForm } from "./components/team-form";
+import { TeamForm } from "./components/form";
 import { teamsGetAll } from "@/data/team";
+import { TeamClient } from "./components/client";
 
 const TeamsPage = async () => {
   const teams = await teamsGetAll();
@@ -13,7 +12,7 @@ const TeamsPage = async () => {
       description="Manage teams for your organization."
       topMenu={<TeamForm />}
     >
-      <DataTable data={teams} columns={columns} />
+      <TeamClient intitTeams={teams} />
     </PageLayoutAdmin>
   );
 };

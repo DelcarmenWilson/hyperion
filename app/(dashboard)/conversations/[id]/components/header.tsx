@@ -1,6 +1,6 @@
 "use client";
 import { Phone } from "lucide-react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { usePhone } from "@/hooks/use-phone";
 
@@ -51,7 +51,7 @@ export const Header = ({ lead }: HeaderProps) => {
           size="sm"
           onClick={() =>
             setIsOpen((open) => {
-              emitter.emit("toggleLeadInfo", !open);
+              userEmitter.emit("toggleLeadInfo", !open);
               return !open;
             })
           }

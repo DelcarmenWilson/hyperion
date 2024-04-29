@@ -37,6 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 # public
-/assets
-/recordings
+/public/assets
+/public/recordings
 

@@ -706,6 +706,29 @@ model AdSet {
   updatedAt DateTime @updatedAt
 }
 
+model HyperionLead {
+  id            String   @id @unique
+  formId        String
+  adName        String
+  campaignName  String
+  firstName     String
+  lastName      String
+  address       String
+  city          String
+  state         String
+  cellPhone     String
+  gender        String
+  maritalStatus String
+  email         String
+  dateOfBirth   DateTime
+  weight        String
+  height        String
+  policyAmount  String
+  smoker        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 //TASK
 model Task {
   id String @id @default(cuid())

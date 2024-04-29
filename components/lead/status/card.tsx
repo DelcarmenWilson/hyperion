@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -32,7 +32,7 @@ export const LeadStatusCard = ({ initLeadStatus }: LeadStatusCardProps) => {
         toast.error(data.error);
       }
       if (data.success) {
-        emitter.emit("userLeadStatusDeleted", leadStatus.id);
+        userEmitter.emit("userLeadStatusDeleted", leadStatus.id);
         toast.success(data.success);
       }
     });
@@ -45,7 +45,9 @@ export const LeadStatusCard = ({ initLeadStatus }: LeadStatusCardProps) => {
     const onLeadStatusUpdated = (e: LeadStatus) => {
       if (e.id == leadStatus.id) setLeadStatus(e);
     };
-    emitter.on("userLeadStatusUpdated", (info) => onLeadStatusUpdated(info));
+    userEmitter.on("userLeadStatusUpdated", (info) =>
+      onLeadStatusUpdated(info)
+    );
   }, [initLeadStatus]);
   return (
     <>

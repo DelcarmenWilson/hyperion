@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Cake, CalendarX, FilePenLine, Phone, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,7 @@ export const GeneralInfoClient = ({
 
   useEffect(() => {
     setGeneralInfo(info);
-    emitter.on("generalInfoUpdated", (info) => onSetInfo(info));
+    userEmitter.on("generalInfoUpdated", (info) => onSetInfo(info));
   }, [info]);
 
   return (

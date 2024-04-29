@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Message } from "@prisma/client";
 import { Switch } from "@/components/ui/switch";
@@ -78,7 +78,7 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
                 size="sm"
                 onClick={() =>
                   setIsOpen((open) => {
-                    emitter.emit("toggleLeadInfo", !open);
+                    userEmitter.emit("toggleLeadInfo", !open);
                     return !open;
                   })
                 }

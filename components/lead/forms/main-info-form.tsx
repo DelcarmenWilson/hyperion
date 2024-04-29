@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { useState } from "react";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -58,7 +58,7 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
     setLoading(true);
     await leadUpdateByIdMainInfo(values).then((data) => {
       if (data.success) {
-        emitter.emit("mainInfoUpdated", {
+        userEmitter.emit("mainInfoUpdated", {
           ...data.success,
           email: data.success.email?.toString(),
           address: data.success.address?.toString(),

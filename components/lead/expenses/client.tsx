@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Button } from "@/components/ui/button";
 import { ExpenseIncome } from "./expense-income";
@@ -67,11 +67,11 @@ export const ExpensesClient = ({
     const expenseTotal = data.expenses.reduce((sum, exp) => sum + exp.value, 0);
     const incomeTotal = data.income.reduce((sum, inc) => sum + inc.value, 0);
     calculateIncome(expenseTotal, incomeTotal);
-    emitter.on("expenseUpdated", (type, total) =>
+    userEmitter.on("expenseUpdated", (type, total) =>
       onExpenseUpdated(type, total)
     );
     return () => {
-      emitter.on("expenseUpdated", (type, total) =>
+      userEmitter.on("expenseUpdated", (type, total) =>
         onExpenseUpdated(type, total)
       );
     };

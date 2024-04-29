@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -31,7 +31,7 @@ export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
         toast.error(data.error);
       }
       if (data.success) {
-        emitter.emit("conditionDeleted", condition.id);
+        userEmitter.emit("conditionDeleted", condition.id);
         toast.success(data.success);
       }
     });
@@ -43,7 +43,7 @@ export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
     const onConditionUpdated = (e: FullLeadMedicalCondition) => {
       if (e.id == condition.id) setCondition(e);
     };
-    emitter.on("conditionUpdated", (info) => onConditionUpdated(info));
+    userEmitter.on("conditionUpdated", (info) => onConditionUpdated(info));
   }, [initCondition]);
   return (
     <>

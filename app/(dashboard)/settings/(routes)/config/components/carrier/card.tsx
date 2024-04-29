@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -32,7 +32,7 @@ export const CarrierCard = ({ initCarrier }: CarrierCardProps) => {
         toast.error(data.error);
       }
       if (data.success) {
-        emitter.emit("carrierDeleted", carrier.id);
+        userEmitter.emit("carrierDeleted", carrier.id);
         toast.success(data.success);
       }
     });
@@ -45,7 +45,7 @@ export const CarrierCard = ({ initCarrier }: CarrierCardProps) => {
     const onCarrierUpdated = (e: FullUserCarrier) => {
       if (e.id == carrier.id) setCarrier(e);
     };
-    emitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
+    userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
   }, [initCarrier]);
   return (
     <>

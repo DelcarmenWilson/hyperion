@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 import { useGlobalContext } from "@/providers/global";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { FullUserCarrier } from "@/types";
@@ -39,13 +39,13 @@ export const CarrierClient = () => {
           .concat(updatedCarrier);
       });
     };
-    emitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
-    emitter.on("carrierInserted", (info) => onCarrierInserted(info));
-    emitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
+    userEmitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
+    userEmitter.on("carrierInserted", (info) => onCarrierInserted(info));
+    userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
     return () => {
-      emitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
-      emitter.on("carrierInserted", (info) => onCarrierInserted(info));
-      emitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
+      userEmitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
+      userEmitter.on("carrierInserted", (info) => onCarrierInserted(info));
+      userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
     };
   }, []);
 

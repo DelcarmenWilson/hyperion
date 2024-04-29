@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
 import { useCurrentRole } from "@/hooks/user-current-role";
@@ -41,13 +41,13 @@ export const LicenseClient = () => {
           .concat(updatedLicense);
       });
     };
-    emitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
-    emitter.on("licenseInserted", (info) => onLicenseInserted(info));
-    emitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
+    userEmitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
+    userEmitter.on("licenseInserted", (info) => onLicenseInserted(info));
+    userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
     return () => {
-      emitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
-      emitter.on("licenseInserted", (info) => onLicenseInserted(info));
-      emitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
+      userEmitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
+      userEmitter.on("licenseInserted", (info) => onLicenseInserted(info));
+      userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
     };
   }, []);
   return (

@@ -1,7 +1,7 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +64,7 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
     if (carrier)
       userCarrierUpdateById(values).then((data) => {
         if (data.success) {
-          emitter.emit("carrierUpdated", data.success);
+          userEmitter.emit("carrierUpdated", data.success);
           toast.success("Carrier created!");
           onClose();
         }
@@ -75,7 +75,7 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
     else
       userCarrierInsert(values).then((data) => {
         if (data.success) {
-          emitter.emit("carrierInserted", data.success);
+          userEmitter.emit("carrierInserted", data.success);
           toast.success("Carrier created!");
           onClose();
         }

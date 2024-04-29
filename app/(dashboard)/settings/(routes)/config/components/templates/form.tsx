@@ -1,7 +1,8 @@
 "use client";
 import * as z from "zod";
 import { useState } from "react";
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
+import { v4 as uuidv4 } from "uuid";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ import { UserTemplateSchema } from "@/schemas";
 import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
 import { ImageUpload } from "@/components/custom/image-upload";
 import axios from "axios";
-import { KeyworkSelect } from "@/components/custom/keyword-select";
+import { KeywordSelect } from "@/components/custom/keyword-select";
 
 type TemplateFormProps = {
   template?: UserTemplate;
@@ -64,6 +65,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
 
     if (selectedFile) {
       const formData = new FormData();
+      formData.append("id", uuidv4());
       formData.append("image", selectedFile);
       formData.append("filePath", "assets/templates");
       if (template?.attachment) formData.append("oldFile", template.attachment);
@@ -79,7 +81,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     if (template)
       userTemplateUpdateById(values).then((data) => {
         if (data.success) {
-          emitter.emit("templateUpdated", data.success);
+          userEmitter.emit("templateUpdated", data.success);
           onCancel();
           toast.success("Template created!");
         }
@@ -90,7 +92,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     else
       userTemplateInsert(values).then((data) => {
         if (data.success) {
-          emitter.emit("templateInserted", data.success);
+          userEmitter.emit("templateInserted", data.success);
           onCancel();
           toast.success("Template created!");
         }
@@ -157,7 +159,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
                 </FormItem>
               )}
             />
-            <KeyworkSelect onSetKeyWord={onSetKeyWord} />
+            <KeywordSelect onSetKeyWord={onSetKeyWord} />
 
             <FormField
               control={form.control}

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
 
-import { emitter } from "@/lib/event-emmiter";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 
 import { smsCreate } from "@/actions/sms";
-import { Message, UserTemplate } from "@prisma/client";
+import { UserTemplate } from "@prisma/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -75,7 +75,7 @@ export const SmsForm = () => {
     setLoading(true);
     await smsCreate(values).then((data) => {
       if (data.success) {
-        emitter.emit("messageInserted", data.success);
+        userEmitter.emit("messageInserted", data.success);
       }
       if (data.error) {
         toast.error(data.error);
@@ -96,9 +96,9 @@ export const SmsForm = () => {
       }
       setDialogOpen(false);
     };
-    emitter.on("templateSelected", (info) => onTemplateSelected(info));
+    userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
     return () => {
-      emitter.on("templateSelected", (info) => onTemplateSelected(info));
+      userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
     };
   }, []);
 
