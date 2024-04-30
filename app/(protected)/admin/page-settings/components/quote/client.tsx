@@ -31,7 +31,7 @@ export const QuoteClient = ({ initQuotes }: QuoteClientProps) => {
   const onSetRandomQuote = () => {
     adminQuoteUpdateActive().then((data) => {
       if (data.success) {
-        toast.success(data.success);
+        toast.success("New quote has been selected!");
       }
     });
   };

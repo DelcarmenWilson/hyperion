@@ -352,8 +352,8 @@ export const adminQuoteUpdateActive = async () => {
   if(activeQuote){
     await db.quote.update({where:{id:activeQuote.id},data:{active:false}})
   }
-  await db.quote.update({where:{id:randomQuote.id},data:{active:true}}) 
+  const newQuote=await db.quote.update({where:{id:randomQuote.id},data:{active:true}}) 
 
-  return { success: "Random quote has been set." };
+  return { success: newQuote};
 };
 

@@ -8,6 +8,7 @@ import { find } from "lodash";
 import { ShortConversation } from "@/types";
 import { Conversation, Message } from "@prisma/client";
 import { ConversationCard } from "./card";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
 type ConversationsClientProps = {
   convos: ShortConversation[];
@@ -74,9 +75,18 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         Conversations
       </h4>
       <div className="flex-1 space-y-2 overflow-y-auto h-full">
-        {conversations.map((conversation) => (
-          <ConversationCard key={conversation.id} conversation={conversation} />
-        ))}
+        {conversations.length > 1 ? (
+          <>
+            {conversations.map((conversation) => (
+              <ConversationCard
+                key={conversation.id}
+                conversation={conversation}
+              />
+            ))}
+          </>
+        ) : (
+          <EmptyCard title="No Conversations" />
+        )}
       </div>
     </div>
   );

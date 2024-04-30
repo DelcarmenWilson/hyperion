@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { pipelineDeleteById, pipelineUpdateById } from "@/actions/pipeline";
 import { Input } from "@/components/ui/input";
 import { useGlobalContext } from "@/providers/global";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
 type SaleClientProps = {
   data: FullLead[];
@@ -143,16 +144,23 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
           </Button>
         </DialogContent>
       </Dialog>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {pipelines?.map((pipeline) => (
-          <PipelineCard
-            key={pipeline.id}
-            pipeline={pipeline}
-            sendPipeline={sendPipeline}
-            leads={data.filter((e) => e.status == pipeline.status.status)}
-          />
-        ))}
-      </div>
+      {pipelines.length > 1 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {pipelines?.map((pipeline) => (
+            <PipelineCard
+              key={pipeline.id}
+              pipeline={pipeline}
+              sendPipeline={sendPipeline}
+              leads={data.filter((e) => e.status == pipeline.status.status)}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyCard
+          title="No Stages Available"
+          subTitle="Please add a new stage"
+        />
+      )}
     </>
   );
 };
