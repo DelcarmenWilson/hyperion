@@ -18,7 +18,7 @@ const ConfigPage = async () => {
   return (
     <Tabs
       className="flex flex-col lg:flex-row gap-2 item-start h-full"
-      defaultValue="licenses"
+      defaultValue="templates"
     >
       <TabsList className="flex flex-col w-full lg:w-[120px] gap-2 h-full">
         <TabsTrigger className="w-full" value="licenses">

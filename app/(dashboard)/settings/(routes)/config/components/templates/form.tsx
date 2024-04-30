@@ -2,7 +2,6 @@
 import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { v4 as uuidv4 } from "uuid";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,7 +37,10 @@ type TemplateFormValues = z.infer<typeof UserTemplateSchema>;
 
 export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   const [loading, setLoading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File>();
+  const [file, setFile] = useState<{
+    image: string | undefined;
+    filename: string | undefined;
+  }>({ image: undefined, filename: undefined });
   const btnText = template ? "Update" : "Create";
 
   const form = useForm<TemplateFormValues>({
@@ -50,33 +52,27 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
+    onImageRemove();
     onClose();
   };
   const onSetKeyWord = (e: string) => {
     const msg = form.getValues("message");
     form.setValue("message", `${msg || ""} ${e}`);
   };
-  const onImageUpdate = (file: File) => {
-    setSelectedFile(file);
-    form.setValue("attachment", URL.createObjectURL(file));
+  const onImageUpdate = (imageUrl: string, image: string, filename: string) => {
+    setFile({ image, filename });
+    form.setValue("attachment", imageUrl);
+  };
+  const onImageRemove = () => {
+    setFile({ image: undefined, filename: undefined });
+    form.setValue("attachment", undefined);
   };
   const onSubmit = async (values: TemplateFormValues) => {
     setLoading(true);
+    let newFileName = `/assets/templates/${file.filename}`;
 
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("id", uuidv4());
-      formData.append("image", selectedFile);
-      formData.append("filePath", "assets/templates");
-      if (template?.attachment) formData.append("oldFile", template.attachment);
-      const response = await axios.post("/api/upload/image", formData);
-      const data = await response.data;
-      if (data.success) {
-        values.attachment = data.success;
-      }
-      if (data.error) {
-        toast.error("Image was not able to be uploaded!");
-      }
+    if (file.image) {
+      values.attachment = newFileName;
     }
     if (template)
       userTemplateUpdateById(values).then((data) => {
@@ -89,17 +85,28 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
           toast.error(data.error);
         }
       });
-    else
-      userTemplateInsert(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("templateInserted", data.success);
-          onCancel();
-          toast.success("Template created!");
+    else {
+      const data = await userTemplateInsert(values);
+      if (data.success) {
+        if (file.image) {
+          await axios
+            .put("/api/upload/rename", {
+              oldFileName: file.image,
+              newFileName: newFileName,
+            })
+            .then((response) => {
+              const data = response.data;
+              if (data.error) toast.error(data.error);
+            });
         }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+        onCancel();
+        userEmitter.emit("templateInserted", data.success);
+        toast.success("Template created!");
+      }
+      if (data.error) {
+        toast.error(data.error);
+      }
+    }
 
     setLoading(false);
   };
@@ -111,8 +118,10 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <ImageUpload
+            oldImage={template?.attachment}
             selectedImage={form.getValues("attachment")!}
             onImageUpdate={onImageUpdate}
+            onImageRemove={onImageRemove}
           />
           <div className="flex flex-col gap-2">
             {/* NAME */}

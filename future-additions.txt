@@ -6,6 +6,8 @@ Jhonni
 --revisit the expense sheet(not calculating properly)
     -- need to send income to back end
 
+--fix the sms for assistants and see why the conversations are not showing up
+
 IN SALE
 -- finish the intake form
 -- fix the dailer(big task)

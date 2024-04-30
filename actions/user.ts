@@ -714,8 +714,10 @@ export const userTemplateDeleteById = async (id: string) => {
 export const userTemplateInsert = async (
   values: z.infer<typeof UserTemplateSchema>
 ) => {
+  
   const validatedFields = UserTemplateSchema.safeParse(values);
   if (!validatedFields.success) {
+    console.log(values)
     return { error: "Invalid fields!" };
   }
 

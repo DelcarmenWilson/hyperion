@@ -11,6 +11,8 @@ import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio-config";
 import { SmsMessageSchema } from "@/schemas";
 import { HyperionLead, Lead } from "@prisma/client";
+import { format } from "date-fns";
+import { hyperionDate } from "@/formulas/dates";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -211,7 +213,10 @@ export const smsSendAgentAppointmentNotification = async (
 
   const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
-  } has booked an appointment for ${date.toDateString()} at ${date.toLocaleTimeString()}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
+  } has booked an appointment for ${format(date, hyperionDate)} at ${format(
+    date,
+    "hh:mm aa"
+  )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
   const result = await smsSend(
     lead.defaultNumber,
@@ -233,14 +238,17 @@ export const smsSendLeadAppointmentNotification = async (
 ) => {
   const message = `Hi ${
     lead.firstName
-  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${date.toDateString()} at ${date.toLocaleTimeString()}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
+  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${format(
+    date,
+    hyperionDate
+  )} at ${format(
+    date,
+    "hh:mm aa"
+  )}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
 
-  if (!result) {
-    return { error: "Message was not sent!" };
-  }
   const existingConversation = await db.conversation.findFirst({
     where: {
       lead: { id: lead.id },
@@ -250,7 +258,7 @@ export const smsSendLeadAppointmentNotification = async (
   if (!convoid) {
     convoid = (await conversationInsert(userId, lead.id)).success;
   }
-  await messageInsert({
+  const newMessage = await messageInsert({
     role: "assistant",
     content: message,
     conversationId: convoid!,
@@ -258,7 +266,14 @@ export const smsSendLeadAppointmentNotification = async (
     hasSeen: true,
   });
 
-  return { success: "Message sent!" };
+  if (!result.success) {
+    return { error: "Message was not sent!" };
+  }
+  if (!newMessage.success) {
+    return { error: newMessage.error };
+  }
+
+  return { success: newMessage.success };
 };
 
 export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
@@ -274,12 +289,13 @@ export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
   return { success: "Message sent!" };
 };
 
-export const smsSendNewHyperionLeadNotifications = async (lead: HyperionLead,) => {
-
+export const smsSendNewHyperionLeadNotifications = async (
+  lead: HyperionLead
+) => {
   const message = `A new lead has been added hyperion:\n ${lead.firstName} ${lead.lastName}\n${lead.city}, ${lead.state},\n DOB: ${lead.dateOfBirth}.`;
 
-await smsSend('+18623527091', '+19177548025', message);
-await smsSend('+18624659687', '+13478030962', message);
+  await smsSend("+18623527091", "+19177548025", message);
+  await smsSend("+18624659687", "+13478030962", message);
 
   return { success: "Message sent!" };
 };

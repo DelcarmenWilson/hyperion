@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { userGetByAssistant } from "./user";
 
 export const conversationsGetByUserId = async () => {
   try {
@@ -8,8 +9,13 @@ export const conversationsGetByUserId = async () => {
       return [];
     }
 
+    let agentId = user.id;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
+
     const conversations = await db.conversation.findMany({
-      where: { agentId: user.id },
+      where: { agentId },
       include: {
         lead: true,
         messages: true,
@@ -46,8 +52,13 @@ export const conversationGetById = async (conversationId: string) => {
     if (!user?.email) {
       return null;
     }
+    
+    let agentId = user.id;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
     const conversation = await db.conversation.findUnique({
-      where: { id: conversationId, agentId: user.id },
+      where: { id: conversationId, agentId },
       include: {
         lead: {
           include: {

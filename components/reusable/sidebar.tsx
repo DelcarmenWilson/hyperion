@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSidebar } from "@/store/use-sidebar";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { ArrowRight } from "lucide-react";
@@ -14,7 +14,7 @@ import { IconLink, IconLinkSkeleton } from "./icon-link";
 import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
 
 export const SideBar = ({ main = false }: { main?: boolean }) => {
-  const { collapsed, onExpand, onCollapse } = useSidebar((state) => state);
+  const { collapsed } = useSidebar((state) => state);
   const role = useCurrentRole();
   const pathname = usePathname();
   const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
@@ -26,30 +26,13 @@ export const SideBar = ({ main = false }: { main?: boolean }) => {
   if (!main && role != "MASTER") {
     routes = allRoutes.filter((e) => !e.master);
   }
-
-  const onToggle = () => {
-    if (collapsed) onExpand();
-    else onCollapse();
-  };
-
   return (
     <aside
       className={cn(
-        "flex flex-col fixed top-14 z-30 h-[calc(100vh-3.5rem)] w-60 shrink-0 md:sticky bg-background border-r py-2 transition ease-in-out",
+        "flex flex-col fixed top-14 z-30 h-[calc(100vh-3.5rem)] w-60 shrink-0 md:sticky bg-background border-r py-2 transition-[width] ease-in-out",
         collapsed && "w-[70px]"
       )}
     >
-      <div className="border-b flex justify-end">
-        <ArrowRight
-          className={cn(
-            "opacity-50 hover:opacity-100 z-50 cursor-pointer transition-all ease-in-out",
-            !collapsed && "rotate-180 "
-          )}
-          size={30}
-          onClick={onToggle}
-        />
-      </div>
-
       <ScrollArea className="p-2 flex-1">
         {routes.map((route) => (
           <IconLink

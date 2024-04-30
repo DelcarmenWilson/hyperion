@@ -61,15 +61,16 @@ const appointmentDate=new Date(date)
     return { error: "Appointment was not created!" };
   }
   const lead = await db.lead.findUnique({ where: { id: leadId } });
+  let message
   if (lead) {
-    await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
+     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
     if (sendSms) {
-      await smsSendLeadAppointmentNotification(userId,lead, appointmentDate);
+      message=(await smsSendLeadAppointmentNotification(userId,lead, appointmentDate)).success;
     }
   }
 
   // pusher.publish(appointment)
-  return { success: appointment };
+  return { success: {appointment,message} };
 };
 
 export const appointmentInsertBook = async (

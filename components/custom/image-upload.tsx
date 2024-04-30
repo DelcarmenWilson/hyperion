@@ -1,21 +1,63 @@
 "use client";
-import { ChangeEvent } from "react";
-import { ImageIcon } from "lucide-react";
+import { ChangeEvent, useState } from "react";
+import { ImageIcon, X } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import axios from "axios";
+import Loader from "../reusable/loader";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 type ImageUploadProps = {
   selectedImage: string;
-  onImageUpdate: (files: File) => void;
+  oldImage?: string | null;
+  onImageUpdate: (imageUrl: string, image: string, filename: string) => void;
+  onImageRemove: () => void;
 };
 export const ImageUpload = ({
   selectedImage,
+  oldImage,
   onImageUpdate,
+  onImageRemove,
 }: ImageUploadProps) => {
+  const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(false);
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const files = e.target.files;
-      onImageUpdate(files[0]);
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("id", uuidv4());
+      formData.append("image", file);
+      formData.append("filePath", "assets/temp");
+      if (oldImage) formData.append("oldFile", oldImage);
+      setLoading(true);
+      axios.post("/api/upload/image", formData).then((response) => {
+        const data = response.data;
+        if (data.success)
+          onImageUpdate(
+            URL.createObjectURL(file),
+            data.success.image,
+            data.success.filename
+          );
+        setImage(data.success);
+        if (data.error) toast.error(data.error);
+      });
+      setLoading(false);
     }
+  };
+  const onImageRemoved = () => {
+    setLoading(true);
+    setLoading(true);
+    axios.put("/api/upload/image", { oldFile: image }).then((response) => {
+      const data = response.data;
+      if (data.success) {
+        setImage("");
+        onImageRemove();
+      }
+      if (data.error) toast.error(data.error);
+    });
+
+    setLoading(false);
   };
   return (
     <div className="flex flex-col justify-center items-center">
@@ -27,21 +69,38 @@ export const ImageUpload = ({
           onChange={onFileChange}
         />
         <div className="min-w-40 max-w-md aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
-          {selectedImage ? (
-            <Image
-              width={100}
-              height={100}
-              className="h-[100px] w-[100px]"
-              src={selectedImage}
-              alt="Image to upload"
-            />
+          {loading ? (
+            <Loader />
           ) : (
-            <div className="flex flex-col gap-2 justify-center items-center ">
-              <ImageIcon size={26} />
-              <span className="text-lg text-muted-foreground">
-                Select Images
-              </span>
-            </div>
+            <>
+              {selectedImage ? (
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    className="absolute top-0 right-0"
+                    type="button"
+                    onClick={onImageRemoved}
+                  >
+                    <X size={16} />
+                  </Button>
+                  <Image
+                    width={100}
+                    height={100}
+                    className="h-[100px] w-[100px]"
+                    src={selectedImage}
+                    alt="Image to upload"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 justify-center items-center ">
+                  <ImageIcon size={26} />
+                  <span className="text-lg text-muted-foreground">
+                    Select Images
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </label>
