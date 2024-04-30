@@ -3,6 +3,7 @@ import { ConversationsClient } from "./components/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { conversationsGetByUserId } from "@/data/conversation";
 import Image from "next/image";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
 const ConversationsPage = async () => {
   const conversations = await conversationsGetByUserId();
@@ -23,7 +24,14 @@ const ConversationsPage = async () => {
     <Card className="flex flex-col h-full overflow-hidden p-0">
       <CardContent className="flex h-full gap-2 overflow-hidden p-0">
         <ConversationsClient convos={formattedConversations} />
-        <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
+        <EmptyCard
+          title={
+            conversations.length > 1
+              ? "Select a Conversation"
+              : "Start a new Conversation"
+          }
+        />
+        {/* <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
           <CardContent className="flex-center flex-col h-full gap-2 text-muted-foreground opacity-50 overflow-hidden p-0">
             <Image
               height={80}
@@ -34,7 +42,7 @@ const ConversationsPage = async () => {
             />
             <h4>Select a Conversation</h4>
           </CardContent>
-        </Card>
+        </Card> */}
       </CardContent>
     </Card>
   );

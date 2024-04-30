@@ -66,7 +66,7 @@ const DahsBoardPage = async () => {
           inBoundCallsCount={inBoundCallsCount}
           outBoundCallsCount={outBoundCallsCount}
         />
-        <QuoteClient quote={quote!} />
+        <QuoteClient initQuote={quote!} />
         <PageLayout title="Appointments" icon={Calendar}>
           <AppointmentClient data={appointments} />
         </PageLayout>

@@ -4,6 +4,7 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { PieChart } from "lucide-react";
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { weekStartEnd } from "@/formulas/dates";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
 export const TurnOverRate = () => {
   const [dates, setDates] = useState(weekStartEnd());
@@ -14,6 +15,7 @@ export const TurnOverRate = () => {
     <CardLayout title="Turn over Rate" icon={PieChart}>
       <p className="text-muted-foreground">Date Range</p>
       <DateRangePicker date={dates} setDate={onDateSelected} className="flex" />
+      <EmptyCard title="Coming Soon" />
     </CardLayout>
   );
 };

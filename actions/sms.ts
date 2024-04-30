@@ -217,6 +217,7 @@ export const smsSendAgentAppointmentNotification = async (
     date,
     "hh:mm aa"
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
+  
 
   const result = await smsSend(
     lead.defaultNumber,
