@@ -6,41 +6,50 @@ import {
   LeadMainInfo,
   LeadPolicyInfo,
 } from "@/types";
-import { HyperionLead, LeadBeneficiary, LeadStatus, Message, UserLicense, UserTemplate } from "@prisma/client";
+
+import {
+  Appointment,
+  HyperionLead,
+  LeadBeneficiary,
+  LeadStatus,
+  Message,
+  UserLicense,
+  UserTemplate,
+} from "@prisma/client";
 
 type UserEvents = {
+  appointmentScheduled: [info: Appointment];
   beneficiaryDeleted: [id: string];
   beneficiaryInserted: [info: LeadBeneficiary];
   beneficiaryUpdated: [info: LeadBeneficiary];
-  carrierDeleted: [id: string];  
+  carrierDeleted: [id: string];
   carrierInserted: [info: FullUserCarrier];
   carrierUpdated: [info: FullUserCarrier];
-  conditionDeleted: [id: string];  
+  conditionDeleted: [id: string];
   conditionInserted: [info: FullLeadMedicalCondition];
   conditionUpdated: [info: FullLeadMedicalCondition];
-  expenseUpdated: [type: string,total:number];
+  expenseUpdated: [type: string, total: number];
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];
-  licenseDeleted: [id: string];  
+  licenseDeleted: [id: string];
   licenseInserted: [info: UserLicense];
   licenseUpdated: [info: UserLicense];
   mainInfoUpdated: [info: LeadMainInfo];
   messageInserted: [info: Message];
-  policyInfoUpdated: [info: LeadPolicyInfo]; 
-  templateDeleted: [id: string]; 
+  policyInfoUpdated: [info: LeadPolicyInfo];
+  templateDeleted: [id: string];
   templateInserted: [info: UserTemplate];
-  templateUpdated: [info: UserTemplate];  
+  templateUpdated: [info: UserTemplate];
   templateSelected: [info: UserTemplate];
-   
+
   userLeadStatusDeleted: [id: string];
   userLeadStatusInserted: [info: LeadStatus];
   userLeadStatusUpdated: [info: LeadStatus];
   //TOGGLE EVENTS
-  toggleLeadInfo:[open:boolean]
-//NEW EVENTS
+  toggleLeadInfo: [open: boolean];
+  //NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];
-
 };
 
 type AdminEvents = {
@@ -50,7 +59,7 @@ type AdminEvents = {
   teamDeleted: [id: string];
   teamInserted: [info: FullTeam];
   teamUpdated: [info: FullTeam];
-}
+};
 
 type Listener<T extends Array<any>> = (...args: T) => void;
 class EventEmmitter<EventMap extends Record<string, Array<any>>> {
@@ -84,7 +93,7 @@ declare global {
   var adminEmitter: EventEmmitter<AdminEvents> | undefined;
 }
 
-export const userEmitter = globalThis.userEmitter || new EventEmmitter<UserEvents>();
-export const adminEmitter = globalThis.adminEmitter || new EventEmmitter<AdminEvents>();
-
-
+export const userEmitter =
+  globalThis.userEmitter || new EventEmmitter<UserEvents>();
+export const adminEmitter =
+  globalThis.adminEmitter || new EventEmmitter<AdminEvents>();

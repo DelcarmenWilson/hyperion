@@ -15,27 +15,28 @@ export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
   const [messages, setMessages] = useState(initMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const ScrollDown = () => {
-    if (bottomRef.current) {
-      const parent = bottomRef.current.parentElement?.parentElement;
-      const top = bottomRef.current.offsetTop;
-      parent?.scrollTo({ top, behavior: "smooth" });
-    }
-  };
   useEffect(() => {
-    ScrollDown();
+    const ScrollDown = () => {
+      if (bottomRef.current) {
+        const parent = bottomRef.current.parentElement?.parentElement;
+        const top = bottomRef.current.offsetTop;
+        parent?.scrollTo({ top, behavior: "smooth" });
+      }
+    };
 
-    const onSetsetMessages = (newMessage: Message) => {
+    const onSetMessage = (newMessage: Message) => {
       const existing = messages?.find((e) => e.id == newMessage.id);
       if (existing == undefined)
         setMessages((messages) => [...messages!, newMessage]);
       ScrollDown();
     };
-    userEmitter.on("messageInserted", (info) => onSetsetMessages(info));
+
+    ScrollDown();
+    userEmitter.on("messageInserted", (info) => onSetMessage(info));
     return () => {
-      userEmitter.on("messageInserted", (info) => onSetsetMessages(info));
+      userEmitter.on("messageInserted", (info) => onSetMessage(info));
     };
-  }, [initMessages]);
+  }, [initMessages, messages]);
   return (
     <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">
       {!messages?.length && (
@@ -46,7 +47,7 @@ export const SmsBody = ({ initMessages, leadName, userName }: SmsBodyProps) => {
       {messages?.map((message) => (
         <MessageCard
           key={message.id}
-          data={message}
+          message={message}
           username={message.role === "user" ? leadName : userName}
         />
       ))}

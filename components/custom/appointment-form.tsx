@@ -1,10 +1,11 @@
 "use client";
 import * as z from "zod";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,8 +55,6 @@ export const AppointmentForm = () => {
       (e) => new Date(e.date).toDateString() == date.toDateString()
     );
 
-    console.log(schedule, appointments);
-
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
@@ -90,7 +89,7 @@ export const AppointmentForm = () => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const newDate = concateDate(date, time);
+    const newDate = concateDate(date, time, user?.role == "ASSISTANT");
     if (!time) return;
     const appointment: z.infer<typeof AppointmentSchema> = {
       date: newDate,
@@ -102,8 +101,10 @@ export const AppointmentForm = () => {
     await appointmentInsert(appointment).then((data) => {
       if (data.success) {
         setAppointments((apps) => {
-          return [...apps!, data.success];
+          return [...apps!, data.success.appointment];
         });
+        userEmitter.emit("appointmentScheduled", data.success.appointment);
+        userEmitter.emit("messageInserted", data.success.message!);
         toast.success("Appointment scheduled!");
       }
       if (data.error) {

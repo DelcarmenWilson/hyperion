@@ -1,5 +1,6 @@
 "use client";
 import { ShortConversation } from "@/types";
+import { differenceInDays, format, formatDistance, subDays } from "date-fns";
 import Link from "next/link";
 import React from "react";
 type ConversationCardProps = {
@@ -28,7 +29,14 @@ export const ConversationCard = ({ conversation }: ConversationCardProps) => {
             <span className="text-lg font-semibold">{initials}</span>
           </div>
         </div>
-        <span>{fullName}</span>
+        <div className="text-sm">
+          <p className="text-xs text-right">
+            {formatDistance(conversation.updatedAt, new Date(), {
+              addSuffix: true,
+            })}
+          </p>
+          <p className="font-semibold">{fullName}</p>
+        </div>
       </div>
       <div className=" flex flex-col">
         <span className=" text-muted-foreground text-sm truncate overflow-hidden">

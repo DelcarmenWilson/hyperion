@@ -5,17 +5,15 @@ import { pusherServer } from "@/lib/pusher";
 
 import { MessageSchema } from "@/schemas";
 
-export const messageInsert = async (
-  values: z.infer<typeof MessageSchema>
-) => {
+export const messageInsert = async (values: z.infer<typeof MessageSchema>) => {
   const validatedFields = MessageSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
 
-  const { role, content,conversationId,attachment,senderId,hasSeen,sid } = validatedFields.data;
+  const { role, content, conversationId, attachment, senderId, hasSeen, sid } =
+    validatedFields.data;
 
- 
   const newMessage = await db.message.create({
     data: {
       conversationId,
@@ -24,12 +22,15 @@ export const messageInsert = async (
       attachment,
       hasSeen,
       senderId,
-      sid,      
-    },include:{}
+      sid,
+    },
   });
 
-  const conversation=await db.conversation.update({where:{id:conversationId},data:{lastMessage:content}})
-  
+  const conversation = await db.conversation.update({
+    where: { id: conversationId },
+    data: { lastMessage: content },
+  });
+
   await pusherServer.trigger(conversationId, "messages:new", newMessage);
   await pusherServer.trigger(senderId, "messages:new", conversation);
 

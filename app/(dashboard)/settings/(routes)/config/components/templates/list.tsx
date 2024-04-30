@@ -26,7 +26,7 @@ export const TemplateList = ({
             <TemplateCard
               key={template.id}
               initTemplate={template}
-              showSelect
+              showSelect={showSelect}
             />
           ))}
         </div>

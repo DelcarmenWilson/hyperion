@@ -1,13 +1,13 @@
 import { states } from "@/constants/states";
 import { differenceInYears, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
 
-
+export const hyperionDate:string="MMMM do yyyy"
 export const getAge = (dateOfBirth: any):string => {
   if(!dateOfBirth) return "NA"
   return differenceInYears(new Date,dateOfBirth).toString()
 };
 
-export const concateDate = (date: Date, time: string): Date => {
+export const concateDate = (date: Date, time: string,isAssistant:boolean=false): Date => {
   const prefix = time.substring(time.length - 2);
   const colonIdx = time.indexOf(":");
   let hours = parseInt(time.substring(0, colonIdx));
@@ -17,7 +17,10 @@ export const concateDate = (date: Date, time: string): Date => {
   if (prefix == "PM") {
     hours += 12;
   }
-
+  if(isAssistant){
+    hours=hours>12?hours-12:hours+12    
+  } 
+  
   date.setHours(hours);
   date.setMinutes(minutes);
   date.setSeconds(0);
