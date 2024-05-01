@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
 import { writeFile, unlink } from "fs/promises";
 import { currentUser } from "@/lib/auth";
 
 import { getFileExtension } from "@/formulas/text";
-import { FileRecords } from "@/types/item";
+import { FileRecord } from "@/types/item";
 
 export const POST = async (req: any, res: any) => {
   const user = await currentUser();
@@ -15,22 +14,20 @@ export const POST = async (req: any, res: any) => {
 
   const formData = await req.formData();
 
-  const record: FileRecords = {
-    files: formData.getAll("image"),
+  const record: FileRecord = {
+    file: formData.get("image"),
     path: formData.get("filePath"),
     id: formData.get("id"),
-    type: formData.get("type"),
-    fileNames: [],
     oldFile: formData.get("oldFile"),
   };
-  if (!record.files.length) {
-    return NextResponse.json({ error: "No files received." }, { status: 400 });
+  if (!record.file) {
+    return NextResponse.json({ error: "No file received." }, { status: 400 });
   }
 
   try {
     // const token =  uuidv4();
 
-    const file = record.files[0];
+    const file = record.file;
     if (!file) {
       return NextResponse.json(
         { error: "No files received." },
@@ -41,7 +38,7 @@ export const POST = async (req: any, res: any) => {
     const ext = getFileExtension(file.name);
 
     const filename = `${record.id}.${ext}`;
-    const image = `/${record.path}/${filename}`;
+    const image = `${record.path}${filename}`;
     await writeFile(path.join(process.cwd(), `public${image}`), buffer);
 
     if (record.oldFile) {

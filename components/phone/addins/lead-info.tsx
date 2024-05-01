@@ -63,6 +63,10 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     height: lead.height || undefined,
     income: lead.income || undefined,
     smoker: lead.smoker,
+
+    leadName: leadName,
+    lastCall: lead.calls[0]?.createdAt,
+    nextAppointment: lead.appointments[0]?.date,
   };
 
   const leadPolicy: LeadPolicyInfo = {
@@ -100,7 +104,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
           >
             <div className="grid grid-cols-3 gap-2 p-2">
               <MainInfoClient info={leadMainInfo} noConvo={false} />
-              <GeneralInfoClient leadName={leadName} info={leadInfo} showInfo />
+              <GeneralInfoClient info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />
               <PolicyInfoClient leadName={leadName} info={leadPolicy} />
               <NotesForm

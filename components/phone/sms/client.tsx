@@ -18,9 +18,16 @@ import axios from "axios";
 import Loader from "@/components/reusable/loader";
 import { Button } from "@/components/ui/button";
 
-export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
+export const SmsClient = ({
+  leadId,
+  showHeader = true,
+}: {
+  leadId?: string;
+  showHeader?: boolean;
+}) => {
   const user = useCurrentUser();
   const { lead } = usePhone();
+  const lid = leadId || lead?.id;
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -54,9 +61,9 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   useEffect(() => {
     const setData = async () => {
       setLoading(true);
-      if (lead) {
+      if (lid) {
         const response = await axios.post("/api/leads/messages", {
-          leadId: lead?.id,
+          leadId: lid,
         });
         setMessages(response.data);
       }
@@ -64,7 +71,7 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
     };
     setData();
     // return () => setData();
-  }, [lead]);
+  }, [lid]);
 
   return (
     <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">

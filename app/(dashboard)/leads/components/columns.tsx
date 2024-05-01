@@ -112,6 +112,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "appointment",
     header: "",
     cell: ({ row }) => {
+      console.log(row.original.calls);
       const leadInfo: LeadGeneralInfo = {
         id: row.original.id,
         gender: row.original.gender,
@@ -121,17 +122,12 @@ export const columns: ColumnDef<FullLead>[] = [
         height: row.original.height || undefined,
         income: row.original.income || undefined,
         smoker: row.original.smoker,
+
+        leadName: `${row.original.firstName} ${row.original.lastName}`,
+        lastCall: row.original.calls[0]?.createdAt,
+        nextAppointment: row.original.appointments[0]?.date,
       };
-      return (
-        <GeneralInfoClient
-          leadName={`${row.original.firstName} ${row.original.lastName}`}
-          info={leadInfo}
-          call={row.original.calls[row.original.calls.length - 1]!}
-          appointment={
-            row.original.appointments[row.original.appointments.length - 1]!
-          }
-        />
-      );
+      return <GeneralInfoClient info={leadInfo} />;
     },
   },
   {

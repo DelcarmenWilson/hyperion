@@ -105,7 +105,6 @@ export const SmsForm = () => {
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        {/* <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-[70%]"> */}
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold text-primary">Templates</h3>
           <TemplateList templates={templates!} showSelect />

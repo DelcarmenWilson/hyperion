@@ -68,6 +68,7 @@ export const ConversationLeadInfo = ({
     height: lead.height || undefined,
     income: lead.income || undefined,
     smoker: lead.smoker,
+    leadName: leadName,
   };
 
   const leadPolicy: LeadPolicyInfo = {
@@ -110,7 +111,7 @@ export const ConversationLeadInfo = ({
               )}
             >
               <MainInfoClient info={leadMainInfo} noConvo={false} />
-              <GeneralInfoClient leadName={leadName} info={leadInfo} showInfo />
+              <GeneralInfoClient info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />
               <PolicyInfoClient leadName={leadName} info={leadPolicy} />
               <NotesForm

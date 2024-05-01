@@ -11,37 +11,44 @@ import { TextGroup } from "@/components/reusable/input-group";
 import { GeneralInfoForm } from "./forms/general-info-form";
 
 import { LeadGeneralInfo } from "@/types";
-import { Appointment, Call } from "@prisma/client";
+import { Appointment } from "@prisma/client";
 
 import { getAge } from "@/formulas/dates";
 
 type GeneralInfoClientProps = {
-  leadName: string;
   info: LeadGeneralInfo;
-  call?: Call;
-  appointment?: Appointment;
-  dob?: Date;
   showInfo?: boolean;
 };
 
 export const GeneralInfoClient = ({
-  leadName,
   info,
-  call,
-  appointment,
-  dob,
   showInfo = false,
 }: GeneralInfoClientProps) => {
   const [generalInfo, setGeneralInfo] = useState<LeadGeneralInfo>(info);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const onSetInfo = (e: LeadGeneralInfo) => {
-    if (e.id == info.id) setGeneralInfo(e);
-  };
-
   useEffect(() => {
+    const onSetInfo = (e: LeadGeneralInfo) => {
+      if (e.id == info.id) setGeneralInfo(e);
+    };
+    const onSetLastCall = (leadId: string) => {
+      if (leadId == info.id)
+        setGeneralInfo((info) => {
+          return { ...info, lastCall: new Date() };
+        });
+    };
+    const onSetNextAppointment = (e: Appointment) => {
+      if (e.leadId == info.id)
+        setGeneralInfo((info) => {
+          return { ...info, nextAppointment: e.date };
+        });
+    };
     setGeneralInfo(info);
     userEmitter.on("generalInfoUpdated", (info) => onSetInfo(info));
+    userEmitter.on("appointmentScheduled", (newAppointment) =>
+      onSetNextAppointment(newAppointment)
+    );
+    userEmitter.on("newCall", (leadId) => onSetLastCall(leadId));
   }, [info]);
 
   return (
@@ -49,7 +56,8 @@ export const GeneralInfoClient = ({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
           <h4 className="text-2xl font-semibold py-2">
-            General Info - <span className="text-primary">{leadName}</span>
+            General Info -{" "}
+            <span className="text-primary">{generalInfo.leadName}</span>
           </h4>
           <GeneralInfoForm
             info={generalInfo}
@@ -58,31 +66,31 @@ export const GeneralInfoClient = ({
         </DialogContent>
       </Dialog>
       <div className="flex flex-col gap-2 text-sm">
-        {call && (
+        {generalInfo.lastCall && (
           <div className="flex items-center  gap-1">
             <Badge className="gap-1 w-fit">
               <Phone size={16} /> Last Call
             </Badge>
-            {format(call.createdAt, "MM-dd-yy hh:mm aaaa")}
+            {format(generalInfo.lastCall, "MM-dd-yy hh:mm aaaa")}
           </div>
         )}
 
-        {appointment && (
+        {generalInfo.nextAppointment && (
           <div>
             <div className="flex items-center  gap-1">
               <Badge className="gap-1 w-fit">
                 <CalendarX size={16} /> Appt Set
               </Badge>
-              {format(appointment.date, "MM-dd-yy hh:mm aaaa")}
+              {format(generalInfo.nextAppointment, "MM-dd-yy hh:mm aaaa")}
             </div>
           </div>
         )}
 
-        {dob && (
+        {generalInfo.dob && (
           <div className="flex items-center gap-1 w-fit">
             <Cake size={16} />
             <XCircle size={16} />
-            Birthday: {format(dob!, "MM/dd/yy")}
+            Birthday: {format(generalInfo.dob, "MM/dd/yy")}
           </div>
         )}
 

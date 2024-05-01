@@ -9,6 +9,7 @@ import { TopMenu } from "./components/top-menu";
 
 const SalesPage = async () => {
   const user = await currentUser();
+
   if (!user) return null;
   const leads = await leadsGetAllByAgentId(user.id!);
   const pipelines = await pipelineGetAllByAgentId(user.id!);
