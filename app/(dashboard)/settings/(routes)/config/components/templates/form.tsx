@@ -41,6 +41,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     image: string | undefined;
     filename: string | undefined;
   }>({ image: undefined, filename: undefined });
+  const imgPath = "/assets/templates/";
   const btnText = template ? "Update" : "Create";
 
   const form = useForm<TemplateFormValues>({
@@ -69,7 +70,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   };
   const onSubmit = async (values: TemplateFormValues) => {
     setLoading(true);
-    let newFileName = `/assets/templates/${file.filename}`;
+    let newFileName = `${imgPath}${file.filename}`;
 
     if (file.image) {
       values.attachment = newFileName;
@@ -118,6 +119,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <ImageUpload
+            filePath={imgPath}
             oldImage={template?.attachment}
             selectedImage={form.getValues("attachment")!}
             onImageUpdate={onImageUpdate}

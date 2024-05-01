@@ -2,7 +2,6 @@ import { ShortConversation } from "@/types";
 import { ConversationsClient } from "./components/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { conversationsGetByUserId } from "@/data/conversation";
-import Image from "next/image";
 import { EmptyCard } from "@/components/reusable/empty-card";
 
 const ConversationsPage = async () => {
@@ -31,18 +30,6 @@ const ConversationsPage = async () => {
               : "Start a new Conversation"
           }
         />
-        {/* <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
-          <CardContent className="flex-center flex-col h-full gap-2 text-muted-foreground opacity-50 overflow-hidden p-0">
-            <Image
-              height={80}
-              width={80}
-              className="w-[80px] h-[80px] grayscale"
-              src="/logo3.png"
-              alt="logo"
-            />
-            <h4>Select a Conversation</h4>
-          </CardContent>
-        </Card> */}
       </CardContent>
     </Card>
   );

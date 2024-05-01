@@ -130,10 +130,14 @@ export type LeadGeneralInfo = {
   gender: Gender;
   maritalStatus: MaritalStatus;
   dateOfBirth?: string;
-  weight?: string ;
+  weight?: string;
   height?: string ;
   income?: string;
   smoker: boolean;
+  leadName?:string;
+  lastCall?: Date;
+  nextAppointment?: Date;
+  dob?: Date;
 };
 
 export type LeadPolicyInfo = {

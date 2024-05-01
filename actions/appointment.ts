@@ -13,7 +13,7 @@ import {
 
 export const appointmentInsert = async (
   values: z.infer<typeof AppointmentSchema>,
-  sendSms: boolean = true
+  sendSms: boolean = false
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -46,7 +46,7 @@ export const appointmentInsert = async (
       data: { status: "Rescheduled" },
     });
   }
-const appointmentDate=new Date(date)
+const appointmentDate=date
   const appointment = await db.appointment.create({
     data: {
       agentId: userId,

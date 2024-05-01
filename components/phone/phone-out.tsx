@@ -103,6 +103,7 @@ export const PhoneOut = () => {
     });
 
     call.on("disconnect", onDisconnect);
+    userEmitter.emit("newCall", lead?.id!);
     setCall(call);
   };
 

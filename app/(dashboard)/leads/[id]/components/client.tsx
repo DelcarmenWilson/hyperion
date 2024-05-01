@@ -56,6 +56,9 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     height: lead.height || undefined,
     income: lead.income || undefined,
     smoker: lead.smoker,
+    leadName: leadName,
+    lastCall: lead?.calls[0].createdAt,
+    nextAppointment: lead?.appointments[0].date,
   };
 
   const leadPolicy: LeadPolicyInfo = {
@@ -99,13 +102,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
           <CallInfo info={lead} />
         </div>
         <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
-          <GeneralInfoClient
-            leadName={leadName}
-            info={leadInfo}
-            call={lead?.calls[lead.calls.length - 1]!}
-            appointment={lead?.appointments[lead.appointments.length - 1]!}
-            showInfo
-          />
+          <GeneralInfoClient info={leadInfo} showInfo />
           <PolicyInfoClient leadName={leadName} info={leadPolicy} />
         </div>
       </div>

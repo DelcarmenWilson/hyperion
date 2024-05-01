@@ -4,19 +4,18 @@ export type ItemProps = {
 };
 
 export type FileRecords = {
-  files:File[]
-  path: string;
   id: string;
+  path: string;
   type: string;
+  files:File[]
   oldFile?:string;
   fileNames?: string[];
 };
 
 export type FileRecord = {
-  file:File
-  path: string;
   id: string;
-  type: string;
+  path: string;
+  file:File
   oldFile?:string;
 };
 

@@ -80,11 +80,7 @@ export const AppointmentForm = () => {
     setCalOpen(false);
   };
 
-  const onCancel = () => {
-    if (onClose) {
-      onClose();
-    }
-  };
+  const onCancel = () => onClose();
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -106,6 +102,7 @@ export const AppointmentForm = () => {
         userEmitter.emit("appointmentScheduled", data.success.appointment);
         userEmitter.emit("messageInserted", data.success.message!);
         toast.success("Appointment scheduled!");
+        onCancel();
       }
       if (data.error) {
         toast.error(data.error);

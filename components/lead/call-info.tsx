@@ -29,9 +29,9 @@ interface CallInfoProps {
 export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
   const usePm = usePhone();
   const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
-  const leadcount = info.calls?.filter((e) => e.direction == "outbound");
+  const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;
 
-  const [callCount, setCallCount] = useState(leadcount?.length || 0);
+  const [callCount, setCallCount] = useState(leadcount || 0);
   const { leadStatus } = useGlobalContext();
 
   const onStatusUpdated = (e: string) => {
@@ -78,9 +78,20 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
         });
       }
     };
+    const onSetCallCount = (leadId: string) => {
+      if (leadId == info.id) setCallCount((ct) => ct + 1);
+    };
+
     userEmitter.on("leadStatusChanged", (leadId, newStatus) =>
       onLeadStatusChanged(leadId, newStatus)
     );
+    userEmitter.on("newCall", (leadId) => onSetCallCount(leadId));
+    return () => {
+      userEmitter.off("leadStatusChanged", (leadId, newStatus) =>
+        onLeadStatusChanged(leadId, newStatus)
+      );
+      userEmitter.off("newCall", (leadId) => onSetCallCount(leadId));
+    };
   }, [info]);
 
   return (

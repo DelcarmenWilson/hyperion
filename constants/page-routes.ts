@@ -8,6 +8,7 @@ import {
   ComputerIcon,
   DollarSign,
   Facebook,
+  Folder,
   Globe2,
   Heading,
   Home,
@@ -84,6 +85,11 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Tasks",
     href: "/admin/tasks",
     icon: ListTodo,
+  },
+  {
+    title: "Temp Folder",
+    href: "/admin/temp-folder",
+    icon: Folder,
   },
 ];
 

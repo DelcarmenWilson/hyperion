@@ -10,12 +10,14 @@ import { Button } from "../ui/button";
 
 type ImageUploadProps = {
   selectedImage: string;
+  filePath?: string;
   oldImage?: string | null;
   onImageUpdate: (imageUrl: string, image: string, filename: string) => void;
   onImageRemove: () => void;
 };
 export const ImageUpload = ({
   selectedImage,
+  filePath = "/assets/temp",
   oldImage,
   onImageUpdate,
   onImageRemove,
@@ -28,7 +30,7 @@ export const ImageUpload = ({
       const formData = new FormData();
       formData.append("id", uuidv4());
       formData.append("image", file);
-      formData.append("filePath", "assets/temp");
+      formData.append("filePath", filePath);
       if (oldImage) formData.append("oldFile", oldImage);
       setLoading(true);
       axios.post("/api/upload/image", formData).then((response) => {
@@ -46,7 +48,6 @@ export const ImageUpload = ({
     }
   };
   const onImageRemoved = () => {
-    setLoading(true);
     setLoading(true);
     axios.put("/api/upload/image", { oldFile: image }).then((response) => {
       const data = response.data;
