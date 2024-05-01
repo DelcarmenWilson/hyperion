@@ -112,7 +112,6 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "appointment",
     header: "",
     cell: ({ row }) => {
-      console.log(row.original.calls);
       const leadInfo: LeadGeneralInfo = {
         id: row.original.id,
         gender: row.original.gender,
