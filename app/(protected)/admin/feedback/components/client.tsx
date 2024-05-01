@@ -28,25 +28,30 @@ export const FeedbacksClient = ({ feedbacks }: FeedbacksClientProps) => {
   };
   return (
     <>
-      <div className="flex items-center gap-2 my-2">
-        <span className="text-sm text-muted-foreground">Status</span>
-        <Select
-          name="ddlStatus"
-          onValueChange={onSetStatus}
-          defaultValue={status}
-        >
-          <SelectTrigger className=" w-1/3">
-            <SelectValue placeholder="Select a status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="%">All</SelectItem>
-            <SelectItem value="New">New</SelectItem>
-            <SelectItem value="In Progress">In Progress</SelectItem>
-            <SelectItem value="Resolved">Resolved</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <DataTable columns={columns} data={currentFeedbacks} />
+      <DataTable
+        columns={columns}
+        data={currentFeedbacks}
+        topMenu={
+          <div className="flex items-center gap-2 my-2">
+            <span className="text-sm text-muted-foreground">Status</span>
+            <Select
+              name="ddlStatus"
+              onValueChange={onSetStatus}
+              defaultValue={status}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="%">All</SelectItem>
+                <SelectItem value="New">New</SelectItem>
+                <SelectItem value="In Progress">In Progress</SelectItem>
+                <SelectItem value="Resolved">Resolved</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        }
+      />
     </>
   );
 };

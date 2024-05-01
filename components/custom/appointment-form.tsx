@@ -94,7 +94,7 @@ export const AppointmentForm = () => {
       comments: comments,
     };
 
-    await appointmentInsert(appointment).then((data) => {
+    appointmentInsert(appointment).then((data) => {
       if (data.success) {
         setAppointments((apps) => {
           return [...apps!, data.success.appointment];

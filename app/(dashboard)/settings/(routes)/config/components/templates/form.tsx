@@ -41,7 +41,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     image: string | undefined;
     filename: string | undefined;
   }>({ image: undefined, filename: undefined });
-  const imgPath = "/assets/templates/";
+  const imgPath = "/assets/user-templates/";
   const btnText = template ? "Update" : "Create";
 
   const form = useForm<TemplateFormValues>({
@@ -89,17 +89,17 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     else {
       const data = await userTemplateInsert(values);
       if (data.success) {
-        if (file.image) {
-          await axios
-            .put("/api/upload/rename", {
-              oldFileName: file.image,
-              newFileName: newFileName,
-            })
-            .then((response) => {
-              const data = response.data;
-              if (data.error) toast.error(data.error);
-            });
-        }
+        // if (file.image) {
+        //   await axios
+        //     .put("/api/upload/rename", {
+        //       oldFileName: file.image,
+        //       newFileName: newFileName,
+        //     })
+        //     .then((response) => {
+        //       const data = response.data;
+        //       if (data.error) toast.error(data.error);
+        //     });
+        // }
         onCancel();
         userEmitter.emit("templateInserted", data.success);
         toast.success("Template created!");
