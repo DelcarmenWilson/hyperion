@@ -6,6 +6,7 @@ import { FullFeedback } from "@/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { format } from "date-fns";
+import { FeedbackActions } from "./actions";
 
 export const columns: ColumnDef<FullFeedback>[] = [
   {
@@ -66,9 +67,10 @@ export const columns: ColumnDef<FullFeedback>[] = [
     header: "Actions",
     id: "actions",
     cell: ({ row }) => (
-      <Button asChild>
-        <Link href={`/feedback/${row.original.id}`}>Details</Link>
-      </Button>
+      // <Button asChild>
+      //   <Link href={`/feedback/${row.original.id}`}>Details</Link>
+      // </Button>
+      <FeedbackActions feedback={row.original} />
     ),
   },
 ];

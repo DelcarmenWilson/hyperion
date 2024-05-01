@@ -8,10 +8,12 @@ import axios from "axios";
 import { toast } from "sonner";
 
 type TempFolderListProps = {
+  folder: string;
   initImages: string[];
   size?: string;
 };
 export const TempFolderList = ({
+  folder,
   initImages,
   size = "full",
 }: TempFolderListProps) => {
@@ -20,7 +22,7 @@ export const TempFolderList = ({
     setImages(initImages);
     const onSetImages = (id: string) => {
       axios
-        .put("/api/upload/image", { oldFile: `/assets/temp/${id}` })
+        .put("/api/upload/image", { oldFile: `/assets/${folder}/${id}` })
         .then((response) => {
           const data = response.data;
           if (data.success) {
@@ -45,7 +47,7 @@ export const TempFolderList = ({
           )}
         >
           {images.map((image, i) => (
-            <TempFolderCard key={i} image={image} />
+            <TempFolderCard key={i} folder={folder} image={image} />
           ))}
         </div>
       ) : (

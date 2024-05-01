@@ -4,6 +4,17 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { DevFeedbackSchema, FeedbackSchema } from "@/schemas";
 
+export const feedbackDeleteById = async (id: string) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
+  await db.feedback.delete({ where: { id } });
+
+  return { success: "Feedback has been deleted" };
+};
 export const feedbackInsert = async (
   values: z.infer<typeof FeedbackSchema>
 ) => {
@@ -20,7 +31,7 @@ export const feedbackInsert = async (
 
   const { headLine, page, feedback } = validatedFields.data;
 
-  const newFeedback=await db.feedback.create({
+  const newFeedback = await db.feedback.create({
     data: {
       userId: user.id,
       headLine,
@@ -46,13 +57,14 @@ export const feedbackUpdateById = async (
     return { error: "Unauthenticated!" };
   }
 
-  const { id,userId,headLine, page, feedback } = validatedFields.data;
-  
+  const { id, userId, headLine, page, feedback } = validatedFields.data;
+
   if (user?.id != userId) {
     return { error: "Unauthorized!" };
   }
 
-  await db.feedback.update({where:{id},
+  await db.feedback.update({
+    where: { id },
     data: {
       userId,
       headLine,
@@ -78,15 +90,17 @@ export const feedbackUpdateByIdDev = async (
     return { error: "Unauthenticated!" };
   }
 
-  const { id,status,comments } = validatedFields.data;
-  
+  const { id, status, comments } = validatedFields.data;
+
   if (user?.role != "MASTER") {
     return { error: "Unauthorized!" };
   }
 
-  await db.feedback.update({where:{id},
+  await db.feedback.update({
+    where: { id },
     data: {
-      status,comments
+      status,
+      comments,
     },
   });
 

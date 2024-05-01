@@ -5,11 +5,12 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type TempFolderCardProps = {
+  folder: string;
   image: string;
 };
 
-export const TempFolderCard = ({ image }: TempFolderCardProps) => {
-  const url = `/assets/temp/${image}`;
+export const TempFolderCard = ({ folder, image }: TempFolderCardProps) => {
+  const url = `/assets/${folder}/${image}`;
 
   const onImageDeleted = () => {
     adminEmitter.emit("tempImageDeleted", image);
