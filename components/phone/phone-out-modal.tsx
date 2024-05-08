@@ -9,7 +9,7 @@ export const PhoneOutModal = () => {
     usePhone();
   return (
     <DrawerRight
-      title="Dialer"
+      title="Phone"
       isOpen={isDialerOpen}
       onClose={onDialerClose}
       scroll={false}

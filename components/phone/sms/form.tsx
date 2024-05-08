@@ -35,12 +35,16 @@ import { ImageGrid } from "@/components/reusable/image-grid";
 import { usePhone } from "@/hooks/use-phone";
 import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "@/app/(dashboard)/settings/(routes)/config/components/templates/list";
+import { FullLeadNoConvo } from "@/types";
 
 type SmsFormValues = z.infer<typeof SmsMessageSchema>;
-
-export const SmsForm = () => {
+type SmsFormProps = {
+  conversationId?: string;
+  lead?: FullLeadNoConvo;
+};
+export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
   const { user, templates } = useGlobalContext();
-  const { lead } = usePhone();
+  //  const { lead, onSetLead } = usePhone();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,6 +54,7 @@ export const SmsForm = () => {
   const form = useForm<SmsFormValues>({
     resolver: zodResolver(SmsMessageSchema),
     defaultValues: {
+      conversationId: conversationId,
       leadId: lead?.id,
       content: "",
       type: "sms",
@@ -71,6 +76,7 @@ export const SmsForm = () => {
   const onSubmit = async (values: SmsFormValues) => {
     if (!lead?.id) {
       toast.error("Lead id is not supplied");
+      return;
     }
     setLoading(true);
     await smsCreate(values).then((data) => {

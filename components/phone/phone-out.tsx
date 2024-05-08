@@ -25,23 +25,28 @@ import {
   chatSettingsUpdateCoach,
   chatSettingsUpdateRecord,
 } from "@/actions/chat-settings";
+import { EmptyCard } from "../reusable/empty-card";
 
 export const PhoneOut = () => {
   const { update } = useSession();
   const user = useCurrentUser();
-  const { lead } = usePhone();
+  const { lead, currentCall } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
+  const [onCall, setOnCall] = useState(false);
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [empty, setEmpty] = useState(false);
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
     name: lead ? leadFullName : "New Call",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
-  const [record, setRecord] = useState(user?.record);
-  const [coach, setCoach] = useState(false);
+  const [settings, setSettings] = useState({
+    record: user?.record || false,
+    coach: false,
+  });
 
   const [selectedNumber, setSelectedNumber] = useState(
     user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
@@ -53,6 +58,7 @@ export const PhoneOut = () => {
 
   const startupClient = () => {
     if (!user?.phoneNumbers.length) {
+      setEmpty(true);
       console.log("no phone number has been set up");
       return;
     }
@@ -85,7 +91,7 @@ export const PhoneOut = () => {
       axios
         .post("/api/leads/details", { phone: reFormatPhoneNumber(to.number) })
         .then((response) => {
-          const { id, cellPhone, firstName, lastName } = response.data;
+          const { id, firstName, lastName } = response.data;
           if (id) {
             setTo((state) => {
               return { ...state, name: `${firstName} ${lastName}` };
@@ -97,18 +103,32 @@ export const PhoneOut = () => {
     const call = phone.connect({
       To: reFormatPhoneNumber(to.number),
       AgentNumber: selectedNumber as string,
-      Recording: record ? "record-from-answer-dual" : "do-not-record",
-      Coach: coach ? "on" : "off",
+      Recording: settings.record.toString(),
+      Coach: settings.coach ? "on" : "off",
       Direction: "outbound",
     });
 
+    if (settings.coach) {
+      console.log(call.parameters);
+      axios.post("/api/twilio/voice/conference", {
+        // conferenceId: user?.id as string,
+        conferenceId: call.parameters.CallSid,
+        from: selectedNumber as string,
+        to: reFormatPhoneNumber(to.number),
+        label: to.name,
+        record: settings.record,
+      });
+    }
+
     call.on("disconnect", onDisconnect);
     userEmitter.emit("newCall", lead?.id!);
+    setOnCall(true);
     setCall(call);
   };
 
   const onDisconnect = () => {
     call?.disconnect();
+    setOnCall(false);
     setCall(null);
   };
 
@@ -137,27 +157,28 @@ export const PhoneOut = () => {
   };
 
   const onRecordUpdate = () => {
-    setRecord((state) => !state);
-    update();
-    chatSettingsUpdateRecord(!record).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.error(data.success);
-      }
+    setSettings((settings) => {
+      update();
+      chatSettingsUpdateRecord(!settings.record).then((data) => {
+        if (data.error) toast.error(data.error);
+
+        if (data.success) toast.error(data.success);
+      });
+      return { ...settings, record: !settings.record };
     });
   };
 
   const onCoachUpdate = () => {
-    setCoach((state) => !state);
-    chatSettingsUpdateCoach(!coach).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.error(data.success);
-      }
+    setSettings((settings) => {
+      chatSettingsUpdateCoach(!settings.coach).then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+        }
+      });
+      return { ...settings, coach: !settings.coach };
     });
   };
 
@@ -182,112 +203,118 @@ export const PhoneOut = () => {
 
   useEffect(() => {
     startupClient();
-  }, []);
+    if (currentCall) {
+      toast.success(currentCall);
+    }
+  }, [currentCall]);
 
   return (
-    // <div className="flex flex-col gap-2 p-2">
     <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
-      <div className="flex justify-between items-center">
-        {to.name}
-        <Button
-          variant="outlineprimary"
-          size="sm"
-          onClick={() =>
-            setIsOpen((open) => {
-              userEmitter.emit("toggleLeadInfo", !open);
-              return !open;
-            })
-          }
-        >
-          LEAD INFO
-        </Button>
-      </div>
-      <div className="relative">
-        <Input
-          placeholder="Phone Number"
-          value={to.number}
-          maxLength={10}
-          onChange={(e) => onNumberTyped(e.target.value)}
-        />
-        <X
-          className={cn(
-            "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
-            to.number.length == 0 ? "opacity-0" : "opacity-100"
-          )}
-          onClick={onReset}
-        />
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="w-40">Caller Id</span>
-        <PhoneSwitcher
-          number={selectedNumber}
-          onSetDefaultNumber={setSelectedNumber}
-        />
-      </div>
-      {user?.role != "ASSISTANT" && (
-        <div className="flex  items-center text-sm gap-2">
-          <AlertCircle size={16} /> Call recording
-          <div className="ml-auto flex gap-2">
-            Off
-            <Switch
-              disabled={!!call}
-              checked={record}
-              onCheckedChange={onRecordUpdate}
-            />
-            On
-          </div>
-        </div>
-      )}
-      {/* <div className="flex items-center text-sm gap-2">
-        <AlertCircle className="h-4 w-4" /> Agent coaching
-        <div className="ml-auto flex gap-2">
-          Off{" "}
-          <Switch
-            disabled={!!call}
-            checked={coach}
-            onCheckedChange={onCoachUpdate}
-          />
-          On
-        </div>
-      </div> */}
-      <div className="grid grid-cols-3 gap-1">
-        {numbers.map((number) => (
-          <Button
-            key={number.value}
-            className="flex-col gap-1 h-14"
-            variant="outlineprimary"
-            onClick={() => onNumberClick(number.value)}
-          >
-            <p>{number.value}</p>
-            <p>{number.letters}</p>
-          </Button>
-        ))}
-      </div>
-      {!call ? (
-        <Button className="gap-2" disabled={!disabled} onClick={onStarted}>
-          <Phone size={16} /> Call
-        </Button>
+      {empty ? (
+        <EmptyCard title="No phone Number has been setup" />
       ) : (
-        <Button className="gap-2" variant="destructive" onClick={onDisconnect}>
-          <Phone size={16} /> Hang up
-        </Button>
-      )}
-      {call && (
-        <Button
-          className="gap-2"
-          variant={isCallMuted ? "destructive" : "outlinedestructive"}
-          onClick={onCallMuted}
-        >
-          {isCallMuted ? (
-            <>
-              <MicOff size={16} /> Muted
-            </>
+        <>
+          <div className="flex justify-between items-center">
+            {to.name}
+            <Button
+              variant="outlineprimary"
+              size="sm"
+              onClick={() =>
+                setIsOpen((open) => {
+                  userEmitter.emit("toggleLeadInfo", !open);
+                  return !open;
+                })
+              }
+            >
+              LEAD INFO
+            </Button>
+          </div>
+          <div className="relative">
+            <Input
+              placeholder="Phone Number"
+              value={to.number}
+              maxLength={10}
+              onChange={(e) => onNumberTyped(e.target.value)}
+            />
+            <X
+              className={cn(
+                "h-4 w-4 absolute right-2 top-0 translate-y-1/2 cursor-pointer transition-opacity ease-in-out",
+                to.number.length == 0 ? "opacity-0" : "opacity-100"
+              )}
+              onClick={onReset}
+            />
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="w-40">Caller Id</span>
+            <PhoneSwitcher
+              number={selectedNumber}
+              onSetDefaultNumber={setSelectedNumber}
+            />
+          </div>
+          <div className="grid grid-cols-2 text-sm gap-2">
+            {user?.role != "ASSISTANT" && (
+              <div className="flex items-center gap-2">
+                <AlertCircle size={16} /> Recording
+                <Switch
+                  disabled={!!call}
+                  checked={settings.record}
+                  onCheckedChange={onRecordUpdate}
+                />
+              </div>
+            )}
+            {/* <div className="flex items-center gap-2">
+              <AlertCircle size={16} /> Coaching
+              <Switch
+                disabled={!!call}
+                checked={settings.coach}
+                onCheckedChange={onCoachUpdate}
+              />
+            </div> */}
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            {numbers.map((number) => (
+              <Button
+                key={number.value}
+                className="flex-col gap-1 h-14"
+                variant="outlineprimary"
+                onClick={() => onNumberClick(number.value)}
+              >
+                <p>{number.value}</p>
+                <p>{number.letters}</p>
+              </Button>
+            ))}
+          </div>
+          {!onCall ? (
+            <Button className="gap-2" disabled={!disabled} onClick={onStarted}>
+              <Phone size={16} /> Call
+            </Button>
           ) : (
-            <>
-              <Mic size={16} /> Mute
-            </>
+            <Button
+              className="gap-2"
+              variant="destructive"
+              onClick={onDisconnect}
+            >
+              <Phone size={16} /> Hang up
+            </Button>
           )}
-        </Button>
+          {onCall && (
+            <Button
+              className="gap-2"
+              variant={isCallMuted ? "destructive" : "outlinedestructive"}
+              onClick={onCallMuted}
+            >
+              {isCallMuted ? (
+                <>
+                  <MicOff size={16} /> Muted
+                </>
+              ) : (
+                <>
+                  <Mic size={16} /> Mute
+                </>
+              )}
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

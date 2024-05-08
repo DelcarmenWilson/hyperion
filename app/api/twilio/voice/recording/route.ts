@@ -1,7 +1,7 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { client } from "@/lib/twilio-config";
+import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -24,8 +24,8 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    await pusherServer.trigger(call?.leadId, "calllog:new", call);
-    await pusherServer.trigger(call?.userId, "calllog:new", call);
+    // await pusherServer.trigger(call?.leadId, "calllog:new", call);
+    // await pusherServer.trigger(call?.userId, "calllog:new", call);
   }
   return new NextResponse("", { status: 200 });
 }

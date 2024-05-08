@@ -1,6 +1,6 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import { client } from "@/lib/twilio-config";
+import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

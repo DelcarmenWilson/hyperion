@@ -75,7 +75,7 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         Conversations
       </h4>
       <div className="flex-1 space-y-2 overflow-y-auto h-full">
-        {conversations.length > 1 ? (
+        {conversations.length > 0 ? (
           <>
             {conversations.map((conversation) => (
               <ConversationCard

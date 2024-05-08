@@ -33,7 +33,7 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
           leadName={conversation.lead.firstName}
           userName={user?.name as string}
         />
-        <SmsForm />
+        <SmsForm lead={conversation.lead} conversationId={conversation.id} />
       </CardContent>
     </Card>
   );

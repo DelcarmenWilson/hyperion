@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { cfg, client } from "@/lib/twilio-config";
-import axios from "axios";
-
-import path from "path";
-import { writeFile } from "fs/promises";
+import {  client } from "@/lib/twilio/config";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { from,to } = body;
 let results:any=[]
   await client.calls.list({ limit:20, }).then((recordings) =>
     recordings.forEach((r) => {

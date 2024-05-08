@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import { client } from "@/lib/twilio-config";
+import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 import twilio from "twilio";
 

@@ -60,7 +60,7 @@ export const notificationSettingsInsertAll = async () => {
   const role = await currentRole();
 
   if (role != "MASTER") {
-    return { error: "Unathorized!" };
+    return { error: "Unauthorized!" };
   }
 
   const notifications = await db.notificationSettings.findFirst();

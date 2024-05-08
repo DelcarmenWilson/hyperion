@@ -1,12 +1,23 @@
+
+"use server"
+import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
+import { UserPhoneNumberSchema } from "@/schemas";
 
-export const phoneNumberInsert = async (phone: string, state: string) => {
+export const phoneNumberInsert = async (values: z.infer<typeof UserPhoneNumberSchema>) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated!" };
   }
+  const validatedFields = UserPhoneNumberSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const {
+    state,phone
+  } = validatedFields.data;
 
   const existingPhoneNumber = await db.phoneNumber.findFirst({
     where: { phone },

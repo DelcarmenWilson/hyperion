@@ -130,7 +130,7 @@ export const SmsClient = ({
           userName={user?.name as string}
         />
       )}
-      <SmsForm />
+      <SmsForm lead={lead} />
     </div>
   );
 };

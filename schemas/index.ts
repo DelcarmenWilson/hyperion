@@ -259,6 +259,7 @@ export const MessageSchema = z.object({
 });
 
 export const SmsMessageSchema = z.object({
+  conversationId:z.optional(z.string()),
   leadId: z.optional(z.string()),
   content: z.string(),
   images: z.optional(z.string()),
@@ -318,7 +319,11 @@ export const LeadStatusSchema = z.object({
   status: z.string().min(2, "*"),
   description: z.optional(z.string()),
 });
-
+export const UserPhoneNumberSchema = z.object({
+  id: z.optional(z.string()),
+  phone: z.string().min(10,"10 digits requires ex. 7189892356"),
+  state: z.string().min(1,"Please select a State"),
+});
 export const UserLicenseSchema = z.object({
   id: z.optional(z.string()),
   state: z.string().min(2, "*"),

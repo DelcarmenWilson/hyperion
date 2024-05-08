@@ -29,9 +29,10 @@ export const CallHistoryClient = ({
 
   useEffect(() => {
     if (!user?.id) return;
-    pusherClient.subscribe(user?.id as string);
+    // pusherClient.subscribe(user?.id as string);
 
     const callHandler = (newCall: FullCall) => {
+      console.log("we are here");
       setCalls((current) => {
         if (find(current, { id: newCall.id })) {
           current.shift();
@@ -39,10 +40,10 @@ export const CallHistoryClient = ({
         return [newCall, ...current];
       });
     };
-    pusherClient.bind("calllog:new", callHandler);
+    // pusherClient.bind("calllog:new", callHandler);
     return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("calllog:new", callHandler);
+      // pusherClient.unsubscribe(user?.id as string);
+      // pusherClient.unbind("calllog:new", callHandler);
     };
   }, [leadId, user?.id]);
   return (

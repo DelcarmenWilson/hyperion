@@ -6,7 +6,7 @@ import { usePhone } from "@/hooks/use-phone";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useSidebar } from "@/store/use-sidebar";
-// import { MainNav } from "./main-nav";
+import { MainNav } from "./main-nav";
 type NavBarProps = {
   showPhone?: boolean;
 };
@@ -34,44 +34,7 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
             />
             <span className="hidden font-bold sm:inline-block">hyperion</span>
           </a>
-          {/* <nav className="flex items-center gap-4 text-sm lg:gap-6">
-            <a
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-              href="/docs"
-            >
-              Docs
-            </a>
-            <a
-              className="transition-colors hover:text-foreground/80 text-foreground"
-              href="/docs/components"
-            >
-              Components
-            </a>
-            <a
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-              href="/themes"
-            >
-              Themes
-            </a>
-            <a
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-              href="/examples"
-            >
-              Examples
-            </a>
-            <a
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-              href="/blocks"
-            >
-              Blocks
-            </a>
-            <a
-              className="hidden text-foreground/60 transition-colors hover:text-foreground/80 lg:block"
-              href="https://github.com/shadcn-ui/ui"
-            >
-              GitHub
-            </a>
-          </nav> */}
+          {/* <MainNav /> */}
         </div>
 
         {showPhone && (

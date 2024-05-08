@@ -8,7 +8,7 @@ import { messageInsert } from "./message";
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
-import { cfg, client } from "@/lib/twilio-config";
+import { cfg, client } from "@/lib/twilio/config";
 import { SmsMessageSchema } from "@/schemas";
 import { HyperionLead, Lead } from "@prisma/client";
 import { format } from "date-fns";
@@ -75,7 +75,8 @@ export const smsCreateInitial = async (leadId: string) => {
     )}  `;
   }
 
-  const conversationId = (await conversationInsert(user.id, lead.id)).success;
+  const conversationId = (await conversationInsert(user.id, lead.id, true))
+    .success;
 
   if (!conversationId) {
     return { error: "Conversation was not created" };
@@ -121,7 +122,9 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { leadId, content, images, type } = validatedFields.data;
+  const { conversationId, leadId, content, images, type } =
+    validatedFields.data;
+  console.log(validatedFields.data);
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
@@ -129,12 +132,10 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     return { error: "Lead does not exist" };
   }
 
-  const existingConversation = await db.conversation.findFirst({
-    where: {
-      lead: { id: lead.id },
-    },
-  });
-  let convoid = existingConversation?.id;
+  // const existingConversation= await db.conversation.findUnique({
+  //   where: { id:conversationId },
+  // });
+  let convoid = conversationId;
   if (!convoid) {
     convoid = (await conversationInsert(user.id, lead.id)).success;
   }
@@ -165,17 +166,37 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
 export const smsSend = async (
   fromPhone: string,
   toPhone: string,
-  message: string
+  message: string,
+  timer: number = 0
 ) => {
+
   if (!message) {
     return { error: "Message cannot be empty!" };
   }
 
-  const result = await client.messages.create({
-    body: message,
-    from: fromPhone,
-    to: toPhone,
-  });
+  let result;
+
+  if (timer > 900) {
+    const date = new Date();
+    date.setSeconds(date.getSeconds() + timer);
+    result = await client.messages.create({
+      body: message,
+      from: fromPhone,
+      to: toPhone,
+      messagingServiceSid:cfg.messageServiceSid,
+      sendAt: date,
+      scheduleType: "fixed",
+    });
+  } else {
+    setTimeout(async () => {
+      result = await client.messages.create({
+        body: message,
+        from: fromPhone,
+        to: toPhone,
+        applicationSid: cfg.twimlAppSid,
+      });
+    }, timer * 1000);
+  }
 
   if (!result) {
     return { error: "Message was not sent!" };
@@ -217,7 +238,6 @@ export const smsSendAgentAppointmentNotification = async (
     date,
     "hh:mm aa"
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
-  
 
   const result = await smsSend(
     lead.defaultNumber,
