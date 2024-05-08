@@ -262,14 +262,22 @@ export const PhoneOut = () => {
                 />
               </div>
             )}
+<<<<<<< HEAD
+            {/* <div className="flex items-center gap-2">
+=======
             <div className="flex items-center gap-2">
+>>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f
               <AlertCircle size={16} /> Coaching
               <Switch
                 disabled={!!call}
                 checked={settings.coach}
                 onCheckedChange={onCoachUpdate}
               />
+<<<<<<< HEAD
+            </div> */}
+=======
             </div>
+>>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f
           </div>
           <div className="grid grid-cols-3 gap-1">
             {numbers.map((number) => (

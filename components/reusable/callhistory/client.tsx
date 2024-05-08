@@ -11,7 +11,6 @@ import { DataTable } from "@/components/tables/data-table";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
 import { DatesFilter } from "../dates-filter";
-import socket from "@/lib/socket";
 
 type CallHistoryClientProps = {
   initialCalls: FullCall[];
@@ -42,7 +41,6 @@ export const CallHistoryClient = ({
       });
     };
     // pusherClient.bind("calllog:new", callHandler);
-    socket.on("new-call", callHandler);
     return () => {
       // pusherClient.unsubscribe(user?.id as string);
       // pusherClient.unbind("calllog:new", callHandler);

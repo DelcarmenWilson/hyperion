@@ -1,7 +1,6 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import socket from "@/lib/socket";
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 
@@ -25,8 +24,6 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    console.log("new call should emit")    
-    socket.emit('new-call',call)
     // await pusherServer.trigger(call?.leadId, "calllog:new", call);
     // await pusherServer.trigger(call?.userId, "calllog:new", call);
   }

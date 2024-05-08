@@ -34,7 +34,11 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
             />
             <span className="hidden font-bold sm:inline-block">hyperion</span>
           </a>
+<<<<<<< HEAD
+          {/* <MainNav /> */}
+=======
           <MainNav />
+>>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f
         </div>
 
         {showPhone && (
