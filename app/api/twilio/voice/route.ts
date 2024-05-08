@@ -2,10 +2,6 @@ import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { voiceResponse } from "@/lib/twilio/handler";
 import { pusherServer } from "@/lib/pusher";
-<<<<<<< HEAD
-=======
-import socket from "@/lib/socket";
->>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f
 
 import { NextResponse } from "next/server";
 import { TwilioCall } from "@/types/twilio";
@@ -65,11 +61,6 @@ export async function POST(req: Request) {
   }
   call.callerName=`${lead?.firstName} ${lead?.lastName}`
   if (lead?.id) {
-<<<<<<< HEAD
-=======
-    console.log("new call should emit")    
-    socket.emit('new-call',newCall)
->>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f
     //  await pusherServer.trigger(lead?.id, "call:new", newCall);
   }
 

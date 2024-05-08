@@ -1,10 +1,6 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-<<<<<<< HEAD:app/api/twilio/voice/recording/route.ts
-=======
-import socket from "@/lib/socket";
->>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f:app/api/voice/recording/route.ts
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 
@@ -28,11 +24,6 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-<<<<<<< HEAD:app/api/twilio/voice/recording/route.ts
-=======
-    console.log("new call should emit")    
-    socket.emit('new-call',call)
->>>>>>> 1f8d0c608473700a8d6b7aada66aa5d47418dc6f:app/api/voice/recording/route.ts
     // await pusherServer.trigger(call?.leadId, "calllog:new", call);
     // await pusherServer.trigger(call?.userId, "calllog:new", call);
   }
