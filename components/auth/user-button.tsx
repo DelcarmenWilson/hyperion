@@ -1,5 +1,7 @@
 "use client";
 import { Cog, Lock, LogOut, User } from "lucide-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { LogoutButton } from "./logout-button";
 import { useRouter } from "next/navigation";
 

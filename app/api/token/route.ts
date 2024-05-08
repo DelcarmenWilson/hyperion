@@ -1,4 +1,4 @@
-import { tokenGenerator } from "@/lib/handler";
+import { tokenGenerator } from "@/lib/twilio/handler";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

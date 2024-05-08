@@ -1,6 +1,6 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import {  hangupReponse, voicemailResponse } from "@/lib/handler";
+import {  hangupReponse, voicemailResponse } from "@/lib/twilio/handler";
 
 import { NextResponse } from "next/server";
 const callStatus = ["busy", "no-answer", "canceled", "failed"];

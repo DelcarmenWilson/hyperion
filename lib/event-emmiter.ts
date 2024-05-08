@@ -42,6 +42,11 @@ type UserEvents = {
   templateUpdated: [info: UserTemplate];
   templateSelected: [info: UserTemplate];
 
+
+  //CONFERENCE AND PARTICIPANTS
+  participantsFetch: [conferenceId: string];
+  joinCall:[callSid:string]
+  
   userLeadStatusDeleted: [id: string];
   userLeadStatusInserted: [info: LeadStatus];
   userLeadStatusUpdated: [info: LeadStatus];

@@ -24,7 +24,7 @@ export const MessageCard = ({ message, username }: MessageCardProps) => {
   return (
     <div className={cn("flex flex-col group mb-2", isOwn.pos && "items-end")}>
       <div className=" text-xs italic px-2">
-        <span>{username}</span> -
+        <span>{username}</span>{" "}
         <span className=" text-muted-foreground">
           {formatDistance(message.createdAt, new Date(), {
             addSuffix: true,

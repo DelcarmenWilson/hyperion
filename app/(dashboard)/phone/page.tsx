@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { MyPhoneNumbers } from "./components/my-phone-numbers";
-import { PurchasePhoneNumbers } from "./components/purchase-phone-numbers";
+import { PurchasePhoneNumberForm } from "./components/purchase-phone-numbers";
 import { phoneNumbersGetByAgentId } from "@/data/phonenumber";
 
 const PhonePage = async () => {
@@ -8,7 +8,7 @@ const PhonePage = async () => {
   const phoneNumbers = await phoneNumbersGetByAgentId(user?.id as string);
   return (
     <div className="flex flex-col gap-3">
-      <PurchasePhoneNumbers />
+      <PurchasePhoneNumberForm />
       <MyPhoneNumbers phoneNumbers={phoneNumbers} />
     </div>
   );

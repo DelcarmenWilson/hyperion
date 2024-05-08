@@ -11,34 +11,41 @@ import {
 import { MdDialpad } from "react-icons/md";
 import { toast } from "sonner";
 
-import { useSession } from "next-auth/react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
-import { Switch } from "@/components/ui/switch";
-import { chatSettingsUpdateRecord } from "@/actions/chat-settings";
+import { DialerSettingsType } from "@/types";
+import { DialerSettings } from "./settings";
 
 type DialerMenuProps = {
   setIndex: (e?: boolean) => void;
 };
 export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
   const user = useCurrentUser();
-  const { update } = useSession();
-  const { onPhoneDialerClose, leads, lead, pipeline, pipIndex } = usePhone();
+  const {
+    onPhoneDialerClose,
+    leads,
+    lead,
+    pipeline,
+    pipeIndex: pipIndex,
+  } = usePhone();
 
-  const [dialMatrix, setDialMatrix] = useState(2);
   const [dialNumber, setDialNumber] = useState(1);
   const [dialing, setDialing] = useState(false);
 
   // PHONE VARIABLES
   const { phone, call, setCall } = usePhoneContext();
-  const [record, setRecord] = useState(user?.record);
+  const [settings, setSettings] = useState<DialerSettingsType>({
+    record: user?.record || true,
+    matrix: 3,
+    pause: 5,
+  });
+
   const [coach, setCoach] = useState(false);
   const [isCallMuted, setIsCallMuted] = useState(false);
 
@@ -61,24 +68,10 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     const agentNumber =
       user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone;
-    // console.log(
-    //   "agentNumber:",
-    //   agentNumber,
-    //   "leadNumber",
-    //   lead.cellPhone,
-    //   "leadsLength:",
-    //   leads?.length,
-    //   "dialMatrix",
-    //   dialMatrix,
-    //   "dialNumber",
-    //   dialNumber,
-    //   "pipIndex",
-    //   pipIndex
-    // );
     const call = phone.connect({
       To: reFormatPhoneNumber(lead.cellPhone),
       AgentNumber: agentNumber,
-      Recording: record ? "record-from-answer-dual" : "do-not-record",
+      Recording: settings.record ? "record-from-answer-dual" : "do-not-record",
       Coach: coach ? "on" : "off",
       Direction: "outbound",
     });
@@ -92,14 +85,14 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     let dial = true;
     setDialNumber((num) => {
       const newNum = num + 1;
-      if (pipIndex == leads?.length! - 1 && newNum > dialMatrix) {
+      if (pipIndex == leads?.length! - 1 && newNum > settings.matrix) {
         dial = false;
         onStopDailing();
         onReset();
         toast.success("stage completed!");
         return 1;
       }
-      if (newNum > dialMatrix) {
+      if (newNum > settings.matrix) {
         setIndex();
         return 1;
       }
@@ -134,19 +127,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     setIndex();
   };
 
-  const onRecordUpdate = () => {
-    setRecord((state) => !state);
-    update();
-    chatSettingsUpdateRecord(!record).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.error(data.success);
-      }
-    });
-  };
-
   const onReset = () => {
     setIndex(true);
   };
@@ -177,21 +157,12 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
             {formatPhoneNumber(lead?.cellPhone as string) || ""}
           </span>
         </div>
-        <div className="flex gap-2">
-          {user?.role != "ASSISTANT" && (
-            <div className="flex items-center text-sm gap-2">
-              Recording
-              <Switch
-                disabled={dialing}
-                checked={record}
-                onCheckedChange={onRecordUpdate}
-              />
-            </div>
-          )}
+        <div className="flex gap-2 items-start">
           {!dialing && (
             <>
               <Button
                 variant="outlineprimary"
+                size="sm"
                 className="gap-2"
                 onClick={onReset}
               >
@@ -200,6 +171,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
               <Button
                 disabled={pipIndex >= leads?.length! - 1}
                 className="gap-2"
+                size="sm"
                 onClick={() => onNextLead()}
               >
                 <ArrowRightCircle size={16} /> Next Lead
@@ -212,6 +184,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
             <>
               <Button
                 className="gap-2"
+                size="sm"
                 variant={isCallMuted ? "destructive" : "outlinedestructive"}
                 onClick={onCallMuted}
               >
@@ -228,6 +201,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
               <Button
                 variant="destructive"
                 className="gap-2"
+                size="sm"
                 onClick={onNextCall}
               >
                 <Phone size={16} /> Nex Call
@@ -236,22 +210,21 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <span>Dial Matrix</span>
-          <Input
-            className="w-15"
+          <DialerSettings
             disabled={dialing}
-            value={dialMatrix}
-            onChange={(e) => setDialMatrix(parseInt(e.target.value))}
-            type="number"
+            settings={settings}
+            setSettings={setSettings}
           />
           {dialing ? (
-            <Button variant="destructive" onClick={onStopDailing}>
+            <Button variant="destructive" size="sm" onClick={onStopDailing}>
               Stop Dialing
             </Button>
           ) : (
-            <Button onClick={onStartDialing}>Start Dialing</Button>
+            <Button size="sm" onClick={onStartDialing}>
+              Start Dialing
+            </Button>
           )}
-          <Button disabled={dialing} size="icon" onClick={onPhoneDialerClose}>
+          <Button disabled={dialing} size="sm" onClick={onPhoneDialerClose}>
             <X size={16} />
           </Button>
         </div>

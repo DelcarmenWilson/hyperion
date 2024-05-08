@@ -1,4 +1,4 @@
-import { cfg, client } from "@/lib/twilio-config";
+import {  client } from "@/lib/twilio/config";
 //DATA
 export const callsGetTwilio = async () => {
   //THIS IS A TEST DONT FORGET TO REMOVE

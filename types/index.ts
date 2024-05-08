@@ -75,7 +75,7 @@ export type FullConversation = Conversation & {
 };
 
 export type LeadPolicyType = Lead & {
-  policy?: LeadPolicy|null;
+  policy?: LeadPolicy | null;
 };
 export type LeadConversationType = Conversation & {
   lead: Lead;
@@ -91,10 +91,10 @@ export type FullLeadNoConvo = Lead & {
   calls: Call[];
   appointments: Appointment[];
   activities?: Activity[];
-  beneficiaries?:LeadBeneficiary[],
-  expenses?:LeadExpense[]
-  conditions?:FullLeadMedicalCondition[]
-  policy:LeadPolicy|null;
+  beneficiaries?: LeadBeneficiary[];
+  expenses?: LeadExpense[];
+  conditions?: FullLeadMedicalCondition[];
+  policy: LeadPolicy | null;
 };
 
 export type FullLead = Lead & {
@@ -102,28 +102,27 @@ export type FullLead = Lead & {
   calls: Call[];
   appointments: Appointment[];
   activities: Activity[];
-  beneficiaries?:LeadBeneficiary[];
-  expenses?:LeadExpense[];
-  conditions?:FullLeadMedicalCondition[];
-  policy:LeadPolicy|null;
+  beneficiaries?: LeadBeneficiary[];
+  expenses?: LeadExpense[];
+  conditions?: FullLeadMedicalCondition[];
+  policy: LeadPolicy | null;
 };
 export type FullLeadMedicalCondition = LeadMedicalCondition & {
-  condition:MedicalCondition
+  condition: MedicalCondition;
 };
 
 export type LeadMainInfo = {
-  id: string;   
-  firstName: string ;
-  lastName: string ;
-  cellPhone: string ;
-  email?: string ;
-  address?: string ;
-  city?: string ;
-  state: string ;
-  zipCode?: string ;  
-  status:string;
-  quote: string ;
-
+  id: string;
+  firstName: string;
+  lastName: string;
+  cellPhone: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state: string;
+  zipCode?: string;
+  status: string;
+  quote: string;
 };
 export type LeadGeneralInfo = {
   id: string;
@@ -131,10 +130,10 @@ export type LeadGeneralInfo = {
   maritalStatus: MaritalStatus;
   dateOfBirth?: string;
   weight?: string;
-  height?: string ;
+  height?: string;
   income?: string;
   smoker: boolean;
-  leadName?:string;
+  leadName?: string;
   lastCall?: Date;
   nextAppointment?: Date;
   dob?: Date;
@@ -142,15 +141,15 @@ export type LeadGeneralInfo = {
 
 export type LeadPolicyInfo = {
   leadId: string;
-  carrier:string
-  policyNumber:string
-  status:string;
-  ap: string ;
-  commision: string ;
+  carrier: string;
+  policyNumber: string;
+  status: string;
+  ap: string;
+  commision: string;
   coverageAmount: string;
-  startDate?:Date;
-  createdAt:Date;
-  updatedAt:Date;
+  startDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type PhoneType = {
@@ -166,9 +165,9 @@ export type FullCall = Call & {
     cellPhone: string;
     email: string | null;
   } | null;
-  user?:{
-    firstName:string
-  }
+  user?: {
+    firstName: string;
+  };
 };
 
 export type FullAppointment = Appointment & {
@@ -208,7 +207,41 @@ export type FullUserCarrier = UserCarrier & {
 
 export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
-  policy?:LeadPolicy| null;
+  policy?: LeadPolicy | null;
 };
 
+//DAILER SETTINGS
+export type DialerSettingsType = {
+  record: boolean;
+  matrix: number;
+  pause: number;
+};
 
+//CONFERENCE & PARTICIPANTS
+export type ConferenceType = {
+  accountSid: string;
+  dateCreated: Date;
+  dateUpdated: Date;
+  apiVersion: string;
+  friendlyName: string;
+  sid: string;
+  status: string;
+  uri: string;
+};
+
+export type ParticipantType = {
+  accountSid: string;
+  callSid: string;
+  label: string | null;
+  callSidToCoach: string | null;
+  coaching: boolean;
+  conferenceSid: string;
+  dateCreated: Date;
+  dateUpdated: Date;
+  endConferenceOnExit: boolean;
+  muted: boolean;
+  hold: boolean;
+  startConferenceOnEnter: boolean;
+  status: string;
+  uri: string;
+};

@@ -92,6 +92,29 @@ export const leadGetById = async (id: string) => {
     return null;
   }
 };
+export const leadGetByPhone = async (cellPhone: string) => {
+  try {
+    const lead = await db.lead.findFirst({
+      where: {
+        cellPhone,
+      },
+      include: {
+        conversation: true,
+        appointments: { orderBy: { date: "desc" } },
+        calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
+        activities: { orderBy: { createdAt: "desc" } },
+        expenses: true,
+        beneficiaries: true,
+        conditions: { include: { condition: true } },
+        policy:true        
+      },
+    });
+
+    return lead;
+  } catch {
+    return null;
+  }
+};
 
 export const leadGetPrevNextById = async (id: string) => {
   try {

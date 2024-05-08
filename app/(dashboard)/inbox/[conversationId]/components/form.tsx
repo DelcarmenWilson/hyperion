@@ -30,7 +30,7 @@ export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
     // console.log(data);
     // return;
     axios
-      .post("/api/sms/out", {
+      .post("/api/twilio/sms/out", {
         ...data,
         conversationId,
         phone,

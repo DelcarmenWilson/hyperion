@@ -1,9 +1,21 @@
 "use client";
+import * as z from "zod";
 import { useState } from "react";
 import { Check, HelpCircle, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { UserPhoneNumberSchema } from "@/schemas";
+
+import {
+  Form,
+  FormField,
+  FormControl,
+  FormLabel,
+  FormMessage,
+  FormItem,
+} from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -20,39 +32,72 @@ import { isAValidPhoneNumber } from "@/formulas/phones";
 import { phoneNumberInsert } from "@/actions/phonenumber";
 import { states } from "@/constants/states";
 import { CardLayout } from "@/components/custom/card/layout";
-import { PhonePurcahseItems } from "@/constants/phone";
+import { PhonePurcahseItems as PhonePurchaseItems } from "@/constants/phone";
 import { ItemProps } from "@/types/item";
 
-export const PurchasePhoneNumbers = () => {
+type PurchasePhoneNumberFormValues = z.infer<typeof UserPhoneNumberSchema>;
+export const PurchasePhoneNumberForm = () => {
   const [stateSelected, setStateSelected] = useState("");
   const [numberSelected, setNumberSelected] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onPurchaseNumber = () => {
-    if (!stateSelected) {
-      toast.error("Please select a State");
-      return;
-    }
+  const form = useForm<PurchasePhoneNumberFormValues>({
+    resolver: zodResolver(UserPhoneNumberSchema),
+    defaultValues: {},
+  });
 
-    if (numberSelected.length < 10) {
-      toast.error("10 digits requires ex. 7189892356");
-      return;
-    }
-    if (!isAValidPhoneNumber(numberSelected)) {
-      toast.error("Not a valid phone number");
-      return;
-    }
+  const onCancel = () => {
+    form.clearErrors();
+    form.reset();
+  };
 
-    phoneNumberInsert(numberSelected, stateSelected).then((data) => {
+  const onSubmit = (values: PurchasePhoneNumberFormValues) => {
+    setLoading(true);
+    phoneNumberInsert(values).then((data) => {
+      if (data.success) {
+        // userEmitter.emit("policyInfoUpdated", {
+        //   ...data.success,
+        //   startDate: data.success?.startDate || undefined,
+        // });
+        // userEmitter.emit("leadStatusChanged", data.success.leadId, "Sold");
+
+        toast.success(data.success);
+      }
       if (data.error) {
+        form.reset();
         toast.error(data.error);
       }
-      if (data.success) {
-        toast.success(data.success);
-        setStateSelected("");
-        setNumberSelected("");
-      }
     });
+
+    setLoading(false);
   };
+
+  // const onPurchaseNumber = () => {
+  //   if (!stateSelected) {
+  //     toast.error("Please select a State");
+  //     return;
+  //   }
+
+  //   if (numberSelected.length < 10) {
+  //     toast.error("10 digits requires ex. 7189892356");
+  //     return;
+  //   }
+  //   if (!isAValidPhoneNumber(numberSelected)) {
+  //     toast.error("Not a valid phone number");
+  //     return;
+  //   }
+
+  //   phoneNumberInsert(numberSelected, stateSelected).then((data) => {
+  //     if (data.error) {
+  //       toast.error(data.error);
+  //     }
+  //     if (data.success) {
+  //       toast.success(data.success);
+  //       setStateSelected("");
+  //       setNumberSelected("");
+  //     }
+  //   });
+  // };
   return (
     <CardLayout title="Purchase Phone Numbers" icon={Phone}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
@@ -72,14 +117,15 @@ export const PurchasePhoneNumbers = () => {
             Select all States
           </p>
 
-          <Select
+          {/* <Select
             name="ddlState"
+            disabled={loading}
             onValueChange={(value) => setStateSelected(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select States you want phone numbers in" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent >
               {states.map((state) => (
                 <SelectItem key={state.abv} value={state.abv}>
                   {state.state}
@@ -91,19 +137,92 @@ export const PurchasePhoneNumbers = () => {
           <Input
             placeholder="Phone number"
             onChange={(e) => setNumberSelected(e.target.value)}
-          />
-          <Button
+          /> */}
+
+          <Form {...form}>
+            <form
+              className="space-y-2 px-2 w-full"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              {/* STATE */}
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem className=" col-span-2">
+                    <FormLabel>State</FormLabel>
+                    <Select
+                      name="ddlState"
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select States you want phone numbers in" />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent>
+                        {states.map((state) => (
+                          <SelectItem key={state.abv} value={state.abv}>
+                            {state.state}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* PHONE NUMBER */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Phone number"
+                        disabled={loading}
+                        type="number"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+                <Button
+                  onClick={onCancel}
+                  type="button"
+                  variant="outlineprimary"
+                >
+                  Cancel
+                </Button>
+                <Button disabled={loading} type="submit">
+                  Purchase
+                </Button>
+
+                {/* <Button
             disabled={!numberSelected}
             className="mt-4 self-end"
             onClick={onPurchaseNumber}
           >
             Purchase
-          </Button>
+          </Button> */}
+              </div>
+            </form>
+          </Form>
         </div>
         <div className="flex flex-col gap-2">
           <h4 className="font-bold text-primary">Yes you can</h4>
           <div className="flex flex-col gap-1 font-light text-sm">
-            {PhonePurcahseItems.map((item, i) => (
+            {PhonePurchaseItems.map((item, i) => (
               <Item key={i} text={item.text} />
             ))}
           </div>

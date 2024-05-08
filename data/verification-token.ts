@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { tokenGenerator } from "@/lib/handler";
+import { tokenGenerator } from "@/lib/twilio/handler";
 
 export const getVerificationTokenByToken = async (token: string) => {
   try {

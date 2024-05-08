@@ -20,7 +20,7 @@ export const PhoneDialerModal = () => {
     leads,
     lead,
     pipeline,
-    pipIndex,
+    pipeIndex: pipIndex,
   } = usePhone();
 
   const indexRef = useRef<HTMLDivElement>(null);

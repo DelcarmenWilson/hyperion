@@ -1,5 +1,4 @@
 "use server";
-
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
@@ -105,6 +104,8 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
         dateOfBirth,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         userId: user.id,
+        height:"",
+        weight:""
       },
     });
   }

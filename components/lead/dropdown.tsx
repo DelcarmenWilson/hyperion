@@ -142,7 +142,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
           {conversation?.id && (
             <DropdownMenuItem
               className={cn(
-                " text-background cursor-pointer fap-2",
+                " text-background cursor-pointer gap-2",
                 autoChat ? "bg-primary" : "bg-destructive"
               )}
               onClick={onHyperChatToggle}

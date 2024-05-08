@@ -1,4 +1,4 @@
-import { client } from "@/lib/twilio-config";
+import { client } from "@/lib/twilio/config";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { format } from "date-fns";
