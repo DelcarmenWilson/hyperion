@@ -1,11 +1,11 @@
-import { db } from "@/lib/db";
+import { leadGetByPhone } from "@/data/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { phone } = body;
-    const lead = await db.lead.findFirst({ where: { cellPhone: phone } });    
+    const lead = await leadGetByPhone(phone)  
     
     if(!lead){
       return NextResponse.json({});

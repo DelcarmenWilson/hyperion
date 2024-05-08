@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/auth";
 export const conversationInsert = async (
   userId: string,
   leadId: string,
+  autoChat:boolean=false
 ) => {
   if (!userId) {
     return { error: "User id is Required!" };
@@ -17,7 +18,8 @@ export const conversationInsert = async (
   const conversation = await db.conversation.create({
     data: {
       leadId,
-      agentId:userId
+      agentId:userId,
+      autoChat
     },
   });
 

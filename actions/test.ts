@@ -1,5 +1,5 @@
 "use server";
-import { cfg, client } from "@/lib/twilio-config";
+import {  client } from "@/lib/twilio/config";
 
 export const creatCall = async () => {
     const call = await client.calls.create({
@@ -16,7 +16,7 @@ export const creatCall = async () => {
   //       {
   //         callerId: call.from,
   //         record: "record-from-answer-dual",
-  //         recordingStatusCallback: "/api/voice/recording",
+  //         recordingStatusCallback: "/api/twilio/voice/recording",
   //       },
   //       call.to
   //     );

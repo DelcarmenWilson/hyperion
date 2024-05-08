@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { client } from "@/lib/twilio-config";
+import { client } from "@/lib/twilio/config";
 import { currentRole } from "@/lib/auth";
 import {  phoneNumberInsertTwilio } from "@/actions/phonenumber";
 

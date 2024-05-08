@@ -1,4 +1,6 @@
 "use client";
+
+import { Connection } from "twilio-client";
 import { Fragment, useEffect, useState } from "react";
 import {
   Phone,
@@ -8,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import axios from "axios";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -24,8 +27,13 @@ import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
 import { cn } from "@/lib/utils";
 import { PhoneLeadInfo } from "./addins/lead-info";
+import { ConferenceType } from "@/types";
+import { ConferenceList } from "./conference/list";
+import { ParticipantList } from "./participant/list";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export const PhoneInModal = () => {
+  const user = useCurrentUser();
   const { isPhoneInOpen, onPhoneInClose, onPhoneInOpen, onSetLead, lead } =
     usePhone();
   const { phone, call, setCall } = usePhoneContext();
@@ -34,12 +42,15 @@ export const PhoneInModal = () => {
 
   // PHONE VARIABLES
   // const [call, setInComingCall] = useState<Connection>();
-  const [isCallAccepted, setIsCallAccepted] = useState(false);
+  const [onCall, setOnCall] = useState(false);
   const [from, setFrom] = useState<{ name: string; number: string }>();
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
 
-  function addDeviceListeners() {
+  const [conferences, setConferences] = useState<ConferenceType[]>();
+  const [participants, setParticipants] = useState();
+
+  const addDeviceListeners = () => {
     if (!phone) return;
     phone.on("ready", function () {
       console.log("ready");
@@ -49,57 +60,83 @@ export const PhoneInModal = () => {
       console.log(error);
     });
 
-    phone.on("incoming", async function (call: any) {
-      call.on("disconnect", function (error: any) {
-        onIncomingCallDisconnect();
+    phone.on("incoming", async function (incomingCall: Connection) {
+      if (phone.status() == "busy") {
+        incomingCall?.reject();
+        return;
+      }
+
+      incomingCall.on("disconnect", function (error: any) {
+        onCallDisconnect();
       });
-      call.on("cancel", function (error: any) {
-        onIncomingCallDisconnect();
+      incomingCall.on("cancel", function (error: any) {
+        onCallDisconnect();
       });
       const response = await axios.post("/api/leads/details", {
-        phone: call.parameters.From,
+        phone: incomingCall.parameters.From,
       });
 
       const data = response.data;
-      onSetLead(data);
+      if (data) {
+        onSetLead(data);
 
-      setFrom({
-        name: data.firstName
-          ? `${data.firstName} ${data.lastName}`
-          : "Unknown Caller",
-        number: data.cellPhone || call.parameters.From,
-      });
+        setFrom({
+          name: data.firstName
+            ? `${data.firstName} ${data.lastName}`
+            : "Unknown Caller",
+          number: data.cellPhone || incomingCall.parameters.From,
+        });
+      }
 
       onPhoneInOpen();
-      setCall(call);
+      setCall(incomingCall);
     });
-  }
-
-  const onIncomingCallDisconnect = () => {
+  };
+  ///Disconnect an in progress call
+  const onCallDisconnect = () => {
     call?.disconnect();
-    setIsCallAccepted(false);
+    setOnCall(false);
     setRunning(false);
     setTime(0);
     onPhoneInClose();
   };
-
+  ///Accept an incoming call
   const onIncomingCallAccept = () => {
     call?.accept();
-    setIsCallAccepted(true);
+    setOnCall(true);
     setRunning(true);
   };
-
+  ///Disconnect an in progress call - Direct the call to voicemail
   const onIncomingCallReject = () => {
     call?.reject();
-    setIsCallAccepted(false);
+    setOnCall(false);
     onPhoneInClose();
+  };
+  ///Testing getting conferences
+  const onGetConferences = () => {
+    axios.post("/api/twilio/conference", {}).then((response) => {
+      const data = response.data as ConferenceType[];
+      setConferences(data);
+    });
+  };
+
+  const onStarted = () => {
+    if (!phone) return;
+
+    const call = phone.connect({
+      agentId: user?.id!,
+      direction: "conference",
+    });
+
+    call.on("disconnect", onCallDisconnect);
+    setCall(call);
   };
 
   useEffect(() => {
     let interval: any;
     if (running) {
       interval = setInterval(() => {
-        setTime((state) => state + 1);
+        setTime((time) => time + 1);
       }, 1000);
     } else {
       clearInterval(interval);
@@ -108,9 +145,30 @@ export const PhoneInModal = () => {
   }, [running]);
 
   useEffect(() => {
+    ///Testing getting participants
+    const onGetParticipants = (conferenceId: string) => {
+      axios
+        .post("/api/twilio/conference/participant", {
+          conferenceId: conferenceId,
+        })
+        .then((response) => {
+          const data = response.data;
+          setParticipants(data);
+        });
+    };
+
     addDeviceListeners();
+    userEmitter.on("participantsFetch", (conferenceId) =>
+      onGetParticipants(conferenceId)
+    );
+    return () => {
+      userEmitter.off("participantsFetch", (conferenceId) =>
+        onGetParticipants(conferenceId)
+      );
+    };
   }, []);
 
+  //TODO - dont forget to remove this test data....
   // useEffect(() => {
   //   const test = async () => {
   //     const response = await axios.post("/api/leads/details", {
@@ -152,10 +210,11 @@ export const PhoneInModal = () => {
         <div className="fixed inset-0 overflow-hidden pointer-events-none ">
           <div
             className={cn(
-              "flex justify-center  w-full h-full overflow-hidden pointer-events-none p-10",
+              "flex justify-center w-full h-full overflow-hidden pointer-events-none p-10",
               showLeadInfo ? "" : "items-center"
             )}
           >
+            {conferences && <ConferenceList conferences={conferences} />}
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-500"
@@ -177,7 +236,7 @@ export const PhoneInModal = () => {
                       <Button size="sm" onClick={() => setShowLeadInfo(false)}>
                         Return to call
                       </Button>
-                      {!isCallAccepted ? (
+                      {!onCall ? (
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -201,19 +260,11 @@ export const PhoneInModal = () => {
                           size="sm"
                           variant="destructive"
                           className="gap-2"
-                          onClick={onIncomingCallDisconnect}
+                          onClick={onCallDisconnect}
                         >
                           <PhoneOff size={16} /> Hang Up
                         </Button>
                       )}
-                      {/* <Button
-                        size="sm"
-                        variant="destructive"
-                        className="gap-2"
-                        onClick={onIncomingCallDisconnect}
-                      >
-                        <PhoneOff size={16} /> Hang Up
-                      </Button> */}
                     </div>
                     <PhoneLeadInfo open={true} />
                   </div>
@@ -241,7 +292,7 @@ export const PhoneInModal = () => {
                         {formatSecondsToTime(time)}
                       </span>
                     </div>
-                    {!isCallAccepted ? (
+                    {!onCall ? (
                       <div className="flex flex-col gap-2">
                         <Button
                           className="gap-2"
@@ -262,7 +313,7 @@ export const PhoneInModal = () => {
                       <Button
                         variant="destructive"
                         className="gap-2"
-                        onClick={onIncomingCallDisconnect}
+                        onClick={onCallDisconnect}
                       >
                         <PhoneOff size={16} /> Hang Up
                       </Button>
@@ -287,26 +338,28 @@ export const PhoneInModal = () => {
                     >
                       <PhoneForwarded size={16} /> Forward Call
                     </Button>
+
+                    {/* <div className="grid grid-cols-2 items-center gap-2">
+                      <Button className="gap-2" onClick={onGetConferences}>
+                        Get Conference
+                      </Button>
+
+                      <Button
+                        variant="outlineprimary"
+                        className="gap-2"
+                        onClick={onStarted}
+                      >
+                        Start Conference
+                      </Button>
+                    </div> */}
                   </div>
                 )}
               </Dialog.Panel>
             </Transition.Child>
+            {participants && <ParticipantList participants={participants} />}
           </div>
         </div>
       </Dialog>
     </Transition.Root>
   );
 };
-// "use client";
-// import { usePhoneModal } from "@/hooks/use-phone-modal";
-// import { DialogHp } from "../custom/dialog-hp";
-// import { PhoneIn } from "./phone-in";
-
-// export const PhoneInModal = () => {
-//   const { isPhoneInOpen } = usePhoneModal();
-//   return (
-//     <DialogHp isOpen={isPhoneInOpen}>
-//       <PhoneIn />
-//     </DialogHp>
-//   );
-// };

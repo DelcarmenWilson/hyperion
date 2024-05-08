@@ -1,22 +1,39 @@
 "use client";
+import Link from "next/link";
 import { format } from "date-fns";
 import { FullTeam } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardData } from "@/components/reusable/card-data";
+import { UserCard } from "./user-card";
+import { User } from "lucide-react";
 
 type TeamCardProps = {
   team: FullTeam;
 };
 export const TeamCard = ({ team }: TeamCardProps) => {
   return (
-    <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
-      <h3 className="text-2xl text-primary font-semibold text-center">{`${team.name}`}</h3>
+    <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm h-[475px] gap-2">
+      <Link
+        className="text-2xl text-primary font-semibold text-center hover:bg-primary hover:text-background"
+        href={`/admin/teams/${team.id}`}
+      >
+        {team.name}
+      </Link>
 
+      <div className="flex-center flex-col text-sm">
+        <h4 className="text-muted-foreground">Owner</h4>
+        <Avatar>
+          <AvatarImage src={team.owner?.image || ""} />
+          <AvatarFallback className="bg-primary">
+            <User className="text-accent" />
+          </AvatarFallback>
+        </Avatar>
+        <h4 className="font-bold">{team.owner?.firstName!}</h4>
+      </div>
       <CardData title="Image" value={team.image!} />
       <CardData title="Banner" value={team.banner!} />
 
       <CardData title="Organization" value={team.organization.name} />
-      <CardData title="Owner" value={team.owner?.firstName!} />
-      <CardData title="Owner Image" value={team.owner?.image!} />
       <CardData
         title="Date Created"
         value={format(team.createdAt, "MM-dd-yyyy")}
@@ -26,18 +43,16 @@ export const TeamCard = ({ team }: TeamCardProps) => {
         value={format(team.updatedAt, "MM-dd-yyyy")}
       />
       {team.userId.length > 0 && (
-        <div className="border p-2">
+        <div className="flex-1 flex flex-col overflow-hidden shadow-sm p-2">
           <h4 className="flex justify-between items-center text-lg font-semibold">
             Users
             <span>{team.users?.length}</span>
           </h4>
-          {team.users?.map((user) => (
-            <div key={user.id}>
-              <p>{user.userName}</p>
-              <p>{user.image}</p>
-              <p>{user.image}</p>
-            </div>
-          ))}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 overflow-y-auto ">
+            {team.users?.map((user) => (
+              <UserCard key={user.id} user={user} />
+            ))}
+          </div>
         </div>
       )}
     </div>

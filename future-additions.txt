@@ -2,11 +2,15 @@ Jhonni
     - working on prompt enginering
     - working on workflow
 
+Chat
+    - make sure the autochat does not respond to similar messages that are sent back to back
+
 --error when trying to upload an image for the templates
 --revisit the expense sheet(not calculating properly)
     -- need to send income to back end
 
 --fix the sms for assistants and see why the conversations are not showing up
+--fix issue with token revalidation
 
 IN SALE
 -- finish the intake form
