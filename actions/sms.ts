@@ -161,7 +161,7 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     conversationId: convoid!,
     attachment: images,
     senderId: user.id,
-    hasSeen: false,
+    hasSeen: true,
   });
 
   if (!result) {

@@ -1,7 +1,6 @@
 "use server";
 import * as z from "zod";
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
 
 import { MessageSchema } from "@/schemas";
 
@@ -26,13 +25,10 @@ export const messageInsert = async (values: z.infer<typeof MessageSchema>) => {
     },
   });
 
-  const conversation = await db.conversation.update({
+   await db.conversation.update({
     where: { id: conversationId },
     data: { lastMessage: content },
   });
-
-  await pusherServer.trigger(conversationId, "messages:new", newMessage);
-  await pusherServer.trigger(senderId, "messages:new", conversation);
 
   return { success: newMessage };
 };

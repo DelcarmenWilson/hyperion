@@ -110,6 +110,7 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Conversations",
     href: "/conversations",
     icon: MessagesSquare,
+    assistant: true,
   },
   // {
   //   title: "Inbox",
