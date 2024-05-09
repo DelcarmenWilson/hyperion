@@ -23,6 +23,7 @@ import { PhoneType } from "@/types";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import {
   chatSettingsUpdateCoach,
+  chatSettingsUpdateCurrentCall,
   chatSettingsUpdateRecord,
 } from "@/actions/chat-settings";
 import { EmptyCard } from "../reusable/empty-card";
@@ -127,6 +128,7 @@ export const PhoneOut = () => {
   };
 
   const onDisconnect = () => {
+    chatSettingsUpdateCurrentCall("");
     call?.disconnect();
     setOnCall(false);
     setCall(null);

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBox } from "@/components/reusable/message-box";
 import { FullConversation, FullMessage } from "@/types";
 import useConversation from "@/hooks/user-conversation";

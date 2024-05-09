@@ -36,7 +36,10 @@ import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { IntakeForm } from "@/components/lead/forms/intake-form";
 import { FullLeadNoConvo } from "@/types";
-import { conversationUpdateByIdAutoChat } from "@/actions/conversation";
+import {
+  conversationDeleteById,
+  conversationUpdateByIdAutoChat,
+} from "@/actions/conversation";
 import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 import { useCurrentRole } from "@/hooks/user-current-role";
@@ -71,18 +74,18 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   };
 
   const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/conversations/${conversation?.id}`);
-      router.refresh();
-      router.push("/inbox");
-      toast.success("Conversation deleted.");
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-      setAlertOpen(false);
-    }
+    setLoading(true);
+    conversationDeleteById(conversation?.id as string).then((data) => {
+      if (data.error) {
+        toast.error(data.error);
+      }
+      if (data.success) {
+        toast.success(data.success);
+      }
+    });
+
+    setLoading(false);
+    setAlertOpen(false);
   };
 
   const preExport = (fileType: string) => {
@@ -94,20 +97,13 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   };
   return (
     <>
-      {/* <Button
-      disabled={lead.status == "Do_Not_Call"}
-      className="cursor-pointer rounded-full"
-      size="icon"
-      onClick={() => useAppointment.onOpen(lead)}
-    >
-      <Calendar size={16} />
-    </Button>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
         onConfirm={onDelete}
         loading={loading}
-      /> */}
+        height="h-auto"
+      />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold py-2">
@@ -140,19 +136,28 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
             Intake Form
           </DropdownMenuItem>
           {conversation?.id && (
-            <DropdownMenuItem
-              className={cn(
-                " text-background cursor-pointer gap-2",
-                autoChat ? "bg-primary" : "bg-destructive"
-              )}
-              onClick={onHyperChatToggle}
-            >
-              <div className="flex items-center justify-between gap-2">
-                {autoChat ? <Check size={16} /> : <X size={16} />}
-                <span>Hyper Chat</span>
-                <span>{autoChat ? "ON" : "OFF"}</span>
-              </div>
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem
+                className={cn(
+                  " text-background cursor-pointer gap-2",
+                  autoChat ? "bg-primary" : "bg-destructive"
+                )}
+                onClick={onHyperChatToggle}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  {autoChat ? <Check size={16} /> : <X size={16} />}
+                  <span>Hyper Chat</span>
+                  <span>{autoChat ? "ON" : "OFF"}</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => setAlertOpen(true)}
+              >
+                <Trash size={16} />
+                Delete Convo
+              </DropdownMenuItem>
+            </>
           )}
           <DropdownMenuSeparator />
           <DropdownMenuSub>

@@ -125,6 +125,7 @@ export const SmsClient = ({
         <Loader />
       ) : (
         <SmsBody
+          initConversationId={messages[0]?.conversationId}
           initMessages={messages}
           leadName={lead?.lastName as string}
           userName={user?.name as string}

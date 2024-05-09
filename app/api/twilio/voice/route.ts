@@ -17,6 +17,7 @@ export async function POST(req: Request) {
 
   if (call.direction == "outbound") {
     call.agentId = call.caller.replace("client:", "");
+    await db.chatSettings.update({where:{userId:call.agentId},data:{currentCall:call.callSid}})
   } else if (call.direction == "inbound"){
     const phonenumber = await db.phoneNumber.findFirst({
       where: { phone: call.to },
@@ -27,15 +28,9 @@ export async function POST(req: Request) {
     call.recording = settings?.record!
       call.voicemailIn=settings?.voicemailIn
     call.agentId = phonenumber?.agentId!;
+    call.currentCall=settings?.currentCall
   }
-
-  await db.chatSettings.update({
-    where: { userId: call.agentId },
-    data: {
-      currentCall: call.callSid,
-    },
-  });
-
+  
   const newCall = await db.call.create({
     data: {
       id: call.callSid,
@@ -61,7 +56,7 @@ export async function POST(req: Request) {
   }
   call.callerName=`${lead?.firstName} ${lead?.lastName}`
   if (lead?.id) {
-    //  await pusherServer.trigger(lead?.id, "call:new", newCall);
+      await pusherServer.trigger(lead?.id, "call:new", newCall);
   }
 
   const reponse = await voiceResponse(call);

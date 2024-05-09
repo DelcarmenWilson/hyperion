@@ -31,6 +31,7 @@ import { ConferenceType } from "@/types";
 import { ConferenceList } from "./conference/list";
 import { ParticipantList } from "./participant/list";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 
 export const PhoneInModal = () => {
   const user = useCurrentUser();
@@ -94,6 +95,7 @@ export const PhoneInModal = () => {
   };
   ///Disconnect an in progress call
   const onCallDisconnect = () => {
+    chatSettingsUpdateCurrentCall("");
     call?.disconnect();
     setOnCall(false);
     setRunning(false);
@@ -102,9 +104,11 @@ export const PhoneInModal = () => {
   };
   ///Accept an incoming call
   const onIncomingCallAccept = () => {
+    chatSettingsUpdateCurrentCall(call?.parameters.CallSid!);
     call?.accept();
     setOnCall(true);
     setRunning(true);
+    console.log(call);
   };
   ///Disconnect an in progress call - Direct the call to voicemail
   const onIncomingCallReject = () => {

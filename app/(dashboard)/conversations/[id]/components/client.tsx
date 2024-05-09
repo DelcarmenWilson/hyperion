@@ -29,6 +29,7 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
       <Separator />
       <CardContent className="flex flex-col flex-1 p-2 gap-2 overflow-hidden">
         <SmsBody
+          initConversationId={conversation.id}
           initMessages={conversation.messages}
           leadName={conversation.lead.firstName}
           userName={user?.name as string}

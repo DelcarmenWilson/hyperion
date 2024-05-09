@@ -27,7 +27,42 @@ export type TwilioNumber={
     coach:string
     caller:string;
     recording:boolean
+    currentCall?:string|null;
     voicemailIn?:string|null;
+  }
+
+  export type TwilioCallResult={
+    accountSid:string;
+    apiVersion:string;
+    applicationSid:string;
+    callbackSource:string;
+    callDuration:string;
+    called:string;
+    calledCity:string;
+    calledCountry:string;
+    calledState:string;
+    calledZip:string;
+    caller:string;
+    callerCity:string;
+    callerCountry:string;
+    callerState:string;
+    callerZip:string;
+    callSid	:string;
+    callStatus:string;
+    direction:string;
+    duration:string;
+    from:string;
+    fromCity:string;
+    fromCountry:string;
+    fromState:string;
+    fromZip:string;
+    sequenceNumber:string;
+    timestamp:string;
+    to:string;
+    toCity:string;
+    toCountry:string;
+    toState	:string;
+    toZip:string;
   }
 
   export type TwilioSms={

@@ -81,3 +81,20 @@ export const chatSettingsUpdateRecord = async (record: boolean) => {
 
   return { success: `recording has been turned ${record ? "on" : "off"}` };
 };
+
+export const chatSettingsUpdateCurrentCall = async (currentCall: string) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+
+  await db.chatSettings.update({
+    where: { userId: user.id },
+    data: {
+      currentCall,
+    },
+  });
+
+  return { success: "current Call has been updated" };
+};

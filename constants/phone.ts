@@ -23,7 +23,7 @@ export const PhoneLegendItems: ItemProps[] = [
   },
 ];
 
-export const PhonePurcahseItems: ItemProps[] = [
+export const PhonePurchaseItems: ItemProps[] = [
   { text: "Does local id work automatically?" },
   {
     text: "Can I get multilple numbers in the same state for the area code matching?",

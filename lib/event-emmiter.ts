@@ -28,6 +28,8 @@ type UserEvents = {
   conditionDeleted: [id: string];
   conditionInserted: [info: FullLeadMedicalCondition];
   conditionUpdated: [info: FullLeadMedicalCondition];
+  
+  conversationSeen:[conversationId:string]
   expenseUpdated: [type: string, total: number];
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];

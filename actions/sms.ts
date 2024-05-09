@@ -13,6 +13,7 @@ import { SmsMessageSchema } from "@/schemas";
 import { HyperionLead, Lead } from "@prisma/client";
 import { format } from "date-fns";
 import { hyperionDate } from "@/formulas/dates";
+import { userGetByAssistant } from "@/data/user";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -75,7 +76,7 @@ export const smsCreateInitial = async (leadId: string) => {
     )}  `;
   }
 
-  const conversationId = (await conversationInsert(user.id, lead.id, true))
+  const conversationId = (await conversationInsert(user.id, lead.id, chatSettings?.autoChat))
     .success;
 
   if (!conversationId) {
@@ -124,7 +125,6 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   }
   const { conversationId, leadId, content, images, type } =
     validatedFields.data;
-  console.log(validatedFields.data);
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
@@ -132,12 +132,19 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     return { error: "Lead does not exist" };
   }
 
-  // const existingConversation= await db.conversation.findUnique({
-  //   where: { id:conversationId },
-  // });
   let convoid = conversationId;
+  let agentId = user.id;
+
   if (!convoid) {
-    convoid = (await conversationInsert(user.id, lead.id)).success;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
+    const existingConversation = await db.conversation.findUnique({
+      where: { leadId: lead.id },
+    });
+    if (existingConversation) {
+      convoid = existingConversation.id;
+    } else convoid = (await conversationInsert(agentId, lead.id)).success;
   }
 
   const result = await client.messages.create({
@@ -145,11 +152,8 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     to: lead.cellPhone || (lead.homePhone as string),
     mediaUrl: images ? [`https://hperioncrm.com${images}`] : undefined,
     body: content,
+    applicationSid: cfg.twimlAppSid,
   });
-
-  if (!result) {
-    return { error: "Message was not sent!" };
-  }
 
   const newMessage = await messageInsert({
     role: "assistant",
@@ -160,6 +164,10 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
     hasSeen: false,
   });
 
+  if (!result) {
+    return { error: "Message was not sent!" };
+  }
+
   return { success: newMessage.success };
 };
 
@@ -169,7 +177,6 @@ export const smsSend = async (
   message: string,
   timer: number = 0
 ) => {
-
   if (!message) {
     return { error: "Message cannot be empty!" };
   }
@@ -183,7 +190,7 @@ export const smsSend = async (
       body: message,
       from: fromPhone,
       to: toPhone,
-      messagingServiceSid:cfg.messageServiceSid,
+      messagingServiceSid: cfg.messageServiceSid,
       sendAt: date,
       scheduleType: "fixed",
     });

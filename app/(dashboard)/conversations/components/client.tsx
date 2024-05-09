@@ -62,11 +62,32 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         return [...current];
       });
     };
+
+    const onConversationSeen = (conversationId: string) => {
+      setConversations((current) => {
+        if (find(current, { id: conversationId })) {
+          const convo = current.find((e) => e.id == conversationId);
+          if (!convo) {
+            return current;
+          }
+          convo.unread = 0;
+
+          return [...current];
+        }
+        return [...current];
+      });
+    };
     // pusherClient.bind("messages:new", convoHandler);
     userEmitter.on("messageInserted", (info) => onMessageInserted(info));
+    userEmitter.on("conversationSeen", (conversationId) =>
+      onConversationSeen(conversationId)
+    );
     return () => {
       // pusherClient.unsubscribe(user?.id as string);
       // pusherClient.unbind("messages:new", convoHandler);
+      userEmitter.off("conversationSeen", (conversationId) =>
+        onConversationSeen(conversationId)
+      );
     };
   }, [user?.id]);
   return (

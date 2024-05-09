@@ -3,11 +3,11 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 export const conversationInsert = async (
-  userId: string,
+  agentId: string,
   leadId: string,
   autoChat:boolean=false
 ) => {
-  if (!userId) {
+  if (!agentId) {
     return { error: "User id is Required!" };
   }
 
@@ -18,7 +18,7 @@ export const conversationInsert = async (
   const conversation = await db.conversation.create({
     data: {
       leadId,
-      agentId:userId,
+      agentId,
       autoChat
     },
   });
@@ -26,7 +26,6 @@ export const conversationInsert = async (
   if (!conversation.id) {
     return { error: "Conversation was not created!" };
   }
-
 
   return  ({success:conversation.id} );
 };
@@ -47,8 +46,7 @@ export const conversationDeleteById = async (
     return { error: "Unauthorized!" };
   }
 
-  await db.conversation.delete({where:{id}})
-  
+  await db.conversation.delete({where:{id}}) 
 
 
   return  ({success:"conversation has been deleted"} );
