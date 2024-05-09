@@ -23,7 +23,7 @@ export const SmsBody = ({
   const [messages, setMessages] = useState(initMessages);
   const audioRef = useRef<HTMLAudioElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
+  //TODO - messages are not scrolling to the bottom after being inserted
   const ScrollDown = () => {
     if (bottomRef.current) {
       const parent = bottomRef.current.parentElement?.parentElement;
@@ -33,12 +33,12 @@ export const SmsBody = ({
   };
 
   const onSetMessage = (newMessage: Message) => {
+    const existing = messages?.find((e) => e.id == newMessage.id);
+    if (existing != undefined) return;
     if (!conversationId) {
       setConversationId(newMessage.conversationId);
     }
-    const existing = messages?.find((e) => e.id == newMessage.id);
-    if (existing == undefined)
-      setMessages((messages) => [...messages!, newMessage]);
+    setMessages((messages) => [...messages!, newMessage]);
     ScrollDown();
   };
 
@@ -46,9 +46,9 @@ export const SmsBody = ({
     ScrollDown();
     userEmitter.on("messageInserted", (info) => onSetMessage(info));
     return () => {
-      userEmitter.on("messageInserted", (info) => onSetMessage(info));
+      userEmitter.off("messageInserted", (info) => onSetMessage(info));
     };
-  }, [initMessages, messages]);
+  }, []);
 
   useEffect(() => {
     if (conversationId) {
