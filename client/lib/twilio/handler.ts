@@ -30,7 +30,7 @@ export const tokenGenerator = (identity: string) => {
 
 export const voiceResponse = async (call: TwilioCall) => {
   const {
-    agentId,
+    agentId,agentName,
     agentNumber,
     direction,
     coach,
@@ -42,7 +42,7 @@ export const voiceResponse = async (call: TwilioCall) => {
     callSidToCoach,
     voicemailIn,
   } = call;
-  console.log(call);
+  
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
@@ -57,13 +57,13 @@ export const voiceResponse = async (call: TwilioCall) => {
     case "outbound":
       twiml.dial().conference(
         {
-          participantLabel: "Me",
+          participantLabel: agentName,
           startConferenceOnEnter: true,
           endConferenceOnExit: true,
           beep: "false",
           waitUrl: "",
           record: "record-from-start",
-          recordingStatusCallback: "/api/twilio/voice/recording",
+          recordingStatusCallback: "/api/twilio/voice/conference/recording",
         },
         agentId
       );
@@ -73,7 +73,7 @@ export const voiceResponse = async (call: TwilioCall) => {
       dialCoach.conference(
         {
           beep: "false",
-          participantLabel: "Coach",
+          participantLabel: agentName,
           coach: callSidToCoach,
           // action: "/api/twilio/voice/action",
           // timeout: 10,

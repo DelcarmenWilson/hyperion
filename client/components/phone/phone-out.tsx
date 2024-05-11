@@ -27,8 +27,7 @@ import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 
 export const PhoneOut = () => {
   const user = useCurrentUser();
-  const { lead, conference, setConference, participants, setParticipants } =
-    usePhone();
+  const { lead, conference, setConference, setParticipants } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const [onCall, setOnCall] = useState(false);
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
@@ -94,6 +93,7 @@ export const PhoneOut = () => {
       To: reFormatPhoneNumber(to.number),
       AgentNumber: selectedNumber as string,
       Direction: "outbound",
+      AgentName: `${user?.name} (Agent)`,
     });
 
     setTimeout(() => {
@@ -106,9 +106,7 @@ export const PhoneOut = () => {
         })
         .then((response) => {
           const data = response.data as TwilioParticipant;
-          const allParticipants = participants
-            ? [...participants, data]
-            : [data];
+          onGetParticipants(data.conferenceSid, data);
           const conf: TwilioShortConference = {
             agentName: user?.name as string,
             agentId: user?.id as string,
@@ -118,8 +116,6 @@ export const PhoneOut = () => {
             coaching: false,
           };
           setConference(conf);
-
-          setParticipants(allParticipants);
           setIsConferenceOpen(true);
           chatSettingsUpdateCurrentCall(data.callSid);
         });
@@ -179,14 +175,18 @@ export const PhoneOut = () => {
   };
 
   //CONFERENCES AND PARTICIPANTS
-  const onGetParticipants = (conferenceId: string) => {
+  const onGetParticipants = (
+    conferenceId: string,
+    newParticipant: TwilioParticipant | null = null
+  ) => {
     axios
       .post("/api/twilio/conference/participant", {
         conferenceId: conferenceId,
       })
       .then((response) => {
-        const data = response.data;
-        setParticipants(data);
+        const participants = response.data as TwilioParticipant[];
+        if (newParticipant) participants.push(newParticipant);
+        setParticipants(participants);
       });
   };
 
@@ -198,6 +198,7 @@ export const PhoneOut = () => {
       Direction: "coach",
       ConferenceId: conference.conferenceSid,
       CallSidToCoach: conference.callSidToCoach as string,
+      AgentName: `${user?.name} (Coach)`,
     });
 
     setTimeout(() => {

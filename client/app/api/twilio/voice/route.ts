@@ -26,6 +26,8 @@ export async function POST(req: Request) {
       call.voicemailIn = settings?.voicemailIn;
       call.agentId = phonenumber?.agentId!;
       call.currentCall = settings?.currentCall;
+
+      call.callerName = `${lead?.firstName} ${lead?.lastName}`;
       break;
     case "conference":
       break;
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
       },
     });
   }
-  call.callerName = `${lead?.firstName} ${lead?.lastName}`;
+  
 
   const reponse = await voiceResponse(call);
   return new NextResponse(reponse, { status: 200 });
