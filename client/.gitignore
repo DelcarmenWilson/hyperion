@@ -38,5 +38,6 @@ next-env.d.ts
 
 # public
 /public/assets
+/public/assets/users
 /public/recordings
 
