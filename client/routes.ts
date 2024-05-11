@@ -20,6 +20,7 @@ export const publicRoutes = [
   "/api/twilio/voice",
   "/api/twilio/voice/action",
   "/api/twilio/voice/callback",
+  "/api/twilio/voice/conference/recording",
   "/api/twilio/voice/recording",
   "/api/twilio/voice/result",
   "/api/twilio/voice/transcribe",

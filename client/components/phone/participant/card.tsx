@@ -7,8 +7,12 @@ import { TwilioParticipant } from "@/types/twilio";
 
 type ParticipantCardProps = {
   participant: TwilioParticipant;
+  enableControls: boolean;
 };
-export const ParticipantCard = ({ participant }: ParticipantCardProps) => {
+export const ParticipantCard = ({
+  participant,
+  enableControls = true,
+}: ParticipantCardProps) => {
   const [muted, setMuted] = useState(participant.muted);
   const [hold, setHold] = useState(participant.hold);
   const [coaching, setCoaching] = useState(participant.coaching);
@@ -32,6 +36,7 @@ export const ParticipantCard = ({ participant }: ParticipantCardProps) => {
         <div>
           muted
           <Switch
+            disabled={enableControls}
             checked={muted}
             onCheckedChange={() =>
               setMuted((muted) => {
@@ -45,6 +50,7 @@ export const ParticipantCard = ({ participant }: ParticipantCardProps) => {
         <div>
           hold
           <Switch
+            disabled={enableControls}
             checked={hold}
             onCheckedChange={() =>
               setHold((hold) => {
@@ -58,6 +64,7 @@ export const ParticipantCard = ({ participant }: ParticipantCardProps) => {
         <div>
           coaching
           <Switch
+            disabled={enableControls}
             checked={coaching}
             onCheckedChange={() =>
               setCoaching((coaching) => {
@@ -67,47 +74,13 @@ export const ParticipantCard = ({ participant }: ParticipantCardProps) => {
             }
           />
         </div>
-        <Button onClick={() => onParticipantUpdate("hangup", true)}>
+        <Button
+          disabled={enableControls}
+          onClick={() => onParticipantUpdate("hangup", true)}
+        >
           Hangup
         </Button>
-
-        {/* <CardData
-          title="endConferenceOnExit"
-          value={paricipant.endConferenceOnExit.toString()}
-        />
-
-        <CardData
-          title="startConferenceOnEnter"
-          value={paricipant.startConferenceOnEnter.toString()}
-        /> */}
       </div>
-
-      {/* <CardData title="accountSid" value={paricipant.accountSid} />
-      <CardData title="callSid" value={paricipant.callSid} />
-      <CardData title="label" value={paricipant.label!} />
-      <CardData title="callSidToCoach" value={paricipant.callSidToCoach!} />
-      <CardData title="coaching" value={paricipant.coaching.toString()} />
-      <CardData title="conferenceSid" value={paricipant.conferenceSid} />
-      <CardData
-        title="dateCreated"
-        value={format(paricipant.dateCreated, "MM-dd-yyy")}
-      />
-      <CardData
-        title="dateUpdated"
-        value={format(paricipant.dateUpdated, "MM-dd-yyy")}
-      />
-      <CardData
-        title="endConferenceOnExit"
-        value={paricipant.endConferenceOnExit.toString()}
-      />
-      <CardData title="muted" value={paricipant.muted.toString()} />
-      <CardData title="hold" value={paricipant.hold.toString()} />
-      <CardData
-        title="startConferenceOnEnter"
-        value={paricipant.startConferenceOnEnter.toString()}
-      />
-      <CardData title="status" value={paricipant.status.toString()} />
-      <CardData title="uri" value={paricipant.uri.toString()} /> */}
     </div>
   );
 };

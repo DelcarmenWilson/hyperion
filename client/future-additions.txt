@@ -1,8 +1,7 @@
 Jhonni 
     - working on prompt enginering
     - working on workflow
-    - recording should always be on (remove the option)
-    - conferencing(coaching) should always be on
+    
 
 Assisted Coacing
     - request coach

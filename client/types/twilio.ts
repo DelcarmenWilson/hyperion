@@ -23,7 +23,9 @@ export type TwilioCall = {
   callerName: string;
   callStatus: string;
   agentNumber: string;
+
   agentId: string;
+  agentName:string;
   coach: string;
   caller: string;
   recording: boolean;
@@ -133,4 +135,41 @@ export type TwilioParticipant = {
   startConferenceOnEnter: boolean;
   status: string;
   uri: string;
+};
+
+export type TwilioRecording = {
+  accountSid: string;
+  apiVersion: string;
+  callSid: string;
+  conferenceSid: string;
+  dateCreated: string;
+  dateUpdated: string;
+  startTime: string;
+  duration: string;
+  sid: string;
+  price: string;
+  priceUnit: string;
+  status: string;
+  channels: 1,
+  source: string;
+  errorCode: null,
+  uri: string;
+  encryptionDetails: null,
+  subresourceUris: {
+    add_on_results: string;
+    transcriptions: string;
+  },
+  mediaUrl:string;
+}
+export type TwilioConferenceRecording = {
+  recordingSource: string;
+  recordingSid: string;
+  conferenceSid: string;
+  recordingUrl: string;
+  recordingStatus: string;
+  recordingChannels: string;
+  errorCode: string;
+  recordingStartTime: string;
+  accountSid: string;
+  recordingDuration: string;
 };

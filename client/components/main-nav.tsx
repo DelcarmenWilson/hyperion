@@ -26,10 +26,6 @@ export const MainNav = () => {
 
   useEffect(() => {
     if (role != "ADMIN") return;
-    if (!socket) return;
-    socket.on("test-recieved", () => {
-      toast.success("testing the sockets");
-    });
     socket.on(
       "coach-request-received",
       (lead: FullLeadNoConvo, conference: TwilioShortConference) => {
@@ -44,17 +40,15 @@ export const MainNav = () => {
   }, [socket]);
 
   return (
-    <>
-      <CoachNotification
-        conference={conference}
-        isOpen={isNotificationOpen}
-        onJoinCall={onJoinCall}
-        onClose={() => setIsNotificationOpen(false)}
-      />
-      <Button onClick={onPhoneInOpen}>Open Modal</Button>
-      <Button onClick={() => setIsNotificationOpen(true)}>
-        Open Notifications
-      </Button>
-    </>
+    <CoachNotification
+      conference={conference}
+      isOpen={isNotificationOpen}
+      onJoinCall={onJoinCall}
+      onClose={() => setIsNotificationOpen(false)}
+    />
+    // <Button onClick={onPhoneInOpen}>Open Modal</Button>
+    // <Button onClick={() => setIsNotificationOpen(true)}>
+    //   Open Notifications
+    // </Button>
   );
 };
