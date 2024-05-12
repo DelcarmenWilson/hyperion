@@ -7,11 +7,13 @@ import { TwilioParticipant } from "@/types/twilio";
 
 type ParticipantCardProps = {
   participant: TwilioParticipant;
-  enableControls: boolean;
+  isLead: boolean;
+  name: string | undefined;
 };
 export const ParticipantCard = ({
   participant,
-  enableControls = true,
+  isLead,
+  name,
 }: ParticipantCardProps) => {
   const [muted, setMuted] = useState(participant.muted);
   const [hold, setHold] = useState(participant.hold);
@@ -29,11 +31,22 @@ export const ParticipantCard = ({
           userEmitter.emit("participantsFetch", participant.conferenceSid);
       });
   };
+
   return (
-    <div className="border p-2 w-full text-center">
-      <h4 className="text-muted-foreground">{participant.label!}</h4>
-      <div className="flex items-center gap-2">
-        <div>
+    <div className="shadow-sm p-2 w-full">
+      <div className="flex justify-between items-center">
+        <h4 className="text-muted-foreground">{name}</h4>
+
+        <Button
+          size="xs"
+          disabled={!isLead}
+          onClick={() => onParticipantUpdate("hangup", true)}
+        >
+          Hangup
+        </Button>
+      </div>
+      <div className="flex items-start gap-2">
+        {/* <div className="flex justify-between items-center gap-2">
           muted
           <Switch
             disabled={enableControls}
@@ -45,41 +58,35 @@ export const ParticipantCard = ({
               })
             }
           />
-        </div>
+        </div> */}
 
-        <div>
-          hold
-          <Switch
-            disabled={enableControls}
-            checked={hold}
-            onCheckedChange={() =>
-              setHold((hold) => {
-                onParticipantUpdate("hold", !hold);
-                return !hold;
-              })
-            }
-          />
-        </div>
-
-        <div>
-          coaching
-          <Switch
-            disabled={enableControls}
-            checked={coaching}
-            onCheckedChange={() =>
-              setCoaching((coaching) => {
-                onParticipantUpdate("coaching", !coaching);
-                return !coaching;
-              })
-            }
-          />
-        </div>
-        <Button
-          disabled={enableControls}
-          onClick={() => onParticipantUpdate("hangup", true)}
-        >
-          Hangup
-        </Button>
+        {isLead ? (
+          <div className="flex justify-between items-start gap-2">
+            <span className="font-bold">Hold</span>
+            <Switch
+              checked={hold}
+              onCheckedChange={() =>
+                setHold((hold) => {
+                  onParticipantUpdate("hold", !hold);
+                  return !hold;
+                })
+              }
+            />
+          </div>
+        ) : (
+          <div className="flex justify-between items-start gap-2">
+            <span className="font-bold">Coaching</span>
+            <Switch
+              checked={coaching}
+              onCheckedChange={() =>
+                setCoaching((coaching) => {
+                  onParticipantUpdate("coaching", !coaching);
+                  return !coaching;
+                })
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
   );

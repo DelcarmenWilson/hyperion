@@ -360,7 +360,7 @@ export const PhoneInModal = () => {
                 )}
               </Dialog.Panel>
             </Transition.Child>
-            {participants && <ParticipantList />}
+            {participants && <ParticipantList onClose={() => {}} />}
           </div>
         </div>
       </Dialog>

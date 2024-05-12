@@ -216,5 +216,14 @@ export type DialerSettingsType = {
   matrix: number;
   pause: number;
 };
-
+// CHAT
+export type ShortChat = {
+  id: string;
+  name: string;
+  icon: string;
+  isGroup: boolean;
+  lastMessage:string
+  updatedAt: Date;
+  // unread: number;
+};
 

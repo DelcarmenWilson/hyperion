@@ -1,19 +1,80 @@
-"use server"
-import OpenAI from "openai";
+"use server";
+import * as z from "zod";
+import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { ChatMessageSchema } from "@/schemas";
 
-export const chatFetch = async (messages: any=[]) => {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+// CHAT
+export const chatInsert = async (
+  userId: string,
+  name: string,
+  isGroup: boolean = false
+) => {
+  if (!userId) {
+    return { error: "User id is Required!" };
+  }
+
+  const chat = await db.chat.create({
+    data: {
+      users: { connect: { id: userId } },
+      name,
+      isGroup,
+    },
   });
-  
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: messages,
-    temperature: 0,
-    max_tokens: 1024,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,    
+
+  if (!chat.id) {
+    return { error: "Chat was not created!" };
+  }
+
+  return { success: chat };
+};
+
+export const chatDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+  const existingChat = await db.chat.findUnique({
+    where: { id },
+    include: { users: true },
   });
-  return response;
+  if (!existingChat) {
+    return { error: "Chat does not exist!" };
+  }
+
+  if (!existingChat.users.find((e) => e.id == user.id)) {
+    return { error: "Unauthorized!" };
+  }
+
+  await db.chat.delete({ where: { id } });
+
+  return { success: "chat has been deleted" };
+};
+
+// CHAT MESSAGES
+export const chatMessageInsert = async (
+  values: z.infer<typeof ChatMessageSchema>
+) => {
+  const validatedFields = ChatMessageSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { chatId, content, attachment, senderId } = validatedFields.data;
+
+  const newMessage = await db.chatMessage.create({
+    data: {
+      chatId,
+      content,
+      attachment,
+      senderId,
+    },
+  });
+
+  await db.chat.update({
+    where: { id: chatId },
+    data: { lastMessage: content },
+  });
+
+  return { success: newMessage };
 };

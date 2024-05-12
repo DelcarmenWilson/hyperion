@@ -113,10 +113,13 @@ export type TwilioConference = {
 export type TwilioShortConference = {
   agentId:string
   agentName:string
-  leadName:string,
   conferenceSid: string;
   callSidToCoach: string | null;
   coaching: boolean;
+  leadId:string,
+  leadName:string,
+  coachId?:string,
+  coachName?:string,
 };
 
 
@@ -127,8 +130,8 @@ export type TwilioParticipant = {
   callSidToCoach: string | null;
   coaching: boolean;
   conferenceSid: string;
-  dateCreated: Date;
-  dateUpdated: Date;
+  dateCreated: string;
+  dateUpdated: string;
   endConferenceOnExit: boolean;
   muted: boolean;
   hold: boolean;

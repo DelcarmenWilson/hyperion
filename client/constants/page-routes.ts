@@ -1,5 +1,6 @@
 
 import {
+  Bot,
   Calendar,
   CarTaxiFront,
   ClipboardList,
@@ -138,6 +139,13 @@ export const MainSidebarRoutes: NavType[] = [
     href: "/phone",
     icon: Phone,
   },
+  {
+    title: "Chat",
+    href: "/chat",
+    icon: Bot,
+    assistant: true,
+  },
+
   // {
   //   title: "Lead Vendors",
   //   href: "/vendors",

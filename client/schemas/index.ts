@@ -410,3 +410,12 @@ export const HyperionLeadSchema = z.object({
   policyAmount: z.optional(z.string()),
   smoker: z.optional(z.string()),
 });
+
+// CHAT
+export const ChatMessageSchema = z.object({  
+  id: z.optional(z.string()),
+  chatId: z.string(),  
+  content: z.optional(z.string()),
+  attachment: z.optional(z.string()),
+  senderId: z.string(),
+});

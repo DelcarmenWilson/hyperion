@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Mic, MicOff, Phone, X } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import socket from "@/lib/socket";
+import { useSocket } from "@/hooks/use-socket";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -15,17 +15,18 @@ import { TwilioParticipant, TwilioShortConference } from "@/types/twilio";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { PhoneSwitcher } from "./addins/switcher";
 
-import { numbers } from "@/constants/phone-numbers";
 import { EmptyCard } from "../reusable/empty-card";
 import { ParticipantList } from "./participant/list";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
+import { TouchPad } from "./addins/touch-pad";
+// import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
+  const socket = useSocket();
   const user = useCurrentUser();
   const { lead, conference, setConference, setParticipants } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
@@ -42,13 +43,11 @@ export const PhoneOut = () => {
     name: lead ? leadFullName : "New Call",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
-
   const [selectedNumber, setSelectedNumber] = useState(
     user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone ||
       ""
   );
-
   const [isCallMuted, setIsCallMuted] = useState(false);
 
   const startupClient = () => {
@@ -102,21 +101,22 @@ export const PhoneOut = () => {
           conferenceId: user?.id as string,
           from: selectedNumber as string,
           to: reFormatPhoneNumber(to.number),
-          label: to.name,
+          label: lead?.id,
         })
         .then((response) => {
           const data = response.data as TwilioParticipant;
           onGetParticipants(data.conferenceSid, data);
           const conf: TwilioShortConference = {
-            agentName: user?.name as string,
             agentId: user?.id as string,
-            leadName: to.name,
+            agentName: user?.name as string,
             conferenceSid: data.conferenceSid,
             callSidToCoach: data.callSid,
             coaching: false,
+            leadId: lead?.id as string,
+            leadName: to.name,
           };
           setConference(conf);
-          setIsConferenceOpen(true);
+          // setIsConferenceOpen(true);
           chatSettingsUpdateCurrentCall(data.callSid);
         });
     }, 2000);
@@ -130,6 +130,8 @@ export const PhoneOut = () => {
   const onDisconnect = () => {
     call?.disconnect();
     setOnCall(false);
+    setConference(undefined);
+    setParticipants(undefined);
     setIsConferenceOpen(false);
     chatSettingsUpdateCurrentCall(null);
     setCall(null);
@@ -201,10 +203,12 @@ export const PhoneOut = () => {
       AgentName: `${user?.name} (Coach)`,
     });
 
-    setTimeout(() => {
-      onGetParticipants(conference.conferenceSid!);
-      socket?.emit("coach-joined", conference.conferenceSid);
-    }, 2000);
+    socket?.emit(
+      "coach-joined",
+      conference.conferenceSid,
+      user?.id,
+      user?.name
+    );
 
     newCall.on("disconnect", onDisconnect);
     setOnCall(true);
@@ -213,23 +217,37 @@ export const PhoneOut = () => {
 
   useEffect(() => {
     onCheckNumber();
-  }, []);
-
-  useEffect(() => {
     startupClient();
     if (conference) {
       onStartConference();
     }
-  }, []);
 
-  useEffect(() => {
-    socket?.on("coach-joined-recieved", (conferenceId: string) => {
-      onGetParticipants(conferenceId);
-    });
+    socket?.on(
+      "coach-joined-recieved",
+      (conferenceId: string, coachId: string, coachName: string) => {
+        if (!conference) return;
+        if (conference.conferenceSid != conferenceId) return;
+
+        const updatedConference: TwilioShortConference = {
+          ...conference,
+          coachId,
+          coachName,
+        };
+
+        setConference(updatedConference);
+        onGetParticipants(conferenceId);
+      }
+    );
     return () => {
       socket?.disconnect();
     };
   }, []);
+
+  //TODO - Test data dont forget to remove
+  // useEffect(() => {
+  //   setConference(testConference);
+  //   setParticipants(testParticipants);
+  // }, []);
 
   return (
     <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
@@ -239,28 +257,20 @@ export const PhoneOut = () => {
         <>
           <div className="flex justify-between items-center">
             {to.name}
-            {/* <Button
-              variant="outlineprimary"
-              size="sm"
-              // onClick={() => setIsConferenceOpen((open) => !open)}
-              onClick={() => {
-                socket?.emit("test");
-              }}
-            >
-              Conference
-            </Button> */}
-            <Button
-              variant="outlineprimary"
-              size="sm"
-              onClick={() =>
-                setIsOpen((open) => {
-                  userEmitter.emit("toggleLeadInfo", !open);
-                  return !open;
-                })
-              }
-            >
-              LEAD INFO
-            </Button>
+            {lead && (
+              <Button
+                variant={isOpen ? "default" : "outlineprimary"}
+                size="sm"
+                onClick={() =>
+                  setIsOpen((open) => {
+                    userEmitter.emit("toggleLeadInfo", !open);
+                    return !open;
+                  })
+                }
+              >
+                LEAD INFO
+              </Button>
+            )}
           </div>
           <div className="relative">
             <Input
@@ -278,66 +288,69 @@ export const PhoneOut = () => {
             />
           </div>
           <div className="flex justify-between items-center">
-            <span className="w-40">Caller Id</span>
+            <span>Caller Id</span>
             <PhoneSwitcher
               number={selectedNumber}
               onSetDefaultNumber={setSelectedNumber}
             />
           </div>
-          <div className="relative flex-1 overflow-hidden">
-            {/* <div className="absolute right-0 inset-0 bg-background border"> */}
+          <div className="relative flex flex-col gap-2 flex-1 overflow-hidden">
+            <TouchPad onNumberClick={onNumberClick} />
+
+            {!onCall ? (
+              <Button
+                className="gap-2"
+                disabled={!disabled}
+                onClick={onStarted}
+              >
+                <Phone size={16} /> Call
+              </Button>
+            ) : (
+              <Button
+                className="gap-2"
+                variant="destructive"
+                onClick={onDisconnect}
+              >
+                <Phone size={16} /> Hang up
+              </Button>
+            )}
+            {onCall && (
+              <Button
+                className="gap-2"
+                variant={isCallMuted ? "destructive" : "outlinedestructive"}
+                onClick={onCallMuted}
+              >
+                {isCallMuted ? (
+                  <>
+                    <MicOff size={16} /> Muted
+                  </>
+                ) : (
+                  <>
+                    <Mic size={16} /> Mute
+                  </>
+                )}
+              </Button>
+            )}
+
             <div
               className={cn(
-                "flex flex-col absolute bg-background border transition-[right] -right-full ease-in-out duration-500 w-full h-full overflow-hidden",
-                isConferenceOpen && " right-0"
+                "flex flex-col absolute bg-background  transition-[bottom] left-0 -bottom-full ease-in-out duration-500 w-full h-full overflow-hidden",
+                isConferenceOpen && " bottom-0"
               )}
             >
-              <ParticipantList />
+              <ParticipantList onClose={() => setIsConferenceOpen(false)} />
             </div>
-            <div className="grid grid-cols-3 gap-1">
-              {numbers.map((number) => (
-                <Button
-                  key={number.value}
-                  className="flex-col gap-1 h-14"
-                  variant="outlineprimary"
-                  onClick={() => onNumberClick(number.value)}
-                >
-                  <p>{number.value}</p>
-                  <p>{number.letters}</p>
-                </Button>
-              ))}
-            </div>
+            {conference?.agentId == user?.id && (
+              <Button
+                className="mt-auto"
+                variant="outlineprimary"
+                size="sm"
+                onClick={() => setIsConferenceOpen((open) => !open)}
+              >
+                See Paricipants
+              </Button>
+            )}
           </div>
-          {!onCall ? (
-            <Button className="gap-2" disabled={!disabled} onClick={onStarted}>
-              <Phone size={16} /> Call
-            </Button>
-          ) : (
-            <Button
-              className="gap-2"
-              variant="destructive"
-              onClick={onDisconnect}
-            >
-              <Phone size={16} /> Hang up
-            </Button>
-          )}
-          {onCall && (
-            <Button
-              className="gap-2"
-              variant={isCallMuted ? "destructive" : "outlinedestructive"}
-              onClick={onCallMuted}
-            >
-              {isCallMuted ? (
-                <>
-                  <MicOff size={16} /> Muted
-                </>
-              ) : (
-                <>
-                  <Mic size={16} /> Mute
-                </>
-              )}
-            </Button>
-          )}
         </>
       )}
     </div>

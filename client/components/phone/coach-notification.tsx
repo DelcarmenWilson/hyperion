@@ -16,13 +16,13 @@ type CoachNotificationProps = {
   conference: TwilioShortConference | undefined;
   isOpen: boolean;
   onJoinCall: () => void;
-  onClose: () => void;
+  onRejectCall: (e: string) => void;
 };
 export const CoachNotification = ({
   conference,
   isOpen,
   onJoinCall,
-  onClose,
+  onRejectCall,
 }: CoachNotificationProps) => {
   const [reason, setReason] = useState(
     "Currently on the call with another client"
@@ -91,7 +91,10 @@ export const CoachNotification = ({
                     </SelectContent>
                   </Select>
                   <div className="mt-auto grid grid-cols-2 items-center gap-2">
-                    <Button variant="outlinedestructive" onClick={onClose}>
+                    <Button
+                      variant="outlinedestructive"
+                      onClick={() => onRejectCall(reason)}
+                    >
                       Reject
                     </Button>
 

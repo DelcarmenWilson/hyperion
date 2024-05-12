@@ -2,7 +2,7 @@ type NumberType={
     value:string;
     letters:string;
 }
- export const numbers:NumberType[] =[
+ export const touchPadNumbers:NumberType[] =[
     {
       value: "1",
       letters: "",
@@ -52,5 +52,3 @@ type NumberType={
       letters: " ",
     },
   ];
-
-  

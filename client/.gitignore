@@ -40,4 +40,5 @@ next-env.d.ts
 /public/assets
 /public/assets/users
 /public/recordings
+/test-data/
 

@@ -80,6 +80,10 @@ model User {
   appointments  Appointment[]
   activities    Activity[]
 
+  //USER CONVERSATIONS
+  chats        Chat[]
+  chatMessages ChatMessage[]
+
   //USER COLUMNS
   carriers    UserCarrier[]
   licenses    UserLicense[]
@@ -743,6 +747,34 @@ model Task {
   startAt   DateTime
   endAt     DateTime
   published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id          String        @id @default(cuid())
+  name        String
+  icon        String?
+  isGroup     Boolean
+  messages    ChatMessage[]
+  lastMessage String?       @db.LongText
+  users       User[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ChatMessage {
+  id String @id @default(cuid())
+
+  chatId String
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  content    String? @db.LongText
+  attachment String?
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

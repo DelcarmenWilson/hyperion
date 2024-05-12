@@ -4,7 +4,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { NextResponse } from "next/server";
 import { MessageSchema } from "@/schemas";
 import { messageInsert } from "@/actions/message";
-import { chatFetch } from "@/actions/chat";
+import { chatFetch } from "@/actions/gpt";
 
 import { defaultOptOut } from "@/placeholder/chat";
 import { format } from "date-fns";
