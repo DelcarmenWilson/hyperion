@@ -57,7 +57,7 @@ export const voiceResponse = async (call: TwilioCall) => {
     case "outbound":
       twiml.dial().conference(
         {
-          participantLabel: agentName,
+          participantLabel: agentId,
           startConferenceOnEnter: true,
           endConferenceOnExit: true,
           beep: "false",
@@ -73,7 +73,7 @@ export const voiceResponse = async (call: TwilioCall) => {
       dialCoach.conference(
         {
           beep: "false",
-          participantLabel: agentName,
+          participantLabel: agentId,
           coach: callSidToCoach,
           // action: "/api/twilio/voice/action",
           // timeout: 10,

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
 import { toast } from "sonner";
 import { userEmitter } from "@/lib/event-emmiter";
-import socket from "@/lib/socket";
+import { useSocket } from "@/hooks/use-socket";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -20,7 +20,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { PhoneSwitcher } from "./addins/switcher";
 
-import { numbers } from "@/constants/phone-numbers";
+import { touchPadNumbers } from "@/constants/touch-pad-numbers";
 import { EmptyCard } from "../reusable/empty-card";
 import { ParticipantList } from "./participant/list";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
@@ -32,6 +32,7 @@ import {
 } from "@/actions/chat-settings";
 
 export const PhoneOutORG = () => {
+  const socket = useSocket();
   const { update } = useSession();
   const user = useCurrentUser();
   const { lead, conference } = usePhone();
@@ -354,10 +355,10 @@ export const PhoneOutORG = () => {
                 isConferenceOpen && " right-0"
               )}
             >
-              <ParticipantList />
+              <ParticipantList onClose={() => setIsConferenceOpen(false)} />
             </div>
             <div className="grid grid-cols-3 gap-1">
-              {numbers.map((number) => (
+              {touchPadNumbers.map((number) => (
                 <Button
                   key={number.value}
                   className="flex-col gap-1 h-14"

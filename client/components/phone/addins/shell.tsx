@@ -6,16 +6,14 @@ import { usePhoneContext } from "@/providers/phone";
 import { VoicemailList } from "@/components/phone/voicemail/list";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
 import { SmsClient } from "../sms/client";
+import { Badge } from "@/components/ui/badge";
 
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
       <PhoneLeadInfo />
-      <Tabs
-        className="w-[400px] flex flex-col h-full border-s"
-        defaultValue="phone"
-      >
+      <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
         <TabsList className="w-full h-auto">
           <TabsTrigger
             className="flex-1 flex-col justify-center gap-2"
@@ -37,28 +35,28 @@ const PhoneShell = () => {
           >
             <Voicemail size={16} />
             VOICEMAIL
-            {/* {voicemails?.length && (
-                  <Badge className="absolute top-0 right-0 rounded-full">
-                    {voicemails.length}
-                  </Badge>
-                )} */}
+            {voicemails?.length && (
+              <Badge className="absolute top-0 right-0 rounded-full">
+                {voicemails.length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           <TabsContent
-            className="flex flex-col m-0 overflow-hidden"
+            className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="phone"
           >
             <PhoneOut />
           </TabsContent>
           <TabsContent
-            className="flex flex-col m-0 overflow-hidden"
+            className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="sms"
           >
             <SmsClient />
           </TabsContent>
           <TabsContent
-            className="flex flex-col m-0 overflow-hidden"
+            className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="voicemail"
           >
             <VoicemailList initVoicemails={voicemails} />
