@@ -24,7 +24,12 @@ const SocketContextComponent: React.FunctionComponent<
   const { children } = props;
   const user = useCurrentUser();
 
-  const socket = useSocket("ws://localhost:4000", {
+  // const socket = useSocket("ws://localhost:4000", {
+  //   reconnectionAttempts: 5,
+  //   reconnectionDelay: 1000,
+  //   autoConnect: false,
+  // });
+  const socket = useSocket(process.env.NEXT_PUBLIC_WS_URL!, {
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
     autoConnect: false,

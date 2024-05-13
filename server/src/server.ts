@@ -38,6 +38,14 @@ application.use((req, res, next) => {
     next();
 });
 
+application.get('/', (req, res, next) => {
+    return res.status(200).json({ hello: 'Entry point working fine!' });
+});
+
+application.get('/app', (req, res, next) => {
+    return res.status(200).json({ hello: 'Entry point working fine!' });
+});
+
 /** Healthcheck */
 application.get('/ping', (req, res, next) => {
     return res.status(200).json({ hello: 'world!' });
