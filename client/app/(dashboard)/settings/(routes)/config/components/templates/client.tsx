@@ -45,6 +45,8 @@ export const UserTemplateClient = () => {
       userEmitter.on("templateInserted", (info) => onTemplateInserted(info));
       userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
     };
+
+    // eslint-disable-next-line
   }, []);
   return (
     <>

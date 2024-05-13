@@ -1,5 +1,3 @@
-"use client";
-
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

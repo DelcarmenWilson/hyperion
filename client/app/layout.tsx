@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/providers/modal";
 import { ThemeProvider } from "@/providers/theme";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
+import SocketContextComponent from "@/providers/socket-component";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -47,7 +48,7 @@ export default async function RootLayout({
           >
             <ModalProvider />
             <Toaster richColors />
-            {children}
+            <SocketContextComponent>{children}</SocketContextComponent>
             <ThemeSwitcher />
           </ThemeProvider>
         </body>

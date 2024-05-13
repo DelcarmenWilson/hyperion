@@ -28,6 +28,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
 
   useEffect(() => {
     OnFilter("status", "New");
+    // eslint-disable-next-line
   }, []);
   return (
     <>

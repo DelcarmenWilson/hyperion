@@ -49,6 +49,8 @@ export const LicenseClient = () => {
       userEmitter.on("licenseInserted", (info) => onLicenseInserted(info));
       userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
     };
+
+    // eslint-disable-next-line
   }, []);
   return (
     <>

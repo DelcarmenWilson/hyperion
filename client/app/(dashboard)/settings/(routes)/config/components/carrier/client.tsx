@@ -47,6 +47,8 @@ export const CarrierClient = () => {
       userEmitter.on("carrierInserted", (info) => onCarrierInserted(info));
       userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
     };
+
+    // eslint-disable-next-line
   }, []);
 
   return (

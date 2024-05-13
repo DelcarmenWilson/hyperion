@@ -8,8 +8,6 @@ import { cn } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Button } from "@/components/ui/button";
-
 import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { MainInfoClient } from "@/components/lead/main-info";
@@ -65,8 +63,8 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     smoker: lead.smoker,
 
     leadName: leadName,
-    lastCall: lead.calls[0]?.createdAt,
-    nextAppointment: lead.appointments[0]?.date,
+    lastCall: lead.calls ? lead.calls[0]?.createdAt : undefined,
+    nextAppointment: lead.appointments ? lead.appointments[0]?.date : undefined,
   };
 
   const leadPolicy: LeadPolicyInfo = {

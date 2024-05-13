@@ -48,6 +48,7 @@ export const SmsBody = ({
     return () => {
       userEmitter.off("messageInserted", (info) => onSetMessage(info));
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

@@ -51,6 +51,7 @@ export const HyperionLeadClient = ({ initLeads }: HyperionLeadClientProps) => {
         onHyperionLeadUpdated(info)
       );
     };
+    // eslint-disable-next-line
   }, []);
 
   return (

@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSocket } from "@/hooks/use-socket";
+import { useContext, useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 
@@ -8,9 +7,10 @@ import { CoachNotification } from "./phone/coach-notification";
 import { TwilioShortConference } from "@/types/twilio";
 import { FullLeadNoConvo } from "@/types";
 import { toast } from "sonner";
+import SocketContext from "@/providers/socket";
 
 export const MainNav = () => {
-  const socket = useSocket();
+  const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const { onPhoneInOpen, onPhoneOutOpen, conference, setConference } =
     usePhone();
@@ -25,28 +25,35 @@ export const MainNav = () => {
   };
   const onRejectCall = (reason: string) => {
     setIsNotificationOpen(false);
-    socket?.emit("coach-reject", user?.name, reason);
+    socket?.emit("coach-reject", conference?.agentId, user?.name, reason);
   };
 
   useEffect(() => {
     if (user?.role == "ADMIN") {
       socket?.on(
         "coach-request-received",
-        (lead: FullLeadNoConvo, conference: TwilioShortConference) => {
-          setConference(conference);
-          setLead(lead);
+        (data: {
+          lead: FullLeadNoConvo;
+          conference: TwilioShortConference;
+        }) => {
+          setConference(data.conference);
+          setLead(data.lead);
           setIsNotificationOpen(true);
         }
       );
     }
-    socket?.on("coach-reject-recieved", (coachName: string, reason: string) => {
-      toast.error(`${coachName} rejected your request.
-      ${reason}`);
-    });
+    socket?.on(
+      "coach-reject-received",
+      (data: { coachName: string; reason: string }) => {
+        toast.error(`${data.coachName} rejected your request.
+      ${data.reason}`);
+      }
+    );
     socket?.on("connected", () => {
       console.log("connected");
     });
-  }, [socket]);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <CoachNotification

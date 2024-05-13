@@ -170,6 +170,7 @@ export const PhoneInModal = () => {
         onGetParticipants(conferenceId)
       );
     };
+    // eslint-disable-next-line
   }, []);
 
   //TODO - dont forget to remove this test data....

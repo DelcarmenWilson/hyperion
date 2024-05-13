@@ -58,6 +58,7 @@ export const LeadStatusClient = () => {
         onUserLeadStatusUpdated(info)
       );
     };
+    // eslint-disable-next-line
   }, []);
   return (
     <>

@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Mic, MicOff, Phone, X } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useSocket } from "@/hooks/use-socket";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -23,10 +22,11 @@ import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 import { TouchPad } from "./addins/touch-pad";
+import SocketContext from "@/providers/socket";
 // import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
-  const socket = useSocket();
+  const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const { lead, conference, setConference, setParticipants } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
@@ -205,6 +205,7 @@ export const PhoneOut = () => {
 
     socket?.emit(
       "coach-joined",
+      conference.agentId,
       conference.conferenceSid,
       user?.id,
       user?.name
@@ -223,24 +224,22 @@ export const PhoneOut = () => {
     }
 
     socket?.on(
-      "coach-joined-recieved",
-      (conferenceId: string, coachId: string, coachName: string) => {
+      "coach-joined-received",
+      (data: { conferenceId: string; coachId: string; coachName: string }) => {
         if (!conference) return;
-        if (conference.conferenceSid != conferenceId) return;
+        if (conference.conferenceSid != data.conferenceId) return;
 
         const updatedConference: TwilioShortConference = {
           ...conference,
-          coachId,
-          coachName,
+          coachId: data.coachId,
+          coachName: data.coachName,
         };
 
         setConference(updatedConference);
-        onGetParticipants(conferenceId);
+        onGetParticipants(data.conferenceId);
       }
     );
-    return () => {
-      socket?.disconnect();
-    };
+    // eslint-disable-next-line
   }, []);
 
   //TODO - Test data dont forget to remove

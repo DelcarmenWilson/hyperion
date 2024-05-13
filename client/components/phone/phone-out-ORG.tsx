@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AlertCircle, Mic, MicOff, Phone, X } from "lucide-react";
 import { toast } from "sonner";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useSocket } from "@/hooks/use-socket";
+import SocketContext from "@/providers/socket";
 
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -32,7 +32,7 @@ import {
 } from "@/actions/chat-settings";
 
 export const PhoneOutORG = () => {
-  const socket = useSocket();
+  const { socket } = useContext(SocketContext).SocketState;
   const { update } = useSession();
   const user = useCurrentUser();
   const { lead, conference } = usePhone();
@@ -256,6 +256,7 @@ export const PhoneOutORG = () => {
 
   useEffect(() => {
     onCheckNumber();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -263,6 +264,7 @@ export const PhoneOutORG = () => {
     if (conference) {
       onStartConference();
     }
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

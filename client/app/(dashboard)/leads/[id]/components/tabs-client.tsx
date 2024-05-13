@@ -19,7 +19,6 @@ import { CallHistoryClient } from "./call-history/client";
 import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityList } from "./activity-log/list";
 
-import { Body } from "./message-client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePhone } from "@/hooks/use-phone";
 import { useEffect } from "react";
@@ -34,6 +33,7 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
   const phone = usePhone();
   useEffect(() => {
     phone.lead = lead;
+    // eslint-disable-next-line
   }, []);
   return (
     <>
