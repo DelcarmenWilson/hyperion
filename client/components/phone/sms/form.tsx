@@ -106,6 +106,7 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
     return () => {
       userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
     };
+    // eslint-disable-next-line
   }, []);
 
   return (

@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-export const useSocket = () => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+import { useEffect, useRef } from "react";
+import io, { ManagerOptions, Socket, SocketOptions } from "socket.io-client";
+
+export const useSocket = (
+  url: string,
+  options?: Partial<ManagerOptions & SocketOptions> | undefined
+): Socket => {
+  const { current: socket } = useRef(io(url, options));
 
   useEffect(() => {
-    if (socket) return;
-    const url = io("http://localhost:4000");
-    setSocket(url);
-  }, []);
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [socket]);
+
   return socket;
 };

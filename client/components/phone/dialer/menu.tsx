@@ -145,6 +145,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
 
   useEffect(() => {
     addDeviceListeners();
+    // eslint-disable-next-line
   }, []);
 
   return (

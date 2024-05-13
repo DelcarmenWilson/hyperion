@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { X } from "lucide-react";
-import { useSocket } from "@/hooks/use-socket";
 import { usePhone } from "@/hooks/use-phone";
+import SocketContext from "@/providers/socket";
+import { toast } from "sonner";
 
 import { ParticipantCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
 
 type ParticipantListProps = {
   onClose: () => void;
 };
 export const ParticipantList = ({ onClose }: ParticipantListProps) => {
-  const socket = useSocket();
+  const { socket } = useContext(SocketContext).SocketState;
   const { lead, conference, participants } = usePhone();
 
   return (
@@ -22,26 +22,26 @@ export const ParticipantList = ({ onClose }: ParticipantListProps) => {
         <h4 className="text-center text-muted-foreground text-lg font-bold">
           Participants
         </h4>
+        <Button
+          variant="outlineprimary"
+          size="sm"
+          onClick={() => {
+            socket?.emit("coach-request", lead, conference);
+            toast.success("coach requested!");
+          }}
+        >
+          Request A Coach
+        </Button>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X size={16} />
         </Button>
       </div>
-      <div className="h-full w-full overflow-y-auto">
+      <div className="h-full w-full ">
         {!participants ? (
           <EmptyCard title="No partipants found" />
         ) : (
           <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
-            <CardContent className="flex flex-col items-center gap-2 p-1">
-              <Button
-                variant="outlineprimary"
-                size="sm"
-                onClick={() => {
-                  socket?.emit("coach-request", lead, conference);
-                  toast.success("coach requested!");
-                }}
-              >
-                Request A Coach
-              </Button>
+            <CardContent className="flex flex-col overflow-y-auto items-center gap-2 p-1">
               {participants
                 .filter((e) => e.label != conference?.agentId)
                 .map((participant) => (

@@ -2,12 +2,10 @@
 import { useEffect, useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
-import { toast } from "sonner";
 
 import { HyperionLead } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 
 import { HyperionLeadForm } from "./form";
@@ -17,8 +15,6 @@ type HyperionLeadCardProps = {
 };
 export const HyperionLeadCard = ({ initLead }: HyperionLeadCardProps) => {
   const [lead, setLead] = useState(initLead);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {

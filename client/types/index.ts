@@ -227,3 +227,9 @@ export type ShortChat = {
   // unread: number;
 };
 
+//WEB SOCKETS
+export type UserSocket = {
+  id: string;
+  sid: string;
+  role: string;
+};
