@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon src/server.ts",
-    "start": "ts-node src/server.ts"
+    "start": "src/server.ts"
   },
   "keywords": [],
   "author": "",
