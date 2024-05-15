@@ -98,12 +98,21 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
             info={leadMainInfo}
             noConvo={lead.conversation?.id ? true : false}
           />
-          <NotesForm leadId={lead.id} intialNotes={lead.notes!} />
+          <NotesForm
+            leadId={lead.id}
+            intialNotes={lead.notes!}
+            initSharedUser={lead.sharedUser}
+          />
           <CallInfo info={lead} />
         </div>
         <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
           <GeneralInfoClient info={leadInfo} showInfo />
-          <PolicyInfoClient leadName={leadName} info={leadPolicy} />
+          <PolicyInfoClient
+            leadId={lead.id}
+            leadName={leadName}
+            assistant={lead.assistant}
+            info={leadPolicy}
+          />
         </div>
       </div>
       <div className="text-sm font-light px-4">

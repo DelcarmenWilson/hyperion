@@ -66,3 +66,21 @@ export const adminQuotesGetActive = async () => {
     return null;
   }
 };
+//TERM CARRIERS
+export const adminTermCarriersGetAll = async () => {
+  try {
+    const carriers = await db.termCarrier.findMany({include:{carrier:true,condition:true},orderBy:{carrier:{name:"asc"}}});
+    return carriers;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const adminTermCarrierGetById = async (id: string) => {
+  try {
+    const carrier = await db.termCarrier.findUnique({ where: { id } });
+    return carrier;
+  } catch (error) {
+    return null;
+  }
+};

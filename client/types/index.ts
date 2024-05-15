@@ -20,6 +20,10 @@ import {
   LeadMedicalCondition,
   MedicalCondition,
   LeadPolicy,
+  Chat,
+  ChatMessage,
+  TermCarrier,
+  Carrier,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -95,6 +99,8 @@ export type FullLeadNoConvo = Lead & {
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
   policy: LeadPolicy | null;
+  assistant?:User| null;
+  sharedUser?:User| null;
 };
 
 export type FullLead = Lead & {
@@ -106,6 +112,8 @@ export type FullLead = Lead & {
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
   policy: LeadPolicy | null;
+  assistant?:User| null;
+  sharedUser?:User| null;
 };
 export type FullLeadMedicalCondition = LeadMedicalCondition & {
   condition: MedicalCondition;
@@ -217,14 +225,17 @@ export type DialerSettingsType = {
   pause: number;
 };
 // CHAT
-export type ShortChat = {
-  id: string;
-  name: string;
-  icon: string;
-  isGroup: boolean;
-  lastMessage:string
-  updatedAt: Date;
-  // unread: number;
+export type ShortChat = Chat & {
+  userOne: User;
+  userTwo: User;
+};
+export type FullChat = ShortChat & {
+  userOne: User;
+  userTwo: User;
+  messages: FullChatMessage[];
+};
+export type FullChatMessage = ChatMessage & {
+  sender: User;
 };
 
 //WEB SOCKETS
@@ -233,3 +244,8 @@ export type UserSocket = {
   sid: string;
   role: string;
 };
+//TERM CARRIER
+export type FullTermCarrier=TermCarrier&{
+  carrier:Carrier;
+  condition:MedicalCondition
+}

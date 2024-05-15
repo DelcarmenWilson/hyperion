@@ -11,15 +11,27 @@ import { Button } from "@/components/ui/button";
 
 import { PolicyInfoForm } from "./forms/policy-info-form";
 import { LeadPolicyInfo } from "@/types";
+import { User } from "@prisma/client";
+import { AssistantForm } from "./forms/assistant-form";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type PolicyInfoClientProps = {
+  leadId: string;
   leadName: string;
   info: LeadPolicyInfo;
+  assistant: User | null | undefined;
 };
 
-export const PolicyInfoClient = ({ leadName, info }: PolicyInfoClientProps) => {
+export const PolicyInfoClient = ({
+  leadId,
+  leadName,
+  info,
+  assistant,
+}: PolicyInfoClientProps) => {
+  const user = useCurrentUser();
   const [policyInfo, setPolicyInfo] = useState<LeadPolicyInfo>(info);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [policyDialogOpen, setPolicyDialogOpen] = useState(false);
+  const [assitantDialogOpen, setAssitantDialogOpen] = useState(false);
 
   useEffect(() => {
     setPolicyInfo(info);
@@ -34,18 +46,48 @@ export const PolicyInfoClient = ({ leadName, info }: PolicyInfoClientProps) => {
 
   return (
     <>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
           <h3 className="text-2xl font-semibold py-2">
             Policy Info - <span className="text-primary">{leadName}</span>
           </h3>
           <PolicyInfoForm
             policyInfo={policyInfo}
-            onClose={() => setDialogOpen(false)}
+            onClose={() => setPolicyDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={assitantDialogOpen} onOpenChange={setAssitantDialogOpen}>
+        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
+          <h3 className="text-2xl font-semibold py-2">
+            Assistant for - <span className="text-primary">{leadName}</span>
+          </h3>
+          <AssistantForm
+            leadId={leadId}
+            assistant={assistant}
+            onClose={() => setAssitantDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>
       <div className="flex flex-col gap-1 text-sm">
+        {user?.role != "ASSISTANT" && (
+          <div className="border rounded-sm shadow-md p-2">
+            <h4 className="text-muted-foreground">Assistant</h4>
+            {assistant && (
+              <h4 className="text-lg text-center font-bold">
+                {assistant.firstName}
+              </h4>
+            )}
+            <Button
+              className="w-full"
+              size="sm"
+              onClick={() => setAssitantDialogOpen(true)}
+            >
+              {assistant ? "Change" : "Add"}
+            </Button>
+          </div>
+        )}
+
         {policyInfo.carrier ? (
           <div className="relative group">
             {/* <div>
@@ -90,13 +132,15 @@ export const PolicyInfoClient = ({ leadName, info }: PolicyInfoClientProps) => {
             />
             <Button
               className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => setDialogOpen(true)}
+              onClick={() => setPolicyDialogOpen(true)}
             >
               <FilePenLine size={16} />
             </Button>
           </div>
         ) : (
-          <Button onClick={() => setDialogOpen(true)}>Create Policy</Button>
+          <Button onClick={() => setPolicyDialogOpen(true)}>
+            Create Policy
+          </Button>
         )}
       </div>
     </>

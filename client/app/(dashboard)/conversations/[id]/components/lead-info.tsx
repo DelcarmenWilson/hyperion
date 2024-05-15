@@ -113,10 +113,16 @@ export const ConversationLeadInfo = ({
               <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />
-              <PolicyInfoClient leadName={leadName} info={leadPolicy} />
+              <PolicyInfoClient
+                leadId={lead.id}
+                leadName={leadName}
+                assistant={lead.assistant}
+                info={leadPolicy}
+              />
               <NotesForm
                 leadId={lead?.id as string}
                 intialNotes={lead?.notes as string}
+                initSharedUser={lead.sharedUser}
               />
             </div>
           </TabsContent>

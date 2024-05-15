@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
-import { usersGetAll } from "@/data/user";
+import { usersGetAll, usersGetAllByRole } from "@/data/user";
 
 export async function POST(req: Request) {
   try {
-    // const body = await req.json();
-    // const { user } = body;
-    // const script = await scriptGetOne();
-    const users=await usersGetAll()
+    const body = await req.json();
+    const { role } = body;
+
+    let users;
+    if (role=="all") {
+      users = await usersGetAll();
+    }else{
+    users = await usersGetAllByRole(role);}
+
+    
 
     return NextResponse.json(users);
   } catch (error) {

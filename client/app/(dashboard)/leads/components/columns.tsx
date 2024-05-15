@@ -99,7 +99,11 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "notes",
     header: "",
     cell: ({ row }) => (
-      <NotesForm leadId={row.original.id} intialNotes={row.original.notes!} />
+      <NotesForm
+        leadId={row.original.id}
+        intialNotes={row.original.notes!}
+        initSharedUser={row.original.sharedUser}
+      />
     ),
   },
   {
@@ -145,7 +149,14 @@ export const columns: ColumnDef<FullLead>[] = [
         updatedAt: row.original.policy?.updatedAt!,
       };
       const leadName = `${row.original.firstName} ${row.original.lastName}`;
-      return <PolicyInfoClient leadName={leadName} info={leadPolicy} />;
+      return (
+        <PolicyInfoClient
+          leadId={row.original.id}
+          leadName={leadName}
+          assistant={row.original.assistant}
+          info={leadPolicy}
+        />
+      );
     },
   },
 ];
