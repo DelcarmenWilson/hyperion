@@ -40,7 +40,7 @@ export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
   };
 
   useEffect(() => {
-    axios.post("/api/user/users").then((response) => {
+    axios.post("/api/user/users", { role: "all" }).then((response) => {
       if (response.data) {
         setUsers(response.data);
       }

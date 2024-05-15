@@ -6,16 +6,26 @@ import { userEmitter } from "@/lib/event-emmiter";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { leadUpdateByIdNotes } from "@/actions/lead";
+import { leadUpdateByIdNotes, leadUpdateByIdShare } from "@/actions/lead";
+import { User } from "@prisma/client";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { Ghost, X } from "lucide-react";
 
 type NoteFormProps = {
   leadId: string;
   intialNotes: string;
+  initSharedUser: User | null | undefined;
 };
 
-export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
+export const NotesForm = ({
+  leadId,
+  intialNotes,
+  initSharedUser,
+}: NoteFormProps) => {
+  const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState(intialNotes || "");
+  const [sharedUser, setSharedUser] = useState(initSharedUser);
 
   const onNotesUpdated = async () => {
     if (!notes) return;
@@ -34,6 +44,17 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
       }
     });
     setLoading(false);
+  };
+  const onUnShareLead = () => {
+    setSharedUser(null);
+    leadUpdateByIdShare(leadId, undefined).then((data) => {
+      if (data.success) {
+        toast.success(data.success);
+      }
+      if (data.error) {
+        toast.error(data.error);
+      }
+    });
   };
   useEffect(() => {
     setNotes(intialNotes);
@@ -60,6 +81,32 @@ export const NotesForm = ({ leadId, intialNotes }: NoteFormProps) => {
       >
         UPDATE NOTES
       </Button>
+
+      {sharedUser && user?.role != "ASSISTANT" && (
+        <div className="text-lg text-center bg-primary text-secondary mt-2">
+          {user?.id == sharedUser.id ? (
+            <h4 className="relative font-bold text-lg  text-center">
+              SHARED LEAD !!!
+            </h4>
+          ) : (
+            <h4 className="relative font-bold text-lg  text-center">
+              Sharing With:
+              {sharedUser.firstName}
+              <Button
+                className="ms-2"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSharedUser(undefined);
+                  onUnShareLead();
+                }}
+              >
+                <X size={16} />
+              </Button>
+            </h4>
+          )}
+        </div>
+      )}
     </div>
   );
 };

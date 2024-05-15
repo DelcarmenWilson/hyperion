@@ -3,7 +3,12 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { CarrierSchema, MedicalConditionSchema, QuoteSchema } from "@/schemas";
+import {
+  CarrierSchema,
+  MedicalConditionSchema,
+  QuoteSchema,
+  TermCarrierSchema,
+} from "@/schemas";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 
 export const admin = async () => {
@@ -244,16 +249,20 @@ export const adminCarrierUpdateById = async (
     return { error: "Invalid fields!" };
   }
 
-  const { id,name, description,website,portal } = validatedFields.data;
+  const { id, name, description, website, portal } = validatedFields.data;
 
   const existingCarrier = await db.carrier.findUnique({ where: { id } });
   if (!existingCarrier) {
     return { error: "Carrier does not exists" };
   }
 
- await db.carrier.update({where: { id },
+  await db.carrier.update({
+    where: { id },
     data: {
-      name, description,website,portal
+      name,
+      description,
+      website,
+      portal,
     },
   });
 
@@ -278,9 +287,11 @@ export const adminMedicalInsert = async (
     return { error: "Invalid fields!" };
   }
 
-  const {  name, description } = validatedFields.data;
+  const { name, description } = validatedFields.data;
 
-  const existingCondition = await db.medicalCondition.findFirst({ where: { name } });
+  const existingCondition = await db.medicalCondition.findFirst({
+    where: { name },
+  });
   if (existingCondition) {
     return { error: "Condition already exists" };
   }
@@ -288,18 +299,20 @@ export const adminMedicalInsert = async (
   const condition = await db.medicalCondition.create({
     data: {
       name,
-      description:description as string,
+      description: description as string,
     },
   });
 
   return { success: condition };
 };
-export const adminMedicalImport = async (values: z.infer<typeof MedicalConditionSchema>[]) => {
+export const adminMedicalImport = async (
+  values: z.infer<typeof MedicalConditionSchema>[]
+) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
   }
-  
+
   const conditions = await db.medicalCondition.createMany({
     data: values,
     skipDuplicates: true,
@@ -310,9 +323,7 @@ export const adminMedicalImport = async (values: z.infer<typeof MedicalCondition
 };
 
 //QUOTES
-export const adminQuoteInsert = async (
-  values: z.infer<typeof QuoteSchema>
-) => {
+export const adminQuoteInsert = async (values: z.infer<typeof QuoteSchema>) => {
   const user = await currentUser();
 
   if (!user) {
@@ -329,7 +340,7 @@ export const adminQuoteInsert = async (
 
   const { quote, author } = validatedFields.data;
 
-  const existingQuote= await db.quote.findFirst({ where: { quote } });
+  const existingQuote = await db.quote.findFirst({ where: { quote } });
   if (existingQuote) {
     return { error: "Quote already exists" };
   }
@@ -337,23 +348,103 @@ export const adminQuoteInsert = async (
   const newQuote = await db.quote.create({
     data: {
       quote,
-      author    },
+      author,
+    },
   });
 
   return { success: newQuote };
 };
 
-export const adminQuoteUpdateActive = async () => {  
+export const adminQuoteUpdateActive = async () => {
   const quotes = await db.quote.findMany({});
-  const random=Math.floor(Math.random()*quotes.length)
-  const randomQuote=quotes[random]     
+  const random = Math.floor(Math.random() * quotes.length);
+  const randomQuote = quotes[random];
 
-  const activeQuote=quotes.find(e=>e.active)
-  if(activeQuote){
-    await db.quote.update({where:{id:activeQuote.id},data:{active:false}})
+  const activeQuote = quotes.find((e) => e.active);
+  if (activeQuote) {
+    await db.quote.update({
+      where: { id: activeQuote.id },
+      data: { active: false },
+    });
   }
-  const newQuote=await db.quote.update({where:{id:randomQuote.id},data:{active:true}}) 
+  const newQuote = await db.quote.update({
+    where: { id: randomQuote.id },
+    data: { active: true },
+  });
 
-  return { success: newQuote};
+  return { success: newQuote };
 };
 
+//TERM CARRIER
+export const adminTermCarrierInsert = async (
+  values: z.infer<typeof TermCarrierSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role == "USER") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = TermCarrierSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { carrierId, conditionId, requirements } = validatedFields.data;
+
+  const existingCarrier = await db.termCarrier.findFirst({
+    where: { carrierId, conditionId },
+  });
+  if (existingCarrier) {
+    return { error: "Term Carrier already exists" };
+  }
+
+  const termCarrier = await db.termCarrier.create({
+    data: {
+      carrierId,
+      conditionId,
+      requirements,
+    },
+    include: { carrier: true, condition: true },
+  });
+
+  return { success: termCarrier };
+};
+export const adminTermCarrierUpdateById = async (
+  values: z.infer<typeof TermCarrierSchema>
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role == "USER") {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = TermCarrierSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id, carrierId, conditionId, requirements } = validatedFields.data;
+
+  const existingCarrier = await db.termCarrier.findUnique({ where: { id } });
+  if (!existingCarrier) {
+    return { error: "Term Carrier does not exists" };
+  }
+
+  await db.termCarrier.update({
+    where: { id },
+    data: {
+      carrierId,
+      conditionId,
+      requirements,
+    },
+  });
+
+  return { success: "Term Carrier updated" };
+};

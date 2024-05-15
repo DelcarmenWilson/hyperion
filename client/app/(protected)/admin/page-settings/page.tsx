@@ -14,13 +14,16 @@ import {
   adminLeadStatusGetAll,
   adminMedicalConditionsGetAll,
   adminQuotesGetAll,
+  adminTermCarriersGetAll,
 } from "@/data/admin";
+import { TermCarrierClient } from "./components/term/client";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();
   const leadstatus = await adminLeadStatusGetAll();
   const medical = await adminMedicalConditionsGetAll();
   const quotes = await adminQuotesGetAll();
+  const termCarriers = await adminTermCarriersGetAll();
   return (
     <PageLayoutAdmin
       title="Page Settings"
@@ -33,9 +36,10 @@ const PageSettings = async () => {
         </Button>
       }
     >
-      <Tabs defaultValue="carriers" className="mx-2">
+      <Tabs defaultValue="term" className="mx-2">
         <TabsList className="flex w-full">
           <TabsTrigger value="carriers">Carriers</TabsTrigger>
+          <TabsTrigger value="term">Term Sheet</TabsTrigger>
           <TabsTrigger value="leadStatus">Lead Status</TabsTrigger>
           <TabsTrigger value="medical">Conditions</TabsTrigger>
           <TabsTrigger value="quotes">Quotes</TabsTrigger>
@@ -43,6 +47,9 @@ const PageSettings = async () => {
         <div className="px-2">
           <TabsContent value="carriers">
             <CarrierClient initCarriers={carriers} />
+          </TabsContent>
+          <TabsContent value="term">
+            <TermCarrierClient initTermCarriers={termCarriers} />
           </TabsContent>
 
           <TabsContent value="leadStatus">

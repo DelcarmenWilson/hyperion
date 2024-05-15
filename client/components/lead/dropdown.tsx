@@ -13,6 +13,7 @@ import {
   Download,
   FileBarChart,
   FileText,
+  Share,
   Trash,
   X,
 } from "lucide-react";
@@ -43,6 +44,7 @@ import {
 import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 import { useCurrentRole } from "@/hooks/user-current-role";
+import { ShareForm } from "./forms/share-form";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -55,7 +57,8 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const useAppointment = useAppointmentModal();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [intakeDialogOpen, setIntakeDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
@@ -104,13 +107,26 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
         loading={loading}
         height="h-auto"
       />
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={intakeDialogOpen} onOpenChange={setIntakeDialogOpen}>
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold py-2">
             Intake Form -{" "}
             <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
           </h3>
           <IntakeForm lead={lead} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
+          <h3 className="text-2xl font-semibold py-2">
+            Share Lead -{" "}
+            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
+          </h3>
+          <ShareForm
+            leadId={lead.id}
+            sharedUser={lead.sharedUser}
+            onClose={() => setShareDialogOpen(false)}
+          />
         </DialogContent>
       </Dialog>
       <DropdownMenu>
@@ -130,7 +146,14 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer gap-2"
-            onClick={() => setDialogOpen(true)}
+            onClick={() => setShareDialogOpen(true)}
+          >
+            <Share size={16} />
+            Share Lead
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer gap-2"
+            onClick={() => setIntakeDialogOpen(true)}
           >
             <BookText size={16} />
             Intake Form

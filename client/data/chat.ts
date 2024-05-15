@@ -9,10 +9,17 @@ export const chatsGetByUserId = async () => {
       return [];
     }
 
-    const chats = await db.user.findMany({
-      where: { id: user.id },
-      select: { chats: { orderBy: { updatedAt: "desc" } } },
-    //   select: { chats: { include:{users:true}, orderBy: { updatedAt: "desc" } } },
+    const chats = await db.chat.findMany({
+      where: {
+        OR: [
+          {
+            userOne: { id: user.id },
+          },
+          {
+            userTwo: { id: user.id },
+          },
+        ],
+      },include:{userOne:true,userTwo:true}
     });
 
     return chats;
@@ -29,6 +36,11 @@ export const chatGetById = async (id: string) => {
     }
     const chat = await db.chat.findUnique({
       where: { id },
+      include: {
+        messages: { include: { sender: true } },
+        userOne: true,
+        userTwo: true,
+      },
     });
     return chat;
   } catch (error) {

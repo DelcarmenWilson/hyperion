@@ -104,8 +104,8 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
         dateOfBirth,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         userId: user.id,
-        height:"",
-        weight:""
+        height: "",
+        weight: "",
       },
     });
   }
@@ -509,7 +509,7 @@ export const leadUpdateByIdPolicyInfo = async (
   if (parseInt(ap) > 0) {
     await db.lead.update({
       where: { id: leadId },
-      data: { status: "Sold", assistant: null },
+      data: { status: "Sold", assistant: { disconnect: true } },
     });
   }
   const existingPolicy = await db.leadPolicy.findUnique({ where: { leadId } });
@@ -851,6 +851,7 @@ export const leadExpenseInsertSheet = async (leadId: string) => {
 
   return { success: newLeadExpenses };
 };
+
 export const leadExpenseInsert = async (
   values: z.infer<typeof LeadExpenseSchema>
 ) => {
@@ -924,3 +925,29 @@ export const leadExpenseDeleteById = async (id: string) => {
   return { success: `${deletedExpense.type} deleted!` };
 };
 
+//LEAD ASSISTANT AND SHARE
+export const leadUpdateByIdShare = async (id: string, userId: string|null|undefined) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+
+  if(!userId){
+    await db.lead.update({
+      where: { id },
+      data: {
+        sharedUser:{disconnect:true} ,
+      },
+    });
+    return { success: " Lead sharing has ben deactivated!" };
+  }
+  await db.lead.update({
+    where: { id },
+    data: {
+      sharedUserId: userId ,
+    },
+  });
+
+  return { success: " Lead is now shared!" };
+};

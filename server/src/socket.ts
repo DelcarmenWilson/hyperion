@@ -37,7 +37,7 @@ export class ServerSocket {
       "handshake",
       (userId, role, callback: (uid: string, users: User[]) => void) => {
         console.info("Handshake received from: " + socket.id, userId);
-        
+
         const reconnected = this.users.find((e) => e.sid == socket.id);
 
         if (reconnected) {
@@ -77,7 +77,7 @@ export class ServerSocket {
     socket.on("coach-request", (lead, conference) => {
       const uid = this.GetUidFromSocketId(socket.id);
       const users = this.users.filter((e) => e.role == "admin" && e.id != uid);
-      this.SendMessage("coach-request-received", users,  {lead, conference} );
+      this.SendMessage("coach-request-received", users, { lead, conference });
     });
     socket.on("coach-joined", (userId, conferenceId, coachId, coachName) => {
       const uid = this.GetSocketIdFromUid(userId);
@@ -92,6 +92,34 @@ export class ServerSocket {
       this.SendUserMessage("coach-reject-received", uid, {
         coachName,
         reason,
+      });
+    });
+    //CHAT MESSAGES
+    socket.on("chat-message-sent", (userId, message) => {
+      const uid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("chat-message-received", uid, {
+        message,
+      });
+    });
+    //LEAD SHARING
+    socket.on("lead-shared", (userId, leadId, sharedUser) => {
+      const uid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("lead-shared-received", uid, {
+        leadId,
+        sharedUser,
+      });
+      socket.emit("lead-shared-received", uid, {
+        leadId,
+        sharedUser,
+      });
+    });
+    socket.on("lead-unshared", (userId, leadId) => {
+      const uid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("lead-unshared-received", uid, {
+        leadId,
+      });
+      socket.emit("lead-shared-received", uid, {
+        leadId,
       });
     });
   };
@@ -119,8 +147,6 @@ export class ServerSocket {
     if (!sid) return;
     console.info("Emitting event: " + name + " to", sid);
 
-    payload
-      ? this.io.to(sid).emit(name, payload)
-      : this.io.to(sid).emit(name);
+    payload ? this.io.to(sid).emit(name, payload) : this.io.to(sid).emit(name);
   };
 }

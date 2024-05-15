@@ -28,7 +28,7 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         if (find(current, { id: updatedConvo.id })) {
           const convo = current.find((e) => e.id == updatedConvo.id);
           const index = current.findIndex((e) => e.id == updatedConvo.id);
-          if (!convo) {
+          if (!convo || index == -1) {
             return current;
           }
           convo.message = updatedConvo.lastMessage!;

@@ -419,3 +419,10 @@ export const ChatMessageSchema = z.object({
   attachment: z.optional(z.string()),
   senderId: z.string(),
 });
+//TERM CARRIERS
+export const TermCarrierSchema = z.object({
+  id: z.optional(z.string()),
+  carrierId: z.string().min(2, "*"),
+  conditionId: z.string().min(2, "*"),
+  requirements:z.string().min(2, "*"),
+});

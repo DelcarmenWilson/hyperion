@@ -1,4 +1,5 @@
 import {
+  FullChatMessage,
   FullLeadMedicalCondition,
   FullTeam,
   FullUserCarrier,
@@ -37,7 +38,10 @@ type UserEvents = {
   licenseInserted: [info: UserLicense];
   licenseUpdated: [info: UserLicense];
   mainInfoUpdated: [info: LeadMainInfo];
+  chatMessageInserted: [info: FullChatMessage];
   messageInserted: [info: Message];
+
+  
   policyInfoUpdated: [info: LeadPolicyInfo];
   templateDeleted: [id: string];
   templateInserted: [info: UserTemplate];

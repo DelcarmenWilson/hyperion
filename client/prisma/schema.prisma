@@ -80,8 +80,12 @@ model User {
   appointments  Appointment[]
   activities    Activity[]
 
-  //USER CONVERSATIONS
-  chats        Chat[]
+  assistants  Lead[] @relation("LeadAssistant")
+  sharedUsers Lead[] @relation("LeadSharedUser")
+
+  //CHAT MESSAGES
+  userOne      Chat[]        @relation("uesrOneChat")
+  userTwo      Chat[]        @relation("uesrTwoChat")
   chatMessages ChatMessage[]
 
   //USER COLUMNS
@@ -361,11 +365,6 @@ model Lead {
   defaultNumber String
   notes         String?
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  assistant String?
-
   beneficiaries LeadBeneficiary[]
   conditions    LeadMedicalCondition[]
   expenses      LeadExpense[]
@@ -374,6 +373,15 @@ model Lead {
   calls         Call[]
   activities    Activity[]
   policy        LeadPolicy?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  assistantId String?
+  assistant   User?   @relation(name: "LeadAssistant", fields: [assistantId], references: [id])
+
+  sharedUserId String?
+  sharedUser   User?   @relation(name: "LeadSharedUser", fields: [sharedUserId], references: [id])
 
   recievedAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -638,8 +646,10 @@ model MedicalCondition {
   name           String                 @unique
   description    String?
   leadConditions LeadMedicalCondition[] @relation("LeadToCondition")
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
+  termCarriers   TermCarrier[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Carrier {
@@ -651,6 +661,7 @@ model Carrier {
   portal      String @default("")
 
   userCarriers UserCarrier[]
+  termCarriers TermCarrier[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -758,9 +769,15 @@ model Chat {
   isGroup     Boolean
   messages    ChatMessage[]
   lastMessage String?       @db.LongText
-  users       User[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+
+  userOneId String
+  userOne   User   @relation("uesrOneChat", fields: [userOneId], references: [id])
+
+  userTwoId String
+  userTwo   User     @relation("uesrTwoChat", fields: [userTwoId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String?
 }
 
 model ChatMessage {
@@ -777,4 +794,17 @@ model ChatMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+//GRID TERM SHEET
+model TermCarrier {
+  id        String  @id @default(cuid())
+  carrierId String
+  carrier   Carrier @relation(fields: [carrierId], references: [id])
+
+  conditionId  String
+  condition    MedicalCondition @relation(fields: [conditionId], references: [id])
+  requirements String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }

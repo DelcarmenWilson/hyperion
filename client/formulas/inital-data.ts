@@ -141,7 +141,8 @@ export const convertLeads = (result: any): Lead[] => {
       vendor: d["vendor"],
       weight: d["weight"],
       status: d["status"],
-      assistant: d["assistant"],
+      assistantId: d["assistantId"],
+      sharedUserId: d["sharedUserId"],
     };
     mapped.push(newobj);
   });

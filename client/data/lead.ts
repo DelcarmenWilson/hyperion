@@ -22,7 +22,9 @@ export const leadsGetAll = async () => {
 export const leadsGetAllByAgentId = async (userId: string) => {
   try {
     const leads = await db.lead.findMany({
-      where: { OR: [{ userId }, { assistant: userId }] },
+      where: {
+        OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
+      },
       include: {
         conversation: true,
         appointments: { where: { status: "scheduled" } },
@@ -31,7 +33,9 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         beneficiaries: true,
         expenses: true,
         conditions: { include: { condition: true } },
-        policy:true  
+        policy: true,
+        assistant: true,
+        sharedUser: true,
       },
     });
     return leads;
@@ -83,7 +87,9 @@ export const leadGetById = async (id: string) => {
         expenses: true,
         beneficiaries: true,
         conditions: { include: { condition: true } },
-        policy:true        
+        policy: true,
+        assistant: true,
+        sharedUser: true,
       },
     });
 
@@ -106,7 +112,7 @@ export const leadGetByPhone = async (cellPhone: string) => {
         expenses: true,
         beneficiaries: true,
         conditions: { include: { condition: true } },
-        policy:true        
+        policy: true,
       },
     });
 
@@ -118,13 +124,12 @@ export const leadGetByPhone = async (cellPhone: string) => {
 
 export const leadGetPrevNextById = async (id: string) => {
   try {
-    const user=await currentUser()
-    if(!user)
-      return null
-let userId=user.id
-if(user.role=="ASSISTANT"){
-  userId=(await userGetByAssistant(userId))as string
-}
+    const user = await currentUser();
+    if (!user) return null;
+    let userId = user.id;
+    if (user.role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
     const prev = await db.lead.findMany({
       take: 1,
       select: { id: true },
@@ -176,10 +181,9 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
 // LEADSTATUS
 export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
   try {
-    
-     const temp=(await userGetByAssistant(userId))as string
-     if(temp)userId=temp
-    
+    const temp = (await userGetByAssistant(userId)) as string;
+    if (temp) userId = temp;
+
     const leadStatus = await db.leadStatus.findMany({
       where: { OR: [{ userId }, { type: { equals: "default" } }] },
     });

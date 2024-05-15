@@ -1,15 +1,24 @@
 "use client";
-import { ShortChat } from "@/types";
-import { differenceInDays, format, formatDistance, subDays } from "date-fns";
-import Link from "next/link";
 import React from "react";
+import { formatDistance } from "date-fns";
+import Link from "next/link";
+import { ShortChat } from "@/types";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 type ChatCardProps = {
   chat: ShortChat;
 };
 export const ChatCard = ({ chat }: ChatCardProps) => {
+  const user = useCurrentUser();
+  const otherUser = chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
+  const initials = `${otherUser.firstName.substring(
+    0,
+    1
+  )} ${otherUser.lastName.substring(0, 1)}`;
+  const fullName = `${otherUser.firstName} ${otherUser.lastName}`;
   return (
     <Link
-      href={`/chats/${chat.id}`}
+      href={`/chat/${chat.id}`}
       className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
     >
       <div className="flex justify-between items-center">
@@ -20,8 +29,8 @@ export const ChatCard = ({ chat }: ChatCardProps) => {
             </span>
           )} */}
 
-          <div className="flex-center bg-primary text-accent rounded-full p-1 mr-2">
-            <span className="text-lg font-semibold">{chat.name}</span>
+          <div className="flex-center  h-10 w-10 text-lg font-bold bg-primary text-accent rounded-full">
+            {initials}
           </div>
         </div>
         <div className="text-sm">
@@ -30,12 +39,12 @@ export const ChatCard = ({ chat }: ChatCardProps) => {
               addSuffix: true,
             })}
           </p>
-          <p className="font-semibold">{chat.name}</p>
+          <p className="font-semibold">{fullName}</p>
         </div>
       </div>
       <div className=" flex flex-col">
         <span className=" text-muted-foreground text-sm truncate overflow-hidden">
-          {chat.lastMessage}
+          {chat.lastMessage || "new message"}
         </span>
         {/*<span>{chat.updatedAt.toString()}</span> */}
       </div>

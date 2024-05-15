@@ -1,5 +1,6 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
+import SocketContext from "@/providers/socket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 
@@ -7,7 +8,6 @@ import { CoachNotification } from "./phone/coach-notification";
 import { TwilioShortConference } from "@/types/twilio";
 import { FullLeadNoConvo } from "@/types";
 import { toast } from "sonner";
-import SocketContext from "@/providers/socket";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
