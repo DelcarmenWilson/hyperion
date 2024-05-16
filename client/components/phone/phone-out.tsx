@@ -28,7 +28,14 @@ import SocketContext from "@/providers/socket";
 export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { lead, conference, setConference, setParticipants } = usePhone();
+  const {
+    autoCall,
+    setAutoCall,
+    lead,
+    conference,
+    setConference,
+    setParticipants,
+  } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const [onCall, setOnCall] = useState(false);
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
@@ -214,13 +221,28 @@ export const PhoneOut = () => {
     newCall.on("disconnect", onDisconnect);
     setOnCall(true);
     setCall(newCall);
+    //TODO -remove after testing has been completed
+    console.log(
+      "phone:",
+      phone,
+      "conference:",
+      conference,
+      "call:",
+      call,
+      "newCall:",
+      newCall
+    );
   };
 
   useEffect(() => {
     onCheckNumber();
     startupClient();
-    if (conference) {
+    //IF autocall is set to true dil the conference associated with the call..
+    if (autoCall) {
+      //TODO - dont forget to remove after testing
+      console.log(autoCall);
       onStartConference();
+      setAutoCall(false);
     }
 
     socket?.on(
@@ -239,6 +261,7 @@ export const PhoneOut = () => {
         onGetParticipants(data.conferenceId);
       }
     );
+
     // eslint-disable-next-line
   }, []);
 

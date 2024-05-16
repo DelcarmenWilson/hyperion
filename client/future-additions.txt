@@ -2,7 +2,14 @@ Jhonni
     - working on prompt enginering
     - working on workflow
     
-
+-- work on lead sharing websocket (front end part)
+--work on blocking incoming blocked calls
+-- add the phone number from a  unknown caller
+-- add filter to the calls log based on type, sorting by length
+-- add timer to phoneOut calls
+-- phoneIn not coming out
+-- switching from sms back to phone disables the phone controls
+-- fix the user Emmiter
 Assisted Coacing
     - request coach
      - should be requested to eveyone who is CTE
