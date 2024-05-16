@@ -27,11 +27,9 @@ import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
 import { cn } from "@/lib/utils";
 import { PhoneLeadInfo } from "./addins/lead-info";
-import { ConferenceList } from "./conference/list";
-import { ParticipantList } from "./participant/list";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
-import { TwilioConference } from "@/types/twilio";
 
 export const PhoneInModal = () => {
   const user = useCurrentUser();
@@ -47,9 +45,6 @@ export const PhoneInModal = () => {
   const [from, setFrom] = useState<{ name: string; number: string }>();
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
-
-  const [conferences, setConferences] = useState<TwilioConference[]>();
-  const [participants, setParticipants] = useState();
 
   const addDeviceListeners = () => {
     if (!phone) return;
@@ -88,7 +83,7 @@ export const PhoneInModal = () => {
           number: data.cellPhone || incomingCall.parameters.From,
         });
       }
-
+      console.log("we are herer");
       onPhoneInOpen();
       setCall(incomingCall);
     });
@@ -108,32 +103,12 @@ export const PhoneInModal = () => {
     call?.accept();
     setOnCall(true);
     setRunning(true);
-    console.log(call);
   };
-  ///Disconnect an in progress call - Direct the call to voicemail
+  //Disconnect an in progress call - Direct the call to voicemail
   const onIncomingCallReject = () => {
     call?.reject();
     setOnCall(false);
     onPhoneInClose();
-  };
-  ///Testing getting conferences
-  const onGetConferences = () => {
-    axios.post("/api/twilio/conference", {}).then((response) => {
-      const data = response.data as TwilioConference[];
-      setConferences(data);
-    });
-  };
-
-  const onStarted = () => {
-    if (!phone) return;
-
-    const call = phone.connect({
-      agentId: user?.id!,
-      direction: "conference",
-    });
-
-    call.on("disconnect", onCallDisconnect);
-    setCall(call);
   };
 
   useEffect(() => {
@@ -149,29 +124,9 @@ export const PhoneInModal = () => {
   }, [running]);
 
   useEffect(() => {
-    ///Testing getting participants
-    const onGetParticipants = (conferenceId: string) => {
-      axios
-        .post("/api/twilio/conference/participant", {
-          conferenceId: conferenceId,
-        })
-        .then((response) => {
-          const data = response.data;
-          setParticipants(data);
-        });
-    };
-
+    if (phone?.status() == "busy") return;
     addDeviceListeners();
-    userEmitter.on("participantsFetch", (conferenceId) =>
-      onGetParticipants(conferenceId)
-    );
-    return () => {
-      userEmitter.off("participantsFetch", (conferenceId) =>
-        onGetParticipants(conferenceId)
-      );
-    };
-    // eslint-disable-next-line
-  }, []);
+  }, [addDeviceListeners]);
 
   //TODO - dont forget to remove this test data....
   // useEffect(() => {
@@ -219,7 +174,6 @@ export const PhoneInModal = () => {
               showLeadInfo ? "" : "items-center"
             )}
           >
-            {conferences && <ConferenceList conferences={conferences} />}
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-500"
@@ -361,7 +315,6 @@ export const PhoneInModal = () => {
                 )}
               </Dialog.Panel>
             </Transition.Child>
-            {participants && <ParticipantList onClose={() => {}} />}
           </div>
         </div>
       </Dialog>

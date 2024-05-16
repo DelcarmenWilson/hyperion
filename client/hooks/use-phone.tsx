@@ -35,7 +35,6 @@ type phoneStore = {
   participants?: TwilioParticipant[];
   setConference: (e?: TwilioShortConference) => void;
   setParticipants: (e?: TwilioParticipant[]) => void;
-  setAutoCall: (e: boolean) => void;
 };
 
 export const usePhone = create<phoneStore>((set) => ({
@@ -64,5 +63,4 @@ export const usePhone = create<phoneStore>((set) => ({
   onSetIndex: (e) => set({ pipeIndex: e }),
   setConference: (e) => set({ conference: e }),
   setParticipants: (e) => set({ participants: e }),
-  setAutoCall: (e) => set({ autoCall: e }),
 }));
