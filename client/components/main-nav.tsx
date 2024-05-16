@@ -12,8 +12,7 @@ import { toast } from "sonner";
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { onPhoneInOpen, onPhoneOutOpen, conference, setConference } =
-    usePhone();
+  const { onPhoneOutConference, conference, setConference } = usePhone();
 
   //COACH NOTIFICATION
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -21,7 +20,7 @@ export const MainNav = () => {
 
   const onJoinCall = () => {
     setIsNotificationOpen(false);
-    onPhoneOutOpen(lead, conference);
+    onPhoneOutConference(lead, conference);
   };
   const onRejectCall = (reason: string) => {
     setIsNotificationOpen(false);
@@ -29,19 +28,15 @@ export const MainNav = () => {
   };
 
   useEffect(() => {
-    if (user?.role == "ADMIN") {
-      socket?.on(
-        "coach-request-received",
-        (data: {
-          lead: FullLeadNoConvo;
-          conference: TwilioShortConference;
-        }) => {
-          setConference(data.conference);
-          setLead(data.lead);
-          setIsNotificationOpen(true);
-        }
-      );
-    }
+    socket?.on(
+      "coach-request-received",
+      (data: { lead: FullLeadNoConvo; conference: TwilioShortConference }) => {
+        setConference(data.conference);
+        setLead(data.lead);
+        setIsNotificationOpen(true);
+      }
+    );
+
     socket?.on(
       "coach-reject-received",
       (data: { coachName: string; reason: string }) => {
