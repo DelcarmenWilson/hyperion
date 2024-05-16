@@ -20,7 +20,14 @@ export const MainNav = () => {
 
   const onJoinCall = () => {
     setIsNotificationOpen(false);
-    onPhoneOutConference(lead, conference);
+    // onPhoneOutConference(lead, conference);
+    socket?.emit(
+      "coach-joined",
+      conference?.agentId,
+      conference?.conferenceSid,
+      user?.id,
+      user?.name
+    );
   };
   const onRejectCall = (reason: string) => {
     setIsNotificationOpen(false);

@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     return NextResponse.json("Unauthorized", { status: 401 });
   }
   const body = await req.json();
-  const { conferenceId, from, to,label,record } = body;
+  const { conferenceId, from, to,label,earlyMedia,record,coaching,callSidToCoach} = body;
  
   const conference = await client
     .conferences(conferenceId)
@@ -19,10 +19,13 @@ export async function POST(req: Request) {
       //  statusCallbackEvent: ['ringing'],
       startConferenceOnEnter:true,
       endConferenceOnExit:true,
-      earlyMedia:true,
+      earlyMedia:earlyMedia,
       record: record,
       from: from,
       to: to,
+      coaching:coaching,
+      callSidToCoach
+
     });
   return NextResponse.json(conference, { status: 200 });
 }

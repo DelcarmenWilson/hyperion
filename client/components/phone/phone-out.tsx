@@ -28,14 +28,7 @@ import SocketContext from "@/providers/socket";
 export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const {
-    autoCall,
-    setAutoCall,
-    lead,
-    conference,
-    setConference,
-    setParticipants,
-  } = usePhone();
+  const { lead, conference, setConference, setParticipants } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const [onCall, setOnCall] = useState(false);
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
@@ -63,7 +56,7 @@ export const PhoneOut = () => {
       console.log("no phone number has been set up");
       return;
     }
-    addDeviceListeners;
+    addDeviceListeners();
   };
 
   const addDeviceListeners = () => {
@@ -109,6 +102,10 @@ export const PhoneOut = () => {
           from: selectedNumber as string,
           to: reFormatPhoneNumber(to.number),
           label: lead?.id,
+          record: true,
+          earlyMedia: true,
+          coaching: false,
+          callSidToCoach: null,
         })
         .then((response) => {
           const data = response.data as TwilioParticipant;
@@ -205,7 +202,7 @@ export const PhoneOut = () => {
 
     const newCall = phone.connect({
       Direction: "coach",
-      ConferenceId: conference.conferenceSid,
+      ConferenceId: conference.agentId,
       CallSidToCoach: conference.callSidToCoach as string,
       AgentName: `${user?.name} (Coach)`,
     });
@@ -234,37 +231,67 @@ export const PhoneOut = () => {
     );
   };
 
+  const onAddCoach = (coachId: string, coachName: string) => {
+    axios
+      .post("/api/twilio/voice/conference", {
+        conferenceId: user?.id as string,
+        from: lead?.cellPhone as string,
+        to: `client:${coachId}`,
+        label: coachId,
+        record: true,
+        earlyMedia: false,
+        coaching: true,
+        callSidToCoach: conference?.callSidToCoach,
+      })
+      .then((response) => {
+        const data = response.data as TwilioParticipant;
+
+        const updatedConference: TwilioShortConference = {
+          ...conference!,
+          coachId: coachId,
+          coachName: coachName,
+        };
+
+        setConference(updatedConference);
+        onGetParticipants(data.conferenceSid, data);
+        // setIsConferenceOpen(true);
+        chatSettingsUpdateCurrentCall(data.callSid);
+      });
+  };
   useEffect(() => {
     onCheckNumber();
     startupClient();
     //IF autocall is set to true dil the conference associated with the call..
-    if (autoCall) {
-      //TODO - dont forget to remove after testing
-      console.log(autoCall);
-      onStartConference();
-      setAutoCall(false);
-    }
+    // if (autoCall) {
+    //   //TODO - dont forget to remove after testing
+    //   console.log(autoCall);
+    //   onStartConference();
+    //   setAutoCall(false);
+    // }
 
-    socket?.on(
-      "coach-joined-received",
-      (data: { conferenceId: string; coachId: string; coachName: string }) => {
-        if (!conference) return;
-        if (conference.conferenceSid != data.conferenceId) return;
-
-        const updatedConference: TwilioShortConference = {
-          ...conference,
-          coachId: data.coachId,
-          coachName: data.coachName,
-        };
-
-        setConference(updatedConference);
-        onGetParticipants(data.conferenceId);
-      }
-    );
+    // socket?.on(
+    //   "coach-joined-received",
+    //   (data: { conferenceId: string; coachId: string; coachName: string }) => {
+    //     if (!conference) return;
+    //     if (conference.conferenceSid != data.conferenceId) return;
+    //     console.log(conference);
+    //     onAddCoach(data.coachId, data.coachName);
+    //   }
+    // );
 
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    socket?.on(
+      "coach-joined-received",
+      (data: { conferenceId: string; coachId: string; coachName: string }) => {
+        console.log(data.conferenceId, data.coachId, data.coachName);
+        if (!conference) return;
+        onAddCoach(data.coachId, data.coachName);
+      }
+    );
+  }, [socket, conference]);
   //TODO - Test data dont forget to remove
   // useEffect(() => {
   //   setConference(testConference);
