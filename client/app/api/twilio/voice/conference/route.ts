@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     return NextResponse.json("Unauthorized", { status: 401 });
   }
   const body = await req.json();
-  const { conferenceId, from, to,label,earlyMedia,record,coaching,callSidToCoach} = body;
+  const { conferenceId, from, to,label,earlyMedia,endConferenceOnExit,record,coaching,callSidToCoach} = body;
  
   const conference = await client
     .conferences(conferenceId)
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       //  statusCallback: 'https://myapp.com/events',
       //  statusCallbackEvent: ['ringing'],
       startConferenceOnEnter:true,
-      endConferenceOnExit:true,
+      endConferenceOnExit:endConferenceOnExit,
       earlyMedia:earlyMedia,
       record: record,
       from: from,
