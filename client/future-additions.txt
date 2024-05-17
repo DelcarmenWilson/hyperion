@@ -11,7 +11,7 @@ Jhonni
 -- switching from sms back to phone disables the phone controls
 -- need to remove all the excess stuff from the phoneContext and phone out and in
 -- fix the user Emmiter
-
+-- remove add assistant for everyone that is not an admin
 Assisted Coacing
     - request coach
      - should be requested to eveyone who is CTE

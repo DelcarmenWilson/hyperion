@@ -114,7 +114,7 @@ export const PhoneOut = () => {
             agentId: user?.id as string,
             agentName: user?.name as string,
             conferenceSid: data.conferenceSid,
-            callSidToCoach: data.callSid,
+            callSidToCoach: call.parameters.CallSid,
             coaching: false,
             leadId: lead?.id as string,
             leadName: to.name,
