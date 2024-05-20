@@ -28,6 +28,7 @@ import { SimpleFilter } from "@/components/tables/filter/simple";
 import { LeadFilter } from "@/components/tables/filter/lead";
 import { SimplePagination } from "./pagination/simple";
 import { cn } from "@/lib/utils";
+import { CallFilter } from "./filter/call";
 
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
@@ -39,7 +40,7 @@ type DataTableProps<TData, TValue> = {
   hidden?: VisibilityState;
   placeHolder?: string;
   striped?: boolean;
-  filterType?: "advance" | "lead" | "simple";
+  filterType?: "advance" | "lead" | "simple" | "call";
   paginationType?: "advance" | "lead" | "simple";
 };
 
@@ -104,6 +105,7 @@ export function DataTable<TData, TValue>({
             )}
           </div>
           {filterType == "lead" && <LeadFilter table={table} />}
+          {filterType == "call" && <CallFilter table={table} />}
           {topMenu}
         </div>
       </div>

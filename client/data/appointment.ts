@@ -3,9 +3,9 @@ import { currentRole } from "@/lib/auth";
 
 import { UserRole } from "@prisma/client";
 import { userGetByAssistant } from "@/data/user";
-import { getToday } from "@/formulas/dates";
+import { getEntireDay, getToday } from "@/formulas/dates";
 
-//DATA
+//APPOINTMENTS
 export const appointmentsGetAll = async () => {
   try {
     const appointments = await db.appointment.findMany({
@@ -48,7 +48,7 @@ export const appointmentsGetByUserIdFiltered = async (
     const fromDate = new Date(from);
     const toDate = new Date(to);
     const appointments = await db.appointment.findMany({
-      where: { agentId: userId, date: { lte: toDate, gte: fromDate } },
+      where: { agentId: userId, startDate: { lte: toDate, gte: fromDate } },
       include: { lead: true },
       orderBy: { createdAt: "desc" },
     });
@@ -70,7 +70,7 @@ export const appointmentsGetAllByUserIdUpcoming = async (
     const today = getToday();
 
     const appointments = await db.appointment.findMany({
-      where: { agentId, status: "Scheduled", date: { gte: today } },
+      where: { agentId, status: "Scheduled", startDate: { gte: today } },
     });
 
     return appointments;
@@ -81,14 +81,31 @@ export const appointmentsGetAllByUserIdUpcoming = async (
 
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
   try {
-    let today = getToday();
-
+    const today = getEntireDay();
     const appointments = await db.appointment.findMany({
-      where: { agentId, status: "scheduled", createdAt: today },
+      where: { agentId, status: "scheduled", createdAt: {lt:today.end,gt:today.start} },
       include: { agent: true, lead: true },
     });
 
     return appointments;
+  } catch {
+    return [];
+  }
+};
+
+//APPOINTMENT LABELS
+
+export const appointmentLabelsGetAllByUserId = async (userId: string) => {
+  try {
+    const role = await currentRole();
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const labels = await db.appointmentLabel.findMany({
+      where: { userId },
+    });
+
+    return labels;
   } catch {
     return [];
   }

@@ -3,18 +3,14 @@ Jhonni
     - working on workflow
     
 -- work on lead sharing websocket (front end part)
---work on blocking incoming blocked calls
+-- work on blocking incoming blocked calls
 -- add the phone number from a  unknown caller
--- add filter to the calls log based on type, sorting by length
--- add timer to phoneOut calls
--- phoneIn not coming out
 -- switching from sms back to phone disables the phone controls
 -- need to remove all the excess stuff from the phoneContext and phone out and in
 -- fix the user Emmiter
--- remove add assistant for everyone that is not an admin
-Assisted Coacing
-    - request coach
-     - should be requested to eveyone who is CTE
+-- work on the expenses (calculation is way off)
+-- calls not being able to be shared user profile
+-- work on the calendar some more before uploading
 
 Chat
     - make sure the autochat does not respond to similar messages that are sent back to back

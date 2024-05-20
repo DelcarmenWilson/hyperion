@@ -1,8 +1,24 @@
 import type { Config } from "tailwindcss"
 import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
-
+const labelsClasses = [
+  "indigo",
+  "gray",
+  "green",
+  "blue",
+  "red",
+  "purple",
+];
 const config = {
+  // purge: {
+  //   //Because we made a dynamic class with the label we need to add those clases
+  //   // to the safe list so the purge does not remove that
+  //   safelist: [
+  //     ...labelsClasses.map((lbl) => `bg-${lbl}-500`),
+  //     ...labelsClasses.map((lbl) => `bg-${lbl}-200`),
+  //     ...labelsClasses.map((lbl) => `text-${lbl}-400`)
+  //   ],
+  // },
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -138,7 +154,9 @@ const config = {
           "conic-gradient(from 225deg, #FFC876, #79FFF7, #9F53FF, #FF98E2, #FFC876)",hero: "url('/assets/background/hero.png')",
           pentagon: "url('/assets/background/pentagon.jpg')",
           user:"url('/assets/defaults/teamBanner.jpg')"
-      },
+      },gridTemplateColumns: {
+        "1/5": "1fr 5fr"
+      }
     },
   },
   plugins: [require("tailwindcss-animate"),plugin(function ({ addBase, addComponents, addUtilities }) {

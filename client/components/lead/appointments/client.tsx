@@ -1,4 +1,7 @@
 "use client";
+import { Calendar } from "lucide-react";
+
+import { PageLayout } from "@/components/custom/layout/page-layout";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { columns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,15 +12,18 @@ import { useEffect, useState } from "react";
 import { find } from "lodash";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { TopMenu } from "./top-menu";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
   showDate?: boolean;
+  showLink?: boolean;
 };
 
 export const AppointmentClient = ({
   data,
   showDate = false,
+  showLink = false,
 }: AppointmentClientProps) => {
   const [appointments, setAppointments] = useState(data);
   const user = useCurrentUser();
@@ -34,12 +40,18 @@ export const AppointmentClient = ({
   }, [user?.id]);
 
   return (
-    <DataTable
-      columns={columns}
-      data={appointments}
-      headers
-      topMenu={showDate ? <DatesFilter link="/appointments" /> : null}
-    />
+    <PageLayout
+      title="Appointments"
+      icon={Calendar}
+      topMenu={<TopMenu showLink={showLink} />}
+    >
+      <DataTable
+        columns={columns}
+        data={appointments}
+        headers
+        topMenu={showDate ? <DatesFilter link="/appointments" /> : null}
+      />
+    </PageLayout>
   );
 };
 

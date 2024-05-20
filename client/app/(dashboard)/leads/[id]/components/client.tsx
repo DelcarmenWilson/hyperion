@@ -58,7 +58,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     smoker: lead.smoker,
     leadName: leadName,
     lastCall: lead?.calls[0]?.createdAt,
-    nextAppointment: lead?.appointments[0]?.date,
+    nextAppointment: lead?.appointments[0]?.startDate,
   };
 
   const leadPolicy: LeadPolicyInfo = {

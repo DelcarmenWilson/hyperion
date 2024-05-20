@@ -63,7 +63,7 @@ export const AssistantForm = ({
           {assistant && (
             <div>
               <h4 className="text-md text-muted-foreground font-bold">
-                Currently Sharing Lead with:
+                Current Assistant:
               </h4>
               <p className="font-bold text-lg  text-center">
                 {assistant.firstName} {assistant.lastName}

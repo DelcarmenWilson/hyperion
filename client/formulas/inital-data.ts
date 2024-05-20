@@ -190,7 +190,10 @@ export const convertAppointments = (result: any): Appointment[] => {
   result.data.map((d: any) => {
     const newobj: Appointment = {
       id: d["id"],
-      date: new Date(d["date"]),
+      startDate: new Date(d["startDate"]),
+      endDate: new Date(d["startDate"]),
+      title: d["title"],
+      label: d["label"],
       agentId: d["agentId"],
       leadId: d["leadId"],
       status: d["status"],

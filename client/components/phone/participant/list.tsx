@@ -14,7 +14,7 @@ type ParticipantListProps = {
 };
 export const ParticipantList = ({ onClose }: ParticipantListProps) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { lead, conference, participants } = usePhone();
+  const { conference, participants } = usePhone();
 
   return (
     <div className="flex flex-col gap-2 bg-background w-full h-full overflow-hidden">
@@ -26,7 +26,7 @@ export const ParticipantList = ({ onClose }: ParticipantListProps) => {
           variant="outlineprimary"
           size="sm"
           onClick={() => {
-            socket?.emit("coach-request", lead, conference);
+            socket?.emit("coach-request", conference);
             toast.success("coach requested!");
           }}
         >

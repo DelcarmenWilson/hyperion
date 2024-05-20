@@ -1,13 +1,24 @@
 import { states } from "@/constants/states";
-import { differenceInYears, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
+import {
+  differenceInYears,
+  endOfMonth,
+  endOfWeek,
+  format,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 
-export const hyperionDate:string="MMMM do yyyy"
-export const getAge = (dateOfBirth: any):string => {
-  if(!dateOfBirth) return "NA"
-  return differenceInYears(new Date,dateOfBirth).toString()
+export const hyperionDate: string = "MMMM do yyyy";
+export const getAge = (dateOfBirth: any): string => {
+  if (!dateOfBirth) return "NA";
+  return differenceInYears(new Date(), dateOfBirth).toString();
 };
 
-export const concateDate = (date: Date, time: string,isAssistant:boolean=false): Date => {
+export const concateDate = (
+  date: Date,
+  time: string,
+  isAssistant: boolean = false
+): Date => {
   const prefix = time.substring(time.length - 2);
   const colonIdx = time.indexOf(":");
   let hours = parseInt(time.substring(0, colonIdx));
@@ -17,10 +28,10 @@ export const concateDate = (date: Date, time: string,isAssistant:boolean=false):
   if (prefix == "PM") {
     hours += 12;
   }
-  if(isAssistant){
-    hours=hours>12?hours-12:hours+12    
-  } 
-  
+  if (isAssistant) {
+    hours = hours > 12 ? hours - 12 : hours + 12;
+  }
+
   date.setHours(hours);
   date.setMinutes(minutes);
   date.setSeconds(0);
@@ -30,15 +41,15 @@ export const concateDate = (date: Date, time: string,isAssistant:boolean=false):
 
 export const weekStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-  const start=startOfWeek(curr)
-  const end =endOfWeek(curr)
+  const start = startOfWeek(curr);
+  const end = endOfWeek(curr);
 
   return { from: start, to: end };
 };
 export const monthStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-  const start=startOfMonth(curr)
-  const end=endOfMonth(curr)
+  const start = startOfMonth(curr);
+  const end = endOfMonth(curr);
   return { from: start, to: end };
 };
 
@@ -61,10 +72,19 @@ export const getTommorrow = (): Date => {
   return tommorrow;
 };
 
-export const getToday = (): Date => {
+
+export const  getToday = (): Date => {
   let today = new Date();
   today.setHours(0, 0);
   return today;
+};
+
+export const getEntireDay = (): { start: Date; end: Date } => {
+  let start = new Date();
+  start.setHours(0, 0, 0);
+  let end = new Date();
+  end.setHours(23, 59);
+  return { start, end };
 };
 
 export const getYesterday = (): Date => {

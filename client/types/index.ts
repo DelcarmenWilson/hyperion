@@ -99,8 +99,8 @@ export type FullLeadNoConvo = Lead & {
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
   policy: LeadPolicy | null;
-  assistant?:User| null;
-  sharedUser?:User| null;
+  assistant?: User | null;
+  sharedUser?: User | null;
 };
 
 export type FullLead = Lead & {
@@ -112,8 +112,8 @@ export type FullLead = Lead & {
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
   policy: LeadPolicy | null;
-  assistant?:User| null;
-  sharedUser?:User| null;
+  assistant?: User | null;
+  sharedUser?: User | null;
 };
 export type FullLeadMedicalCondition = LeadMedicalCondition & {
   condition: MedicalCondition;
@@ -245,7 +245,17 @@ export type UserSocket = {
   role: string;
 };
 //TERM CARRIER
-export type FullTermCarrier=TermCarrier&{
-  carrier:Carrier;
-  condition:MedicalCondition
-}
+export type FullTermCarrier = TermCarrier & {
+  carrier: Carrier;
+  condition: MedicalCondition;
+};
+//APOINTMENT CONTEXT
+export type CalendarEvent = {
+  id: string;
+  label: string;
+  [key: string]: any;
+};
+export type CalendarLabel = {
+  label: string;
+  checked: boolean;
+};

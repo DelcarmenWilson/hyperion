@@ -81,7 +81,7 @@ export const leadGetById = async (id: string) => {
       },
       include: {
         conversation: true,
-        appointments: { orderBy: { date: "desc" } },
+        appointments: { orderBy: { startDate: "desc" } },
         calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
@@ -106,7 +106,7 @@ export const leadGetByPhone = async (cellPhone: string) => {
       },
       include: {
         conversation: true,
-        appointments: { orderBy: { date: "desc" } },
+        appointments: { orderBy: { startDate: "desc" } },
         calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,

@@ -190,7 +190,7 @@ export const PhoneInModal = () => {
                 )}
               >
                 {showLeadInfo ? (
-                  <div className="flex flex-col gap-2 overflow-y-auto bg-white p-2 shadow-xl rounded-md text-sm relative">
+                  <div className="relative flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
                     <div className=" flex gap-2 absolute top-2 left-2 z-50">
                       <Button size="sm" onClick={() => setShowLeadInfo(false)}>
                         Return to call
@@ -228,7 +228,7 @@ export const PhoneInModal = () => {
                     <PhoneLeadInfo open={true} />
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2 overflow-y-auto bg-white p-2 shadow-xl rounded-md text-sm">
+                  <div className="flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
                     <div className="flex items-center gap-2">
                       <PhoneIncoming size={16} />
                       Incoming call from

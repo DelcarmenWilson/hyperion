@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   if (appointments) {
     appointments.forEach((app) => {
       client.messages.create({
-        body: `Appointment reminder - ${format(app.date,"MM-dd @ hh:mm aa")}`,
+        body: `Appointment reminder - ${format(app.startDate,"MM-dd @ hh:mm aa")}`,
         from: app.lead.defaultNumber,
         to: app.lead.cellPhone,
       });

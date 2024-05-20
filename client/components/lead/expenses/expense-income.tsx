@@ -36,8 +36,6 @@ export const ExpenseIncome = ({
     });
     let totalExp = total + e.value;
     setTotal(totalExp);
-    // onExpenseUpdated(type, totalExp);
-
     userEmitter.emit("expenseUpdated", type, totalExp);
 
     setIsOpen(false);

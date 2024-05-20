@@ -58,7 +58,10 @@ export const ExpensesClient = ({
   const onExpenseUpdated = (type: string, newValue: number) => {
     let expenseTotal = total.expenses;
     let incomeTotal = total.income;
-    if (type == "Expense") expenseTotal = newValue;
+    toast.success(
+      JSON.stringify({ exp: expenseTotal, inc: incomeTotal, ttl: total })
+    );
+    if (type.toLocaleLowerCase() == "expense") expenseTotal = newValue;
     else incomeTotal = newValue;
 
     calculateIncome(expenseTotal, incomeTotal);
@@ -75,7 +78,7 @@ export const ExpensesClient = ({
         onExpenseUpdated(type, total)
       );
     };
-  }, [data]);
+  }, []);
   return (
     <div>
       {data.expenses.length ? (

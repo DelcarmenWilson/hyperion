@@ -1,11 +1,10 @@
 import React from "react";
 import { currentUser } from "@/lib/auth";
-import { Calendar } from "lucide-react";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
 import { AppointmentClient } from "@/components/lead/appointments/client";
 import { appointmentsGetByUserIdFiltered } from "@/data/appointment";
 import { weekStartEnd } from "@/formulas/dates";
+import { CalendarClient } from "./components/calendar/client";
 
 const AppointmentsPage = async ({
   searchParams,
@@ -21,9 +20,8 @@ const AppointmentsPage = async ({
   const appointments = await appointmentsGetByUserIdFiltered(user.id, from, to);
 
   return (
-    <PageLayout title="Appointments" icon={Calendar}>
-      <AppointmentClient data={appointments} showDate />
-    </PageLayout>
+    //<AppointmentClient data={appointments} showDate />
+    <CalendarClient />
   );
 };
 

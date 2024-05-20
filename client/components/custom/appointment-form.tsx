@@ -6,6 +6,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { useAppointmentContext } from "@/providers/app";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +24,7 @@ import {
   breakDownSchedule,
   generateScheduleTimes,
 } from "@/constants/schedule-times";
-import { useAppointmentContext } from "@/providers/appointment";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
@@ -52,7 +53,7 @@ export const AppointmentForm = () => {
     if (!brSchedule) return;
 
     const currentapps = appointments?.filter(
-      (e) => new Date(e.date).toDateString() == date.toDateString()
+      (e) => new Date(e.startDate).toDateString() == date.toDateString()
     );
 
     if (brSchedule[day].day == "Not Available") {
@@ -68,7 +69,7 @@ export const AppointmentForm = () => {
       return times?.map((time) => {
         time.disabled = false;
         const oldapp = currentapps?.find(
-          (e) => new Date(e.date).toLocaleTimeString() == time.value
+          (e) => new Date(e.startDate).toLocaleTimeString() == time.value
         );
         if (oldapp) {
           time.disabled = true;
@@ -88,17 +89,20 @@ export const AppointmentForm = () => {
     const newDate = concateDate(date, time, user?.role == "ASSISTANT");
     if (!time) return;
     const appointment: z.infer<typeof AppointmentSchema> = {
-      date: newDate,
+      startDate: newDate,
       agentId: user?.id!,
       leadId: lead?.id!,
+      label: "blue",
       comments: comments,
     };
 
     appointmentInsert(appointment).then((data) => {
       if (data.success) {
-        setAppointments((apps) => {
-          return [...apps!, data.success.appointment];
-        });
+        //TODO - need to apply the dispatcher for this
+        // setAppointments((apps) => {
+        //   if (!apps) return apps;
+        //   return [...apps!, data.success.appointment];
+        // });
         userEmitter.emit("appointmentScheduled", data.success.appointment);
         userEmitter.emit("messageInserted", data.success.message!);
         toast.success("Appointment scheduled!");

@@ -5,11 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { PhoneOutgoing, X } from "lucide-react";
+import { ArrowUpDown, PhoneOutgoing, X } from "lucide-react";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { FullCall } from "@/types";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { CallHistoryActions } from "./actions";
+import { Button } from "@/components/ui/button";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -34,10 +35,20 @@ export const columns: ColumnDef<FullCall>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "agentName",
-  //   header: "Agent",
-  // },
+  {
+    id: "direction",
+    accessorKey: "direction",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+
+  {
+    id: "status",
+    accessorKey: "status",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+
   {
     accessorKey: "phone",
     header: "Phone Number",
@@ -50,6 +61,7 @@ export const columns: ColumnDef<FullCall>[] = [
               : row.original?.from
           )}
         </p>
+
         <div className="flex gap-2 items-center">
           {row.original.direction.toLowerCase() === "inbound" ? (
             getPhoneStatusText(row.original.status as string)
@@ -85,7 +97,18 @@ export const columns: ColumnDef<FullCall>[] = [
   // },
   {
     accessorKey: "duration",
-    header: "Duration",
+    // header: "Duration",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Duration
+          <ArrowUpDown size={16} className="ml-2" />
+        </Button>
+      );
+    },
     cell: ({ row }) => (
       <div>
         {row.original.duration && formatSecondsToTime(row.original.duration)}

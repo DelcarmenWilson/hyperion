@@ -64,7 +64,9 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
 
     leadName: leadName,
     lastCall: lead.calls ? lead.calls[0]?.createdAt : undefined,
-    nextAppointment: lead.appointments ? lead.appointments[0]?.date : undefined,
+    nextAppointment: lead.appointments
+      ? lead.appointments[0]?.startDate
+      : undefined,
   };
 
   const leadPolicy: LeadPolicyInfo = {

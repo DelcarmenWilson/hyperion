@@ -35,7 +35,7 @@ export const DialogHp = ({ isOpen, children }: DialogHpProps) => {
                 leaveTo="opacity-0"
               >
                 <Dialog.Panel className="pointer-events-auto w-[400px]">
-                  <div className="flex flex-col gap-2 overflow-y-auto bg-white p-2 shadow-xl rounded-md text-sm">
+                  <div className="flex flex-col gap-2 overflow-y-auto bg-background p-2 shadow-xl rounded-md text-sm">
                     {children}
                   </div>
                 </Dialog.Panel>

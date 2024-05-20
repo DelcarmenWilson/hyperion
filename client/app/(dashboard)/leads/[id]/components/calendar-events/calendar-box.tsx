@@ -11,7 +11,7 @@ interface CalendarBoxProps {
 export const CalendarBox = ({ appointment }: CalendarBoxProps) => {
   return (
     <div className="grid grid-cols-4 items-center gap-2 border-b py-2">
-      <div>{format(appointment.date, "MM-dd-yy hh:mm aa")}</div>
+      <div>{format(appointment.startDate, "MM-dd-yy hh:mm aa")}</div>
       <div
         className={cn(
           appointment.status == "Rescheduled" && "text-destructive"
