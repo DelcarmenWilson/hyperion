@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { find } from "lodash";
 import { ShortConversation } from "@/types";
 import { Conversation, Message } from "@prisma/client";
 import { ConversationCard } from "./card";
@@ -25,8 +24,8 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
       //   audioRef.current.play();
       // }
       setConversations((current) => {
-        if (find(current, { id: updatedConvo.id })) {
-          const convo = current.find((e) => e.id == updatedConvo.id);
+        const convo = current.find((e) => e.id == updatedConvo.id);
+        if (convo) {
           const index = current.findIndex((e) => e.id == updatedConvo.id);
           if (!convo || index == -1) {
             return current;
@@ -46,8 +45,8 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
       //   audioRef.current.play();
       // }
       setConversations((current) => {
-        if (find(current, { id: newMessage.conversationId })) {
-          const convo = current.find((e) => e.id == newMessage.conversationId);
+        const convo = current.find((e) => e.id == newMessage.conversationId);
+        if (convo) {
           const index = current.findIndex(
             (e) => e.id == newMessage.conversationId
           );
@@ -65,15 +64,13 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
 
     const onConversationSeen = (conversationId: string) => {
       setConversations((current) => {
-        if (find(current, { id: conversationId })) {
-          const convo = current.find((e) => e.id == conversationId);
-          if (!convo) {
-            return current;
-          }
-          convo.unread = 0;
+        const convo = current.find((e) => e.id == conversationId);
 
-          return [...current];
+        if (!convo) {
+          return current;
         }
+        convo.unread = 0;
+
         return [...current];
       });
     };

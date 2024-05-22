@@ -1,13 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageBox } from "@/components/reusable/message-box";
-import { FullConversation, FullMessage } from "@/types";
-import useConversation from "@/hooks/user-conversation";
-import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
-import { find } from "lodash";
+import axios from "axios";
+import useConversation from "@/hooks/user-conversation";
+
+import { FullConversation, FullMessage } from "@/types";
+import { MessageBox } from "@/components/reusable/message-box";
 
 type BodyProps = {
   initialData: FullConversation;
@@ -35,7 +33,8 @@ export const Body = ({ initialData }: BodyProps) => {
         audioRef.current.play();
       }
       setMessages((current) => {
-        if (find(current, { id: message.id })) {
+        const existingMessage = current.find((e) => e.id == message.id);
+        if (existingMessage) {
           return current;
         }
         return [...current, message];

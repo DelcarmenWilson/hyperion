@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import SocketContext from "@/providers/socket";
 import { Plus } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -17,22 +16,20 @@ import { ChatUsersList } from "./form";
 import { chatInsert } from "@/actions/chat";
 import { chatGetById } from "@/data/chat";
 import { FullChatMessage, ShortChat } from "@/types";
-import { find } from "lodash";
 
 type ChatsClientProps = {
   initChats: ShortChat[];
 };
 export const ChatsClient = ({ initChats }: ChatsClientProps) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const user = useCurrentUser();
   const router = useRouter();
   const [chats, setChats] = useState<ShortChat[]>(initChats);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const onSetChats = (message: FullChatMessage) => {
     setChats((current) => {
-      if (find(current, { id: message.chatId })) {
-        const convo = current.find((e) => e.id == message.chatId);
+      const convo = current.find((e) => e.id == message.chatId);
+      if (convo) {
         const index = current.findIndex((e) => e.id == message.chatId);
         if (!convo || index == -1) {
           return current;
@@ -49,18 +46,6 @@ export const ChatsClient = ({ initChats }: ChatsClientProps) => {
         else return [...current];
       });
       return [...current];
-      // if (exisitingChat != undefined) {
-      //   exisitingChat.lastMessage = message.content;
-      //   exisitingChat.updatedAt = message.updatedAt;
-      //   return [exisitingChat, ...chats];
-      // }
-
-      // chatGetById(message.chatId).then((data) => {
-      //   if (data) return [data, ...chats];
-      //   else return [...chats];
-      // });
-
-      // return [...chats];
     });
   };
 

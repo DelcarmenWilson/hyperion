@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { find } from "lodash";
 import { pusherClient } from "@/lib/pusher";
 
 import { CallHistoryCard } from "./card";
@@ -22,7 +21,8 @@ export const CallHistoryClient = ({
 
     const callHandler = (newCall: Call) => {
       setCalls((current) => {
-        if (find(current, { id: newCall.id })) {
+        const existingCall = current.find((e) => e.id == newCall.id);
+        if (existingCall) {
           current.shift();
         }
         return [newCall, ...current];

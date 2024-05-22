@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { find } from "lodash";
-import { pusherClient } from "@/lib/pusher";
 import { Phone } from "lucide-react";
 
 import { columns } from "./columns";
@@ -10,8 +8,6 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { DataTable } from "@/components/tables/data-table";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
-import { DatesFilter } from "../dates-filter";
-import Link from "next/link";
 
 type CallHistoryClientProps = {
   initialCalls: FullCall[];
@@ -37,7 +33,8 @@ export const CallHistoryClient = ({
     const callHandler = (newCall: FullCall) => {
       console.log("we are here");
       setCalls((current) => {
-        if (find(current, { id: newCall.id })) {
+        const existingCall = current.find((e) => e.id == newCall.id);
+        if (existingCall) {
           current.shift();
         }
         return [newCall, ...current];

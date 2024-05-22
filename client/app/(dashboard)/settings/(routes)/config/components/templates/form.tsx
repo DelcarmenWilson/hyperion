@@ -27,6 +27,7 @@ import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
 import { ImageUpload } from "@/components/custom/image-upload";
 import axios from "axios";
 import { KeywordSelect } from "@/components/custom/keyword-select";
+import { useRouter } from "next/navigation";
 
 type TemplateFormProps = {
   template?: UserTemplate;
@@ -36,6 +37,7 @@ type TemplateFormProps = {
 type TemplateFormValues = z.infer<typeof UserTemplateSchema>;
 
 export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<{
     image: string | undefined;
@@ -79,6 +81,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
       userTemplateUpdateById(values).then((data) => {
         if (data.success) {
           userEmitter.emit("templateUpdated", data.success);
+          router.refresh();
           onCancel();
           toast.success("Template created!");
         }
@@ -101,6 +104,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
         //     });
         // }
         onCancel();
+        router.refresh();
         userEmitter.emit("templateInserted", data.success);
         toast.success("Template created!");
       }
