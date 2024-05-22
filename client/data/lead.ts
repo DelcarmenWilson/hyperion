@@ -43,6 +43,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
     return [];
   }
 };
+
 export const leadsGetAllByAgentIdFiltered = async (
   values: z.infer<typeof LeadExportSchema>
 ) => {
@@ -82,7 +83,7 @@ export const leadGetById = async (id: string) => {
       include: {
         conversation: true,
         appointments: { orderBy: { startDate: "desc" } },
-        calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
+        calls: { where: { status: "completed" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,
@@ -107,7 +108,7 @@ export const leadGetByPhone = async (cellPhone: string) => {
       include: {
         conversation: true,
         appointments: { orderBy: { startDate: "desc" } },
-        calls: { where: { type: "call" }, orderBy: { createdAt: "desc" } },
+        calls: { where: { status: "completed" }, orderBy: { createdAt: "desc" } },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,

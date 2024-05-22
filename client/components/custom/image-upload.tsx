@@ -1,11 +1,13 @@
 "use client";
 import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ImageIcon, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 import Image from "next/image";
 import axios from "axios";
+
 import Loader from "../reusable/loader";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 
 type ImageUploadProps = {
@@ -22,6 +24,7 @@ export const ImageUpload = ({
   onImageUpdate,
   onImageRemove,
 }: ImageUploadProps) => {
+  const router = useRouter();
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +45,7 @@ export const ImageUpload = ({
             data.success.filename
           );
         setImage(data.success);
+        router.refresh();
         if (data.error) toast.error(data.error);
       });
       setLoading(false);
