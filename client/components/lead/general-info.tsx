@@ -40,7 +40,7 @@ export const GeneralInfoClient = ({
     const onSetNextAppointment = (e: Appointment) => {
       if (e.leadId == info.id)
         setGeneralInfo((info) => {
-          return { ...info, nextAppointment: e.date };
+          return { ...info, nextAppointment: e.startDate };
         });
     };
     setGeneralInfo(info);

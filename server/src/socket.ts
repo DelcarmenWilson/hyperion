@@ -74,10 +74,10 @@ export class ServerSocket {
       }
     });
     //CONFERENCE
-    socket.on("coach-request", (lead, conference) => {
+    socket.on("coach-request", (conference) => {
       const uid = this.GetUidFromSocketId(socket.id);
       const users = this.users.filter((e) => e.role == "admin" && e.id != uid);
-      this.SendMessage("coach-request-received", users, { lead, conference });
+      this.SendMessage("coach-request-received", users, { conference });
     });
     socket.on("coach-joined", (userId, conferenceId, coachId, coachName) => {
       const uid = this.GetSocketIdFromUid(userId);

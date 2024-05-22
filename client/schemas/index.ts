@@ -278,9 +278,10 @@ export const PresetSchema = z.object({
 });
 
 export const AppointmentSchema = z.object({
-  date: z.date(),
+  startDate: z.date(),
   agentId: z.string(),
   leadId: z.string(),
+  label:z.string(),
   comments: z.string(),
 });
 
@@ -298,6 +299,15 @@ export const AppointmentLeadSchema = z.object({
     MaritalStatus.Divorced,
   ]),
   email: z.string().email(),
+});
+
+export const AppointmentLabelSchema = z.object({
+
+  id: z.string(),
+  name: z.string().min(3, "name name must be at least 3 characters"),
+  color: z.string(),
+  description: z.optional(z.string()),
+  checked:z.boolean()
 });
 
 export const FeedbackSchema = z.object({
@@ -426,3 +436,4 @@ export const TermCarrierSchema = z.object({
   conditionId: z.string().min(2, "*"),
   requirements:z.string().min(2, "*"),
 });
+

@@ -4,7 +4,7 @@ import { currentUser } from "@/lib/auth";
 
 import NavBar from "@/components/navbar";
 import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
-import AppointmentProvider from "@/providers/appointment";
+import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
@@ -17,7 +17,10 @@ import {
 } from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGetByUserId } from "@/data/schedule";
-import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
+import {
+  appointmentLabelsGetAllByUserId,
+  appointmentsGetAllByUserId,
+} from "@/data/appointment";
 import { getTwilioToken } from "@/data/verification-token";
 import { adminCarriersGetAll } from "@/data/admin";
 
@@ -39,10 +42,8 @@ export default async function DashBoardLayout({
   const carriers = await userCarriersGetAllByUserId(user.id);
   const availableCarriers = await adminCarriersGetAll();
   const schedule = await scheduleGetByUserId(user.id, user.role);
-  const appointments = await appointmentsGetAllByUserIdUpcoming(
-    user.id,
-    user.role
-  );
+  const appointments = await appointmentsGetAllByUserId(user.id);
+  const appointmentLabels = await appointmentLabelsGetAllByUserId(user.id);
   const templates = await userTemplatesGetAllByUserId(user.id);
 
   return (
@@ -64,12 +65,13 @@ export default async function DashBoardLayout({
               initTemplates={templates}
             >
               <PhoneContextProvider initVoicemails={voicemails} token={token!}>
-                <AppointmentProvider
+                <AppointmentContextComponent
                   initSchedule={schedule!}
                   initAppointments={appointments}
+                  initLabels={appointmentLabels}
                 >
                   {children}
-                </AppointmentProvider>
+                </AppointmentContextComponent>
               </PhoneContextProvider>
             </GlobalContextProvider>
           </div>

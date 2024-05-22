@@ -573,8 +573,15 @@ model Message {
 }
 
 model Appointment {
-  id   String   @id @default(cuid())
-  date DateTime
+  id        String    @id @default(cuid())
+  startDate DateTime
+  endDate   DateTime?
+  title     String?
+  label     String    @default("indigo")
+  // labelId   String
+  // label     AppointmentLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  status    String    @default("Scheduled")
+  comments  String?   @db.LongText
 
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
@@ -582,9 +589,19 @@ model Appointment {
   lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
   leadId String
 
-  status   String  @default("Scheduled")
-  comments String? @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+model AppointmentLabel {
+  id          String  @id @default(cuid())
+  name        String
+  color       String
+  description String? @db.LongText
+  checked     Boolean @default(true)
+
+  // appointments Appointment[]
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

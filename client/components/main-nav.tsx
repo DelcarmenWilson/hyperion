@@ -3,24 +3,22 @@ import { useContext, useEffect, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
+import { toast } from "sonner";
 
 import { CoachNotification } from "./phone/coach-notification";
 import { TwilioShortConference } from "@/types/twilio";
-import { FullLeadNoConvo } from "@/types";
-import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { onPhoneOutConference, conference, setConference } = usePhone();
+  const { onPhoneInOpen, conference, setConference } = usePhone();
 
   //COACH NOTIFICATION
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [lead, setLead] = useState<FullLeadNoConvo>();
 
   const onJoinCall = () => {
     setIsNotificationOpen(false);
-    // onPhoneOutConference(lead, conference);
     socket?.emit(
       "coach-joined",
       conference?.agentId,
@@ -37,9 +35,8 @@ export const MainNav = () => {
   useEffect(() => {
     socket?.on(
       "coach-request-received",
-      (data: { lead: FullLeadNoConvo; conference: TwilioShortConference }) => {
+      (data: { conference: TwilioShortConference }) => {
         setConference(data.conference);
-        setLead(data.lead);
         setIsNotificationOpen(true);
       }
     );
@@ -51,22 +48,21 @@ export const MainNav = () => {
       ${data.reason}`);
       }
     );
-    socket?.on("connected", () => {
-      console.log("connected");
-    });
     // eslint-disable-next-line
   }, []);
 
   return (
-    <CoachNotification
-      conference={conference}
-      isOpen={isNotificationOpen}
-      onJoinCall={onJoinCall}
-      onRejectCall={onRejectCall}
-    />
-    // <Button onClick={onPhoneInOpen}>Open Modal</Button>
-    // <Button onClick={() => setIsNotificationOpen(true)}>
-    //   Open Notifications
-    // </Button>
+    <>
+      <CoachNotification
+        conference={conference}
+        isOpen={isNotificationOpen}
+        onJoinCall={onJoinCall}
+        onRejectCall={onRejectCall}
+      />
+      {/* <Button onClick={onPhoneInOpen}>Open Modal</Button>
+      <Button onClick={() => setIsNotificationOpen(true)}>
+        Open Notifications
+      </Button> */}
+    </>
   );
 };

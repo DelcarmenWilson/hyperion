@@ -122,7 +122,18 @@ export type TwilioShortConference = {
   coachName?:string,
 };
 
-
+export type TwilioShortParticipant = {  
+  conferenceSid: string;
+  from: string ;
+  to: string;
+  label: string ;
+  callSidToCoach: string | null;
+  coaching: boolean;
+  record: boolean;
+  earlyMedia: boolean;
+  endConferenceOnExit: boolean;
+  startConferenceOnEnter: boolean;
+};
 export type TwilioParticipant = {
   accountSid: string;
   callSid: string;
@@ -133,9 +144,9 @@ export type TwilioParticipant = {
   dateCreated: string;
   dateUpdated: string;
   endConferenceOnExit: boolean;
+  startConferenceOnEnter: boolean;
   muted: boolean;
   hold: boolean;
-  startConferenceOnEnter: boolean;
   status: string;
   uri: string;
 };

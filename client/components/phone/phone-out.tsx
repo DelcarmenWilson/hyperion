@@ -6,11 +6,17 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 
+import SocketContext from "@/providers/socket";
+
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
-import { TwilioParticipant, TwilioShortConference } from "@/types/twilio";
+import {
+  TwilioParticipant,
+  TwilioShortConference,
+  TwilioShortParticipant,
+} from "@/types/twilio";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,12 +24,12 @@ import { PhoneSwitcher } from "./addins/switcher";
 
 import { EmptyCard } from "../reusable/empty-card";
 import { ParticipantList } from "./participant/list";
+import { TouchPad } from "./addins/touch-pad";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
+import { formatSecondsToTime } from "@/formulas/numbers";
 
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
-import { TouchPad } from "./addins/touch-pad";
-import SocketContext from "@/providers/socket";
-// import { testConference, testParticipants } from "@/test-data/phone";
+//import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -48,6 +54,8 @@ export const PhoneOut = () => {
       user?.phoneNumbers[0]?.phone ||
       ""
   );
+  const [time, setTime] = useState(0);
+  const [running, setRunning] = useState(false);
   const [isCallMuted, setIsCallMuted] = useState(false);
 
   const startupClient = () => {
@@ -70,7 +78,7 @@ export const PhoneOut = () => {
     });
   };
 
-  const onStarted = () => {
+  const onStarted = async () => {
     if (!phone) return;
     if (!lead) {
       setTo((state) => {
@@ -95,40 +103,39 @@ export const PhoneOut = () => {
       AgentName: `${user?.name} (Agent)`,
     });
 
-    setTimeout(() => {
-      axios
-        .post("/api/twilio/voice/conference", {
-          conferenceId: user?.id as string,
-          from: selectedNumber as string,
-          to: reFormatPhoneNumber(to.number),
-          label: lead?.id,
-          endConferenceOnExit: true,
-          record: true,
-          earlyMedia: true,
-          coaching: false,
-          callSidToCoach: null,
-        })
-        .then((response) => {
-          const data = response.data as TwilioParticipant;
-          onGetParticipants(data.conferenceSid, data);
-          const conf: TwilioShortConference = {
-            agentId: user?.id as string,
-            agentName: user?.name as string,
-            conferenceSid: data.conferenceSid,
-            callSidToCoach: call.parameters.CallSid,
-            coaching: false,
-            leadId: lead?.id as string,
-            leadName: to.name,
-          };
-          setConference(conf);
-          // setIsConferenceOpen(true);
-          chatSettingsUpdateCurrentCall(data.callSid);
-        });
+    setTimeout(async () => {
+      const participant = await addParticipant({
+        conferenceSid: user?.id as string,
+        from: selectedNumber as string,
+        to: reFormatPhoneNumber(to.number),
+        label: lead?.id as string,
+        record: true,
+        coaching: false,
+        callSidToCoach: null,
+        earlyMedia: true,
+        endConferenceOnExit: true,
+        startConferenceOnEnter: true,
+      });
+
+      onGetParticipants(participant.conferenceSid, participant);
+
+      const conf: TwilioShortConference = {
+        agentId: user?.id as string,
+        agentName: user?.name as string,
+        conferenceSid: participant.conferenceSid,
+        callSidToCoach: call.parameters.CallSid,
+        coaching: false,
+        leadId: lead?.id as string,
+        leadName: to.name,
+      };
+      setConference(conf);
+      chatSettingsUpdateCurrentCall(participant.callSid);
     }, 2000);
 
     call.on("disconnect", onDisconnect);
     userEmitter.emit("newCall", lead?.id!);
     setOnCall(true);
+    setRunning(true);
     setCall(call);
   };
 
@@ -138,6 +145,8 @@ export const PhoneOut = () => {
     setConference(undefined);
     setParticipants(undefined);
     setIsConferenceOpen(false);
+    setRunning(false);
+    setTime(0);
     chatSettingsUpdateCurrentCall(null);
     setCall(null);
   };
@@ -196,92 +205,39 @@ export const PhoneOut = () => {
         setParticipants(participants);
       });
   };
-
-  const onStartConference = () => {
-    if (!phone || !conference) return;
-    if (call != null) return;
-
-    const newCall = phone.connect({
-      Direction: "coach",
-      ConferenceId: conference.agentId,
-      CallSidToCoach: conference.callSidToCoach as string,
-      AgentName: `${user?.name} (Coach)`,
-    });
-
-    socket?.emit(
-      "coach-joined",
-      conference.agentId,
-      conference.conferenceSid,
-      user?.id,
-      user?.name
+  const addParticipant = async (participant: TwilioShortParticipant) => {
+    const response = await axios.post(
+      "/api/twilio/voice/conference",
+      participant
     );
-
-    newCall.on("disconnect", onDisconnect);
-    setOnCall(true);
-    setCall(newCall);
-    //TODO -remove after testing has been completed
-    console.log(
-      "phone:",
-      phone,
-      "conference:",
-      conference,
-      "call:",
-      call,
-      "newCall:",
-      newCall
-    );
+    return response.data as TwilioParticipant;
   };
 
-  const onAddCoach = (coachId: string, coachName: string) => {
-    axios
-      .post("/api/twilio/voice/conference", {
-        conferenceId: user?.id as string,
-        from: lead?.cellPhone as string,
-        to: `client:${coachId}`,
-        label: coachId,
-        endConferenceOnExit: false,
-        record: true,
-        earlyMedia: false,
-        coaching: true,
-        callSidToCoach: conference?.callSidToCoach,
-      })
-      .then((response) => {
-        const data = response.data as TwilioParticipant;
-
-        const updatedConference: TwilioShortConference = {
-          ...conference!,
-          coachId: coachId,
-          coachName: coachName,
-        };
-
-        setConference(updatedConference);
-        onGetParticipants(data.conferenceSid, data);
-        // setIsConferenceOpen(true);
-        chatSettingsUpdateCurrentCall(data.callSid);
-      });
+  const onAddCoach = async (coachId: string, coachName: string) => {
+    const participant = await addParticipant({
+      conferenceSid: user?.id as string,
+      from: lead?.cellPhone as string,
+      to: `client:${coachId}`,
+      label: coachId,
+      record: true,
+      earlyMedia: false,
+      coaching: true,
+      callSidToCoach: conference?.callSidToCoach as string,
+      endConferenceOnExit: false,
+      startConferenceOnEnter: false,
+    });
+    const updatedConference: TwilioShortConference = {
+      ...conference!,
+      coachId: coachId,
+      coachName: coachName,
+    };
+    setConference(updatedConference);
+    onGetParticipants(participant.conferenceSid, participant);
+    chatSettingsUpdateCurrentCall(participant.callSid);
   };
   useEffect(() => {
     onCheckNumber();
     startupClient();
-    //IF autocall is set to true dil the conference associated with the call..
-    // if (autoCall) {
-    //   //TODO - dont forget to remove after testing
-    //   console.log(autoCall);
-    //   onStartConference();
-    //   setAutoCall(false);
-    // }
-
-    // socket?.on(
-    //   "coach-joined-received",
-    //   (data: { conferenceId: string; coachId: string; coachName: string }) => {
-    //     if (!conference) return;
-    //     if (conference.conferenceSid != data.conferenceId) return;
-    //     console.log(conference);
-    //     onAddCoach(data.coachId, data.coachName);
-    //   }
-    // );
-
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -294,6 +250,18 @@ export const PhoneOut = () => {
       }
     );
   }, [socket, conference]);
+
+  useEffect(() => {
+    let interval: any;
+    if (running) {
+      interval = setInterval(() => {
+        setTime((time) => time + 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [running]);
   //TODO - Test data dont forget to remove
   // useEffect(() => {
   //   setConference(testConference);
@@ -308,6 +276,7 @@ export const PhoneOut = () => {
         <>
           <div className="flex justify-between items-center">
             {to.name}
+
             {lead && (
               <Button
                 variant={isOpen ? "default" : "outlineprimary"}
@@ -322,6 +291,9 @@ export const PhoneOut = () => {
                 LEAD INFO
               </Button>
             )}
+            <span className="text-primary font-bold">
+              {formatSecondsToTime(time)}
+            </span>
           </div>
           <div className="relative">
             <Input

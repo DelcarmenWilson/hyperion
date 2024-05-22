@@ -35,7 +35,7 @@ export const PageLayout = ({
             {title}
           </CardTitle>
         </div>
-        <div className="flex flex-1 gap-2 lg:mr-6 px-2">{topMenu}</div>
+        <div className="flex gap-2 lg:mr-6 px-2">{topMenu}</div>
       </div>
       <CardContent className="flex flex-1 flex-col items-center space-y-0 pb-2 overflow-hidden">
         <ScrollArea className="w-full flex-1 pr-2">{children}</ScrollArea>

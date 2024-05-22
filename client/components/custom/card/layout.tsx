@@ -27,7 +27,7 @@ export const CardLayout = ({
             {title}
           </CardTitle>
         </div>
-        <div className="flex flex-col flex-1 lg:flex-row gap-2 mr-6">
+        <div className="flex flex-col  lg:flex-row justify-end gap-2 mr-6">
           {topMenu}
         </div>
       </div>

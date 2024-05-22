@@ -59,7 +59,7 @@ export const columns: ColumnDef<FullAppointment>[] = [
       <div>
         <Badge variant="outlineprimary">{row.original.status}</Badge>
         <p className="capitalize">
-          {format(row.original.date, "MM-dd hh:mm aaaaa'M'")}
+          {format(row.original.startDate, "MM-dd hh:mm aaaaa'M'")}
         </p>
       </div>
     ),

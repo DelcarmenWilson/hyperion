@@ -70,7 +70,7 @@ export const PolicyInfoClient = ({
         </DialogContent>
       </Dialog>
       <div className="flex flex-col gap-1 text-sm">
-        {user?.role != "ASSISTANT" && (
+        {user?.role == "ADMIN" && (
           <div className="border rounded-sm shadow-md p-2">
             <h4 className="text-muted-foreground">Assistant</h4>
             {assistant && (

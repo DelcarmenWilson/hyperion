@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import * as z from "zod";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -73,6 +71,7 @@ export const BookAgentClient = ({
   const OnDateSlected = (date: Date) => {
     if (!date) return;
     setselectedDate(date);
+    setselectedTime("");
     const day = date.getDay();
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
@@ -84,14 +83,14 @@ export const BookAgentClient = ({
     }
 
     const currentapps = appointments.filter(
-      (e) => e.date.toDateString() == date.toDateString()
+      (e) => e.startDate.toDateString() == date.toDateString()
     );
 
     setTimes((times) => {
       return times?.map((time) => {
         time.disabled = false;
         const oldapp = currentapps.find(
-          (e) => e.date.toLocaleTimeString() == time.value
+          (e) => e.startDate.toLocaleTimeString() == time.value
         );
         if (oldapp) {
           time.disabled = true;
@@ -139,31 +138,24 @@ export const BookAgentClient = ({
 
   useEffect(() => {
     return () => OnDateSlected(selectedDate);
-  });
+  }, []);
 
   return (
-    <div className="flex justify-center p-4">
-      <div className="flex flex-col gap-2 w-[600px]">
-        <div className="flex flex-col justify-center items-center text-center gap-2 ">
-          {/* <Image
-            src={userImage}
-            width={80}
-            height={80}
-            className="w-auto h-auto"
-            alt="Profile Image"
-          /> */}
+    <div className="flex-center h-full p-4 overflow-hidden">
+      <div className="flex-center flex-col gap-2 w-full lg:w-[600px] h-full bg-background rounded-md p-4 overflow-hidden">
+        <div className="flex-center flex-col text-center gap-2 border-b ">
           <Avatar className="w-[100px] h-auto rounded-md">
             <AvatarImage src={userImage || ""} />
-            <AvatarFallback className="bg-primary dark:bg-accent">
-              <FaUser className="text-accent dark:text-primary h-5 w-5" />
+            <AvatarFallback className="w-[100px] h-[100px] rounded-md bg-primary">
+              <FaUser size={25} className="text-accent" />
             </AvatarFallback>
           </Avatar>
           <p className="font-bold text-2xl">{schedule.title}</p>
           <p className="text-sm">{schedule.subTitle}</p>
-        </div>{" "}
+        </div>
         <Tabs
           defaultValue="schedule"
-          className="pt-2 border border-t-0 border-b-0"
+          className="pt-2 w-full flex-1 overflow-y-auto"
         >
           <div className="px-2">
             <TabsContent value="schedule">
@@ -180,32 +172,35 @@ export const BookAgentClient = ({
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  {available ? (
-                    <div className="grid grid-cols-4 font-bold text-sm gap-2">
-                      {times?.map((time) => (
-                        <Button
-                          variant={
-                            selectedTime == time.value
-                              ? "default"
-                              : "outlineprimary"
-                          }
-                          disabled={time.disabled}
-                          key={time.value}
-                          onClick={() => setselectedTime(time.value)}
-                        >
-                          {time.text}
-                        </Button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="flex flex-1 justify-center items-center text-2xl text-muted-foreground">
-                      Not Available
-                    </p>
-                  )}
+                  <h4 className="text-center">{selectedDate.toDateString()}</h4>
+                  <div className="flex-center flex-1">
+                    {available ? (
+                      <div className="grid grid-cols-4 font-bold text-sm gap-2">
+                        {times?.map((time) => (
+                          <Button
+                            variant={
+                              selectedTime == time.value
+                                ? "default"
+                                : "outlineprimary"
+                            }
+                            disabled={time.disabled}
+                            key={time.value}
+                            onClick={() => setselectedTime(time.value)}
+                          >
+                            {time.text}
+                          </Button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="flex-center flex-1  text-2xl text-muted-foreground">
+                        Not Available
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
               {selectedTime && (
-                <TabsList className="w-full justify-end">
+                <TabsList className="bg-transparent w-full justify-end">
                   <TabsTrigger value="info">
                     <Button variant="outlineprimary">Next</Button>
                   </TabsTrigger>
@@ -218,12 +213,12 @@ export const BookAgentClient = ({
                   <Badge>Date: {selectedDate.toDateString()}</Badge>
                   <Badge>Time: {selectedTime}</Badge>
                   <Button className="ml-auto" variant="outlineprimary">
-                    Back
+                    Change
                   </Button>
                 </TabsTrigger>
               </TabsList>
               <div className="flex flex-col">
-                <p className="font-semibold">
+                <p className="font-semibold text-center p-2">
                   Please provide some general information about yourself
                 </p>
                 <Form {...form}>

@@ -1,8 +1,5 @@
 import { Suspense } from "react";
 import { currentUser } from "@/lib/auth";
-import { Calendar } from "lucide-react";
-
-import { PageLayout } from "@/components/custom/layout/page-layout";
 import { AgentSummaryColumn } from "./components/agentsummary/columns";
 
 import { DashBoardClient, DashBoardClientSkeleton } from "./components/client";
@@ -67,16 +64,15 @@ const DahsBoardPage = async () => {
           outBoundCallsCount={outBoundCallsCount}
         />
         <QuoteClient initQuote={quote!} />
-        <PageLayout title="Appointments" icon={Calendar}>
-          <AppointmentClient data={appointments} />
-        </PageLayout>
+        <AppointmentClient data={appointments} showLink />
+
         <AgentSummaryClient initialData={formattedAgents} />
         <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">
           <div className="w-full lg:w-[25%] h-full">
             <TurnOverRate />
           </div>
           <div className="w-full lg:w-[75%] h-full">
-            <CallHistoryClient initialCalls={calls} />
+            <CallHistoryClient initialCalls={calls} showLink />
           </div>
         </div>
       </Suspense>

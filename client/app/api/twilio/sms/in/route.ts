@@ -99,9 +99,10 @@ export async function POST(req: Request) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     await appointmentInsert(
       {
-        date: aptDate,
+        startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
+        label:"blue",
         comments: "",
       },
       false
@@ -208,10 +209,11 @@ export async function PUT(req: Request) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     await appointmentInsert(
       {
-        date: aptDate,
+        startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
-        comments: "",
+        label:"blue",comments: "",
+
       },
       false
     );

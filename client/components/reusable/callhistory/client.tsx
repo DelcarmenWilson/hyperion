@@ -11,16 +11,19 @@ import { DataTable } from "@/components/tables/data-table";
 import { TopMenu } from "./top-menu";
 import { FullCall } from "@/types";
 import { DatesFilter } from "../dates-filter";
+import Link from "next/link";
 
 type CallHistoryClientProps = {
   initialCalls: FullCall[];
   duration?: number;
+  showLink?: boolean;
   showDate?: boolean;
 };
 
 export const CallHistoryClient = ({
   initialCalls,
   duration = 0,
+  showLink = false,
   showDate = false,
 }: CallHistoryClientProps) => {
   const user = useCurrentUser();
@@ -51,14 +54,18 @@ export const CallHistoryClient = ({
       title="Call History"
       icon={Phone}
       topMenu={
-        showDate ? (
-          <DatesFilter link="/calls" />
-        ) : (
-          <TopMenu duration={duration} />
-        )
+        <TopMenu showLink={showLink} showDate={showDate} duration={duration} />
       }
     >
-      <DataTable columns={columns} data={calls} headers search={false} />
+      <DataTable
+        columns={columns}
+        data={calls}
+        headers
+        striped
+        paginationType="advance"
+        filterType="call"
+        hidden={{ direction: false, status: false }}
+      />
     </CardLayout>
   );
 };

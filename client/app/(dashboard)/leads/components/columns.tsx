@@ -128,7 +128,7 @@ export const columns: ColumnDef<FullLead>[] = [
 
         leadName: `${row.original.firstName} ${row.original.lastName}`,
         lastCall: row.original.calls[0]?.createdAt,
-        nextAppointment: row.original.appointments[0]?.date,
+        nextAppointment: row.original.appointments[0]?.startDate,
       };
       return <GeneralInfoClient info={leadInfo} />;
     },
