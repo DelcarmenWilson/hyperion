@@ -11,7 +11,6 @@ import { UserTemplate } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
-import { CardData } from "@/components/reusable/card-data";
 
 import { TemplateForm } from "./form";
 
@@ -94,13 +93,18 @@ export const TemplateCard = ({
 
           {template.attachment && (
             <div className="flex-center">
-              <Image
+              <img
+                className="w-[100px] h-[100px]"
+                src={template.attachment}
+                alt={template.name}
+              />
+              {/* <Image
                 height={100}
                 width={100}
                 className="w-[100px] h-[100px]"
                 src={template.attachment}
                 alt="Chat Image"
-              />
+              /> */}
             </div>
           )}
         </div>

@@ -1,18 +1,17 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { columns } from "./columns";
-import { Skeleton } from "@/components/ui/skeleton";
-import { FullAppointment } from "@/types";
-import { DataTable } from "@/components/tables/data-table";
-import { DatesFilter } from "@/components/reusable/dates-filter";
-import { useEffect, useState } from "react";
-import { find } from "lodash";
-
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { TopMenu } from "./top-menu";
+import { DatesFilter } from "@/components/reusable/dates-filter";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DataTable } from "@/components/tables/data-table";
+import { columns } from "./columns";
+
+import { FullAppointment } from "@/types";
 
 type AppointmentClientProps = {
   data: FullAppointment[];
@@ -29,9 +28,9 @@ export const AppointmentClient = ({
   const user = useCurrentUser();
   useEffect(() => {
     const appointmentHandler = (appointment: FullAppointment) => {
-      console.log(appointment);
       setAppointments((current) => {
-        if (find(current, { id: appointment.id })) {
+        const existingAppointment = current.find((e) => e.id == appointment.id);
+        if (existingAppointment) {
           return current;
         }
         return [...current, appointment];

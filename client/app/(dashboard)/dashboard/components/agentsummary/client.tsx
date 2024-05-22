@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import { pusherClient } from "@/lib/pusher";
 
-import { find } from "lodash";
 import { AgentSummaryColumn, columns } from "./columns";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,8 @@ export const AgentSummaryClient = ({
     pusherClient.subscribe(user?.id as string);
     const agentHandler = (agent: AgentSummaryColumn) => {
       setAgents((current) => {
-        if (find(current, { id: agent.id })) {
+        const existingAgent = current.find((e) => e.id == agent.id);
+        if (existingAgent) {
           current.shift();
         }
         return [agent, ...current];

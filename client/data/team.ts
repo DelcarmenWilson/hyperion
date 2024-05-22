@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { includes } from "lodash";
 
 export const teamsGetAll = async () => {
   try {
