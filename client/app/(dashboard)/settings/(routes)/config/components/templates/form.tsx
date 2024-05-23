@@ -28,6 +28,8 @@ import { ImageUpload } from "@/components/custom/image-upload";
 import axios from "axios";
 import { KeywordSelect } from "@/components/custom/keyword-select";
 import { useRouter } from "next/navigation";
+import { computeSHA256, handleFileUpload } from "@/lib/utils";
+import { getSignedURL } from "@/actions/upload";
 
 type TemplateFormProps = {
   template?: UserTemplate;
@@ -37,13 +39,13 @@ type TemplateFormProps = {
 type TemplateFormValues = z.infer<typeof UserTemplateSchema>;
 
 export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<{
-    image: string | undefined;
-    filename: string | undefined;
-  }>({ image: undefined, filename: undefined });
-  const imgPath = "/assets/user-templates/";
+    image: File | null;
+    url: string | null;
+  }>({ image: null, url: null });
+
+  const imgPath = "/user-templates/";
   const btnText = template ? "Update" : "Create";
 
   const form = useForm<TemplateFormValues>({
@@ -51,6 +53,22 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     //@ts-ignore
     defaultValues: template || {},
   });
+
+  // const handleFileUpload = async (file: File, path: string = "temp") => {
+  //   const signedURLResult = await getSignedURL({
+  //     fileSize: file.size,
+  //     fileType: file.type,
+  //     filePath: "user-templates",
+  //     checksum: await computeSHA256(file),
+  //   });
+  //   if (signedURLResult.error !== undefined) {
+  //     throw new Error(signedURLResult.error);
+  //   }
+  //   const url = signedURLResult.success;
+  //   await axios.put(url, file, { headers: { "Content-Type": file.type } });
+  //   const fileUrl = url.split("?")[0];
+  //   return fileUrl;
+  // };
 
   const onCancel = () => {
     form.clearErrors();
@@ -62,54 +80,40 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     const msg = form.getValues("message");
     form.setValue("message", `${msg || ""} ${e}`);
   };
-  const onImageUpdate = (imageUrl: string, image: string, filename: string) => {
-    setFile({ image, filename });
-    form.setValue("attachment", imageUrl);
+  const onImageUpdate = (image: File, url: string) => {
+    setFile({ image, url });
+    form.setValue("attachment", url);
   };
   const onImageRemove = () => {
-    setFile({ image: undefined, filename: undefined });
+    setFile({ image: null, url: null });
     form.setValue("attachment", undefined);
   };
   const onSubmit = async (values: TemplateFormValues) => {
     setLoading(true);
-    let newFileName = `${imgPath}${file.filename}`;
 
     if (file.image) {
-      values.attachment = newFileName;
+      values.attachment = await handleFileUpload(file.image, "user-templates");
     }
-    if (template)
-      userTemplateUpdateById(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("templateUpdated", data.success);
-          router.refresh();
-          onCancel();
-          toast.success("Template created!");
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
-    else {
-      const data = await userTemplateInsert(values);
-      if (data.success) {
-        // if (file.image) {
-        //   await axios
-        //     .put("/api/upload/rename", {
-        //       oldFileName: file.image,
-        //       newFileName: newFileName,
-        //     })
-        //     .then((response) => {
-        //       const data = response.data;
-        //       if (data.error) toast.error(data.error);
-        //     });
-        // }
+    if (template) {
+      //TODO replace the old file if exist
+      const updateData = await userTemplateUpdateById(values);
+      if (updateData.success) {
+        userEmitter.emit("templateUpdated", updateData.success);
         onCancel();
-        router.refresh();
-        userEmitter.emit("templateInserted", data.success);
         toast.success("Template created!");
       }
-      if (data.error) {
-        toast.error(data.error);
+      if (updateData.error) {
+        toast.error(updateData.error);
+      }
+    } else {
+      const insertData = await userTemplateInsert(values);
+      if (insertData.success) {
+        onCancel();
+        userEmitter.emit("templateInserted", insertData.success);
+        toast.success("Template created!");
+      }
+      if (insertData.error) {
+        toast.error(insertData.error);
       }
     }
 
@@ -123,8 +127,6 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <ImageUpload
-            filePath={imgPath}
-            oldImage={template?.attachment}
             selectedImage={form.getValues("attachment")!}
             onImageUpdate={onImageUpdate}
             onImageRemove={onImageRemove}

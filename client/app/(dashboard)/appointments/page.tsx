@@ -20,8 +20,8 @@ const AppointmentsPage = async ({
   const appointments = await appointmentsGetByUserIdFiltered(user.id, from, to);
 
   return (
-    //<AppointmentClient data={appointments} showDate />
-    <CalendarClient />
+    <AppointmentClient data={appointments} showDate />
+    //<CalendarClient />
   );
 };
 

@@ -1,64 +1,35 @@
 "use client";
 import { ChangeEvent, useState } from "react";
 import { ImageIcon, X } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "sonner";
 import Image from "next/image";
-import axios from "axios";
 
 import Loader from "../reusable/loader";
 import { Button } from "../ui/button";
 
 type ImageUploadProps = {
   selectedImage: string;
-  filePath?: string;
-  oldImage?: string | null;
-  onImageUpdate: (imageUrl: string, image: string, filename: string) => void;
+  onImageUpdate: (image: File, url: string) => void;
   onImageRemove: () => void;
 };
 export const ImageUpload = ({
   selectedImage,
-  filePath = "/assets/temp",
-  oldImage,
   onImageUpdate,
   onImageRemove,
 }: ImageUploadProps) => {
-  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      const formData = new FormData();
-      formData.append("id", uuidv4());
-      formData.append("image", file);
-      formData.append("filePath", filePath);
-      if (oldImage) formData.append("oldFile", oldImage);
-      setLoading(true);
-      axios.post("/api/upload/image", formData).then((response) => {
-        const data = response.data;
-        if (data.success)
-          onImageUpdate(
-            URL.createObjectURL(file),
-            data.success.image,
-            data.success.filename
-          );
-        setImage(data.success);
-        if (data.error) toast.error(data.error);
-      });
-      setLoading(false);
-    }
+    if (!e.target.files) return;
+    setLoading(true);
+    const file = e.target.files[0];
+    const url = URL.createObjectURL(file);
+
+    onImageUpdate(file, url);
+
+    setLoading(false);
   };
   const onImageRemoved = () => {
     setLoading(true);
-    axios.put("/api/upload/image", { oldFile: image }).then((response) => {
-      const data = response.data;
-      if (data.success) {
-        setImage("");
-        onImageRemove();
-      }
-      if (data.error) toast.error(data.error);
-    });
-
+    onImageRemove();
     setLoading(false);
   };
   return (
@@ -70,7 +41,7 @@ export const ImageUpload = ({
           hidden
           onChange={onFileChange}
         />
-        <div className="min-w-40 max-w-md aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
+        <div className="flex-center min-w-40 max-w-md aspect-video rounded  border-2 border-dashed hover:bg-accent cursor-pointer">
           {loading ? (
             <Loader />
           ) : (
