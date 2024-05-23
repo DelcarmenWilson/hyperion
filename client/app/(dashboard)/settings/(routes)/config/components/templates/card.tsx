@@ -16,7 +16,8 @@ import { TemplateForm } from "./form";
 
 import { userTemplateDeleteById } from "@/actions/user";
 import { cn } from "@/lib/utils";
-import axios from "axios";
+
+import { deleteImage } from "@/actions/upload";
 
 type TemplateCardProps = {
   initTemplate: UserTemplate;
@@ -31,21 +32,20 @@ export const TemplateCard = ({
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteTemplate = () => {
+  const onDeleteTemplate = async () => {
     setLoading(true);
 
-    userTemplateDeleteById(template.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
+    const deletedTemplate = await userTemplateDeleteById(template.id);
+    if (deletedTemplate.error) {
+      toast.error(deletedTemplate.error);
+    }
+    if (deletedTemplate.success) {
+      if (template.attachment) {
+        await deleteImage(template.attachment);
       }
-      if (data.success) {
-        if (template.attachment) {
-          axios.put("/api/upload/image", { oldFile: template.attachment });
-        }
-        userEmitter.emit("templateDeleted", template.id);
-        toast.success(data.success);
-      }
-    });
+      userEmitter.emit("templateDeleted", template.id);
+      toast.success(deletedTemplate.success);
+    }
     setAlertOpen(false);
     setLoading(false);
   };
@@ -93,18 +93,13 @@ export const TemplateCard = ({
 
           {template.attachment && (
             <div className="flex-center">
-              <img
-                className="w-[100px] h-[100px]"
-                src={template.attachment}
-                alt={template.name}
-              />
-              {/* <Image
+              <Image
                 height={100}
                 width={100}
                 className="w-[100px] h-[100px]"
                 src={template.attachment}
-                alt="Chat Image"
-              /> */}
+                alt={template.name}
+              />
             </div>
           )}
         </div>

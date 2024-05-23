@@ -1,7 +1,8 @@
 Jhonni 
     - working on prompt enginering
     - working on workflow
-    
+--s3 bucket working. concentrate on the rest of the commands
+    -- seperate the lib into its own file    
 -- work on lead sharing websocket (front end part)
 -- work on blocking incoming blocked calls
 -- add the phone number from a  unknown caller
