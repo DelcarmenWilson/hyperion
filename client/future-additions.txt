@@ -3,6 +3,8 @@ Jhonni
     - working on workflow
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    
+    --work on implementing all the filupload with s3
+    -- change all the file on the database to reflect s3 bucket
 -- work on lead sharing websocket (front end part)
 -- work on blocking incoming blocked calls
 -- add the phone number from a  unknown caller
