@@ -84,6 +84,48 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
           className="space-y-2 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+            {/* FIRST NAME */}
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="first name"
+                      disabled={loading}
+                      autoComplete="firstName"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* LAST NAME */}
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="last name"
+                      disabled={loading}
+                      autoComplete="lastName"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* EMAIL */}
           <FormField
             control={form.control}

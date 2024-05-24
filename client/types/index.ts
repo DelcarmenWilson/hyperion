@@ -30,6 +30,10 @@ export type HalfUser = {
   id: string;
   userName: string;
 };
+export type ShortUser = User & {
+  team?: Team|null;
+};
+
 export type FullUser = User & {
   calls: Call[];
   leads: Lead[];

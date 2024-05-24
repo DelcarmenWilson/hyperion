@@ -17,7 +17,8 @@ Jhonni
 
 Chat
     - make sure the autochat does not respond to similar messages that are sent back to back
-
+    - change company name to strongSide
+    
 --error when trying to upload an image for the templates
 --revisit the expense sheet(not calculating properly)
     -- need to send income to back end
