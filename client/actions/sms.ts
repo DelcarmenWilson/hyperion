@@ -21,7 +21,11 @@ export const smsCreateInitial = async (leadId: string) => {
     return { error: "Unauthenticated" };
   }
 
-  const user = await db.user.findUnique({ where: { id: dbuser.id } });
+  //retrieve user data from database and include the team
+  const user = await db.user.findUnique({ 
+    where: { id: dbuser.id },
+    include:{team:true}   
+  });
   if (!user) {
     return { error: "Unauthorized" };
   }

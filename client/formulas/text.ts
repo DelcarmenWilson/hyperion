@@ -1,4 +1,6 @@
-import { Lead, User } from "@prisma/client";
+import { ShortUser } from "@/types";
+import { Lead } from "@prisma/client";
+import { format } from "date-fns";
 
 export const capitalize = (text: string): string => {
   if (!text) return text;
@@ -15,26 +17,41 @@ export const getIntials = (firstName: string,lastName:string): string => {
  
 };
 
-export const replacePresetUser = (message: string, user: User): string => {
+export const replacePresetUser = (message: string, user: ShortUser): string => {
   if (!user) return message;
   // USER INFO
   message = message
     .replace("#my_first_name", user.firstName)
-    .replace("#my_company_name", "Family First Life");
+    .replace("#my_company_name",  user.team?.name!)
   return message;
 };
 export const replacePreset = (
   message: string,
-  user: User,
+  user: ShortUser,
   lead: Lead
 ): string => {
   if (!user || !lead) return message;
   // USER INFO
   message = message.replace("#my_first_name", user.firstName)
-  .replace("#my_company_name", "Family First Life")
+  .replace("#my_last_name",user.lastName )
+  .replace("#my_full_name", `${user.firstName} ${user.lastName}`)
+  .replace("#my_company_name", user.team?.name!)
+  .replace("#my_booking_link", `https://hperioncrm.com/book/${user.userName}`)
+  
   // LEAD INFO
   .replace("#first_name", lead.firstName)
-  .replace("#state", lead.state);
+  .replace("#full_name", lead.lastName)
+  .replace("#first_name", `${lead.firstName} ${lead.lastName}`)
+  .replace("#street_adress", lead.address as string)  
+  .replace("#birthday", format(lead.dateOfBirth!,"MM-dd-yyyy"))
+  .replace("#city", lead.city as string)
+  .replace("#state", lead.state)
+  .replace("#zip_code", lead.zipCode as string);
+
+
+
+
+  " #my_email,#my_office_phone_number, #my_forwarding_number,#next_month_full_name, #new_line"
   return message;
 };
 
