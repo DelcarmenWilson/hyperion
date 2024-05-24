@@ -36,7 +36,7 @@ export const handleFileUpload = async (file: File, path: string = "temp") => {
   const signedURLResult = await getSignedURL({
     fileSize: file.size,
     fileType: file.type,
-    filePath: "user-templates",
+    filePath:path,
     checksum: await computeSHA256(file),
   });
   if (signedURLResult.error !== undefined) {

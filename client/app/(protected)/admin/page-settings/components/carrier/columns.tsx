@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Carrier } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 export const columns: ColumnDef<Carrier>[] = [
   {
@@ -33,6 +34,13 @@ export const columns: ColumnDef<Carrier>[] = [
   {
     accessorKey: "name",
     header: "Name",
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => (
+      <Image src={row.original.image} alt={row.original.name} />
+    ),
   },
 
   {

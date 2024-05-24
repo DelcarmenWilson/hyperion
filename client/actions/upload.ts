@@ -86,12 +86,14 @@ type SignedURLResponse = Promise<
 >;
 
 type GetSignedURLParams = {
+  id?:string;
   fileType: string;
   fileSize: number;
   filePath: string;
   checksum: string;
 };
 export const getSignedURL = async ({
+  id,
   fileType,
   fileSize,
   filePath = "temp",
@@ -111,7 +113,7 @@ export const getSignedURL = async ({
     return { error: "File size too large" };
   }
 
-  const fileName = generateFileName();
+  const fileName = id?id:generateFileName();
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME!,

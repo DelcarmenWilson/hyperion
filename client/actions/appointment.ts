@@ -52,7 +52,9 @@ export const appointmentInsert = async (
   }
   const config = await db.schedule.findUnique({ where: { userId } });
   const appointmentDate = startDate;
-  let endDate = startDate;
+
+  let endDate = new Date(startDate);
+
   if (config?.type == "hourly") {
     endDate.setHours(endDate.getHours() + 1);
   } else {
