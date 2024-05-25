@@ -26,46 +26,56 @@ export const smsCreateInitial = async (leadId: string) => {
     where: { id: dbuser.id },
     include:{team:true}   
   });
+
+  //if  user does not exist return unauthorized
   if (!user) {
     return { error: "Unauthorized" };
   }
 
+  //retrieve lead info from the database
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!lead) {
     return { error: "Lead does not exist" };
   }
-
+ //retrieve existing conversation with the lead
   const existingConversation = await db.conversation.findFirst({
     where: {
       lead: { id: lead.id },
     },
   });
 
+  //ensure that the conversation dost not exists
   if (existingConversation) {
     return { error: "Conversation Already exist" };
   }
 
+  //get all the preset text from this users account and return a random one
   const presets = await db.presets.findMany({
     where: { agentId: user.id, type: "Text" },
   });
-  const rnd = getRandomNumber(0, 2);
+  const rnd = getRandomNumber(0, presets.length);
   const preset = presets[rnd];
 
+  //get the chatsettings for the user
   const chatSettings = await db.chatSettings.findUnique({
     where: { userId: user.id },
   });
 
+  //if the user doesnt not have a prompt use the hyperion's default prompt
   let prompt = chatSettings?.defaultPrompt
     ? chatSettings?.defaultPrompt
     : defaultChat.prompt;
 
+ //if the user doesnt not have any presetText use the hyperion's default message
   let message = preset ? preset.content : defaultChat.message;
 
+  //replace the pompt and message variable content with the lead an user information
   prompt = replacePreset(prompt, user, lead);
   message = replacePreset(message, user, lead);
   message += ` ${defaultOptOut.request}`;
 
+  //if the user specific to include the lead info - add the lead info to the prompt
   if (chatSettings?.leadInfo) {
     const leadInfo = {
       "first Name": lead.firstName,
@@ -75,18 +85,22 @@ export const smsCreateInitial = async (leadId: string) => {
       city: lead.city,
       state: lead.state,
     };
-    prompt += `Todays Date is ${new Date()} Here is my information: ${JSON.stringify(
+
+    prompt += `Todays Date is ${new Date()}. When you're poised to arrange an appointment, signify with the keword {schedule}, alongside the designated date and time in UTC format. Here is my information: ${JSON.stringify(
       leadInfo
     )}  `;
   }
 
+  //create a new conversation between the agent and lead.
   const conversationId = (await conversationInsert(user.id, lead.id, chatSettings?.autoChat))
     .success;
 
+    //ensure that the conversationw as created
   if (!conversationId) {
     return { error: "Conversation was not created" };
   }
 
+  //insert the prompt into the conversation- the first message will have a role of system. this tells chat gpt to use this as a prompt
   await messageInsert({
     role: "system",
     content: prompt,
@@ -94,14 +108,14 @@ export const smsCreateInitial = async (leadId: string) => {
     senderId: user.id,
     hasSeen: false,
   });
-
+//send the message to the lead via sms and await the response
   const result = await client.messages.create({
     body: message,
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
     applicationSid: cfg.twimlAppSid,
   });
-
+//insert the initial message into the conversation
   await messageInsert({
     role: "assistant",
     content: message,
