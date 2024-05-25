@@ -41,12 +41,13 @@ export async function POST(req: Request) {
     senderId: conversation?.agentId!,
     hasSeen: false,
   };
-  
+
   //Create a new message from the leads response
   await messageInsert(smsFromLead);
 
   switch (smsFromLead.content.toLowerCase()) {
     case "stop":
+    case "cancel":
       await db.lead.update({
         where: { id: conversation.leadId },
         data: { status: "Do_Not_Call" },
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
     return new NextResponse("Thank you for your message", { status: 200 });
   }
 
+  //Insert the new message into the conversation
   await messageInsert({
     role,
     content,
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
     hasSeen: false,
   });
 
-  //If the message from chatGpt includes the word schedule - lets schedule an appointment
+  //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     await appointmentInsert(
@@ -102,7 +104,7 @@ export async function POST(req: Request) {
         startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
-        label:"blue",
+        label: "blue",
         comments: "",
       },
       false
@@ -122,7 +124,11 @@ export async function POST(req: Request) {
     );
   }
   //Wait 5 seconds before inserting the new message from chatGpt
-  const delay = Math.round(content.length / 35) * 8;
+  // const delay = Math.round(content.length / 35) * 8;
+
+  const words=content.split
+  const wpm =38
+  const delay=Math.round(words.length/wpm)
   await smsSend(sms.to, sms.from, content, delay);
 
   return new NextResponse(content, { status: 200 });
@@ -212,8 +218,8 @@ export async function PUT(req: Request) {
         startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
-        label:"blue",comments: "",
-
+        label: "blue",
+        comments: "",
       },
       false
     );

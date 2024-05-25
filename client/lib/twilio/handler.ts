@@ -47,17 +47,24 @@ export const voiceResponse = async (call: TwilioCall) => {
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-      const inDial = twiml.dial({
-        record: "record-from-answer-dual",
-        recordingStatusCallback: "/api/twilio/voice/recording",
-        action: "/api/twilio/voice/action",
-        timeout: 10,
-      });
+      twiml.play("/sounds/SSF-Greeting-2.mp3")
+    //   twiml.say(
+    //   { voice:"Polly.Amy" },
+    //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
+    // );
+    
+    twiml.pause({length:1});
+        
+    const inDial = twiml.dial({
+      record: "record-from-answer-dual",
+      recordingStatusCallback: "/api/twilio/voice/recording",
+      action: "/api/twilio/voice/action",
+      timeout: 10,
+    });
       inDial.client(agentId);
       break;
     case "outbound":
-      twiml.dial().conference(
-        {
+      twiml.dial().conference({
           participantLabel: agentId,
           startConferenceOnEnter: true,
           endConferenceOnExit: true,
