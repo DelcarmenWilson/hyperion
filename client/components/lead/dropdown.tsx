@@ -62,7 +62,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const onHyperChatToggle = () => {
+  const onTitanToggle = () => {
     setAutoChat((state) => !state);
     conversationUpdateByIdAutoChat(conversation?.id as string, !autoChat).then(
       (data) => {
@@ -165,11 +165,11 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
                   " text-background cursor-pointer gap-2",
                   autoChat ? "bg-primary" : "bg-destructive"
                 )}
-                onClick={onHyperChatToggle}
+                onClick={onTitanToggle}
               >
                 <div className="flex items-center justify-between gap-2">
                   {autoChat ? <Check size={16} /> : <X size={16} />}
-                  <span>Hyper Chat</span>
+                  <span>Titan</span>
                   <span>{autoChat ? "ON" : "OFF"}</span>
                 </div>
               </DropdownMenuItem>

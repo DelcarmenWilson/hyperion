@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Phone, X } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -43,7 +43,7 @@ export const PhoneOut = () => {
   const [isConferenceOpen, setIsConferenceOpen] = useState(false);
 
   const [empty, setEmpty] = useState(false);
-
+  const btnLeadRef = useRef<HTMLButtonElement>(null);
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
     name: lead ? leadFullName : "New Call",
@@ -190,6 +190,12 @@ export const PhoneOut = () => {
     setDisabled(false);
   };
 
+  const toggleLeadInfo = () => {
+    setIsOpen((open) => {
+      userEmitter.emit("toggleLeadInfo", !open);
+      return !open;
+    });
+  };
   //CONFERENCES AND PARTICIPANTS
   const onGetParticipants = (
     conferenceId: string,
@@ -238,6 +244,8 @@ export const PhoneOut = () => {
   useEffect(() => {
     onCheckNumber();
     startupClient();
+    if (!lead) return;
+    toggleLeadInfo();
   }, []);
 
   useEffect(() => {
@@ -279,14 +287,10 @@ export const PhoneOut = () => {
 
             {lead && (
               <Button
+                ref={btnLeadRef}
                 variant={isOpen ? "default" : "outlineprimary"}
                 size="sm"
-                onClick={() =>
-                  setIsOpen((open) => {
-                    userEmitter.emit("toggleLeadInfo", !open);
-                    return !open;
-                  })
-                }
+                onClick={toggleLeadInfo}
               >
                 LEAD INFO
               </Button>

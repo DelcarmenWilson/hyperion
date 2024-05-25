@@ -53,7 +53,7 @@ export default async function DashBoardLayout({
         <Suspense fallback={<SidebarSkeleton />}>
           <SideBar main />
         </Suspense>
-        <div className="flex flex-1 flex-col h-full">
+        <div className="flex flex-1 flex-col h-full ms-[70px] lg:ms-0 ">
           <div className="flex flex-col flex-1 w-full  mt-14 px-1 lg:px-2 lg:mb-2 overflow-y-auto">
             <GlobalContextProvider
               initUser={initUser!}

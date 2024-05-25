@@ -102,7 +102,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             className="flex-1 overflow-hidden overflow-y-auto"
             value="general"
           >
-            <div className="grid grid-cols-3 gap-2 p-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
               <MainInfoClient info={leadMainInfo} noConvo={false} />
               <GeneralInfoClient info={leadInfo} showInfo />
               <CallInfo info={lead!} showBtnCall={false} />

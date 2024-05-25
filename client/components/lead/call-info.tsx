@@ -34,26 +34,18 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
   const [callCount, setCallCount] = useState(leadcount || 0);
   const { leadStatus } = useGlobalContext();
 
-  const onStatusUpdated = (e: string) => {
-    leadUpdateByIdStatus(lead.id, e).then((data) => {
-      if (data.error) {
-        toast.success(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
-    });
+  const onStatusUpdated = async (e: string) => {
+    const reponse = await leadUpdateByIdStatus(lead.id, e);
+    if (reponse.success) {
+      userEmitter.emit("leadStatusChanged", lead.id, e);
+      toast.success(reponse.success);
+    } else toast.error(reponse.error);
   };
 
-  const onTypeUpdated = (type: string) => {
-    leadUpdateByIdType(lead.id, type).then((data) => {
-      if (data.error) {
-        toast.success(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
-    });
+  const onTypeUpdated = async (type: string) => {
+    const reponse = await leadUpdateByIdType(lead.id, type);
+    if (reponse.success) toast.success(reponse.success);
+    else toast.error(reponse.error);
   };
 
   useEffect(() => {

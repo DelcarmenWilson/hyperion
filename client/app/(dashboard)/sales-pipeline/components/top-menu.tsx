@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { userEmitter } from "@/lib/event-emmiter";
 import { ChevronDown, ChevronUp, Cog, RefreshCcw } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -89,9 +90,17 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
     // toast.success(JSON.stringify(list));
   };
 
+  const onRefresh = () => {
+    router.refresh();
+  };
+
+  useEffect(() => {
+    userEmitter.on("leadStatusChanged", () => onRefresh());
+  }, []);
+
   return (
     <div className="flex gap-2 ml-auto mr-6 lg:mr-0">
-      <Button size="sm" onClick={() => router.refresh()}>
+      <Button size="sm" onClick={onRefresh}>
         <RefreshCcw size={16} />
       </Button>
       <Dialog open={stageOpen} onOpenChange={setStageOpen}>

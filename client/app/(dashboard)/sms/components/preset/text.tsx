@@ -1,15 +1,26 @@
 "use client";
-import { Box } from "@/components/reusable/box";
+import { useEffect, useState } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
 import { Zap } from "lucide-react";
-import { PresetForm } from "./preset-form";
-import { Separator } from "@/components/ui/separator";
-import { PresetData } from "./preset-data";
 import { Presets } from "@prisma/client";
 
+import { Box } from "@/components/reusable/box";
+import { PresetForm } from "./preset-form";
+import { PresetData } from "./preset-data";
+
 interface TextProps {
-  presets: Presets[];
+  initPresets: Presets[];
 }
-export const Text = ({ presets }: TextProps) => {
+export const Text = ({ initPresets }: TextProps) => {
+  const [presets, setPresets] = useState(initPresets);
+  const onSetPreset = (preset: Presets) => {
+    setPresets((state) => {
+      return [...state, preset];
+    });
+  };
+  useEffect(() => {
+    userEmitter.on("presetInserted", onSetPreset);
+  }, []);
   return (
     <Box
       icon={Zap}
@@ -19,8 +30,7 @@ export const Text = ({ presets }: TextProps) => {
     >
       <PresetForm type="Text" />
 
-      <h3>Current intial Preset texts</h3>
-      <Separator className="my-2" />
+      <h3 className="border-b">Current intial Preset texts</h3>
       {presets.map((preset) => (
         <PresetData key={preset.id} preset={preset} />
       ))}

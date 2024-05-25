@@ -33,7 +33,7 @@ export const presetInsert = async (values: z.infer<typeof PresetSchema>) => {
   if(!content){
     return { error: "message cannot be empty!" };
   }
-  await db.presets.create({
+  const preset=await db.presets.create({
     data: {
       type,
       content,
@@ -41,7 +41,7 @@ export const presetInsert = async (values: z.infer<typeof PresetSchema>) => {
     },
   });
 
-  return { success: "Preset text saved" };
+  return { success: preset };
 };
 
 export const presetUpdateById = async (values: Presets) => {
