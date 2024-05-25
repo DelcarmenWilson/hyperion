@@ -108,9 +108,9 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     } else {
       const insertData = await userTemplateInsert(values);
       if (insertData.success) {
-        onCancel();
         userEmitter.emit("templateInserted", insertData.success);
         toast.success("Template created!");
+        onCancel();
       }
       if (insertData.error) {
         toast.error(insertData.error);

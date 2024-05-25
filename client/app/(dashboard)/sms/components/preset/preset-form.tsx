@@ -1,6 +1,7 @@
 "use client";
-import * as z from "zod";
 import { useState, useTransition } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
+import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -45,13 +46,12 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
   const onSubmit = (values: PresetFormValues) => {
     startTransition(() => {
       presetInsert(values).then((data) => {
-        form.reset();
-        if (data.error) {
-          toast.error(data.error);
-        }
         if (data.success) {
-          toast.error(data.success);
-        }
+          userEmitter.emit("presetInserted", data.success);
+          toast.success("Preset added!!");
+        } else toast.error(data.error);
+
+        form.reset();
       });
     });
   };

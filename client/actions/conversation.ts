@@ -71,5 +71,5 @@ export const conversationUpdateByIdAutoChat = async (
 
   await db.conversation.update({where:{id},data:{autoChat}})
   
-  return  ({success:`hyper chat has been turned ${autoChat?"on":"off"} `} );
+  return  ({success:`Titan chat has been turned ${autoChat?"on":"off"} `} );
 };

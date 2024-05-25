@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Check, Pencil, Trash, X } from "lucide-react";
 import { Presets } from "@prisma/client";
@@ -36,12 +35,9 @@ export const PresetData = ({ preset }: PresetDataProps) => {
     startTransition(() => {
       presetUpdateById(values).then((data) => {
         form.reset();
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.error(data.success);
-        }
+
+        if (data.success) toast.success(data.success);
+        else toast.error(data.error);
       });
     });
     setEditing(false);
@@ -50,18 +46,14 @@ export const PresetData = ({ preset }: PresetDataProps) => {
     startTransition(() => {
       presetDeleteById(preset.id).then((data) => {
         form.reset();
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.error(data.success);
-        }
+        if (data.success) toast.success(data.success);
+        else toast.error(data.error);
       });
     });
   };
 
   return (
-    <div>
+    <div className="border-b">
       {!editing ? (
         <div className="flex gap-2">
           <div className="flex-1 py-3 px-4">
@@ -115,13 +107,12 @@ export const PresetData = ({ preset }: PresetDataProps) => {
                 size="icon"
                 onClick={() => setEditing(false)}
               >
-                <X className="h4 w-4" />
+                <X size={16} />
               </Button>
             </div>
           </form>
         </Form>
       )}
-      <Separator className="my-2" />
     </div>
   );
 };

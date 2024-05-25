@@ -56,25 +56,22 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
 
   const onSubmit = async (values: MainInfoFormValues) => {
     setLoading(true);
-    await leadUpdateByIdMainInfo(values).then((data) => {
-      if (data.success) {
-        userEmitter.emit("mainInfoUpdated", {
-          ...data.success,
-          email: data.success.email?.toString(),
-          address: data.success.address?.toString(),
-          city: data.success.city?.toString(),
-          zipCode: data.success.zipCode?.toString(),
-        });
+    const response = await leadUpdateByIdMainInfo(values);
+    if (response.success) {
+      userEmitter.emit("mainInfoUpdated", {
+        ...response.success,
+        email: response.success.email?.toString(),
+        address: response.success.address?.toString(),
+        city: response.success.city?.toString(),
+        zipCode: response.success.zipCode?.toString(),
+      });
 
-        toast.success("Lead demographic info updated");
-        onClose();
-      }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
-    });
-
+      toast.success("Lead demographic info updated");
+      onClose();
+    } else {
+      form.reset();
+      toast.error(response.error);
+    }
     setLoading(false);
   };
   return (

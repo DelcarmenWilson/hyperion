@@ -37,6 +37,7 @@ export const MainInfoClient = ({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const onSetInfo = (e: LeadMainInfo) => {
+    console.log(e);
     if (e.id == info.id) setLeadInfo(e);
   };
   const onQuoteUpdated = (e?: string) => {

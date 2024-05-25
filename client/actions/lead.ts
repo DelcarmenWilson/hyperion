@@ -398,7 +398,8 @@ export const leadUpdateByIdMainInfo = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id, email, address, city, state, zipCode } = validatedFields.data;
+  const { id, firstName, lastName, email, address, city, state, zipCode } =
+    validatedFields.data;
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
@@ -416,6 +417,8 @@ export const leadUpdateByIdMainInfo = async (
   const leadInfo = await db.lead.update({
     where: { id },
     data: {
+      firstName,
+      lastName,
       email,
       address,
       city,
@@ -926,18 +929,21 @@ export const leadExpenseDeleteById = async (id: string) => {
 };
 
 //LEAD ASSISTANT AND SHARE
-export const leadUpdateByIdShare = async (id: string, userId: string|null|undefined) => {
+export const leadUpdateByIdShare = async (
+  id: string,
+  userId: string | null | undefined
+) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
   }
 
-  if(!userId){
+  if (!userId) {
     await db.lead.update({
       where: { id },
       data: {
-        sharedUser:{disconnect:true} ,
+        sharedUser: { disconnect: true },
       },
     });
     return { success: " Lead sharing has ben deactivated!" };
@@ -945,7 +951,7 @@ export const leadUpdateByIdShare = async (id: string, userId: string|null|undefi
   await db.lead.update({
     where: { id },
     data: {
-      sharedUserId: userId ,
+      sharedUserId: userId,
     },
   });
 

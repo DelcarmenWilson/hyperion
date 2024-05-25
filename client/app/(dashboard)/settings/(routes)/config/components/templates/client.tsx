@@ -40,11 +40,9 @@ export const UserTemplateClient = () => {
       });
     };
 
-    return () => {
-      userEmitter.on("templateDeleted", (id) => onTemplateDeleted(id));
-      userEmitter.on("templateInserted", (info) => onTemplateInserted(info));
-      userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
-    };
+    userEmitter.on("templateDeleted", (id) => onTemplateDeleted(id));
+    userEmitter.on("templateInserted", (info) => onTemplateInserted(info));
+    userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
 
     // eslint-disable-next-line
   }, []);
