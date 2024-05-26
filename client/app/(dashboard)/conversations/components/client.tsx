@@ -17,12 +17,9 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
   const [conversations, setConversations] =
     useState<ShortConversation[]>(convos);
   useEffect(() => {
-    // pusherClient.subscribe(user?.id as string);
+    pusherClient.subscribe(user?.id as string);
 
     const convoHandler = (updatedConvo: Conversation) => {
-      // if (message.role == "user" && audioRef.current) {
-      //   audioRef.current.play();
-      // }
       setConversations((current) => {
         const convo = current.find((e) => e.id == updatedConvo.id);
         if (convo) {
@@ -74,14 +71,14 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         return [...current];
       });
     };
-    // pusherClient.bind("messages:new", convoHandler);
+    pusherClient.bind("conversation:updated", convoHandler);
     userEmitter.on("messageInserted", (info) => onMessageInserted(info));
     userEmitter.on("conversationSeen", (conversationId) =>
       onConversationSeen(conversationId)
     );
     return () => {
-      // pusherClient.unsubscribe(user?.id as string);
-      // pusherClient.unbind("messages:new", convoHandler);
+      pusherClient.unsubscribe(user?.id as string);
+      pusherClient.unbind("messages:new", convoHandler);
       userEmitter.off("conversationSeen", (conversationId) =>
         onConversationSeen(conversationId)
       );

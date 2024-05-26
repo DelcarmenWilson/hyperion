@@ -22,7 +22,6 @@ export async function POST(req: Request) {
       const settings = await db.chatSettings.findUnique({
         where: { userId: phonenumber?.agentId! },
       });
-      call.recording = settings?.record!;
       call.voicemailIn = settings?.voicemailIn;
       call.agentId = phonenumber?.agentId!;
       call.currentCall = settings?.currentCall;
@@ -35,15 +34,7 @@ export async function POST(req: Request) {
       call.agentId = call.caller.replace("client:", "");
       break;
   }
-  // if (call.direction == "outbound") {
-  //   call.agentId = call.caller.replace("client:", "");
-  //   await db.chatSettings.update({
-  //     where: { userId: call.agentId },
-  //     data: { currentCall: call.callSid },
-  //   });
-  // } else if (call.direction == "inbound") {
-  // }
-
+ 
   if (call.direction == "inbound" || call.direction == "outbound"){
     await db.call.create({
       data: {

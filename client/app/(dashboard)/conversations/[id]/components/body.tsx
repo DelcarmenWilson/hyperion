@@ -48,7 +48,7 @@ export const Body = ({ initialData }: BodyProps) => {
       pusherClient.unsubscribe(conversationId as string);
       pusherClient.unbind("messages:new", messageHandler);
     };
-  }, [conversationId]);
+  }, [conversationId, messages]);
 
   return (
     <div className="flex flex-col flex-1 w-full px-4 overflow-hidden overflow-y-auto">

@@ -5,7 +5,7 @@ export type ExtendedUser = DefaultSession["user"] & {
     role: UserRole;
     isTwoFactorEnabled:boolean;
     isOAuth:boolean
-    record:boolean
+    messageNotification:string
     team:string
     phoneNumbers:PhoneNumber[]
     image:string

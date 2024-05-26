@@ -41,7 +41,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
   // PHONE VARIABLES
   const { phone, call, setCall } = usePhoneContext();
   const [settings, setSettings] = useState<DialerSettingsType>({
-    record: user?.record || true,
     matrix: 3,
     pause: 5,
   });
@@ -71,7 +70,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     const call = phone.connect({
       To: reFormatPhoneNumber(lead.cellPhone),
       AgentNumber: agentNumber,
-      Recording: settings.record ? "record-from-answer-dual" : "do-not-record",
       Coach: coach ? "on" : "off",
       Direction: "outbound",
     });

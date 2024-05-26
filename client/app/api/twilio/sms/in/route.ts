@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { userEmitter } from "@/lib/event-emmiter";
+import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 import { MessageSchema } from "@/schemas";
 import { messageInsert } from "@/actions/message";
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   const body = await req.formData();
 
   const sms: TwilioSms = formatObject(body);
-
+let updatedConversation
   //Pulling the entire conversation based on the phone number
   const conversation = await db.conversation.findFirst({
     where: {
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
   };
 
   //Create a new message from the leads response
-  await messageInsert(smsFromLead);
+  const newMessage = (await messageInsert(smsFromLead)).success;
 
   switch (smsFromLead.content.toLowerCase()) {
     case "stop":
@@ -62,6 +63,13 @@ export async function POST(req: Request) {
 
   //If autochat is disabled - exit the workflow
   if (!conversation.autoChat) {
+    updatedConversation=await db.conversation.update({where:{id:conversation.id},data:{
+      lastMessage:newMessage?.content
+    }})
+    
+    await pusherServer.trigger(conversation.agentId, "conversation:updated", updatedConversation);
+    await pusherServer.trigger(conversation.id, "message:new", newMessage);
+    await pusherServer.trigger(conversation.agentId, "message:notify", null);
     return new NextResponse(null, { status: 200 });
   }
 
@@ -87,14 +95,14 @@ export async function POST(req: Request) {
     return new NextResponse("Thank you for your message", { status: 200 });
   }
 
-  //Insert the new message into the conversation
-  await messageInsert({
+  //Insert the new message from chat gpt into the conversation
+  const newChatMessage= (await messageInsert({
     role,
     content,
     conversationId: conversation.id,
     senderId: conversation.agentId,
     hasSeen: false,
-  });
+  })).success;
 
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
@@ -126,11 +134,19 @@ export async function POST(req: Request) {
   //Wait 5 seconds before inserting the new message from chatGpt
   // const delay = Math.round(content.length / 35) * 8;
 
-  const words=content.split
-  const wpm =38
-  const delay=Math.round(words.length/wpm)
+  const words = content.split;
+  const wpm = 38;
+  const delay = Math.round(words.length / wpm);
   await smsSend(sms.to, sms.from, content, delay);
-
+  if (newChatMessage) {
+    updatedConversation=await db.conversation.update({where:{id:conversation.id},data:{
+      lastMessage:newChatMessage?.content
+    }})
+    
+    await pusherServer.trigger(conversation.agentId, "conversation:updated", updatedConversation);
+     await pusherServer.trigger(conversation.id, "messages:new", [newMessage,newChatMessage]);
+    await pusherServer.trigger(conversation.agentId, "message:notify", null);
+  }
   return new NextResponse(content, { status: 200 });
 }
 

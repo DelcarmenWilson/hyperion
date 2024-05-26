@@ -21,8 +21,8 @@ export const SmsBody = ({
 }: SmsBodyProps) => {
   const [conversationId, setConversationId] = useState(initConversationId);
   const [messages, setMessages] = useState(initMessages);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
   //TODO - messages are not scrolling to the bottom after being inserted
   const ScrollDown = () => {
     if (bottomRef.current) {
@@ -42,6 +42,16 @@ export const SmsBody = ({
     ScrollDown();
   };
 
+  const onSetMessages = (newMessages: Message[]) => {
+    const existing = messages?.find((e) => e.id == newMessages[0].id);
+    if (existing != undefined) return;
+    if (!conversationId) {
+      setConversationId(newMessages[0].conversationId);
+    }
+    setMessages((messages) => [...messages!, ...newMessages]);
+    ScrollDown();
+  };
+
   useEffect(() => {
     ScrollDown();
     userEmitter.on("messageInserted", (info) => onSetMessage(info));
@@ -58,17 +68,20 @@ export const SmsBody = ({
       userEmitter.emit("conversationSeen", conversationId as string);
     }
 
+    const messagesHandler = (messages: Message[]) => {
+      axios.post(`/api/conversations/${conversationId}/seen`);
+      onSetMessages(messages);
+    };
     const messageHandler = (message: Message) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
-      if (message.role == "user" && audioRef.current) {
-        audioRef.current.play();
-      }
       onSetMessage(message);
     };
-    pusherClient.bind("messages:new", messageHandler);
+    pusherClient.bind("messages:new", messagesHandler);
+    pusherClient.bind("message:new", messageHandler);
     return () => {
       pusherClient.unsubscribe(conversationId as string);
-      pusherClient.unbind("messages:new", messageHandler);
+      pusherClient.unbind("messages:new", messagesHandler);
+      pusherClient.unbind("message:new", messageHandler);
     };
   }, [conversationId]);
 
@@ -87,7 +100,6 @@ export const SmsBody = ({
         />
       ))}
       <div ref={bottomRef} className="pt-2" />
-      <audio ref={audioRef} src="/sounds/message.mp3" />
     </ScrollArea>
   );
 };

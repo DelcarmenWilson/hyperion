@@ -224,7 +224,6 @@ export type Sales = Lead & {
 
 //DAILER SETTINGS
 export type DialerSettingsType = {
-  record: boolean;
   matrix: number;
   pause: number;
 };

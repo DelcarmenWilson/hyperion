@@ -24,19 +24,18 @@ export const chatSettingsUpdate = async (values: any) => {
     userId,
     defaultPrompt,
     defaultFunction,
-    leadInfo,
+    messageNotification,
     autoChat,
-    record,
     coach,
   } = values;
+
   const chatSettings = await db.chatSettings.update({
     where: { userId: userId },
     data: {
       defaultPrompt,
       defaultFunction,
-      leadInfo,
+      messageNotification,
       autoChat,
-      record,
       coach,
     },
   });
@@ -65,24 +64,9 @@ export const chatSettingsUpdateCoach = async (coach: boolean) => {
   return { success: `coaching has been turned ${coach ? "on" : "off"}` };
 };
 
-export const chatSettingsUpdateRecord = async (record: boolean) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
-  await db.chatSettings.update({
-    where: { userId: user.id },
-    data: {
-      record,
-    },
-  });
-
-  return { success: `recording has been turned ${record ? "on" : "off"}` };
-};
-
-export const chatSettingsUpdateCurrentCall = async (currentCall: string|null) => {
+export const chatSettingsUpdateCurrentCall = async (
+  currentCall: string | null
+) => {
   const user = await currentUser();
 
   if (!user) {

@@ -28,7 +28,6 @@ export type TwilioCall = {
   agentName:string;
   coach: string;
   caller: string;
-  recording: boolean;
   currentCall?: string | null;
   conferenceId?:string;
   callSidToCoach?:string;

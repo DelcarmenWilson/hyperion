@@ -34,7 +34,6 @@ export const voiceResponse = async (call: TwilioCall) => {
     agentNumber,
     direction,
     coach,
-    recording,
     from,
     to,
     callerName,
@@ -77,7 +76,6 @@ console.log(call)
     // );
     case "inbound":
       const inDial = twiml.dial({
-        record: recording ? "record-from-answer-dual" : "do-not-record",
         recordingStatusCallback: "/api/twilio/voice/recording",
         action: "/api/twilio/voice/action",
         timeout: 10,
@@ -88,7 +86,6 @@ console.log(call)
       const attr = isAValidPhoneNumber(to) ? "number" : "client";
       const dialOut = twiml.dial({
         callerId: agentNumber,
-        record: recording ? "record-from-answer-dual" : "do-not-record",
         recordingStatusCallback: "/api/twilio/voice/recording",
       });
       if (coach == "on") {
@@ -99,7 +96,6 @@ console.log(call)
             endConferenceOnExit: true,
             beep: "false",
             waitUrl: "",
-            record: recording ? "record-from-start" : "do-not-record",
             recordingStatusCallback: "/api/twilio/voice/recording",
           },
           agentId
