@@ -8,6 +8,7 @@ import { PhoneNumber, UserRole } from "@prisma/client";
 import { getAccountByUserId } from "@/data/account";
 import { userGetById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { StringDecoder } from "string_decoder";
 
 export const {
   handlers: { GET, POST },
@@ -60,7 +61,7 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;    
         session.user.name = token.name;
         session.user.email = token.email;
-        session.user.record=token.record as boolean
+        session.user.messageNotification=token.messageNotification as string
         session.user.team=token.team as string
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
@@ -80,7 +81,7 @@ export const {
       token.name = existingUser.userName;
       token.email = existingUser.email;
       token.role = existingUser.role;
-      token.record=existingUser.chatSettings?.record
+      token.messageNotification=existingUser.chatSettings?.messageNotification
       token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;

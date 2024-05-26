@@ -1,8 +1,9 @@
 "use client";
+import { useState, useTransition } from "react";
+import { useSession } from "next-auth/react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,13 @@ import {
   FormItem,
   FormDescription,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
@@ -25,6 +33,7 @@ import { defaultChat } from "@/placeholder/chat";
 import { ChatUserSchema } from "@/schemas";
 import { RecordModal } from "@/components/modals/record";
 import { AudioPlayer } from "@/components/custom/audio-player";
+import { newMessageNotifications } from "@/constants/sounds";
 
 type ChatClientProps = {
   data: ChatSettings & { user: User };
@@ -34,6 +43,7 @@ type ChatValues = z.infer<typeof ChatUserSchema>;
 
 export const ChatClient = ({ data }: ChatClientProps) => {
   const router = useRouter();
+  const { update } = useSession();
 
   const [voicemail, setVoicemail] = useState<{
     type: string;
@@ -80,12 +90,10 @@ export const ChatClient = ({ data }: ChatClientProps) => {
     startTransition(() => {
       chatSettingsUpdate(values)
         .then((data) => {
-          if (data.error) {
-            toast.error(data.error);
-          }
           if (data.success) {
             toast.success(data.success);
-          }
+            update();
+          } else toast.error(data.error);
         })
         .catch(() => {
           toast.error("Something went wrong");
@@ -182,29 +190,6 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                 </FormItem>
               )}
             />
-            {/* SEND LEAD INFO */}
-            <FormField
-              control={form.control}
-              name="leadInfo"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Lead Info</FormLabel>
-                    <FormDescription>
-                      Send lead info with the intial prompt
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblIsTwoFactor"
-                      disabled={loading}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
 
             {/* AUTO CHAT */}
             <FormField
@@ -228,27 +213,6 @@ export const ChatClient = ({ data }: ChatClientProps) => {
               )}
             />
 
-            {/* RECORD */}
-            <FormField
-              control={form.control}
-              name="record"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Recording</FormLabel>
-                    <FormDescription>Recording calls</FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      name="cblRecord"
-                      disabled={loading}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             {/* COACH */}
             <FormField
               control={form.control}
@@ -269,6 +233,41 @@ export const ChatClient = ({ data }: ChatClientProps) => {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* MESSAGE NOTIFICATION */}
+            <FormField
+              control={form.control}
+              name="messageNotification"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>New Message Notification</FormLabel>
+                    <Select
+                      name="ddlNotification"
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Sound" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {newMessageNotifications.map((notification, i) => (
+                          <SelectItem key={i} value={notification}>
+                            {notification}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <AudioPlayer
+                    src={`/sounds/${form.getValues("messageNotification")}.wav`}
+                    autoPlay={true}
+                  />
                 </FormItem>
               )}
             />

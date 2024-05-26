@@ -79,15 +79,11 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
       return;
     }
     setLoading(true);
-    await smsCreate(values).then((data) => {
-      if (data.success) {
-        userEmitter.emit("messageInserted", data.success);
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-      onCancel();
-    });
+    const response = await smsCreate(values);
+    if (response.success) userEmitter.emit("messageInserted", response.success);
+    else toast.error(response.error);
+    onCancel();
+
     setLoading(false);
   };
   useEffect(() => {

@@ -175,11 +175,9 @@ model ChatSettings {
   defaultPrompt   String @db.LongText
   defaultFunction String @db.LongText
 
-  leadInfo Boolean @default(true)
-
-  autoChat Boolean @default(false)
-  record   Boolean @default(false)
-  coach    Boolean @default(false)
+  autoChat            Boolean @default(false)
+  coach               Boolean @default(false)
+  messageNotification String  @default("access-allowed")
 
   currentCall  String?
   voicemailIn  String?

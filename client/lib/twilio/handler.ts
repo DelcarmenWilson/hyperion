@@ -35,7 +35,6 @@ export const voiceResponse = async (call: TwilioCall) => {
     agentNumber,
     direction,
     coach,
-    recording,
     from,
     to,
     callerName,

@@ -75,13 +75,11 @@ export const smsCreateInitial = async (leadId: string) => {
   message = replacePreset(message, user, lead);
   message += ` ${defaultOptOut.request}`;
 
-  //if the user specific to include the lead info - add the lead info to the prompt
-  if (chatSettings?.leadInfo) {
+  //include the lead info and add it to the end of prompt 
     const leadInfo = {
       "first Name": lead.firstName,
       "last Name": lead.lastName,
       "Date Of Birth": lead.dateOfBirth,
-      address: lead.address,
       city: lead.city,
       state: lead.state,
     };
@@ -89,7 +87,7 @@ export const smsCreateInitial = async (leadId: string) => {
     prompt += `Todays Date is ${new Date()}. When you're poised to arrange an appointment, signify with the keword {schedule}, alongside the designated date and time in UTC format. Here is my information: ${JSON.stringify(
       leadInfo
     )}  `;
-  }
+ 
 
   //create a new conversation between the agent and lead.
   const conversationId = (await conversationInsert(user.id, lead.id, chatSettings?.autoChat))
@@ -168,7 +166,7 @@ export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
   const result = await client.messages.create({
     from: lead.defaultNumber,
     to: lead.cellPhone || (lead.homePhone as string),
-    mediaUrl: images ? [`https://hperioncrm.com${images}`] : undefined,
+    mediaUrl: images ? [images] : undefined,
     body: content,
     applicationSid: cfg.twimlAppSid,
   });

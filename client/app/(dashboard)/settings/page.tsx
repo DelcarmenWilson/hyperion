@@ -77,13 +77,10 @@ const SettingsPage = () => {
     startTransition(() => {
       userUpdateById(values)
         .then((data) => {
-          if (data.error) {
-            toast.error(data.error);
-          }
           if (data.success) {
             toast.success(data.success);
             update();
-          }
+          } else toast.error(data.error);
         })
         .catch(() => {
           toast.error("Something went wrong");

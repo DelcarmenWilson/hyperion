@@ -241,9 +241,8 @@ export const ChatUserSchema = z.object({
   defaultPrompt: z.optional(z.string()),
   defaultFunction: z.optional(z.string()),
   autoChat: z.boolean(),
-  record: z.boolean(),
+  messageNotification:z.string(),
   coach: z.boolean(),
-  leadInfo: z.boolean(),
 });
 
 export const TeamSchema = z.object({ name: z.string().min(1) });
