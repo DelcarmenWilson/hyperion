@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { userEmitter } from "@/lib/event-emmiter";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -15,7 +16,6 @@ import { AlertModal } from "@/components/modals/alert";
 import { TemplateForm } from "./form";
 
 import { userTemplateDeleteById } from "@/actions/user";
-import { cn } from "@/lib/utils";
 
 import { deleteImage } from "@/actions/upload";
 
@@ -34,18 +34,14 @@ export const TemplateCard = ({
 
   const onDeleteTemplate = async () => {
     setLoading(true);
-
     const deletedTemplate = await userTemplateDeleteById(template.id);
-    if (deletedTemplate.error) {
-      toast.error(deletedTemplate.error);
-    }
     if (deletedTemplate.success) {
-      if (template.attachment) {
-        await deleteImage(template.attachment);
-      }
+      if (template.attachment)
+        await deleteImage(template.attachment, "user-templates");
       userEmitter.emit("templateDeleted", template.id);
       toast.success(deletedTemplate.success);
-    }
+    } else toast.error(deletedTemplate.error);
+
     setAlertOpen(false);
     setLoading(false);
   };
@@ -96,7 +92,9 @@ export const TemplateCard = ({
               <Image
                 height={100}
                 width={100}
-                className="w-[100px] h-[100px]"
+                className="w-20 h-20"
+                loading="lazy"
+                priority={false}
                 src={template.attachment}
                 alt={template.name}
               />
@@ -125,27 +123,6 @@ export const TemplateCard = ({
           </div>
         )}
       </div>
-      {/* <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
-        <h3 className="text-2xl text-primary font-semibold text-center">{`${template.state} - ${template.templateNumber}`}</h3>
-
-        <CardData title="State" value={template.state} />
-        <CardData title="type" value={template.type} />
-        <CardData title="templateNumber" value={template.templateNumber} />
-        <CardData
-          title="dateExpires"
-          value={format(template.dateExpires, "MM-dd-yyy")}
-        />
-        <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
-          <Button
-            variant="destructive"
-            className="opacity-0 group-hover:opacity-100"
-            onClick={() => setAlertOpen(true)}
-          >
-            Delete
-          </Button>
-          <Button onClick={() => setIsOpen(true)}>Edit</Button>
-        </div>
-      </div> */}
     </>
   );
 };

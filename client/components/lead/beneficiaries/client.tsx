@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-
 import { cn } from "@/lib/utils";
+import { userEmitter } from "@/lib/event-emmiter";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { LeadBeneficiary } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -23,10 +24,11 @@ export const BeneficiariesClient = ({
   initBeneficiaries,
   size = "full",
 }: BeneficiariesClientProp) => {
+  const user = useCurrentUser();
   const [beneficiaries, setBeneficiaries] =
     useState<LeadBeneficiary[]>(initBeneficiaries);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     setBeneficiaries(initBeneficiaries);

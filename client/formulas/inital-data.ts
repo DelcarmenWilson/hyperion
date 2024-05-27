@@ -48,6 +48,7 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       defaultFunction: d["defaultFunction"],
       autoChat: d["autoChat"] == "f" ? false : true,
       messageNotification: d["messageNotification"],
+      dataStyle:d["dataStyle"],
       coach: d["coach"] == "f" ? false : true,
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),

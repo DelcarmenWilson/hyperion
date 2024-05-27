@@ -6,6 +6,7 @@ export type ExtendedUser = DefaultSession["user"] & {
     isTwoFactorEnabled:boolean;
     isOAuth:boolean
     messageNotification:string
+    dataStyle:string
     team:string
     phoneNumbers:PhoneNumber[]
     image:string

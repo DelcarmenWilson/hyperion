@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { DataTable } from "@/components/tables/data-table";
@@ -15,9 +16,10 @@ type TaskClientProps = {
 };
 
 export const TaskClient = ({ initTasks }: TaskClientProps) => {
+  const user = useCurrentUser();
   const [tasks, setTasks] = useState(initTasks);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
   const onTaskCreated = (e?: Task) => {
     if (e) {
       setTasks((tasks) => {

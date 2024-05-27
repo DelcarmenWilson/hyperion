@@ -268,6 +268,34 @@ export const adminCarrierUpdateById = async (
 
   return { success: "Carrier updated" };
 };
+export const adminCarrierUpdateByIdImage = async (
+  id:string,
+  image:string
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  if (user.role == "USER") {
+    return { error: "Unauthorized" };
+  }
+  
+
+  const existingCarrier = await db.carrier.findUnique({ where: { id } });
+  if (!existingCarrier) {
+    return { error: "Carrier does not exists" };
+  }
+
+  await db.carrier.update({
+    where: { id },
+    data: {
+      image
+    },
+  });
+
+  return { success: "Carrier Image has been updated!" };
+};
 
 //MEDICAL CONDITIONS
 export const adminMedicalInsert = async (

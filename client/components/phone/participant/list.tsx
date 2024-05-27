@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { usePhone } from "@/hooks/use-phone";
 import SocketContext from "@/providers/socket";
@@ -15,7 +15,16 @@ type ParticipantListProps = {
 export const ParticipantList = ({ onClose }: ParticipantListProps) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { conference, participants } = usePhone();
+  const [localConference, setLocalConference] = useState(conference);
+  const [localParticipants, setLocalParticipants] = useState(participants);
 
+  useEffect(() => {
+    setLocalConference(conference);
+  }, [conference]);
+
+  useEffect(() => {
+    setLocalParticipants(participants);
+  }, [participants]);
   return (
     <div className="flex flex-col gap-2 bg-background w-full h-full overflow-hidden">
       <div className="flex justify-between items-center p-2">
@@ -26,7 +35,7 @@ export const ParticipantList = ({ onClose }: ParticipantListProps) => {
           variant="outlineprimary"
           size="sm"
           onClick={() => {
-            socket?.emit("coach-request", conference);
+            socket?.emit("coach-request", localConference);
             toast.success("coach requested!");
           }}
         >
@@ -37,22 +46,22 @@ export const ParticipantList = ({ onClose }: ParticipantListProps) => {
         </Button>
       </div>
       <div className="h-full w-full ">
-        {!participants ? (
+        {!localParticipants ? (
           <EmptyCard title="No partipants found" />
         ) : (
           <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
             <CardContent className="flex flex-col overflow-y-auto items-center gap-2 p-1">
-              {participants
-                .filter((e) => e.label != conference?.agentId)
+              {localParticipants
+                .filter((e) => e.label != localConference?.agentId)
                 .map((participant) => (
                   <ParticipantCard
                     key={participant.callSid}
                     participant={participant}
-                    isLead={conference?.leadId == participant?.label}
+                    isLead={localConference?.leadId == participant?.label}
                     name={
-                      conference?.leadId == participant?.label
-                        ? conference?.leadName
-                        : conference?.coachName
+                      localConference?.leadId == participant?.label
+                        ? localConference?.leadName
+                        : localConference?.coachName
                     }
                   />
                 ))}

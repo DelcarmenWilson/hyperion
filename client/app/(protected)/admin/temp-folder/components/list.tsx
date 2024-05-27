@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import axios from "axios";
 import { toast } from "sonner";
-
+//TODO - need to make this use the aws3 bucket, or possibly remove this entirely
 type TempFolderListProps = {
   folder: string;
   initImages: string[];
@@ -20,22 +20,22 @@ export const TempFolderList = ({
   const [images, setImages] = useState(initImages);
   useEffect(() => {
     setImages(initImages);
-    const onSetImages = (id: string) => {
-      axios
-        .put("/api/upload/image", { oldFile: `/assets/${folder}/${id}` })
-        .then((response) => {
-          const data = response.data;
-          if (data.success) {
-            setImages((images) => images.filter((e) => e != id));
-            toast.success(data.success);
-          }
-          if (data.error) {
-            toast.error(data.error);
-          }
-        });
-    };
+    // const onSetImages = (id: string) => {
+    //   axios
+    //     .put("/api/upload/image", { oldFile: `/assets/${folder}/${id}` })
+    //     .then((response) => {
+    //       const data = response.data;
+    //       if (data.success) {
+    //         setImages((images) => images.filter((e) => e != id));
+    //         toast.success(data.success);
+    //       }
+    //       if (data.error) {
+    //         toast.error(data.error);
+    //       }
+    //     });
+    // };
 
-    adminEmitter.on("tempImageDeleted", onSetImages);
+    // adminEmitter.on("tempImageDeleted", onSetImages);
   }, [initImages]);
   return (
     <>

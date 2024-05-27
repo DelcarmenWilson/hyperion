@@ -49,7 +49,7 @@ export const PhoneOut = () => {
     name: lead ? leadFullName : "New Call",
     number: formatPhoneNumber(lead?.cellPhone as string) || "",
   });
-  const [selectedNumber, setSelectedNumber] = useState(
+  const [myNumber, setMyNumber] = useState(
     user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone ||
       ""
@@ -84,21 +84,20 @@ export const PhoneOut = () => {
       setTo((state) => {
         return { ...state, number: formatPhoneNumber(state.number) };
       });
-      axios
-        .post("/api/leads/details", { phone: reFormatPhoneNumber(to.number) })
-        .then((response) => {
-          const { id, firstName, lastName } = response.data;
-          if (id) {
-            setTo((state) => {
-              return { ...state, name: `${firstName} ${lastName}` };
-            });
-          }
+      const response = await axios.post("/api/leads/details", {
+        phone: reFormatPhoneNumber(to.number),
+      });
+      const { id, firstName, lastName } = response.data;
+      if (id) {
+        setTo((state) => {
+          return { ...state, name: `${firstName} ${lastName}` };
         });
+      }
     }
 
     const call = phone.connect({
       To: reFormatPhoneNumber(to.number),
-      AgentNumber: selectedNumber as string,
+      AgentNumber: myNumber as string,
       Direction: "outbound",
       AgentName: `${user?.name} (Agent)`,
     });
@@ -106,7 +105,7 @@ export const PhoneOut = () => {
     setTimeout(async () => {
       const participant = await addParticipant({
         conferenceSid: user?.id as string,
-        from: selectedNumber as string,
+        from: myNumber as string,
         to: reFormatPhoneNumber(to.number),
         label: lead?.id as string,
         record: true,
@@ -197,19 +196,16 @@ export const PhoneOut = () => {
     });
   };
   //CONFERENCES AND PARTICIPANTS
-  const onGetParticipants = (
+  const onGetParticipants = async (
     conferenceId: string,
     newParticipant: TwilioParticipant | null = null
   ) => {
-    axios
-      .post("/api/twilio/conference/participant", {
-        conferenceId: conferenceId,
-      })
-      .then((response) => {
-        const participants = response.data as TwilioParticipant[];
-        if (newParticipant) participants.push(newParticipant);
-        setParticipants(participants);
-      });
+    const response = await axios.post("/api/twilio/conference/participant", {
+      conferenceId: conferenceId,
+    });
+    const participants = response.data as TwilioParticipant[];
+    if (newParticipant) participants.push(newParticipant);
+    setParticipants(participants);
   };
   const addParticipant = async (participant: TwilioShortParticipant) => {
     const response = await axios.post(
@@ -316,10 +312,7 @@ export const PhoneOut = () => {
           </div>
           <div className="flex justify-between items-center">
             <span>Caller Id</span>
-            <PhoneSwitcher
-              number={selectedNumber}
-              onSetDefaultNumber={setSelectedNumber}
-            />
+            <PhoneSwitcher number={myNumber} onSetDefaultNumber={setMyNumber} />
           </div>
           <div className="relative flex flex-col gap-2 flex-1 overflow-hidden">
             <TouchPad onNumberClick={onNumberClick} />

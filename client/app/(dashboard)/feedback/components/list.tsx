@@ -1,4 +1,9 @@
 "use client";
+import { useEffect, useState } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
+
+import { Feedback } from "@prisma/client";
+
 import {
   Select,
   SelectContent,
@@ -8,25 +13,45 @@ import {
 } from "@/components/ui/select";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Feedback } from "@prisma/client";
 import { FeedbackCard } from "./card";
-import { useState } from "react";
 
 type FeedbackListProps = {
-  feedbacks: Feedback[];
+  initFeedbacks: Feedback[];
 };
 
-export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
+export const FeedbackList = ({ initFeedbacks }: FeedbackListProps) => {
   const [status, setStatus] = useState("New");
+  const [feedbacks, setFeedbacks] = useState(initFeedbacks);
   const [currentFeedbacks, setCurrentFeedbacks] = useState(
     feedbacks.filter((e) => e.status.includes(status))
   );
   const onSetStatus = (st: string) => {
     setStatus(st);
     setCurrentFeedbacks(
-      feedbacks.filter((e) => e.status.includes(st == "%" ? "" : st))
+      initFeedbacks.filter((e) => e.status.includes(st == "%" ? "" : st))
     );
   };
+
+  useEffect(() => {
+    const onFeedbackInserted = (newFeedback: Feedback) => {
+      const existing = feedbacks?.find((e) => e.id == newFeedback.id);
+      if (existing == undefined)
+        setFeedbacks((feedbacks) => [...feedbacks!, newFeedback]);
+    };
+
+    const onFeedbackUpdated = (updatedFeedback: Feedback) => {
+      setFeedbacks((feedbacks) => {
+        if (!feedbacks) return feedbacks;
+        return feedbacks
+          .filter((e) => e.id != updatedFeedback.id)
+          .concat(updatedFeedback);
+      });
+    };
+    userEmitter.on("feedbackInserted", (info) => onFeedbackInserted(info));
+    userEmitter.on("feedbackUpdated", (info) => onFeedbackUpdated(info));
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <>
       <div className="flex justify-between items-center gap-2 pt-2 pr-1">
@@ -52,7 +77,7 @@ export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
       </div>
 
       <ScrollArea>
-        {feedbacks.length ? (
+        {initFeedbacks.length ? (
           <>
             {currentFeedbacks.length ? (
               <div className="grid grid-cols-3 gap-2 p-2">
@@ -66,7 +91,7 @@ export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
           </>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p>You have not leave any feeback!</p>
+            <p>You have not leave any feedback!</p>
           </div>
         )}
       </ScrollArea>

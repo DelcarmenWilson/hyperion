@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserTemplate } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -14,9 +15,10 @@ import { TemplateForm } from "./form";
 import { TemplateList } from "./list";
 
 export const UserTemplateClient = () => {
+  const user = useCurrentUser();
   const { templates, setTemplates } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onTemplateDeleted = (id: string) => {

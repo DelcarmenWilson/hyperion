@@ -2,6 +2,8 @@
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { toast } from "sonner";
@@ -39,10 +41,8 @@ import { ImageModal } from "@/components/modals/image";
 import { ImageGrid } from "@/components/reusable/image-grid";
 import { Task } from "@prisma/client";
 import { DefaultStatus } from "@/constants/texts";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { taskUpdateById } from "@/actions/task";
-
+//TODO - need to change this to use the aws3 bucket
 type TaskFormValues = z.infer<typeof TaskSchema>;
 type TaskFormProps = {
   task: Task;
@@ -65,9 +65,9 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
     defaultValues: task,
   });
 
-  const onImagesAdded = (e: string[], files: File[]) => {
+  const onImagesAdded = (e: string[], files?: File[]) => {
     setImages((imgs) => [...imgs, ...e]);
-    setFiles((fls) => [...fls, ...files]);
+    setFiles((fls) => [...fls, ...files!]);
     setModalOpen(false);
   };
 
@@ -107,9 +107,8 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
       <ImageModal
         title="Upload Task Images?"
         description=""
-        id={task?.id}
-        type="task"
-        filePath="assets/tasks"
+        oldFile={task?.id}
+        filePath="tasks"
         multi
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

@@ -31,19 +31,24 @@ export const computeSHA256 = async (file: File) => {
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
   return hashHex
 }
-
-export const handleFileUpload = async (file: File, path: string = "temp") => {
+type FileUploadProps={
+  newFile: File, 
+  filePath: string ,
+  oldFile?:string|null
+}
+export const handleFileUpload = async ({newFile, filePath = "temp",oldFile}:FileUploadProps) => {
   const signedURLResult = await getSignedURL({
-    fileSize: file.size,
-    fileType: file.type,
-    filePath:path,
-    checksum: await computeSHA256(file),
+    oldFile:oldFile,
+    fileSize: newFile.size,
+    fileType: newFile.type,
+    filePath:filePath,
+    checksum: await computeSHA256(newFile),
   });
   if (signedURLResult.error !== undefined) {
     throw new Error(signedURLResult.error);
   }
   const url = signedURLResult.success;
-  await axios.put(url, file, { headers: { "Content-Type": file.type } });
+  await axios.put(url, newFile, { headers: { "Content-Type": newFile.type } });
   const fileUrl = url.split("?")[0];
   return fileUrl;
 };

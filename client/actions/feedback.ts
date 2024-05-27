@@ -18,18 +18,19 @@ export const feedbackDeleteById = async (id: string) => {
 export const feedbackInsert = async (
   values: z.infer<typeof FeedbackSchema>
 ) => {
-  const validatedFields = FeedbackSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
   const user = await currentUser();
 
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated!" };
   }
+  
+  const validatedFields = FeedbackSchema.safeParse(values);
 
-  const { headLine, page, feedback } = validatedFields.data;
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { headLine, page, feedback,images } = validatedFields.data;
 
   const newFeedback = await db.feedback.create({
     data: {
@@ -37,24 +38,26 @@ export const feedbackInsert = async (
       headLine,
       page,
       feedback,
+      images
     },
   });
 
-  return { success: newFeedback.id };
+  return { success: newFeedback };
 };
 
 export const feedbackUpdateById = async (
   values: z.infer<typeof FeedbackSchema>
 ) => {
-  const validatedFields = FeedbackSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unauthenticated!" };
+  }
+  const validatedFields = FeedbackSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
   }
 
   const { id, userId, headLine, page, feedback } = validatedFields.data;
@@ -63,7 +66,7 @@ export const feedbackUpdateById = async (
     return { error: "Unauthorized!" };
   }
 
-  await db.feedback.update({
+  const updatedFeedback= await db.feedback.update({
     where: { id },
     data: {
       userId,
@@ -73,7 +76,7 @@ export const feedbackUpdateById = async (
     },
   });
 
-  return { success: "Feedback has been updated" };
+  return { success:updatedFeedback };
 };
 
 export const feedbackUpdateByIdDev = async (

@@ -37,7 +37,7 @@ export const TermCarrierClient = ({ initTermCarriers }: TermClientProps) => {
         <TermCarrierForm onClose={onTermCarrierCreated} />
       </DrawerRight>
       <Heading
-        title="Carriers"
+        title="Term Carriers"
         description="Manage all carriers for your organization"
       />
       <DataTable

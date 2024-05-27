@@ -10,6 +10,7 @@ import {
 
 import {
   Appointment,
+  Feedback,
   HyperionLead,
   LeadBeneficiary,
   LeadStatus,
@@ -33,6 +34,9 @@ type UserEvents = {
   
   conversationSeen:[conversationId:string]
   expenseUpdated: [type: string, total: number];
+  feedbackInserted: [info: Feedback];
+  feedbackUpdated: [info: Feedback];
+
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];
   licenseDeleted: [id: string];

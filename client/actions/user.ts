@@ -1,4 +1,6 @@
 "use server";
+  
+import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
@@ -7,7 +9,6 @@ import { currentUser } from "@/lib/auth";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 
-import { UserRole } from "@prisma/client";
 import {
   LeadStatusSchema,
   MasterRegisterSchema,
@@ -301,6 +302,47 @@ export const userUpdateById = async (
     },
   });
   return { success: "Settings Updated! " };
+};
+
+export const userUpdateByIdImage = async (
+  image:string
+) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      image
+    },
+  });
+
+revalidatePath("/");
+  return { success: "User profile image updated!" };
+};
+
+//TODO-THIS SHOULD BE IN ITS OWN TABLE (DISPLAY SETTINGS)
+export const userUpdateByIdDataStyle = async (
+  dataStyle:string
+) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.chatSettings.update({
+    where: {
+      userId: user.id,
+    },
+    data: {
+      dataStyle
+    },
+  });
+  return { success: `Data style updated to ${dataStyle}!` };
 };
 
 export const userUpdateEmailVerification = async (token: string) => {

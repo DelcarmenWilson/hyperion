@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { useGlobalContext } from "@/providers/global";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { UserLicense } from "@prisma/client";
 
@@ -15,10 +15,10 @@ import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { LicenseList } from "./list";
 
 export const LicenseClient = () => {
+  const user = useCurrentUser();
   const { licenses, setLicenses } = useGlobalContext();
-  const role = useCurrentRole();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onLicenseDeleted = (id: string) => {
@@ -44,12 +44,6 @@ export const LicenseClient = () => {
     userEmitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
     userEmitter.on("licenseInserted", (info) => onLicenseInserted(info));
     userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
-    return () => {
-      userEmitter.on("licenseDeleted", (id) => onLicenseDeleted(id));
-      userEmitter.on("licenseInserted", (info) => onLicenseInserted(info));
-      userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
-    };
-
     // eslint-disable-next-line
   }, []);
   return (
@@ -73,7 +67,7 @@ export const LicenseClient = () => {
               isList={isList}
               setIsList={setIsList}
               setIsDrawerOpen={setIsDrawerOpen}
-              showButton={role != "ASSISTANT"}
+              showButton={user?.role != "ASSISTANT"}
             />
           }
         />
@@ -86,7 +80,7 @@ export const LicenseClient = () => {
               setIsDrawerOpen={setIsDrawerOpen}
               isList={isList}
               setIsList={setIsList}
-              showButton={role != "ASSISTANT"}
+              showButton={user?.role != "ASSISTANT"}
             />
           </div>
           <LicenseList licenses={licenses!} />

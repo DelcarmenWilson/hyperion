@@ -315,6 +315,7 @@ export const FeedbackSchema = z.object({
   headLine: z.string().min(3),
   page: z.string(),
   feedback: z.string().min(5),
+  images: z.optional(z.string()),
 });
 
 export const DevFeedbackSchema = z.object({

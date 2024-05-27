@@ -24,7 +24,10 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { ImageModal } from "@/components/modals/image";
-import { adminCarrierUpdateById } from "@/actions/admin";
+import {
+  adminCarrierUpdateById,
+  adminCarrierUpdateByIdImage,
+} from "@/actions/admin";
 
 type CarrierFormProps = {
   carrier: Carrier;
@@ -50,35 +53,34 @@ export const CarrierForm = ({ carrier }: CarrierFormProps) => {
   };
 
   const onSubmit = async (values: CarrierFormValues) => {
-    console.log(values);
     setLoading(true);
-    await adminCarrierUpdateById(values).then((data) => {
-      if (data.success) {
-        router.refresh();
-        toast.success(data.success);
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const updatedCarrier = await adminCarrierUpdateById(values);
+    if (updatedCarrier.success) {
+      router.refresh();
+      toast.success(updatedCarrier.success);
+    } else toast.error(updatedCarrier.error);
 
     setLoading(false);
   };
 
-  const onImageUpdated = (e: string[], files?: File[] | undefined) => {
+  const onImageUpdated = async (images: string[]) => {
     setModalOpen(false);
-    setImage(e.at(0) as string);
-    router.refresh();
-
-    toast.success("Carrier Image has been updated");
+    const updatedImage = await adminCarrierUpdateByIdImage(
+      carrier.id,
+      images[0]
+    );
+    if (updatedImage.success) {
+      setImage(images[0]);
+      router.refresh();
+      toast.success(updatedImage.success);
+    } else toast.error(updatedImage.error);
   };
   return (
     <>
       <ImageModal
         title="Change carrier image?"
-        id={carrier.id}
-        type="carrier"
-        filePath="assets/carriers"
+        filePath="carriers"
+        oldFile={carrier.image}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onImageUpdate={onImageUpdated}
@@ -90,7 +92,9 @@ export const CarrierForm = ({ carrier }: CarrierFormProps) => {
             height={250}
             className="rounded-md shadow-sm shadow-white h-auto w-[250px]"
             src={image || "/assets/defaults/teamImage.jpg"}
-            alt="Team Image"
+            alt={carrier.name}
+            loading="lazy"
+            priority={false}
           />
           <Button
             className="absolute bottom-0 left-0 w-full opacity-0 group-hover:opacity-100"

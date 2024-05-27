@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { HyperionLead } from "@prisma/client";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
@@ -11,8 +13,9 @@ type HyperionLeadClientProps = {
   initLeads: HyperionLead[];
 };
 export const HyperionLeadClient = ({ initLeads }: HyperionLeadClientProps) => {
+  const user = useCurrentUser();
   const [leads, setLeads] = useState(initLeads);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onHyperionLeadDeleted = (id: string) => {

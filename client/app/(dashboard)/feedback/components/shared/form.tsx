@@ -1,13 +1,13 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { handleFileUpload } from "@/lib/utils";
+import { userEmitter } from "@/lib/event-emmiter";
 
-import axios from "axios";
-
-import { toast } from "sonner";
+import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,10 +46,14 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const [files, setFiles] = useState<File[]>([]);
-  const [images, setImages] = useState<string[]>(
-    feedback?.images ? feedback.images.split(",") : []
-  );
+  const [files, setFiles] = useState<{
+    images: string[];
+    urls: File[] | undefined;
+  }>({
+    images: feedback?.images ? feedback.images.split(",") : [],
+    urls: [],
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const routes = [...MainSidebarRoutes].sort((a, b) => {
     if (a.title < b.title) {
@@ -63,6 +67,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(FeedbackSchema),
+    //@ts-ignore
     defaultValues: feedback || {
       headLine: "",
       page: "Dashboard",
@@ -70,20 +75,26 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
     },
   });
 
-  const onImagesAdded = (e: string[], files: File[]) => {
-    setImages((imgs) => [...imgs, ...e]);
-    setFiles((fls) => [...fls, ...files]);
+  const onImagesAdded = (e: string[], fls?: File[]) => {
+    setFiles((files) => {
+      return {
+        images: [...files.images, ...e],
+        urls: [...files.urls!, ...fls!],
+      };
+    });
     setModalOpen(false);
   };
 
   const onImageRemove = (e: number) => {
     if (e < 0) return;
-    const newImages = images;
+    const newImages = files.images;
     newImages.splice(e, 1);
-    setImages(newImages);
+
     setFiles((files) => {
-      files.splice(e, 1);
-      return files;
+      return {
+        images: newImages,
+        urls: files.urls?.splice(e, 1),
+      };
     });
   };
 
@@ -94,38 +105,40 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
 
   const onSubmit = async (values: FeedbackFormValues) => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append("type", "feedback");
-    formData.append("filePath", "assets/feedbacks");
-
-    for (let index = 0; index < images.length; index++) {
-      formData.append("image", files[index]);
-    }
 
     if (feedback) {
-      feedbackUpdateById(values).then((data) => {
-        if (data.success) {
-          toast.success(data.success);
-          router.refresh();
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
+      const updatedFeedback = await feedbackUpdateById(values);
+      if (updatedFeedback.success) {
+        toast.success("Feedback has been updated");
+        userEmitter.emit("feedbackUpdated", updatedFeedback.success);
+        router.refresh();
+      } else {
+        form.reset();
+        toast.error(updatedFeedback.error);
+      }
     } else {
-      feedbackInsert(values).then((data) => {
-        if (data.success) {
-          formData.append("id", data.success);
-          axios.post("/api/upload/images", formData);
-          toast.success("Feedback has been created");
-          router.refresh();
+      if (files.urls) {
+        let urls: string[] = [];
+        for (let i = 0; i < files.urls.length; i++) {
+          const url = await handleFileUpload({
+            newFile: files.urls[i],
+            filePath: "feedbacks",
+          });
+          urls.push(url);
         }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
+        values.images = urls.join(",");
+      }
+
+      const insertedFeedback = await feedbackInsert(values);
+
+      if (insertedFeedback.success) {
+        setFiles({ images: [], urls: [] });
+        form.reset();
+        toast.success("Feedback has been created");
+        userEmitter.emit("feedbackInserted", insertedFeedback.success);
+      } else {
+        toast.error(insertedFeedback.error);
+      }
     }
 
     setLoading(false);
@@ -135,13 +148,12 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
       <ImageModal
         title="Upload FeedBack Images?"
         description=""
-        id={feedback?.id}
-        type="feedback"
         filePath="assets/feedbacks"
         multi
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onImageUpdate={onImagesAdded}
+        autoUpload={false}
       />
       <Form {...form}>
         <form
@@ -250,7 +262,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
       </Form>
       <ImageGrid
         enableButton={role != "MASTER" && feedback?.status != "Resolved"}
-        images={images}
+        images={files.images}
         setModalOpen={setModalOpen}
         onImageRemove={onImageRemove}
       />
