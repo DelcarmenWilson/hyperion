@@ -1,36 +1,39 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
+import { cn, handleFileUpload } from "@/lib/utils";
+
 import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import axios from "axios";
-import { cn } from "@/lib/utils";
 
 type ImageModalProps = {
   title: string;
   description?: string;
-  type: string;
-  id?: string;
   filePath: string;
+  oldFile?: string;
   multi?: boolean;
+  autoUpload?: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onImageUpdate: (e: string[], files: File[]) => void;
+  onImageUpdate: (e: string[], files?: File[]) => void;
 };
 export const ImageModal = ({
   title,
   description = "Previous image will be replaced",
-  type,
-  id,
   filePath,
+  oldFile,
   multi = false,
+  autoUpload = true,
   isOpen,
   onClose,
   onImageUpdate,
 }: ImageModalProps) => {
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>();
+  const [files, setFiles] = useState<{
+    images: string[];
+    urls: File[] | undefined;
+  }>({ images: [], urls: undefined });
+
   const [uploading, setUploading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const width = multi ? 80 : 250;
@@ -45,34 +48,36 @@ export const ImageModal = ({
         sf.push(URL.createObjectURL(files[index]));
         fl.push(files[index]);
       }
+      setFiles({ images: sf, urls: fl });
+    }
+  };
+  const onUpload = async () => {
+    if (autoUpload) {
+      setUploading(true);
+      try {
+        if (!files.urls?.length) return;
 
-      setSelectedImages(sf);
-      setSelectedFiles(fl);
-    }
-  };
-  const onUpload = () => {
-    setUploading(true);
-    try {
-      if (!selectedFiles?.length) return;
-      if (id) {
-        const formData = new FormData();
-        // formData.append("image", selectedFiles[0]);
-        for (let index = 0; index < selectedFiles.length; index++) {
-          formData.append("image", selectedFiles[index]);
+        let urls: string[] = [];
+        for (let i = 0; i < files.urls.length; i++) {
+          const url = await handleFileUpload({
+            newFile: files.urls[i],
+            filePath,
+            oldFile,
+          });
+          urls.push(url);
         }
-        formData.append("filePath", filePath);
-        formData.append("id", id as string);
-        formData.append("type", type);
-        axios.post("/api/upload/images", formData);
+        onImageUpdate(urls, files.urls);
+
+        setFiles({ images: [], urls: undefined });
+      } catch (error: any) {
+        console.log(error.response?.data);
       }
-      onImageUpdate(selectedImages, selectedFiles);
-      setSelectedImages([]);
-      setSelectedFiles(undefined);
-    } catch (error: any) {
-      console.log(error.response?.data);
+      setUploading(false);
+    } else {
+      onImageUpdate(files.images, files.urls);
     }
-    setUploading(false);
   };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -98,16 +103,9 @@ export const ImageModal = ({
             onChange={onFileChange}
           />
           <div className="min-w-40 max-w-md aspect-video rounded flex items-center justify-center border-2 border-dashed hover:bg-accent cursor-pointer">
-            {selectedImages.length ? (
-              // <Image
-              //   width={80}
-              //   height={80}
-              //   className="h-auto w-[250px]"
-              //   src={selectedImage}
-              //   alt="Profile Image"
-              // />
+            {files.images.length ? (
               <div className={cn("grid-cols-4 gap-2", multi ? "grid " : "")}>
-                {selectedImages.map((img, index) => (
+                {files.images.map((img, index) => (
                   <Image
                     key={index}
                     width={width}
@@ -133,7 +131,7 @@ export const ImageModal = ({
         <Button disabled={uploading} variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        {selectedFiles && (
+        {files.urls && (
           <Button disabled={uploading} onClick={onUpload}>
             {uploading ? "Uploading..." : "Upload"}
           </Button>

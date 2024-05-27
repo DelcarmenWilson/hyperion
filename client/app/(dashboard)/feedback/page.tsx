@@ -18,7 +18,7 @@ const FeedbackPage = async () => {
           <FeedbackForm feedback={null} />
         </div>
         <div className="flex flex-col overflow-hidden">
-          <FeedbackList feedbacks={feedbacks} />
+          <FeedbackList initFeedbacks={feedbacks} />
         </div>
       </div>
     </PageLayout>

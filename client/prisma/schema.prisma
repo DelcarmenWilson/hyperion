@@ -178,6 +178,7 @@ model ChatSettings {
   autoChat            Boolean @default(false)
   coach               Boolean @default(false)
   messageNotification String  @default("access-allowed")
+  dataStyle           String  @default("list")
 
   currentCall  String?
   voicemailIn  String?

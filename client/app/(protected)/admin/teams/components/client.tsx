@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { FullTeam } from "@/types";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
@@ -12,8 +13,9 @@ type TeamClientProps = {
   intitTeams: FullTeam[];
 };
 export const TeamClient = ({ intitTeams }: TeamClientProps) => {
+  const user = useCurrentUser();
   const [teams, setTeams] = useState(intitTeams);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onTeamDeleted = (id: string) => {

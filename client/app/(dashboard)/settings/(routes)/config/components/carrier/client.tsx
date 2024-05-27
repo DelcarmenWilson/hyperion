@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useGlobalContext } from "@/providers/global";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { FullUserCarrier } from "@/types";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
@@ -13,10 +13,10 @@ import { CarrierForm } from "./form";
 import { CarrierList } from "./list";
 
 export const CarrierClient = () => {
+  const user = useCurrentUser();
   const { carriers, setCarriers } = useGlobalContext();
-  const role = useCurrentRole();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onCarrierDeleted = (id: string) => {
@@ -72,7 +72,7 @@ export const CarrierClient = () => {
               isList={isList}
               setIsList={setIsList}
               setIsDrawerOpen={setIsDrawerOpen}
-              showButton={role != "ASSISTANT"}
+              showButton={user?.role != "ASSISTANT"}
             />
           }
         />
@@ -85,7 +85,7 @@ export const CarrierClient = () => {
               setIsDrawerOpen={setIsDrawerOpen}
               isList={isList}
               setIsList={setIsList}
-              showButton={role != "ASSISTANT"}
+              showButton={user?.role != "ASSISTANT"}
             />
           </div>
           <CarrierList carriers={carriers!} />

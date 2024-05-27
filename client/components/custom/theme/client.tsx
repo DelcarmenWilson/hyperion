@@ -27,10 +27,10 @@ export function ThemeClient() {
     <>
       <div className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
         <div className="space-y-0.5">
-          <h3 className="flex items-center gap-2">
-            <span className="font-semibold">Theme</span>
-          </h3>
-          <p className="text-muted-foreground">Set Page Theme</p>
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Theme
+          </label>
+          <p className="text-[0.8rem] text-muted-foreground">Set Page Theme</p>
         </div>
         <div>
           <div className="grid grid-cols-2 gap-2">
@@ -66,10 +66,11 @@ export function ThemeClient() {
       </div>
       <div className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
         <div className="space-y-0.5">
-          <h3 className="flex items-center gap-2">
-            <span className="font-semibold">Color</span>
-          </h3>
-          <p className="text-muted-foreground">Set Page Color</p>
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Color
+          </label>
+
+          <p className="text-[0.8rem] text-muted-foreground">Set Page Color</p>
         </div>
         <div className="flex flex-wrap mr-2 items-center space-x-0.5">
           {mounted ? (

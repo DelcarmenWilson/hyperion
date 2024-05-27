@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { FullLeadMedicalCondition } from "@/types";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -23,10 +24,11 @@ export const ConditionsClient = ({
   initConditions,
   size = "full",
 }: ConditionsClientProp) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const user = useCurrentUser();
   const [conditions, setConditions] =
     useState<FullLeadMedicalCondition[]>(initConditions);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   const onConditionDeleted = (id: string) => {
     setConditions((conditions) => conditions.filter((e) => e.id !== id));

@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-
 import { useGlobalContext } from "@/providers/global";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { LeadStatus } from "@prisma/client";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
@@ -13,9 +13,10 @@ import { LeadStatusForm } from "./form";
 import { LeadStatusList } from "./list";
 
 export const LeadStatusClient = () => {
+  const user = useCurrentUser();
   const { leadStatus, setLeadStatus } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   useEffect(() => {
     const onUserLeadStatusDeleted = (id: string) => {

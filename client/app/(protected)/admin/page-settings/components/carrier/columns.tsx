@@ -39,7 +39,13 @@ export const columns: ColumnDef<Carrier>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => (
-      <Image src={row.original.image} alt={row.original.name} />
+      <Image
+        height={50}
+        width={50}
+        className="h-[50px] w-[50px]"
+        src={row.original.image || "/assets/defaults/teamImage.jpg"}
+        alt={row.original.name}
+      />
     ),
   },
 

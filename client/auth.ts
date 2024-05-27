@@ -62,6 +62,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.messageNotification=token.messageNotification as string
+        session.user.dataStyle=token.dataStyle as string
         session.user.team=token.team as string
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
@@ -82,6 +83,7 @@ export const {
       token.email = existingUser.email;
       token.role = existingUser.role;
       token.messageNotification=existingUser.chatSettings?.messageNotification
+      token.dataStyle=existingUser.chatSettings?.dataStyle
       token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;

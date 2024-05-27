@@ -2,14 +2,17 @@
 import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
+import { handleFileUpload } from "@/lib/utils";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+import { UserTemplate } from "@prisma/client";
+import { UserTemplateSchema } from "@/schemas";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormField,
@@ -19,17 +22,11 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { UserTemplate } from "@prisma/client";
-
 import { Textarea } from "@/components/ui/textarea";
-import { UserTemplateSchema } from "@/schemas";
-import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
 import { ImageUpload } from "@/components/custom/image-upload";
-import axios from "axios";
 import { KeywordSelect } from "@/components/custom/keyword-select";
-import { useRouter } from "next/navigation";
-import { computeSHA256, handleFileUpload } from "@/lib/utils";
-import { getSignedURL } from "@/actions/upload";
+
+import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
 
 type TemplateFormProps = {
   template?: UserTemplate;
@@ -44,8 +41,6 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     image: File | null;
     url: string | null;
   }>({ image: null, url: null });
-
-  const imgPath = "/user-templates/";
   const btnText = template ? "Update" : "Create";
 
   const form = useForm<TemplateFormValues>({
@@ -53,22 +48,6 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     //@ts-ignore
     defaultValues: template || {},
   });
-
-  // const handleFileUpload = async (file: File, path: string = "temp") => {
-  //   const signedURLResult = await getSignedURL({
-  //     fileSize: file.size,
-  //     fileType: file.type,
-  //     filePath: "user-templates",
-  //     checksum: await computeSHA256(file),
-  //   });
-  //   if (signedURLResult.error !== undefined) {
-  //     throw new Error(signedURLResult.error);
-  //   }
-  //   const url = signedURLResult.success;
-  //   await axios.put(url, file, { headers: { "Content-Type": file.type } });
-  //   const fileUrl = url.split("?")[0];
-  //   return fileUrl;
-  // };
 
   const onCancel = () => {
     form.clearErrors();
@@ -92,18 +71,21 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     setLoading(true);
 
     if (file.image) {
-      values.attachment = await handleFileUpload(file.image, "user-templates");
+      values.attachment = await handleFileUpload({
+        newFile: file.image,
+        filePath: "user-templates",
+        oldFile: template?.attachment,
+      });
     }
     if (template) {
-      //TODO replace the old file if exist
-      const updateData = await userTemplateUpdateById(values);
-      if (updateData.success) {
-        userEmitter.emit("templateUpdated", updateData.success);
+      const updatedTemplate = await userTemplateUpdateById(values);
+      if (updatedTemplate.success) {
+        userEmitter.emit("templateUpdated", updatedTemplate.success);
         onCancel();
         toast.success("Template created!");
       }
-      if (updateData.error) {
-        toast.error(updateData.error);
+      if (updatedTemplate.error) {
+        toast.error(updatedTemplate.error);
       }
     } else {
       const insertData = await userTemplateInsert(values);

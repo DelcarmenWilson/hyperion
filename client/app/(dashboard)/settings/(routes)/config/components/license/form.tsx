@@ -64,28 +64,21 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
   const onSubmit = async (values: LicenseFormValues) => {
     setLoading(true);
 
-    if (license)
-      userLicenseUpdateById(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("licenseUpdated", data.success);
-          toast.success("License updated!");
-          onCancel();
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
-    else
-      userLicenseInsert(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("licenseInserted", data.success);
-          toast.success("License created!");
-          onCancel();
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+    if (license) {
+      const updatedLicense = await userLicenseUpdateById(values);
+      if (updatedLicense.success) {
+        userEmitter.emit("licenseUpdated", updatedLicense.success);
+        toast.success("License updated!");
+        onCancel();
+      } else toast.error(updatedLicense.error);
+    } else {
+      const InsertedLicense = await userLicenseInsert(values);
+      if (InsertedLicense.success) {
+        userEmitter.emit("licenseInserted", InsertedLicense.success);
+        toast.success("License created!");
+        onCancel();
+      } else toast.error(InsertedLicense.error);
+    }
     setLoading(false);
   };
   return (

@@ -36,7 +36,7 @@ const PageSettings = async () => {
         </Button>
       }
     >
-      <Tabs defaultValue="term" className="mx-2">
+      <Tabs defaultValue="carriers" className="mx-2">
         <TabsList className="flex w-full">
           <TabsTrigger value="carriers">Carriers</TabsTrigger>
           <TabsTrigger value="term">Term Sheet</TabsTrigger>

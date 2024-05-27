@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { TempFolderList } from "./list";
 
@@ -11,8 +12,9 @@ export const TempFolderClient = ({
   folder,
   initImages,
 }: TempFolderClientProps) => {
+  const user = useCurrentUser();
   const [images] = useState(initImages);
-  const [isList, setIsList] = useState(false);
+  const [isList, setIsList] = useState(user?.dataStyle == "list");
 
   return (
     <>

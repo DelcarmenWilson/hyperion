@@ -1,11 +1,9 @@
 "use client";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
 import { useSession } from "next-auth/react";
-import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -35,18 +33,16 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserRole } from "@prisma/client";
 
 import { SettingsSchema } from "@/schemas";
-import { userUpdateById } from "@/actions/user";
+import { userUpdateById, userUpdateByIdImage } from "@/actions/user";
 import { ImageModal } from "@/components/modals/image";
 
 type SettingsValues = z.infer<typeof SettingsSchema>;
 
 const SettingsPage = () => {
-  const router = useRouter();
   const user = useCurrentUser();
   const { update } = useSession();
   const [isPending, startTransition] = useTransition();
-  const [image, setImage] = useState(user?.image);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -63,14 +59,13 @@ const SettingsPage = () => {
     },
   });
 
-  const onImageUpdated = (e: string[], files: File[]) => {
-    setProfileOpen(false);
-    setImage(e.at(0) as string);
-    update();
-    revalidatePath("/");
-    router.refresh();
-
-    toast.success("Profile Image has been updated");
+  const onImageUpdated = async (images: string[]) => {
+    setModalOpen(false);
+    const imageUpdated = await userUpdateByIdImage(images[0]);
+    if (imageUpdated.success) {
+      update();
+      toast.success(imageUpdated.success);
+    } else toast.error(imageUpdated.error);
   };
 
   const onSubmit = (values: SettingsValues) => {
@@ -92,11 +87,10 @@ const SettingsPage = () => {
     <>
       <ImageModal
         title="Change Profile image?"
-        type="user"
-        id={user?.id}
-        filePath="assets/users"
-        isOpen={profileOpen}
-        onClose={() => setProfileOpen(false)}
+        filePath="users"
+        oldFile={user?.image}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
         onImageUpdate={onImageUpdated}
       />
       <div className="flex mb-2 gap-2 items-center justify-center">
@@ -105,13 +99,15 @@ const SettingsPage = () => {
             width={100}
             height={100}
             className="rounded-full shadow-sm shadow-white w-[100px] aspect-square"
-            src={image || "/assets/defaults/teamImage.jpg"}
-            alt="Team Image"
+            src={user?.image || "/assets/defaults/teamImage.jpg"}
+            alt="Profile Image"
+            loading="lazy"
+            priority={false}
           />
           <Button
             className="absolute bottom-0 left-0 w-full opacity-0 group-hover:opacity-100"
             variant="secondary"
-            onClick={() => setProfileOpen(true)}
+            onClick={() => setModalOpen(true)}
           >
             CHANGE
           </Button>
