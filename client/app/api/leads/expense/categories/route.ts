@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { leadExpensesGetAllById } from "@/data/lead";
 
 export async function GET(request: Request) {
   const user = await currentUser();
@@ -14,25 +14,8 @@ export async function GET(request: Request) {
   if (!leadId) {
     throw new Error("Lead Id must be difined");
   }
-  
-  const expenses = await LeadExpenseCategories(leadId);
+
+  const expenses = await leadExpensesGetAllById(leadId);
+
   return Response.json(expenses);
-}
-
-export type GetLeadExpenseCategoriesResponseType = Awaited<
-  ReturnType<typeof LeadExpenseCategories>
->;
-
-async function LeadExpenseCategories(leadId: string) {
-  const expenses = await db.leadExpense.groupBy({
-    by: ["type", "name", "value","isDefault"],
-    where: {
-      leadId,
-    },
-    orderBy:{
-        value:"desc"
-    }
-  });
-
-  return expenses;
 }

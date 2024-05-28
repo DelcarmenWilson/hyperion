@@ -27,26 +27,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { leadExpenseInsert } from "@/actions/lead";
+import { leadExpenseInsert, leadExpenseUpdateById } from "@/actions/lead";
 import { Loader2 } from "lucide-react";
+import { LeadExpense } from "@prisma/client";
 
 type CreateExpenseFormProps = {
   leadId: string;
+  expense?: LeadExpense;
   type: ExpenseType;
   trigger: ReactNode;
 };
 
 const CreateExpenseForm = ({
   leadId,
+  expense,
   trigger,
   type,
 }: CreateExpenseFormProps) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-
+  const btnText = expense ? "Update" : "Create";
   const form = useForm<LeadExpenseSchemaType>({
     resolver: zodResolver(LeadExpenseSchema),
-    defaultValues: {
+    //@ts-ignore
+    defaultValues: expense || {
       leadId,
       type,
       name: "",
@@ -55,10 +59,14 @@ const CreateExpenseForm = ({
     },
   });
   const { mutate, isPending } = useMutation({
-    mutationFn: leadExpenseInsert,
+    mutationFn: expense ? leadExpenseUpdateById : leadExpenseInsert,
     onSuccess: () => {
-      toast.success("Transaction created successfully 🎉", {
-        id: "create-transaction",
+      const toastString = expense
+        ? "Transaction updated successfully"
+        : "Transaction created successfully";
+
+      toast.success(toastString, {
+        id: "insert-update-transaction",
       });
 
       form.reset({
@@ -70,7 +78,7 @@ const CreateExpenseForm = ({
 
       // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
       queryClient.invalidateQueries({
-        queryKey: ["leadexpense", "balance", "categories"],
+        queryKey: ["expenseBalance", "expenseCategories"],
       });
 
       setOpen((prev) => !prev);
@@ -79,7 +87,10 @@ const CreateExpenseForm = ({
 
   const onSubmit = useCallback(
     (values: LeadExpenseSchemaType) => {
-      toast.loading("Creating transaction...", { id: "create-transaction" });
+      const toastString = expense
+        ? "Updating transaction..."
+        : "Creating transaction...";
+      toast.loading(toastString, { id: "insert-update-transaction" });
 
       mutate(values);
     },
@@ -134,6 +145,7 @@ const CreateExpenseForm = ({
             />
 
             {/* NOTES   */}
+
             <FormField
               control={form.control}
               name="notes"
@@ -141,7 +153,7 @@ const CreateExpenseForm = ({
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Input defaultValue={""} {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>Notes for you reference</FormDescription>
                 </FormItem>
@@ -162,8 +174,7 @@ const CreateExpenseForm = ({
             </Button>
           </DialogClose>
           <Button onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
-            {!isPending && "Create"}
-            {isPending && <Loader2 className="animate-spin" />}
+            {!isPending ? btnText : <Loader2 className="animate-spin" />}
           </Button>
         </DialogFooter>
       </DialogContent>

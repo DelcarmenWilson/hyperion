@@ -109,15 +109,17 @@ export const LeadConditionSchema = z.object({
 export type LeadConditionSchemaType = z.infer<typeof LeadConditionSchema>;
 
 export const LeadExpenseSchema = z.object({
+  id:z.optional(z.string()),
   leadId: z.string(),
   type: z.string(),
   name: z.string(),
   value: z.coerce.number(),
-  notes: z.optional(z.string()),
+  notes: z.optional(z.string()).nullable(),
 });
 export type LeadExpenseSchemaType = z.infer<typeof LeadExpenseSchema>;
 
 export const LeadExportSchema = z.object({
+
   userId: z.string(),
   type: z.string(),
   from: z.date(),

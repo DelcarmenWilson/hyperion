@@ -1,23 +1,25 @@
 "use client";
-import React from "react";
-
+import React, { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ExpenseType } from "@/types";
+import { cn } from "@/lib/utils";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
-import { GetLeadExpenseCategoriesResponseType } from "@/app/api/leads/expense/categories/route";
+import { AlertModal } from "@/components/modals/alert";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { USDollar } from "@/formulas/numbers";
 import CreateExpenseForm from "./create-expense-form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { LeadExpense } from "@prisma/client";
+import { leadExpenseDeleteById } from "@/actions/lead";
+import { toast } from "sonner";
 
 const CatergoryCards = ({ leadId }: { leadId: string }) => {
-  const expenseQuery = useQuery<GetLeadExpenseCategoriesResponseType>({
-    queryKey: ["leadexpense", "balance", "categories"],
+  const expenseQuery = useQuery<LeadExpense[]>({
+    queryKey: ["expenseCategories"],
     queryFn: () =>
       fetch(`/api/leads/expense/categories?leadId=${leadId}`).then((res) =>
         res.json()
@@ -44,100 +46,146 @@ export default CatergoryCards;
 type CategoriesCardProps = {
   leadId: string;
   type: ExpenseType;
-  data: GetLeadExpenseCategoriesResponseType;
+  data: LeadExpense[];
 };
 const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const queryClient = useQueryClient();
   const filteredData = data.filter((el) => el.type === type);
   const total = filteredData.reduce((acc, el) => acc + (el.value || 0), 0);
+  const [selectedExpense, setSelectedExpense] = useState<string>("");
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: leadExpenseDeleteById,
+    onSuccess: () => {
+      toast.success("Transaction deleted succesfully", {
+        id: "delete-transaction",
+      });
+      // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
+      queryClient.invalidateQueries({
+        queryKey: ["expenseBalance", "expenseCategories"],
+      });
+
+      setAlertOpen((prev) => !prev);
+    },
+  });
+
+  const onSelectedExpense = (id: string) => {
+    setSelectedExpense(id);
+    setAlertOpen(true);
+  };
+  const onDelete = useCallback(() => {
+    toast.loading("Deleting transaction...", { id: "delete-transaction" });
+    mutate(selectedExpense);
+  }, [mutate, selectedExpense]);
 
   return (
-    <Card className="min-h-80 w-full col-span-6">
-      <CardHeader>
-        <CardTitle className="grid grid-flow-row justify-between items-center gap-2 text-muted-foreground md:grid-flow-col">
-          {type === "Income" ? "Incomes" : "Expenses"}
+    <>
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        onConfirm={onDelete}
+        loading={isPending}
+        height="auto"
+      />
+      <Card className="min-h-80 w-full col-span-6">
+        <CardHeader>
+          <CardTitle className="grid grid-flow-row justify-between items-center gap-2 text-muted-foreground md:grid-flow-col">
+            {type === "Income" ? "Incomes" : "Expenses"}
 
-          <CreateExpenseForm
-            trigger={
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "hover:text-white",
-                  type == "Income"
-                    ? "border-emerald-500 bg-emerald-950 text-white hover:bg-emerald-700 "
-                    : "border-rose-500 bg-rose-950 text-white hover:bg-rose-700"
-                )}
-              >
-                New {type}
-              </Button>
-            }
-            leadId={leadId}
-            type={type}
-          />
-        </CardTitle>
-      </CardHeader>
+            <CreateExpenseForm
+              trigger={
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "hover:text-white",
+                    type == "Income"
+                      ? "border-emerald-500 bg-emerald-950 text-white hover:bg-emerald-700 "
+                      : "border-rose-500 bg-rose-950 text-white hover:bg-rose-700"
+                  )}
+                >
+                  New {type}
+                </Button>
+              }
+              leadId={leadId}
+              type={type}
+            />
+          </CardTitle>
+        </CardHeader>
 
-      <div className="flex items-center justify-between gap-2">
-        {filteredData.length === 0 && (
-          <EmptyCard
-            title="No data found"
-            subTitle={`Start by adding a new ${
-              type === "Income" ? "incomes" : "expenses"
-            }`}
-          />
-        )}
+        <div className="flex items-center justify-between gap-2">
+          {filteredData.length === 0 && (
+            <EmptyCard
+              title="No data found"
+              subTitle={`Start by adding a new ${
+                type === "Income" ? "incomes" : "expenses"
+              }`}
+            />
+          )}
 
-        {filteredData.length > 0 && (
-          <div className="flex w-full flex-col gap-4 p-4">
-            {filteredData.map((item) => {
-              const amount = item.value || 0;
-              const percentage = (amount * 100) / (total || amount);
+          {filteredData.length > 0 && (
+            <div className="flex w-full flex-col gap-4 p-4">
+              {filteredData.map((item) => {
+                const amount = item.value || 0;
+                const percentage = (amount * 100) / (total || amount);
 
-              return (
-                <div key={item.name} className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between group">
-                    <span className="flex items-center text-gray-400">
-                      {item.name}
+                return (
+                  <div key={item.name} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between group">
+                      <span className="flex items-center text-gray-400">
+                        {item.name}
 
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        ({percentage.toFixed(0)}%)
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          ({percentage.toFixed(0)}%)
+                        </span>
                       </span>
-                    </span>
-                    <div className="flex gap-1 items-center">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className={cn(
-                          "opacity-0",
-                          item.isDefault ? "" : "group-hover:opacity-100"
-                        )}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100"
-                      >
-                        Edit
-                      </Button>
-                      <span className="text-sm text-gray-400">
-                        {USDollar.format(item.value)}
-                      </span>
+                      <div className="flex gap-1 items-center">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className={cn(
+                            "opacity-0",
+                            item.isDefault ? "" : "group-hover:opacity-100"
+                          )}
+                          onClick={() => onSelectedExpense(item.id)}
+                        >
+                          Delete
+                        </Button>
+
+                        <CreateExpenseForm
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="opacity-0 group-hover:opacity-100"
+                            >
+                              Edit
+                            </Button>
+                          }
+                          expense={item}
+                          leadId={leadId}
+                          type={type}
+                        />
+
+                        <span className="text-sm text-gray-400">
+                          {USDollar.format(item.value)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  <Progress
-                    value={percentage}
-                    indicator={
-                      type === "Income" ? "bg-emerald-500" : "bg-red-500"
-                    }
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </Card>
+                    <Progress
+                      value={percentage}
+                      indicator={
+                        type === "Income" ? "bg-emerald-500" : "bg-red-500"
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </Card>
+    </>
   );
 };
