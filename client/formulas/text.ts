@@ -43,7 +43,7 @@ export const replacePreset = (
   .replace("#full_name", lead.lastName)
   .replace("#first_name", `${lead.firstName} ${lead.lastName}`)
   .replace("#street_adress", lead.address?lead.address :"")  
-  .replace("#birthday", format(lead.dateOfBirth!,"MM-dd-yyyy"))
+  .replace("#birthday", lead.dateOfBirth?format(lead.dateOfBirth,"MM-dd-yyyy"):"")
   .replace("#city", lead.city?lead.city :"")
   .replace("#state", lead.state)
   .replace("#zip_code", lead.zipCode?lead.zipCode :"");
