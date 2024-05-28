@@ -49,6 +49,7 @@ const CreateExpenseForm = ({
   const btnText = expense ? "Update" : "Create";
   const form = useForm<LeadExpenseSchemaType>({
     resolver: zodResolver(LeadExpenseSchema),
+    //@ts-ignore
     defaultValues: expense || {
       leadId,
       type,
