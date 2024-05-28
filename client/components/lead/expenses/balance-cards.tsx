@@ -13,7 +13,7 @@ import { USDollar } from "@/formulas/numbers";
 
 const BalanceCards = ({ leadId }: { leadId: string }) => {
   const statsQuery = useQuery<GetLeadExpenseResponseType>({
-    queryKey: ["expenseBalance"],
+    queryKey: ["leadExpense", "balance"],
     queryFn: () =>
       fetch(`/api/leads/expense/balance?leadId=${leadId}`).then((res) =>
         res.json()

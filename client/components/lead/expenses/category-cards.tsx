@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ExpenseType } from "@/types";
 import { cn } from "@/lib/utils";
@@ -19,7 +18,7 @@ import { toast } from "sonner";
 
 const CatergoryCards = ({ leadId }: { leadId: string }) => {
   const expenseQuery = useQuery<LeadExpense[]>({
-    queryKey: ["expenseCategories"],
+    queryKey: ["leadExpense", "categories"],
     queryFn: () =>
       fetch(`/api/leads/expense/categories?leadId=${leadId}`).then((res) =>
         res.json()
@@ -61,9 +60,8 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
       toast.success("Transaction deleted succesfully", {
         id: "delete-transaction",
       });
-      // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
       queryClient.invalidateQueries({
-        queryKey: ["expenseBalance", "expenseCategories"],
+        queryKey: ["leadExpense"],
       });
 
       setAlertOpen((prev) => !prev);

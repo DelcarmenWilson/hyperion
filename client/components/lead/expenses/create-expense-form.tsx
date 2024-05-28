@@ -49,6 +49,7 @@ const CreateExpenseForm = ({
   const btnText = expense ? "Update" : "Create";
   const form = useForm<LeadExpenseSchemaType>({
     resolver: zodResolver(LeadExpenseSchema),
+    //@ts-ignore
     defaultValues: expense || {
       leadId,
       type,
@@ -77,7 +78,7 @@ const CreateExpenseForm = ({
 
       // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
       queryClient.invalidateQueries({
-        queryKey: ["expenseBalance", "expenseCategories"],
+        queryKey: ["leadExpense"],
       });
 
       setOpen((prev) => !prev);

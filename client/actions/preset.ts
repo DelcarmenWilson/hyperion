@@ -10,7 +10,7 @@ export const presetDeleteById = async (id: string) => {
 
     return { success: "Preset deleted!" };
   } catch (error: any) {
-    console.log("PRESET_Delete_ERROR", error);
+    console.log("PRESET_DELETE_ERROR", error);
     return { error: "Something went wrong!" };
   }
 };

@@ -22,7 +22,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { DayHour } from "./day-hours";
 import { scheduleUpdateByUserId } from "@/actions/schedule";
-
+//TODO need to look into refactoring this entire component
 type AvailabilityClientProps = {
   username: string;
   schedule: Schedule;
@@ -55,19 +55,11 @@ export function AvailabilityClient({
     values.thursday = thursday;
     values.friday = friday;
     values.saturday = saturday;
-    // console.log(values);
-    // setLoading(false);
 
-    // return;
+    const updatedSchedule = await scheduleUpdateByUserId(values);
 
-    await scheduleUpdateByUserId(values).then((data) => {
-      if (data.success) {
-        toast.success(data.success);
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    if (updatedSchedule.success) toast.success(updatedSchedule.success);
+    else toast.error(updatedSchedule.error);
 
     setLoading(false);
   };
