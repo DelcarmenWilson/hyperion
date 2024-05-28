@@ -230,7 +230,6 @@ export const leadExpensesGetAllById = async (leadId: string) => {
         value: "desc",
       },
     });
-    console.log(expenses)
     return expenses;
   } catch {
     return [];

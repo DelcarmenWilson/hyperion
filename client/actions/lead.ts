@@ -231,7 +231,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
 };
 
 export const leadUpdateById = async (
-  values:  LeadSchemaType,
+  values: LeadSchemaType,
   leadId: string
 ) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
@@ -396,9 +396,7 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
   return { success: "Lead status has been updated" };
 };
 
-export const leadUpdateByIdMainInfo = async (
-  values: LeadMainSchemaType
-) => {
+export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   const validatedFields = LeadMainSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -435,7 +433,7 @@ export const leadUpdateByIdMainInfo = async (
   return { success: leadInfo };
 };
 export const leadUpdateByIdGeneralInfo = async (
-  values:  LeadGeneralSchemaType
+  values: LeadGeneralSchemaType
 ) => {
   const validatedFields = LeadGeneralSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -484,7 +482,7 @@ export const leadUpdateByIdGeneralInfo = async (
   return { success: leadInfo };
 };
 export const leadUpdateByIdPolicyInfo = async (
-  values:  LeadPolicySchemaType
+  values: LeadPolicySchemaType
 ) => {
   const validatedFields = LeadPolicySchema.safeParse(values);
   if (!validatedFields.success) {
@@ -625,7 +623,7 @@ export const leadBeneficiaryInsert = async (
   return { success: newBeneficiary };
 };
 export const leadBeneficiaryUpdateById = async (
-  values:  LeadBeneficiarySchemaType
+  values: LeadBeneficiarySchemaType
 ) => {
   const validatedFields = LeadBeneficiarySchema.safeParse(values);
   if (!validatedFields.success) {
@@ -720,9 +718,7 @@ export const leadBeneficiaryDeleteById = async (id: string) => {
 };
 
 //LEAD MEDICAL CONDITIONS
-export const leadConditionInsert = async (
-  values: LeadConditionSchemaType
-) => {
+export const leadConditionInsert = async (values: LeadConditionSchemaType) => {
   const validatedFields = LeadConditionSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -763,7 +759,7 @@ export const leadConditionInsert = async (
 };
 
 export const leadConditionUpdateById = async (
-  values:  LeadConditionSchemaType
+  values: LeadConditionSchemaType
 ) => {
   const validatedFields = LeadConditionSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -860,9 +856,7 @@ export const leadExpenseInsertSheet = async (leadId: string) => {
   return { success: newLeadExpenses };
 };
 
-export const leadExpenseInsert = async (
-  values: LeadExpenseSchemaType
-) => {
+export const leadExpenseInsert = async (values: LeadExpenseSchemaType) => {
   const validatedFields = LeadExpenseSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -887,16 +881,18 @@ export const leadExpenseInsert = async (
   return { success: newLeadExpense };
 };
 
-export const leadExpenseUpdateById = async (
-  id: string,
-  name: string,
-  value: number
-) => {
+export const leadExpenseUpdateById = async (values: LeadExpenseSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
   }
+
+  const validatedFields = LeadExpenseSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const { id, name, value, notes } = validatedFields.data;
 
   const existingExpense = await db.leadExpense.findUnique({ where: { id } });
   if (!existingExpense) {
@@ -908,6 +904,7 @@ export const leadExpenseUpdateById = async (
     data: {
       name,
       value,
+      notes,
     },
   });
 
@@ -925,6 +922,8 @@ export const leadExpenseDeleteById = async (id: string) => {
   if (!existingExpense) {
     return { error: "Expense no longer exists" };
   }
+
+  console.log(existingExpense)
 
   const deletedExpense = await db.leadExpense.delete({
     where: { id },

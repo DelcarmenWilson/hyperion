@@ -1,8 +1,11 @@
 "use client";
-
+import { useState } from "react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { toast } from "sonner";
+
 import {
   Calendar,
   Copy,
@@ -21,11 +24,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import axios from "axios";
+
 import { AlertModal } from "@/components/modals/alert";
 import { smsCreateInitial } from "@/actions/sms";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { FullLead } from "@/types";
 
 interface CellActionProps {
@@ -40,15 +41,13 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onStartConversation = async () => {
     // toast.success(data.id);
     // return;
-    await smsCreateInitial(data.id).then((data) => {
-      router.refresh();
-      if (data?.error) {
-        toast.error(data.error);
-      }
-      if (data?.success) {
-        toast.error(data.success);
-      }
-    });
+    const insertedSms = await smsCreateInitial(data.id);
+
+    if (insertedSms?.success) {
+      toast.error(insertedSms.success);
+    } else toast.error(insertedSms.error);
+
+    router.refresh();
   };
 
   const onCopy = () => {
