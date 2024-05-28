@@ -114,7 +114,7 @@ export const LeadExpenseSchema = z.object({
   type: z.string(),
   name: z.string(),
   value: z.coerce.number(),
-  notes: z.optional(z.string()).nullable(),
+  notes: z.optional(z.string()),
 });
 export type LeadExpenseSchemaType = z.infer<typeof LeadExpenseSchema>;
 

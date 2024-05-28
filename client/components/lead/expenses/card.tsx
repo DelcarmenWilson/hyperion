@@ -17,11 +17,12 @@ export const ExpenseIncomeCard = ({ expense }: ExpenseIncomeCardProps) => {
   const [value, setValue] = useState(expense.value.toString());
 
   const onExpenseUpdate = async () => {
-    const updatedExpense = await leadExpenseUpdateById(
-      expense.id,
+    const updatedExpense = await leadExpenseUpdateById({
+      ...expense,
       name,
-      parseInt(value)
-    );
+      value: parseInt(value),
+      notes: "",
+    });
     if (updatedExpense.success) {
       userEmitter.emit("expenseUpdated", updatedExpense.success);
       toast.success(`${updatedExpense.success.type} updated!`);
