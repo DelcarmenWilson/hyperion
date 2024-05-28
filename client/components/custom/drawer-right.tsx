@@ -26,7 +26,7 @@ export const DrawerRight = ({
 }: DrawerRightProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-40" onClose={() => {}}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"

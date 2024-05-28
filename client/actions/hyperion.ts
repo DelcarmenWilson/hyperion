@@ -1,14 +1,12 @@
 "use server";
-
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { HyperionLeadSchema } from "@/schemas";
+import { HyperionLeadSchema,HyperionLeadSchemaType } from "@/schemas/admin";
 import { smsSendNewHyperionLeadNotifications } from "./sms";
 
 export const hyperionLeadInsert = async (
-  values: z.infer<typeof HyperionLeadSchema>
+  values: HyperionLeadSchemaType
 ) => {
   const validatedFields = HyperionLeadSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -80,7 +78,7 @@ export const hyperionLeadInsert = async (
 };
 
 export const hyperionLeadUpdateById = async (
-  values: z.infer<typeof HyperionLeadSchema>
+  values: HyperionLeadSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {

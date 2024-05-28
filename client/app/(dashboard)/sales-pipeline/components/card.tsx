@@ -51,7 +51,7 @@ export const PipelineCard = ({
   //   divRef.current?.scrollTo(0, indexRef.current?.offsetTop! - 15);
   // }, [index]);
   return (
-    <section className="flex flex-col gap-2 glassmorphism border border-primary/50 shadow-inner h-[400px]">
+    <section className="flex flex-col border border-primary/50 shadow-inner h-[400px]">
       <div className="bg-primary text-background flex justify-between items-center px-2">
         <p>{pipeline.name}</p>
         <Actions
@@ -72,7 +72,7 @@ export const PipelineCard = ({
           <SelectItem value="South">South</SelectItem>
         </SelectContent>
       </Select> */}
-      <div className="flex justify-between items-center border-b px-2">
+      <div className="flex justify-between items-center border-b p-2">
         <Button
           size="sm"
           disabled={!leads.length}

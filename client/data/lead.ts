@@ -1,13 +1,13 @@
-import * as z from "zod";
 import { db } from "@/lib/db";
 
 import { UserRole } from "@prisma/client";
-import { LeadExportSchema } from "@/schemas";
+import { LeadExportSchemaType } from "@/schemas/lead";
 
 import { userGetByAssistant } from "@/data/user";
 
 import { getYesterday } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const leadsGetAll = async () => {
   try {
@@ -45,7 +45,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
 };
 
 export const leadsGetAllByAgentIdFiltered = async (
-  values: z.infer<typeof LeadExportSchema>
+  values: LeadExportSchemaType
 ) => {
   try {
     const { userId, to, from, state, vendor } = values;
@@ -83,7 +83,10 @@ export const leadGetById = async (id: string) => {
       include: {
         conversation: true,
         appointments: { orderBy: { startDate: "desc" } },
-        calls: { where: { status: "completed" }, orderBy: { createdAt: "desc" } },
+        calls: {
+          where: { status: "completed" },
+          orderBy: { createdAt: "desc" },
+        },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,
@@ -93,7 +96,6 @@ export const leadGetById = async (id: string) => {
         sharedUser: true,
       },
     });
-
     return lead;
   } catch {
     return null;
@@ -108,7 +110,10 @@ export const leadGetByPhone = async (cellPhone: string) => {
       include: {
         conversation: true,
         appointments: { orderBy: { startDate: "desc" } },
-        calls: { where: { status: "completed" }, orderBy: { createdAt: "desc" } },
+        calls: {
+          where: { status: "completed" },
+          orderBy: { createdAt: "desc" },
+        },
         activities: { orderBy: { createdAt: "desc" } },
         expenses: true,
         beneficiaries: true,
@@ -206,6 +211,27 @@ export const leadStatusGetAllByAgentId = async (
       where: { userId },
     });
     return leadStatus;
+  } catch {
+    return [];
+  }
+};
+
+// LEAD EXPENSES
+
+export const leadExpensesGetAllById = async (leadId: string) => {
+  const user = await currentUser();
+  if (!user) {
+    redirect("/login");
+  }
+  try {
+    const expenses = await db.leadExpense.findMany({
+      where: { leadId },
+      orderBy: {
+        value: "desc",
+      },
+    });
+    console.log(expenses)
+    return expenses;
   } catch {
     return [];
   }

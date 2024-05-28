@@ -1,10 +1,9 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 
-import { MessageSchema } from "@/schemas";
+import { MessageSchema,MessageSchemaType } from "@/schemas/message";
 
-export const messageInsert = async (values: z.infer<typeof MessageSchema>) => {
+export const messageInsert = async (values: MessageSchemaType) => {
   const validatedFields = MessageSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };

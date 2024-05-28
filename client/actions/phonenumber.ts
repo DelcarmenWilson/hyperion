@@ -1,12 +1,11 @@
 
 "use server"
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
-import { UserPhoneNumberSchema } from "@/schemas";
+import { UserPhoneNumberSchema,UserPhoneNumberSchemaType } from "@/schemas/user";
 
-export const phoneNumberInsert = async (values: z.infer<typeof UserPhoneNumberSchema>) => {
+export const phoneNumberInsert = async (values:  UserPhoneNumberSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated!" };

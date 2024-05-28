@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 
 import { toast } from "sonner";
@@ -34,25 +33,19 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
-import { LeadExportSchema } from "@/schemas";
+import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
 import { monthStartEnd } from "@/formulas/dates";
 
 import { states } from "@/constants/states";
 import { importVendors } from "@/constants/lead";
 import { exportLeads } from "@/lib/xlsx";
 
-type ExportLeadFormProps = {
-  onClose?: () => void;
-};
-
-type ExportLeadFormValues = z.infer<typeof LeadExportSchema>;
-
-export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
+export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
   const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const month = monthStartEnd();
 
-  const form = useForm<ExportLeadFormValues>({
+  const form = useForm<LeadExportSchemaType>({
     resolver: zodResolver(LeadExportSchema),
     defaultValues: {
       userId: user?.id as string,
@@ -70,7 +63,7 @@ export const ExportLeadForm = ({ onClose }: ExportLeadFormProps) => {
     if (onClose) onClose();
   };
 
-  const onSubmit = async (values: ExportLeadFormValues) => {
+  const onSubmit = async (values: LeadExportSchemaType) => {
     setLoading(true);
     axios.post("/api/leads/export", values).then((reponse) => {
       const data = reponse.data;

@@ -45,12 +45,11 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     pause: 5,
   });
 
-  const [coach, setCoach] = useState(false);
   const [isCallMuted, setIsCallMuted] = useState(false);
 
   const [time, setTime] = useState(0);
 
-  function addDeviceListeners() {
+  const addDeviceListeners = () => {
     if (!phone) return;
     phone.on("ready", function () {
       console.log("Dialer ready");
@@ -59,7 +58,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     phone.on("error", function (error: any) {
       console.log(error);
     });
-  }
+  };
 
   const startCall = (dial: boolean = true) => {
     if (!dial) return;
@@ -70,7 +69,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     const call = phone.connect({
       To: reFormatPhoneNumber(lead.cellPhone),
       AgentNumber: agentNumber,
-      Coach: coach ? "on" : "off",
       Direction: "outbound",
     });
 

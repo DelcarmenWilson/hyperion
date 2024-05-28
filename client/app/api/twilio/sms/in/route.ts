@@ -1,9 +1,8 @@
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { userEmitter } from "@/lib/event-emmiter";
 import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
-import { MessageSchema } from "@/schemas";
+import { MessageSchema, MessageSchemaType } from "@/schemas/message";
 import { messageInsert } from "@/actions/message";
 import { chatFetch } from "@/actions/gpt";
 
@@ -18,7 +17,7 @@ export async function POST(req: Request) {
   const body = await req.formData();
 
   const sms: TwilioSms = formatObject(body);
-let updatedConversation
+  let updatedConversation;
   //Pulling the entire conversation based on the phone number
   const conversation = await db.conversation.findFirst({
     where: {
@@ -35,7 +34,7 @@ let updatedConversation
   }
 
   //The incoming message from the lead
-  const smsFromLead: z.infer<typeof MessageSchema> = {
+  const smsFromLead: MessageSchemaType = {
     role: "user",
     content: sms.body,
     conversationId: conversation?.id!,
@@ -63,11 +62,18 @@ let updatedConversation
 
   //If autochat is disabled - exit the workflow
   if (!conversation.autoChat) {
-    updatedConversation=await db.conversation.update({where:{id:conversation.id},data:{
-      lastMessage:newMessage?.content
-    }})
-    
-    await pusherServer.trigger(conversation.agentId, "conversation:updated", updatedConversation);
+    updatedConversation = await db.conversation.update({
+      where: { id: conversation.id },
+      data: {
+        lastMessage: newMessage?.content,
+      },
+    });
+
+    await pusherServer.trigger(
+      conversation.agentId,
+      "conversation:updated",
+      updatedConversation
+    );
     await pusherServer.trigger(conversation.id, "message:new", newMessage);
     await pusherServer.trigger(conversation.agentId, "message:notify", null);
     return new NextResponse(null, { status: 200 });
@@ -96,13 +102,15 @@ let updatedConversation
   }
 
   //Insert the new message from chat gpt into the conversation
-  const newChatMessage= (await messageInsert({
-    role,
-    content,
-    conversationId: conversation.id,
-    senderId: conversation.agentId,
-    hasSeen: false,
-  })).success;
+  const newChatMessage = (
+    await messageInsert({
+      role,
+      content,
+      conversationId: conversation.id,
+      senderId: conversation.agentId,
+      hasSeen: false,
+    })
+  ).success;
 
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
@@ -139,12 +147,22 @@ let updatedConversation
   const delay = Math.round(words.length / wpm);
   await smsSend(sms.to, sms.from, content, delay);
   if (newChatMessage) {
-    updatedConversation=await db.conversation.update({where:{id:conversation.id},data:{
-      lastMessage:newChatMessage?.content
-    }})
-    
-    await pusherServer.trigger(conversation.agentId, "conversation:updated", updatedConversation);
-     await pusherServer.trigger(conversation.id, "messages:new", [newMessage,newChatMessage]);
+    updatedConversation = await db.conversation.update({
+      where: { id: conversation.id },
+      data: {
+        lastMessage: newChatMessage?.content,
+      },
+    });
+
+    await pusherServer.trigger(
+      conversation.agentId,
+      "conversation:updated",
+      updatedConversation
+    );
+    await pusherServer.trigger(conversation.id, "messages:new", [
+      newMessage,
+      newChatMessage,
+    ]);
     await pusherServer.trigger(conversation.agentId, "message:notify", null);
   }
   return new NextResponse(content, { status: 200 });
@@ -164,7 +182,7 @@ export async function PUT(req: Request) {
     },
   });
   //The incoming message from the lead
-  const textFromLead: z.infer<typeof MessageSchema> = {
+  const textFromLead: MessageSchemaType = {
     role: "user",
     content: j.body,
     conversationId: conversation?.id!,

@@ -17,10 +17,7 @@ import { chatInsert } from "@/actions/chat";
 import { chatGetById } from "@/data/chat";
 import { FullChatMessage, ShortChat } from "@/types";
 
-type ChatsClientProps = {
-  initChats: ShortChat[];
-};
-export const ChatsClient = ({ initChats }: ChatsClientProps) => {
+export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
   const { socket } = useContext(SocketContext).SocketState;
   const router = useRouter();
   const [chats, setChats] = useState<ShortChat[]>(initChats);

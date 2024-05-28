@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { handleFileUpload } from "@/lib/utils";
@@ -9,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { UserTemplate } from "@prisma/client";
-import { UserTemplateSchema } from "@/schemas";
+import { UserTemplateSchema, UserTemplateSchemaType } from "@/schemas/user";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,8 +32,6 @@ type TemplateFormProps = {
   onClose: () => void;
 };
 
-type TemplateFormValues = z.infer<typeof UserTemplateSchema>;
-
 export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<{
@@ -43,7 +40,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
   }>({ image: null, url: null });
   const btnText = template ? "Update" : "Create";
 
-  const form = useForm<TemplateFormValues>({
+  const form = useForm<UserTemplateSchemaType>({
     resolver: zodResolver(UserTemplateSchema),
     //@ts-ignore
     defaultValues: template || {},
@@ -67,7 +64,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     setFile({ image: null, url: null });
     form.setValue("attachment", undefined);
   };
-  const onSubmit = async (values: TemplateFormValues) => {
+  const onSubmit = async (values: UserTemplateSchemaType) => {
     setLoading(true);
 
     if (file.image) {

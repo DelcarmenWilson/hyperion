@@ -1,8 +1,7 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { DevFeedbackSchema, FeedbackSchema } from "@/schemas";
+import { DevFeedbackSchema,DevFeedbackSchemaType, FeedbackSchema, FeedbackSchemaType } from "@/schemas/feedback";
 
 export const feedbackDeleteById = async (id: string) => {
   const user = await currentUser();
@@ -16,7 +15,7 @@ export const feedbackDeleteById = async (id: string) => {
   return { success: "Feedback has been deleted" };
 };
 export const feedbackInsert = async (
-  values: z.infer<typeof FeedbackSchema>
+  values: FeedbackSchemaType
 ) => {
   const user = await currentUser();
 
@@ -46,7 +45,7 @@ export const feedbackInsert = async (
 };
 
 export const feedbackUpdateById = async (
-  values: z.infer<typeof FeedbackSchema>
+  values: FeedbackSchemaType
 ) => {
   
   const user = await currentUser();
@@ -80,7 +79,7 @@ export const feedbackUpdateById = async (
 };
 
 export const feedbackUpdateByIdDev = async (
-  values: z.infer<typeof DevFeedbackSchema>
+  values: DevFeedbackSchemaType
 ) => {
   const validatedFields = DevFeedbackSchema.safeParse(values);
 

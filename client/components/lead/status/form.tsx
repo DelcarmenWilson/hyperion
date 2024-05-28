@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -9,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { LeadStatusSchema } from "@/schemas";
+import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -28,8 +27,6 @@ type LeadStatusFormProps = {
   onClose: () => void;
 };
 
-type LeadStatusFormValues = z.infer<typeof LeadStatusSchema>;
-
 export const LeadStatusForm = ({
   leadStatus,
   onClose,
@@ -37,7 +34,7 @@ export const LeadStatusForm = ({
   const [loading, setLoading] = useState(false);
   const btnText = leadStatus ? "Update" : "Create";
 
-  const form = useForm<LeadStatusFormValues>({
+  const form = useForm<LeadStatusSchemaType>({
     resolver: zodResolver(LeadStatusSchema),
     //@ts-ignore
     defaultValues: leadStatus || {
@@ -54,7 +51,7 @@ export const LeadStatusForm = ({
     }
   };
 
-  const onSubmit = async (values: LeadStatusFormValues) => {
+  const onSubmit = async (values: LeadStatusSchemaType) => {
     setLoading(true);
     if (leadStatus)
       userLeadStatusUpdateById(values).then((data) => {

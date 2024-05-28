@@ -1,12 +1,14 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { Check, HelpCircle, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { UserPhoneNumberSchema } from "@/schemas";
+import {
+  UserPhoneNumberSchema,
+  UserPhoneNumberSchemaType,
+} from "@/schemas/user";
 
 import {
   Form,
@@ -35,13 +37,10 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { PhonePurchaseItems as PhonePurchaseItems } from "@/constants/phone";
 import { ItemProps } from "@/types/item";
 
-type PurchasePhoneNumberFormValues = z.infer<typeof UserPhoneNumberSchema>;
 export const PurchasePhoneNumberForm = () => {
-  const [stateSelected, setStateSelected] = useState("");
-  const [numberSelected, setNumberSelected] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<PurchasePhoneNumberFormValues>({
+  const form = useForm<UserPhoneNumberSchemaType>({
     resolver: zodResolver(UserPhoneNumberSchema),
     defaultValues: {},
   });
@@ -51,7 +50,7 @@ export const PurchasePhoneNumberForm = () => {
     form.reset();
   };
 
-  const onSubmit = (values: PurchasePhoneNumberFormValues) => {
+  const onSubmit = (values: UserPhoneNumberSchemaType) => {
     setLoading(true);
     phoneNumberInsert(values).then((data) => {
       if (data.success) {

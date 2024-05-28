@@ -1,7 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import * as z from "zod";
 import Papa from "papaparse";
 import { toast } from "sonner";
 
@@ -19,13 +18,11 @@ import {
 } from "@/components/ui/select";
 import { convertLead } from "@/formulas/lead";
 import { importVendors } from "@/constants/lead";
-import { LeadSchema } from "@/schemas";
-
-type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
+import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
 
 export const ImportLeadsForm = () => {
   const router = useRouter();
-  const [leads, setLeads] = useState<ImportLeadsFormValues[]>([]);
+  const [leads, setLeads] = useState<LeadSchemaType[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
   const [vendor, setVendor] = useState(importVendors[0].value);
 
@@ -36,7 +33,7 @@ export const ImportLeadsForm = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (result: any) {
-        const mapped: ImportLeadsFormValues[] = convertLead(result, vendor);
+        const mapped: LeadSchemaType[] = convertLead(result, vendor);
         setLeads(mapped);
         const fls: ImportLeadColumn[] = mapped.map((lead) => ({
           id: "",

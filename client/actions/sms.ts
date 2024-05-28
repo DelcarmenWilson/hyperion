@@ -1,5 +1,4 @@
 "use server";
-import * as z from "zod";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -9,7 +8,7 @@ import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
 import { cfg, client } from "@/lib/twilio/config";
-import { SmsMessageSchema } from "@/schemas";
+import { SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
 import { HyperionLead, Lead } from "@prisma/client";
 import { format } from "date-fns";
 import { hyperionDate } from "@/formulas/dates";
@@ -130,7 +129,7 @@ export const smsCreateInitial = async (leadId: string) => {
   return { success: "Inital message sent!" };
 };
 
-export const smsCreate = async (values: z.infer<typeof SmsMessageSchema>) => {
+export const smsCreate = async (values: SmsMessageSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };

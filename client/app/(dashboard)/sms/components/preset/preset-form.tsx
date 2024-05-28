@@ -1,7 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -21,11 +20,9 @@ import {
 } from "@/components/ui/form";
 
 import { Preset } from "@prisma/client";
-import { PresetSchema } from "@/schemas";
+import { PresetSchema, PresetSchemaType } from "@/schemas/settings";
 import { presetKeywords } from "@/constants/texts";
 import { presetInsert } from "@/actions/preset";
-
-type PresetFormValues = z.infer<typeof PresetSchema>;
 
 type PresetFormProps = {
   type: Preset;
@@ -35,7 +32,7 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
   const [isPending, startTransition] = useTransition();
   const [count, setCount] = useState(content.length);
 
-  const form = useForm<PresetFormValues>({
+  const form = useForm<PresetSchemaType>({
     resolver: zodResolver(PresetSchema),
     defaultValues: {
       type: type,
@@ -43,16 +40,15 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
     },
   });
 
-  const onSubmit = (values: PresetFormValues) => {
-    startTransition(() => {
-      presetInsert(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("presetInserted", data.success);
-          toast.success("Preset added!!");
-        } else toast.error(data.error);
+  const onSubmit = async (values: PresetSchemaType) => {
+    startTransition(async () => {
+      const insertedPreset = await presetInsert(values);
+      if (insertedPreset.success) {
+        userEmitter.emit("presetInserted", insertedPreset.success);
+        toast.success("Preset added!!");
+      } else toast.error(insertedPreset.error);
 
-        form.reset();
-      });
+      form.reset();
     });
   };
 

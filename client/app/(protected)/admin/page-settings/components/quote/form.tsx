@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 
 import { toast } from "sonner";
@@ -8,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { QuoteSchema } from "@/schemas";
+import { QuoteSchema, QuoteSchemaType } from "@/schemas/admin";
 import {
   Form,
   FormField,
@@ -22,16 +21,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminQuoteInsert } from "@/actions/admin";
 import { Quote } from "@prisma/client";
 
-type QuoteFormProps = {
-  onClose?: (e?: Quote) => void;
-};
-
-type QuoteFormValues = z.infer<typeof QuoteSchema>;
-
-export const QuoteForm = ({ onClose }: QuoteFormProps) => {
+export const QuoteForm = ({ onClose }: { onClose?: (e?: Quote) => void }) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<QuoteFormValues>({
+  const form = useForm<QuoteSchemaType>({
     resolver: zodResolver(QuoteSchema),
     defaultValues: {
       quote: "",
@@ -47,7 +40,7 @@ export const QuoteForm = ({ onClose }: QuoteFormProps) => {
     }
   };
 
-  const onSubmit = async (values: QuoteFormValues) => {
+  const onSubmit = async (values: QuoteSchemaType) => {
     setLoading(true);
     adminQuoteInsert(values).then((data) => {
       if (data.success) {

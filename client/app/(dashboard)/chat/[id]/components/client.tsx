@@ -10,11 +10,7 @@ import { Header } from "./header";
 import { ChatBody } from "./body";
 import { ChatForm } from "./form";
 
-type ChatClientProps = {
-  chat: FullChat;
-};
-
-const ChatClient = ({ chat }: ChatClientProps) => {
+const ChatClient = ({ chat }: { chat: FullChat }) => {
   const user = useCurrentUser();
   const otherUser = chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
   return (

@@ -9,10 +9,7 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { Toaster } from "@/components/ui/sonner";
-import { ModalProvider } from "@/providers/modal";
-import { ThemeProvider } from "@/providers/theme";
-import { ThemeSwitcher } from "@/components/custom/theme/switcher";
-import SocketContextComponent from "@/providers/socket-component";
+import RootProviders from "@/providers/root-providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -40,17 +37,8 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en">
         <body className={cn("bg-secondary", poppins.className)}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ModalProvider />
-            <Toaster richColors />
-            <SocketContextComponent>{children}</SocketContextComponent>
-            <ThemeSwitcher />
-          </ThemeProvider>
+          <Toaster richColors position="bottom-right" />
+          <RootProviders>{children}</RootProviders>
         </body>
       </html>
     </SessionProvider>

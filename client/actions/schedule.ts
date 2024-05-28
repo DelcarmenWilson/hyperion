@@ -1,12 +1,9 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
-import { ScheduleSchema } from "@/schemas";
+import { ScheduleSchema,ScheduleSchemaType } from "@/schemas/settings";
 
-
-//ACTIONS
 export const scheduleInsert = async (
-  values: z.infer<typeof ScheduleSchema>
+  values: ScheduleSchemaType
 ) => {
   try {
     const validatedFields = ScheduleSchema.safeParse(values);
@@ -48,7 +45,7 @@ export const scheduleInsert = async (
   }
 };
 export const scheduleUpdateByUserId = async (
-  values: z.infer<typeof ScheduleSchema>
+  values: ScheduleSchemaType
 ) => {
   try {
     const validatedFields = ScheduleSchema.safeParse(values);

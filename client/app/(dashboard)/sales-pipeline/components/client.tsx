@@ -31,7 +31,7 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [updateOpen, setUpdateOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const router = useRouter();
   const [pipeline, setPipeline] = useState<PipeLine | null>();
@@ -53,45 +53,37 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
 
   const sendPipeline = (e: PipeLine, type: string) => {
     setPipeline(e);
-    if (type == "alert") {
-      setAlertOpen(true);
-    } else {
-      setUpdateOpen(true);
-    }
+    if (type == "alert") setAlertOpen(true);
+    else setDialogOpen(true);
   };
 
-  const onPipelineUpdate = () => {
+  const onPipelineUpdate = async () => {
     if (!pipeline) return;
     if (!pipeline.name) {
       toast.error("title cannot be empty");
     }
     setLoading(true);
-    pipelineUpdateById(pipeline).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        router.refresh();
-        toast.success(data.success);
-      }
-    });
+    const updatedPipeline = await pipelineUpdateById(pipeline);
+
+    if (updatedPipeline.success) {
+      router.refresh();
+      toast.success(updatedPipeline.success);
+    } else toast.error(updatedPipeline.error);
+
     setPipeline(null);
-    setUpdateOpen(false);
+    setDialogOpen(false);
     setLoading(false);
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!pipeline) return;
     setLoading(true);
-    pipelineDeleteById(pipeline.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        router.refresh();
-        toast.success(data.success);
-      }
-    });
+    const deletePipeline = await pipelineDeleteById(pipeline.id);
+    if (deletePipeline.success) {
+      router.refresh();
+      toast.success(deletePipeline.success);
+    } else toast.error(deletePipeline.error);
+
     setPipeline(null);
     setAlertOpen(false);
     setLoading(false);
@@ -105,7 +97,7 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
         loading={loading}
         height="h-auto"
       />
-      <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="flex flex-col justify-start h-[60%] w-full">
           <h3 className="text-2xl font-semibold py-2">Edit Stage</h3>
           <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">

@@ -1,9 +1,14 @@
 "use client";
 import { useState } from "react";
-import * as z from "zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
+import {
+  MasterRegisterSchema,
+  MasterRegisterSchemaType,
+} from "@/schemas/register";
 import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 import { Modal } from "@/components/modals/modal";
 import {
@@ -16,18 +21,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { toast } from "sonner";
 import { ScrollArea } from "../ui/scroll-area";
-import { MasterRegisterSchema } from "@/schemas";
 import { userInsertMaster } from "@/actions/user";
 
 export const MasterAccountModal = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const masterModel = useMasterAccountModal();
 
-  const [loading, setLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof MasterRegisterSchema>>({
+  const form = useForm<MasterRegisterSchemaType>({
     resolver: zodResolver(MasterRegisterSchema),
     defaultValues: {
       organization: "",
@@ -40,17 +42,15 @@ export const MasterAccountModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof MasterRegisterSchema>) => {
+  const onSubmit = async (values: MasterRegisterSchemaType) => {
     setLoading(true);
-    await userInsertMaster(values).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        window.location.assign(`/admin`);
-        toast.success(data.success);
-      }
-    });
+    const insertedMaster = await userInsertMaster(values);
+
+    if (insertedMaster.success) {
+      router.push(`/admin`);
+      toast.success(insertedMaster.success);
+    } else toast.error(insertedMaster.error);
+
     setLoading(false);
   };
   return (

@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +11,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { RegisterSchema } from "@/schemas";
+import { RegisterSchema, RegisterSchemaType } from "@/schemas/register";
 import {
   Form,
   FormField,
@@ -38,8 +37,6 @@ type AssistantFormProps = {
   onClose?: (e?: User) => void;
 };
 
-type AssistantFormValues = z.infer<typeof RegisterSchema>;
-
 export const AssistantForm = ({
   admins,
   teams,
@@ -50,7 +47,7 @@ export const AssistantForm = ({
   const [show, setShow] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<AssistantFormValues>({
+  const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       id: user?.id,
@@ -72,19 +69,15 @@ export const AssistantForm = ({
     }
   };
 
-  const onSubmit = async (values: AssistantFormValues) => {
-    startTransition(() => {
-      userInsertAssistant(values).then((data) => {
-        if (data.success) {
-          form.reset();
-          if (onClose) onClose();
-          router.refresh();
-          toast.success(data.success);
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+  const onSubmit = async (values: RegisterSchemaType) => {
+    startTransition(async () => {
+      const insertedAssistant = await userInsertAssistant(values);
+      if (insertedAssistant.success) {
+        form.reset();
+        if (onClose) onClose();
+        router.refresh();
+        toast.success(insertedAssistant.success);
+      } else toast.error(insertedAssistant.error);
     });
   };
   return (

@@ -1,6 +1,5 @@
 "use client";
 import { useTransition } from "react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -21,25 +20,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { NotificationSettings } from "@prisma/client";
 
-import { NotificationSettingsSchema } from "@/schemas";
+import {
+  NotificationSettingsSchema,
+  NotificationSettingsSchemaType,
+} from "@/schemas/settings";
 import { notificationSettingsUpdateByUserId } from "@/actions/notification-settings";
 import { Heading } from "@/components/custom/heading";
 
-type NotificationClientValues = z.infer<typeof NotificationSettingsSchema>;
-type NotificationClientProps = {
-  notificationSettings: NotificationSettings;
-};
 export const NotificationClient = ({
   notificationSettings,
-}: NotificationClientProps) => {
+}: {
+  notificationSettings: NotificationSettings;
+}) => {
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<NotificationClientValues>({
+  const form = useForm<NotificationSettingsSchemaType>({
     resolver: zodResolver(NotificationSettingsSchema),
     defaultValues: notificationSettings,
   });
 
-  const onSubmit = (values: NotificationClientValues) => {
+  const onSubmit = (values: NotificationSettingsSchemaType) => {
     startTransition(() => {
       notificationSettingsUpdateByUserId(values)
         .then((data) => {

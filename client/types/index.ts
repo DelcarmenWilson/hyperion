@@ -262,3 +262,6 @@ export type CalendarLabel = {
   label: string;
   checked: boolean;
 };
+
+
+export type ExpenseType = "Income" | "Expense";

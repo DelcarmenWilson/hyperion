@@ -1,24 +1,30 @@
 "use server";
-  
-import { revalidatePath } from "next/cache";
-import * as z from "zod";
-import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 
+import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
 import {
-  LeadStatusSchema,
-  MasterRegisterSchema,
-  NewPasswordSchema,
   UserCarrierSchema,
+  UserCarrierSchemaType,
   UserLicenseSchema,
+  UserLicenseSchemaType,
   UserTemplateSchema,
-} from "@/schemas";
-import { RegisterSchema } from "@/schemas";
-import { SettingsSchema } from "@/schemas";
+  UserTemplateSchemaType,
+} from "@/schemas/user";
+import {
+  MasterRegisterSchema,
+  MasterRegisterSchemaType,
+  NewPasswordSchema,
+  NewPasswordSchemaType,
+  RegisterSchema,
+  RegisterSchemaType,
+} from "@/schemas/register";
+import { SettingsSchema, SettingsSchemaType } from "@/schemas/settings";
 
 import { chatSettingsInsert } from "./chat-settings";
 import { getVerificationTokenByToken } from "@/data/verification-token";
@@ -28,7 +34,7 @@ import { notificationSettingsInsert } from "./notification-settings";
 import { scheduleInsert } from "./schedule";
 
 //ACTIONS
-export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
+export const userInsert = async (values: RegisterSchemaType) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -93,7 +99,7 @@ export const userInsert = async (values: z.infer<typeof RegisterSchema>) => {
 };
 
 export const userInsertAssistant = async (
-  values: z.infer<typeof RegisterSchema>
+  values: RegisterSchemaType
 ) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -165,7 +171,7 @@ export const userInsertAssistant = async (
 };
 
 export const userInsertMaster = async (
-  values: z.infer<typeof MasterRegisterSchema>
+  values: MasterRegisterSchemaType
 ) => {
   const validatedFields = MasterRegisterSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -248,7 +254,7 @@ export const userInsertMaster = async (
 };
 
 export const userUpdateById = async (
-  values: z.infer<typeof SettingsSchema>
+  values:SettingsSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -304,9 +310,7 @@ export const userUpdateById = async (
   return { success: "Settings Updated! " };
 };
 
-export const userUpdateByIdImage = async (
-  image:string
-) => {
+export const userUpdateByIdImage = async (image: string) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -317,18 +321,16 @@ export const userUpdateByIdImage = async (
       id: user.id,
     },
     data: {
-      image
+      image,
     },
   });
 
-revalidatePath("/");
+  revalidatePath("/");
   return { success: "User profile image updated!" };
 };
 
 //TODO-THIS SHOULD BE IN ITS OWN TABLE (DISPLAY SETTINGS)
-export const userUpdateByIdDataStyle = async (
-  dataStyle:string
-) => {
+export const userUpdateByIdDataStyle = async (dataStyle: string) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -339,7 +341,7 @@ export const userUpdateByIdDataStyle = async (
       userId: user.id,
     },
     data: {
-      dataStyle
+      dataStyle,
     },
   });
   return { success: `Data style updated to ${dataStyle}!` };
@@ -383,7 +385,7 @@ export const userUpdateEmailVerification = async (token: string) => {
 };
 
 export const userUpdatePassword = async (
-  values: z.infer<typeof NewPasswordSchema>,
+  values: NewPasswordSchemaType,
   token?: string | null
 ) => {
   if (!token) {
@@ -453,7 +455,11 @@ export const userLeadStatusDeleteById = async (id: string) => {
   });
 
   if (leads.length > 0) {
-    return { error: `(${leads.length}) lead${leads.length>1?"s are":" is"} still using this status!` };
+    return {
+      error: `(${leads.length}) lead${
+        leads.length > 1 ? "s are" : " is"
+      } still using this status!`,
+    };
   }
 
   await db.leadStatus.delete({
@@ -463,7 +469,7 @@ export const userLeadStatusDeleteById = async (id: string) => {
   return { success: "Lead Status deleted!" };
 };
 export const userLeadStatusInsert = async (
-  values: z.infer<typeof LeadStatusSchema>
+  values: LeadStatusSchemaType
 ) => {
   const user = await currentUser();
 
@@ -501,7 +507,7 @@ export const userLeadStatusInsert = async (
 };
 
 export const userLeadStatusUpdateById = async (
-  values: z.infer<typeof LeadStatusSchema>
+  values: LeadStatusSchemaType
 ) => {
   const user = await currentUser();
 
@@ -565,7 +571,7 @@ export const userLicenseDeleteById = async (id: string) => {
   return { success: "License Deleted" };
 };
 export const userLicenseInsert = async (
-  values: z.infer<typeof UserLicenseSchema>
+  values: UserLicenseSchemaType
 ) => {
   const validatedFields = UserLicenseSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -600,7 +606,7 @@ export const userLicenseInsert = async (
   return { success: license };
 };
 export const userLicenseUpdateById = async (
-  values: z.infer<typeof UserLicenseSchema>
+  values: UserLicenseSchemaType
 ) => {
   const validatedFields = UserLicenseSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -660,7 +666,7 @@ export const userCarrierDeleteById = async (id: string) => {
   return { success: "Carrier Deleted" };
 };
 export const userCarrierInsert = async (
-  values: z.infer<typeof UserCarrierSchema>
+  values: UserCarrierSchemaType
 ) => {
   const validatedFields = UserCarrierSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -693,7 +699,7 @@ export const userCarrierInsert = async (
   return { success: carrier };
 };
 export const userCarrierUpdateById = async (
-  values: z.infer<typeof UserCarrierSchema>
+  values: UserCarrierSchemaType
 ) => {
   const validatedFields = UserCarrierSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -754,12 +760,11 @@ export const userTemplateDeleteById = async (id: string) => {
   return { success: "Template deleted!" };
 };
 export const userTemplateInsert = async (
-  values: z.infer<typeof UserTemplateSchema>
+  values:  UserTemplateSchemaType
 ) => {
-  
   const validatedFields = UserTemplateSchema.safeParse(values);
   if (!validatedFields.success) {
-    console.log(values)
+    console.log(values);
     return { error: "Invalid fields!" };
   }
 
@@ -789,7 +794,7 @@ export const userTemplateInsert = async (
   return { success: template };
 };
 export const userTemplateUpdateById = async (
-  values: z.infer<typeof UserTemplateSchema>
+  values: UserTemplateSchemaType
 ) => {
   const validatedFields = UserTemplateSchema.safeParse(values);
   if (!validatedFields.success) {

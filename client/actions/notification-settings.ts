@@ -1,9 +1,8 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentRole } from "@/lib/auth";
 
-import { NotificationSettingsSchema } from "@/schemas";
+import { NotificationSettingsSchema,NotificationSettingsSchemaType } from "@/schemas/settings";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 
 export const notificationSettingsInsert = async (userId: string) => {
@@ -26,7 +25,7 @@ export const notificationSettingsInsert = async (userId: string) => {
 };
 
 export const notificationSettingsUpdateByUserId = async (
-  values: z.infer<typeof NotificationSettingsSchema>
+  values: NotificationSettingsSchemaType
 ) => {
   const validatedFields = NotificationSettingsSchema.safeParse(values);
 

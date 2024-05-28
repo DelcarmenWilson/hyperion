@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
@@ -10,17 +9,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { ImportMedicalConditionColumn, columns } from "./columns";
 
-import { MedicalConditionSchema } from "@/schemas";
+import { MedicalConditionSchemaType } from "@/schemas/admin";
 import { convertCondition } from "@/formulas/admin";
 import { adminMedicalImport } from "@/actions/admin";
 
-type ImportMedicalConditionFormValues = z.infer<typeof MedicalConditionSchema>;
-
 export const ImportMedicalConditionForm = () => {
   const router = useRouter();
-  const [conditions, setConditions] = useState<
-    ImportMedicalConditionFormValues[]
-  >([]);
+  const [conditions, setConditions] = useState<MedicalConditionSchemaType[]>(
+    []
+  );
   const [formattedConditions, setFormattedConditions] = useState<
     ImportMedicalConditionColumn[]
   >([]);
@@ -31,8 +28,7 @@ export const ImportMedicalConditionForm = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (result: any) {
-        const mapped: ImportMedicalConditionFormValues[] =
-          convertCondition(result);
+        const mapped: MedicalConditionSchemaType[] = convertCondition(result);
         setConditions(mapped);
         const fls: ImportMedicalConditionColumn[] = mapped.map((condition) => ({
           name: condition.name,

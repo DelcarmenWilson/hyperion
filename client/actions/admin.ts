@@ -1,14 +1,17 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 import {
   CarrierSchema,
+  CarrierSchemaType,
   MedicalConditionSchema,
+  MedicalConditionSchemaType,
   QuoteSchema,
+  QuoteSchemaType,
   TermCarrierSchema,
-} from "@/schemas";
+  TermCarrierSchemaType,
+} from "@/schemas/admin";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 
 export const admin = async () => {
@@ -198,9 +201,7 @@ export const adminLeadStatusInsert = async (status: string) => {
 };
 
 //CARRIER
-export const adminCarrierInsert = async (
-  values: z.infer<typeof CarrierSchema>
-) => {
+export const adminCarrierInsert = async (values: CarrierSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -232,9 +233,7 @@ export const adminCarrierInsert = async (
 
   return { success: carrier };
 };
-export const adminCarrierUpdateById = async (
-  values: z.infer<typeof CarrierSchema>
-) => {
+export const adminCarrierUpdateById = async (values: CarrierSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -269,8 +268,8 @@ export const adminCarrierUpdateById = async (
   return { success: "Carrier updated" };
 };
 export const adminCarrierUpdateByIdImage = async (
-  id:string,
-  image:string
+  id: string,
+  image: string
 ) => {
   const user = await currentUser();
 
@@ -280,7 +279,6 @@ export const adminCarrierUpdateByIdImage = async (
   if (user.role == "USER") {
     return { error: "Unauthorized" };
   }
-  
 
   const existingCarrier = await db.carrier.findUnique({ where: { id } });
   if (!existingCarrier) {
@@ -290,7 +288,7 @@ export const adminCarrierUpdateByIdImage = async (
   await db.carrier.update({
     where: { id },
     data: {
-      image
+      image,
     },
   });
 
@@ -299,7 +297,7 @@ export const adminCarrierUpdateByIdImage = async (
 
 //MEDICAL CONDITIONS
 export const adminMedicalInsert = async (
-  values: z.infer<typeof MedicalConditionSchema>
+  values: MedicalConditionSchemaType
 ) => {
   const user = await currentUser();
 
@@ -334,7 +332,7 @@ export const adminMedicalInsert = async (
   return { success: condition };
 };
 export const adminMedicalImport = async (
-  values: z.infer<typeof MedicalConditionSchema>[]
+  values: MedicalConditionSchemaType[]
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -351,7 +349,7 @@ export const adminMedicalImport = async (
 };
 
 //QUOTES
-export const adminQuoteInsert = async (values: z.infer<typeof QuoteSchema>) => {
+export const adminQuoteInsert = async (values: QuoteSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -404,9 +402,7 @@ export const adminQuoteUpdateActive = async () => {
 };
 
 //TERM CARRIER
-export const adminTermCarrierInsert = async (
-  values: z.infer<typeof TermCarrierSchema>
-) => {
+export const adminTermCarrierInsert = async (values: TermCarrierSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -442,7 +438,7 @@ export const adminTermCarrierInsert = async (
   return { success: termCarrier };
 };
 export const adminTermCarrierUpdateById = async (
-  values: z.infer<typeof TermCarrierSchema>
+  values: TermCarrierSchemaType
 ) => {
   const user = await currentUser();
 

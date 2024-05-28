@@ -1,8 +1,4 @@
-import * as z from "zod";
 import { useState } from "react";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
@@ -13,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactDatePicker from "react-datepicker";
 
-import { LeadPolicySchema } from "@/schemas";
+import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -30,23 +26,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 import { LeadPolicyInfo } from "@/types";
 import { leadUpdateByIdPolicyInfo } from "@/actions/lead";
 import { useGlobalContext } from "@/providers/global";
-import { Calendar } from "@/components/ui/calendar";
 
 type PolicyInfoFormProps = {
   policyInfo: LeadPolicyInfo;
   onClose: () => void;
 };
-
-type PolicyInfoFormValues = z.infer<typeof LeadPolicySchema>;
 
 export const PolicyInfoForm = ({
   policyInfo,
@@ -55,7 +43,7 @@ export const PolicyInfoForm = ({
   const { carriers } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<PolicyInfoFormValues>({
+  const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
     defaultValues: policyInfo,
   });
@@ -66,7 +54,7 @@ export const PolicyInfoForm = ({
     onClose();
   };
 
-  const onSubmit = (values: PolicyInfoFormValues) => {
+  const onSubmit = (values: LeadPolicySchemaType) => {
     setLoading(true);
     leadUpdateByIdPolicyInfo(values).then((data) => {
       if (data.success) {

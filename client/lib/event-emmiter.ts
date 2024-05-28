@@ -13,6 +13,7 @@ import {
   Feedback,
   HyperionLead,
   LeadBeneficiary,
+  LeadExpense,
   LeadStatus,
   Message,
   Presets,
@@ -33,7 +34,11 @@ type UserEvents = {
   conditionUpdated: [info: FullLeadMedicalCondition];
   
   conversationSeen:[conversationId:string]
-  expenseUpdated: [type: string, total: number];
+
+  expenseDeleted: [id: string];
+  expenseInserted: [info:LeadExpense];
+  expenseUpdated: [info:LeadExpense];
+
   feedbackInserted: [info: Feedback];
   feedbackUpdated: [info: Feedback];
 
@@ -48,6 +53,7 @@ type UserEvents = {
 
   presetInserted: [Presets];
   policyInfoUpdated: [info: LeadPolicyInfo];
+  //TEMPLATES
   templateDeleted: [id: string];
   templateInserted: [info: UserTemplate];
   templateUpdated: [info: UserTemplate];

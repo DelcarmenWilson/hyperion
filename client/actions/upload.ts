@@ -17,6 +17,7 @@ const client = new S3Client({
 });
 
 const allowedFileTypes = [
+  "audio/wav",
   "image/jpeg",
   "image/png",
   "video/mp4",
@@ -52,7 +53,7 @@ export const getSignedURL = async ({
   if (!user) {
     return { error: "not authenticated" };
   }
-
+console.log(fileType)
   if (!allowedFileTypes.includes(fileType)) {
     return { error: "File type not allowed" };
   }

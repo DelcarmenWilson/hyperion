@@ -36,9 +36,12 @@ export const LicenseClient = () => {
     const onLicenseUpdated = (updatedLicense: UserLicense) => {
       setLicenses((licenses) => {
         if (!licenses) return licenses;
-        return licenses
-          .filter((e) => e.id != updatedLicense.id)
-          .concat(updatedLicense);
+        return licenses.map((license) => {
+          if (license.id == updatedLicense.id) {
+            license = updatedLicense;
+          }
+          return license;
+        });
       });
     };
     userEmitter.on("licenseDeleted", (id) => onLicenseDeleted(id));

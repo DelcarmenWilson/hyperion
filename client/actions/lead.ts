@@ -1,18 +1,23 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import {
   LeadBeneficiarySchema,
+  LeadBeneficiarySchemaType,
   LeadConditionSchema,
+  LeadConditionSchemaType,
   LeadExpenseSchema,
+  LeadExpenseSchemaType,
   LeadGeneralSchema,
+  LeadGeneralSchemaType,
   LeadMainSchema,
+  LeadMainSchemaType,
   LeadPolicySchema,
+  LeadPolicySchemaType,
   LeadSchema,
-  LeadStatusSchema,
-} from "@/schemas";
+  LeadSchemaType,
+} from "@/schemas/lead";
 
 import { activityInsert } from "./activity";
 import { userGetByAssistant } from "@/data/user";
@@ -21,7 +26,7 @@ import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
 import { defaultLeadExpenses } from "@/constants/lead";
 
-export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
+export const leadInsert = async (values: LeadSchemaType) => {
   const validatedFields = LeadSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -112,7 +117,7 @@ export const leadInsert = async (values: z.infer<typeof LeadSchema>) => {
   return { success: newLead };
 };
 
-export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
+export const leadsImport = async (values: LeadSchemaType[]) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -226,7 +231,7 @@ export const leadsImport = async (values: z.infer<typeof LeadSchema>[]) => {
 };
 
 export const leadUpdateById = async (
-  values: z.infer<typeof LeadSchema>,
+  values:  LeadSchemaType,
   leadId: string
 ) => {
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
@@ -392,7 +397,7 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
 };
 
 export const leadUpdateByIdMainInfo = async (
-  values: z.infer<typeof LeadMainSchema>
+  values: LeadMainSchemaType
 ) => {
   const validatedFields = LeadMainSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -430,7 +435,7 @@ export const leadUpdateByIdMainInfo = async (
   return { success: leadInfo };
 };
 export const leadUpdateByIdGeneralInfo = async (
-  values: z.infer<typeof LeadGeneralSchema>
+  values:  LeadGeneralSchemaType
 ) => {
   const validatedFields = LeadGeneralSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -479,7 +484,7 @@ export const leadUpdateByIdGeneralInfo = async (
   return { success: leadInfo };
 };
 export const leadUpdateByIdPolicyInfo = async (
-  values: z.infer<typeof LeadPolicySchema>
+  values:  LeadPolicySchemaType
 ) => {
   const validatedFields = LeadPolicySchema.safeParse(values);
   if (!validatedFields.success) {
@@ -549,7 +554,7 @@ export const leadUpdateByIdPolicyInfo = async (
 
 //LEAD BENFICIARIES
 export const leadBeneficiaryInsert = async (
-  values: z.infer<typeof LeadBeneficiarySchema>
+  values: LeadBeneficiarySchemaType
 ) => {
   const validatedFields = LeadBeneficiarySchema.safeParse(values);
   if (!validatedFields.success) {
@@ -620,7 +625,7 @@ export const leadBeneficiaryInsert = async (
   return { success: newBeneficiary };
 };
 export const leadBeneficiaryUpdateById = async (
-  values: z.infer<typeof LeadBeneficiarySchema>
+  values:  LeadBeneficiarySchemaType
 ) => {
   const validatedFields = LeadBeneficiarySchema.safeParse(values);
   if (!validatedFields.success) {
@@ -716,7 +721,7 @@ export const leadBeneficiaryDeleteById = async (id: string) => {
 
 //LEAD MEDICAL CONDITIONS
 export const leadConditionInsert = async (
-  values: z.infer<typeof LeadConditionSchema>
+  values: LeadConditionSchemaType
 ) => {
   const validatedFields = LeadConditionSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -758,7 +763,7 @@ export const leadConditionInsert = async (
 };
 
 export const leadConditionUpdateById = async (
-  values: z.infer<typeof LeadConditionSchema>
+  values:  LeadConditionSchemaType
 ) => {
   const validatedFields = LeadConditionSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -856,7 +861,7 @@ export const leadExpenseInsertSheet = async (leadId: string) => {
 };
 
 export const leadExpenseInsert = async (
-  values: z.infer<typeof LeadExpenseSchema>
+  values: LeadExpenseSchemaType
 ) => {
   const validatedFields = LeadExpenseSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -898,7 +903,7 @@ export const leadExpenseUpdateById = async (
     return { error: "Expense no longer exists" };
   }
 
-  const modifiedExpense = await db.leadExpense.update({
+  const updatedExpense = await db.leadExpense.update({
     where: { id },
     data: {
       name,
@@ -906,7 +911,7 @@ export const leadExpenseUpdateById = async (
     },
   });
 
-  return { success: `${modifiedExpense.type} updated!` };
+  return { success: updatedExpense };
 };
 
 export const leadExpenseDeleteById = async (id: string) => {
@@ -925,7 +930,7 @@ export const leadExpenseDeleteById = async (id: string) => {
     where: { id },
   });
 
-  return { success: `${deletedExpense.type} deleted!` };
+  return { success: deletedExpense };
 };
 
 //LEAD ASSISTANT AND SHARE

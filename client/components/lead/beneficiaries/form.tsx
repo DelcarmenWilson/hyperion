@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 
 import { userEmitter } from "@/lib/event-emmiter";
@@ -30,7 +29,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { Gender } from "@prisma/client";
 
-import { LeadBeneficiarySchema } from "@/schemas";
+import {
+  LeadBeneficiarySchema,
+  LeadBeneficiarySchemaType,
+} from "@/schemas/lead";
 import { LeadBeneficiary } from "@prisma/client";
 import {
   leadBeneficiaryInsert,
@@ -43,8 +45,6 @@ type BeneficiaryFormProps = {
   onClose: () => void;
 };
 
-type BeneficiaryFormValues = z.infer<typeof LeadBeneficiarySchema>;
-
 export const BeneficiaryForm = ({
   leadId,
   beneficiary,
@@ -53,7 +53,7 @@ export const BeneficiaryForm = ({
   const [loading, setLoading] = useState(false);
   const btnTitle = beneficiary ? "Update" : "Add";
 
-  const form = useForm<BeneficiaryFormValues>({
+  const form = useForm<LeadBeneficiarySchemaType>({
     resolver: zodResolver(LeadBeneficiarySchema),
     defaultValues: beneficiary || {
       leadId: leadId,
@@ -69,7 +69,7 @@ export const BeneficiaryForm = ({
     }
   };
 
-  const onSubmit = async (values: BeneficiaryFormValues) => {
+  const onSubmit = async (values: LeadBeneficiarySchemaType) => {
     setLoading(true);
 
     if (leadId) {

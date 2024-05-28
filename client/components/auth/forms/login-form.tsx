@@ -3,11 +3,9 @@ import { useState, useTransition } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import * as z from "zod";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/schemas";
+import { LoginSchema, LoginSchemaType } from "@/schemas/register";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
@@ -39,7 +37,7 @@ export const LoginForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
+  const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
@@ -47,7 +45,7 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: LoginSchemaType) => {
     setError("");
     setSuccess("");
 

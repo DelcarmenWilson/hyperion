@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import * as z from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,14 +21,16 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AppointmentLabelSchema } from "@/schemas";
+import {
+  AppointmentLabelSchema,
+  AppointmentLabelSchemaType,
+} from "@/schemas/appointment";
 import {
   appointmentLabelInsert,
   appointmentLabelUpdateById,
 } from "@/actions/appointment";
 import { getLabelBgColor, labelClasses } from "@/formulas/labels";
 
-type LabelModalValues = z.infer<typeof AppointmentLabelSchema>;
 export const LabelModal = () => {
   const {
     userLabels,
@@ -40,7 +41,7 @@ export const LabelModal = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<LabelModalValues>({
+  const form = useForm<AppointmentLabelSchemaType>({
     resolver: zodResolver(AppointmentLabelSchema),
     //@ts-ignore
     defaultValues: selectedLabel || {
@@ -50,7 +51,7 @@ export const LabelModal = () => {
     },
   });
 
-  const onSubmit = (values: LabelModalValues) => {
+  const onSubmit = (values: AppointmentLabelSchemaType) => {
     setLoading(true);
 
     if (selectedLabel) {

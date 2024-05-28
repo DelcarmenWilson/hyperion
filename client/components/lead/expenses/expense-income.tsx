@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
 
 import { LeadExpense } from "@prisma/client";
@@ -15,54 +14,17 @@ import { USDollar } from "@/formulas/numbers";
 type ExpenseIncomeProps = {
   leadId: string;
   type: string;
-  initExpenses: LeadExpense[];
+  expenses: LeadExpense[];
   size?: string;
 };
 export const ExpenseIncome = ({
   leadId,
   type,
-  initExpenses,
+  expenses,
   size = "full",
 }: ExpenseIncomeProps) => {
+  const total = expenses.reduce((sum, exp) => sum + exp.value, 0);
   const [isOpen, setIsOpen] = useState(false);
-  const [expenses, setExpenses] = useState(initExpenses);
-  const [total, setTotal] = useState(
-    initExpenses.reduce((sum, exp) => sum + exp.value, 0)
-  );
-
-  const onInserted = (e: LeadExpense) => {
-    setExpenses((expenses) => {
-      return [...expenses, e];
-    });
-    let totalExp = total + e.value;
-    setTotal(totalExp);
-    userEmitter.emit("expenseUpdated", type, totalExp);
-
-    setIsOpen(false);
-  };
-
-  const onUpdated = (uptype: string, id: string, newVal: number) => {
-    let diff = 0;
-    if (uptype == "delete") {
-      const oldVal = expenses.find((e) => e.id == id)?.value;
-      if (oldVal) diff = -oldVal;
-      setExpenses((expenses) => {
-        return expenses.filter((e) => e.id !== id);
-      });
-    } else {
-      const expense = expenses.find((e) => e.id == id);
-      if (expense) {
-        diff =
-          expense.value > newVal
-            ? -(expense.value - newVal)
-            : newVal - expense.value;
-        expense.value = newVal;
-      }
-    }
-    const expenseTotal = total + diff;
-    setTotal(expenseTotal);
-    userEmitter.emit("expenseUpdated", type, expenseTotal);
-  };
 
   return (
     <>
@@ -75,7 +37,6 @@ export const ExpenseIncome = ({
           leadId={leadId}
           type={type}
           onClose={() => setIsOpen(false)}
-          onExpenseInserted={onInserted}
         />
       </DrawerRight>
       <div>
@@ -99,11 +60,7 @@ export const ExpenseIncome = ({
           <Button onClick={() => setIsOpen(true)}>Add {type}</Button>
         </div>
         {expenses.map((expense) => (
-          <ExpenseIncomeCard
-            key={expense.id}
-            expense={expense}
-            onExpenseUpdated={onUpdated}
-          />
+          <ExpenseIncomeCard key={expense.id} expense={expense} />
         ))}
       </div>
     </>

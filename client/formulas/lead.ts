@@ -1,9 +1,6 @@
-import * as z from "zod";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
-import { LeadSchema } from "@/schemas";
-
-type ImportLeadsFormValues = z.infer<typeof LeadSchema>;
+import { LeadSchemaType } from "@/schemas/lead";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -48,7 +45,7 @@ const convertMaritalStatus = (
 export const convertLead = (
   result: any,
   vendor: string
-): ImportLeadsFormValues[] => {
+): LeadSchemaType[] => {
   switch (vendor) {
     case "Avalanche_Leads":
       return Avalanche_Leads(result, vendor);
@@ -72,10 +69,10 @@ export const convertLead = (
 const Avalanche_Leads = (
   result: any,
   vendor: string
-): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["First_Name"]),
       lastName: capitalize(d["Last_Name"]),
@@ -98,10 +95,10 @@ const Avalanche_Leads = (
   return mapped;
 };
 
-const Hyperion = (result: any, vendor: string): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+const Hyperion = (result: any, vendor: string): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["first_name"]),
       lastName: capitalize(d["last_name"]),
@@ -127,8 +124,8 @@ const Hyperion = (result: any, vendor: string): ImportLeadsFormValues[] => {
   });
   return mapped;
 };
-const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+const IlcLeads = (result: any, vendor: string): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   const extractInfo = (data: string): any => {
     if (!data) return {};
     let exData = data
@@ -143,7 +140,7 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
 
   result.data.map((d: any) => {
     const a = extractInfo(d["Notes"]);
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["First Name"]),
       lastName: capitalize(d["Last Name"]),
@@ -168,11 +165,11 @@ const IlcLeads = (result: any, vendor: string): ImportLeadsFormValues[] => {
   });
   return mapped;
 };
-const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+const Leadrilla = (result: any, vendor: string): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
     const fullName = d["name"].split(" ");
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(fullName[0]),
       lastName: capitalize(fullName[1]),
@@ -197,10 +194,10 @@ const Leadrilla = (result: any, vendor: string): ImportLeadsFormValues[] => {
 const MediaAlphaLeads = (
   result: any,
   vendor: string
-): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["first_name"]),
       lastName: capitalize(d["last_name"]),
@@ -228,10 +225,10 @@ const MediaAlphaLeads = (
 const MutualOfOmaha = (
   result: any,
   vendor: string
-): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["firstname"]),
       lastName: capitalize(d["lastname"]),
@@ -254,11 +251,11 @@ const MutualOfOmaha = (
   });
   return mapped;
 };
-const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+const PrimeTime = (result: any, vendor: string): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
     const fullName = d["Name"].split(" ");
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(fullName[0]),
       lastName: capitalize(fullName[1]),
@@ -284,10 +281,10 @@ const PrimeTime = (result: any, vendor: string): ImportLeadsFormValues[] => {
 const ProspectForLeads = (
   result: any,
   vendor: string
-): ImportLeadsFormValues[] => {
-  let mapped: ImportLeadsFormValues[] = [];
+): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
-    const newobj: ImportLeadsFormValues = {
+    const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["first name"]),
       lastName: capitalize(d["last name"]),

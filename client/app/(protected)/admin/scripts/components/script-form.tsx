@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Script } from "@prisma/client";
 
 import { scriptInsert, scriptUpdateById } from "@/actions/script";
-import { ScriptSchema } from "@/schemas";
+import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 import { Tiptap } from "@/components/reusable/tiptap";
 
 type ScriptFormProps = {
@@ -28,14 +27,12 @@ type ScriptFormProps = {
   setScripts?: React.Dispatch<React.SetStateAction<Script[] | null>>;
 };
 
-type ScriptFormValues = z.infer<typeof ScriptSchema>;
-
 export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
   const [loading, setLoading] = useState(false);
 
   const buttonText = script ? "Update" : "Save";
 
-  const form = useForm<ScriptFormValues>({
+  const form = useForm<ScriptSchemaType>({
     mode: "onChange",
     resolver: zodResolver(ScriptSchema),
     defaultValues: script || {
@@ -44,7 +41,7 @@ export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
     },
   });
 
-  const onSubmit = async (values: ScriptFormValues) => {
+  const onSubmit = async (values: ScriptSchemaType) => {
     setLoading(true);
     if (!script) {
       scriptInsert(values).then((data) => {

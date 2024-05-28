@@ -30,10 +30,12 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
           <a className="mr-6 flex items-center space-x-2" href="/">
             <Image
               src="/logo3.png"
-              alt="logo"
-              width="30"
-              height="30"
+              alt="hyperion logo"
+              width={30}
+              height={30}
               className="w-[30px] aspect-square"
+              priority={false}
+              loading="lazy"
             />
             <span className="hidden font-bold sm:inline-block">hyperion</span>
           </a>

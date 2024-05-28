@@ -1,7 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -26,22 +25,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChatSettings, User } from "@prisma/client";
 
 import { toast } from "sonner";
-import { chatSettingsUpdate } from "@/actions/chat-settings";
+import {
+  chatSettingsUpdate,
+  chatSettingsUpdateVoicemail,
+} from "@/actions/chat-settings";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { defaultChat } from "@/placeholder/chat";
-import { ChatUserSchema } from "@/schemas";
+import { ChatUserSchema, ChatUserSchemaType } from "@/schemas/chat";
 import { RecordModal } from "@/components/modals/record";
 import { AudioPlayer } from "@/components/custom/audio-player";
 import { newMessageNotifications } from "@/constants/sounds";
 
-type ChatClientProps = {
+export const ChatClient = ({
+  data,
+}: {
   data: ChatSettings & { user: User };
-};
-
-type ChatValues = z.infer<typeof ChatUserSchema>;
-
-export const ChatClient = ({ data }: ChatClientProps) => {
+}) => {
   const router = useRouter();
   const { update } = useSession();
 
@@ -61,23 +61,25 @@ export const ChatClient = ({ data }: ChatClientProps) => {
     });
     setRecordingOpen(true);
   };
-  const onRecordingUpdated = (e: string) => {
+  const onRecordingUpdated = async (vm: string) => {
     setRecordingOpen(false);
-    if (voicemail.type == "in") {
-      setVoicemail((state) => {
-        return { ...state, in: e };
-      });
-    } else {
-      setVoicemail((state) => {
-        return { ...state, out: e };
-      });
-    }
-    router.refresh();
-
-    toast.success("Recording has been updated");
+    const insertedVoicemail = await chatSettingsUpdateVoicemail(vm);
+    if (insertedVoicemail.success) {
+      if (voicemail.type == "in") {
+        setVoicemail((state) => {
+          return { ...state, in: vm };
+        });
+      } else {
+        setVoicemail((state) => {
+          return { ...state, out: vm };
+        });
+      }
+      router.refresh();
+      toast.success(insertedVoicemail.success);
+    } else toast.error(insertedVoicemail.error);
   };
 
-  const form = useForm<ChatValues>({
+  const form = useForm<ChatUserSchemaType>({
     resolver: zodResolver(ChatUserSchema),
     defaultValues: data,
   });
@@ -86,7 +88,7 @@ export const ChatClient = ({ data }: ChatClientProps) => {
     form.setValue("defaultPrompt", defaultChat.prompt);
   };
 
-  const onSubmit = (values: ChatValues) => {
+  const onSubmit = (values: ChatUserSchemaType) => {
     startTransition(() => {
       chatSettingsUpdate(values)
         .then((data) => {

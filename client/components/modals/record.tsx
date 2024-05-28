@@ -1,20 +1,25 @@
 "use client";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { AudioLinesIcon, Mic, Pause } from "lucide-react";
+
+// import { MediaRecorder, register } from "extendable-media-recorder";
+// import { connect } from "extendable-media-recorder-wav-encoder";
 
 import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 import { AudioPlayer } from "@/components/custom/audio-player";
+import { handleFileUpload } from "@/lib/utils";
 
 type RecordModalProps = {
   type: string;
+  oldFile?: string;
   isOpen: boolean;
   onClose: () => void;
   onRecordingUpdate: (e: string) => void;
 };
 export const RecordModal = ({
   type,
+  oldFile,
   isOpen,
   onClose,
   onRecordingUpdate,
@@ -36,22 +41,19 @@ export const RecordModal = ({
       setFile(file);
     }
   };
-  const onUpload = () => {
+  const onUpload = async () => {
+    if (!file) return;
     setUploading(true);
-    try {
-      if (!file) return;
-      const formData = new FormData();
-      formData.append("type", type);
-      formData.append("voicemail", file);
-      formData.append("filePath", `assets/voicemail/${type}`);
-      axios.post("/api/user/voicemails/recording", formData).then(() => {
-        setAudio("");
-        setFile(undefined);
-        onRecordingUpdate(audio);
-      });
-    } catch (error: any) {
-      console.log(error.response?.data);
-    }
+    console.log(file.type);
+    const voicemail = await handleFileUpload({
+      newFile: file,
+      filePath: "voicemail",
+      oldFile: oldFile,
+    });
+    console.log(voicemail);
+    onRecordingUpdate(voicemail);
+    setAudio("");
+    setFile(undefined);
     setUploading(false);
   };
   const startRecording = async () => {

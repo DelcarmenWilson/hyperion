@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
@@ -32,11 +31,9 @@ import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserRole } from "@prisma/client";
 
-import { SettingsSchema } from "@/schemas";
+import { SettingsSchema, SettingsSchemaType } from "@/schemas/settings";
 import { userUpdateById, userUpdateByIdImage } from "@/actions/user";
 import { ImageModal } from "@/components/modals/image";
-
-type SettingsValues = z.infer<typeof SettingsSchema>;
 
 const SettingsPage = () => {
   const user = useCurrentUser();
@@ -47,7 +44,7 @@ const SettingsPage = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useForm<SettingsValues>({
+  const form = useForm<SettingsSchemaType>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
       userName: user?.name || undefined,
@@ -68,7 +65,7 @@ const SettingsPage = () => {
     } else toast.error(imageUpdated.error);
   };
 
-  const onSubmit = (values: SettingsValues) => {
+  const onSubmit = (values: SettingsSchemaType) => {
     startTransition(() => {
       userUpdateById(values)
         .then((data) => {

@@ -1,6 +1,5 @@
-import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -19,29 +18,19 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { LeadExpenseSchema } from "@/schemas";
+import { LeadExpenseSchema, LeadExpenseSchemaType } from "@/schemas/lead";
 import { leadExpenseInsert } from "@/actions/lead";
-import { LeadExpense } from "@prisma/client";
 
 type ExpenseFormProps = {
   leadId: string;
   type: string;
-  onExpenseInserted: (e: LeadExpense) => void;
   onClose?: () => void;
 };
 
-type ExpenseFormValues = z.infer<typeof LeadExpenseSchema>;
-
-export const ExpenseForm = ({
-  leadId,
-  type,
-  onExpenseInserted,
-  onClose,
-}: ExpenseFormProps) => {
-  const router = useRouter();
+export const ExpenseForm = ({ leadId, type, onClose }: ExpenseFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<ExpenseFormValues>({
+  const form = useForm<LeadExpenseSchemaType>({
     resolver: zodResolver(LeadExpenseSchema),
     defaultValues: {
       leadId: leadId,
@@ -57,21 +46,18 @@ export const ExpenseForm = ({
     }
   };
 
-  const onSubmit = async (values: ExpenseFormValues) => {
+  const onSubmit = async (values: LeadExpenseSchemaType) => {
     setLoading(true);
 
-    leadExpenseInsert(values).then((data) => {
-      if (data.success) {
-        const newExpense = data.success;
-        router.refresh();
-        toast.success(`${type} Added!`);
-        onExpenseInserted(newExpense);
-      }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
-    });
+    const insertedExpense = await leadExpenseInsert(values);
+
+    if (insertedExpense.success) {
+      userEmitter.emit("expenseInserted", insertedExpense.success);
+      toast.success(`${type} Added!`);
+    } else {
+      form.reset();
+      toast.error(insertedExpense.error);
+    }
 
     setLoading(false);
   };

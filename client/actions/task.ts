@@ -1,8 +1,7 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { TaskSchema } from "@/schemas";
+import { TaskSchema, TaskSchemaType } from "@/schemas/admin";
 
 export const taskDeleteById = async (id: string) => {
   const user = await currentUser();
@@ -26,7 +25,7 @@ export const taskDeleteById = async (id: string) => {
 
   return { success: `Task has been deleted!` };
 };
-export const taskInsert = async (values: z.infer<typeof TaskSchema>) => {
+export const taskInsert = async (values: TaskSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -62,7 +61,7 @@ export const taskInsert = async (values: z.infer<typeof TaskSchema>) => {
 
   return { success: task };
 };
-export const taskUpdateById = async (values: z.infer<typeof TaskSchema>) => {
+export const taskUpdateById = async (values: TaskSchemaType) => {
   const user = await currentUser();
 
   if (!user) {

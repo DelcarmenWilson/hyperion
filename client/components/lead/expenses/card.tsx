@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { Button } from "@/components/ui/button";
 import { LeadExpense } from "@prisma/client";
@@ -10,37 +11,29 @@ import { toast } from "sonner";
 
 type ExpenseIncomeCardProps = {
   expense: LeadExpense;
-  onExpenseUpdated: (type: string, id: string, newVal: number) => void;
 };
-export const ExpenseIncomeCard = ({
-  expense,
-  onExpenseUpdated,
-}: ExpenseIncomeCardProps) => {
+export const ExpenseIncomeCard = ({ expense }: ExpenseIncomeCardProps) => {
   const [name, setName] = useState(expense.name);
   const [value, setValue] = useState(expense.value.toString());
 
-  const onExpenseUpdate = () => {
-    leadExpenseUpdateById(expense.id, name, parseInt(value)).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        onExpenseUpdated("update", expense.id, parseInt(value));
-        toast.success(data.success);
-      }
-    });
+  const onExpenseUpdate = async () => {
+    const updatedExpense = await leadExpenseUpdateById(
+      expense.id,
+      name,
+      parseInt(value)
+    );
+    if (updatedExpense.success) {
+      userEmitter.emit("expenseUpdated", updatedExpense.success);
+      toast.success(`${updatedExpense.success.type} updated!`);
+    } else toast.error(updatedExpense.error);
   };
 
-  const onExpenseDelete = () => {
-    leadExpenseDeleteById(expense.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        onExpenseUpdated("delete", expense.id, 0);
-        toast.success(data.success);
-      }
-    });
+  const onExpenseDelete = async () => {
+    const deletedExpense = await leadExpenseDeleteById(expense.id);
+    if (deletedExpense.success) {
+      userEmitter.emit("expenseDeleted", expense.id);
+      toast.success(`${deletedExpense.success.type} deleted!`);
+    } else toast.error(deletedExpense.error);
   };
   return (
     <div className="grid grid-cols-4 mb-1 items-center gap-2">

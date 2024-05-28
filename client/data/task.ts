@@ -1,7 +1,6 @@
-import * as z from "zod";
 import { db } from "@/lib/db";
 import {  currentUser } from "@/lib/auth";
-import {  TaskSchema } from "@/schemas";
+import {  TaskSchema, TaskSchemaType } from "@/schemas/admin";
 
 export const tasksGetAll = async () => {
     try {
@@ -86,7 +85,7 @@ export const taskDeleteById = async (id:string
   return { success: `Task has been deleted!` };
 };
 export const taskInsert = async (
-    values: z.infer<typeof TaskSchema>
+    values: TaskSchemaType
   ) => {
     const user = await currentUser();
   
@@ -123,7 +122,7 @@ export const taskInsert = async (
     return { success: task };
   };
   export const taskUpdateById = async (
-    values: z.infer<typeof TaskSchema>
+    values: TaskSchemaType
   ) => {
     const user = await currentUser();
   

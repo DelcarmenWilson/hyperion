@@ -1,10 +1,9 @@
 "use client";
 import { useState, useTransition } from "react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { NewPasswordSchema } from "@/schemas";
+import { NewPasswordSchema, NewPasswordSchemaType } from "@/schemas/register";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
@@ -29,14 +28,14 @@ export const NewPasswordForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof NewPasswordSchema>>({
+  const form = useForm<NewPasswordSchemaType>({
     resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
+  const onSubmit = (values: NewPasswordSchemaType) => {
     if (!token) {
       setError("Missing token!");
       return;

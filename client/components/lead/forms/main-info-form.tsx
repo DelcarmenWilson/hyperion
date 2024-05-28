@@ -1,6 +1,4 @@
-import * as z from "zod";
 import { useState } from "react";
-
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
@@ -10,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { LeadMainSchema } from "@/schemas";
+import { LeadMainSchema, LeadMainSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -38,12 +36,10 @@ type MainInfoFormProps = {
   onClose: () => void;
 };
 
-type MainInfoFormValues = z.infer<typeof LeadMainSchema>;
-
 export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<MainInfoFormValues>({
+  const form = useForm<LeadMainSchemaType>({
     resolver: zodResolver(LeadMainSchema),
     defaultValues: info,
   });
@@ -54,7 +50,7 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: MainInfoFormValues) => {
+  const onSubmit = async (values: LeadMainSchemaType) => {
     setLoading(true);
     const response = await leadUpdateByIdMainInfo(values);
     if (response.success) {

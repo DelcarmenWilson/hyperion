@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import * as z from "zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Gender, Lead, MaritalStatus, Schedule } from "@prisma/client";
+import { Gender, MaritalStatus, Schedule } from "@prisma/client";
 import { Appointment } from "@prisma/client";
 
 import {
@@ -36,7 +35,10 @@ import {
   ScheduleTimeType,
 } from "@/constants/schedule-times";
 import { states } from "@/constants/states";
-import { AppointmentLeadSchema } from "@/schemas";
+import {
+  AppointmentLeadSchema,
+  AppointmentLeadSchemaType,
+} from "@/schemas/appointment";
 import { Badge } from "@/components/ui/badge";
 import { concateDate, getTommorrow } from "@/formulas/dates";
 import { appointmentInsertBook } from "@/actions/appointment";
@@ -46,11 +48,9 @@ import { FaUser } from "react-icons/fa";
 type BookAgentClientProps = {
   userImage: string;
   schedule: Schedule;
-  lead?: z.infer<typeof AppointmentLeadSchema>;
+  lead?: AppointmentLeadSchemaType;
   appointments: Appointment[];
 };
-
-type LeadFormValues = z.infer<typeof AppointmentLeadSchema>;
 
 export const BookAgentClient = ({
   userImage,
@@ -100,7 +100,7 @@ export const BookAgentClient = ({
     });
   };
 
-  const form = useForm<LeadFormValues>({
+  const form = useForm<AppointmentLeadSchemaType>({
     resolver: zodResolver(AppointmentLeadSchema),
     defaultValues: lead || {
       firstName: "",
@@ -118,7 +118,7 @@ export const BookAgentClient = ({
     form.reset();
   };
 
-  const onSubmit = async (values: LeadFormValues) => {
+  const onSubmit = async (values: AppointmentLeadSchemaType) => {
     setLoading(true);
     const newDate = concateDate(selectedDate, selectedTime);
     await appointmentInsertBook(values, schedule.userId, newDate).then(

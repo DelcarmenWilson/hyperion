@@ -1,5 +1,7 @@
-import * as z from "zod";
-import { AppointmentLeadSchema } from "@/schemas";
+import {
+  AppointmentLeadSchema,
+  AppointmentLeadSchemaType,
+} from "@/schemas/appointment";
 
 import { BookAgentClient } from "./components/client";
 import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
@@ -21,7 +23,7 @@ const BookAgentPage = async ({
   const lead = await leadGetById(searchParams?.lid as string);
   const schedule = await scheduleGetByUserId(user?.id!);
 
-  const formattedLead: z.infer<typeof AppointmentLeadSchema> = {
+  const formattedLead: AppointmentLeadSchemaType = {
     id: lead?.id!,
     firstName: lead?.firstName!,
     lastName: lead?.lastName!,

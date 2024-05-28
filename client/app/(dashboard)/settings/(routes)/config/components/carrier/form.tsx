@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -26,7 +25,7 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { UserCarrierSchema } from "@/schemas";
+import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
 
 import { userCarrierInsert, userCarrierUpdateById } from "@/actions/user";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,13 +37,11 @@ type CarrierFormProps = {
   onClose: () => void;
 };
 
-type CarrierFormValues = z.infer<typeof UserCarrierSchema>;
-
 export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
   const { availableCarriers } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<CarrierFormValues>({
+  const form = useForm<UserCarrierSchemaType>({
     resolver: zodResolver(UserCarrierSchema),
     //@ts-ignore
     defaultValues: carrier || {
@@ -59,7 +56,7 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: CarrierFormValues) => {
+  const onSubmit = async (values: UserCarrierSchemaType) => {
     setLoading(true);
     if (carrier)
       userCarrierUpdateById(values).then((data) => {

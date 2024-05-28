@@ -1,11 +1,10 @@
-import * as z from "zod";
 import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { TermCarrierSchema } from "@/schemas";
+import { TermCarrierSchema, TermCarrierSchemaType } from "@/schemas/admin";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,18 +31,16 @@ import axios from "axios";
 import { adminTermCarrierInsert } from "@/actions/admin";
 import { FullTermCarrier } from "@/types";
 
-type TermCarrierFormProps = {
+export const TermCarrierForm = ({
+  onClose,
+}: {
   onClose?: (e?: FullTermCarrier) => void;
-};
-
-type TermCarrierFormValues = z.infer<typeof TermCarrierSchema>;
-
-export const TermCarrierForm = ({ onClose }: TermCarrierFormProps) => {
+}) => {
   const [loading, setLoading] = useState(false);
   const [carriers, setCarriers] = useState<Carrier[] | null>();
   const [conditions, setConditions] = useState<MedicalCondition[] | null>();
 
-  const form = useForm<TermCarrierFormValues>({
+  const form = useForm<TermCarrierSchemaType>({
     resolver: zodResolver(TermCarrierSchema),
     defaultValues: {
       carrierId: carriers ? carriers[0].id : "",
@@ -68,7 +65,7 @@ export const TermCarrierForm = ({ onClose }: TermCarrierFormProps) => {
     });
   }, []);
 
-  const onSubmit = async (values: TermCarrierFormValues) => {
+  const onSubmit = async (values: TermCarrierSchemaType) => {
     setLoading(true);
     adminTermCarrierInsert(values).then((data) => {
       if (data.success) {

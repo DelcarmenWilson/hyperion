@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 
 import { useForm } from "react-hook-form";
@@ -25,7 +24,7 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { UserCarrierSchema } from "@/schemas";
+import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
 
 import { Appointment, Carrier } from "@prisma/client";
 import { userCarrierInsert } from "@/actions/user";
@@ -36,8 +35,6 @@ type AppointmentFormProps = {
   appointment: FullAppointment;
   onClose: () => void;
 };
-
-type AppointmentFormValues = z.infer<typeof UserCarrierSchema>;
 
 export const AppointmentForm = ({
   appointment,

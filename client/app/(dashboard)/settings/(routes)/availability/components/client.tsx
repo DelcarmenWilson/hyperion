@@ -1,9 +1,13 @@
 "use client";
+import { useState } from "react";
+import Link from "next/link";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { toast } from "sonner";
 
+import { Schedule } from "@prisma/client";
+import { ScheduleSchema, ScheduleSchemaType } from "@/schemas/settings";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,20 +19,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DayHour } from "./day-hours";
-import { Schedule } from "@prisma/client";
-import { ScheduleSchema } from "@/schemas";
-import { useState } from "react";
 import { scheduleUpdateByUserId } from "@/actions/schedule";
-import Link from "next/link";
 
 type AvailabilityClientProps = {
   username: string;
   schedule: Schedule;
 };
-type ScheduleFormValues = z.infer<typeof ScheduleSchema>;
 
 export function AvailabilityClient({
   username,
@@ -43,12 +41,12 @@ export function AvailabilityClient({
   const [friday, setFriday] = useState(schedule.friday);
   const [saturday, setSaturday] = useState(schedule.saturday);
 
-  const form = useForm<ScheduleFormValues>({
+  const form = useForm<ScheduleSchemaType>({
     resolver: zodResolver(ScheduleSchema),
     defaultValues: schedule,
   });
 
-  const onSubmit = async (values: ScheduleFormValues) => {
+  const onSubmit = async (values: ScheduleSchemaType) => {
     setLoading(true);
     values.sunday = sunday;
     values.monday = monday;

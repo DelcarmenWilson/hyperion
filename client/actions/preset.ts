@@ -1,9 +1,8 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { Presets } from "@prisma/client";
-import { PresetSchema } from "@/schemas";
+import { PresetSchema,PresetSchemaType } from "@/schemas/settings";
 
 export const presetDeleteById = async (id: string) => {
   try {
@@ -15,7 +14,7 @@ export const presetDeleteById = async (id: string) => {
     return { error: "Something went wrong!" };
   }
 };
-export const presetInsert = async (values: z.infer<typeof PresetSchema>) => {
+export const presetInsert = async (values: PresetSchemaType) => {
   const validatedFields = PresetSchema.safeParse(values);
   const user = await currentUser();
 

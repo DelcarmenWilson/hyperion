@@ -1,8 +1,7 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { ChatMessageSchema } from "@/schemas";
+import { ChatMessageSchema,ChatMessageSchemaType } from "@/schemas/chat";
 
 // CHAT
 export const chatInsert = async (userId: string) => {
@@ -110,7 +109,7 @@ export const chatDeleteById = async (id: string) => {
 
 // CHAT MESSAGES
 export const chatMessageInsert = async (
-  values: z.infer<typeof ChatMessageSchema>
+  values: ChatMessageSchemaType
 ) => {
   const validatedFields = ChatMessageSchema.safeParse(values);
   if (!validatedFields.success) {

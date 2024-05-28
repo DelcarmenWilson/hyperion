@@ -1,9 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterSchema } from "@/schemas";
+import { RegisterSchema, RegisterSchemaType } from "@/schemas/register";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
@@ -29,14 +28,11 @@ import { Team } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { userInsert } from "@/actions/user";
 
-type RegisterFormProps = {
-  teams: Team[];
-};
-export const RegisterForm = ({ teams }: RegisterFormProps) => {
+export const RegisterForm = ({ teams }: { teams: Team[] }) => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const form = useForm<z.infer<typeof RegisterSchema>>({
+  const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       team: "",
@@ -49,7 +45,7 @@ export const RegisterForm = ({ teams }: RegisterFormProps) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = (values: RegisterSchemaType) => {
     setError("");
     setSuccess("");
     startTransition(() => {

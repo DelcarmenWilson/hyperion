@@ -1,4 +1,5 @@
-import { useSession } from "next-auth/react";
+"use client";
+import { useState } from "react";
 import { Cog } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -18,10 +19,9 @@ export const DialerSettings = ({
   setSettings,
   disabled,
 }: DialerSettingsProps) => {
-  const { update } = useSession();
-
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button disabled={disabled} variant="outline" size="icon">
           <Cog size={16} />
@@ -42,6 +42,9 @@ export const DialerSettings = ({
               }
               type="number"
             />
+            <h5 className="text-muted-foreground text-sm">
+              amount of calls per lead
+            </h5>
           </div>
           <div className="space-y-0.5">
             <h4 className="font-bold">Pause</h4>
@@ -55,8 +58,13 @@ export const DialerSettings = ({
               }
               type="number"
             />
+            <h5 className="text-muted-foreground text-sm">
+              puase between calls
+            </h5>
           </div>
         </div>
+
+        <Button onClick={() => setIsOpen(false)}>Save</Button>
       </DialogContent>
     </Dialog>
   );

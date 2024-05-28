@@ -1,13 +1,15 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import {
   AppointmentLabelSchema,
+  AppointmentLabelSchemaType,
   AppointmentLeadSchema,
+  AppointmentLeadSchemaType,
   AppointmentSchema,
-} from "@/schemas";
+  AppointmentSchemaType,
+} from "@/schemas/appointment";
 import { userGetByAssistant } from "@/data/user";
 import { states } from "@/constants/states";
 import {
@@ -16,7 +18,7 @@ import {
 } from "./sms";
 
 export const appointmentInsert = async (
-  values: z.infer<typeof AppointmentSchema>,
+  values: AppointmentSchemaType,
   sendSms: boolean = false
 ) => {
   const user = await currentUser();
@@ -92,7 +94,7 @@ export const appointmentInsert = async (
 };
 
 export const appointmentInsertBook = async (
-  values: z.infer<typeof AppointmentLeadSchema>,
+  values: AppointmentLeadSchemaType,
   agentId: string,
   startDate: Date
 ) => {
@@ -174,7 +176,7 @@ export const appointmentInsertBook = async (
 
 //APPOINTMENT LABELS
 export const appointmentLabelInsert = async (
-  values: z.infer<typeof AppointmentLabelSchema>
+  values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -215,7 +217,7 @@ export const appointmentLabelInsert = async (
 };
 
 export const appointmentLabelUpdateById = async (
-  values: z.infer<typeof AppointmentLabelSchema>
+  values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -255,7 +257,7 @@ export const appointmentLabelUpdateById = async (
 };
 
 export const appointmentLabelUpdateByChecked = async (
-  values: z.infer<typeof AppointmentLabelSchema>
+  values:AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {

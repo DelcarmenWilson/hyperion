@@ -15,7 +15,7 @@ type LeadCardProps = {
 };
 
 export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
-  const usePm = usePhone();
+  const { onPhoneOutOpen } = usePhone();
   return (
     <div ref={indexRef} className="border-b">
       <div
@@ -41,11 +41,11 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
         <div className="flex flex-col justify-between gap-2 items-end">
           <Button
             className="rounded-full w-fit"
-            onClick={() => usePm.onPhoneOutOpen(lead)}
+            onClick={() => onPhoneOutOpen(lead)}
           >
             <Phone size={16} />
           </Button>
-          <p> Recieved {format(lead.createdAt, "MM-dd aaaa")}</p>
+          <p> Recieved {format(lead.createdAt, "MM-dd-yy")}</p>
         </div>
       </div>
     </div>

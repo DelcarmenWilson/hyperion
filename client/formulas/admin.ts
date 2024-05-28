@@ -1,16 +1,14 @@
-import * as z from "zod";
 import { capitalize } from "./text";
 
-import {  MedicalConditionSchema } from "@/schemas";
-type MedicalConditionFormValues = z.infer<typeof MedicalConditionSchema>;
+import {  MedicalConditionSchemaType } from "@/schemas/admin";
 
 export const convertCondition = (
     result: any,
-  ): MedicalConditionFormValues[] => {
-    let mapped: MedicalConditionFormValues[] = [];    
+  ): MedicalConditionSchemaType[] => {
+    let mapped: MedicalConditionSchemaType[] = [];    
   
     result.data.map((d: any) => {
-      const newobj: MedicalConditionFormValues = {
+      const newobj: MedicalConditionSchemaType = {
         name: capitalize(d["name"]),
         description: capitalize(d["description"]),
       };

@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -27,20 +26,14 @@ import {
 import { Gender, MaritalStatus } from "@prisma/client";
 
 import { states } from "@/constants/states";
-import { LeadSchema } from "@/schemas";
+import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
 import { leadInsert } from "@/actions/lead";
 
-type NewLeadFormProps = {
-  onClose?: () => void;
-};
-
-type LeadFormValues = z.infer<typeof LeadSchema>;
-
-export const NewLeadForm = ({ onClose }: NewLeadFormProps) => {
+export const NewLeadForm = ({ onClose }: { onClose?: () => void }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<LeadFormValues>({
+  const form = useForm<LeadSchemaType>({
     resolver: zodResolver(LeadSchema),
     defaultValues: {
       firstName: "",
@@ -65,7 +58,7 @@ export const NewLeadForm = ({ onClose }: NewLeadFormProps) => {
     }
   };
 
-  const onSubmit = async (values: LeadFormValues) => {
+  const onSubmit = async (values: LeadSchemaType) => {
     setLoading(true);
     await leadInsert(values).then((data) => {
       if (data.success) {

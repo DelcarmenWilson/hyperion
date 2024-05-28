@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { userEmitter } from "@/lib/event-emmiter";
@@ -28,7 +27,7 @@ import {
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
-import { AppointmentSchema } from "@/schemas";
+import { AppointmentSchemaType } from "@/schemas/appointment";
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
@@ -88,7 +87,7 @@ export const AppointmentForm = () => {
     setLoading(true);
     const newDate = concateDate(date, time, user?.role == "ASSISTANT");
     if (!time) return;
-    const appointment: z.infer<typeof AppointmentSchema> = {
+    const appointment: AppointmentSchemaType = {
       startDate: newDate,
       agentId: user?.id!,
       leadId: lead?.id!,

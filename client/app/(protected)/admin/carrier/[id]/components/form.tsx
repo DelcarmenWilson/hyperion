@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -9,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Carrier } from "@prisma/client";
-import { CarrierSchema } from "@/schemas";
+import { CarrierSchema, CarrierSchemaType } from "@/schemas/admin";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,20 +28,14 @@ import {
   adminCarrierUpdateByIdImage,
 } from "@/actions/admin";
 
-type CarrierFormProps = {
-  carrier: Carrier;
-};
-
-type CarrierFormValues = z.infer<typeof CarrierSchema>;
-
-export const CarrierForm = ({ carrier }: CarrierFormProps) => {
+export const CarrierForm = ({ carrier }: { carrier: Carrier }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const [image, setImage] = useState(carrier.image);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const form = useForm<CarrierFormValues>({
+  const form = useForm<CarrierSchemaType>({
     resolver: zodResolver(CarrierSchema),
     defaultValues: carrier,
   });
@@ -52,7 +45,7 @@ export const CarrierForm = ({ carrier }: CarrierFormProps) => {
     form.reset();
   };
 
-  const onSubmit = async (values: CarrierFormValues) => {
+  const onSubmit = async (values: CarrierSchemaType) => {
     setLoading(true);
     const updatedCarrier = await adminCarrierUpdateById(values);
     if (updatedCarrier.success) {

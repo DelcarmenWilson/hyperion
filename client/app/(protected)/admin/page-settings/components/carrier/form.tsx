@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 
 import { toast } from "sonner";
@@ -8,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { CarrierSchema } from "@/schemas";
+import { CarrierSchema, CarrierSchemaType } from "@/schemas/admin";
 import {
   Form,
   FormField,
@@ -22,16 +21,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminCarrierInsert } from "@/actions/admin";
 import { Carrier } from "@prisma/client";
 
-type CarrierFormProps = {
+export const CarrierForm = ({
+  onClose,
+}: {
   onClose?: (e?: Carrier) => void;
-};
-
-type CarrierFormValues = z.infer<typeof CarrierSchema>;
-
-export const CarrierForm = ({ onClose }: CarrierFormProps) => {
+}) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<CarrierFormValues>({
+  const form = useForm<CarrierSchemaType>({
     resolver: zodResolver(CarrierSchema),
     defaultValues: {
       name: "",
@@ -46,7 +43,7 @@ export const CarrierForm = ({ onClose }: CarrierFormProps) => {
     }
   };
 
-  const onSubmit = async (values: CarrierFormValues) => {
+  const onSubmit = async (values: CarrierSchemaType) => {
     setLoading(true);
     adminCarrierInsert(values).then((data) => {
       if (data.success) {

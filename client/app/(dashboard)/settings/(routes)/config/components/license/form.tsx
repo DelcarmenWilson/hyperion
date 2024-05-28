@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -25,7 +24,7 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { UserLicenseSchema } from "@/schemas";
+import { UserLicenseSchema, UserLicenseSchemaType } from "@/schemas/user";
 
 import { UserLicense } from "@prisma/client";
 import { states } from "@/constants/states";
@@ -38,13 +37,11 @@ type LicenseFormProps = {
   onClose: () => void;
 };
 
-type LicenseFormValues = z.infer<typeof UserLicenseSchema>;
-
 export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
   const [loading, setLoading] = useState(false);
   const btnText = license ? "Update" : "Create";
 
-  const form = useForm<LicenseFormValues>({
+  const form = useForm<UserLicenseSchemaType>({
     resolver: zodResolver(UserLicenseSchema),
     //@ts-ignore
     defaultValues: license || {
@@ -61,7 +58,7 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: LicenseFormValues) => {
+  const onSubmit = async (values: UserLicenseSchemaType) => {
     setLoading(true);
 
     if (license) {

@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -37,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { DefaultStatus } from "@/constants/texts";
 import { Task } from "@prisma/client";
-import { TaskSchema } from "@/schemas";
+import { TaskSchema, TaskSchemaType } from "@/schemas/admin";
 import { taskInsert, taskUpdateById } from "@/actions/task";
 
 type TaskFormProps = {
@@ -45,13 +44,11 @@ type TaskFormProps = {
   onClose?: (e?: Task) => void;
 };
 
-type TaskFormValues = z.infer<typeof TaskSchema>;
-
 export const TaskForm = ({ task = null, onClose }: TaskFormProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<TaskFormValues>({
+  const form = useForm<TaskSchemaType>({
     resolver: zodResolver(TaskSchema),
     defaultValues: task || {
       headLine: "",
@@ -71,31 +68,25 @@ export const TaskForm = ({ task = null, onClose }: TaskFormProps) => {
     }
   };
 
-  const onSubmit = async (values: TaskFormValues) => {
+  const onSubmit = async (values: TaskSchemaType) => {
     setLoading(true);
 
     if (task) {
-      taskUpdateById(values).then((data) => {
-        if (data.success) {
-          toast.success(data.success);
-          router.refresh();
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
+      const updatedTask = await taskUpdateById(values);
+      if (updatedTask.success) {
+        toast.success(updatedTask.success);
+        router.refresh();
+      } else {
+        form.reset();
+        toast.error(updatedTask.error);
+      }
     } else {
-      taskInsert(values).then((data) => {
-        if (data.success) {
-          form.reset();
-          if (onClose) onClose(data.success);
-          toast.success("Task created!");
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+      const insertedTask = await taskInsert(values);
+      if (insertedTask.success) {
+        form.reset();
+        if (onClose) onClose(insertedTask.success);
+        toast.success("Task created!");
+      } else toast.error(insertedTask.error);
     }
 
     setLoading(false);

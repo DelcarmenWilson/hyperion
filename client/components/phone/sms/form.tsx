@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SmsMessageSchema } from "@/schemas";
+import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -32,26 +32,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ImageGrid } from "@/components/reusable/image-grid";
-import { usePhone } from "@/hooks/use-phone";
 import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "@/app/(dashboard)/settings/(routes)/config/components/templates/list";
 import { FullLeadNoConvo } from "@/types";
 
-type SmsFormValues = z.infer<typeof SmsMessageSchema>;
 type SmsFormProps = {
   conversationId?: string;
   lead?: FullLeadNoConvo;
 };
 export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
   const { user, templates } = useGlobalContext();
-  //  const { lead, onSetLead } = usePhone();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [attachment, setAttachment] = useState<string[]>([]);
 
-  const form = useForm<SmsFormValues>({
+  const form = useForm<SmsMessageSchemaType>({
     resolver: zodResolver(SmsMessageSchema),
     defaultValues: {
       conversationId: conversationId,
@@ -73,7 +70,7 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
     setAttachment([]);
     form.setValue("images", undefined);
   };
-  const onSubmit = async (values: SmsFormValues) => {
+  const onSubmit = async (values: SmsMessageSchemaType) => {
     if (!lead?.id) {
       toast.error("Lead id is not supplied");
       return;

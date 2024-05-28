@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useEffect, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
@@ -10,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { UserTemplate } from "@prisma/client";
 
-import { ChatMessageSchema } from "@/schemas";
+import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -36,11 +35,7 @@ import { TemplateList } from "@/app/(dashboard)/settings/(routes)/config/compone
 import { chatMessageInsert } from "@/actions/chat";
 import { toast } from "sonner";
 
-type ChatFormValues = z.infer<typeof ChatMessageSchema>;
-type ChatFormProps = {
-  chatId: string;
-};
-export const ChatForm = ({ chatId }: ChatFormProps) => {
+export const ChatForm = ({ chatId }: { chatId: string }) => {
   const { user, templates } = useGlobalContext();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -48,10 +43,10 @@ export const ChatForm = ({ chatId }: ChatFormProps) => {
 
   const [attachment, setAttachment] = useState<string[]>([]);
 
-  const form = useForm<ChatFormValues>({
+  const form = useForm<ChatMessageSchemaType>({
     resolver: zodResolver(ChatMessageSchema),
     defaultValues: {
-      chatId: chatId,
+      chatId,
       content: "",
       senderId: user?.id as string,
     },
@@ -63,7 +58,7 @@ export const ChatForm = ({ chatId }: ChatFormProps) => {
     setAttachment([]);
     form.setValue("attachment", undefined);
   };
-  const onSubmit = async (values: ChatFormValues) => {
+  const onSubmit = async (values: ChatMessageSchemaType) => {
     setLoading(true);
     const data = await chatMessageInsert(values);
 

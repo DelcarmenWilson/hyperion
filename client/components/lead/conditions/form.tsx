@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useEffect, useState } from "react";
 
 import { userEmitter } from "@/lib/event-emmiter";
@@ -31,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FullLeadMedicalCondition } from "@/types";
 import { MedicalCondition } from "@prisma/client";
 
-import { LeadConditionSchema } from "@/schemas";
+import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
 import { leadConditionInsert, leadConditionUpdateById } from "@/actions/lead";
 
@@ -40,8 +39,6 @@ type ConditionFormProps = {
   condition?: FullLeadMedicalCondition;
   onClose: () => void;
 };
-
-type ConditionFormValues = z.infer<typeof LeadConditionSchema>;
 
 export const ConditionForm = ({
   leadId,
@@ -52,7 +49,7 @@ export const ConditionForm = ({
   const [loading, setLoading] = useState(false);
   const btnTitle = condition ? "Update" : "Add";
 
-  const form = useForm<ConditionFormValues>({
+  const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
     defaultValues: condition || {
       leadId: leadId,
@@ -68,7 +65,7 @@ export const ConditionForm = ({
     onClose();
   };
 
-  const onSubmit = async (values: ConditionFormValues) => {
+  const onSubmit = async (values: LeadConditionSchemaType) => {
     setLoading(true);
 
     if (leadId) {

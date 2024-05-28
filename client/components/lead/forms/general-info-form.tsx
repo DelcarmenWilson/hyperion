@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -9,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { LeadGeneralSchema } from "@/schemas";
+import { LeadGeneralSchema, LeadGeneralSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -38,12 +37,10 @@ type GeneralInfoFormProps = {
   onClose: () => void;
 };
 
-type GeneralInfoFormValues = z.infer<typeof LeadGeneralSchema>;
-
 export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<GeneralInfoFormValues>({
+  const form = useForm<LeadGeneralSchemaType>({
     resolver: zodResolver(LeadGeneralSchema),
     defaultValues: info,
   });
@@ -54,7 +51,7 @@ export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: GeneralInfoFormValues) => {
+  const onSubmit = async (values: LeadGeneralSchemaType) => {
     setLoading(true);
     await leadUpdateByIdGeneralInfo(values).then((data) => {
       if (data.success) {

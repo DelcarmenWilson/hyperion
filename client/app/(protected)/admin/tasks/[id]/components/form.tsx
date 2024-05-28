@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon } from "lucide-react";
@@ -34,7 +33,7 @@ import {
 } from "@/components/ui/popover";
 
 import { Calendar } from "@/components/ui/calendar";
-import { TaskSchema } from "@/schemas";
+import { TaskSchema, TaskSchemaType } from "@/schemas/admin";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageModal } from "@/components/modals/image";
@@ -43,12 +42,8 @@ import { Task } from "@prisma/client";
 import { DefaultStatus } from "@/constants/texts";
 import { taskUpdateById } from "@/actions/task";
 //TODO - need to change this to use the aws3 bucket
-type TaskFormValues = z.infer<typeof TaskSchema>;
-type TaskFormProps = {
-  task: Task;
-};
 
-export const TaskIdForm = ({ task }: TaskFormProps) => {
+export const TaskIdForm = ({ task }: { task: Task }) => {
   const role = useCurrentRole();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -60,7 +55,7 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const isMaster = role != "MASTER" && task?.status != "Resolved";
 
-  const form = useForm<TaskFormValues>({
+  const form = useForm<TaskSchemaType>({
     resolver: zodResolver(TaskSchema),
     defaultValues: task,
   });
@@ -87,7 +82,7 @@ export const TaskIdForm = ({ task }: TaskFormProps) => {
     form.reset();
   };
 
-  const onSubmit = async (values: TaskFormValues) => {
+  const onSubmit = async (values: TaskSchemaType) => {
     setLoading(true);
     taskUpdateById(values).then((data) => {
       if (data.success) {

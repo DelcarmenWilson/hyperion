@@ -1,10 +1,9 @@
 "use server";
-import * as z from "zod";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { ScriptSchema } from "@/schemas";
+import { ScriptSchema,ScriptSchemaType } from "@/schemas/admin";
 
-export const scriptInsert = async (values:z.infer<typeof ScriptSchema>) => {
+export const scriptInsert = async (values:ScriptSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -28,7 +27,7 @@ export const scriptInsert = async (values:z.infer<typeof ScriptSchema>) => {
   return { success: newScript };
 };
 
-export const scriptUpdateById = async (values:z.infer<typeof ScriptSchema>) => {
+export const scriptUpdateById = async (values:ScriptSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };

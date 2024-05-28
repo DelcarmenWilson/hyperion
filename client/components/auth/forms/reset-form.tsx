@@ -1,9 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResetSchema } from "@/schemas";
+import { ResetSchema, ResetSchemaType } from "@/schemas/register";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import {
@@ -25,14 +24,14 @@ export const ResetForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof ResetSchema>>({
+  const form = useForm<ResetSchemaType>({
     resolver: zodResolver(ResetSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof ResetSchema>) => {
+  const onSubmit = (values: ResetSchemaType) => {
     setError("");
     setSuccess("");
 

@@ -8,7 +8,6 @@ import { PhoneNumber, UserRole } from "@prisma/client";
 import { getAccountByUserId } from "@/data/account";
 import { userGetById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
-import { StringDecoder } from "string_decoder";
 
 export const {
   handlers: { GET, POST },

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { handleFileUpload } from "@/lib/utils";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -26,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FeedbackSchema } from "@/schemas";
+import { FeedbackSchema, FeedbackSchemaType } from "@/schemas/feedback";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MainSidebarRoutes } from "@/constants/page-routes";
@@ -36,12 +35,7 @@ import { useCurrentRole } from "@/hooks/user-current-role";
 import { ImageModal } from "@/components/modals/image";
 import { ImageGrid } from "@/components/reusable/image-grid";
 
-type FeedbackFormValues = z.infer<typeof FeedbackSchema>;
-type FeedbackFormProps = {
-  feedback: Feedback | null;
-};
-
-export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
+export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
   const role = useCurrentRole();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -65,7 +59,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
     return 0;
   });
 
-  const form = useForm<FeedbackFormValues>({
+  const form = useForm<FeedbackSchemaType>({
     resolver: zodResolver(FeedbackSchema),
     //@ts-ignore
     defaultValues: feedback || {
@@ -103,7 +97,7 @@ export const FeedbackForm = ({ feedback }: FeedbackFormProps) => {
     form.reset();
   };
 
-  const onSubmit = async (values: FeedbackFormValues) => {
+  const onSubmit = async (values: FeedbackSchemaType) => {
     setLoading(true);
 
     if (feedback) {

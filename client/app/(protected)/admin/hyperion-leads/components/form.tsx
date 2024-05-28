@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
 
@@ -19,7 +18,7 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { HyperionLeadSchema } from "@/schemas";
+import { HyperionLeadSchema, HyperionLeadSchemaType } from "@/schemas/admin";
 import { HyperionLead } from "@prisma/client";
 import { hyperionLeadUpdateById } from "@/actions/hyperion";
 
@@ -28,12 +27,10 @@ type HyperionLeadFormProps = {
   onClose: () => void;
 };
 
-type HyperionLeadFormValues = z.infer<typeof HyperionLeadSchema>;
-
 export const HyperionLeadForm = ({ lead, onClose }: HyperionLeadFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<HyperionLeadFormValues>({
+  const form = useForm<HyperionLeadSchemaType>({
     resolver: zodResolver(HyperionLeadSchema),
     //@ts-ignore
     defaultValues: lead,
@@ -45,7 +42,7 @@ export const HyperionLeadForm = ({ lead, onClose }: HyperionLeadFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: HyperionLeadFormValues) => {
+  const onSubmit = async (values: HyperionLeadSchemaType) => {
     setLoading(true);
     hyperionLeadUpdateById(values).then((data) => {
       if (data.success) {

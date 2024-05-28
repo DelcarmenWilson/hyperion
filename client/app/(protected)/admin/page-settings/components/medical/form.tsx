@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { useState } from "react";
 
 import { toast } from "sonner";
@@ -8,7 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { MedicalConditionSchema } from "@/schemas";
+import {
+  MedicalConditionSchema,
+  MedicalConditionSchemaType,
+} from "@/schemas/admin";
 import {
   Form,
   FormField,
@@ -22,16 +24,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminMedicalInsert } from "@/actions/admin";
 import { MedicalCondition } from "@prisma/client";
 
-type MedicalFormProps = {
+export const MedicalForm = ({
+  onClose,
+}: {
   onClose?: (e?: MedicalCondition) => void;
-};
-
-type MedicalFormValues = z.infer<typeof MedicalConditionSchema>;
-
-export const MedicalForm = ({ onClose }: MedicalFormProps) => {
+}) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<MedicalFormValues>({
+  const form = useForm<MedicalConditionSchemaType>({
     resolver: zodResolver(MedicalConditionSchema),
     defaultValues: {
       name: "",
@@ -46,7 +46,7 @@ export const MedicalForm = ({ onClose }: MedicalFormProps) => {
     }
   };
 
-  const onSubmit = async (values: MedicalFormValues) => {
+  const onSubmit = async (values: MedicalConditionSchemaType) => {
     setLoading(true);
     adminMedicalInsert(values).then((data) => {
       if (data.success) {

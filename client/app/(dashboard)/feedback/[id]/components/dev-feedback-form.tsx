@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -24,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DevFeedbackSchema, FeedbackSchema } from "@/schemas";
+import { DevFeedbackSchema, DevFeedbackSchemaType } from "@/schemas/feedback";
 import { Textarea } from "@/components/ui/textarea";
 
 import { feedbackUpdateByIdDev } from "@/actions/feedback";
@@ -33,17 +32,12 @@ import { useCurrentRole } from "@/hooks/user-current-role";
 import { format } from "date-fns";
 import { DefaultStatus } from "@/constants/texts";
 
-type DevFeedbackFormValues = z.infer<typeof DevFeedbackSchema>;
-type DevFeedbackFormProps = {
-  feedback: Feedback;
-};
-
-export const DevFeedbackForm = ({ feedback }: DevFeedbackFormProps) => {
+export const DevFeedbackForm = ({ feedback }: { feedback: Feedback }) => {
   const role = useCurrentRole();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<DevFeedbackFormValues>({
+  const form = useForm<DevFeedbackSchemaType>({
     resolver: zodResolver(DevFeedbackSchema),
     defaultValues: {
       id: feedback.id,
@@ -52,7 +46,7 @@ export const DevFeedbackForm = ({ feedback }: DevFeedbackFormProps) => {
     },
   });
 
-  const onSubmit = async (values: DevFeedbackFormValues) => {
+  const onSubmit = async (values: DevFeedbackSchemaType) => {
     setLoading(true);
 
     await feedbackUpdateByIdDev(values).then((data) => {
