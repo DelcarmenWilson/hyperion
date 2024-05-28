@@ -446,7 +446,7 @@ model LeadExpense {
   name      String
   value     Int      @default(0)
   isDefault Boolean  @default(false)
-  notes     String?
+  notes     String?  @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

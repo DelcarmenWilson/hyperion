@@ -49,13 +49,12 @@ const CreateExpenseForm = ({
   const btnText = expense ? "Update" : "Create";
   const form = useForm<LeadExpenseSchemaType>({
     resolver: zodResolver(LeadExpenseSchema),
-    //@ts-ignore
     defaultValues: expense || {
       leadId,
       type,
       name: "",
       value: 0,
-      notes: undefined,
+      notes: "",
     },
   });
   const { mutate, isPending } = useMutation({
@@ -73,7 +72,7 @@ const CreateExpenseForm = ({
         type,
         name: "",
         value: 0,
-        notes: undefined,
+        notes: "",
       });
 
       // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
@@ -153,7 +152,7 @@ const CreateExpenseForm = ({
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input defaultValue={""} {...field} />
                   </FormControl>
                   <FormDescription>Notes for you reference</FormDescription>
                 </FormItem>
