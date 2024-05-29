@@ -44,29 +44,20 @@ export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
   const onSubmit = async (values: ScriptSchemaType) => {
     setLoading(true);
     if (!script) {
-      scriptInsert(values).then((data) => {
-        if (data.error) {
-          toast.error(data.error);
+      const insertScript = await scriptInsert(values);
+      if (insertScript.success) {
+        if (setScripts) {
+          setScripts((scripts) => {
+            return [...scripts!, insertScript.success];
+          });
         }
-        if (data.success) {
-          if (setScripts) {
-            setScripts((scripts) => {
-              return [...scripts!, data.success];
-            });
-          }
-          toast.success("Script created!");
-        }
-      });
+        toast.success("Script created!");
+      } else toast.error(insertScript.error);
     } else {
-      scriptUpdateById(values).then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          console.log(data.success);
-          toast.success("Scipt Updated!");
-        }
-      });
+      const updatedScript = await scriptUpdateById(values);
+      if (updatedScript.success) {
+        toast.success("Script Updated!");
+      } else toast.error(updatedScript.error);
     }
     setLoading(false);
   };

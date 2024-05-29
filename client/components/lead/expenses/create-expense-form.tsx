@@ -78,7 +78,7 @@ const CreateExpenseForm = ({
 
       // After creating an expense or income transaction, we need to invalidate the overview query which will refetch data in the expense page
       queryClient.invalidateQueries({
-        queryKey: ["expenseBalance", "expenseCategories"],
+        queryKey: ["leadExpense"],
       });
 
       setOpen((prev) => !prev);

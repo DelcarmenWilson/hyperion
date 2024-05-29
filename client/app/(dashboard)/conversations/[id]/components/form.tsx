@@ -27,8 +27,6 @@ export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setValue("message", "", { shouldValidate: true });
-    // console.log(data);
-    // return;
     axios
       .post("/api/twilio/sms/out", {
         ...data,

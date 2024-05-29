@@ -8,8 +8,8 @@ import { ModalProvider } from "@/providers/modal";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 import SocketContextComponent from "@/providers/socket-component";
 
-function RootProviders({ children }: { children: ReactNode }) {
-  const [queryClient] = React.useState(() => new QueryClient({}));
+const queryClient = new QueryClient({});
+const RootProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
@@ -25,6 +25,6 @@ function RootProviders({ children }: { children: ReactNode }) {
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
-}
+};
 
 export default RootProviders;

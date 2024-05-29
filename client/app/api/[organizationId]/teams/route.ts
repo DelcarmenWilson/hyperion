@@ -37,7 +37,7 @@ export async function POST(req:Request,{params}:{params:{organizationId:string}}
          })
         return NextResponse.json(team)
     } catch (error) {
-        console.log("TEAMS_POST",error)
+        console.log("TEAMS_POST_ERROR",error)
         return new NextResponse("Internal Error",{status:500})
     }
 }
@@ -52,7 +52,7 @@ export async function GET(req:Request,{params}:{params:{organizationId:string}})
          })
         return NextResponse.json(teams)
     } catch (error) {
-        console.log("TEAMS_POST",error)
+        console.log("TEAMS_POST_ERROR",error)
         return new NextResponse("Internal Error",{status:500})
     }
 }

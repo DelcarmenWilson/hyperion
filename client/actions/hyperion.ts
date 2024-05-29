@@ -10,7 +10,7 @@ export const hyperionLeadInsert = async (
 ) => {
   const validatedFields = HyperionLeadSchema.safeParse(values);
   if (!validatedFields.success) {
-    console.log(validatedFields.error);
+    console.log("HYPERIONLEAD_INSERT_ERROR");
     return { error: "Invalid fields!" };
   }
 
@@ -86,7 +86,7 @@ export const hyperionLeadUpdateById = async (
   }
   const validatedFields = HyperionLeadSchema.safeParse(values);
   if (!validatedFields.success) {
-    console.log(validatedFields.error);
+    console.log("HYPERIONLEAD_UPDATE_ERROR");
     return { error: "Invalid fields!" };
   }
 

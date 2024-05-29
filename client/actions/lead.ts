@@ -923,8 +923,6 @@ export const leadExpenseDeleteById = async (id: string) => {
     return { error: "Expense no longer exists" };
   }
 
-  console.log(existingExpense)
-
   const deletedExpense = await db.leadExpense.delete({
     where: { id },
   });

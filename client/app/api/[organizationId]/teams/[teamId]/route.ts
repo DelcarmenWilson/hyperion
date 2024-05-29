@@ -21,7 +21,7 @@ export async function GET(
   
       return NextResponse.json(team);
     } catch (error) {
-      console.log("[TEAM_GET]", error);
+      console.log("[TEAM_GET_ERROR]", error);
       return new NextResponse("Internal error", { status: 500 });
     }
   }
@@ -71,7 +71,7 @@ export async function PATCH(
     });
     return NextResponse.json(team);
   } catch (error) {
-    console.log("[TEAM_PATCH]", error);
+    console.log("[TEAM_PATCH_ERROR]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
@@ -111,7 +111,7 @@ export async function DELETE(
 
     return NextResponse.json(team);
   } catch (error) {
-    console.log("[TEAM_DELETE]", error);
+    console.log("[TEAM_DELETE_ERROR]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

@@ -50,17 +50,12 @@ export const getSignedURL = async ({
 }: GetSignedURLParams): SignedURLResponse => {
   const user = await currentUser();
 
-  if (!user) {
-    return { error: "not authenticated" };
-  }
-console.log(fileType)
-  if (!allowedFileTypes.includes(fileType)) {
-    return { error: "File type not allowed" };
-  }
+  if (!user) return { error: "not authenticated" };
 
-  if (fileSize > maxFileSize) {
-    return { error: "File size too large" };
-  }
+  if (!allowedFileTypes.includes(fileType))
+    return { error: "File type not allowed" };
+
+  if (fileSize > maxFileSize) return { error: "File size too large" };
 
   const fileName = generateFileName();
   const key = `${filePath}/${fileName}.${fileType.split("/").slice(-1)[0]}`;

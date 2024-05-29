@@ -764,7 +764,7 @@ export const userTemplateInsert = async (
 ) => {
   const validatedFields = UserTemplateSchema.safeParse(values);
   if (!validatedFields.success) {
-    console.log(values);
+    console.log("USERTEMPLATE_INSERT_ERROR");
     return { error: "Invalid fields!" };
   }
 
