@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ExpenseType } from "@/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -13,30 +14,52 @@ import { USDollar } from "@/formulas/numbers";
 import CreateExpenseForm from "./create-expense-form";
 import { Button } from "@/components/ui/button";
 import { LeadExpense } from "@prisma/client";
-import { leadExpenseDeleteById } from "@/actions/lead";
-import { toast } from "sonner";
+import { leadExpenseDeleteById, leadExpenseInsertSheet } from "@/actions/lead";
 
 const CatergoryCards = ({ leadId }: { leadId: string }) => {
+  const queryClient = useQueryClient();
   const expenseQuery = useQuery<LeadExpense[]>({
-    queryKey: ["leadExpense", "categories"],
+    queryKey: ["leadExpense", `lead-${leadId}`, "categories"],
     queryFn: () =>
       fetch(`/api/leads/expense/categories?leadId=${leadId}`).then((res) =>
         res.json()
       ),
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: leadExpenseInsertSheet,
+    onSuccess: () => {
+      toast.success("Expense Sheet Created", {
+        id: "create-expense-sheet",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["leadExpense", `lead-${leadId}`],
+      });
+    },
+  });
+
   return (
-    <div className="flex w-full flex-wrap gap-2 md:flex-nowrap">
-      {["Expense", "Income"].map((type) => (
-        <SkeletonWrapper key={type} isLoading={expenseQuery.isFetching}>
-          <CategoriesCard
-            leadId={leadId}
-            type={type as ExpenseType}
-            data={expenseQuery.data || []}
-          />
-        </SkeletonWrapper>
-      ))}
-    </div>
+    <>
+      {expenseQuery.data?.length ? (
+        <div className="flex w-full flex-wrap gap-2 md:flex-nowrap">
+          {["Expense", "Income"].map((type) => (
+            <SkeletonWrapper key={type} isLoading={expenseQuery.isFetching}>
+              <CategoriesCard
+                leadId={leadId}
+                type={type as ExpenseType}
+                data={expenseQuery.data || []}
+              />
+            </SkeletonWrapper>
+          ))}
+        </div>
+      ) : (
+        <div className="flex-center h-full">
+          <Button disabled={isPending} onClick={() => mutate(leadId)}>
+            Create Expense Sheet
+          </Button>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -61,7 +84,7 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
         id: "delete-transaction",
       });
       queryClient.invalidateQueries({
-        queryKey: ["leadExpense"],
+        queryKey: ["leadExpense", `lead-${leadId}`],
       });
 
       setAlertOpen((prev) => !prev);

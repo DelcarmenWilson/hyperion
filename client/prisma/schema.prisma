@@ -658,11 +658,11 @@ model Feedback {
 // ADMIN TABLES
 
 model MedicalCondition {
-  id             String                 @id @default(cuid())
-  name           String                 @unique
-  description    String?
-  leadConditions LeadMedicalCondition[] @relation("LeadToCondition")
-  termCarriers   TermCarrier[]
+  id                String                 @id @default(cuid())
+  name              String                 @unique
+  description       String?
+  leadConditions    LeadMedicalCondition[] @relation("LeadToCondition")
+  carrierConditions CarrierCondition[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -676,11 +676,27 @@ model Carrier {
   website     String @default("")
   portal      String @default("")
 
-  userCarriers UserCarrier[]
-  termCarriers TermCarrier[]
+  userCarriers      UserCarrier[]
+  carrierConditions CarrierCondition[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+//GRID TERM SHEET
+model CarrierCondition {
+  id        String  @id @default(cuid())
+  carrierId String
+  carrier   Carrier @relation(fields: [carrierId], references: [id])
+
+  conditionId  String
+  condition    MedicalCondition @relation(fields: [conditionId], references: [id])
+  requirements String
+  notes        String           @default("")
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([carrierId, conditionId])
 }
 
 // SCRIPTS
@@ -810,17 +826,4 @@ model ChatMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-//GRID TERM SHEET
-model TermCarrier {
-  id        String  @id @default(cuid())
-  carrierId String
-  carrier   Carrier @relation(fields: [carrierId], references: [id])
-
-  conditionId  String
-  condition    MedicalCondition @relation(fields: [conditionId], references: [id])
-  requirements String
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
 }

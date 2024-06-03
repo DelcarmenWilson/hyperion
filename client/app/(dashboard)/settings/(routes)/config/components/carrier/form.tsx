@@ -58,28 +58,22 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
 
   const onSubmit = async (values: UserCarrierSchemaType) => {
     setLoading(true);
-    if (carrier)
-      userCarrierUpdateById(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("carrierUpdated", data.success);
-          toast.success("Carrier created!");
-          onClose();
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
-    else
-      userCarrierInsert(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("carrierInserted", data.success);
-          toast.success("Carrier created!");
-          onClose();
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+    if (carrier) {
+      const updatedCarrier = await userCarrierUpdateById(values);
+
+      if (updatedCarrier.success) {
+        userEmitter.emit("carrierUpdated", updatedCarrier.success);
+        toast.success("Carrier updated!");
+        onClose();
+      } else toast.error(updatedCarrier.error);
+    } else {
+      const insertedCarrier = await userCarrierInsert(values);
+      if (insertedCarrier.success) {
+        userEmitter.emit("carrierInserted", insertedCarrier.success);
+        toast.success("Carrier created!");
+        onClose();
+      } else toast.error(insertedCarrier.error);
+    }
     setLoading(false);
   };
   return (

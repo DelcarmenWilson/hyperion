@@ -2,6 +2,7 @@ import {
   FullChatMessage,
   FullLeadMedicalCondition,
   FullTeam,
+  FullCarrierCondition,
   FullUserCarrier,
   LeadGeneralInfo,
   LeadMainInfo,
@@ -26,18 +27,25 @@ type UserEvents = {
   beneficiaryDeleted: [id: string];
   beneficiaryInserted: [info: LeadBeneficiary];
   beneficiaryUpdated: [info: LeadBeneficiary];
+
+  //CARRIER CONDITIONS
+  carrierConditionDeleted: [id: string];
+  carrierConditionInserted: [info: FullCarrierCondition];
+  carrierConditionUpdated: [info: FullCarrierCondition];
+
+  //CARRIERS
   carrierDeleted: [id: string];
   carrierInserted: [info: FullUserCarrier];
   carrierUpdated: [info: FullUserCarrier];
   conditionDeleted: [id: string];
   conditionInserted: [info: FullLeadMedicalCondition];
   conditionUpdated: [info: FullLeadMedicalCondition];
-  
-  conversationSeen:[conversationId:string]
+
+  conversationSeen: [conversationId: string];
 
   expenseDeleted: [id: string];
-  expenseInserted: [info:LeadExpense];
-  expenseUpdated: [info:LeadExpense];
+  expenseInserted: [info: LeadExpense];
+  expenseUpdated: [info: LeadExpense];
 
   feedbackInserted: [info: Feedback];
   feedbackUpdated: [info: Feedback];
@@ -59,11 +67,10 @@ type UserEvents = {
   templateUpdated: [info: UserTemplate];
   templateSelected: [info: UserTemplate];
 
-
   //CONFERENCE AND PARTICIPANTS
   participantsFetch: [conferenceId: string];
-  joinCall:[callSid:string]
-  
+  joinCall: [callSid: string];
+
   userLeadStatusDeleted: [id: string];
   userLeadStatusInserted: [info: LeadStatus];
   userLeadStatusUpdated: [info: LeadStatus];
@@ -81,7 +88,7 @@ type AdminEvents = {
   teamDeleted: [id: string];
   teamInserted: [info: FullTeam];
   teamUpdated: [info: FullTeam];
-  tempImageDeleted:[id:string]
+  tempImageDeleted: [id: string];
 };
 
 type Listener<T extends Array<any>> = (...args: T) => void;

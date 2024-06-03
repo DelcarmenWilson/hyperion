@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
+
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 
@@ -15,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/reusable/loader";
-import { leadUpdateByIdShare } from "@/actions/lead";
+import { leadUpdateByIdAsssitant } from "@/actions/lead";
 
 type AssistantFormProps = {
   leadId: string;
@@ -27,33 +29,44 @@ export const AssistantForm = ({
   assistant,
   onClose,
 }: AssistantFormProps) => {
-  const [selectedUserId, setSelectedUserId] = useState(assistant?.id);
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState<User[]>();
+  const [assistantId, setAssistantId] = useState(assistant?.id);
+  const [loading, setLoading] = useState(false);
 
-  const onSetAssistant = (userId: string | undefined = undefined) => {
-    leadUpdateByIdShare(leadId, userId).then((data) => {
-      if (data.success) {
-        toast.success(data.success);
-        onClose();
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+  const assistantsQuery = useQuery<User[]>({
+    queryKey: ["userAsisstants"],
+    queryFn: () =>
+      fetch("/api/user/users", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role: "ASSISTANT" }),
+      }).then((res) => res.json()),
+  });
+
+  const onSetAssistant = async (userId: string | undefined = undefined) => {
+    setLoading(true);
+    const leadShared = await leadUpdateByIdAsssitant(leadId, userId);
+    if (leadShared.success) {
+      toast.success(leadShared.success);
+      onClose();
+    } else toast.error(leadShared.error);
+    setLoading(false);
   };
+  //TODO - need to change this to useQuery
 
-  useEffect(() => {
-    axios
-      .post("/api/user/users", { role: "ASSISTANT" })
-      .then((response) => {
-        const data = response.data as User[];
-        setUsers(data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .post("/api/user/users", { role: "ASSISTANT" })
+  //     .then((response) => {
+  //       const data = response.data as User[];
+  //       setUsers(data);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, []);
   return (
     <div>
       {loading ? (
@@ -71,7 +84,7 @@ export const AssistantForm = ({
                   className="ms-2"
                   size="sm"
                   onClick={() => {
-                    setSelectedUserId(undefined);
+                    setAssistantId(undefined);
                     onSetAssistant();
                   }}
                 >
@@ -85,15 +98,15 @@ export const AssistantForm = ({
           </p>
           <Select
             name="ddlGender"
-            disabled={loading}
-            onValueChange={setSelectedUserId}
-            defaultValue={selectedUserId}
+            disabled={assistantsQuery.isPending}
+            onValueChange={setAssistantId}
+            defaultValue={assistantId}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select a User" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
-              {users?.map((user) => (
+              {assistantsQuery.data?.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.firstName} {user.lastName}
                 </SelectItem>
@@ -101,14 +114,14 @@ export const AssistantForm = ({
             </SelectContent>
           </Select>
 
-          {assistant?.id !== selectedUserId && (
+          {assistant?.id !== assistantId && (
             <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
               <Button onClick={onClose} type="button" variant="outline">
                 Cancel
               </Button>
               <Button
                 disabled={loading}
-                onClick={() => onSetAssistant(selectedUserId)}
+                onClick={() => onSetAssistant(assistantId)}
               >
                 Share
               </Button>

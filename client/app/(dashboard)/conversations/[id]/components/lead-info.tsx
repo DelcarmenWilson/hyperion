@@ -141,11 +141,7 @@ export const ConversationLeadInfo = ({
             />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesClient
-              leadId={lead.id}
-              initExpenses={lead.expenses!}
-              size="sm"
-            />
+            <ExpensesClient leadId={lead.id} size="sm" />
           </TabsContent>
         </ScrollArea>
       </Tabs>

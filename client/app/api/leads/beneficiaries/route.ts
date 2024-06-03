@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { leadExpensesGetAllById } from "@/data/lead";
+import {  leadBeneficiariesGetAllById } from "@/data/lead";
 
 export async function GET(request: Request) {
   const user = await currentUser();
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     throw new Error("Lead Id must be provided");
   }
 
-  const expenses = await leadExpensesGetAllById(leadId);
+  const beneficiaries = await leadBeneficiariesGetAllById(leadId);
 
-  return Response.json(expenses);
+  return Response.json(beneficiaries);
 }
