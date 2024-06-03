@@ -30,7 +30,9 @@ export const LeadSchema = z.object({
   type: z.optional(z.string()),
   vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
-  recievedAt: z.optional(z.string()),
+  recievedAt: z.optional(z.string()),  
+  status: z.optional(z.string()),
+  assistantId: z.optional(z.string()),
 });
 export type LeadSchemaType = z.infer<typeof LeadSchema>;
 

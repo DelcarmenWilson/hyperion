@@ -1,5 +1,4 @@
 "use client";
-
 import React, { ReactNode } from "react";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +12,7 @@ import { USDollar } from "@/formulas/numbers";
 
 const BalanceCards = ({ leadId }: { leadId: string }) => {
   const statsQuery = useQuery<GetLeadExpenseResponseType>({
-    queryKey: ["leadExpense", "balance"],
+    queryKey: ["leadExpense", `lead-${leadId}`, "balance"],
     queryFn: () =>
       fetch(`/api/leads/expense/balance?leadId=${leadId}`).then((res) =>
         res.json()

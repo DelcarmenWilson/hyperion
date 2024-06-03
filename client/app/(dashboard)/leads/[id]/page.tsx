@@ -44,7 +44,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
           <ConditionsClient leadId={lead.id} initConditions={lead.conditions} />
         </TabsContent>
         <TabsContent value="expenses">
-          <ExpensesClient leadId={lead.id} initExpenses={lead.expenses} />
+          <ExpensesClient leadId={lead.id} />
         </TabsContent>
         <TabsContent value="activity">
           <LeadTabsClient lead={lead} />

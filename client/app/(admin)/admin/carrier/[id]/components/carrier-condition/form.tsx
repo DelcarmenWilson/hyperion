@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { TermCarrierSchema, TermCarrierSchemaType } from "@/schemas/admin";
+import {
+  CarrierConditionSchema,
+  CarrierConditionSchemaType,
+} from "@/schemas/admin";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,57 +30,70 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { Carrier, MedicalCondition } from "@prisma/client";
-import axios from "axios";
-import { adminTermCarrierInsert } from "@/actions/admin";
-import { FullTermCarrier } from "@/types";
+import {
+  adminCarrierConditionInsert,
+  adminCarrierConditionUpdateById,
+} from "@/actions/admin";
+import { FullCarrierCondition } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { GetCarriersAndConditionsResponseType } from "@/app/api/admin/carrier-conditions/route";
 
-export const TermCarrierForm = ({
+type CarrierConditionFormProps = {
+  carrierCondition?: FullCarrierCondition;
+  onClose: () => void;
+};
+export const CarrierConditionForm = ({
+  carrierCondition,
   onClose,
-}: {
-  onClose?: (e?: FullTermCarrier) => void;
-}) => {
+}: CarrierConditionFormProps) => {
   const [loading, setLoading] = useState(false);
-  const [carriers, setCarriers] = useState<Carrier[] | null>();
-  const [conditions, setConditions] = useState<MedicalCondition[] | null>();
 
-  const form = useForm<TermCarrierSchemaType>({
-    resolver: zodResolver(TermCarrierSchema),
-    defaultValues: {
-      carrierId: carriers ? carriers[0].id : "",
-      conditionId: conditions ? conditions[0].id : "",
+  const ccQuery = useQuery<GetCarriersAndConditionsResponseType>({
+    queryKey: ["adminCarriersConditions"],
+    queryFn: () =>
+      fetch("/api/admin/carrier-conditions").then((res) => res.json()),
+  });
+
+  const form = useForm<CarrierConditionSchemaType>({
+    resolver: zodResolver(CarrierConditionSchema),
+    //@ts-ignore
+    defaultValues: carrierCondition || {
+      carrierId: ccQuery.data?.carriers ? ccQuery.data?.carriers[0].id : "",
+      conditionId: ccQuery.data?.conditions
+        ? ccQuery.data?.conditions[0].id
+        : "",
       requirements: "",
+      notes: "",
     },
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
-  useEffect(() => {
-    axios.post("/api/admin/carrier-conditions").then((response) => {
-      const data = response.data;
-      setCarriers(data.carriers);
-      setConditions(data.conditions);
-    });
-  }, []);
-
-  const onSubmit = async (values: TermCarrierSchemaType) => {
+  const onSubmit = async (values: CarrierConditionSchemaType) => {
     setLoading(true);
-    adminTermCarrierInsert(values).then((data) => {
-      if (data.success) {
+    if (carrierCondition) {
+      const updatedCarrier = await adminCarrierConditionUpdateById(values);
+
+      if (updatedCarrier.success) {
+        userEmitter.emit("carrierConditionUpdated", updatedCarrier.success);
+        toast.success("Carrier condition updated!");
+        onClose();
+      } else toast.error(updatedCarrier.error);
+    } else {
+      const insertedCarrier = await adminCarrierConditionInsert(values);
+
+      if (insertedCarrier.success) {
+        userEmitter.emit("carrierConditionInserted", insertedCarrier.success);
         form.reset();
-        if (onClose) onClose(data.success);
+        if (onClose) onClose();
         toast.success("Carrier created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+      } else toast.error(insertedCarrier.error);
+    }
+
     setLoading(false);
   };
   return (
@@ -110,7 +127,7 @@ export const TermCarrierForm = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {carriers?.map((carrier) => (
+                      {ccQuery.data?.carriers?.map((carrier) => (
                         <SelectItem key={carrier.id} value={carrier.id}>
                           {carrier.name}
                         </SelectItem>
@@ -144,7 +161,7 @@ export const TermCarrierForm = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {conditions?.map((condition) => (
+                      {ccQuery.data?.conditions?.map((condition) => (
                         <SelectItem key={condition.id} value={condition.id}>
                           {condition.name}
                         </SelectItem>
@@ -168,9 +185,33 @@ export const TermCarrierForm = ({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Description"
+                      placeholder="Requirements"
                       disabled={loading}
                       autoComplete="Description"
+                      rows={4}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* NOTES*/}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem className="flex flex-col pt-2">
+                  <FormLabel className="flex justify-between items-center">
+                    Notes
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Notes"
+                      disabled={loading}
+                      autoComplete="Notes"
+                      rows={4}
                     />
                   </FormControl>
                 </FormItem>

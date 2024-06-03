@@ -1,6 +1,7 @@
 Jhonni 
     - working on prompt enginering
     - working on workflow
+
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    
     --work on implementing all the filupload with s3
@@ -11,10 +12,18 @@ Jhonni
 -- switching from sms back to phone disables the phone controls
 -- need to remove all the excess stuff from the phoneContext and phone out and in
 -- fix the user Emmiter
--- work on the expenses (calculation is way off)
+-- work on the expenses (calculation is way off)????
 -- calls not being able to be shared user profile
 -- work on the calendar some more before uploading
 
+Voicemails - 
+    - let the agent decide to delete the voicemail.
+    - let agent call bacl lead directly from the voicemail
+
+
+Lead 
+    -- the leads birthday is not showing up correctly
+    -- on the same token check all the dats and make sure the same syntax is used throught the site
 Chat
     - make sure the autochat does not respond to similar messages that are sent back to back
     - change company name to strongSide

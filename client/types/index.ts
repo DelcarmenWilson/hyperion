@@ -3,7 +3,6 @@ import {
   Message,
   User,
   Lead,
-  Preset,
   Call,
   Appointment,
   Team,
@@ -22,8 +21,8 @@ import {
   LeadPolicy,
   Chat,
   ChatMessage,
-  TermCarrier,
   Carrier,
+  CarrierCondition,
 } from "@prisma/client";
 
 export type HalfUser = {
@@ -248,7 +247,7 @@ export type UserSocket = {
   role: string;
 };
 //TERM CARRIER
-export type FullTermCarrier = TermCarrier & {
+export type FullCarrierCondition = CarrierCondition & {
   carrier: Carrier;
   condition: MedicalCondition;
 };

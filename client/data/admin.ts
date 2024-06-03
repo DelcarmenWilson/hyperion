@@ -25,7 +25,7 @@ export const adminLeadStatusGetAll = async () => {
 // CARRIERS
 export const adminCarriersGetAll = async () => {
   try {
-    const carriers = await db.carrier.findMany({orderBy:{name:"asc"}});
+    const carriers = await db.carrier.findMany({ orderBy: { name: "asc" } });
     return carriers;
   } catch (error) {
     return [];
@@ -43,7 +43,9 @@ export const adminCarrierGetById = async (id: string) => {
 //MEDICAL CONDITIONS
 export const adminMedicalConditionsGetAll = async () => {
   try {
-    const conditions = await db.medicalCondition.findMany({orderBy:{name:"asc"}});
+    const conditions = await db.medicalCondition.findMany({
+      orderBy: { name: "asc" },
+    });
     return conditions;
   } catch (error) {
     return [];
@@ -60,27 +62,47 @@ export const adminQuotesGetAll = async () => {
 };
 export const adminQuotesGetActive = async () => {
   try {
-    const quote = await db.quote.findFirst({where:{active:true}});
-    return quote
+    const quote = await db.quote.findFirst({ where: { active: true } });
+    return quote;
   } catch (error) {
     return null;
   }
 };
-//TERM CARRIERS
-export const adminTermCarriersGetAll = async () => {
+//CARRIER CONDITIONSS
+export const adminCarrierConditionsGetAll = async () => {
   try {
-    const carriers = await db.termCarrier.findMany({include:{carrier:true,condition:true},orderBy:{carrier:{name:"asc"}}});
-    return carriers;
+    const conditions = await db.carrierCondition.findMany({
+      include: { carrier: true, condition: true },
+      orderBy: { carrier: { name: "asc" } },
+    });
+    return conditions;
   } catch (error) {
     return [];
   }
 };
 
-export const adminTermCarrierGetById = async (id: string) => {
+export const adminCarrierConditionsGetAllByCarrierId = async (id: string) => {
   try {
-    const carrier = await db.termCarrier.findUnique({ where: { id } });
-    return carrier;
+    const conditions = await db.carrierCondition.findMany({
+      where:{carrierId:id},
+      include: { carrier: true, condition: true },
+      orderBy: { carrier: { name: "asc" } },
+    });
+    return conditions;
   } catch (error) {
-    return null;
+    return [];
+  }
+};
+
+export const adminCarrierConditionsGetAllByConditionId = async (id: string) => {
+  try {
+    const conditions = await db.carrierCondition.findMany({
+      where:{conditionId:id},
+      include: { carrier: true, condition: true },
+      orderBy: { carrier: { name: "asc" } },
+    });
+    return conditions;
+  } catch (error) {
+    return [];
   }
 };

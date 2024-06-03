@@ -127,6 +127,12 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
+  let assistant
+  const assistantId=values[0].assistantId
+  if(assistantId){
+    assistant=(await db.user.findUnique({where:{id:assistantId}}))?.firstName
+  }
+
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   for (let i = 0; i < values.length; i++) {
     const {
@@ -151,6 +157,8 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
       currentInsuranse,
       type,
       vendor,
+      status,
+      assistantId,
       recievedAt,
     } = values[i];
 
@@ -221,12 +229,14 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
             ? phoneNumber.phone
             : defaultNumber?.phone!,
           userId: user?.id,
+          status,
+          assistantId
         },
       });
     }
   }
   return {
-    success: `${values.length} Leads have been imported - duplicates(${duplicates})`,
+    success: `${values.length} Leads have been imported ${assistant&& `and assigned to ${assistant} ` } - duplicates(${duplicates})`,
   };
 };
 
@@ -931,6 +941,34 @@ export const leadExpenseDeleteById = async (id: string) => {
 };
 
 //LEAD ASSISTANT AND SHARE
+export const leadUpdateByIdAsssitant = async (
+  id: string,
+  assistantId: string | null | undefined
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+
+  if (!assistantId) {
+    await db.lead.update({
+      where: { id },
+      data: {
+        assistant: { disconnect: true },
+      },
+    });
+    return { success: "Assistant has been removed from the lead!" };
+  }
+  await db.lead.update({
+    where: { id },
+    data: {
+      assistantId: assistantId,
+    },
+  });
+
+  return { success: "Assistant has been added to the lead!" };
+};
 export const leadUpdateByIdShare = async (
   id: string,
   userId: string | null | undefined
@@ -948,7 +986,7 @@ export const leadUpdateByIdShare = async (
         sharedUser: { disconnect: true },
       },
     });
-    return { success: " Lead sharing has ben deactivated!" };
+    return { success: "Lead sharing has been deactivated!" };
   }
   await db.lead.update({
     where: { id },

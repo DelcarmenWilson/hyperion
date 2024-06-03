@@ -78,7 +78,7 @@ export const CarrierForm = ({ carrier }: { carrier: Carrier }) => {
         onClose={() => setModalOpen(false)}
         onImageUpdate={onImageUpdated}
       />
-      <div className="flex justify-center items-center w-full my-4">
+      <div className="flex justify-center items-center w-full">
         <div className="relative text-center overflow-hidden rounded-md group">
           <Image
             width={250}

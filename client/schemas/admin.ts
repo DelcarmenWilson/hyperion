@@ -66,11 +66,13 @@ export const HyperionLeadSchema = z.object({
 });
 export type HyperionLeadSchemaType = z.infer<typeof HyperionLeadSchema>;
 
-//TERM CARRIERS
-export const TermCarrierSchema = z.object({
+//CARRIER CONDITIONS
+export const CarrierConditionSchema = z.object({
   id: z.optional(z.string()),
   carrierId: z.string().min(2, "*"),
   conditionId: z.string().min(2, "*"),
   requirements:z.string().min(2, "*"),
+  notes:z.optional(z.string()),
+  condition:z.optional(z.string()),
 });
-export type TermCarrierSchemaType = z.infer<typeof TermCarrierSchema>;
+export type CarrierConditionSchemaType = z.infer<typeof CarrierConditionSchema>;

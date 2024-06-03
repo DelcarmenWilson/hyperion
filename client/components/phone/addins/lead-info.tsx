@@ -132,7 +132,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesClient leadId={lead.id} initExpenses={lead.expenses!} />
+            <ExpensesClient leadId={lead.id} />
           </TabsContent>
         </Tabs>
 

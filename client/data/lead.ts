@@ -215,7 +215,21 @@ export const leadStatusGetAllByAgentId = async (
     return [];
   }
 };
-
+//LEAD BENEDICIERIES
+export const leadBeneficiariesGetAllById = async (leadId: string) => {
+  const user = await currentUser();
+  if (!user) {
+    redirect("/login");
+  }
+  try {
+    const beneficieries = await db.leadBeneficiary.findMany({
+      where: { leadId },
+    });
+    return beneficieries;
+  } catch {
+    return [];
+  }
+};
 // LEAD EXPENSES
 
 export const leadExpensesGetAllById = async (leadId: string) => {

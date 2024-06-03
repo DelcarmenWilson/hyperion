@@ -1,4 +1,4 @@
-import { capitalize } from "./text";
+import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
 import { LeadSchemaType } from "@/schemas/lead";
 
@@ -44,31 +44,37 @@ const convertMaritalStatus = (
 };
 export const convertLead = (
   result: any,
-  vendor: string
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
 ): LeadSchemaType[] => {
   switch (vendor) {
     case "Avalanche_Leads":
-      return Avalanche_Leads(result, vendor);
+      return Avalanche_Leads(result, vendor, type, status, assistantId);
     case "Hyperion":
-      return Hyperion(result, vendor);
+      return Hyperion(result, vendor, type, status, assistantId);
     case "Leadrilla":
-      return Leadrilla(result, vendor);
+      return Leadrilla(result, vendor, status, assistantId);
     case "Media_Alpha":
-      return MediaAlphaLeads(result, vendor);
+      return MediaAlphaLeads(result, vendor, type, status, assistantId);
     case "Mutual_Of_Omaha":
-      return MutualOfOmaha(result, vendor);
+      return MutualOfOmaha(result, vendor, type, status, assistantId);
     case "Prime_Time_Leads":
-      return PrimeTime(result, vendor);
+      return PrimeTime(result, vendor, type, status, assistantId);
     case "Prospect_For_Leads":
-      return ProspectForLeads(result, vendor);
+      return ProspectForLeads(result, vendor, type, status, assistantId);
     default:
-      return IlcLeads(result, vendor);
+      return IlcLeads(result, vendor, type, status, assistantId);
   }
 };
 
 const Avalanche_Leads = (
   result: any,
-  vendor: string
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
@@ -87,15 +93,24 @@ const Avalanche_Leads = (
       gender: d["Gender"],
       maritalStatus: "Single",
       height: "",
-      vendor: vendor,
       recievedAt: d["Date_Posted"],
+      vendor,
+      type,
+      status,
+      assistantId
     };
     mapped.push(newobj);
   });
   return mapped;
 };
 
-const Hyperion = (result: any, vendor: string): LeadSchemaType[] => {
+const Hyperion = (
+  result: any,
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
+): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
     const newobj: LeadSchemaType = {
@@ -114,32 +129,30 @@ const Hyperion = (result: any, vendor: string): LeadSchemaType[] => {
       zipCode: "NA",
       gender: convertGender(d["gender"]),
       maritalStatus: convertMaritalStatus(d["marital_status"]),
-      type: "General",
       recievedAt: d["created_time"],
       policyAmount: d["how_much_insurance_coverage_will_you_like_to_get?"],
-      vendor: vendor,
       smoker: d["are_you_a_smoker?"].toLowerCase() == "no" ? false : true,
+      vendor: vendor,
+      type,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
   return mapped;
 };
-const IlcLeads = (result: any, vendor: string): LeadSchemaType[] => {
+
+const IlcLeads = (
+  result: any,
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
+): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
-  const extractInfo = (data: string): any => {
-    if (!data) return {};
-    let exData = data
-      .replaceAll('"', "")
-      .replaceAll("' ", "")
-      .replaceAll(": ", '":"')
-      .replaceAll("] [", '","')
-      .replace("[", '{"')
-      .replace("]", '"}');
-    return JSON.parse(exData);
-  };
 
   result.data.map((d: any) => {
-    const a = extractInfo(d["Notes"]);
+    const a = stringToJson(d["Notes"]);
     const newobj: LeadSchemaType = {
       id: "",
       firstName: capitalize(d["First Name"]),
@@ -153,19 +166,28 @@ const IlcLeads = (result: any, vendor: string): LeadSchemaType[] => {
       state: capitalize(d["State"]),
       gender: "NA",
       maritalStatus: "Single",
-      weight: a["Weight"],
-      height: a["Height"],
-      smoker: a["IsSmoker"] == "No" ? false : true,
+      weight: a?.Weight || "",
+      height: a?.Height || "",
+      smoker: a?.IsSmoker == "No" ? false : true,
       zipCode: d["Zip"],
       recievedAt: d["Received Date"],
-      policyAmount: a["DesiredCoverageAmount"],
-      vendor: vendor,
+      policyAmount: a?.DesiredCoverageAmount,
+      vendor,
+      type,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
   return mapped;
 };
-const Leadrilla = (result: any, vendor: string): LeadSchemaType[] => {
+
+const Leadrilla = (
+  result: any,
+  vendor: string,
+  status: string,
+  assistantId: string | undefined
+): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
     const fullName = d["name"].split(" ");
@@ -186,14 +208,20 @@ const Leadrilla = (result: any, vendor: string): LeadSchemaType[] => {
       type: convertType(d["product"]),
       recievedAt: d["date purchased"],
       vendor: vendor,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
   return mapped;
 };
+
 const MediaAlphaLeads = (
   result: any,
-  vendor: string
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
@@ -217,6 +245,9 @@ const MediaAlphaLeads = (
       smoker: d["tobacco_use"] == "No" ? false : true,
       vendor: vendor,
       recievedAt: d["received_at"],
+      type,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
@@ -224,7 +255,10 @@ const MediaAlphaLeads = (
 };
 const MutualOfOmaha = (
   result: any,
-  vendor: string
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
@@ -246,12 +280,21 @@ const MutualOfOmaha = (
 
       maritalStatus: "Single",
       vendor: vendor,
+      type,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
   return mapped;
 };
-const PrimeTime = (result: any, vendor: string): LeadSchemaType[] => {
+const PrimeTime = (
+  result: any,
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
+): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
     const fullName = d["Name"].split(" ");
@@ -273,14 +316,20 @@ const PrimeTime = (result: any, vendor: string): LeadSchemaType[] => {
       recievedAt: d["Date Requested"],
       policyAmount: d["Amount Requested"],
       vendor: vendor,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
   return mapped;
 };
+
 const ProspectForLeads = (
   result: any,
-  vendor: string
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
   result.data.map((d: any) => {
@@ -303,6 +352,9 @@ const ProspectForLeads = (
       income: d["family income"],
       vendor: vendor,
       policyAmount: d["Policy Amount"],
+      type,
+      status,
+      assistantId,
     };
     mapped.push(newobj);
   });
