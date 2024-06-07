@@ -1,4 +1,4 @@
-import { leadGetById } from "@/data/lead";
+import { leadGetById } from "@/actions/lead";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 

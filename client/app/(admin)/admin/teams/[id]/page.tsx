@@ -8,7 +8,7 @@ import { RecentSales } from "./components/sales/client";
 import { OverviewChart } from "./components/overview/client";
 
 import { teamGetByIdStats, teamGetByIdSales } from "@/data/team";
-import { adminUsersGetAll } from "@/data/admin";
+import { adminUsersGetAll } from "@/actions/admin/user";
 import { weekStartEnd } from "@/formulas/dates";
 import { convertSalesData } from "@/formulas/reports";
 

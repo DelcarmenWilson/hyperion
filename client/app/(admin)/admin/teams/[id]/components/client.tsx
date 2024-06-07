@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 
-import { adminChangeTeamManager } from "@/actions/admin";
+import { adminChangeTeamManager } from "@/actions/admin/team";
 import { weekStartEnd } from "@/formulas/dates";
 import { USDollar } from "@/formulas/numbers";
 import { DatesFilter } from "@/components/reusable/dates-filter";

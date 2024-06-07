@@ -1,5 +1,4 @@
-import { leadsGetAllByAgentIdFiltered } from "@/data/lead";
-import { db } from "@/lib/db";
+import { leadsGetAllByAgentIdFiltered } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

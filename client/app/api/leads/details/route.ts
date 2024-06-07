@@ -1,4 +1,4 @@
-import { leadGetByPhone } from "@/data/lead";
+import { leadGetByPhone } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

@@ -13,8 +13,6 @@ import {
   Appointment,
   Feedback,
   HyperionLead,
-  LeadBeneficiary,
-  LeadExpense,
   LeadStatus,
   Message,
   Presets,
@@ -24,9 +22,6 @@ import {
 
 type UserEvents = {
   appointmentScheduled: [info: Appointment];
-  beneficiaryDeleted: [id: string];
-  beneficiaryInserted: [info: LeadBeneficiary];
-  beneficiaryUpdated: [info: LeadBeneficiary];
 
   //CARRIER CONDITIONS
   carrierConditionDeleted: [id: string];
@@ -43,24 +38,23 @@ type UserEvents = {
 
   conversationSeen: [conversationId: string];
 
-  expenseDeleted: [id: string];
-  expenseInserted: [info: LeadExpense];
-  expenseUpdated: [info: LeadExpense];
-
   feedbackInserted: [info: Feedback];
   feedbackUpdated: [info: Feedback];
 
   generalInfoUpdated: [info: LeadGeneralInfo];
   leadStatusChanged: [leadId: string, newStatus: string];
+  //LICENSES
   licenseDeleted: [id: string];
   licenseInserted: [info: UserLicense];
   licenseUpdated: [info: UserLicense];
+
   mainInfoUpdated: [info: LeadMainInfo];
   chatMessageInserted: [info: FullChatMessage];
   messageInserted: [info: Message];
 
   presetInserted: [Presets];
   policyInfoUpdated: [info: LeadPolicyInfo];
+
   //TEMPLATES
   templateDeleted: [id: string];
   templateInserted: [info: UserTemplate];

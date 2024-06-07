@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CarrierConditionSchemaType } from "@/schemas/admin";
 import { convertCarrierCondition } from "@/formulas/admin";
 import { Carrier, MedicalCondition } from "@prisma/client";
-import { adminCarrierConditionImport as adminCarrierConditionsImport } from "@/actions/admin";
+import { adminCarrierConditionsImport } from "@/actions/admin/carrier-condition";
 
 export const ImportCarrierConditionsForm = ({
   carrier,

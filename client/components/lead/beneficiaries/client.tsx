@@ -1,53 +1,38 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useQuery } from "@tanstack/react-query";
 
 import { LeadBeneficiary } from "@prisma/client";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { DataTable } from "@/components/tables/data-table";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { BeneficiaryForm } from "./form";
 import { BeneficiariesList } from "./list";
 import { columns } from "./columns";
+import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 
 type BeneficiariesClientProp = {
   leadId: string;
-  initBeneficiaries: LeadBeneficiary[];
   size?: string;
 };
 
 export const BeneficiariesClient = ({
   leadId,
-  initBeneficiaries,
   size = "full",
 }: BeneficiariesClientProp) => {
   const user = useCurrentUser();
-  const [beneficiaries, setBeneficiaries] =
-    useState<LeadBeneficiary[]>(initBeneficiaries);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
 
-  useEffect(() => {
-    setBeneficiaries(initBeneficiaries);
-    const onBeneficiaryInserted = (newBeneficiary: LeadBeneficiary) => {
-      const existing = beneficiaries.find((e) => e.id == newBeneficiary.id);
-      if (existing == undefined)
-        setBeneficiaries((beneficiaries) => [...beneficiaries, newBeneficiary]);
-    };
-
-    const onBeneficiaryDeleted = (id: string) => {
-      setBeneficiaries((beneficiaries) =>
-        beneficiaries.filter((e) => e.id !== id)
-      );
-    };
-    userEmitter.on("beneficiaryInserted", (info) =>
-      onBeneficiaryInserted(info)
-    );
-    userEmitter.on("beneficiaryDeleted", (id) => onBeneficiaryDeleted(id));
-  }, [initBeneficiaries]);
+  const beneficiariesQuery = useQuery<LeadBeneficiary[]>({
+    queryKey: ["leadBeneficiaries", `lead-${leadId}`],
+    queryFn: () => leadBeneficiariesGetAllById(leadId),
+  });
 
   return (
     <>
@@ -62,19 +47,21 @@ export const BeneficiariesClient = ({
         />
       </DrawerRight>
       {isList ? (
-        <DataTable
-          columns={columns}
-          data={beneficiaries}
-          headers
-          topMenu={
-            <ListGridTopMenu
-              text="Add Beneficiary"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          }
-        />
+        <SkeletonWrapper isLoading={beneficiariesQuery.isFetching}>
+          <DataTable
+            columns={columns}
+            data={beneficiariesQuery.data || []}
+            headers
+            topMenu={
+              <ListGridTopMenu
+                text="Add Beneficiary"
+                isList={isList}
+                setIsList={setIsList}
+                setIsDrawerOpen={setIsDrawerOpen}
+              />
+            }
+          />
+        </SkeletonWrapper>
       ) : (
         <>
           <div
@@ -92,7 +79,12 @@ export const BeneficiariesClient = ({
               size={size}
             />
           </div>
-          <BeneficiariesList beneficiaries={beneficiaries} size={size} />
+          <SkeletonWrapper isLoading={beneficiariesQuery.isFetching}>
+            <BeneficiariesList
+              beneficiaries={beneficiariesQuery.data || []}
+              size={size}
+            />
+          </SkeletonWrapper>
         </>
       )}
     </>

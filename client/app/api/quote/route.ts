@@ -1,4 +1,4 @@
-import { adminQuoteUpdateActive } from "@/actions/admin";
+import { adminQuoteUpdateActive } from "@/actions/admin/quote";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

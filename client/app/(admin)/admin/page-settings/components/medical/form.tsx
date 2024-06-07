@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { adminMedicalInsert } from "@/actions/admin";
+import { adminMedicalConditionInsert } from "@/actions/admin/medical";
 import { MedicalCondition } from "@prisma/client";
 
 export const MedicalForm = ({
@@ -48,16 +48,13 @@ export const MedicalForm = ({
 
   const onSubmit = async (values: MedicalConditionSchemaType) => {
     setLoading(true);
-    adminMedicalInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("Medical created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const insertedMedical = await adminMedicalConditionInsert(values);
+    if (insertedMedical.success) {
+      form.reset();
+      if (onClose) onClose(insertedMedical.success);
+      toast.success("Medical created!");
+    } else toast.error(insertedMedical.error);
+
     setLoading(false);
   };
   return (

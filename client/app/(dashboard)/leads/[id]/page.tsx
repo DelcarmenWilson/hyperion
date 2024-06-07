@@ -7,7 +7,7 @@ import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
-import { leadGetById, leadGetPrevNextById } from "@/data/lead";
+import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 import { LeadHeader } from "@/components/lead/header";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
@@ -35,13 +35,10 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
           <LeadClient lead={lead} />
         </TabsContent>
         <TabsContent value="beneficiaries">
-          <BeneficiariesClient
-            leadId={lead.id}
-            initBeneficiaries={lead.beneficiaries}
-          />
+          <BeneficiariesClient leadId={lead.id} />
         </TabsContent>
         <TabsContent value="conditions">
-          <ConditionsClient leadId={lead.id} initConditions={lead.conditions} />
+          <ConditionsClient leadId={lead.id} />
         </TabsContent>
         <TabsContent value="expenses">
           <ExpensesClient leadId={lead.id} />

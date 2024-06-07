@@ -23,7 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserRoles } from "@/constants/user";
-import { adminChangeTeam, adminChangeUserRole } from "@/actions/admin";
+
+import { adminChangeTeam } from "@/actions/admin/team";
+import { adminChangeUserRole } from "@/actions/admin/user";
 import { toast } from "sonner";
 import { USDollar } from "@/formulas/numbers";
 import { DatesFilter } from "@/components/reusable/dates-filter";
@@ -67,34 +69,28 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
   const [team, setTeam] = useState(user.teamId!);
   const [role, setRole] = useState(user.role.toString());
 
-  const onRoleChange = () => {
+  const onRoleChange = async () => {
     if (!role) return;
     setLoading(true);
-    adminChangeUserRole(user.id, role).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-        router.refresh();
-      }
-      setLoading(false);
-    });
+    const updatedUserRole = await adminChangeUserRole(user.id, role);
+
+    if (updatedUserRole.success) {
+      toast.success(updatedUserRole.success);
+      router.refresh();
+    } else toast.error(updatedUserRole.error);
+    setLoading(false);
   };
 
-  const onTeamChange = () => {
+  const onTeamChange = async () => {
     if (!team) return;
     setLoading(true);
-    adminChangeTeam(user.id, team).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-        router.refresh();
-      }
-      setLoading(false);
-    });
+    const updatedTeam = await adminChangeTeam(user.id, team);
+
+    if (updatedTeam.success) {
+      toast.success(updatedTeam.success);
+      router.refresh();
+    } else toast.error(updatedTeam.error);
+    setLoading(false);
   };
 
   return (

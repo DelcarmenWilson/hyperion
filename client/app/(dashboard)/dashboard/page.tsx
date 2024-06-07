@@ -10,11 +10,11 @@ import { TurnOverRate } from "./components/turnover/turn-over-rate";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
 
-import { adminQuotesGetActive } from "@/data/admin";
+import { adminQuotesGetActive } from "@/actions/admin/quote";
 import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
 import { callsGetAllByAgentIdLast24Hours } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
-import { leadsGetByAgentIdTodayCount } from "@/data/lead";
+import { leadsGetByAgentIdTodayCount } from "@/actions/lead";
 import { usersGetSummaryByTeamId } from "@/data/user";
 
 const DahsBoardPage = async () => {

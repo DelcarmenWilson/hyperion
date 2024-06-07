@@ -1,13 +1,13 @@
-import {
-  adminCarrierGetById,
-  adminCarriersGetAll,
-  adminCarrierConditionsGetAllByCarrierId,
-} from "@/data/admin";
-
 import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
 import { TopMenu } from "./components/top-menu";
 import { CarrierForm } from "./components/form";
 import { CarrierConditionClient } from "./components/carrier-condition/client";
+
+import {
+  adminCarrierGetById,
+  adminCarriersGetAll,
+} from "@/actions/admin/carrier";
+import { adminCarrierConditionsGetAllByCarrierId } from "@/actions/admin/carrier-condition";
 
 const CarrierPage = async ({
   params,

@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { adminConfirmUserEmail } from "@/actions/admin";
+import { adminConfirmUserEmail } from "@/actions/admin/user";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
 import { notificationSettingsInsertAll } from "@/actions/notification-settings";
@@ -20,15 +20,10 @@ import { notificationSettingsInsertAll } from "@/actions/notification-settings";
 export const NotificationConfirm = () => {
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = () => {
-    notificationSettingsInsertAll().then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
-    });
+  const onSubmit = async () => {
+    const insertedSettings = await notificationSettingsInsertAll();
+    if (insertedSettings.success) toast.success(insertedSettings.success);
+    else toast.error(insertedSettings.error);
   };
   return (
     <div>

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-
-import { userEmitter } from "@/lib/event-emmiter";
+import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -17,6 +16,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
+
 import {
   Select,
   SelectContent,
@@ -32,7 +32,11 @@ import { MedicalCondition } from "@prisma/client";
 
 import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
-import { leadConditionInsert, leadConditionUpdateById } from "@/actions/lead";
+import {
+  leadConditionInsert,
+  leadConditionUpdateById,
+} from "@/actions/lead/condition";
+import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
 
 type ConditionFormProps = {
   leadId?: string;
@@ -45,9 +49,36 @@ export const ConditionForm = ({
   condition,
   onClose,
 }: ConditionFormProps) => {
+  const queryClient = useQueryClient();
   const [conditions, setConditions] = useState<MedicalCondition[]>();
-  const [loading, setLoading] = useState(false);
   const btnTitle = condition ? "Update" : "Add";
+
+  const conditionsQuery = useQuery<MedicalCondition[]>({
+    queryKey: ["adminConditions"],
+    queryFn: () => adminMedicalConditionsGetAll(),
+  });
+  console.log(conditionsQuery.data);
+  const { mutate, isPending } = useMutation({
+    mutationFn: condition ? leadConditionUpdateById : leadConditionInsert,
+    onSuccess: () => {
+      const toastString = condition
+        ? "Condition updated successfully"
+        : "Condition created successfully";
+
+      toast.success(toastString, {
+        id: "insert-update-condition",
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["leadConditions", `lead-${leadId}`],
+      });
+
+      onCancel();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
@@ -64,43 +95,54 @@ export const ConditionForm = ({
     form.reset();
     onClose();
   };
+  const onSubmit = useCallback(
+    (values: LeadConditionSchemaType) => {
+      const toastString = condition
+        ? "Updating Condition..."
+        : "Creating Condition...";
+      toast.loading(toastString, { id: "insert-update-condition" });
 
-  const onSubmit = async (values: LeadConditionSchemaType) => {
-    setLoading(true);
+      mutate(values);
+    },
+    [mutate]
+  );
 
-    if (leadId) {
-      leadConditionInsert(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("conditionInserted", data.success);
-          toast.success(" Condition Added!");
-          onClose();
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
-    } else {
-      leadConditionUpdateById(values).then((data) => {
-        if (data.success) {
-          userEmitter.emit("conditionUpdated", data.success);
-          toast.success(" Condition Updated!");
-          onClose();
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
-    }
+  // const onSubmit = async (values: LeadConditionSchemaType) => {
+  //   setLoading(true);
 
-    setLoading(false);
-  };
+  //   if (leadId) {
+  //     leadConditionInsert(values).then((data) => {
+  //       if (data.success) {
+  //         userEmitter.emit("conditionInserted", data.success);
+  //         toast.success(" Condition Added!");
+  //         onClose();
+  //       }
+  //       if (data.error) {
+  //         form.reset();
+  //         toast.error(data.error);
+  //       }
+  //     });
+  //   } else {
+  //     leadConditionUpdateById(values).then((data) => {
+  //       if (data.success) {
+  //         userEmitter.emit("conditionUpdated", data.success);
+  //         toast.success(" Condition Updated!");
+  //         onClose();
+  //       }
+  //       if (data.error) {
+  //         toast.error(data.error);
+  //       }
+  //     });
+  //   }
 
-  useEffect(() => {
-    axios.post("/api/admin/conditions").then((response) => {
-      setConditions(response.data);
-    });
-  }, []);
+  //   setLoading(false);
+  // };
+
+  // useEffect(() => {
+  //   axios.post("/api/admin/conditions").then((response) => {
+  //     setConditions(response.data);
+  //   });
+  // }, []);
   return (
     <div>
       <Form {...form}>
@@ -122,7 +164,7 @@ export const ConditionForm = ({
                     </FormLabel>
                     <Select
                       name="ddlCondition"
-                      disabled={loading}
+                      disabled={conditionsQuery.isLoading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -132,7 +174,7 @@ export const ConditionForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {conditions?.map((condition) => (
+                        {conditionsQuery.data?.map((condition) => (
                           <SelectItem key={condition.id} value={condition.id}>
                             {condition.name}
                           </SelectItem>
@@ -157,7 +199,7 @@ export const ConditionForm = ({
                       <Input
                         {...field}
                         placeholder="Diagnosed"
-                        disabled={loading}
+                        disabled={isPending}
                         type="date"
                         autoComplete="Diagnosed"
                       />
@@ -180,7 +222,7 @@ export const ConditionForm = ({
                       <Textarea
                         {...field}
                         placeholder="medications"
-                        disabled={loading}
+                        disabled={isPending}
                         autoComplete="off"
                         rows={5}
                       />
@@ -203,7 +245,7 @@ export const ConditionForm = ({
                       <Textarea
                         {...field}
                         placeholder="notes"
-                        disabled={loading}
+                        disabled={isPending}
                         autoComplete="off"
                         rows={5}
                       />
@@ -217,7 +259,7 @@ export const ConditionForm = ({
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={isPending} type="submit">
               {btnTitle}
             </Button>
           </div>

@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { leadUpdateByIdStatus, leadUpdateByIdType } from "@/actions/lead";
+import { leadUpdateByIdType } from "@/actions/lead";
+import { leadUpdateByIdStatus } from "@/actions/lead/status";
 import { useGlobalContext } from "@/providers/global";
 
 interface CallInfoProps {

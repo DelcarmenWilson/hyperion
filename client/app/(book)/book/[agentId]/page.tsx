@@ -5,7 +5,7 @@ import {
 
 import { BookAgentClient } from "./components/client";
 import { appointmentsGetAllByUserIdUpcoming } from "@/data/appointment";
-import { leadGetById } from "@/data/lead";
+import { leadGetById } from "@/actions/lead";
 import { scheduleGetByUserId } from "@/data/schedule";
 import { userGetByUserName } from "@/data/user";
 

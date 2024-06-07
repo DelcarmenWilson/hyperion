@@ -9,12 +9,10 @@ import { LeadStatusClient } from "./components/leadstatus/client";
 import { MedicalClient } from "./components/medical/client";
 import { QuoteClient } from "./components/quote/client";
 
-import {
-  adminCarriersGetAll,
-  adminLeadStatusGetAll,
-  adminMedicalConditionsGetAll,
-  adminQuotesGetAll,
-} from "@/data/admin";
+import { adminCarriersGetAll } from "@/actions/admin/carrier";
+import { adminLeadStatusGetAll } from "@/actions/admin/lead";
+import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
+import { adminQuotesGetAll } from "@/actions/admin/quote";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();

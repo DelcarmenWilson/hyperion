@@ -11,7 +11,7 @@ import { ImportMedicalConditionColumn, columns } from "./columns";
 
 import { MedicalConditionSchemaType } from "@/schemas/admin";
 import { convertCondition } from "@/formulas/admin";
-import { adminMedicalImport } from "@/actions/admin";
+import { adminMedicalConditionImport } from "@/actions/admin/medical";
 
 export const ImportMedicalConditionForm = () => {
   const router = useRouter();
@@ -40,15 +40,12 @@ export const ImportMedicalConditionForm = () => {
   };
   const onImport = () => {
     startTransition(() => {
-      adminMedicalImport(conditions).then((data) => {
-        if (data?.error) {
-          toast.error(data.error);
-        }
-        if (data?.success) {
+      adminMedicalConditionImport(conditions).then((data) => {
+        if (data.success) {
           onCancel();
           toast.success(data.success);
           router.refresh();
-        }
+        } else toast.error(data.error);
       });
     });
   };
