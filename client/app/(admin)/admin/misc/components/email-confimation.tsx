@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { adminConfirmUserEmail } from "@/actions/admin";
+import { adminConfirmUserEmail } from "@/actions/admin/user";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
 

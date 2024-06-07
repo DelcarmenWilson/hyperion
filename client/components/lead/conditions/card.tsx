@@ -13,7 +13,7 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { ConditionForm } from "./form";
 
-import { leadConditionDeleteById } from "@/actions/lead";
+import { leadConditionDeleteById } from "@/actions/lead/condition";
 
 type ConditionCardProps = {
   initCondition: FullLeadMedicalCondition;

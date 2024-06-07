@@ -7,7 +7,7 @@ import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
-import { leadStatusGetAllByAgentIdDefault } from "@/data/lead";
+import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/data/script";
 import {
   userCarriersGetAllByUserId,
@@ -22,7 +22,7 @@ import {
   appointmentsGetAllByUserId,
 } from "@/data/appointment";
 import { getTwilioToken } from "@/data/verification-token";
-import { adminCarriersGetAll } from "@/data/admin";
+import { adminCarriersGetAll } from "@/actions/admin/carrier";
 
 export default async function DashBoardLayout({
   children,

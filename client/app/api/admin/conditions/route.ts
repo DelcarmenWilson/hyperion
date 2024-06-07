@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { adminMedicalConditionsGetAll } from "@/data/admin";
+import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
 
 export async function GET(req: Request) {
   try {   

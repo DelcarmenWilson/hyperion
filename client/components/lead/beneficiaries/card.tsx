@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
+import { useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { LeadBeneficiary } from "@prisma/client";
@@ -14,47 +14,38 @@ import { CardData } from "@/components/reusable/card-data";
 import { BeneficiaryForm } from "./form";
 
 import { getAge } from "@/formulas/dates";
-import { leadBeneficiaryDeleteById } from "@/actions/lead";
+import { leadBeneficiaryDeleteById } from "@/actions/lead/beneficiary";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 type BeneficiaryCardProps = {
-  initBeneficiary: LeadBeneficiary;
+  beneficiary: LeadBeneficiary;
 };
-export const BeneficiaryCard = ({ initBeneficiary }: BeneficiaryCardProps) => {
-  const [beneficiary, setBeneficiary] = useState(initBeneficiary);
-  const [loading, setLoading] = useState(false);
+export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
+  const queryClient = useQueryClient();
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteBenficiary = () => {
-    setLoading(true);
-    leadBeneficiaryDeleteById(beneficiary.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        userEmitter.emit("beneficiaryDeleted", beneficiary.id);
-        toast.success(data.success);
-      }
-    });
-    setAlertOpen(false);
-    setLoading(false);
-  };
+  const { mutate, isPending } = useMutation({
+    mutationFn: leadBeneficiaryDeleteById,
+    onSuccess: () => {
+      toast.success("Beneficiary Deleted", {
+        id: "delete-beneficiary",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["leadBeneficiaries", `lead-${beneficiary.leadId}`],
+      });
 
-  useEffect(() => {
-    setBeneficiary(initBeneficiary);
-    const onBeneficiaryUpdated = (e: LeadBeneficiary) => {
-      if (e.id == beneficiary.id) setBeneficiary(e);
-    };
-    userEmitter.on("beneficiaryUpdated", (info) => onBeneficiaryUpdated(info));
-  }, [initBeneficiary]);
+      setAlertOpen(false);
+    },
+  });
+
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteBenficiary}
-        loading={loading}
+        onConfirm={() => mutate(beneficiary.id)}
+        loading={isPending}
         height="auto"
       />
       <DrawerRight

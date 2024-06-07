@@ -21,10 +21,7 @@ export const BeneficiariesList = ({
           )}
         >
           {beneficiaries.map((beneficiary) => (
-            <BeneficiaryCard
-              key={beneficiary.id}
-              initBeneficiary={beneficiary}
-            />
+            <BeneficiaryCard key={beneficiary.id} beneficiary={beneficiary} />
           ))}
         </div>
       ) : (

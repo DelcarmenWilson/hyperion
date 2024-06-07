@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { adminQuoteInsert } from "@/actions/admin";
+import { adminQuoteInsert } from "@/actions/admin/quote";
 import { Quote } from "@prisma/client";
 
 export const QuoteForm = ({ onClose }: { onClose?: (e?: Quote) => void }) => {
@@ -42,16 +42,12 @@ export const QuoteForm = ({ onClose }: { onClose?: (e?: Quote) => void }) => {
 
   const onSubmit = async (values: QuoteSchemaType) => {
     setLoading(true);
-    adminQuoteInsert(values).then((data) => {
-      if (data.success) {
-        form.reset();
-        if (onClose) onClose(data.success);
-        toast.success("Quote created!");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const insertedQuote = await adminQuoteInsert(values);
+    if (insertedQuote.success) {
+      form.reset();
+      if (onClose) onClose(insertedQuote.success);
+      toast.success("Quote created!");
+    } else toast.error(insertedQuote.error);
     setLoading(false);
   };
   return (

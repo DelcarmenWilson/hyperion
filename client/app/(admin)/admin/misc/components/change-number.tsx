@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { adminChangeLeadDefaultNumber } from "@/actions/admin";
+import { adminChangeLeadDefaultNumber } from "@/actions/admin/lead";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
 

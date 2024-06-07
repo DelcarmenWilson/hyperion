@@ -4,6 +4,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 
 import {
   CarrierConditionSchema,
@@ -33,9 +34,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   adminCarrierConditionInsert,
   adminCarrierConditionUpdateById,
-} from "@/actions/admin";
+} from "@/actions/admin/carrier-condition";
 import { FullCarrierCondition } from "@/types";
-import { useQuery } from "@tanstack/react-query";
 import { GetCarriersAndConditionsResponseType } from "@/app/api/admin/carrier-conditions/route";
 
 type CarrierConditionFormProps = {

@@ -14,16 +14,17 @@ import { USDollar } from "@/formulas/numbers";
 import CreateExpenseForm from "./create-expense-form";
 import { Button } from "@/components/ui/button";
 import { LeadExpense } from "@prisma/client";
-import { leadExpenseDeleteById, leadExpenseInsertSheet } from "@/actions/lead";
+import {
+  leadExpenseDeleteById,
+  leadExpenseInsertSheet,
+} from "@/actions/lead/expense";
+import { leadExpensesGetAllById } from "@/actions/lead/expense";
 
 const CatergoryCards = ({ leadId }: { leadId: string }) => {
   const queryClient = useQueryClient();
   const expenseQuery = useQuery<LeadExpense[]>({
     queryKey: ["leadExpense", `lead-${leadId}`, "categories"],
-    queryFn: () =>
-      fetch(`/api/leads/expense/categories?leadId=${leadId}`).then((res) =>
-        res.json()
-      ),
+    queryFn: () => leadExpensesGetAllById(leadId),
   });
 
   const { mutate, isPending } = useMutation({

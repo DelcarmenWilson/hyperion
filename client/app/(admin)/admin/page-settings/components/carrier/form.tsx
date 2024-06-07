@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { adminCarrierInsert } from "@/actions/admin";
+import { adminCarrierInsert } from "@/actions/admin/carrier";
 import { Carrier } from "@prisma/client";
 
 export const CarrierForm = ({

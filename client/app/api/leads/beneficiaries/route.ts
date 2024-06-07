@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import {  leadBeneficiariesGetAllById } from "@/data/lead";
+import {  leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 
 export async function GET(request: Request) {
   const user = await currentUser();

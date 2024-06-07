@@ -26,7 +26,7 @@ import { ImageModal } from "@/components/modals/image";
 import {
   adminCarrierUpdateById,
   adminCarrierUpdateByIdImage,
-} from "@/actions/admin";
+} from "@/actions/admin/carrier";
 
 export const CarrierForm = ({ carrier }: { carrier: Carrier }) => {
   const router = useRouter();

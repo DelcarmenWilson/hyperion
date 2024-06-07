@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 import { QuoteForm } from "./form";
 import { columns } from "./columns";
-import { adminQuoteUpdateActive } from "@/actions/admin";
+import { adminQuoteUpdateActive } from "@/actions/admin/quote";
 
 type QuoteClientProps = {
   initQuotes: Quote[];

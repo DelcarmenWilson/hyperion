@@ -13,7 +13,7 @@ import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 import { CarrierConditionForm } from "./form";
 
-import { adminCarrierConditionDeleteById } from "@/actions/admin";
+import { adminCarrierConditionDeleteById } from "@/actions/admin/carrier-condition";
 
 type CarrierConditionCardProps = {
   initCarrierCondition: FullCarrierCondition;

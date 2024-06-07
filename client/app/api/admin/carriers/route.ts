@@ -1,5 +1,5 @@
-import { adminCarriersGetAll } from "@/data/admin";
 import { NextResponse } from "next/server";
+import { adminCarriersGetAll } from "@/actions/admin/carrier";
 
 export async function POST(req: Request) {
   try {

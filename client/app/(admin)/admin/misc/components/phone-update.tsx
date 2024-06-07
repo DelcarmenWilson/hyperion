@@ -11,7 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { adminUpdateLeadNumbers, adminUpdateUserNumber } from "@/actions/admin";
+import { adminUpdateLeadNumbers } from "@/actions/admin/lead";
+import { adminUpdateUserNumber } from "@/actions/admin/user";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
 

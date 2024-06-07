@@ -3,12 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import {
-  LeadBeneficiarySchema,
-  LeadBeneficiarySchemaType,
-  LeadConditionSchema,
-  LeadConditionSchemaType,
-  LeadExpenseSchema,
-  LeadExpenseSchemaType,
+  LeadExportSchemaType,
   LeadGeneralSchema,
   LeadGeneralSchemaType,
   LeadMainSchema,
@@ -19,13 +14,192 @@ import {
   LeadSchemaType,
 } from "@/schemas/lead";
 
-import { activityInsert } from "./activity";
+import { activityInsert } from "../activity";
 import { userGetByAssistant } from "@/data/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { defaultLeadExpenses } from "@/constants/lead";
+import { getYesterday } from "@/formulas/dates";
 
+//LEAD
+
+//DATA
+export const leadsGetAll = async () => {
+  try {
+    const leads = await db.lead.findMany({ include: { conversation: true } });
+
+    return leads;
+  } catch {
+    return [];
+  }
+};
+
+export const leadsGetAllByAgentId = async (userId: string) => {
+  try {
+    const leads = await db.lead.findMany({
+      where: {
+        OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
+      },
+      include: {
+        conversation: true,
+        appointments: { where: { status: "scheduled" } },
+        calls: true,
+        activities: true,
+        beneficiaries: true,
+        expenses: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+        assistant: true,
+        sharedUser: true,
+      },
+    });
+    return leads;
+  } catch {
+    return [];
+  }
+};
+
+export const leadsGetAllByAgentIdFiltered = async (
+  values: LeadExportSchemaType
+) => {
+  try {
+    const { userId, to, from, state, vendor } = values;
+
+    const leads = await db.lead.findMany({
+      where: {
+        userId,
+        state: state != "All" ? state : undefined,
+        vendor: vendor != "All" ? vendor : undefined,
+        createdAt: { lte: to, gte: from },
+      },
+      //where: { userId: userId },
+      // include: {
+      //   conversation: true,
+      //   appointments: { where: { status: "scheduled" } },
+      //   calls: true,
+      //   activities: true,
+      //   beneficiaries: true,
+      //   expenses: true,
+      //   conditions: { include: { condition: true } },
+      // },
+    });
+    return leads;
+  } catch {
+    return [];
+  }
+};
+
+export const leadGetById = async (id: string) => {
+  try {
+    const lead = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        conversation: true,
+        appointments: { orderBy: { startDate: "desc" } },
+        calls: {
+          where: { status: "completed" },
+          orderBy: { createdAt: "desc" },
+        },
+        activities: { orderBy: { createdAt: "desc" } },
+        expenses: true,
+        beneficiaries: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+        assistant: true,
+        sharedUser: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
+export const leadGetByPhone = async (cellPhone: string) => {
+  try {
+    const lead = await db.lead.findFirst({
+      where: {
+        cellPhone,
+      },
+      include: {
+        conversation: true,
+        appointments: { orderBy: { startDate: "desc" } },
+        calls: {
+          where: { status: "completed" },
+          orderBy: { createdAt: "desc" },
+        },
+        activities: { orderBy: { createdAt: "desc" } },
+        expenses: true,
+        beneficiaries: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+      },
+    });
+
+    return lead;
+  } catch {
+    return null;
+  }
+};
+
+export const leadGetPrevNextById = async (id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return null;
+    let userId = user.id;
+    if (user.role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const prev = await db.lead.findMany({
+      take: 1,
+      select: { id: true },
+      where: {
+        userId,
+        id: {
+          lt: id,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+
+    const next = await db.lead.findMany({
+      take: 1,
+      select: { id: true },
+      where: {
+        userId,
+        id: {
+          gt: id,
+        },
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+    return { prev: prev[0]?.id || null, next: next[0]?.id || null };
+  } catch {
+    return null;
+  }
+};
+
+export const leadsGetByAgentIdTodayCount = async (userId: string) => {
+  try {
+    const leads = await db.lead.aggregate({
+      _count: { id: true },
+      where: {
+        userId,
+        createdAt: { gte: getYesterday() },
+      },
+    });
+
+    return leads._count.id;
+  } catch {
+    return 0;
+  }
+};
+//ACTIONS
 export const leadInsert = async (values: LeadSchemaType) => {
   const validatedFields = LeadSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -368,44 +542,6 @@ export const leadUpdateByIdType = async (leadId: string, type: string) => {
   activityInsert(leadId, "Type", "Type updated", user.id, existingLead.type);
   return { success: "Lead type has been updated" };
 };
-
-export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
-  const user = await currentUser();
-
-  if (!user?.id || !user?.email) {
-    return { error: "Unauthenticated" };
-  }
-
-  let userId = user.id;
-  if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
-  }
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-
-  if (!existingLead) {
-    return { error: "Lead does not exist" };
-  }
-
-  if (userId != existingLead.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  await db.lead.update({
-    where: { id: leadId },
-    data: {
-      status,
-    },
-  });
-  activityInsert(
-    leadId,
-    "status",
-    "Status updated",
-    user.id,
-    existingLead.status
-  );
-  return { success: "Lead status has been updated" };
-};
-
 export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   const validatedFields = LeadMainSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -560,385 +696,7 @@ export const leadUpdateByIdPolicyInfo = async (
   return { success: leadPolicyInfo };
 };
 
-//LEAD BENFICIARIES
-export const leadBeneficiaryInsert = async (
-  values: LeadBeneficiarySchemaType
-) => {
-  const validatedFields = LeadBeneficiarySchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
 
-  const {
-    leadId,
-    type,
-    relationship,
-    firstName,
-    lastName,
-    address,
-    city,
-    state,
-    zipCode,
-    cellPhone,
-    gender,
-    email,
-    dateOfBirth,
-    share,
-    ssn,
-    notes,
-  } = validatedFields.data;
-
-  const existingBeneficiery = await db.leadBeneficiary.findFirst({
-    where: {
-      leadId,
-      firstName,
-    },
-  });
-
-  if (existingBeneficiery) {
-    return { error: "Benficiary already exists!" };
-  }
-
-  const newBeneficiary = await db.leadBeneficiary.create({
-    data: {
-      leadId,
-      type,
-      relationship,
-      firstName,
-      lastName,
-      address,
-      city,
-      state: state as string,
-      zipCode,
-      cellPhone: reFormatPhoneNumber(cellPhone as string),
-      gender: gender,
-      email,
-      dateOfBirth,
-      share,
-      ssn,
-      notes,
-    },
-  });
-  await activityInsert(
-    leadId,
-    "Beneficiary",
-    "Beneficiary Added",
-    user.id,
-    firstName
-  );
-  return { success: newBeneficiary };
-};
-export const leadBeneficiaryUpdateById = async (
-  values: LeadBeneficiarySchemaType
-) => {
-  const validatedFields = LeadBeneficiarySchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-
-  const {
-    id,
-    type,
-    relationship,
-    firstName,
-    lastName,
-    address,
-    city,
-    state,
-    zipCode,
-    cellPhone,
-    gender,
-    email,
-    dateOfBirth,
-    share,
-    ssn,
-    notes,
-  } = validatedFields.data;
-
-  const existingBeneficiery = await db.leadBeneficiary.findUnique({
-    where: {
-      id,
-    },
-  });
-
-  if (!existingBeneficiery) {
-    return { error: "Benficiary does not exists!" };
-  }
-
-  const modifiedBeneficiary = await db.leadBeneficiary.update({
-    where: { id },
-    data: {
-      type,
-      relationship,
-      firstName,
-      lastName,
-      address,
-      city,
-      state,
-      zipCode,
-      cellPhone: reFormatPhoneNumber(cellPhone as string),
-      gender: gender,
-      email,
-      dateOfBirth,
-      share,
-      ssn,
-      notes,
-    },
-  });
-  return { success: modifiedBeneficiary };
-};
-
-export const leadBeneficiaryDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-
-  const existingBeneficiery = await db.leadBeneficiary.findUnique({
-    where: {
-      id,
-    },
-  });
-
-  if (!existingBeneficiery) {
-    return { error: "Benficiary does not exists!" };
-  }
-
-  const modifiedBeneficiary = await db.leadBeneficiary.delete({
-    where: { id },
-  });
-
-  await activityInsert(
-    modifiedBeneficiary.leadId,
-    "Beneficiary",
-    "Beneficiary Removed",
-    user.id,
-    modifiedBeneficiary.firstName
-  );
-
-  return { success: "Beneficiary Deleted" };
-};
-
-//LEAD MEDICAL CONDITIONS
-export const leadConditionInsert = async (values: LeadConditionSchemaType) => {
-  const validatedFields = LeadConditionSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { leadId, conditionId, diagnosed, medications, notes } =
-    validatedFields.data;
-
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-  if (!existingLead) {
-    return { error: "Lead does not exists" };
-  }
-
-  const existingCondition = await db.leadMedicalCondition.findFirst({
-    where: { leadId: conditionId },
-  });
-  if (existingCondition) {
-    return { error: "Lead condition already exists" };
-  }
-
-  const newLeadCondition = await db.leadMedicalCondition.create({
-    data: { leadId, conditionId, diagnosed, medications, notes },
-    include: { condition: true },
-  });
-  await activityInsert(
-    leadId,
-    "Condition",
-    "Condition created",
-    user.id,
-    newLeadCondition.condition.name
-  );
-  return { success: newLeadCondition };
-};
-
-export const leadConditionUpdateById = async (
-  values: LeadConditionSchemaType
-) => {
-  const validatedFields = LeadConditionSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-
-  const { id, conditionId, diagnosed, medications, notes } =
-    validatedFields.data;
-
-  const existingCondition = await db.leadMedicalCondition.findUnique({
-    where: {
-      id,
-    },
-  });
-
-  if (!existingCondition) {
-    return { error: "Condition does not exists!" };
-  }
-
-  const modifiedCondition = await db.leadMedicalCondition.update({
-    where: { id },
-    data: {
-      conditionId,
-      diagnosed,
-      medications,
-      notes,
-    },
-    include: { condition: true },
-  });
-  return { success: modifiedCondition };
-};
-
-export const leadConditionDeleteById = async (id: string) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingCondition = await db.leadMedicalCondition.findUnique({
-    where: { id },
-  });
-  if (!existingCondition) {
-    return { error: "Condition no longer exists" };
-  }
-
-  await db.leadMedicalCondition.delete({
-    where: { id },
-  });
-  await activityInsert(
-    existingCondition.leadId,
-    "Condition",
-    "Condition deleted",
-    user.id
-  );
-  return { success: "Condition deleted!" };
-};
-
-//LEAD EXPENSES
-export const leadExpenseInsertSheet = async (leadId: string) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-  if (!existingLead) {
-    return { error: "Lead does not exists" };
-  }
-  const existingLeadExpenses = await db.leadExpense.findFirst({
-    where: { leadId },
-  });
-
-  if (existingLeadExpenses) {
-    return { error: "Lead Sheet already exists" };
-  }
-
-  let defaultExpenses = defaultLeadExpenses;
-  defaultExpenses.forEach((e) => (e.leadId = leadId));
-
-  await db.leadExpense.createMany({
-    data: defaultExpenses,
-  });
-
-  const newLeadExpenses = await db.leadExpense.findMany({
-    where: { leadId },
-  });
-
-  return { success: newLeadExpenses };
-};
-
-export const leadExpenseInsert = async (values: LeadExpenseSchemaType) => {
-  const validatedFields = LeadExpenseSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { leadId, type, name, value, notes } = validatedFields.data;
-
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-  if (!existingLead) {
-    return { error: "Lead does not exists" };
-  }
-
-  const newLeadExpense = await db.leadExpense.create({
-    data: { leadId, type, name, value, notes },
-  });
-
-  return { success: newLeadExpense };
-};
-
-export const leadExpenseUpdateById = async (values: LeadExpenseSchemaType) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const validatedFields = LeadExpenseSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { id, name, value, notes } = validatedFields.data;
-
-  const existingExpense = await db.leadExpense.findUnique({ where: { id } });
-  if (!existingExpense) {
-    return { error: "Expense no longer exists" };
-  }
-
-  const updatedExpense = await db.leadExpense.update({
-    where: { id },
-    data: {
-      name,
-      value,
-      notes,
-    },
-  });
-
-  return { success: updatedExpense };
-};
-
-export const leadExpenseDeleteById = async (id: string) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingExpense = await db.leadExpense.findUnique({ where: { id } });
-  if (!existingExpense) {
-    return { error: "Expense no longer exists" };
-  }
-
-  const deletedExpense = await db.leadExpense.delete({
-    where: { id },
-  });
-
-  return { success: deletedExpense };
-};
 
 //LEAD ASSISTANT AND SHARE
 export const leadUpdateByIdAsssitant = async (

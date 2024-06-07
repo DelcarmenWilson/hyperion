@@ -127,18 +127,10 @@ export const ConversationLeadInfo = ({
             </div>
           </TabsContent>
           <TabsContent value="beneficiaries">
-            <BeneficiariesClient
-              leadId={lead.id}
-              initBeneficiaries={lead.beneficiaries!}
-              size="sm"
-            />
+            <BeneficiariesClient leadId={lead.id} size="sm" />
           </TabsContent>
           <TabsContent value="conditions">
-            <ConditionsClient
-              leadId={lead.id}
-              initConditions={lead.conditions!}
-              size="sm"
-            />
+            <ConditionsClient leadId={lead.id} size="sm" />
           </TabsContent>
           <TabsContent value="expenses">
             <ExpensesClient leadId={lead.id} size="sm" />

@@ -1,11 +1,3 @@
-"use client";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
-
-import { LeadExpense } from "@prisma/client";
-import { leadExpenseInsertSheet } from "@/actions/lead";
 import BalanceCards from "./balance-cards";
 import CatergoryCards from "./category-cards";
 

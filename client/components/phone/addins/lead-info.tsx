@@ -20,9 +20,11 @@ import { PhoneScript } from "./script";
 import { LeadMainInfo, LeadGeneralInfo, LeadPolicyInfo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
+
 type PhoneLeadInfo = {
   open?: boolean;
 };
+
 export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
   const { lead } = usePhone();
   const [isOpen, setIsOpen] = useState(open);
@@ -120,16 +122,10 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
             </div>
           </TabsContent>
           <TabsContent value="beneficiaries">
-            <BeneficiariesClient
-              leadId={lead.id}
-              initBeneficiaries={lead.beneficiaries!}
-            />
+            <BeneficiariesClient leadId={lead.id} />
           </TabsContent>
           <TabsContent value="conditions">
-            <ConditionsClient
-              leadId={lead.id}
-              initConditions={lead.conditions!}
-            />
+            <ConditionsClient leadId={lead.id} />
           </TabsContent>
           <TabsContent value="expenses">
             <ExpensesClient leadId={lead.id} />
