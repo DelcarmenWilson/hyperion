@@ -3,7 +3,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import axios from "axios";
-import { TwilioParticipant } from "@/types/twilio";
+import { TwilioParticipant } from "@/types";
 
 type ParticipantCardProps = {
   participant: TwilioParticipant;

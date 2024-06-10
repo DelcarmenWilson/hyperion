@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { formatObject } from "@/formulas/objects";
 import { pusherServer } from "@/lib/pusher";
 import { client } from "@/lib/twilio/config";
-import { TwilioCallResult } from "@/types/twilio";
+import { TwilioCallResult } from "@/types";
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
 export async function POST(req: Request) {

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Voicemail } from "@/types/phone";
+import { Voicemail } from "@/types";
 import {
   Table,
   TableBody,

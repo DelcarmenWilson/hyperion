@@ -3,7 +3,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
-import { TwilioConference } from "@/types/twilio";
+import { TwilioConference } from "@/types";
 
 type ConferenceCardProps = {
   conference: TwilioConference;

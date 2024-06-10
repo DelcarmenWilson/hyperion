@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { client } from "@/lib/twilio/config";
 import {  currentUser } from "@/lib/auth";
-import { TwilioShortParticipant } from "@/types/twilio";
+import { TwilioShortParticipant } from "@/types";
 
 export async function POST(req: Request) {
   const user = await currentUser();

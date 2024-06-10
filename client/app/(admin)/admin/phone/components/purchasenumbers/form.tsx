@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { TwilioNumber } from "@/types/twilio";
+import { TwilioNumber } from "@/types";
 import { User } from "@prisma/client";
 import axios from "axios";
 

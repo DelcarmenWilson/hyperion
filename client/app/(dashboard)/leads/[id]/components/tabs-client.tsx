@@ -10,7 +10,8 @@ import {
   Video,
 } from "lucide-react";
 
-import { FullConversation, FullLead } from "@/types";
+import { FullConversation } from "@/types";
+import { FullLead } from "@/types";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { appointmentInsert } from "@/actions/appointment";
 import { formatObject } from "@/formulas/objects";
 import { smsSend } from "@/actions/sms";
-import { TwilioSms } from "@/types/twilio";
+import { TwilioSms } from "@/types";
 
 export async function POST(req: Request) {
   const body = await req.formData();

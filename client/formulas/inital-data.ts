@@ -48,7 +48,7 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       defaultFunction: d["defaultFunction"],
       autoChat: d["autoChat"] == "f" ? false : true,
       messageNotification: d["messageNotification"],
-      dataStyle:d["dataStyle"],
+      dataStyle: d["dataStyle"],
       coach: d["coach"] == "f" ? false : true,
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
@@ -143,6 +143,30 @@ export const convertLeads = (result: any): Lead[] => {
       status: d["status"],
       assistantId: d["assistantId"],
       sharedUserId: d["sharedUserId"],
+      // intake form stuff
+      weightLastYear: d["weightLastYear"],
+      yearsSmoking: d["yearsSmoking"],
+      placeOfBirth: d["placeOfBirth"],
+      stateOfBirth: d["stateOfBirth"],
+      licenseState: d["licenseState"],
+      licenseNumber: d["licenseNumber"],
+      licenseExpires: d["licenseExpires"],
+      annualIncome: d["annualIncome"],
+      experience: d["experience"],
+      netWorth: d["netWorth"],
+      employer: d["employer"],
+      employerAddress: d["employerAddress"],
+      employerPhone: d["employerPhone"],
+      occupation: d["occupation"],
+      greenCardNum: d["greenCardNum"],
+      citizenShip: d["citizenShip"],
+      yearsInUs: d["yearsInUs"],
+      parentLiving: d["parentLiving"],
+      fatherAge: d["fatherAge"],
+      motherAge: d["motherAge"],
+      cuaseOfDeath: d["cuaseOfDeath"],
+
+      foreignVisited: d["foreignVisited"],
     };
     mapped.push(newobj);
   });
@@ -178,7 +202,7 @@ export const convertCalls = (result: any): Call[] => {
       listened: d["listened"] == "f" ? false : true,
       price: d["price"],
       recordPrice: d["recordPrice"],
-      shared:false
+      shared: false,
     };
     mapped.push(newobj);
   });
@@ -230,7 +254,7 @@ export const convertMessages = (result: any): Message[] => {
       id: d["id"],
       conversationId: d["conversationId"],
       role: d["role"],
-      attachment:d["attachment"],
+      attachment: d["attachment"],
       content: d["content"],
       senderId: d["senderId"],
       createdAt: new Date(d["createdAt"]),

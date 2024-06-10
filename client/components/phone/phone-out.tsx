@@ -16,7 +16,7 @@ import {
   TwilioParticipant,
   TwilioShortConference,
   TwilioShortParticipant,
-} from "@/types/twilio";
+} from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

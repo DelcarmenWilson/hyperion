@@ -11,9 +11,9 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { LeadDropDown } from "@/components/lead/dropdown";
 import { useState } from "react";
 
-interface HeaderProps {
+type HeaderProps = {
   lead: FullLeadNoConvo;
-}
+};
 export const Header = ({ lead }: HeaderProps) => {
   const usePm = usePhone();
   const [isOpen, setIsOpen] = useState(false);

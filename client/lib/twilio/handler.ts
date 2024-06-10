@@ -2,7 +2,7 @@ import { cfg } from "./config";
 import twilio from "twilio";
 
 import { isAValidPhoneNumber } from "@/formulas/phones";
-import { TwilioCall } from "@/types/twilio";
+import { TwilioCall } from "@/types";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const AccessToken = twilio.jwt.AccessToken;

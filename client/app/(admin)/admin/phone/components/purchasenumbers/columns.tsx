@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-import { TwilioNumber } from "@/types/twilio";
+import { TwilioNumber } from "@/types";
 import { FileImage, MessageCircle, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PurchaseForm } from "./form";

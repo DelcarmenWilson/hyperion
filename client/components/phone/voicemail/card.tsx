@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Trash } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Voicemail } from "@/types/phone";
+import { Voicemail } from "@/types";
 import { AudioPlayer } from "@/components/custom/audio-player";
 
 type VoicemailCardProps = {

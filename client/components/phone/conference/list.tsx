@@ -1,5 +1,5 @@
 import React from "react";
-import { TwilioConference } from "@/types/twilio";
+import { TwilioConference } from "@/types";
 import { ConferenceCard } from "./card";
 
 type ConferenceListProps = {

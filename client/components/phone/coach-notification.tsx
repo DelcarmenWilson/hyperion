@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TwilioShortConference } from "@/types/twilio";
+import { TwilioShortConference } from "@/types";
 
 type CoachNotificationProps = {
   conference: TwilioShortConference | undefined;

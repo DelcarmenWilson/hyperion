@@ -1,16 +1,13 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import axios from "axios";
 import { cn } from "@/lib/utils";
 import {
   BookText,
   Calendar,
   Check,
   ChevronDown,
-  Download,
   FileBarChart,
   FileText,
   Share,
@@ -35,7 +32,7 @@ import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 
 import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { IntakeForm } from "@/components/lead/forms/intake-form";
+import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
 import { FullLeadNoConvo } from "@/types";
 import {
   conversationDeleteById,
@@ -52,7 +49,6 @@ type DropDownProps = {
 };
 
 export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
-  const router = useRouter();
   const role = useCurrentRole();
   const useAppointment = useAppointmentModal();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
@@ -113,7 +109,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
             Intake Form -{" "}
             <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
           </h3>
-          <IntakeForm lead={lead} />
+          <IntakeForm leadId={lead.id} />
         </DialogContent>
       </Dialog>
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>

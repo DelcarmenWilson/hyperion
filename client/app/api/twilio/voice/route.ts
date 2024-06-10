@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { voiceResponse } from "@/lib/twilio/handler";
 
 import { NextResponse } from "next/server";
-import { TwilioCall } from "@/types/twilio";
+import { TwilioCall } from "@/types";
 
 export async function POST(req: Request) {
   const body = await req.formData();

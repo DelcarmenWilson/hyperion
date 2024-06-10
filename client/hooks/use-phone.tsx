@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
-import { TwilioParticipant, TwilioShortConference } from "@/types/twilio";
+import { TwilioParticipant, TwilioShortConference } from "@/types";
 
 type phoneStore = {
   isPhoneInOpen: boolean;

@@ -1,20 +1,12 @@
 "use client";
-import { Phone } from "lucide-react";
-import { userEmitter } from "@/lib/event-emmiter";
-
 import { User } from "@prisma/client";
-import { Button } from "@/components/ui/button";
 
-import { formatPhoneNumber } from "@/formulas/phones";
-import { LeadDropDown } from "@/components/lead/dropdown";
 import { useState } from "react";
 
 interface HeaderProps {
   user: User;
 }
 export const Header = ({ user }: HeaderProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const initials = `${user.firstName.substring(0, 1)} ${user.lastName.substring(
     0,
     1

@@ -155,3 +155,10 @@ background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,8
 .-rotate-360 {
   @apply rotate-[-360deg]
 }
+.react-datepicker-wrapper{
+  display: block !important;
+}
+
+.react-datepicker-wrapper input{
+  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50
+}

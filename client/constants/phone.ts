@@ -1,4 +1,4 @@
-import { ItemProps } from "@/types/item";
+import { ItemProps } from "@/types";
 
 export const PhoneLegendItems: ItemProps[] = [
   {

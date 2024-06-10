@@ -344,10 +344,14 @@ model Lead {
   ssn              String        @default("")
   dateOfBirth      String?       @default("")
   weight           String?
+  //for intake form
+  weightLastYear   String?
   height           String?
   income           String?
   policyAmount     String?
   smoker           Boolean       @default(false)
+  //for intake form
+  yearsSmoking     Int           @default(0)
   currentlyInsured Boolean       @default(false)
   currentInsuranse String?
 
@@ -355,11 +359,37 @@ model Lead {
   type   String @default("General")
   status String @default("New")
 
-  quote             String @default("0.00")
+  quote String @default("0.00")
+
+  // ALL OF THE OLD FIELDS NEED TO BE REMOVED
   apOld             String @default("0.00")
   commisionOld      String @default("0.00")
   coverageAmountOld String @default("0.00")
   carrierOld        String @default("NA")
+
+  // INFO NEED FOR THE INTAKE FORM
+  //TODO - dont forget to organize these
+  placeOfBirth String?
+  stateOfBirth String?
+
+  licenseNumber   String?
+  licenseState    String?
+  licenseExpires  DateTime?
+  annualIncome    Int       @default(0)
+  experience      String?
+  netWorth        Int       @default(0)
+  employer        String?
+  employerAddress String?
+  employerPhone   String?
+  occupation      String?
+  greenCardNum    String?
+  citizenShip     String    @default("citizen")
+  yearsInUs       Int       @default(0)
+  parentLiving    String    @default("yes")
+  fatherAge       Int       @default(0)
+  motherAge       Int       @default(0)
+  cuaseOfDeath    String?
+  foreignVisited  String?
 
   defaultNumber String
   notes         String?
@@ -372,6 +402,9 @@ model Lead {
   calls         Call[]
   activities    Activity[]
   policy        LeadPolicy?
+  dotor         LeadDoctor?
+  bank          LeadBank?
+  medical       LeadMedicalQuestions?
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
@@ -449,6 +482,55 @@ model LeadExpense {
   notes     String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model LeadDoctor {
+  leadId         String   @unique
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  name           String
+  address        String
+  lastVisit      DateTime
+  phone          String
+  reasonForVisit String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model LeadBank {
+  leadId     String   @unique
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  name       String
+  routing    String
+  account    String
+  draftDate  DateTime
+  signature  String
+  signedDate DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model LeadMedicalQuestions {
+  leadId            String    @unique
+  lead              Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  healthIssues      Boolean
+  prescription      Boolean
+  heartAttacks      Boolean
+  bloodThinners     Boolean
+  cancer            Boolean
+  diabetes          Boolean
+  gabapentin        Boolean
+  complications     Boolean
+  dateDisgnosed     DateTime?
+  a1cReading        DateTime?
+  aids              Boolean
+  highBloodPressure Boolean
+  asthma            Boolean
+  copd              Boolean
+  anxiety           Boolean
+  bipolar           Boolean
+  hospitalizations  Boolean
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model LeadDuplicates {

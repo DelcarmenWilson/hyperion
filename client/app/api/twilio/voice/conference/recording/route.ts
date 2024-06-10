@@ -2,7 +2,7 @@ import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
 import { client } from "@/lib/twilio/config";
-import { TwilioConferenceRecording } from "@/types/twilio";
+import { TwilioConferenceRecording } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

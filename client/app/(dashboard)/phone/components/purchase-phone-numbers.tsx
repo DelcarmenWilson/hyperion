@@ -35,7 +35,7 @@ import { phoneNumberInsert } from "@/actions/phonenumber";
 import { states } from "@/constants/states";
 import { CardLayout } from "@/components/custom/card/layout";
 import { PhonePurchaseItems as PhonePurchaseItems } from "@/constants/phone";
-import { ItemProps } from "@/types/item";
+import { ItemProps } from "@/types";
 
 export const PurchasePhoneNumberForm = () => {
   const [loading, setLoading] = useState(false);

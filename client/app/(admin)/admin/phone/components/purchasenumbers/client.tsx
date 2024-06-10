@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { states } from "@/constants/states";
 import { CardLayout } from "@/components/custom/card/layout";
 import { DataTable } from "@/components/tables/data-table";
-import { TwilioNumber } from "@/types/twilio";
+import { TwilioNumber } from "@/types";
 import { columns } from "./columns";
 
 export const PurchaseNumbers = () => {

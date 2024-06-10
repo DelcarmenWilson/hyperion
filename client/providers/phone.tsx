@@ -4,7 +4,7 @@ import { Connection, Device } from "twilio-client";
 import { PhoneOutModal } from "@/components/phone/phone-out-modal";
 import { PhoneInModal } from "@/components/phone/phone-in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
-import { Voicemail } from "@/types/phone";
+import { Voicemail } from "@/types";
 
 type PhoneContextProviderProps = {
   token: string;

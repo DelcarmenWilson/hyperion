@@ -30,7 +30,7 @@ export const LeadSchema = z.object({
   type: z.optional(z.string()),
   vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
-  recievedAt: z.optional(z.string()),  
+  recievedAt: z.optional(z.string()),
   status: z.optional(z.string()),
   assistantId: z.optional(z.string()),
 });
@@ -111,7 +111,7 @@ export const LeadConditionSchema = z.object({
 export type LeadConditionSchemaType = z.infer<typeof LeadConditionSchema>;
 
 export const LeadExpenseSchema = z.object({
-  id:z.optional(z.string()),
+  id: z.optional(z.string()),
   leadId: z.string(),
   type: z.string(),
   name: z.string(),
@@ -121,7 +121,6 @@ export const LeadExpenseSchema = z.object({
 export type LeadExpenseSchemaType = z.infer<typeof LeadExpenseSchema>;
 
 export const LeadExportSchema = z.object({
-
   userId: z.string(),
   type: z.string(),
   from: z.date(),
@@ -137,3 +136,105 @@ export const LeadStatusSchema = z.object({
   description: z.optional(z.string()),
 });
 export type LeadStatusSchemaType = z.infer<typeof LeadStatusSchema>;
+//INTAKE FORM SCHEMA
+export const IntakePersonalInfoSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  homePhone: z.string(),
+  cellPhone: z.string(),
+  email: z.optional(z.string()),
+  maritalStatus: z.enum([
+    MaritalStatus.Single,
+    MaritalStatus.Married,
+    MaritalStatus.Widowed,
+    MaritalStatus.Divorced,
+  ]),
+  address: z.string(),
+  city: z.optional(z.string()),
+  state: z.string(),
+  zipCode: z.optional(z.string()),
+  dateOfBirth: z.optional(z.string()),
+  placeOfBirth: z.optional(z.string()),
+  stateOfBirth: z.optional(z.string()),
+  ssn: z.optional(z.string()),
+  licenseNumber: z.optional(z.string()),
+  licenseState: z.optional(z.string()),
+  licenseExpires: z.date(),
+  annualIncome: z.coerce.number(),
+  experience: z.optional(z.string()),
+  netWorth:z.coerce.number(),
+  employer: z.optional(z.string()),
+  employerAddress: z.optional(z.string()),
+  employerPhone: z.optional(z.string()),
+  occupation: z.optional(z.string()),
+  greenCardNum: z.optional(z.string()),
+  citizenShip: z.string(),
+  yearsInUs: z.coerce.number(),
+  parentLiving: z.string(),
+  fatherAge: z.coerce.number(),
+  motherAge: z.coerce.number(),
+  cuaseOfDeath: z.optional(z.string()),
+});
+export type IntakePersonalInfoSchemaType = z.infer<
+  typeof IntakePersonalInfoSchema
+>;
+export const IntakeDoctorInfoSchema = z.object({
+  leadId: z.string(),
+  name: z.string(),
+  address: z.string(),
+  lastVisit: z.date(),
+  phone: z.string(),
+  reasonForVisit: z.string(),
+});
+
+export type IntakeDoctorInfoSchemaType = z.infer<typeof IntakeDoctorInfoSchema>;
+
+export const IntakeBankInfoSchema = z.object({
+  leadId: z.string(),
+  name: z.string(),
+  routing: z.string(),
+  account: z.string(),
+  draftDate: z.date(),
+  signature: z.string(),
+  signedDate: z.date(),
+});
+
+export type IntakeBankInfoSchemaType = z.infer<typeof IntakeBankInfoSchema>;
+
+export const IntakeOtherInfoSchema = z.object({
+  id: z.string(),
+  weight: z.optional(z.string()),
+  weightLastYear: z.optional(z.string()),
+  height: z.optional(z.string()),
+  smoker: z.boolean(),
+  yearsSmoking: z.number(),
+  foreignVisited: z.optional(z.string()),
+});
+
+export type IntakeOtherInfoSchemaType = z.infer<typeof IntakeOtherInfoSchema>;
+
+export const IntakeMedicalInfoSchema = z.object({
+  leadId: z.string(),
+  healthIssues: z.boolean(),
+  prescription: z.boolean(),
+  heartAttacks: z.boolean(),
+  bloodThinners: z.boolean(),
+  cancer: z.boolean(),
+  diabetes: z.boolean(),
+  gabapentin: z.boolean(),
+  complications: z.boolean(),
+  dateDisgnosed: z.date(),
+  a1cReading: z.date(),
+  aids: z.boolean(),
+  highBloodPressure: z.boolean(),
+  asthma: z.boolean(),
+  copd: z.boolean(),
+  anxiety: z.boolean(),
+  bipolar: z.boolean(),
+  hospitalizations: z.boolean(),
+});
+
+export type IntakeMedicalInfoSchemaType = z.infer<
+  typeof IntakeMedicalInfoSchema
+>;

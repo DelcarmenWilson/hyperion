@@ -5,7 +5,7 @@ import { columns } from "./columns";
 import { DashBoardTable } from "@/components/tables/dashboard-table";
 import { CardLayout } from "@/components/custom/card/layout";
 import { PhoneNumber } from "@prisma/client";
-import { ItemProps } from "@/types/item";
+import { ItemProps } from "@/types";
 import { PhoneLegendItems } from "@/constants/phone";
 import { useGlobalContext } from "@/providers/global";
 

@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { PipelineCard } from "./card";
-import { FullLead, FullPipeline } from "@/types";
+import { FullPipeline } from "@/types";
+import { FullLead } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
