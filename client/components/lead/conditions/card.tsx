@@ -67,10 +67,10 @@ export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
         </h3>
 
         <CardData
-          title="Date Diagnosed"
+          label="Date Diagnosed"
           value={format(condition.diagnosed, "MM-dd-yy")}
         />
-        <CardData title="Medications" value={condition.medications} />
+        <CardData label="Medications" value={condition.medications} />
 
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button

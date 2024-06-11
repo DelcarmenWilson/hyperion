@@ -30,16 +30,16 @@ export const TeamCard = ({ team }: TeamCardProps) => {
         </Avatar>
         <h4 className="font-bold">{team.owner?.firstName!}</h4>
       </div>
-      <CardData title="Image" value={team.image!} />
-      <CardData title="Banner" value={team.banner!} />
+      <CardData label="Image" value={team.image!} />
+      <CardData label="Banner" value={team.banner!} />
 
-      <CardData title="Organization" value={team.organization.name} />
+      <CardData label="Organization" value={team.organization.name} />
       <CardData
-        title="Date Created"
+        label="Date Created"
         value={format(team.createdAt, "MM-dd-yyyy")}
       />
       <CardData
-        title="Date Updated"
+        label="Date Updated"
         value={format(team.updatedAt, "MM-dd-yyyy")}
       />
       {team.userId.length > 0 && (

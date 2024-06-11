@@ -73,6 +73,8 @@ type UserEvents = {
   //NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];
+  //VOICEMAIL
+  voicemailDeleted: [id: string];
 };
 
 type AdminEvents = {

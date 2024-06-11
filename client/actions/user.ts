@@ -24,7 +24,7 @@ import {
   RegisterSchema,
   RegisterSchemaType,
 } from "@/schemas/register";
-import { SettingsSchema, SettingsSchemaType } from "@/schemas/settings";
+import {  SettingsSchemaType } from "@/schemas/settings";
 
 import { chatSettingsInsert } from "./chat-settings";
 import { getVerificationTokenByToken } from "@/data/verification-token";
@@ -32,7 +32,20 @@ import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { userGetByAssistant, userGetByEmail, userGetById } from "@/data/user";
 import { notificationSettingsInsert } from "./notification-settings";
 import { scheduleInsert } from "./schedule";
+import { UserRole } from "@prisma/client";
 
+//DATA
+export const usersGetAllByRole = async (role: UserRole) => {
+  try {
+    const users = await db.user.findMany({
+      where: { role },
+      orderBy: { firstName: "asc" },
+    });
+    return users;
+  } catch {
+    return [];
+  }
+};
 //ACTIONS
 export const userInsert = async (values: RegisterSchemaType) => {
   const validatedFields = RegisterSchema.safeParse(values);

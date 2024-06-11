@@ -5,6 +5,7 @@ import { PhoneOutModal } from "@/components/phone/phone-out-modal";
 import { PhoneInModal } from "@/components/phone/phone-in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
 import { Voicemail } from "@/types";
+import { VoicemailModal } from "@/components/phone/voicemail/modal";
 
 type PhoneContextProviderProps = {
   token: string;
@@ -55,6 +56,7 @@ export default function PhoneContextProvider({
       <PhoneOutModal />
       <PhoneInModal />
       <PhoneDialerModal />
+      <VoicemailModal />
     </PhoneContext.Provider>
   );
 }

@@ -162,19 +162,19 @@ export const IntakePersonalInfoSchema = z.object({
   licenseState: z.optional(z.string()),
   licenseExpires: z.date(),
   annualIncome: z.coerce.number(),
-  experience: z.optional(z.string()),
+  experience: z.string(),
   netWorth:z.coerce.number(),
   employer: z.optional(z.string()),
   employerAddress: z.optional(z.string()),
   employerPhone: z.optional(z.string()),
   occupation: z.optional(z.string()),
-  greenCardNum: z.optional(z.string()),
+  greenCardNum: z.string(),
   citizenShip: z.string(),
   yearsInUs: z.coerce.number(),
   parentLiving: z.string(),
   fatherAge: z.coerce.number(),
   motherAge: z.coerce.number(),
-  cuaseOfDeath: z.optional(z.string()),
+  cuaseOfDeath: z.string(),
 });
 export type IntakePersonalInfoSchemaType = z.infer<
   typeof IntakePersonalInfoSchema

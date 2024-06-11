@@ -1,24 +1,7 @@
 import type { Config } from "tailwindcss"
 import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
-const labelsClasses = [
-  "indigo",
-  "gray",
-  "green",
-  "blue",
-  "red",
-  "purple",
-];
 const config = {
-  // purge: {
-  //   //Because we made a dynamic class with the label we need to add those clases
-  //   // to the safe list so the purge does not remove that
-  //   safelist: [
-  //     ...labelsClasses.map((lbl) => `bg-${lbl}-500`),
-  //     ...labelsClasses.map((lbl) => `bg-${lbl}-200`),
-  //     ...labelsClasses.map((lbl) => `text-${lbl}-400`)
-  //   ],
-  // },
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -111,10 +94,15 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out", 
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],

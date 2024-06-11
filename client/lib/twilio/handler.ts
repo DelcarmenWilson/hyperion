@@ -158,8 +158,8 @@ export const voicemailResponse = async (requestBody: any) => {
   twiml.record({
     action: "/api/twilio/voice/voicemail",
     timeout: 5,
-    // transcribe: true,
-    // transcribeCallback: "/api/twilio/voice/transcribe",
+    transcribe: true,
+    transcribeCallback: "/api/twilio/voice/transcribe",
   });
   twiml.say({ voice: "alice" }, "Your mesage has been saved. Goodbye.");
   twiml.hangup();

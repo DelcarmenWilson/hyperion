@@ -14,10 +14,10 @@ export const ConferenceCard = ({ conference }: ConferenceCardProps) => {
     <div className="border p-2 w-full text-center">
       <h4 className="text-muted-foreground">{conference.friendlyName}</h4>
       <CardData
-        title="Date Created"
+        label="Date Created"
         value={format(conference.dateCreated, "MM-dd-yy hh:mm")}
       />
-      <CardData title="Sid" value={conference.sid} />
+      <CardData label="Sid" value={conference.sid} />
       <Button
         variant="outline"
         onClick={() => {

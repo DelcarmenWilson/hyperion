@@ -49,19 +49,19 @@ export const HyperionLeadCard = ({ initLead }: HyperionLeadCardProps) => {
             <p>{`${lead.city}, ${lead.state}`}</p>
           </address>
         )}
-        <CardData title="cellPhone" value={lead.cellPhone} />
-        <CardData title="dateOfBirth" value={lead.dateOfBirth} />
-        <CardData title="gender" value={lead.gender} />
-        <CardData title="maritalStatus" value={lead.maritalStatus} />
-        <CardData title="height" value={lead.height} />
-        <CardData title="policyAmount" value={lead.policyAmount} />
-        <CardData title="smoker" value={lead.smoker} />
+        <CardData label="cellPhone" value={lead.cellPhone} />
+        <CardData label="dateOfBirth" value={lead.dateOfBirth} />
+        <CardData label="gender" value={lead.gender} />
+        <CardData label="maritalStatus" value={lead.maritalStatus} />
+        <CardData label="height" value={lead.height} />
+        <CardData label="policyAmount" value={lead.policyAmount} />
+        <CardData label="smoker" value={lead.smoker} />
         <CardData
-          title="Date Created"
+          label="Date Created"
           value={format(lead.createdAt, "MM-dd-yyyy")}
         />
         <CardData
-          title="Date Updated"
+          label="Date Updated"
           value={format(lead.updatedAt, "MM-dd-yyyy")}
         />
 

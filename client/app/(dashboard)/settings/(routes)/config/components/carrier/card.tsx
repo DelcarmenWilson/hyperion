@@ -66,13 +66,13 @@ export const CarrierCard = ({ initCarrier }: CarrierCardProps) => {
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${carrier.carrier.name}`}</h3>
 
-        <CardData title="agent Id" value={carrier.agentId} />
+        <CardData label="agent Id" value={carrier.agentId} />
         <CardData
-          title="Date Created"
+          label="Date Created"
           value={format(carrier.createdAt, "MM-dd-yyyy")}
         />
         <CardData
-          title="Date Updated"
+          label="Date Updated"
           value={format(carrier.updatedAt, "MM-dd-yyyy")}
         />
 

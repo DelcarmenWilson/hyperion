@@ -376,19 +376,19 @@ model Lead {
   licenseState    String?
   licenseExpires  DateTime?
   annualIncome    Int       @default(0)
-  experience      String?
+  experience      String    @default("N/A")
   netWorth        Int       @default(0)
   employer        String?
   employerAddress String?
   employerPhone   String?
   occupation      String?
-  greenCardNum    String?
-  citizenShip     String    @default("citizen")
+  greenCardNum    String    @default("N/A")
+  citizenShip     String    @default("Citizen")
   yearsInUs       Int       @default(0)
-  parentLiving    String    @default("yes")
+  parentLiving    String    @default("Yes")
   fatherAge       Int       @default(0)
   motherAge       Int       @default(0)
-  cuaseOfDeath    String?
+  cuaseOfDeath    String    @default("N/A")
   foreignVisited  String?
 
   defaultNumber String

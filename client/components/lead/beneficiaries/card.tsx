@@ -60,26 +60,26 @@ export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
       </DrawerRight>
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${beneficiary.firstName} ${beneficiary.lastName}`}</h3>
-        <CardData title="Type" value={beneficiary.type} />
-        <CardData title="Relationship" value={beneficiary.relationship} />
+        <CardData label="Type" value={beneficiary.type} />
+        <CardData label="Relationship" value={beneficiary.relationship} />
 
-        <CardData title="First Name" value={beneficiary.firstName} />
-        <CardData title="Last Name" value={beneficiary.lastName} />
+        <CardData label="First Name" value={beneficiary.firstName} />
+        <CardData label="Last Name" value={beneficiary.lastName} />
 
         <CardData
-          title="Address"
+          label="Address"
           value={`${beneficiary.address} ${beneficiary.city} ${beneficiary.state} ${beneficiary.zipCode}`}
         />
         <CardData
-          title="Phone"
+          label="Phone"
           value={formatPhoneNumber(beneficiary.cellPhone)}
         />
-        <CardData title="Gender" value={beneficiary.gender} />
+        <CardData label="Gender" value={beneficiary.gender} />
 
-        <CardData title="Email" value={beneficiary.email} />
+        <CardData label="Email" value={beneficiary.email} />
         <div className="flex justify-between items-center">
           <CardData
-            title="Dob"
+            label="Dob"
             value={
               beneficiary.dateOfBirth
                 ? format(beneficiary.dateOfBirth, "MM-dd-yy")
@@ -87,7 +87,7 @@ export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
             }
           />
           <CardData
-            title="Age"
+            label="Age"
             value={
               beneficiary.dateOfBirth
                 ? getAge(beneficiary.dateOfBirth).toString()
@@ -95,8 +95,8 @@ export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
             }
           />
         </div>
-        <CardData title="Ssn#" value={beneficiary.ssn} />
-        <CardData title="Share" value={beneficiary.share} />
+        <CardData label="Ssn#" value={beneficiary.ssn} />
+        <CardData label="Share" value={beneficiary.share} />
 
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button

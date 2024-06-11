@@ -1,6 +1,5 @@
 "use client";
 import React, { ReactNode, useState } from "react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -12,8 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FullLeadNoConvo } from "@/types";
-import { leadGetById } from "@/actions/lead";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { PersonalInfoForm } from "./personal-info-form";
 import { Button } from "@/components/ui/button";
@@ -38,6 +35,9 @@ import { OtherInfoForm } from "./other-info-form";
 import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 import { LeadBeneficiary } from "@prisma/client";
 import { Separator } from "@/components/ui/separator";
+import { USDollar } from "@/formulas/numbers";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TextGroup } from "@/components/reusable/text-group";
 
 export const IntakeForm = ({ leadId }: { leadId: string }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -90,7 +90,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-          <h4 className="text-2xl font-semibold py-2">
+          <h4 className="text-2xl font-semibold py-2 capitalize">
             {dialogType} Info -
             <span className="text-primary">{`${personal.firstName} ${personal.lastName}`}</span>
           </h4>
@@ -124,7 +124,8 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
           )}
         </DialogContent>
       </Dialog>
-      <div className="h-full overflow-y-auto">
+
+      <ScrollArea className="pe-2">
         {/* PERSONAL INFORMATION */}
         <SkeletonWrapper isLoading={personalIsFectching}>
           <SectionWrapper
@@ -186,7 +187,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                   label="Driver's Lic"
                   value={personal.licenseNumber}
                 />
-                <TextGroup label="State" value={personal.licenseNumber} />
+                <TextGroup label="State" value={personal.licenseState} />
                 <TextGroup
                   label="Exp"
                   value={
@@ -198,16 +199,23 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                 <Separator />
                 <TextGroup label="Employer" value={personal.employer} />
                 <TextGroup label="Address" value={personal.employerAddress} />
-                <TextGroup label="Phone" value={personal.employerPhone} />
+                <TextGroup
+                  label="Phone"
+                  value={
+                    personal.employerPhone
+                      ? formatPhoneNumber(personal.employerPhone)
+                      : ""
+                  }
+                />
                 <TextGroup label="Occupation" value={personal.occupation} />
                 <TextGroup label="Experience" value={personal.experience} />
                 <TextGroup
                   label="Annual Income"
-                  value={personal.annualIncome.toString()}
+                  value={USDollar.format(personal.annualIncome)}
                 />
                 <TextGroup
                   label="Net Worth"
-                  value={personal.netWorth.toString()}
+                  value={USDollar.format(personal.netWorth)}
                 />
               </div>
             </div>
@@ -374,12 +382,12 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                     <TableHead>Address</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="font-bold">
                   {beneficiaries
                     ?.filter((e) => e.type == type)
                     ?.map((bene) => (
                       <TableRow key={bene.id}>
-                        <TableCell className="font-medium">{`${bene.firstName} ${bene.lastName}`}</TableCell>
+                        <TableCell>{`${bene.firstName} ${bene.lastName}`}</TableCell>
                         <TableCell>{bene.share}</TableCell>
                         <TableCell>{bene.relationship}</TableCell>
                         <TableCell>
@@ -413,7 +421,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             }
           >
             <div className="grid grid-cols-2 gap-2">
-              <TextGroup label="Tobacco" value={other?.smoker ? "YES" : "NO"} />
+              <TextGroup label="Tobacco" value={other?.smoker ? "Yes" : "No"} />
               <TextGroup
                 label="Number Years of Use:"
                 value={other?.yearsSmoking.toString()}
@@ -421,7 +429,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             </div>
             <div className="grid grid-cols-3 gap-2">
               <TextGroup label="Height" value={other?.height} />
-              <TextGroup label="Weight This year" value={other?.weight} />
+              <TextGroup label="Weight This Year" value={other?.weight} />
               <TextGroup
                 label="Weight Last Year"
                 value={other?.weightLastYear}
@@ -450,7 +458,10 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                 label="Doctor's Name"
                 value={doctor?.name}
               />
-              <TextGroup label="Phone" value={doctor?.phone} />
+              <TextGroup
+                label="Phone"
+                value={doctor?.phone ? formatPhoneNumber(doctor.phone) : ""}
+              />
               <TextGroup
                 className="col-span-3"
                 label="Address"
@@ -605,24 +616,11 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             />
           </SectionWrapper>
         </SkeletonWrapper>
-      </div>
+      </ScrollArea>
     </>
   );
 };
 
-type TextGroupProps = {
-  label: string;
-  value: string | null | undefined;
-  className?: string;
-};
-const TextGroup = ({ label, value, className }: TextGroupProps) => {
-  return (
-    <div className={cn("w-full", className)}>
-      <span>{label}: </span>
-      <span className="font-bold">{value}</span>
-    </div>
-  );
-};
 type QuestionProps = {
   label: string;
   value: boolean;

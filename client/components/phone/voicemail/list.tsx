@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
-
-import { Voicemail } from "@/types";
+import { usePhoneContext } from "@/providers/phone";
 import {
   Table,
   TableBody,
@@ -13,25 +13,23 @@ import {
 import { VoicemailCard } from "./card";
 import { voicemailUpdateByIdListened } from "@/actions/voicemail";
 
-type VoicemailListProps = {
-  initVoicemails: Voicemail[] | null;
-};
-export const VoicemailList = ({ initVoicemails }: VoicemailListProps) => {
-  const [voicemails, setVoicemails] = useState(initVoicemails);
+export const VoicemailList = () => {
+  const { voicemails, setVoicemails } = usePhoneContext();
 
-  const onUpdate = (id: string) => {
-    voicemailUpdateByIdListened(id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
+  const onVoicemailDeleted = async (id: string) => {
+    const updatedVoicemail = await voicemailUpdateByIdListened(id);
+    if (updatedVoicemail.success) {
+      const vm = voicemails?.filter((e) => e.id != id);
+      if (vm) {
+        setVoicemails(vm);
       }
-      if (data.success) {
-        const vm = voicemails?.filter((e) => e.id != id);
-        if (vm) {
-          setVoicemails(vm);
-        }
-      }
-    });
+    } else toast.error(updatedVoicemail.error);
   };
+
+  useEffect(() => {
+    userEmitter.on("voicemailDeleted", (id) => onVoicemailDeleted(id));
+  }, []);
+
   return (
     <div className="text-sm">
       {!voicemails?.length ? (
@@ -50,7 +48,11 @@ export const VoicemailList = ({ initVoicemails }: VoicemailListProps) => {
           </TableHeader>
           <TableBody>
             {voicemails.map((vm) => (
-              <VoicemailCard key={vm.id} voicemail={vm} onUpdate={onUpdate} />
+              <VoicemailCard
+                key={vm.id}
+                voicemail={vm}
+                onUpdate={onVoicemailDeleted}
+              />
             ))}
           </TableBody>
         </Table>

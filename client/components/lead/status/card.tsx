@@ -72,17 +72,17 @@ export const LeadStatusCard = ({ initLeadStatus }: LeadStatusCardProps) => {
         <h3 className="text-2xl text-primary font-semibold text-center">
           {leadStatus.status}
         </h3>
-        <CardData title="Type" value={leadStatus.type} />
+        <CardData label="Type" value={leadStatus.type} />
         <CardData
-          title="Description"
+          label="Description"
           value={leadStatus.description as string}
         />
         <CardData
-          title="Date Created"
+          label="Date Created"
           value={format(leadStatus.createdAt, "MM-dd-yyy")}
         />
         <CardData
-          title="Date Updated"
+          label="Date Updated"
           value={format(leadStatus.updatedAt, "MM-dd-yyy")}
         />
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">

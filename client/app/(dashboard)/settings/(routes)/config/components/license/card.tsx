@@ -66,11 +66,11 @@ export const LicenseCard = ({ initLicense }: LicenseCardProps) => {
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${license.state} - ${license.licenseNumber}`}</h3>
 
-        <CardData title="State" value={license.state} />
-        <CardData title="type" value={license.type} />
-        <CardData title="licenseNumber" value={license.licenseNumber} />
+        <CardData label="State" value={license.state} />
+        <CardData label="type" value={license.type} />
+        <CardData label="licenseNumber" value={license.licenseNumber} />
         <CardData
-          title="dateExpires"
+          label="dateExpires"
           value={format(license.dateExpires, "MM-dd-yyy")}
         />
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">

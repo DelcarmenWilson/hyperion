@@ -12,13 +12,11 @@ Jhonnnnnni
 -- switching from sms back to phone disables the phone controls
 -- need to remove all the excess stuff from the phoneContext and phone out and in
 -- fix the user Emmiter
--- work on the expenses (calculation is way off)????
 -- calls not being able to be shared user profile
 -- work on the calendar some more before uploading
 
 Voicemails - 
-    - let the agent decide to delete the voicemail.
-    - let agent call bacl lead directly from the voicemail
+    - let agent call bacl lead directly from the voicemail (ui done)
 
 
 Lead 
@@ -29,17 +27,14 @@ Chat
     - change company name to strongSide
     - let ai generate the initail text based on the lead type (provide a lead type variable for the preset messages)
     
---error when trying to upload an image for the templates
---revisit the expense sheet(not calculating properly)
+--revisit the expense sheet
     -- need to send income to back end
-
 
 --fix issue with token revalidation
 
 IN SALE
     -- finish the intake form
     -- fix the dailer(big task)
-
 
 add appoinment reminder send to the client to the sms
 -- fixed the time for the appoitment reminder
@@ -81,7 +76,6 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- get an original sound sampler to ebay chime
 -- dont forget to uncomment the inbox client in the inbox
 
--- get agent couching working
 -- be able to  foward to another agent
 -- request to create new teams
 -- create metrics pert teams
@@ -102,11 +96,9 @@ tab called blueprint > personalized businees plan for the indivdual.
 
 -----BUGS
 -- in the appointment for todays days should populate todays schedule but doesnt (on load) -- check
---profile image wont update in setting after upload
 
 ------UNSAFE CODE LET IN CONVERSATION DELETE (ACTION)
 
--- transcription has been turned off as of 3-2-24
 -- call action turned off as of 3-27-24
 
 reset link

@@ -9,6 +9,12 @@ import ReactDatePicker from "react-datepicker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 import {
   IntakePersonalInfoSchema,
@@ -99,12 +105,12 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
               <TabsTrigger value="employment">Employment</TabsTrigger>
               <TabsTrigger value="misc">Misc</TabsTrigger>
             </TabsList>
-
+            {/* GENERAL */}
             <TabsContent
-              className="flex-1 w-full h-full overflow-y-auto"
+              className="flex-1 w-full data-[state=active]:h-full overflow-hidden overflow-y-auto p-1"
               value="general"
             >
-              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+              <div className="grid grid-cols-2 gap-x-2 justify-between mx-1">
                 {/* FIRST NAME */}
                 <FormField
                   control={form.control}
@@ -366,17 +372,18 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                 />
               </div>
             </TabsContent>
+            {/* PERSONAL */}
             <TabsContent
-              className="flex-1 w-full h-full overflow-y-auto"
+              className="flex-1 w-full data-[state=active]:h-full overflow-hidden overflow-y-auto"
               value="personal"
             >
-              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+              <div className="grid grid-cols-2 gap-x-2 justify-between mx-1 mb-1">
                 {/* SSN */}
                 <FormField
                   control={form.control}
                   name="ssn"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="relative flex gap-2 justify-between items-center col-span-2 mb-1">
                       <FormLabel>SSN#</FormLabel>
                       <FormControl>
                         <Input
@@ -385,6 +392,39 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           disabled={isPending}
                           autoComplete="off"
                         />
+
+                        {/* <InputOTP maxLength={9} {...field}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={5} />
+                            <InputOTPSlot index={6} />
+                            <InputOTPSlot index={7} />
+                            <InputOTPSlot index={8} />
+                          </InputOTPGroup>*/}
+
+                        {/* <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSeparator />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSeparator />
+                            <InputOTPSlot index={5} />
+                            <InputOTPSlot index={6} />
+                            <InputOTPSlot index={7} />
+                            <InputOTPSlot index={8} />
+                          </InputOTPGroup> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -463,323 +503,338 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                 />
               </div>
             </TabsContent>
+            {/* EMPLOYEMENT */}
             <TabsContent
-              className="flex-1 w-full h-full overflow-y-auto"
+              className="flex-1 w-full data-[state=active]:h-full overflow-hidden overflow-y-auto"
               value="employment"
             >
-              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-                {/* ANNUAL INCOME */}
-                <FormField
-                  control={form.control}
-                  name="annualIncome"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Annual Income</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="50,000"
-                          disabled={isPending}
-                          autoComplete="off"
-                          type="number"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid grid-cols-2 gap-x-2 justify-between mx-1 mb-1">
+                <div className="space-y-1">
+                  {/* EMPLOYER NAME */}
+                  <FormField
+                    control={form.control}
+                    name="employer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Employer</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="work"
+                            disabled={isPending}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* EXPEREIENCE INCOME */}
-                <FormField
-                  control={form.control}
-                  name="experience"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Experience</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="experience"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {/* EMPLOYER ADDRESS */}
+                  <FormField
+                    control={form.control}
+                    name="employerAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="121 north st"
+                            disabled={isPending}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* NET WORTH */}
-                <FormField
-                  control={form.control}
-                  name="netWorth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Net Worth</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="150,000"
-                          disabled={isPending}
-                          autoComplete="off"
-                          type="number"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {/* EMPLOYER PHONE */}
+                  <FormField
+                    control={form.control}
+                    name="employerPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone#</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="359-895-5625"
+                            disabled={isPending}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="space-y-1">
+                  {/* OCCUPATION */}
+                  <FormField
+                    control={form.control}
+                    name="occupation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Occupation</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Sales"
+                            disabled={isPending}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* EXPEREIENCE INCOME */}
+                  <FormField
+                    control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Experience</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="experience"
+                            disabled={isPending}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* ANNUAL INCOME */}
+                  <FormField
+                    control={form.control}
+                    name="annualIncome"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Annual Income</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="50,000"
+                            disabled={isPending}
+                            autoComplete="off"
+                            type="number"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* EMPLOYER NAME */}
-                <FormField
-                  control={form.control}
-                  name="employer"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Employer</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="work"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* EMPLOYER ADDRESS */}
-                <FormField
-                  control={form.control}
-                  name="employerAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="121 north st"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* EMPLOYER PHONE */}
-                <FormField
-                  control={form.control}
-                  name="employerPhone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone#</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="359-895-5625"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* OCCUPATION */}
-                <FormField
-                  control={form.control}
-                  name="occupation"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Occupation</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Sales"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {/* NET WORTH */}
+                  <FormField
+                    control={form.control}
+                    name="netWorth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Net Worth</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="150,000"
+                            disabled={isPending}
+                            autoComplete="off"
+                            type="number"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </TabsContent>
             <TabsContent
-              className="flex-1 w-full h-full overflow-y-auto"
+              className="flex-1 w-full data-[state=active]:h-full overflow-hidden overflow-y-auto"
               value="misc"
             >
-              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-                {/* GREEN CARD NUMBER */}
-                <FormField
-                  control={form.control}
-                  name="greenCardNum"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Green Card#</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="gfh5868"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid grid-cols-2 gap-x-2 justify-between mx-1 mb-1">
+                <div className="space-y-1">
+                  {/* CITIZENSHIP */}
+                  <FormField
+                    control={form.control}
+                    name="citizenShip"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Citizen Ship </FormLabel>
+                        <FormControl>
+                          <Select
+                            name="ddlState"
+                            disabled={isPending}
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            autoComplete="off"
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a Status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="w-full">
+                              <SelectItem value="Citizen">
+                                US Citizen
+                              </SelectItem>
+                              <SelectItem value="Non-Citizen">
+                                Non-Citizen
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {form.getValues("citizenShip") == "Non-Citizen" && (
+                    <>
+                      {/* GREEN CARD NUMBER */}
+                      <FormField
+                        control={form.control}
+                        name="greenCardNum"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Green Card#</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="gfh5868"
+                                disabled={isPending}
+                                autoComplete="off"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                {/* YEARS IN  THE USA */}
-                <FormField
-                  control={form.control}
-                  name="yearsInUs"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>years In USA</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="30"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                      {/* YEARS IN  THE USA */}
+                      <FormField
+                        control={form.control}
+                        name="yearsInUs"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Years In USA</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="30"
+                                disabled={isPending}
+                                autoComplete="off"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
                   )}
-                />
+                </div>
+                <div className="space-y-1">
+                  {/* PARENTS LIVING */}
+                  <FormField
+                    control={form.control}
+                    name="parentLiving"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Parents Living? </FormLabel>
+                        <FormControl>
+                          <Select
+                            name="ddlParentsLiving"
+                            disabled={isPending}
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            autoComplete="off"
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Parents Living" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="w-full">
+                              <SelectItem value="Yes">Yes</SelectItem>
+                              <SelectItem value="No">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {/* CITIZENSHIP */}
-                <FormField
-                  control={form.control}
-                  name="citizenShip"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Citizen Ship </FormLabel>
-                      <FormControl>
-                        <Select
-                          name="ddlState"
-                          disabled={isPending}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          autoComplete="off"
-                        >
+                  {/* CUASE OF DEATH */}
+                  {form.getValues("parentLiving") == "No" ? (
+                    <FormField
+                      control={form.control}
+                      name="cuaseOfDeath"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cuase Of Death</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a Status" />
-                            </SelectTrigger>
+                            <Input
+                              {...field}
+                              placeholder="cuase"
+                              disabled={isPending}
+                              autoComplete="off"
+                            />
                           </FormControl>
-                          <SelectContent className="w-full">
-                            <SelectItem value="citizen">US Citizen</SelectItem>
-                            <SelectItem value="non-citizen">
-                              Non-Citizen
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* PARENTS LIVING */}
-                <FormField
-                  control={form.control}
-                  name="parentLiving"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Parents Living? </FormLabel>
-                      <FormControl>
-                        <Select
-                          name="ddlParentsLiving"
-                          disabled={isPending}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          autoComplete="off"
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Parents Living" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="w-full">
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    <>
+                      {/* FATHERS AGE */}
+                      <FormField
+                        control={form.control}
+                        name="fatherAge"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fathers Age</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="60"
+                                disabled={isPending}
+                                autoComplete="off"
+                                type="number"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                {/* FATHERS AGE */}
-                <FormField
-                  control={form.control}
-                  name="fatherAge"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fathers Age</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="60"
-                          disabled={isPending}
-                          autoComplete="off"
-                          type="number"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                      {/* MOTHERS AGE */}
+                      <FormField
+                        control={form.control}
+                        name="motherAge"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mothers Age</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="59"
+                                disabled={isPending}
+                                autoComplete="off"
+                                type="number"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
                   )}
-                />
-
-                {/* MOTHERS AGE */}
-                <FormField
-                  control={form.control}
-                  name="motherAge"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mothers Age</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="59"
-                          disabled={isPending}
-                          autoComplete="off"
-                          type="number"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* CUASE OF DEATH */}
-                <FormField
-                  control={form.control}
-                  name="cuaseOfDeath"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cuase Of Death</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="cuase"
-                          disabled={isPending}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                </div>
               </div>
             </TabsContent>
           </Tabs>

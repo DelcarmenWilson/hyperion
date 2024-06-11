@@ -7,7 +7,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TextGroup } from "@/components/reusable/input-group";
+import { InputGroup } from "@/components/reusable/input-group";
 import { GeneralInfoForm } from "./forms/general-info-form";
 
 import { LeadGeneralInfo } from "@/types";
@@ -98,7 +98,7 @@ export const GeneralInfoClient = ({
           <div>
             <div className="relative group">
               <div className="flex gap-1">
-                <TextGroup
+                <InputGroup
                   title="Dob"
                   value={
                     generalInfo.dateOfBirth
@@ -112,24 +112,24 @@ export const GeneralInfoClient = ({
                   </span>
                 )}
               </div>
-              <TextGroup
+              <InputGroup
                 title="Height"
                 value={generalInfo.height?.toString() || ""}
               />
               <div className="flex gap-1">
-                <TextGroup
+                <InputGroup
                   title="Weight"
                   value={generalInfo.weight?.toString() || ""}
                 />
                 lbs
               </div>
               <p>Smoker: {generalInfo.smoker ? "Yes" : "No"}</p>
-              <TextGroup
+              <InputGroup
                 title="Income"
                 value={generalInfo.income?.toString() || ""}
               />
-              <TextGroup title="Gender" value={generalInfo.gender} />
-              <TextGroup
+              <InputGroup title="Gender" value={generalInfo.gender} />
+              <InputGroup
                 title="Marital Status"
                 value={generalInfo.maritalStatus}
               />

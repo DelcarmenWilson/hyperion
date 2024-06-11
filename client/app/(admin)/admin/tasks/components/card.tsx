@@ -88,11 +88,11 @@ export const TaskCard = ({ initTask, onTaskDeleted }: TaskCardProps) => {
             onCheckedChange={onTaskPublished}
           />
         </div>
-        <CardData title="Status" value={task.status} />
+        <CardData label="Status" value={task.status} />
 
-        <CardData title="Description" value={task.description} column />
-        <CardData title="Start Date" value={format(task.startAt, "MM-dd-yy")} />
-        <CardData title="End Date" value={format(task.endAt, "MM-dd-yy")} />
+        <CardData label="Description" value={task.description} column />
+        <CardData label="Start Date" value={format(task.startAt, "MM-dd-yy")} />
+        <CardData label="End Date" value={format(task.endAt, "MM-dd-yy")} />
 
         <div className="flex group gap-2 justify-end items-center  mt-auto pt-2 border-t">
           <Button

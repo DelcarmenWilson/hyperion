@@ -54,24 +54,27 @@ export const PolicyInfoForm = ({
     onClose();
   };
 
-  const onSubmit = (values: LeadPolicySchemaType) => {
+  const onSubmit = async (values: LeadPolicySchemaType) => {
     setLoading(true);
-    leadUpdateByIdPolicyInfo(values).then((data) => {
-      if (data.success) {
-        userEmitter.emit("policyInfoUpdated", {
-          ...data.success,
-          startDate: data.success?.startDate || undefined,
-        });
-        userEmitter.emit("leadStatusChanged", data.success.leadId, "Sold");
+    const updatedPoilicy = await leadUpdateByIdPolicyInfo(values);
 
-        toast.success("Lead Policy Info Updated");
-        onClose();
-      }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
-    });
+    if (updatedPoilicy.success) {
+      userEmitter.emit("policyInfoUpdated", {
+        ...updatedPoilicy.success,
+        startDate: updatedPoilicy.success?.startDate || undefined,
+      });
+      userEmitter.emit(
+        "leadStatusChanged",
+        updatedPoilicy.success.leadId,
+        "Sold"
+      );
+
+      toast.success("Lead Policy Info Updated");
+      onClose();
+    } else {
+      form.reset();
+      toast.error(updatedPoilicy.error);
+    }
 
     setLoading(false);
   };

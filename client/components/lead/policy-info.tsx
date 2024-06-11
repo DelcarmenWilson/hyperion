@@ -6,7 +6,7 @@ import { FilePenLine } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { TextGroup } from "@/components/reusable/input-group";
+import { InputGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
 
 import { PolicyInfoForm } from "./forms/policy-info-form";
@@ -96,20 +96,20 @@ export const PolicyInfoClient = ({
               {policyInfo.vendor.replace("_", " ")}
             </p>
           </div> */}
-            <TextGroup
+            <InputGroup
               title="Carrier"
               value={policyInfo.carrier ? policyInfo.carrier : ""}
             />
 
-            <TextGroup
+            <InputGroup
               title="Policy #"
               value={policyInfo.policyNumber ? policyInfo.policyNumber : ""}
             />
-            <TextGroup
+            <InputGroup
               title="Status"
               value={policyInfo.status ? policyInfo.status : ""}
             />
-            <TextGroup
+            <InputGroup
               title="Start Date"
               value={
                 policyInfo.startDate
@@ -117,16 +117,16 @@ export const PolicyInfoClient = ({
                   : ""
               }
             />
-            <TextGroup
+            <InputGroup
               title="Ap"
               value={policyInfo.ap ? `$${policyInfo.ap}` : ""}
             />
 
-            <TextGroup
+            <InputGroup
               title="Commision"
               value={policyInfo.commision ? `$${policyInfo.commision}` : ""}
             />
-            <TextGroup
+            <InputGroup
               title="Coverage Amount"
               value={policyInfo.coverageAmount ? policyInfo.coverageAmount : ""}
             />

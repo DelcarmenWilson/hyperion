@@ -35,7 +35,7 @@ const PhoneShell = () => {
           >
             <Voicemail size={16} />
             VOICEMAIL
-            {voicemails?.length && (
+            {voicemails && voicemails?.length > 0 && (
               <Badge className="absolute top-0 right-0 rounded-full">
                 {voicemails.length}
               </Badge>
@@ -59,7 +59,7 @@ const PhoneShell = () => {
             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="voicemail"
           >
-            <VoicemailList initVoicemails={voicemails} />
+            <VoicemailList />
           </TabsContent>
         </div>
       </Tabs>

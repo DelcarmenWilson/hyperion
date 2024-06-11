@@ -8,12 +8,14 @@ import { useCurrentRole } from "@/hooks/user-current-role";
 type AudioPlayerProps = {
   src: string | undefined;
   autoPlay?: boolean;
+  size?: number;
   onListened?: () => void;
 };
 
 export const AudioPlayer = ({
   src,
   autoPlay = false,
+  size = 16,
   onListened,
 }: AudioPlayerProps) => {
   const role = useCurrentRole();
@@ -43,8 +45,13 @@ export const AudioPlayer = ({
   return (
     <div>
       <audio ref={audioRef} src={src} />
-      <Button onClick={onPlayPause} disabled={!src} type="button">
-        {playing ? <Pause size={16} /> : <Play size={16} />}
+      <Button
+        size={size > 16 ? "lg" : "default"}
+        onClick={onPlayPause}
+        disabled={!src}
+        type="button"
+      >
+        {playing ? <Pause size={size} /> : <Play size={size} />}
       </Button>
     </div>
   );

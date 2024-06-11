@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { usersGetAll, usersGetAllByRole } from "@/data/user";
+import { usersGetAll } from "@/data/user";
+import { usersGetAllByRole } from "@/actions/user";
 
 export async function POST(req: Request) {
   try {

@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import { toast } from "sonner";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { ImportLeadColumn, columns } from "./columns";
@@ -24,7 +25,8 @@ import { leadsImport } from "@/actions/lead";
 import { useQuery } from "@tanstack/react-query";
 import { FullPipeline } from "@/types";
 import { User } from "@prisma/client";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { usersGetAllByRole } from "@/actions/user";
+import { pipelineGetAllByAgentId } from "@/actions/pipeline";
 
 export const ImportLeadsForm = () => {
   const role = useCurrentRole();
@@ -38,21 +40,17 @@ export const ImportLeadsForm = () => {
   const [isPending, startTransition] = useTransition();
   const disabled = leads.length > 0;
 
-  const pipelinesQuery = useQuery<FullPipeline[]>({
+  const { data: pipelines, isFetching: pipelinesIsFetching } = useQuery<
+    FullPipeline[]
+  >({
     queryKey: ["userPipelines"],
-    queryFn: () => fetch("api/user/pipelines").then((res) => res.json()),
+    queryFn: () => pipelineGetAllByAgentId(),
   });
-  const assistantsQuery = useQuery<User[]>({
+  const { data: assistants, isFetching: assistantsIsFetching } = useQuery<
+    User[]
+  >({
     queryKey: ["userAsisstants"],
-    queryFn: () =>
-      fetch("/api/user/users", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ role: "ASSISTANT" }),
-      }).then((res) => res.json()),
+    queryFn: () => usersGetAllByRole("ASSISTANT"),
   });
 
   const onFileUploaded = (e: any) => {
@@ -109,103 +107,88 @@ export const ImportLeadsForm = () => {
     <div className="h-[500px] flex flex-col gap-2 p-3 bg-background">
       <div className="flex flex-col justify-center items-center">
         <h3 className="text-2xl font-semibold py-2">Import Leads</h3>
-        <div className="flex justify-between items-center w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-4 items-center gap-2 w-full">
           <div className="flex items-center gap-2">
-            <div className="flex w-[300px] items-center gap-2">
-              <span>Vendor</span>
-              <Select
-                name="ddlVendor"
-                disabled={disabled}
-                defaultValue={vendor}
-                onValueChange={setVendor}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a Vendor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {importVendors.map((vendor) => (
-                    <SelectItem key={vendor.name} value={vendor.value}>
-                      {vendor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex w-[300px] items-center gap-2">
-              <span>Type</span>
-              <Select
-                name="ddlLeadType"
-                disabled={disabled}
-                defaultValue={leadType}
-                onValueChange={setLeadType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Lead Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allLeadTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex w-[300px] items-center gap-2">
-              <span>Pipeline</span>
-              <Select
-                name="ddlStatus"
-                disabled={disabled}
-                defaultValue={status}
-                onValueChange={setStatus}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecte a Pipeline" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pipelinesQuery.data?.map((pipeline) => (
-                    <SelectItem
-                      key={pipeline.id}
-                      value={pipeline.status.status}
-                    >
-                      {pipeline.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {role == "ADMIN" && (
-              <div className="flex w-[300px] items-center gap-2">
-                <span>Assitant</span>
-                <Select
-                  name="ddlAssistant"
-                  disabled={disabled}
-                  defaultValue={assistant}
-                  onValueChange={setAssistant}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecte an Assistant" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {assistantsQuery.data?.map((assistant) => (
-                      <SelectItem key={assistant.id} value={assistant.id}>
-                        {assistant.firstName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <span>Vendor</span>
+            <Select
+              name="ddlVendor"
+              disabled={disabled}
+              defaultValue={vendor}
+              onValueChange={setVendor}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a Vendor" />
+              </SelectTrigger>
+              <SelectContent>
+                {importVendors.map((vendor) => (
+                  <SelectItem key={vendor.name} value={vendor.value}>
+                    {vendor.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          {disabled && (
-            <div className="flex gap-2">
-              <Button variant="outline" disabled={isPending} onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button disabled={isPending} onClick={onImport}>
-                Import
-              </Button>
+          <div className="flex items-center gap-2">
+            <span>Type</span>
+            <Select
+              name="ddlLeadType"
+              disabled={disabled}
+              defaultValue={leadType}
+              onValueChange={setLeadType}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Lead Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {allLeadTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span>Pipeline</span>
+            <Select
+              name="ddlStatus"
+              disabled={disabled || pipelinesIsFetching}
+              defaultValue={status}
+              onValueChange={setStatus}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a Pipeline" />
+              </SelectTrigger>
+              <SelectContent>
+                {pipelines?.map((pipeline) => (
+                  <SelectItem key={pipeline.id} value={pipeline.status.status}>
+                    {pipeline.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {role == "ADMIN" && (
+            <div className="flex items-center gap-2">
+              <span>Assitant</span>
+              <Select
+                name="ddlAssistant"
+                disabled={disabled || assistantsIsFetching}
+                defaultValue={assistant}
+                onValueChange={setAssistant}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an Assistant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {assistants?.map((assistant) => (
+                    <SelectItem key={assistant.id} value={assistant.id}>
+                      {assistant.firstName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
         </div>
@@ -219,6 +202,16 @@ export const ImportLeadsForm = () => {
           setFile={onFileUploaded}
         />
       </ScrollArea>
+      {disabled && (
+        <div className="flex justify-end items-center gap-2">
+          <Button variant="outline" disabled={isPending} onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button disabled={isPending} onClick={onImport}>
+            Import
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

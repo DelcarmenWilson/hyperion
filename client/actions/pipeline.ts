@@ -1,10 +1,32 @@
 "use server";
 import { db } from "@/lib/db";
 import {  currentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { PipeLine } from "@prisma/client";
 import { userGetByAssistant } from "@/data/user";
 
-
+//DATA
+export const pipelineGetAllByAgentId = async () => {
+  try {
+    const user=await currentUser()
+    if (!user) {
+      redirect("/login");
+    }  
+    let userId=user.id
+    if (user?.role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const pipelines = await db.pipeLine.findMany({
+      where: { userId },
+      include: { status: { select: { status: true } } },
+      orderBy: { order: "asc" },
+    });
+    return pipelines;
+  } catch {
+    return [];
+  }
+};
+//ACTIONS
 export const pipelineInsert = async (statusId: string, name: string) => {
   const user = await currentUser();
 

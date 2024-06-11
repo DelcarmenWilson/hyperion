@@ -10,17 +10,7 @@ export const usersGetAll = async () => {
     return [];
   }
 };
-export const usersGetAllByRole = async (role: UserRole) => {
-  try {
-    const users = await db.user.findMany({
-      where: { role },
-      orderBy: { firstName: "asc" },
-    });
-    return users;
-  } catch {
-    return [];
-  }
-};
+
 export const userGetById = async (id: string) => {
   try {
     const user = await db.user.findUnique({

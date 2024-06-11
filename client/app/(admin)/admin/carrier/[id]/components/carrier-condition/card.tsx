@@ -72,14 +72,14 @@ export const CarrierConditionCard = ({
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${carrierCondition.condition.name}`}</h3>
 
-        <CardData title="Requirements" value={carrierCondition.requirements} />
-        <CardData title="Notes" value={carrierCondition.notes} />
+        <CardData label="Requirements" value={carrierCondition.requirements} />
+        <CardData label="Notes" value={carrierCondition.notes} />
         <CardData
-          title="Date Created"
+          label="Date Created"
           value={format(carrierCondition.createdAt, "MM-dd-yyyy")}
         />
         <CardData
-          title="Date Updated"
+          label="Date Updated"
           value={format(carrierCondition.updatedAt, "MM-dd-yyyy")}
         />
 

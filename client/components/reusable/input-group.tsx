@@ -1,9 +1,9 @@
-type BoxProps = {
+type InputGroupProps = {
   title: string;
   value: string;
 };
 
-export const TextGroup = ({ title, value }: BoxProps) => {
+export const InputGroup = ({ title, value }: InputGroupProps) => {
   return (
     <p>
       {title}:
