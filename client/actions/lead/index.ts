@@ -19,7 +19,8 @@ import { userGetByAssistant } from "@/data/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { getYesterday } from "@/formulas/dates";
+import { formatTimeZone, getYesterday } from "@/formulas/dates";
+import { FullLead } from "@/types";
 
 //LEAD
 
@@ -36,7 +37,8 @@ export const leadsGetAll = async () => {
 
 export const leadsGetAllByAgentId = async (userId: string) => {
   try {
-    const leads = await db.lead.findMany({
+    
+    const leads= await db.lead.findMany({
       where: {
         OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
       },
@@ -53,7 +55,13 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         sharedUser: true,
       },
     });
-    return leads;
+const fullLeads:FullLead[]=leads.map((lead)=>{
+  const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
+  const currentTime=new Date()
+  return{...lead,zone:timeZone,time :formatTimeZone(currentTime,timeZone)}
+  })
+   
+    return fullLeads;
   } catch {
     return [];
   }

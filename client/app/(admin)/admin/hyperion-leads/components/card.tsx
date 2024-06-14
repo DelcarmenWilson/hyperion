@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 
 import { HyperionLead } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { DrawerRight } from "@/components/custom/drawer-right";
 import { CardData } from "@/components/reusable/card-data";
 
 import { HyperionLeadForm } from "./form";
+import { formatDate } from "@/formulas/dates";
 
 type HyperionLeadCardProps = {
   initLead: HyperionLead;
@@ -56,14 +56,8 @@ export const HyperionLeadCard = ({ initLead }: HyperionLeadCardProps) => {
         <CardData label="height" value={lead.height} />
         <CardData label="policyAmount" value={lead.policyAmount} />
         <CardData label="smoker" value={lead.smoker} />
-        <CardData
-          label="Date Created"
-          value={format(lead.createdAt, "MM-dd-yyyy")}
-        />
-        <CardData
-          label="Date Updated"
-          value={format(lead.updatedAt, "MM-dd-yyyy")}
-        />
+        <CardData label="Date Created" value={formatDate(lead.createdAt)} />
+        <CardData label="Date Updated" value={formatDate(lead.updatedAt)} />
 
         <Button onClick={() => setIsOpen(true)}>Edit</Button>
       </div>

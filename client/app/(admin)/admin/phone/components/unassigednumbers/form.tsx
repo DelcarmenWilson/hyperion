@@ -1,6 +1,11 @@
 "use client";
 
-import { phoneNumberUpdateByIdAssign } from "@/actions/phonenumber";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "sonner";
+
+import { PhoneNumber, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,16 +16,13 @@ import {
 } from "@/components/ui/select";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { PhoneNumber, User } from "@prisma/client";
-import axios from "axios";
-import { format } from "date-fns";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { phoneNumberUpdateByIdAssign } from "@/actions/phonenumber";
+import { formatDate } from "@/formulas/dates";
 
 type AssignNumberFormProps = {
   phoneNumber: PhoneNumber;
 };
+//TODO - need to incoporate react query
 export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
   const router = useRouter();
   const [users, setUsers] = useState<User[] | null>(null);
@@ -53,18 +55,12 @@ export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
         {formatPhoneNumber(phoneNumber.phone)}
       </h3>
       <div className="grid grid-cols-3 text-sm">
-        <div>
-          <p className="font-semibold">State</p>
-          <span>{phoneNumber.state}</span>
-        </div>
-        <div>
-          <p className="font-semibold">Created At</p>
-          <span>{format(phoneNumber.createdAt, "MM-dd-yy")}</span>
-        </div>
-        <div>
-          <p className="font-semibold">Renew At</p>
-          <span>{format(phoneNumber.renewAt, "MM-dd-yy")}</span>
-        </div>
+        <TextGroup label="State" value={phoneNumber.state} />
+        <TextGroup
+          label="Created At"
+          value={formatDate(phoneNumber.createdAt)}
+        />
+        <TextGroup label="Renew At" value={formatDate(phoneNumber.renewAt)} />
       </div>
       <div className="flex gap-2 text-sm my-2">
         <Select
@@ -92,6 +88,20 @@ export const AssignNumberForm = ({ phoneNumber }: AssignNumberFormProps) => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+type TextGroupProps = {
+  label: string;
+  value: string;
+};
+
+const TextGroup = ({ label, value }: TextGroupProps) => {
+  return (
+    <div>
+      <p className="font-semibold">{label}</p>
+      <span>{value}</span>
     </div>
   );
 };

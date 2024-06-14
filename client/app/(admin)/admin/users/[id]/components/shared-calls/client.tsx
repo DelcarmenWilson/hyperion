@@ -2,16 +2,14 @@
 import React from "react";
 import { Share2 } from "lucide-react";
 
+import { FullCall } from "@/types";
 import { CardLayout } from "@/components/custom/card/layout";
 import { AudioPlayerHp } from "@/components/custom/audio-player-hp";
-import { FullCall } from "@/types";
-import { format } from "date-fns";
-import { formatSecondsToTime } from "@/formulas/numbers";
 
-type SharedCallsClientProps = {
-  calls: FullCall[];
-};
-export const SharedCallsClient = ({ calls }: SharedCallsClientProps) => {
+import { formatSecondsToTime } from "@/formulas/numbers";
+import { formatDateTime } from "@/formulas/dates";
+
+export const SharedCallsClient = ({ calls }: { calls: FullCall[] }) => {
   return (
     <CardLayout title="Shared Calls" icon={Share2}>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 w-full">
@@ -32,7 +30,7 @@ export const SharedCallsCard = ({ call }: SharedCallsCardProps) => {
   return (
     <div className="flex flex-col gap-2 border rounded-[10px] p-2 text-sm">
       <p className="text-end">
-        {call.createdAt && format(call.createdAt, "MM-dd-yyyy hh:mm aa")}
+        {call.createdAt && formatDateTime(call.createdAt)}
       </p>
       <p className="capitalize">
         <span className="text-muted-foreground">Lead: </span>

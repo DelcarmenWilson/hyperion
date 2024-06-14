@@ -1,11 +1,11 @@
 "use client";
+import { User } from "lucide-react";
 import Link from "next/link";
-import { format } from "date-fns";
 import { FullTeam } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardData } from "@/components/reusable/card-data";
 import { UserCard } from "./user-card";
-import { User } from "lucide-react";
+import { formatDate } from "@/formulas/dates";
 
 type TeamCardProps = {
   team: FullTeam;
@@ -34,14 +34,8 @@ export const TeamCard = ({ team }: TeamCardProps) => {
       <CardData label="Banner" value={team.banner!} />
 
       <CardData label="Organization" value={team.organization.name} />
-      <CardData
-        label="Date Created"
-        value={format(team.createdAt, "MM-dd-yyyy")}
-      />
-      <CardData
-        label="Date Updated"
-        value={format(team.updatedAt, "MM-dd-yyyy")}
-      />
+      <CardData label="Date Created" value={formatDate(team.createdAt)} />
+      <CardData label="Date Updated" value={formatDate(team.updatedAt)} />
       {team.userId.length > 0 && (
         <div className="flex-1 flex flex-col overflow-hidden shadow-sm p-2">
           <h4 className="flex justify-between items-center text-lg font-semibold">

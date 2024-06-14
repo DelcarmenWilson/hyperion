@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { FilePenLine } from "lucide-react";
 
 import { userEmitter } from "@/lib/event-emmiter";
@@ -14,6 +13,7 @@ import { LeadPolicyInfo } from "@/types";
 import { User } from "@prisma/client";
 import { AssistantForm } from "./forms/assistant-form";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { formatDate } from "@/formulas/dates";
 
 type PolicyInfoClientProps = {
   leadId: string;
@@ -111,24 +111,13 @@ export const PolicyInfoClient = ({
             />
             <InputGroup
               title="Start Date"
-              value={
-                policyInfo.startDate
-                  ? format(policyInfo.startDate, "MM-dd-yyyy")
-                  : ""
-              }
+              value={formatDate(policyInfo.startDate)}
             />
-            <InputGroup
-              title="Ap"
-              value={policyInfo.ap ? `$${policyInfo.ap}` : ""}
-            />
-
-            <InputGroup
-              title="Commision"
-              value={policyInfo.commision ? `$${policyInfo.commision}` : ""}
-            />
+            <InputGroup title="Ap" value={policyInfo.ap} />
+            <InputGroup title="Commision" value={policyInfo.commision} />
             <InputGroup
               title="Coverage Amount"
-              value={policyInfo.coverageAmount ? policyInfo.coverageAmount : ""}
+              value={policyInfo.coverageAmount}
             />
             <Button
               className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"

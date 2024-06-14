@@ -1,11 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sales } from "@/types";
-import { format } from "date-fns";
-import { USDollar } from "@/formulas/numbers";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<Sales>[] = [
   {
@@ -52,6 +50,6 @@ export const columns: ColumnDef<Sales>[] = [
   {
     accessorKey: "saleDate",
     header: "Sale Date",
-    cell: ({ row }) => format(row.original.updatedAt, "MM-dd-yyy"),
+    cell: ({ row }) => formatDate(row.original.updatedAt),
   },
 ];

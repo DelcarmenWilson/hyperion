@@ -10,11 +10,7 @@ import { check2, grid, loading1 } from "@/public/assets/index";
 import { Task } from "@prisma/client";
 import { format } from "date-fns";
 
-type TaskProps = {
-  tasks: Task[];
-};
-
-export const TaskList = ({ tasks }: TaskProps) => {
+export const TaskList = ({ tasks }: { tasks: Task[] }) => {
   return (
     <Section className="overflow-hidden" id="roadmap">
       <div className="container md:pb-10">

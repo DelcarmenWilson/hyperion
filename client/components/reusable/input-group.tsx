@@ -1,6 +1,6 @@
 type InputGroupProps = {
   title: string;
-  value: string;
+  value: string | undefined;
 };
 
 export const InputGroup = ({ title, value }: InputGroupProps) => {

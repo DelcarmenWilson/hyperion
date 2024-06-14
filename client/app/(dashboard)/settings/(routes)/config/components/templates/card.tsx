@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 
 import { UserTemplate } from "@prisma/client";
 
+import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
 
@@ -18,6 +16,7 @@ import { TemplateForm } from "./form";
 import { userTemplateDeleteById } from "@/actions/user";
 
 import { deleteImage } from "@/actions/upload";
+import { formatDate } from "@/formulas/dates";
 
 type TemplateCardProps = {
   initTemplate: UserTemplate;
@@ -84,7 +83,7 @@ export const TemplateCard = ({
             <p className="font-bold">{template.description}</p>
 
             <p className="text-muted-foreground">Date Created:</p>
-            <p>{format(template.createdAt, "MM-dd-yyyy")}</p>
+            <p>{formatDate(template.createdAt)}</p>
           </div>
 
           {template.attachment && (

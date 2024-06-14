@@ -1,5 +1,4 @@
 "use client";
-import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "../purchasenumbers/cell-action";
@@ -9,6 +8,7 @@ import { FullPhoneNumber } from "@/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AssignNumberForm } from "../unassigednumbers/form";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullPhoneNumber>[] = [
   {
@@ -52,14 +52,12 @@ export const columns: ColumnDef<FullPhoneNumber>[] = [
   {
     accessorKey: "renewAt",
     header: "Renew date",
-    cell: ({ row }) => <span>{format(row.original.renewAt, "MM-dd-yy")}</span>,
+    cell: ({ row }) => <span>{formatDate(row.original.renewAt)}</span>,
   },
   {
     accessorKey: "createdAt",
     header: "Create At",
-    cell: ({ row }) => (
-      <span>{format(row.original.createdAt, "MM-dd-yy")}</span>
-    ),
+    cell: ({ row }) => <span>{formatDate(row.original.createdAt)}</span>,
   },
   {
     accessorKey: "status",
@@ -69,7 +67,7 @@ export const columns: ColumnDef<FullPhoneNumber>[] = [
       <div>
         {row.original.status}
         {row.original.status === "Inactive" &&
-          ` since ${format(row.original.updatedAt, "MM-dd-yy")}`}
+          ` since ${formatDate(row.original.updatedAt)}`}
       </div>
     ),
   },

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,28 +13,27 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { LeadStatusForm } from "./form";
 import { userLeadStatusDeleteById } from "@/actions/user";
+import { formatDate } from "@/formulas/dates";
 
-type LeadStatusCardProps = {
+export const LeadStatusCard = ({
+  initLeadStatus,
+}: {
   initLeadStatus: LeadStatus;
-};
-export const LeadStatusCard = ({ initLeadStatus }: LeadStatusCardProps) => {
+}) => {
   const [leadStatus, setLeadStatus] = useState(initLeadStatus);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteLeadStatus = () => {
+  const onDeleteLeadStatus = async () => {
     setLoading(true);
 
-    userLeadStatusDeleteById(leadStatus.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        userEmitter.emit("userLeadStatusDeleted", leadStatus.id);
-        toast.success(data.success);
-      }
-    });
+    const deletedStatus = await userLeadStatusDeleteById(leadStatus.id);
+    if (deletedStatus.success) {
+      userEmitter.emit("userLeadStatusDeleted", leadStatus.id);
+      toast.success(deletedStatus.success);
+    } else toast.error(deletedStatus.error);
+
     setAlertOpen(false);
     setLoading(false);
   };
@@ -79,11 +77,11 @@ export const LeadStatusCard = ({ initLeadStatus }: LeadStatusCardProps) => {
         />
         <CardData
           label="Date Created"
-          value={format(leadStatus.createdAt, "MM-dd-yyy")}
+          value={formatDate(leadStatus.createdAt)}
         />
         <CardData
           label="Date Updated"
-          value={format(leadStatus.updatedAt, "MM-dd-yyy")}
+          value={formatDate(leadStatus.updatedAt)}
         />
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button

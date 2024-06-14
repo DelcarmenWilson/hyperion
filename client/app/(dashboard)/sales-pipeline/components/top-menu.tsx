@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { userEmitter } from "@/lib/event-emmiter";
 import { ChevronDown, ChevronUp, Cog, RefreshCcw } from "lucide-react";
-import { format } from "date-fns";
 import { toast } from "sonner";
+import { useGlobalContext } from "@/providers/global";
 
 import { FullPipeline } from "@/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -18,13 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pipelineInsert, pipelineUpdateOrder } from "@/actions/pipeline";
-import { useGlobalContext } from "@/providers/global";
+import { formatDate } from "@/formulas/dates";
 
-type TopMenuProps = {
-  pipelines: FullPipeline[];
-};
-
-export const TopMenu = ({ pipelines }: TopMenuProps) => {
+export const TopMenu = ({ pipelines }: { pipelines: FullPipeline[] }) => {
   const { leadStatus } = useGlobalContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -166,7 +162,7 @@ export const TopMenu = ({ pipelines }: TopMenuProps) => {
             >
               <p>{pipeline.status.status}</p>
               <p>{pipeline.name}</p>
-              <p>{format(pipeline.createdAt, "MM-dd-yy")}</p>
+              <p>{formatDate(pipeline.createdAt)}</p>
               <div className="flex gap-2 items-center">
                 <Button
                   disabled={index == stages.length - 1}

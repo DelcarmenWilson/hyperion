@@ -1,6 +1,5 @@
 "use client";
 import React, { ReactNode, useState } from "react";
-import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
@@ -38,6 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { USDollar } from "@/formulas/numbers";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TextGroup } from "@/components/reusable/text-group";
+import { formatDate, formatDob } from "@/formulas/dates";
 
 export const IntakeForm = ({ leadId }: { leadId: string }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -169,11 +169,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                 <TextGroup label="Email" value={personal.email} />
                 <TextGroup
                   label="Date of Birth"
-                  value={
-                    personal.dateOfBirth
-                      ? format(personal.dateOfBirth!, "MM-dd-yyyy")
-                      : "N/A"
-                  }
+                  value={formatDob(personal.dateOfBirth)}
                 />
                 <TextGroup
                   label="Place of Birth"
@@ -190,11 +186,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                 <TextGroup label="State" value={personal.licenseState} />
                 <TextGroup
                   label="Exp"
-                  value={
-                    personal.licenseExpires
-                      ? format(personal.licenseExpires!, "MM-dd-yyyy")
-                      : "N/A"
-                  }
+                  value={formatDate(personal.licenseExpires!, "MM-dd-yyyy")}
                 />
                 <Separator />
                 <TextGroup label="Employer" value={personal.employer} />
@@ -390,11 +382,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
                         <TableCell>{`${bene.firstName} ${bene.lastName}`}</TableCell>
                         <TableCell>{bene.share}</TableCell>
                         <TableCell>{bene.relationship}</TableCell>
-                        <TableCell>
-                          {bene.dateOfBirth
-                            ? format(bene.dateOfBirth, "MM-dd-yyy")
-                            : ""}
-                        </TableCell>
+                        <TableCell>{formatDob(bene.dateOfBirth)}</TableCell>
                         <TableCell>{bene.ssn}</TableCell>
                         <TableCell>
                           {bene.cellPhone
@@ -470,11 +458,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
               <TextGroup
                 className="col-span-2"
                 label="Last Date Visited"
-                value={
-                  doctor?.lastVisit
-                    ? format(doctor?.lastVisit, "MM-dd-yyyy")
-                    : ""
-                }
+                value={formatDate(doctor?.lastVisit)}
               />
               <TextGroup
                 label="Reason for Visit"
@@ -506,16 +490,9 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
               <TextGroup label="Signature" value={bank?.signature} />
               <TextGroup
                 label="Draft Date:"
-                value={
-                  bank?.draftDate ? format(bank.draftDate, "MM-dd-yyyy") : ""
-                }
+                value={formatDate(bank?.draftDate)}
               />
-              <TextGroup
-                label="Date"
-                value={
-                  bank?.signedDate ? format(bank.signedDate, "MM-dd-yyyy") : ""
-                }
-              />
+              <TextGroup label="Date" value={formatDate(bank?.signedDate)} />
             </div>
           </SectionWrapper>
         </SkeletonWrapper>

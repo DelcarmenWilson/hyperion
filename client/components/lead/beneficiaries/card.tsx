@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -13,14 +12,15 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { BeneficiaryForm } from "./form";
 
-import { getAge } from "@/formulas/dates";
-import { leadBeneficiaryDeleteById } from "@/actions/lead/beneficiary";
+import { formatDob, getAge } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { leadBeneficiaryDeleteById } from "@/actions/lead/beneficiary";
 
-type BeneficiaryCardProps = {
+export const BeneficiaryCard = ({
+  beneficiary,
+}: {
   beneficiary: LeadBeneficiary;
-};
-export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
+}) => {
   const queryClient = useQueryClient();
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,14 +78,7 @@ export const BeneficiaryCard = ({ beneficiary }: BeneficiaryCardProps) => {
 
         <CardData label="Email" value={beneficiary.email} />
         <div className="flex justify-between items-center">
-          <CardData
-            label="Dob"
-            value={
-              beneficiary.dateOfBirth
-                ? format(beneficiary.dateOfBirth, "MM-dd-yy")
-                : ""
-            }
-          />
+          <CardData label="Dob" value={formatDob(beneficiary.dateOfBirth)} />
           <CardData
             label="Age"
             value={

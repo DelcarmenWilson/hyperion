@@ -1,16 +1,12 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { format } from "date-fns";
-
-import { Button } from "@/components/ui/button";
-import { Feedback } from "@prisma/client";
 import { Paperclip } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-type FeedbackCardProps = {
-  feedback: Feedback;
-};
+import { Feedback } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { formatDate } from "@/formulas/dates";
 
-export const FeedbackCard = ({ feedback }: FeedbackCardProps) => {
+export const FeedbackCard = ({ feedback }: { feedback: Feedback }) => {
   const router = useRouter();
   return (
     <Button
@@ -20,9 +16,7 @@ export const FeedbackCard = ({ feedback }: FeedbackCardProps) => {
     >
       <p className="flex justify-between items-center w-full text-muted-foreground">
         <span>{feedback.status}</span>
-        <span className="text-right">
-          {format(feedback.createdAt, "MM-dd-yy")}
-        </span>
+        <span className="text-right">{formatDate(feedback.createdAt)}</span>
       </p>
       <div className="flex justify-between items-center w-full">
         <span>{feedback.page}</span>

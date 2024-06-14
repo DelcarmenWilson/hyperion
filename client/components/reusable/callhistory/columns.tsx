@@ -1,16 +1,16 @@
 "use client";
-import { format } from "date-fns";
+import { ArrowUpDown, PhoneOutgoing, X } from "lucide-react";
+import { FullCall } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
-
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatPhoneNumber } from "@/formulas/phones";
-import { ArrowUpDown, PhoneOutgoing, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 import { formatSecondsToTime } from "@/formulas/numbers";
-import { FullCall } from "@/types";
+import { formatPhoneNumber } from "@/formulas/phones";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { CallHistoryActions } from "./actions";
-import { Button } from "@/components/ui/button";
+import { formatDateTime } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -119,12 +119,7 @@ export const columns: ColumnDef<FullCall>[] = [
   {
     accessorKey: "date",
     header: "Date/Time",
-    cell: ({ row }) => (
-      <div>
-        {row.original.createdAt &&
-          format(row.original.createdAt, "MM-dd-yyyy hh:mm aa")}
-      </div>
-    ),
+    cell: ({ row }) => <div>{formatDateTime(row.original.createdAt)}</div>,
   },
 
   {

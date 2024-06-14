@@ -1,11 +1,10 @@
 import React from "react";
-import Link from "next/link";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 import { getAge } from "@/formulas/dates";
 import { FullLead } from "@/types";
+import { format } from "date-fns";
 
 type LeadDialerCardProps = {
   lead: FullLead;

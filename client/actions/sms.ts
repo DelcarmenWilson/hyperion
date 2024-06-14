@@ -2,17 +2,20 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-import { conversationInsert } from "./conversation";
-import { messageInsert } from "./message";
+import { cfg, client } from "@/lib/twilio/config";
+
+import { HyperionLead, Lead } from "@prisma/client";
+import { SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
+
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
-import { cfg, client } from "@/lib/twilio/config";
-import { SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
-import { HyperionLead, Lead } from "@prisma/client";
-import { format } from "date-fns";
-import { hyperionDate } from "@/formulas/dates";
+import { formatHyperionDate, formatTime, formatTimeZone } from "@/formulas/dates";
+
+import { messageInsert } from "./message";
+import { conversationInsert } from "./conversation";
 import { userGetByAssistant } from "@/data/user";
+import { states } from "@/constants/states";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -253,12 +256,13 @@ export const smsSendAgentAppointmentNotification = async (
   if (!user.notificationSettings.phoneNumber) {
     return { error: "PhoneNumber not set!" };
   }
+//TODO - dont forget to remap the agents timezone here
 
+   //TODO - update does not go as planned tommorrow - change this back to use the default time ln.264
   const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
-  } has booked an appointment for ${format(date, hyperionDate)} at ${format(
-    date,
-    "hh:mm aa"
+  } has booked an appointment for ${formatHyperionDate(date)} at ${formatTimeZone(
+    date
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
   const result = await smsSend(
@@ -279,15 +283,14 @@ export const smsSendLeadAppointmentNotification = async (
   lead: Lead,
   date: Date
 ) => {
+   //TODO - update does not go as planned tommorrow - change this back to use the default time ln.292
+  const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
   const message = `Hi ${
     lead.firstName
-  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${format(
-    date,
-    hyperionDate
-  )} at ${format(
-    date,
-    "hh:mm aa"
-  )}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
+  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${formatHyperionDate(
+    date   
+      )} at ${formatTimeZone(
+    date,timeZone)}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);

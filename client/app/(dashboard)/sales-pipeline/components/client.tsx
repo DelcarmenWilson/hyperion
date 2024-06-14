@@ -144,7 +144,7 @@ export const SalesClient = ({ data, pipelines }: SaleClientProps) => {
               key={pipeline.id}
               pipeline={pipeline}
               sendPipeline={sendPipeline}
-              leads={data.filter((e) => e.status == pipeline.status.status)}
+              initLeads={data.filter((e) => e.status == pipeline.status.status)}
             />
           ))}
         </div>

@@ -1,14 +1,11 @@
 "use client";
 import React from "react";
-import { formatDistance } from "date-fns";
 import Link from "next/link";
-import { ShortChat } from "@/types";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { ShortChat } from "@/types";
+import { formatDistance } from "date-fns";
 
-type ChatCardProps = {
-  chat: ShortChat;
-};
-export const ChatCard = ({ chat }: ChatCardProps) => {
+export const ChatCard = ({ chat }: { chat: ShortChat }) => {
   const user = useCurrentUser();
   const otherUser = chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
   const initials = `${otherUser.firstName.substring(

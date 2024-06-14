@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { CardData } from "@/components/reusable/card-data";
 import { CarrierConditionForm } from "./form";
 
 import { adminCarrierConditionDeleteById } from "@/actions/admin/carrier-condition";
+import { formatDate } from "@/formulas/dates";
 
 type CarrierConditionCardProps = {
   initCarrierCondition: FullCarrierCondition;
@@ -76,11 +76,11 @@ export const CarrierConditionCard = ({
         <CardData label="Notes" value={carrierCondition.notes} />
         <CardData
           label="Date Created"
-          value={format(carrierCondition.createdAt, "MM-dd-yyyy")}
+          value={formatDate(carrierCondition.createdAt)}
         />
         <CardData
           label="Date Updated"
-          value={format(carrierCondition.updatedAt, "MM-dd-yyyy")}
+          value={formatDate(carrierCondition.updatedAt)}
         />
 
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">

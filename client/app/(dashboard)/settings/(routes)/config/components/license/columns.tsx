@@ -1,9 +1,8 @@
 "use client";
-import { format } from "date-fns";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserLicense } from "@prisma/client";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<UserLicense>[] = [
   {
@@ -47,7 +46,7 @@ export const columns: ColumnDef<UserLicense>[] = [
     header: "Date Expires",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.dateExpires, "MM-dd-yy")}
+        {formatDate(row.original.dateExpires)}
       </span>
     ),
   },

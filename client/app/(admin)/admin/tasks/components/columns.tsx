@@ -1,11 +1,10 @@
 "use client";
-import { format } from "date-fns";
-
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Task } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -47,7 +46,7 @@ export const columns: ColumnDef<Task>[] = [
     header: "Start At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.startAt, "MM-dd-yy")}
+        {formatDate(row.original.startAt)}
       </span>
     ),
   },
@@ -56,7 +55,7 @@ export const columns: ColumnDef<Task>[] = [
     header: "End At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.endAt, "MM-dd-yy")}
+        {formatDate(row.original.endAt)}
       </span>
     ),
   },
@@ -65,7 +64,7 @@ export const columns: ColumnDef<Task>[] = [
     header: "Created At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.createdAt, "MM-dd-yy")}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
   },

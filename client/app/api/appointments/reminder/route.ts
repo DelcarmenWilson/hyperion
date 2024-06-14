@@ -1,7 +1,7 @@
-import { client } from "@/lib/twilio/config";
+import { formatDateTime } from "@/formulas/dates";
 import { db } from "@/lib/db";
+import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
-import { format } from "date-fns";
 
 export async function POST(req: Request) {
   const body=await req.json()
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   if (appointments) {
     appointments.forEach((app) => {
       client.messages.create({
-        body: `Appointment reminder - ${format(app.startDate,"MM-dd @ hh:mm aa")}`,
+        body: `Appointment reminder - ${formatDateTime(app.startDate)}`,
         from: app.lead.defaultNumber,
         to: app.lead.cellPhone,
       });

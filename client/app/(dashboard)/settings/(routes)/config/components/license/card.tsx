@@ -1,13 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 
 import { UserLicense } from "@prisma/client";
 
+import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
@@ -15,6 +13,7 @@ import { CardData } from "@/components/reusable/card-data";
 import { LicenseForm } from "./form";
 
 import { userLicenseDeleteById } from "@/actions/user";
+import { formatDate } from "@/formulas/dates";
 
 type LicenseCardProps = {
   initLicense: UserLicense;
@@ -69,10 +68,7 @@ export const LicenseCard = ({ initLicense }: LicenseCardProps) => {
         <CardData label="State" value={license.state} />
         <CardData label="type" value={license.type} />
         <CardData label="licenseNumber" value={license.licenseNumber} />
-        <CardData
-          label="dateExpires"
-          value={format(license.dateExpires, "MM-dd-yyy")}
-        />
+        <CardData label="dateExpires" value={formatDate(license.dateExpires)} />
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button
             variant="destructive"

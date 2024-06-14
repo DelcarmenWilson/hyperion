@@ -1,9 +1,10 @@
 import React from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
+
+import { TwilioConference } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
-import { TwilioConference } from "@/types";
+import { formatDateTime } from "@/formulas/dates";
 
 type ConferenceCardProps = {
   conference: TwilioConference;
@@ -15,7 +16,7 @@ export const ConferenceCard = ({ conference }: ConferenceCardProps) => {
       <h4 className="text-muted-foreground">{conference.friendlyName}</h4>
       <CardData
         label="Date Created"
-        value={format(conference.dateCreated, "MM-dd-yy hh:mm")}
+        value={formatDateTime(conference.dateCreated)}
       />
       <CardData label="Sid" value={conference.sid} />
       <Button

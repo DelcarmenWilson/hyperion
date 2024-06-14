@@ -1,13 +1,11 @@
 "use client";
 import React from "react";
-import { format } from "date-fns";
-
 import { Sales } from "@/types";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIntials } from "@/formulas/text";
-import { USDollar } from "@/formulas/numbers";
+import { formatDate } from "@/formulas/dates";
 
 type RecentSalesProps = {
   sales: Sales[];
@@ -32,7 +30,7 @@ export const RecentSales = ({ sales }: RecentSalesProps) => {
                 </AvatarFallback>
               </Avatar>
               <p>{sale.firstName}</p>
-              <p>{format(sale.updatedAt, "MM-dd-yyy")}</p>
+              <p>{formatDate(sale.updatedAt)}</p>
               <p className="font-medium text-end">{`+$${sale.policy?.ap}`}</p>
             </div>
           ))}

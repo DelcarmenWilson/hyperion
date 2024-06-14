@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { FullLeadMedicalCondition } from "@/types";
@@ -14,11 +13,13 @@ import { CardData } from "@/components/reusable/card-data";
 import { ConditionForm } from "./form";
 
 import { leadConditionDeleteById } from "@/actions/lead/condition";
+import { formatDate } from "@/formulas/dates";
 
-type ConditionCardProps = {
+export const ConditionCard = ({
+  initCondition,
+}: {
   initCondition: FullLeadMedicalCondition;
-};
-export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
+}) => {
   const [condition, setCondition] = useState(initCondition);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -68,7 +69,7 @@ export const ConditionCard = ({ initCondition }: ConditionCardProps) => {
 
         <CardData
           label="Date Diagnosed"
-          value={format(condition.diagnosed, "MM-dd-yy")}
+          value={formatDate(condition.diagnosed)}
         />
         <CardData label="Medications" value={condition.medications} />
 
