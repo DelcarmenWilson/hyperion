@@ -1,9 +1,8 @@
 "use client";
-import { format } from "date-fns";
-
+import { LeadStatus } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LeadStatus } from "@prisma/client";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<LeadStatus>[] = [
   {
@@ -43,7 +42,7 @@ export const columns: ColumnDef<LeadStatus>[] = [
     header: "Created At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.createdAt, "MM-dd-yy")}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
   },

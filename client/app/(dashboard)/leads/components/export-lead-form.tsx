@@ -1,11 +1,10 @@
 import { useState } from "react";
 
+import axios from "axios";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +33,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
 import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
-import { monthStartEnd } from "@/formulas/dates";
+import { formatDate, monthStartEnd } from "@/formulas/dates";
 
 import { states } from "@/constants/states";
 import { importVendors } from "@/constants/lead";
@@ -130,7 +129,7 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
                           <Input
                             value={
                               field.value
-                                ? format(field.value, "MM-dd-yy")
+                                ? formatDate(field.value)
                                 : "Pick a date"
                             }
                           />
@@ -170,7 +169,7 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
                           <Input
                             value={
                               field.value
-                                ? format(field.value, "MM-dd-yy")
+                                ? formatDate(field.value)
                                 : "Pick a date"
                             }
                           />

@@ -16,22 +16,29 @@ import { Actions } from "./actions";
 import { PipeLine } from "@prisma/client";
 import { usePhone } from "@/hooks/use-phone";
 import { pipelineUpdateByIdIndex } from "@/actions/pipeline";
+import { timeZones } from "@/constants/states";
 
 type PipelineCardProps = {
   pipeline: PipeLine;
-  leads: FullLead[];
+  initLeads: FullLead[];
   sendPipeline: (e: PipeLine, type: string) => void;
 };
 export const PipelineCard = ({
   pipeline,
-  leads,
+  initLeads,
   sendPipeline,
 }: PipelineCardProps) => {
   const { onPhoneDialerOpen } = usePhone();
+  const [leads, setLeads] = useState(initLeads);
   const [index, setIndex] = useState(pipeline.index);
+
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
-
+  const setTimezone = (timeZone: string) => {
+    setLeads(
+      timeZone == "%" ? initLeads : initLeads.filter((e) => e.zone == timeZone)
+    );
+  };
   const onReset = () => {
     setIndex(0);
     pipelineUpdateByIdIndex(pipeline.id, 0);
@@ -60,18 +67,20 @@ export const PipelineCard = ({
           onReset={onReset}
         />
       </div>
-      {/* <Select>
+      <Select onValueChange={setTimezone} defaultValue="%">
         <SelectTrigger>
           <Clock size={16} />
           <SelectValue placeholder="Filter Timezone" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="East">East</SelectItem>
-          <SelectItem value="West">West</SelectItem>
-          <SelectItem value="North">North</SelectItem>
-          <SelectItem value="South">South</SelectItem>
+          <SelectItem value="%">Filter Timezone</SelectItem>
+          {timeZones.map((timeZone) => (
+            <SelectItem key={timeZone.value} value={timeZone.value}>
+              {timeZone.text}
+            </SelectItem>
+          ))}
         </SelectContent>
-      </Select> */}
+      </Select>
       <div className="flex justify-between items-center border-b p-2">
         <Button
           size="sm"

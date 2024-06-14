@@ -1,15 +1,13 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 import { FullMessage } from "@/types";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 
-interface MessageProps {
+type MessageProps = {
   data: FullMessage;
   username: string;
   isLast: boolean;
-}
+};
 
 export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const session = useSession();

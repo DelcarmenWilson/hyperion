@@ -1,14 +1,14 @@
 "use client";
-import { format } from "date-fns";
-import { getAge } from "@/formulas/dates";
+import Link from "next/link";
+import { FullAppointment } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatPhoneNumber } from "@/formulas/phones";
 import { Badge } from "@/components/ui/badge";
-import { FullAppointment } from "@/types";
-import Link from "next/link";
+
+import { formatPhoneNumber } from "@/formulas/phones";
+import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullAppointment>[] = [
   {
@@ -58,9 +58,7 @@ export const columns: ColumnDef<FullAppointment>[] = [
     cell: ({ row }) => (
       <div>
         <Badge variant="outlineprimary">{row.original.status}</Badge>
-        <p className="capitalize">
-          {format(row.original.startDate, "MM-dd hh:mm aaaaa'M'")}
-        </p>
+        <p className="capitalize">{formatDateTime(row.original.startDate)}</p>
       </div>
     ),
   },
@@ -89,9 +87,7 @@ export const columns: ColumnDef<FullAppointment>[] = [
         <p>
           D.O.B:
           <span className="text-primary italic font-bold">
-            {row.original.lead.dateOfBirth
-              ? format(row.original.lead.dateOfBirth, "MM-dd-yy")
-              : "N/A"}
+            {formatDob(row.original.lead.dateOfBirth)}
           </span>
         </p>
         <p>

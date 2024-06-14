@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +37,7 @@ import { DefaultStatus } from "@/constants/texts";
 import { Task } from "@prisma/client";
 import { TaskSchema, TaskSchemaType } from "@/schemas/admin";
 import { taskInsert, taskUpdateById } from "@/actions/task";
+import { formatDate } from "@/formulas/dates";
 
 type TaskFormProps = {
   task?: Task | null;
@@ -160,7 +160,7 @@ export const TaskForm = ({ task = null, onClose }: TaskFormProps) => {
                         <Input
                           value={
                             field.value
-                              ? format(field.value, "MM-dd-yy")
+                              ? formatDate(field.value)
                               : "Pick a date"
                           }
                         />
@@ -201,7 +201,7 @@ export const TaskForm = ({ task = null, onClose }: TaskFormProps) => {
                         <Input
                           value={
                             field.value
-                              ? format(field.value, "MM-dd-yy")
+                              ? formatDate(field.value)
                               : "Pick a date"
                           }
                         />

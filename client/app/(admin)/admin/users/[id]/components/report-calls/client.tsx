@@ -1,11 +1,11 @@
 "use client";
+import React from "react";
+import { ClipboardList } from "lucide-react";
+import { FullCall } from "@/types";
 import { CardLayout } from "@/components/custom/card/layout";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { convertCallData } from "@/formulas/reports";
-import { FullCall } from "@/types";
-import { format } from "date-fns";
-import { ClipboardList } from "lucide-react";
-import React from "react";
+import { formatDate, formatDateTime } from "@/formulas/dates";
 
 type ReportCallsClientProps = {
   from: string;
@@ -21,10 +21,7 @@ export const ReportCallsClient = ({
   const report = convertCallData(calls);
   return (
     <CardLayout
-      title={`Calls Report -  ${format(from, "MM/dd/yy")} - ${format(
-        to,
-        "MM/dd/yy"
-      )}`}
+      title={`Calls Report -  ${formatDate(from)} - ${formatDate(to)}`}
       icon={ClipboardList}
     >
       <div className="grid grid-cols-3 gap-2 text-sm w-full">
@@ -33,7 +30,7 @@ export const ReportCallsClient = ({
         <span>Total Calls</span>
         {report.map((item) => (
           <>
-            <span>{format(item.day, "MM-dd-yy")}</span>
+            <span>{formatDate(item.day)}</span>
             <span>{formatSecondsToTime(item.duration)}</span>
             <span>{item.total}</span>
           </>

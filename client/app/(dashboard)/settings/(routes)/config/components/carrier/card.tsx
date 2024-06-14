@@ -1,13 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 
 import { FullUserCarrier } from "@/types";
 
+import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
@@ -15,11 +13,13 @@ import { CardData } from "@/components/reusable/card-data";
 import { CarrierForm } from "./form";
 
 import { userCarrierDeleteById } from "@/actions/user";
+import { formatDate } from "@/formulas/dates";
 
-type CarrierCardProps = {
+export const CarrierCard = ({
+  initCarrier,
+}: {
   initCarrier: FullUserCarrier;
-};
-export const CarrierCard = ({ initCarrier }: CarrierCardProps) => {
+}) => {
   const [carrier, setCarrier] = useState(initCarrier);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -67,14 +67,8 @@ export const CarrierCard = ({ initCarrier }: CarrierCardProps) => {
         <h3 className="text-2xl text-primary font-semibold text-center">{`${carrier.carrier.name}`}</h3>
 
         <CardData label="agent Id" value={carrier.agentId} />
-        <CardData
-          label="Date Created"
-          value={format(carrier.createdAt, "MM-dd-yyyy")}
-        />
-        <CardData
-          label="Date Updated"
-          value={format(carrier.updatedAt, "MM-dd-yyyy")}
-        />
+        <CardData label="Date Created" value={formatDate(carrier.createdAt)} />
+        <CardData label="Date Updated" value={formatDate(carrier.updatedAt)} />
 
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button

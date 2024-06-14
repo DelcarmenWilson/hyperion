@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { format } from "date-fns";
+import React from "react";
 import { Clock, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { FullLead } from "@/types";
 import { usePhone } from "@/hooks/use-phone";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/formulas/dates";
 
 type LeadCardProps = {
   lead: FullLead;
@@ -34,8 +34,7 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
           </Link>
           <p className="flex gap-1">
             State: {lead.state}
-            {/* Local
-            <Clock size={16} />: 12:41 pm */}
+            <Clock size={16} /> {lead.time}
           </p>
         </div>
         <div className="flex flex-col justify-between gap-2 items-end">
@@ -45,7 +44,7 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
           >
             <Phone size={16} />
           </Button>
-          <p> Recieved {format(lead.createdAt, "MM-dd-yy")}</p>
+          <p> Recieved {formatDate(lead.createdAt)}</p>
         </div>
       </div>
     </div>

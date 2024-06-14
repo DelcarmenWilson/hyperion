@@ -77,7 +77,8 @@ export const appointmentInsert = async (
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-  appointmentDate.setHours(appointmentDate.getHours() - 4);
+  //TODO - if the update goes well tommorrow pl;ease remove
+  // appointmentDate.setHours(appointmentDate.getHours() - 4);
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   let message;
   if (lead) {

@@ -1,14 +1,11 @@
 "use client";
-import { format } from "date-fns";
 
 import { ColumnDef } from "@tanstack/react-table";
-// import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { CellAction } from "./cell-action";
+import { formatDateTime } from "@/formulas/dates";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type AgentSummaryColumn = {
   id: string;
   username: string;
@@ -60,10 +57,11 @@ export const columns: ColumnDef<AgentSummaryColumn>[] = [
     cell: ({ row }) => (
       <div>
         <p className="capitalize">
-          {format(
+          {formatDateTime(row.original.subscriptionExpires)}
+          {/* {format(
             new Date(row.original.subscriptionExpires),
             "MM-dd-yyyy hh:mm aaaaa'M'"
-          )}
+          )} */}
         </p>
       </div>
     ),

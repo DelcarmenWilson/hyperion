@@ -2,16 +2,16 @@ import { db } from "@/lib/db";
 import { userEmitter } from "@/lib/event-emmiter";
 import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
-import { MessageSchema, MessageSchemaType } from "@/schemas/message";
+import { MessageSchemaType } from "@/schemas/message";
 import { messageInsert } from "@/actions/message";
 import { chatFetch } from "@/actions/gpt";
 
 import { defaultOptOut } from "@/placeholder/chat";
-import { format } from "date-fns";
 import { appointmentInsert } from "@/actions/appointment";
 import { formatObject } from "@/formulas/objects";
 import { smsSend } from "@/actions/sms";
 import { TwilioSms } from "@/types";
+import { formatDateTime } from "@/formulas/dates";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -126,16 +126,12 @@ export async function POST(req: Request) {
       false
     );
 
-    const appointmentMessage = `Appointment has been schedule for ${format(
-      aptDate,
-      "MM-dd @ hh:mm aa"
+    const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
+      aptDate
     )}`;
     await smsSend(sms.to, sms.from, appointmentMessage);
     return new NextResponse(
-      `Appointment has been schedule for ${format(
-        aptDate,
-        "MM-dd @ hh:mm aa"
-      )}`,
+      `Appointment has been schedule for ${formatDateTime(aptDate)}`,
       { status: 200 }
     );
   }
@@ -259,10 +255,7 @@ export async function PUT(req: Request) {
     );
 
     return new NextResponse(
-      `Appointment has been schedule for ${format(
-        aptDate,
-        "MM-dd @ hh:mm aa"
-      )}`,
+      `Appointment has been schedule for ${formatDateTime(aptDate)}`,
       { status: 200 }
     );
   }

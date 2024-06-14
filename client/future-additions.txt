@@ -1,6 +1,9 @@
 Jhonnnnnni 
     - working on prompt enginering (ML)
-    - working on workflow
+    - working on workflow+
+
+    -identity and financial information should be hidden for the lead shared holder
+    -withing the boking page ask only the necessary question to a new lead coming in.
 
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    

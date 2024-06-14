@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { useAppointmentContext } from "@/providers/app";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
 import { AppointmentSchemaType } from "@/schemas/appointment";
+import { format } from "date-fns";
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);

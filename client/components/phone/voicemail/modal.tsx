@@ -2,7 +2,6 @@
 import { Phone } from "lucide-react";
 import { toast } from "sonner";
 import { userEmitter } from "@/lib/event-emmiter";
-import { format } from "date-fns";
 
 import { usePhone } from "@/hooks/use-phone";
 
@@ -12,6 +11,7 @@ import { AudioPlayer } from "@/components/custom/audio-player";
 import { CardData } from "@/components/reusable/card-data";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
+import { formatDate } from "@/formulas/dates";
 
 export const VoicemailModal = () => {
   const { isVoicemailOpen, onVoicemailClose, voicemail } = usePhone();
@@ -36,18 +36,11 @@ export const VoicemailModal = () => {
         </h4>
         <div className="grid grid-cols-1 lg:grid-cols-2 ">
           <CardData label="From" value={from} />
-          <CardData
-            label="Date"
-            value={format(voicemail.updatedAt, "MM-dd-yyyy")}
-          />
+          <CardData label="Date" value={formatDate(voicemail.updatedAt)} />
           <CardData label="Phone #" value={formatPhoneNumber(voicemail.from)} />
           <CardData
             label="Duration"
-            value={
-              voicemail.recordDuration
-                ? formatSecondsToTime(voicemail.recordDuration)
-                : ""
-            }
+            value={formatSecondsToTime(voicemail.recordDuration)}
           />
         </div>
         <div className="flex-center">

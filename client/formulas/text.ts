@@ -1,6 +1,6 @@
 import { ShortUser } from "@/types";
 import { Lead } from "@prisma/client";
-import { format } from "date-fns";
+import { formatDob } from "./dates";
 
 export const capitalize = (text: string): string => {
   if (!text) return text;
@@ -42,10 +42,7 @@ export const replacePreset = (
     .replace("#full_name", lead.lastName)
     .replace("#first_name", `${lead.firstName} ${lead.lastName}`)
     .replace("#street_adress", lead.address ? lead.address : "")
-    .replace(
-      "#birthday",
-      lead.dateOfBirth ? format(lead.dateOfBirth, "MM-dd-yyyy") : ""
-    )
+    .replace("#birthday", formatDob(lead.dateOfBirth))
     .replace("#city", lead.city ? lead.city : "")
     .replace("#state", lead.state)
     .replace("#zip_code", lead.zipCode ? lead.zipCode : "");
@@ -59,20 +56,27 @@ export const getFileExtension = (filename: string): string | undefined => {
   return ext;
 };
 
-type Data= {
+type Data = {
   [key: string]: string;
-}
-export const stringToJson = (text: string): {Height:string,Weight:string,IsSmoker:string,DesiredCoverageAmount:string}|null => {
+};
+export const stringToJson = (
+  text: string
+): {
+  Height: string;
+  Weight: string;
+  IsSmoker: string;
+  DesiredCoverageAmount: string;
+} | null => {
   if (!text) return null;
-   const pairs = text.match(/\[([^\]]+)\]/g)?.map((pair) => pair.slice(1, -1));
-  if(!pairs)return null
-  
+  const pairs = text.match(/\[([^\]]+)\]/g)?.map((pair) => pair.slice(1, -1));
+  if (!pairs) return null;
+
   const data: Data = {};
   pairs.forEach((pair) => {
     let [key, value] = pair.split(": ");
     key = key.replaceAll(" ", "");
     data[key] = value;
   });
-//@ts-ignore
+  //@ts-ignore
   return data;
 };

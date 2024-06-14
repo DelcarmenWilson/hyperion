@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { formatDistance } from "date-fns";
 
 import { FullChatMessage } from "@/types";
+import { formatDistance } from "date-fns";
 
 type ChatMessageCardProps = {
   message: FullChatMessage;

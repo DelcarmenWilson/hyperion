@@ -5,8 +5,16 @@ import {
   endOfWeek,
   format,
   startOfMonth,
-  startOfWeek,
+  startOfWeek
 } from "date-fns";
+ import {
+   format as ftz,
+   formatInTimeZone
+ } from "date-fns-tz";
+
+const defaultDate: string = "MM-dd-yyyy";
+const defaultTime: string = "hh:mm aa";
+const defaultDateTime: string = `${defaultDate} ${defaultTime}`
 
 export const hyperionDate: string = "MMMM do yyyy";
 export const getAge = (dateOfBirth: any): string => {
@@ -46,6 +54,7 @@ export const weekStartEnd = (): { from: Date; to: Date } => {
 
   return { from: start, to: end };
 };
+
 export const monthStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
   const start = startOfMonth(curr);
@@ -71,7 +80,6 @@ export const getTommorrow = (): Date => {
   tommorrow.setDate(tommorrow.getDate() + 1);
   return tommorrow;
 };
-
 
 export const  getToday = (): Date => {
   let today = new Date();
@@ -99,3 +107,40 @@ export const getLast24hrs = (): Date => {
   yesterday.setHours(yesterday.getHours() - 24);
   return yesterday;
 };
+
+//FORMAT DATE AND TIME
+export const formatDate=(date:Date|string|undefined,retval:string =""):string=>{
+  if(!date)
+    return retval
+  return format(date,defaultDate)
+}
+
+export const formatDob=(date:Date|string|undefined|null,retval:string =""):string=>{
+  if(!date)
+    return retval
+  return format(date,"MM/dd/yy")
+}
+
+export const formatDateTime=(dateTime:Date|string,retval:string =""):string=>{
+  if(!dateTime)
+    return retval
+  return format(dateTime,defaultDateTime)
+}
+
+export const formatTime=(time:Date,retval:string =""):string=>{
+  if(!time)
+    return retval
+  return format(time,defaultTime)
+}
+
+export const formatHyperionDate=(date:Date,retval:string =""):string=>{
+  if(!date)
+    return retval
+  return format(date,hyperionDate)
+}
+
+export const formatTimeZone=(time:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
+  if(!time)
+    return retval
+  return formatInTimeZone(time,timeZone,defaultTime)
+}

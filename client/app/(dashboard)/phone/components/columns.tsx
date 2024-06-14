@@ -1,11 +1,10 @@
 "use client";
-import { format } from "date-fns";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { PhoneNumber } from "@prisma/client";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<PhoneNumber>[] = [
   {
@@ -42,7 +41,7 @@ export const columns: ColumnDef<PhoneNumber>[] = [
   {
     accessorKey: "renewAt",
     header: "Next renewal date",
-    cell: ({ row }) => <span>{format(row.original.renewAt, "MM-dd-yy")}</span>,
+    cell: ({ row }) => <span>{formatDate(row.original.renewAt)}</span>,
   },
   {
     accessorKey: "status",
@@ -52,7 +51,7 @@ export const columns: ColumnDef<PhoneNumber>[] = [
       <div>
         {row.original.status}
         {row.original.status === "Inactive" &&
-          ` since ${format(row.original.updatedAt, "MM-dd-yy")}`}
+          ` since ${formatDate(row.original.updatedAt)}`}
       </div>
     ),
   },

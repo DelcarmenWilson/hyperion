@@ -1,12 +1,14 @@
 "use client";
-import { ShortConversation } from "@/types";
-import { differenceInDays, format, formatDistance, subDays } from "date-fns";
-import Link from "next/link";
 import React from "react";
-type ConversationCardProps = {
+import Link from "next/link";
+import { ShortConversation } from "@/types";
+import { formatDistance } from "date-fns";
+
+export const ConversationCard = ({
+  conversation,
+}: {
   conversation: ShortConversation;
-};
-export const ConversationCard = ({ conversation }: ConversationCardProps) => {
+}) => {
   const initials = `${conversation.firstName.substring(
     0,
     1

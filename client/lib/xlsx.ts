@@ -1,6 +1,6 @@
+import { formatDate } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { Lead } from "@prisma/client";
-import { format } from "date-fns";
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { jsPDF } from "jspdf";
 export const exportLeads = (fileType: string, leads: Lead[]) => {
@@ -105,9 +105,9 @@ function exportLeadsToPdf(leads: Lead[]) {
           `CoverageAmount: ${lead.coverageAmountOld}`,
           //   `DefaultNumber: ${lead.defaultNumber}`,
           `Notes: ${lead.notes}`,
-          `Recieved Date: ${format(lead.recievedAt, "MM-dd-yy")}`,
-          `Created Date: ${format(lead.createdAt, "MM-dd-yy")}`,
-          `Updated Date: ${format(lead.updatedAt, "MM-dd-yy")}`,
+          `Recieved Date: ${formatDate(lead.recievedAt)}`,
+          `Created Date: ${formatDate(lead.createdAt)}`,
+          `Updated Date: ${formatDate(lead.updatedAt)}`,
         ],
         10,
         20,

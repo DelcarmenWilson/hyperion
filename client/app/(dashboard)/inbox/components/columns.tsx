@@ -2,11 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, CircleSlash, Trash } from "lucide-react";
+
 import { Actions } from "./actions";
 import { Message } from "./message";
+import { formatDateTime } from "@/formulas/dates";
 
 export type InboxColumn = {
   id: string;
@@ -77,8 +76,7 @@ export const columns: ColumnDef<InboxColumn>[] = [
     header: "Recieved on",
     cell: ({ row }) => (
       <div>
-        {row.original.updatedAt &&
-          format(row.original.updatedAt, "MM-dd-yyy h:mm aaaa")}
+        {row.original.updatedAt && formatDateTime(row.original.updatedAt)}
       </div>
     ),
   },

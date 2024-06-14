@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Cake, CalendarX, FilePenLine, Phone, XCircle } from "lucide-react";
-import { format } from "date-fns";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -13,7 +12,7 @@ import { GeneralInfoForm } from "./forms/general-info-form";
 import { LeadGeneralInfo } from "@/types";
 import { Appointment } from "@prisma/client";
 
-import { getAge } from "@/formulas/dates";
+import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
 
 type GeneralInfoClientProps = {
   info: LeadGeneralInfo;
@@ -71,7 +70,7 @@ export const GeneralInfoClient = ({
             <Badge className="gap-1 w-fit">
               <Phone size={16} /> Last Call
             </Badge>
-            {format(generalInfo.lastCall, "MM-dd-yy hh:mm aaaa")}
+            {formatDateTime(generalInfo.lastCall)}
           </div>
         )}
 
@@ -81,7 +80,7 @@ export const GeneralInfoClient = ({
               <Badge className="gap-1 w-fit">
                 <CalendarX size={16} /> Appt Set
               </Badge>
-              {format(generalInfo.nextAppointment, "MM-dd-yy hh:mm aaaa")}
+              {formatDateTime(generalInfo.nextAppointment)}
             </div>
           </div>
         )}
@@ -90,7 +89,7 @@ export const GeneralInfoClient = ({
           <div className="flex items-center gap-1 w-fit">
             <Cake size={16} />
             <XCircle size={16} />
-            Birthday: {format(generalInfo.dob, "MM/dd/yy")}
+            Birthday: {formatDob(generalInfo.dob)}
           </div>
         )}
 
@@ -100,11 +99,7 @@ export const GeneralInfoClient = ({
               <div className="flex gap-1">
                 <InputGroup
                   title="Dob"
-                  value={
-                    generalInfo.dateOfBirth
-                      ? format(new Date(generalInfo.dateOfBirth), "MM/dd/yy")
-                      : ""
-                  }
+                  value={formatDob(generalInfo.dateOfBirth)}
                 />
                 {generalInfo.dateOfBirth && (
                   <span className="font-semibold">

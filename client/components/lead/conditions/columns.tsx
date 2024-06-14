@@ -1,11 +1,8 @@
 "use client";
-import { format } from "date-fns";
-import Link from "next/link";
-
+import { FullLeadMedicalCondition } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { FullLeadMedicalCondition } from "@/types";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullLeadMedicalCondition>[] = [
   {
@@ -38,7 +35,7 @@ export const columns: ColumnDef<FullLeadMedicalCondition>[] = [
   {
     accessorKey: "diagnosed",
     header: "Date Diagnosed",
-    cell: ({ row }) => format(row.original.diagnosed, "MM-dd-yy"),
+    cell: ({ row }) => formatDate(row.original.diagnosed),
   },
   {
     accessorKey: "medications",
@@ -50,7 +47,7 @@ export const columns: ColumnDef<FullLeadMedicalCondition>[] = [
     header: "Created At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.createdAt, "MM-dd-yy")}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
   },

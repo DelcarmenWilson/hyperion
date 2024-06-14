@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone, User } from "lucide-react";
 
 import { capitalize } from "@/formulas/text";
-import { format } from "date-fns";
 import { Team } from "@prisma/client";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -29,6 +28,7 @@ import { adminChangeUserRole } from "@/actions/admin/user";
 import { toast } from "sonner";
 import { USDollar } from "@/formulas/numbers";
 import { DatesFilter } from "@/components/reusable/dates-filter";
+import { formatDate } from "@/formulas/dates";
 
 type UserClientProps = {
   user: FullUserReport;
@@ -253,7 +253,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
                 <span>{number.phone}</span>
                 <span>{number.state}</span>
                 <span>{number.status}</span>
-                <span>{format(number.renewAt, "MM/dd/yyy")}</span>
+                <span>{formatDate(number.renewAt)}</span>
               </>
             ))}
           </div>

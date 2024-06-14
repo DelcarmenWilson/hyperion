@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { FullTeam } from "@/types";
-import { format } from "date-fns";
-import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullTeam>[] = [
   {
@@ -54,9 +54,7 @@ export const columns: ColumnDef<FullTeam>[] = [
   {
     accessorKey: "createdAt",
     header: "CreatedAt",
-    cell: ({ row }) => (
-      <span>{format(row.original.createdAt, "MM-dd-yyyy")}</span>
-    ),
+    cell: ({ row }) => <span>{formatDate(row.original.createdAt)}</span>,
   },
   {
     header: "Actions",

@@ -1,11 +1,10 @@
 "use client";
-import { format } from "date-fns";
+import Image from "next/image";
+import { UserTemplate } from "@prisma/client";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FullUserCarrier } from "@/types";
-import { UserTemplate } from "@prisma/client";
-import Image from "next/image";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<UserTemplate>[] = [
   {
@@ -63,7 +62,7 @@ export const columns: ColumnDef<UserTemplate>[] = [
     header: "Date Created",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.createdAt, "MM-dd-yy")}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
   },

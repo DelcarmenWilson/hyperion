@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { toast } from "sonner";
@@ -41,6 +40,7 @@ import { ImageGrid } from "@/components/reusable/image-grid";
 import { Task } from "@prisma/client";
 import { DefaultStatus } from "@/constants/texts";
 import { taskUpdateById } from "@/actions/task";
+import { formatDate } from "@/formulas/dates";
 //TODO - need to change this to use the aws3 bucket
 
 export const TaskIdForm = ({ task }: { task: Task }) => {
@@ -209,7 +209,7 @@ export const TaskIdForm = ({ task }: { task: Task }) => {
                               <Input
                                 value={
                                   field.value
-                                    ? format(field.value, "MM-dd-yy")
+                                    ? formatDate(field.value)
                                     : "Pick a date"
                                 }
                               />
@@ -251,7 +251,7 @@ export const TaskIdForm = ({ task }: { task: Task }) => {
                               <Input
                                 value={
                                   field.value
-                                    ? format(field.value, "MM-dd-yy")
+                                    ? formatDate(field.value)
                                     : "Pick a date"
                                 }
                               />

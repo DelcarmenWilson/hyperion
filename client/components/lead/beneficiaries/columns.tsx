@@ -1,12 +1,10 @@
 "use client";
-import { format } from "date-fns";
 
+import { LeadBeneficiary } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LeadBeneficiary } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<LeadBeneficiary>[] = [
   {
@@ -69,7 +67,7 @@ export const columns: ColumnDef<LeadBeneficiary>[] = [
     header: "Created At",
     cell: ({ row }) => (
       <span className="text-primary italic font-bold">
-        {format(row.original.createdAt, "MM-dd-yy")}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
   },

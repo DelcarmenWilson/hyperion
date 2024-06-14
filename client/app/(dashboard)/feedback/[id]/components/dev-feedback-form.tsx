@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -28,9 +29,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { feedbackUpdateByIdDev } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
-import { useCurrentRole } from "@/hooks/user-current-role";
-import { format } from "date-fns";
+
 import { DefaultStatus } from "@/constants/texts";
+import { formatDate } from "@/formulas/dates";
 
 export const DevFeedbackForm = ({ feedback }: { feedback: Feedback }) => {
   const role = useCurrentRole();
@@ -65,8 +66,8 @@ export const DevFeedbackForm = ({ feedback }: { feedback: Feedback }) => {
     <div>
       <h3 className="ml-1 text-sm font-semibold">Dev Comments</h3>
       <div className="flex justify-between items-center gap-2 text-sm text-muted-foreground px-2">
-        <p>Created At: {format(feedback.createdAt, "MM-dd-yy")}</p>
-        <p>Updated At: {format(feedback.updatedAt, "MM-dd-yy")}</p>
+        <p>Created At: {formatDate(feedback.createdAt)}</p>
+        <p>Updated At: {formatDate(feedback.updatedAt)}</p>
       </div>
       <Form {...form}>
         <form

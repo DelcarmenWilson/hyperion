@@ -51,6 +51,8 @@ import {
     policy: LeadPolicy | null;
     assistant?: User | null;
     sharedUser?: User | null;
+    zone?:string;
+    time?:string
   };
   export type FullLeadMedicalCondition = LeadMedicalCondition & {
     condition: MedicalCondition;

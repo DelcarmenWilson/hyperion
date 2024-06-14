@@ -3,10 +3,9 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { FullFeedback } from "@/types";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { format } from "date-fns";
+
 import { FeedbackActions } from "./actions";
+import { formatDate } from "@/formulas/dates";
 
 export const columns: ColumnDef<FullFeedback>[] = [
   {
@@ -59,9 +58,7 @@ export const columns: ColumnDef<FullFeedback>[] = [
   {
     accessorKey: "createdAt",
     header: "CreatedAt",
-    cell: ({ row }) => (
-      <span>{format(row.original.createdAt, "MM-dd-yyyy")}</span>
-    ),
+    cell: ({ row }) => <span>{formatDate(row.original.createdAt)}</span>,
   },
   {
     header: "Actions",
