@@ -3,7 +3,9 @@ import { currentRole } from "@/lib/auth";
 
 import { UserRole } from "@prisma/client";
 import { userGetByAssistant } from "@/data/user";
-import { getEntireDay, getToday } from "@/formulas/dates";
+import { formatTimeZone, getEntireDay, getToday } from "@/formulas/dates";
+import { FullAppointment } from "@/types";
+import { states } from "@/constants/states";
 
 //APPOINTMENTS
 export const appointmentsGetAll = async () => {
@@ -53,7 +55,23 @@ export const appointmentsGetByUserIdFiltered = async (
       orderBy: { createdAt: "desc" },
     });
 
-    return appointments;
+    const fullAppointments: FullAppointment[] = appointments.map(
+      (appointment) => {
+        const timeZone =
+          states.find(
+            (e) =>
+              e.abv.toLocaleLowerCase() ==
+              appointment.lead.state.toLocaleLowerCase()
+          )?.zone || "US/Eastern";
+        return {
+          ...appointment,
+          zone: timeZone,
+          time: formatTimeZone(appointment.startDate, timeZone),
+        };
+      }
+    );
+
+    return fullAppointments;
   } catch {
     return [];
   }
@@ -83,7 +101,11 @@ export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
   try {
     const today = getEntireDay();
     const appointments = await db.appointment.findMany({
-      where: { agentId, status: "Scheduled", startDate: {lt:today.end,gt:today.start} },
+      where: {
+        agentId,
+        status: "Scheduled",
+        startDate: { lt: today.end, gt: today.start },
+      },
       include: { agent: true, lead: true },
     });
 

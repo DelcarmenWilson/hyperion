@@ -8,12 +8,3 @@ export type PhoneType = {
   value: string;
   state: string;
 };
-export type Voicemail = {
-  id: string;
-  lead: { firstName: string; lastName: string } | null;
-  from: string;
-  recordUrl: string | null;
-  transcriptionText:string | null;
-  recordDuration:number| null;
-  updatedAt: Date;
-};

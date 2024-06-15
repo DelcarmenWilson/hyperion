@@ -6,20 +6,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Voicemail } from "@/types";
+import { FullCall } from "@/types";
 import { AudioPlayer } from "@/components/custom/audio-player";
 import { toast } from "sonner";
+import axios from "axios";
 
 type VoicemailCardProps = {
-  voicemail: Voicemail;
+  voicemail: FullCall;
   onUpdate: (e: string) => void;
 };
 
@@ -27,10 +23,16 @@ export const VoicemailCard = ({
   voicemail: vm,
   onUpdate,
 }: VoicemailCardProps) => {
-  const { onVoicemailOpen } = usePhone();
-  const onCallBack = () => {
-    //TODO - need to implement this asap
-    toast.error("This feature is not available yet!");
+  const { onCallOpen, onPhoneOutOpen, onPhoneOutClose } = usePhone();
+
+  const onCallBack = async () => {
+    //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
+    const response = await axios.post("/api/leads/details/by-id", {
+      leadId: vm?.lead?.id,
+    });
+    const lead = response.data;
+    onPhoneOutClose();
+    onPhoneOutOpen(lead);
   };
   return (
     <TableRow key={vm.id}>
@@ -54,7 +56,7 @@ export const VoicemailCard = ({
           <DropdownMenuContent align="center">
             <DropdownMenuItem
               className="cursor-pointer gap-2"
-              onClick={() => onVoicemailOpen(vm)}
+              onClick={() => onCallOpen(vm, "voicemail")}
             >
               <Eye size={16} />
               Details

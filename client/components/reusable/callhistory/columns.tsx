@@ -11,6 +11,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { CallHistoryActions } from "./actions";
 import { formatDateTime } from "@/formulas/dates";
+import Link from "next/link";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -54,13 +55,18 @@ export const columns: ColumnDef<FullCall>[] = [
     header: "Phone Number",
     cell: ({ row }) => (
       <div>
-        <p className="text-primary font-bold italic">
-          {formatPhoneNumber(
-            row.original?.lead
-              ? row.original?.lead.cellPhone
-              : row.original?.from
-          )}
-        </p>
+        {row.original?.lead ? (
+          <Link
+            className="text-primary font-bold italic"
+            href={`/leads/${row.original.lead.id}`}
+          >
+            {formatPhoneNumber(row.original?.lead.cellPhone)}
+          </Link>
+        ) : (
+          <span className="text-primary font-bold italic">
+            {formatPhoneNumber(row.original.from)}
+          </span>
+        )}
 
         <div className="flex gap-2 items-center">
           {row.original.direction.toLowerCase() === "inbound" ? (
@@ -123,15 +129,8 @@ export const columns: ColumnDef<FullCall>[] = [
   },
 
   {
-    header: "Recording",
+    header: "Actions",
     id: "actions",
-    cell: ({ row }) => (
-      <CallHistoryActions
-        id={row.original.id}
-        userId={row.original.userId}
-        shared={row.original.shared}
-        recordUrl={row.original.recordUrl!}
-      />
-    ),
+    cell: ({ row }) => <CallHistoryActions call={row.original} />,
   },
 ];

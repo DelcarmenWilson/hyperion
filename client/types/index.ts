@@ -35,7 +35,7 @@ import {
   FullChat,
   FullChatMessage,
 } from "./message";
-import { FullPhoneNumber, PhoneType, Voicemail } from "./phone";
+import { FullPhoneNumber, PhoneType } from "./phone";
 import {
   HalfUser,
   ShortUser,
@@ -149,7 +149,7 @@ export type {
   FullChatMessage,
 };
 //PHONE
-export type { FullPhoneNumber, PhoneType, Voicemail };
+export type { FullPhoneNumber, PhoneType };
 
 //USER
 export type {

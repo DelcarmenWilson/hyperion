@@ -555,7 +555,7 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id, firstName, lastName, email, address, city, state, zipCode } =
+  const { id, firstName, lastName, cellPhone, email, address, city, state, zipCode } =
     validatedFields.data;
   const user = await currentUser();
   if (!user?.id || !user?.email) {
@@ -567,7 +567,7 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
     return { error: "Lead does not exist" };
   }
 
-  if (user.id != existingLead.userId) {
+  if (user.id != existingLead.userId || user.id==existingLead.assistantId) {
     return { error: "Unauthorized" };
   }
 
@@ -576,7 +576,9 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
     data: {
       firstName,
       lastName,
+      cellPhone:reFormatPhoneNumber(cellPhone),
       email,
+
       address,
       city,
       state,
@@ -613,7 +615,7 @@ export const leadUpdateByIdGeneralInfo = async (
     return { error: "Lead does not exist" };
   }
 
-  if (user.id != existingLead.userId) {
+  if (user.id != existingLead.userId || user.id==existingLead.assistantId) {
     return { error: "Unauthorized" };
   }
   let dob = dateOfBirth;

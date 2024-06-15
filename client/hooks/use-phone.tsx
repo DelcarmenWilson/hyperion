@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { FullLead, FullLeadNoConvo, Voicemail } from "@/types";
+import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 
@@ -16,10 +16,11 @@ type phoneStore = {
   onPhoneOutOpen: (e?: FullLeadNoConvo, c?: TwilioShortConference) => void;
   onPhoneOutClose: () => void;
 
-  isVoicemailOpen: boolean;
-  onVoicemailOpen: (e: Voicemail) => void;
-  onVoicemailClose: () => void;
-  voicemail?: Voicemail;
+  isCallOpen: boolean;
+  onCallOpen: (e: FullCall, t?: string) => void;
+  onCallClose: () => void;
+  call?: FullCall;
+  callType?: string;
 
   lead?: FullLeadNoConvo;
   leads?: FullLead[];
@@ -41,7 +42,7 @@ export const usePhone = create<phoneStore>((set) => ({
   isPhoneInOpen: false,
   isPhoneDialerOpen: false,
   isPhoneOutOpen: false,
-  isVoicemailOpen: false,
+  isCallOpen: false,
   onPhoneInOpen: () => set({ isPhoneInOpen: true }),
   onPhoneInClose: () => set({ isPhoneInOpen: false }),
   onPhoneDialerOpen: (e, f) =>
@@ -57,8 +58,9 @@ export const usePhone = create<phoneStore>((set) => ({
 
   onPhoneOutClose: () => set({ isPhoneOutOpen: false }),
 
-  onVoicemailOpen: (e) => set({ isVoicemailOpen: true, voicemail: e }),
-  onVoicemailClose: () => set({ isVoicemailOpen: false }),
+  onCallOpen: (e, t = "call") =>
+    set({ isCallOpen: true, call: e, callType: t }),
+  onCallClose: () => set({ isCallOpen: false }),
 
   onSetLead: (e) => set({ lead: e }),
   onSetLeads: (e) => set({ leads: e }),

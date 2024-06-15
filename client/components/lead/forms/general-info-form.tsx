@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { LeadGeneralSchema, LeadGeneralSchemaType } from "@/schemas/lead";
+import { Gender, MaritalStatus } from "@prisma/client";
+import { LeadGeneralInfo } from "@/types";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import { LeadGeneralSchema, LeadGeneralSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -25,12 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Gender, MaritalStatus } from "@prisma/client";
-
-import { LeadGeneralInfo } from "@/types";
-import { leadUpdateByIdGeneralInfo } from "@/actions/lead";
 
 import { Switch } from "@/components/ui/switch";
+import { leadUpdateByIdGeneralInfo } from "@/actions/lead";
 
 type GeneralInfoFormProps = {
   info: LeadGeneralInfo;
@@ -44,7 +43,6 @@ export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
     resolver: zodResolver(LeadGeneralSchema),
     defaultValues: info,
   });
-
   const onCancel = () => {
     form.clearErrors();
     form.reset();
@@ -53,23 +51,21 @@ export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
 
   const onSubmit = async (values: LeadGeneralSchemaType) => {
     setLoading(true);
-    await leadUpdateByIdGeneralInfo(values).then((data) => {
-      if (data.success) {
-        userEmitter.emit("generalInfoUpdated", {
-          ...data.success,
-          dateOfBirth: data.success.dateOfBirth?.toString(),
-          weight: data.success.weight?.toString(),
-          height: data.success.height?.toString(),
-          income: data.success.income?.toString(),
-        });
-        onClose();
-      }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
-    });
+    const updatedLead = await leadUpdateByIdGeneralInfo(values);
 
+    if (updatedLead.success) {
+      userEmitter.emit("generalInfoUpdated", {
+        ...updatedLead.success,
+        dateOfBirth: updatedLead.success.dateOfBirth?.toString(),
+        weight: updatedLead.success.weight?.toString(),
+        height: updatedLead.success.height?.toString(),
+        income: updatedLead.success.income?.toString(),
+      });
+      onClose();
+    } else {
+      form.reset();
+      toast.error(updatedLead.error);
+    }
     setLoading(false);
   };
   return (

@@ -29,16 +29,17 @@ export const PipelineCard = ({
   sendPipeline,
 }: PipelineCardProps) => {
   const { onPhoneDialerOpen } = usePhone();
+  const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
   const [index, setIndex] = useState(pipeline.index);
 
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
-  const setTimezone = (timeZone: string) => {
-    setLeads(
-      timeZone == "%" ? initLeads : initLeads.filter((e) => e.zone == timeZone)
-    );
-  };
+  // const setTimezone = (timeZone: string) => {
+  //   setLeads(
+  //     timeZone == "%" ? initLeads : initLeads.filter((e) => e.zone == timeZone)
+  //   );
+  // };
   const onReset = () => {
     setIndex(0);
     pipelineUpdateByIdIndex(pipeline.id, 0);
@@ -57,6 +58,12 @@ export const PipelineCard = ({
 
   //   divRef.current?.scrollTo(0, indexRef.current?.offsetTop! - 15);
   // }, [index]);
+
+  useEffect(() => {
+    setLeads(
+      timeZone == "%" ? initLeads : initLeads.filter((e) => e.zone == timeZone)
+    );
+  }, [initLeads, timeZone]);
   return (
     <section className="flex flex-col border border-primary/50 shadow-inner h-[400px]">
       <div className="bg-primary text-background flex justify-between items-center px-2">
@@ -67,7 +74,7 @@ export const PipelineCard = ({
           onReset={onReset}
         />
       </div>
-      <Select onValueChange={setTimezone} defaultValue="%">
+      <Select onValueChange={setTimeZone} defaultValue="%">
         <SelectTrigger>
           <Clock size={16} />
           <SelectValue placeholder="Filter Timezone" />

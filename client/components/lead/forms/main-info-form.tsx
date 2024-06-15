@@ -119,6 +119,25 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
             />
           </div>
 
+          {/* CELLPHONE */}
+          <FormField
+            control={form.control}
+            name="cellPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone #</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="347-859-8547"
+                    disabled={loading}
+                    autoComplete="phone"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* EMAIL */}
           <FormField
             control={form.control}

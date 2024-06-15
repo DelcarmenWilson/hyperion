@@ -38,7 +38,7 @@ export const columns: ColumnDef<FullAppointment>[] = [
     header: "Appointment with",
     cell: ({ row }) => (
       <div>
-        <p className="capitalize">
+        <p className="capitalize font-bold">
           {row.original.lead.firstName} {row.original.lead.lastName}
         </p>
 
@@ -58,7 +58,11 @@ export const columns: ColumnDef<FullAppointment>[] = [
     cell: ({ row }) => (
       <div>
         <Badge variant="outlineprimary">{row.original.status}</Badge>
-        <p className="capitalize">{formatDateTime(row.original.startDate)}</p>
+        <p>{formatDateTime(row.original.startDate)}</p>
+        <p>
+          {" "}
+          <span className="font-bold">Local Time:</span> {row.original.time}
+        </p>
       </div>
     ),
   },
@@ -85,13 +89,13 @@ export const columns: ColumnDef<FullAppointment>[] = [
     cell: ({ row }) => (
       <div>
         <p>
-          D.O.B:
+          D.O.B:{" "}
           <span className="text-primary italic font-bold">
-            {formatDob(row.original.lead.dateOfBirth)}
+            {row.original.lead.dateOfBirth}
           </span>
         </p>
         <p>
-          Age:
+          Age:{" "}
           <span className="text-primary italic font-bold">
             {row.original.lead.dateOfBirth
               ? getAge(row.original.lead.dateOfBirth)

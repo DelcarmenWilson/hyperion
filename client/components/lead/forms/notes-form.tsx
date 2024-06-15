@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
-
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { userEmitter } from "@/lib/event-emmiter";
+
+import { User } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { leadUpdateByIdNotes, leadUpdateByIdShare } from "@/actions/lead";
-import { User } from "@prisma/client";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { Ghost, X } from "lucide-react";
 
 type NoteFormProps = {
   leadId: string;
@@ -30,19 +30,16 @@ export const NotesForm = ({
   const onNotesUpdated = async () => {
     if (!notes) return;
     setLoading(true);
-    await leadUpdateByIdNotes(leadId, notes).then((data) => {
-      if (data.success) {
-        userEmitter.emit(
-          "newNote",
-          data.success.id,
-          data.success.notes as string
-        );
-        toast.success("Lead notes have been updated");
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const updatedNotes = await leadUpdateByIdNotes(leadId, notes);
+
+    if (updatedNotes.success) {
+      userEmitter.emit(
+        "newNote",
+        updatedNotes.success.id,
+        updatedNotes.success.notes as string
+      );
+      toast.success("Lead notes have been updated");
+    } else toast.error(updatedNotes.error);
     setLoading(false);
   };
   const onUnShareLead = () => {
