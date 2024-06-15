@@ -1,33 +1,46 @@
 "use client";
 import React, { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { AudioPlayer } from "@/components/custom/audio-player";
-import { Button } from "@/components/ui/button";
-import { callUpdateByIdShare } from "@/actions/call";
 import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
+import { FullCall } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AudioPlayer } from "@/components/custom/audio-player";
+import { callUpdateByIdShare } from "@/actions/call";
+import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
+import { usePhone } from "@/hooks/use-phone";
+import axios from "axios";
 
 type CallHistoryActionsProps = {
-  id: string;
-  userId: string;
-  shared: boolean;
-  recordUrl: string;
+  call: FullCall;
 };
 
-export const CallHistoryActions = ({
-  id,
-  userId,
-  shared,
-  recordUrl,
-}: CallHistoryActionsProps) => {
+export const CallHistoryActions = ({ call }: CallHistoryActionsProps) => {
   const user = useCurrentUser();
-  const [isShared, setIsShared] = useState(shared);
+  const { onCallOpen, onPhoneOutOpen } = usePhone();
+  const [isShared, setIsShared] = useState(call.shared);
   if (!user) return null;
-  const show: boolean = user.id == userId || user?.role == "MASTER";
+  const show: boolean = user.id == call.userId || user?.role == "MASTER";
+
+  const onCallBack = async () => {
+    //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
+    const response = await axios.post("/api/leads/details/by-id", {
+      leadId: call.lead?.id,
+    });
+    const lead = response.data;
+    onPhoneOutOpen(lead);
+  };
 
   const OnShareToggle = () => {
     const localShared = !isShared;
     setIsShared(localShared);
-    callUpdateByIdShare(id, localShared).then((data) => {
+    callUpdateByIdShare(call.id, localShared).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
@@ -38,15 +51,44 @@ export const CallHistoryActions = ({
   };
   if (!show) return null;
   return (
-    <div>
-      {recordUrl && (
-        <div className="flex flex-col gap-1 items-start justify-center">
-          <AudioPlayer src={recordUrl} />
-          <Button variant="link" className="p-0" onClick={OnShareToggle}>
-            {isShared ? "Unshare" : "Share"}
-          </Button>
-        </div>
-      )}
-    </div>
+    // <div>
+    //   {call.recordUrl && (
+    //     <div className="flex flex-col gap-1 items-start justify-center">
+    //       <AudioPlayer src={call.recordUrl} />
+    //       <Button variant="link" className="p-0" onClick={OnShareToggle}>
+    //         {isShared ? "Unshare" : "Share"}
+    //       </Button>
+    //     </div>
+    //   )}
+    // </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant={call.recordUrl ? "default" : "ghost"} size="icon">
+          <MoreHorizontal size={16} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center">
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => onCallOpen(call)}
+        >
+          <Eye size={16} />
+          Details
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer gap-2" onClick={onCallBack}>
+          <Phone size={16} />
+          Call Back
+        </DropdownMenuItem>
+        {call.recordUrl && (
+          <DropdownMenuItem
+            className="cursor-pointer gap-2"
+            onClick={OnShareToggle}
+          >
+            <Share size={16} />
+            {isShared ? "Unshare Recording" : "Share Recording"}
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

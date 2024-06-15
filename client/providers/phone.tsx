@@ -4,12 +4,12 @@ import { Connection, Device } from "twilio-client";
 import { PhoneOutModal } from "@/components/phone/phone-out-modal";
 import { PhoneInModal } from "@/components/phone/phone-in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
-import { Voicemail } from "@/types";
-import { VoicemailModal } from "@/components/phone/voicemail/modal";
+import { FullCall } from "@/types";
+import { CallModal } from "@/components/phone/call-modal";
 
 type PhoneContextProviderProps = {
   token: string;
-  initVoicemails: Voicemail[] | null;
+  initVoicemails: FullCall[] | null;
   children: React.ReactNode;
 };
 
@@ -18,8 +18,8 @@ type PhoneContext = {
   setPhone: React.Dispatch<React.SetStateAction<Device | null>>;
   call: Connection | null;
   setCall: React.Dispatch<React.SetStateAction<Connection | null>>;
-  voicemails: Voicemail[] | null;
-  setVoicemails: React.Dispatch<React.SetStateAction<Voicemail[] | null>>;
+  voicemails: FullCall[] | null;
+  setVoicemails: React.Dispatch<React.SetStateAction<FullCall[] | null>>;
 };
 
 export const PhoneContext = createContext<PhoneContext | null>(null);
@@ -31,7 +31,7 @@ export default function PhoneContextProvider({
 }: PhoneContextProviderProps) {
   const [phone, setPhone] = useState<Device | null>(null);
   const [call, setCall] = useState<Connection | null>(null);
-  const [voicemails, setVoicemails] = useState<Voicemail[] | null>(
+  const [voicemails, setVoicemails] = useState<FullCall[] | null>(
     initVoicemails
   );
 
@@ -56,7 +56,7 @@ export default function PhoneContextProvider({
       <PhoneOutModal />
       <PhoneInModal />
       <PhoneDialerModal />
-      <VoicemailModal />
+      <CallModal />
     </PhoneContext.Provider>
   );
 }

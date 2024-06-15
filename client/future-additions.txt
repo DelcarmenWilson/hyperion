@@ -5,6 +5,13 @@ Jhonnnnnni
     -identity and financial information should be hidden for the lead shared holder
     -withing the boking page ask only the necessary question to a new lead coming in.
 
+LEADS PAGE
+    - be able to update the leads phone number in the general info section
+     -- unlock the assistant account o be able to update the lead information
+     
+TWILIO
+     --fix issue with token revalidation
+
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    
     --work on implementing all the filupload with s3
@@ -19,8 +26,7 @@ Jhonnnnnni
 -- work on the calendar some more before uploading
 
 Voicemails - 
-    - let agent call bacl lead directly from the voicemail (ui done)
-
+    - let agent call back lead directly from the voicemail (ui done)
 
 Lead 
     -- the leads birthday is not showing up correctly
@@ -32,8 +38,6 @@ Chat
     
 --revisit the expense sheet
     -- need to send income to back end
-
---fix issue with token revalidation
 
 IN SALE
     -- finish the intake form

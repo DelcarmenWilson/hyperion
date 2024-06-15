@@ -56,18 +56,14 @@ export const MainInfoClient = ({
       });
     }
   };
-  const onSendInitialSms = () => {
+  const onSendInitialSms = async () => {
     if (!info) return;
-    smsCreateInitial(info.id).then((data) => {
-      router.refresh();
-      if (data?.error) {
-        toast.error(data.error);
-      }
-      if (data?.success) {
-        setInitConvo(true);
-        toast.success(data.success);
-      }
-    });
+    const createdSms = await smsCreateInitial(info.id);
+    router.refresh();
+    if (createdSms.success) {
+      setInitConvo(true);
+      toast.success(createdSms.success);
+    } else toast.error(createdSms.error);
   };
 
   useEffect(() => {

@@ -5,6 +5,9 @@ import {
   
   export type FullAppointment = Appointment & {
     lead: Lead;
+    zone?:string;
+    time?: string
+    
   };
 
 //APOINTMENT CONTEXT

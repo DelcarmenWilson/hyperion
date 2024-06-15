@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import styles from "./audioplayer.module.css";
+import { calculateTime } from "@/formulas/dates";
 
 type AudioPlayerHpProps = {
   src: string | undefined;
@@ -36,32 +37,13 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const [currentTime, setCurrentTime] = useState(0);
 
   // references
-  const audioPlayer = useRef<HTMLAudioElement>(null); // reference our audio component
-  const progressBar = useRef<HTMLProgressElement>(null); // reference our progress bar
-  const animationRef = useRef(0); // reference the animation
-
-  useEffect(() => {
-    if (!audioPlayer.current || !progressBar.current) return;
-    const seconds = Math.floor(audioPlayer.current.duration);
-    setDuration(seconds);
-    progressBar.current.max = seconds;
-  }, [
-    audioPlayer?.current?.onloadedmetadata,
-    audioPlayer?.current?.readyState,
-  ]);
-
-  const calculateTime = (secs: number) => {
-    const minutes = Math.floor(secs / 60);
-    const returnedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const seconds = Math.floor(secs % 60);
-    const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    return `${returnedMinutes}:${returnedSeconds}`;
-  };
+  const audioPlayer = useRef<HTMLAudioElement>(null);
+  const progressBar = useRef<HTMLProgressElement>(null);
+  const animationRef = useRef(0);
 
   const togglePlayPause = () => {
     if (!audioPlayer.current || !progressBar.current) return;
     const prevValue = isPlaying;
-    console.log(prevValue);
     setIsPlaying(!prevValue);
     if (!prevValue) {
       audioPlayer.current.play();
@@ -102,19 +84,6 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
     setCurrentTime(pnum);
   };
 
-  const backThirty = () => {
-    if (!progressBar.current) return;
-    const pnum = Number(progressBar.current.value);
-    progressBar.current.value = pnum - 30;
-    changeRange();
-  };
-
-  const forwardThirty = () => {
-    if (!progressBar.current) return;
-    progressBar.current.value = progressBar.current.value + 30;
-    changeRange();
-  };
-
   const onStep = (num: number) => {
     if (!progressBar.current) return;
     progressBar.current.value = progressBar.current.value + num;
@@ -126,9 +95,19 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
     setIsPlaying(false);
     changeRange();
   };
+
+  useEffect(() => {
+    if (!audioPlayer.current || !progressBar.current) return;
+    const seconds = Math.floor(audioPlayer.current.duration);
+    setDuration(seconds);
+    // progressBar.current.max = seconds;
+  }, [
+    audioPlayer?.current?.onloadedmetadata,
+    audioPlayer?.current?.readyState,
+  ]);
   if (role == "ASSISTANT") return null;
   return (
-    <div className=" bg-secondary p-2">
+    <div className="bg-secondary w-full p-2">
       <audio ref={audioPlayer} src={src} preload="metadata" />
       <div className="flex gap-2 items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => onStep(-30)}>
@@ -150,6 +129,7 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
         <progress
           className={styles.progressBar}
           defaultValue="0"
+          max={0}
           ref={progressBar}
           onChange={changeRange}
         />
