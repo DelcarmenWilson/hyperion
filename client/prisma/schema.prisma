@@ -84,8 +84,8 @@ model User {
   sharedUsers Lead[] @relation("LeadSharedUser")
 
   //CHAT MESSAGES
-  userOne      Chat[]        @relation("uesrOneChat")
-  userTwo      Chat[]        @relation("uesrTwoChat")
+  userOne      Chat[]        @relation("userOneChat")
+  userTwo      Chat[]        @relation("userTwoChat")
   chatMessages ChatMessage[]
 
   //USER COLUMNS
@@ -175,10 +175,11 @@ model ChatSettings {
   defaultPrompt   String @db.LongText
   defaultFunction String @db.LongText
 
-  autoChat            Boolean @default(false)
-  coach               Boolean @default(false)
-  messageNotification String  @default("access-allowed")
-  dataStyle           String  @default("list")
+  autoChat                    Boolean @default(false)
+  coach                       Boolean @default(false)
+  messageNotification         String  @default("access-allowed")
+  messageInternalNotification String  @default("bubble-pop-up")
+  dataStyle                   String  @default("list")
 
   currentCall  String?
   voicemailIn  String?
@@ -191,6 +192,7 @@ model NotificationSettings {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  masterSwitch String  @default("on")
   phoneNumber  String
   calls        Boolean @default(false)
   appointments Boolean @default(false)
@@ -877,21 +879,24 @@ model Task {
 }
 
 model Chat {
-  id          String        @id @default(cuid())
-  name        String
-  icon        String?
-  isGroup     Boolean
-  messages    ChatMessage[]
-  lastMessage String?       @db.LongText
+  id       String        @id @default(cuid())
+  name     String
+  icon     String?
+  isGroup  Boolean
+  messages ChatMessage[]
+
+  lastMessageId String?      @unique
+  lastMessage   ChatMessage? @relation("lastChatMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
 
   userOneId String
-  userOne   User   @relation("uesrOneChat", fields: [userOneId], references: [id])
+  userOne   User   @relation("userOneChat", fields: [userOneId], references: [id])
 
   userTwoId String
-  userTwo   User     @relation("uesrTwoChat", fields: [userTwoId], references: [id])
+  userTwo   User     @relation("userTwoChat", fields: [userTwoId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    String?
+
+  unread Int @default(0)
 }
 
 model ChatMessage {
@@ -900,11 +905,15 @@ model ChatMessage {
   chatId String
   chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
+  lastMessage Chat? @relation("lastChatMessage")
+
   content    String? @db.LongText
   attachment String?
 
   senderId String
   sender   User   @relation(fields: [senderId], references: [id])
+
+  read Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -26,12 +26,16 @@ export type FullConversation = Conversation & {
 export type ShortChat = Chat & {
   userOne: User;
   userTwo: User;
+  lastMessage:ChatMessage | null
 };
 export type FullChat = ShortChat & {
-  userOne: User;
-  userTwo: User;
   messages: FullChatMessage[];
 };
 export type FullChatMessage = ChatMessage & {
   sender: User;
+};
+export type UnreadShortChat = Chat & {
+  userOne: User;
+  userTwo: User;
+  lastMessage:FullChatMessage | null  
 };

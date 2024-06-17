@@ -13,8 +13,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { ChatCard } from "./card";
 import { ChatUsersList } from "./form";
-import { chatInsert } from "@/actions/chat";
-import { chatGetById } from "@/data/chat";
+import { chatGetById, chatInsert } from "@/actions/chat";
 import { FullChatMessage, ShortChat } from "@/types";
 
 export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
@@ -31,7 +30,7 @@ export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
         if (!convo || index == -1) {
           return current;
         }
-        convo.lastMessage = message.content;
+        convo.lastMessage = message;
         convo.updatedAt = message.updatedAt;
         current.unshift(current.splice(index, 1)[0]);
 

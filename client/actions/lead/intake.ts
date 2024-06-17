@@ -13,6 +13,7 @@ import {
   IntakeOtherInfoSchemaType,
   IntakeMedicalInfoSchemaType,
   IntakeMedicalInfoSchema,
+  LeadPolicySchemaType,
 } from "@/schemas/lead";
 
 //LEAD
@@ -76,19 +77,7 @@ export const leadGetByIdIntakeDoctorInfo = async (leadId: string) => {
         leadId,
       },
     });
-    return leadDoctor;
-  } catch {
-    return null;
-  }
-};
-export const leadGetByIdIntakeBankInfo = async (leadId: string) => {
-  try {
-    const leadDoctor = await db.leadBank.findUnique({
-      where: {
-        leadId,
-      },
-    });
-    return leadDoctor;
+    return leadDoctor ;
   } catch {
     return null;
   }
@@ -122,6 +111,31 @@ export const leadGetByIdIntakeMedicalInfo = async (leadId: string) => {
       },
     });
     return leadMedical as IntakeMedicalInfoSchemaType;
+  } catch {
+    return null;
+  }
+};
+export const leadGetByIdIntakeBankInfo = async (leadId: string) => {
+  try {
+    const leadBank = await db.leadBank.findUnique({
+      where: {
+        leadId,
+      },
+    });
+    return leadBank;
+  } catch {
+    return null;
+  }
+};
+
+export const leadGetByIdIntakePolicyInfo = async (leadId: string) => {
+  try {
+    const leadPolicy = await db.leadPolicy.findUnique({
+      where: {
+        leadId,
+      },
+    });
+    return leadPolicy as LeadPolicySchemaType;
   } catch {
     return null;
   }

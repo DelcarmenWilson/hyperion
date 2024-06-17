@@ -6,9 +6,9 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 import { toast } from "sonner";
 
-import { CoachNotification } from "./phone/coach-notification";
+import { CoachNotification } from "../phone/coach-notification";
 import { TwilioShortConference } from "@/types";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Play } from "lucide-react";
 
 export const MainNav = () => {

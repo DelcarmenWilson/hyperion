@@ -1,6 +1,6 @@
 import { ChatsClient } from "./components/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { chatsGetByUserId } from "@/data/chat";
+import { chatsGetByUserId } from "@/actions/chat";
 import { EmptyCard } from "@/components/reusable/empty-card";
 
 const ChatsPage = async () => {

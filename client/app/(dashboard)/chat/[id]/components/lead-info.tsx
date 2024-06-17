@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
+import { LeadMainInfo, LeadGeneralInfo, FullLeadNoConvo } from "@/types";
+import { LeadPolicySchemaType } from "@/schemas/lead";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -14,12 +16,6 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
-import {
-  LeadMainInfo,
-  LeadGeneralInfo,
-  LeadPolicyInfo,
-  FullLeadNoConvo,
-} from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -71,7 +67,7 @@ export const ConversationLeadInfo = ({
     leadName: leadName,
   };
 
-  const leadPolicy: LeadPolicyInfo = {
+  const leadPolicy: LeadPolicySchemaType = {
     leadId: lead.id,
     carrier: lead.policy?.carrier!,
     policyNumber: lead.policy?.policyNumber!,

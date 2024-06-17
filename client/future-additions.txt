@@ -30,7 +30,7 @@ Voicemails -
 
 Lead 
     -- the leads birthday is not showing up correctly
-    -- on the same token check all the dats and make sure the same syntax is used throught the site
+    
 Chat
     - make sure the autochat does not respond to similar messages that are sent back to back
     - change company name to strongSide

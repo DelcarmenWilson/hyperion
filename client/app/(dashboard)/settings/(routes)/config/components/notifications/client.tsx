@@ -2,6 +2,7 @@
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ export const NotificationClient = ({
 }: {
   notificationSettings: NotificationSettings;
 }) => {
+  const { update } = useSession();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<NotificationSettingsSchemaType>({
@@ -43,12 +45,10 @@ export const NotificationClient = ({
     startTransition(() => {
       notificationSettingsUpdateByUserId(values)
         .then((data) => {
-          if (data.error) {
-            toast.error(data.error);
-          }
           if (data.success) {
             toast.success(data.success);
-          }
+            update();
+          } else toast.error(data.error);
         })
         .catch(() => {
           toast.error("Something went wrong");
@@ -73,7 +73,8 @@ export const NotificationClient = ({
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="345-457-5869"
+                    className="w-[50%]"
+                    placeholder="3454575869"
                     disabled={isPending}
                     autoComplete="phoneNumber"
                   />
@@ -177,7 +178,7 @@ export const NotificationClient = ({
               />
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end mt-2">
             <Button disabled={isPending} type="submit">
               Save
             </Button>

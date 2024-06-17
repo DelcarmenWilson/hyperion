@@ -12,6 +12,7 @@ export const ChatUserSchema = z.object({
   defaultFunction: z.optional(z.string()),
   autoChat: z.boolean(),
   messageNotification: z.string(),
+  messageInternalNotification: z.string(),
   coach: z.boolean(),
 });
 export type ChatUserSchemaType = z.infer<typeof ChatUserSchema>;

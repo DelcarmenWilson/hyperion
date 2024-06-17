@@ -1,4 +1,4 @@
-import { chatGetById, chatsGetByUserId } from "@/data/chat";
+import { chatGetById, chatsGetByUserId } from "@/actions/chat";
 import ChatClient from "./components/client";
 import { ChatsClient } from "../components/client";
 import { Card, CardContent } from "@/components/ui/card";

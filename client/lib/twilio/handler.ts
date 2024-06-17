@@ -41,12 +41,14 @@ export const voiceResponse = async (call: TwilioCall) => {
     conferenceId,
     callSidToCoach,
     voicemailIn,
+    masterSwitch,
+    personalNumber
   } = call;
 
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-      twiml.play("/sounds/SSF-Greeting-2.mp3")
+       twiml.play("/sounds/SSF-Greeting-2.mp3")
     //   twiml.say(
     //   { voice:"Polly.Amy" },
     //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
@@ -59,8 +61,18 @@ export const voiceResponse = async (call: TwilioCall) => {
       recordingStatusCallback: "/api/twilio/voice/recording",
       action: "/api/twilio/voice/action",
       timeout: 10,
-    });
+      //TODO remove this if it doesn work
+      callerId:masterSwitch=="call-forward"?personalNumber:from
+    },);
+    
+    if(masterSwitch=="on"){
       inDial.client(agentId);
+    }else if(masterSwitch=="call-forward"){      
+      inDial.number(personalNumber!)
+    } else{
+      twiml.redirect("/api/twilio/voice/action")
+    }   
+      
       break;
     case "outbound":
       twiml.dial().conference({

@@ -61,11 +61,14 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.messageNotification=token.messageNotification as string
+        session.user.messageInternalNotification=token.messageInternalNotification as string
         session.user.dataStyle=token.dataStyle as string
         session.user.team=token.team as string
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
         session.user.isOAuth=token.isOAuth as boolean
         session.user.image= token.picture as string
+        session.user.masterSwitch= token.masterSwitch as string
+        session.user.personalNumber= token.personalNumber as string
       }
       return session;
     },
@@ -82,11 +85,14 @@ export const {
       token.email = existingUser.email;
       token.role = existingUser.role;
       token.messageNotification=existingUser.chatSettings?.messageNotification
+      token.messageInternalNotification=existingUser.chatSettings?.messageInternalNotification
       token.dataStyle=existingUser.chatSettings?.dataStyle
       token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
       token.picture=existingUser.image
+      token.masterSwitch=existingUser.notificationSettings?.masterSwitch
+      token.personalNumber=existingUser.notificationSettings?.phoneNumber      
       return token;
     },
   },

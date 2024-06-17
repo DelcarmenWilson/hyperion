@@ -4,12 +4,7 @@ import { Pencil } from "lucide-react";
 
 import { toast } from "sonner";
 
-import {
-  FullLead,
-  LeadGeneralInfo,
-  LeadMainInfo,
-  LeadPolicyInfo,
-} from "@/types";
+import { FullLead, LeadGeneralInfo, LeadMainInfo } from "@/types";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
@@ -23,6 +18,7 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
+import { LeadPolicySchemaType } from "@/schemas/lead";
 
 type LeadClientProps = {
   lead: FullLead;
@@ -61,7 +57,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     nextAppointment: lead?.appointments[0]?.startDate,
   };
 
-  const leadPolicy: LeadPolicyInfo = {
+  const leadPolicy: LeadPolicySchemaType = {
     leadId: lead.id,
     carrier: lead.policy?.carrier!,
     policyNumber: lead.policy?.policyNumber!,
@@ -74,17 +70,17 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     updatedAt: lead.policy?.updatedAt!,
   };
 
-  const onSetDefaultNumber = (e: string) => {
-    if (e != defaultNumber) {
-      setDefaultNumber(e);
-      leadUpdateByIdDefaultNumber(lead.id, e).then((data) => {
-        if (data.success) {
-          toast.success(data.success);
-        }
-        if (data.error) {
-          toast.error(data.error);
-        }
-      });
+  const onSetDefaultNumber = async (phoneNumber: string) => {
+    if (phoneNumber != defaultNumber) {
+      setDefaultNumber(phoneNumber);
+      const updatedNumber = await leadUpdateByIdDefaultNumber(
+        lead.id,
+        phoneNumber
+      );
+
+      if (updatedNumber.success) {
+        toast.success(updatedNumber.success);
+      } else toast.error(updatedNumber.error);
     }
     setEdit(false);
   };

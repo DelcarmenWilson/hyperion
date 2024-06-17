@@ -17,9 +17,10 @@ import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
 import { PhoneScript } from "./script";
-import { LeadMainInfo, LeadGeneralInfo, LeadPolicyInfo } from "@/types";
+import { LeadMainInfo, LeadGeneralInfo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
+import { LeadPolicySchemaType } from "@/schemas/lead";
 
 type PhoneLeadInfo = {
   open?: boolean;
@@ -71,7 +72,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
       : undefined,
   };
 
-  const leadPolicy: LeadPolicyInfo = {
+  const leadPolicy: LeadPolicySchemaType = {
     leadId: lead.id,
     carrier: lead.policy?.carrier!,
     policyNumber: lead.policy?.policyNumber!,
