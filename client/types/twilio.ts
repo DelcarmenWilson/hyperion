@@ -22,16 +22,20 @@ export type TwilioCall = {
   from: string;
   callerName: string;
   callStatus: string;
-  agentNumber: string;
 
+  agentNumber: string;
   agentId: string;
   agentName:string;
+
   coach: string;
   caller: string;
   currentCall?: string | null;
   conferenceId?:string;
   callSidToCoach?:string;
   voicemailIn?: string | null;
+
+  masterSwitch?:string
+  personalNumber?:string
 };
 
 export type TwilioCallResult = {

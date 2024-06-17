@@ -1,18 +1,17 @@
 "use client";
 import Image from "next/image";
 import { Menu, MessageSquarePlus, Smartphone } from "lucide-react";
+import { useSidebar } from "@/store/use-sidebar";
+import Link from "next/link";
 
 import { usePhone } from "@/hooks/use-phone";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { useSidebar } from "@/store/use-sidebar";
+import { Button } from "@/components/ui/button";
+
 import { MainNav } from "./main-nav";
+import { MasterSwitch } from "./master-switch";
+import { NavMessages } from "./nav-messages";
 
-type NavBarProps = {
-  showPhone?: boolean;
-};
-
-const NavBar = ({ showPhone = true }: NavBarProps) => {
+const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
   const { collapsed, onToggleCollapse } = useSidebar((state) => state);
   const { onPhoneOutOpen } = usePhone();
 
@@ -43,6 +42,8 @@ const NavBar = ({ showPhone = true }: NavBarProps) => {
         </div>
         {showPhone && (
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <NavMessages />
+            <MasterSwitch />
             <Button asChild>
               <Link
                 className="flex items-center justify-center gap-2"

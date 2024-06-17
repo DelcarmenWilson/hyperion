@@ -1,6 +1,17 @@
 "use client";
 import React, { ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+
+import { LeadBeneficiary } from "@prisma/client";
+import {
+  IntakeBankInfoSchemaType,
+  IntakeDoctorInfoSchemaType,
+  IntakeMedicalInfoSchemaType,
+  IntakeOtherInfoSchemaType,
+  IntakePersonalInfoSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Table,
@@ -11,38 +22,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { PersonalInfoForm } from "./personal-info-form";
 import { Button } from "@/components/ui/button";
+
+import { PersonalInfoForm } from "./personal-info-form";
+import { DoctorInfoForm } from "./doctor-info-form";
+import { BankInfoForm } from "./bank-info-form";
+import { OtherInfoForm } from "./other-info-form";
+import { PolicyInfoForm } from "../policy-info-form";
+
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TextGroup } from "@/components/reusable/text-group";
+
+import { formatDate, formatDob } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { USDollar } from "@/formulas/numbers";
+
+import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 import {
   leadGetByIdIntakePersonalInfo,
   leadGetByIdIntakeDoctorInfo,
   leadGetByIdIntakeBankInfo,
   leadGetByIdIntakeOtherInfo,
   leadGetByIdIntakeMedicalInfo,
+  leadGetByIdIntakePolicyInfo,
 } from "@/actions/lead/intake";
-import {
-  IntakeBankInfoSchemaType,
-  IntakeDoctorInfoSchemaType,
-  IntakeMedicalInfoSchemaType,
-  IntakeOtherInfoSchemaType,
-  IntakePersonalInfoSchemaType,
-} from "@/schemas/lead";
-import { DoctorInfoForm } from "./doctor-info-form";
-import { BankInfoForm } from "./bank-info-form";
-import { OtherInfoForm } from "./other-info-form";
-import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
-import { LeadBeneficiary } from "@prisma/client";
-import { Separator } from "@/components/ui/separator";
-import { USDollar } from "@/formulas/numbers";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { TextGroup } from "@/components/reusable/text-group";
-import { formatDate, formatDob } from "@/formulas/dates";
+import { MedicalInfoForm } from "./medical-info-form";
 
 export const IntakeForm = ({ leadId }: { leadId: string }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
-    "personal" | "doctor" | "bank" | "other"
+    "personal" | "doctor" | "bank" | "other" | "policy" | "medical"
   >("personal");
 
   const { data: personal, isFetching: personalIsFectching } =
@@ -75,13 +85,21 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
       queryFn: () => leadGetByIdIntakeOtherInfo(leadId),
     });
 
+  const { data: policy, isFetching: policyIsFectching } =
+    useQuery<LeadPolicySchemaType | null>({
+      queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakePolicy"],
+      queryFn: () => leadGetByIdIntakePolicyInfo(leadId),
+    });
+
   const { data: medical, isFetching: medicalIsFectching } =
     useQuery<IntakeMedicalInfoSchemaType | null>({
       queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeMedicalInfo"],
       queryFn: () => leadGetByIdIntakeMedicalInfo(leadId),
     });
 
-  const setCurrentDialog = (type: "personal" | "doctor" | "bank" | "other") => {
+  const setCurrentDialog = (
+    type: "personal" | "doctor" | "bank" | "other" | "policy" | "medical"
+  ) => {
     setDialogType(type);
     setDialogOpen(true);
   };
@@ -119,6 +137,20 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
           {dialogType == "other" && (
             <OtherInfoForm
               info={other as IntakeOtherInfoSchemaType}
+              onClose={() => setDialogOpen(false)}
+            />
+          )}
+
+          {dialogType == "policy" && (
+            <PolicyInfoForm
+              policyInfo={policy as LeadPolicySchemaType}
+              onClose={() => setDialogOpen(false)}
+            />
+          )}
+          {dialogType == "medical" && (
+            <MedicalInfoForm
+              leadId={leadId}
+              info={medical as IntakeMedicalInfoSchemaType}
               onClose={() => setDialogOpen(false)}
             />
           )}
@@ -430,6 +462,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             />
           </SectionWrapper>
         </SkeletonWrapper>
+
         {/* DOCTOR INFORMATION*/}
         <SkeletonWrapper isLoading={doctorIsFectching}>
           <SectionWrapper
@@ -467,6 +500,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             </div>
           </SectionWrapper>
         </SkeletonWrapper>
+
         {/* BANK INFORMATION*/}
         <SkeletonWrapper isLoading={bankIsFectching}>
           <SectionWrapper
@@ -496,23 +530,53 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             </div>
           </SectionWrapper>
         </SkeletonWrapper>
+
         {/* FOR PRODUCERS ONLY*/}
-        <SkeletonWrapper isLoading={personalIsFectching}>
-          <SectionWrapper title="For Producers Only">
+        <SkeletonWrapper isLoading={policyIsFectching}>
+          <SectionWrapper
+            title="For Producers Only"
+            button={
+              <Button size="sm" onClick={() => setCurrentDialog("policy")}>
+                Edit
+              </Button>
+            }
+          >
             <div className="grid grid-cols-2 gap-2">
-              <TextGroup label="Life Insurance Plan" value="NEED TO FILL" />
-              <TextGroup label="Premium" value="NEED TO FILL" />
-              <TextGroup label="Face Amount" value="NEED TO FILL" />
-              <TextGroup label="Term Rider Amount" value="NEED TO FILL" />
-              <TextGroup label="LTC Amount" value="NEED TO FILL" />
-              <TextGroup label="Rating" value="NEED TO FILL" />
+              <TextGroup label="Carrier" value={policy?.carrier} />
+              <TextGroup label="Policy Number" value={policy?.policyNumber} />
+              <TextGroup label="Atatus" value={policy?.status} />
+              <TextGroup
+                label="Ap"
+                value={USDollar.format(parseInt(policy?.ap as string))}
+              />
+              <TextGroup
+                label="Commision"
+                value={USDollar.format(parseInt(policy?.commision as string))}
+              />
+              <TextGroup
+                label="Coverage Amount"
+                value={USDollar.format(
+                  parseInt(policy?.coverageAmount as string)
+                )}
+              />
+              <TextGroup
+                label="Start Date"
+                value={formatDate(policy?.startDate)}
+              />
             </div>
           </SectionWrapper>
         </SkeletonWrapper>
         {/*MEDICAL QUESTIONS*/}
 
         <SkeletonWrapper isLoading={medicalIsFectching}>
-          <SectionWrapper title="MEDICAL QUESTIONS">
+          <SectionWrapper
+            title="MEDICAL QUESTIONS"
+            button={
+              <Button size="sm" onClick={() => setCurrentDialog("medical")}>
+                Edit
+              </Button>
+            }
+          >
             <Question
               label="1.Do you have any health issues or concerns you’re going through?
               Any medications, hospitalizations, surgeries, doctors’ visits?"
@@ -606,7 +670,7 @@ const Question = ({ label, value }: QuestionProps) => {
   return (
     <div className="flex justify-between items-center">
       <p>{label}</p>
-      <div className="flex gap-2 items-center">{value}</div>
+      <div className="flex gap-2 items-center">{value ? "Yes" : "No"}</div>
     </div>
   );
 };

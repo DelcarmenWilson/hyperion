@@ -2,18 +2,15 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
+import { FullLead, LeadGeneralInfo, LeadMainInfo } from "@/types";
+import { LeadPolicySchemaType } from "@/schemas/lead";
+
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { CallInfo } from "@/components/lead/call-info";
 import { LeadDropDown } from "@/components/lead/dropdown";
 import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { NotesForm } from "@/components/lead/forms/notes-form";
-import {
-  FullLead,
-  LeadGeneralInfo,
-  LeadMainInfo,
-  LeadPolicyInfo,
-} from "@/types";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
@@ -137,7 +134,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "extra info",
     header: "",
     cell: ({ row }) => {
-      const leadPolicy: LeadPolicyInfo = {
+      const leadPolicy: LeadPolicySchemaType = {
         leadId: row.original.id,
         ap: row.original.policy?.ap!,
         carrier: row.original.policy?.carrier!,

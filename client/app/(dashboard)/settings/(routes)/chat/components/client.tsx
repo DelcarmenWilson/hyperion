@@ -245,9 +245,9 @@ export const ChatClient = ({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
                   <div className="space-y-0.5">
-                    <FormLabel>New Message Notification</FormLabel>
+                    <FormLabel>New Lead Message Notification</FormLabel>
                     <Select
-                      name="ddlNotification"
+                      name="ddlMessageNotification"
                       disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -268,7 +268,43 @@ export const ChatClient = ({
                   </div>
                   <AudioPlayer
                     src={`/sounds/${form.getValues("messageNotification")}.wav`}
-                    autoPlay={true}
+                  />
+                </FormItem>
+              )}
+            />
+
+            {/* INTERNAL MESSAGE NOTIFICATION */}
+            <FormField
+              control={form.control}
+              name="messageInternalNotification"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>New Agent Message Notification</FormLabel>
+                    <Select
+                      name="ddlMessageInternalNotification"
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Sound" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {newMessageNotifications.map((notification, i) => (
+                          <SelectItem key={i} value={notification}>
+                            {notification}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <AudioPlayer
+                    src={`/sounds/${form.getValues(
+                      "messageInternalNotification"
+                    )}.wav`}
                   />
                 </FormItem>
               )}

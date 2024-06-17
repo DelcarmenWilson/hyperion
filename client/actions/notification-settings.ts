@@ -1,8 +1,11 @@
 "use server";
 import { db } from "@/lib/db";
-import { currentRole } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 
-import { NotificationSettingsSchema,NotificationSettingsSchemaType } from "@/schemas/settings";
+import {
+  NotificationSettingsSchema,
+  NotificationSettingsSchemaType,
+} from "@/schemas/settings";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 
 export const notificationSettingsInsert = async (userId: string) => {
@@ -39,11 +42,12 @@ export const notificationSettingsUpdateByUserId = async (
   if (!userId) {
     return { error: "No User Id!" };
   }
+const validPhoneNumber=reFormatPhoneNumber(phoneNumber)
 
-   await db.notificationSettings.update({
+  await db.notificationSettings.update({
     where: { userId },
     data: {
-      phoneNumber:reFormatPhoneNumber(phoneNumber),
+      phoneNumber: validPhoneNumber,
       calls,
       appointments,
       messages,
@@ -51,7 +55,7 @@ export const notificationSettingsUpdateByUserId = async (
     },
   });
 
-  return { success: "Notifications Settings Updated!" };
+  return { success: `Notifications Settings Updated! ${!validPhoneNumber?"Phone Number is not valid":""}` };
 };
 
 //TODO - dont forget to remove this as it should only sun once
@@ -77,4 +81,20 @@ export const notificationSettingsInsertAll = async () => {
   }
 
   return { success: "Notification Settings have been inserted" };
+};
+
+export const notificationsUpdateByIdMasterSwitch = async (value: string) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Auauthenticated" };
+  }
+  await db.notificationSettings.update({
+    where: { userId: user.id },
+    data: {
+      masterSwitch: value,
+    },
+  });
+
+  return { success: "Master switch has been updated" };
 };

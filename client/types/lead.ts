@@ -90,17 +90,4 @@ import {
     policy?: LeadPolicy | null;
   };
   
-  export type LeadPolicyInfo = {
-    leadId: string;
-    carrier: string;
-    policyNumber: string;
-    status: string;
-    ap: string;
-    commision: string;
-    coverageAmount: string;
-    startDate?: Date;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-
   export type ExpenseType = "Income" | "Expense";

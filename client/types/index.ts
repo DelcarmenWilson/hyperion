@@ -23,7 +23,6 @@ import {
   LeadMainInfo,
   LeadGeneralInfo,
   LeadPolicyType,
-  LeadPolicyInfo,
   ExpenseType,
 } from "./lead";
 
@@ -34,6 +33,7 @@ import {
   ShortChat,
   FullChat,
   FullChatMessage,
+  UnreadShortChat,
 } from "./message";
 import { FullPhoneNumber, PhoneType } from "./phone";
 import {
@@ -135,7 +135,6 @@ export type {
   LeadMainInfo,
   LeadGeneralInfo,
   LeadPolicyType,
-  LeadPolicyInfo,
   ExpenseType,
 };
 
@@ -147,6 +146,7 @@ export type {
   ShortChat,
   FullChat,
   FullChatMessage,
+  UnreadShortChat,
 };
 //PHONE
 export type { FullPhoneNumber, PhoneType };

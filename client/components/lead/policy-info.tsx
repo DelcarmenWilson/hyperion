@@ -1,24 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FilePenLine } from "lucide-react";
-
 import { userEmitter } from "@/lib/event-emmiter";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
+import { User } from "@prisma/client";
+import { LeadPolicySchemaType } from "@/schemas/lead";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { InputGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
 
 import { PolicyInfoForm } from "./forms/policy-info-form";
-import { LeadPolicyInfo } from "@/types";
-import { User } from "@prisma/client";
 import { AssistantForm } from "./forms/assistant-form";
-import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { formatDate } from "@/formulas/dates";
 
 type PolicyInfoClientProps = {
   leadId: string;
   leadName: string;
-  info: LeadPolicyInfo;
+  info: LeadPolicySchemaType;
   assistant: User | null | undefined;
 };
 
@@ -29,13 +30,13 @@ export const PolicyInfoClient = ({
   assistant,
 }: PolicyInfoClientProps) => {
   const user = useCurrentUser();
-  const [policyInfo, setPolicyInfo] = useState<LeadPolicyInfo>(info);
+  const [policyInfo, setPolicyInfo] = useState(info);
   const [policyDialogOpen, setPolicyDialogOpen] = useState(false);
   const [assitantDialogOpen, setAssitantDialogOpen] = useState(false);
 
   useEffect(() => {
     setPolicyInfo(info);
-    const onSetInfo = (e: LeadPolicyInfo) => {
+    const onSetInfo = (e: LeadPolicySchemaType) => {
       if (e.leadId == info.leadId) setPolicyInfo(e);
     };
     userEmitter.on("policyInfoUpdated", (info) => onSetInfo(info));

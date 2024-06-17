@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 
-import NavBar from "@/components/navbar";
+import NavBar from "@/components/navbar/navbar";
 import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";

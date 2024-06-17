@@ -1,8 +1,7 @@
 import * as z from "zod";
-import {
-  Preset,
-  UserRole,
-} from "@prisma/client";
+import { Preset, UserRole } from "@prisma/client";
+import { min } from "date-fns";
+import { isAValidPhoneNumber } from "@/formulas/phones";
 
 export const SettingsSchema = z
   .object({
@@ -35,17 +34,26 @@ export type SettingsSchemaType = z.infer<typeof SettingsSchema>;
 
 export const NotificationSettingsSchema = z.object({
   userId: z.string(),
-  phoneNumber: z.string(),
+  phoneNumber: z.string().refine(
+    (val) => {
+      if (val.length >= 1) {
+        return isAValidPhoneNumber(val)
+      }
+      return true;
+    },
+    (val) => ({ message: `${val} Please enter a valid phone number ` })
+  ),
   calls: z.boolean(),
   appointments: z.boolean(),
   messages: z.boolean(),
   voicemails: z.boolean(),
 });
+
+
+
 export type NotificationSettingsSchemaType = z.infer<
   typeof NotificationSettingsSchema
 >;
-
-
 
 export const ScheduleSchema = z.object({
   // type: z.enum(["half", "hourly"], {
@@ -63,9 +71,7 @@ export const ScheduleSchema = z.object({
   friday: z.string(),
   saturday: z.string(),
 });
-export type ScheduleSchemaType = z.infer<
-  typeof ScheduleSchema
->;
+export type ScheduleSchemaType = z.infer<typeof ScheduleSchema>;
 
 export const PresetSchema = z.object({
   type: z.enum([
@@ -77,6 +83,4 @@ export const PresetSchema = z.object({
   ]),
   content: z.string(),
 });
-export type PresetSchemaType = z.infer<
-  typeof PresetSchema
->;
+export type PresetSchemaType = z.infer<typeof PresetSchema>;

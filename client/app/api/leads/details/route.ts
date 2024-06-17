@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const lead = await leadGetByPhone(phone)  
     
     if(!lead){
-      return NextResponse.json({});
+      return NextResponse.json(null);
     }
     return NextResponse.json(lead);
     

@@ -1,3 +1,4 @@
+import { LeadPolicySchemaType } from "@/schemas/lead";
 import {
   FullChatMessage,
   FullLeadMedicalCondition,
@@ -6,7 +7,6 @@ import {
   FullUserCarrier,
   LeadGeneralInfo,
   LeadMainInfo,
-  LeadPolicyInfo,
 } from "@/types";
 
 import {
@@ -53,7 +53,7 @@ type UserEvents = {
   messageInserted: [info: Message];
 
   presetInserted: [Presets];
-  policyInfoUpdated: [info: LeadPolicyInfo];
+  policyInfoUpdated: [info: LeadPolicySchemaType];
 
   //TEMPLATES
   templateDeleted: [id: string];

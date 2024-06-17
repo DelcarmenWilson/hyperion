@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useCallback } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
@@ -27,12 +28,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LeadPolicyInfo } from "@/types";
 import { leadUpdateByIdPolicyInfo } from "@/actions/lead";
 import { useGlobalContext } from "@/providers/global";
 
 type PolicyInfoFormProps = {
-  policyInfo: LeadPolicyInfo;
+  policyInfo: LeadPolicySchemaType;
   onClose: () => void;
 };
 
@@ -41,7 +41,38 @@ export const PolicyInfoForm = ({
   onClose,
 }: PolicyInfoFormProps) => {
   const { carriers } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: leadUpdateByIdPolicyInfo,
+    onSuccess: (result) => {
+      if (result.success) {
+        userEmitter.emit("policyInfoUpdated", {
+          ...result.success,
+          startDate: result.success?.startDate || undefined,
+        });
+        userEmitter.emit("leadStatusChanged", result.success.leadId, "Sold");
+
+        toast.success("Lead Policy Info Updated", {
+          id: "update-policy-info",
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            "leadInfo",
+            `lead-${policyInfo.leadId}`,
+            "leadIntakePolicy",
+          ],
+        });
+
+        onClose();
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
@@ -54,30 +85,15 @@ export const PolicyInfoForm = ({
     onClose();
   };
 
-  const onSubmit = async (values: LeadPolicySchemaType) => {
-    setLoading(true);
-    const updatedPoilicy = await leadUpdateByIdPolicyInfo(values);
+  const onSubmit = useCallback(
+    (values: LeadPolicySchemaType) => {
+      const toastString = "Updating Policy Information...";
+      toast.loading(toastString, { id: "update-policy-info" });
 
-    if (updatedPoilicy.success) {
-      userEmitter.emit("policyInfoUpdated", {
-        ...updatedPoilicy.success,
-        startDate: updatedPoilicy.success?.startDate || undefined,
-      });
-      userEmitter.emit(
-        "leadStatusChanged",
-        updatedPoilicy.success.leadId,
-        "Sold"
-      );
-
-      toast.success("Lead Policy Info Updated");
-      onClose();
-    } else {
-      form.reset();
-      toast.error(updatedPoilicy.error);
-    }
-
-    setLoading(false);
-  };
+      mutate(values);
+    },
+    [mutate]
+  );
   return (
     <div className="h-full overflow-y-auto">
       <Form {...form}>
@@ -95,7 +111,7 @@ export const PolicyInfoForm = ({
                   <FormLabel>Carrier</FormLabel>
                   <Select
                     name="ddlCarrier"
-                    disabled={loading}
+                    disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -152,7 +168,7 @@ export const PolicyInfoForm = ({
                       {...field}
                       className="flex-1"
                       placeholder="7"
-                      disabled={loading}
+                      disabled={isPending}
                       autoComplete="coverageAmount"
                       type="number"
                     />
@@ -174,7 +190,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="EX2548745"
-                      disabled={loading}
+                      disabled={isPending}
                       autoComplete="policyNumber"
                       type="text"
                     />
@@ -191,7 +207,7 @@ export const PolicyInfoForm = ({
                   <FormLabel>Status</FormLabel>
                   <Select
                     name="ddlStatus"
-                    disabled={loading}
+                    disabled={isPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -271,7 +287,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="120"
-                      disabled={loading}
+                      disabled={isPending}
                       autoComplete="ap"
                       type="number"
                     />
@@ -290,7 +306,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="52"
-                      disabled={loading}
+                      disabled={isPending}
                       autoComplete="commision"
                       type="number"
                     />
@@ -304,7 +320,7 @@ export const PolicyInfoForm = ({
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={isPending} type="submit">
               Update
             </Button>
           </div>

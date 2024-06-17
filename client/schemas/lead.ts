@@ -75,6 +75,8 @@ export const LeadPolicySchema = z.object({
   commision: z.string(),
   coverageAmount: z.string(),
   startDate: z.optional(z.date()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 export type LeadPolicySchemaType = z.infer<typeof LeadPolicySchema>;
 

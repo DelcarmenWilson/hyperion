@@ -15,7 +15,12 @@ export const userGetById = async (id: string) => {
   try {
     const user = await db.user.findUnique({
       where: { id },
-      include: { phoneNumbers: true, chatSettings: true, team: true },
+      include: {
+        phoneNumbers: true,
+        chatSettings: true,
+        team: true,
+        notificationSettings: true,
+      },
     });
 
     return user;
@@ -64,7 +69,7 @@ export const userGetByIdReport = async (id: string) => {
       include: {
         phoneNumbers: true,
         calls: true,
-        leads: {include:{policy:true}},
+        leads: { include: { policy: true } },
         appointments: true,
         conversations: true,
         team: { include: { organization: true, owner: true } },
@@ -151,9 +156,7 @@ export const userCarriersGetAllByUserId = async (
 };
 
 // USER TEMPLATES
-export const userTemplatesGetAllByUserId = async (
-  userId: string
-) => {
+export const userTemplatesGetAllByUserId = async (userId: string) => {
   try {
     const templates = await db.userTemplate.findMany({
       where: { userId },

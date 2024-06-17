@@ -41,7 +41,7 @@ export const ChatCard = ({ chat }: { chat: ShortChat }) => {
       </div>
       <div className=" flex flex-col">
         <span className=" text-muted-foreground text-sm truncate overflow-hidden">
-          {chat.lastMessage || "new message"}
+          {chat.lastMessage?.content || "new message"}
         </span>
         {/*<span>{chat.updatedAt.toString()}</span> */}
       </div>
