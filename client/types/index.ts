@@ -21,7 +21,6 @@ import {
   FullLead,
   FullLeadMedicalCondition,
   LeadMainInfo,
-  LeadGeneralInfo,
   LeadPolicyType,
   ExpenseType,
 } from "./lead";
@@ -133,7 +132,6 @@ export type {
   FullLead,
   FullLeadMedicalCondition,
   LeadMainInfo,
-  LeadGeneralInfo,
   LeadPolicyType,
   ExpenseType,
 };

@@ -26,6 +26,8 @@ export const convertUsers = (result: any): User[] => {
       email: d["email"].toLowerCase(),
       emailVerified: null,
       image: d["image"],
+      aboutMe: d["aboutMe"],
+      title: d["title"],
       password: d["password"],
       role: d["role"],
       isTwoFactorEnabled: d["isTwoFactorEnabled"] == "f" ? false : true,

@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, SaveAll } from "lucide-react";
 import { toast } from "sonner";
 
+import { Script } from "@prisma/client";
+
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -16,11 +18,10 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Script } from "@prisma/client";
+import { Tiptap } from "@/components/reusable/tiptap";
 
 import { scriptInsert, scriptUpdateById } from "@/actions/script";
 import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
-import { Tiptap } from "@/components/reusable/tiptap";
 
 type ScriptFormProps = {
   script: Script | null;

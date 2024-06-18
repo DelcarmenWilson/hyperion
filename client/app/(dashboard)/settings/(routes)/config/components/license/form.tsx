@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
+import { handleFileUpload } from "@/lib/utils";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -27,10 +28,11 @@ import {
 import { UserLicenseSchema, UserLicenseSchemaType } from "@/schemas/user";
 
 import { UserLicense } from "@prisma/client";
-import { states } from "@/constants/states";
-import { userLicenseInsert, userLicenseUpdateById } from "@/actions/user";
 import ReactDatePicker from "react-datepicker";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/custom/image-upload";
+import { userLicenseInsert, userLicenseUpdateById } from "@/actions/user";
+import { states } from "@/constants/states";
 
 type LicenseFormProps = {
   license?: UserLicense;
@@ -39,6 +41,10 @@ type LicenseFormProps = {
 
 export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<{
+    image: File | null;
+    url: string | null;
+  }>({ image: null, url: null });
   const btnText = license ? "Update" : "Create";
 
   const form = useForm<UserLicenseSchemaType>({
@@ -55,12 +61,26 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
+    onImageRemove();
     onClose();
   };
-
+  const onImageUpdate = (image: File, url: string) => {
+    setFile({ image, url });
+    form.setValue("image", url);
+  };
+  const onImageRemove = () => {
+    setFile({ image: null, url: null });
+    form.setValue("image", undefined);
+  };
   const onSubmit = async (values: UserLicenseSchemaType) => {
     setLoading(true);
-
+    if (file.image) {
+      values.image = await handleFileUpload({
+        newFile: file.image,
+        filePath: "user-licenses",
+        oldFile: license?.image,
+      });
+    }
     if (license) {
       const updatedLicense = await userLicenseUpdateById(values);
       if (updatedLicense.success) {
@@ -85,6 +105,11 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
           className="space-6 px-2 w-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <ImageUpload
+            selectedImage={form.getValues("image") as string}
+            onImageUpdate={onImageUpdate}
+            onImageRemove={onImageRemove}
+          />
           <div className="flex flex-col gap-2">
             {/* STATE */}
             <FormField

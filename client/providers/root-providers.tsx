@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ModalProvider } from "@/providers/modal";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 import SocketContextComponent from "@/providers/socket-component";
+import { ImageViewerModal } from "@/components/modals/image-viewer-modal";
 
 const queryClient = new QueryClient({});
 const RootProviders = ({ children }: { children: ReactNode }) => {
@@ -21,6 +22,7 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
         <ModalProvider />
         <SocketContextComponent>{children}</SocketContextComponent>
         <ThemeSwitcher />
+        <ImageViewerModal />
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

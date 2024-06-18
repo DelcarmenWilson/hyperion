@@ -15,14 +15,14 @@ import { MainInfoForm } from "./forms/main-info-form";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { FieldBox } from "./field-box";
 
-import { LeadMainInfo } from "@/types";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { smsCreateInitial } from "@/actions/sms";
 import { leadUpdateByIdQuote } from "@/actions/lead";
+import { LeadMainSchemaType } from "@/schemas/lead";
 
 type MainInfoProps = {
-  info: LeadMainInfo;
+  info: LeadMainSchemaType;
   noConvo: boolean;
   showInfo?: boolean;
 };
@@ -33,27 +33,24 @@ export const MainInfoClient = ({
 }: MainInfoProps) => {
   const router = useRouter();
   const [initConvo, setInitConvo] = useState(noConvo);
-  const [leadInfo, setLeadInfo] = useState<LeadMainInfo>(info);
+  const [leadInfo, setLeadInfo] = useState<LeadMainSchemaType>(info);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const onSetInfo = (e: LeadMainInfo) => {
+  const onSetInfo = (e: LeadMainSchemaType) => {
     console.log(e);
     if (e.id == info.id) setLeadInfo(e);
   };
-  const onQuoteUpdated = (e?: string) => {
+
+  const onQuoteUpdated = async (e?: string) => {
     if (!e) {
       return;
     }
     if (leadInfo.quote != info.quote) {
       setLeadInfo((info) => ({ ...info, quote: e }));
-      leadUpdateByIdQuote(info.id, e).then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-        }
-      });
+      const updatedQuote = await leadUpdateByIdQuote(info.id, e);
+      if (updatedQuote.success) {
+        toast.success(updatedQuote.success);
+      } else toast.error(updatedQuote.error);
     }
   };
   const onSendInitialSms = async () => {
@@ -80,7 +77,10 @@ export const MainInfoClient = ({
               {`${leadInfo.firstName} ${leadInfo.lastName}`}
             </span>
           </h3>
-          <MainInfoForm info={leadInfo} onClose={() => setDialogOpen(false)} />
+          <MainInfoForm
+            info={leadInfo as LeadMainSchemaType}
+            onClose={() => setDialogOpen(false)}
+          />
         </DialogContent>
       </Dialog>
       <div className="space-y-1 text-sm">

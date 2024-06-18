@@ -21,8 +21,9 @@ import {
   appointmentLabelsGetAllByUserId,
   appointmentsGetAllByUserId,
 } from "@/data/appointment";
-import { getTwilioToken } from "@/data/verification-token";
+
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
+import { getTwilioToken } from "@/actions/twilio";
 
 export default async function DashBoardLayout({
   children,
@@ -37,7 +38,7 @@ export default async function DashBoardLayout({
   const status = await leadStatusGetAllByAgentIdDefault(user.id);
   const script = await scriptGetOne();
   const voicemails = await voicemailGetUnHeard(user.id);
-  const token = await getTwilioToken(user.id);
+  const token = await getTwilioToken();
   const licenses = await userLicensesGetAllByUserId(user.id);
   const carriers = await userCarriersGetAllByUserId(user.id);
   const availableCarriers = await adminCarriersGetAll();

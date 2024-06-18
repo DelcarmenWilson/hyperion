@@ -1,4 +1,5 @@
 "use client";
+import { useImageViewer } from "@/hooks/use-image-viewer";
 import Image from "next/image";
 import { UserTemplate } from "@prisma/client";
 
@@ -45,16 +46,21 @@ export const columns: ColumnDef<UserTemplate>[] = [
   {
     accessorKey: "attachment",
     header: "Attachment",
-    cell: ({ row }) =>
-      row.original.attachment && (
-        <Image
-          height={80}
-          width={80}
-          src={row.original.attachment}
-          className="h-[80px] w-[80px]"
-          alt="Attachment Image"
-        />
-      ),
+    cell: function CellComponent({ row }) {
+      const { onOpen } = useImageViewer();
+      return (
+        row.original.attachment && (
+          <Image
+            className="w-20 h-20 border cursor-pointer hover:border-primary"
+            onClick={() => onOpen(row.original.attachment, "Attachment Image")}
+            width={100}
+            height={100}
+            src={row.original.attachment}
+            alt="Attachment Image"
+          />
+        )
+      );
+    },
   },
 
   {

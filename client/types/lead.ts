@@ -5,8 +5,6 @@ import {
     Call,
     Appointment,
     Activity,
-    Gender,
-    MaritalStatus,
     LeadBeneficiary,
     LeadExpense,
     LeadMedicalCondition,
@@ -71,22 +69,8 @@ import {
     status: string;
     quote: string;
   };
-  export type LeadGeneralInfo = {
-    id: string;
-    gender: Gender;
-    maritalStatus: MaritalStatus;
-    dateOfBirth?: string;
-    weight?: string;
-    height?: string;
-    income?: string;
-    smoker: boolean;
-    leadName?: string;
-    lastCall?: Date;
-    nextAppointment?: Date;
-    dob?: Date;
-  };
 
-  export type LeadPolicyType = Lead & {
+    export type LeadPolicyType = Lead & {
     policy?: LeadPolicy | null;
   };
   

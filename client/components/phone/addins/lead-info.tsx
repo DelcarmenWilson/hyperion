@@ -6,6 +6,12 @@ import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
 
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { PolicyInfoClient } from "@/components/lead/policy-info";
@@ -17,10 +23,8 @@ import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
 import { PhoneScript } from "./script";
-import { LeadMainInfo, LeadGeneralInfo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
-import { LeadPolicySchemaType } from "@/schemas/lead";
 
 type PhoneLeadInfo = {
   open?: boolean;
@@ -41,7 +45,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     return null;
   }
   const leadName = `${lead.firstName} ${lead.lastName}`;
-  const leadMainInfo: LeadMainInfo = {
+  const leadMainInfo: LeadMainSchemaType = {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
@@ -55,7 +59,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     status: lead.status,
   };
 
-  const leadInfo: LeadGeneralInfo = {
+  const leadInfo: LeadGeneralSchemaType = {
     id: lead.id,
     gender: lead.gender,
     maritalStatus: lead.maritalStatus,

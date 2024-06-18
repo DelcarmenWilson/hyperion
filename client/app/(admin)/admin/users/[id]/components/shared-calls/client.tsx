@@ -11,7 +11,7 @@ import { formatDateTime } from "@/formulas/dates";
 
 export const SharedCallsClient = ({ calls }: { calls: FullCall[] }) => {
   return (
-    <CardLayout title="Shared Calls" icon={Share2}>
+    <CardLayout className="lg:col-span-2" title="Shared Calls" icon={Share2}>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 w-full">
         {calls.length ? (
           calls.map((call) => <SharedCallsCard key={call.id} call={call} />)

@@ -1,4 +1,6 @@
 "use client";
+import { useImageViewer } from "@/hooks/use-image-viewer";
+import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserLicense } from "@prisma/client";
@@ -26,6 +28,25 @@ export const columns: ColumnDef<UserLicense>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: function CellComponent({ row }) {
+      const { onOpen } = useImageViewer();
+      return (
+        row.original.image && (
+          <Image
+            className="w-20 h-20 border cursor-pointer hover:border-primary"
+            onClick={() => onOpen(row.original.image, row.original.state)}
+            width={100}
+            height={100}
+            src={row.original.image}
+            alt={row.original.state}
+          />
+        )
+      );
+    },
   },
   {
     accessorKey: "state",

@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
-import { LeadMainInfo, LeadGeneralInfo, FullLeadNoConvo } from "@/types";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import { FullLeadNoConvo } from "@/types";
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -41,7 +45,7 @@ export const ConversationLeadInfo = ({
   }
 
   const leadName = `${lead.firstName} ${lead.lastName}`;
-  const leadMainInfo: LeadMainInfo = {
+  const leadMainInfo: LeadMainSchemaType = {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
@@ -55,7 +59,7 @@ export const ConversationLeadInfo = ({
     status: lead.status,
   };
 
-  const leadInfo: LeadGeneralInfo = {
+  const leadInfo: LeadGeneralSchemaType = {
     id: lead.id,
     gender: lead.gender,
     maritalStatus: lead.maritalStatus,

@@ -6,7 +6,6 @@ Jhonnnnnni
     -withing the boking page ask only the necessary question to a new lead coming in.
 
 LEADS PAGE
-    - be able to update the leads phone number in the general info section
      -- unlock the assistant account o be able to update the lead information
      
 TWILIO
@@ -54,6 +53,7 @@ MISC
 
 --add all the carrier conditions after medical conditions
 --see why twilio needs a new token (perhaps its becuase of the recent changes)
+    -------- GET WITH JUAN AND SEE WHAT HE HAS NOTICED
 
 --make the quote change automatically with cron job 
 --fix the issue where whne you close the dialer the window is giving an error on chrome
@@ -61,7 +61,6 @@ MISC
 --the default number select is small in the leads client page
 --messed up the team report in the admin
 
-create messaging between us
 be able to change agents to spanish speaking
 
 if convo has > 4 messages it can be considered a full convo in the Admin Users Page
@@ -99,7 +98,7 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- make the app send you motivational speeches every now and then.
 --let each agent create thier own incoming and outgoing voicemail
    --let the agent send out voicemail on answering machine pickup
-   --let the call get worwarded to the agents voicemail if its setup else leave the default.
+   --let the call get Forwarded to the agents voicemail if its setup else leave the default.
 
 -----BUGS
 -- in the appointment for todays days should populate todays schedule but doesnt (on load) -- check

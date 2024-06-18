@@ -55,7 +55,10 @@ const CatergoryCards = ({ leadId }: { leadId: string }) => {
         </div>
       ) : (
         <div className="flex-center h-full">
-          <Button disabled={isPending} onClick={() => mutate(leadId)}>
+          <Button
+            disabled={isPending || expenseQuery.isFetching}
+            onClick={() => mutate(leadId)}
+          >
             Create Expense Sheet
           </Button>
         </div>

@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { LeadGeneralSchema, LeadGeneralSchemaType } from "@/schemas/lead";
 import { Gender, MaritalStatus } from "@prisma/client";
-import { LeadGeneralInfo } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,7 @@ import { Switch } from "@/components/ui/switch";
 import { leadUpdateByIdGeneralInfo } from "@/actions/lead";
 
 type GeneralInfoFormProps = {
-  info: LeadGeneralInfo;
+  info: LeadGeneralSchemaType;
   onClose: () => void;
 };
 
@@ -54,13 +53,7 @@ export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
     const updatedLead = await leadUpdateByIdGeneralInfo(values);
 
     if (updatedLead.success) {
-      userEmitter.emit("generalInfoUpdated", {
-        ...updatedLead.success,
-        dateOfBirth: updatedLead.success.dateOfBirth?.toString(),
-        weight: updatedLead.success.weight?.toString(),
-        height: updatedLead.success.height?.toString(),
-        income: updatedLead.success.income?.toString(),
-      });
+      userEmitter.emit("generalInfoUpdated", updatedLead.success);
       onClose();
     } else {
       form.reset();

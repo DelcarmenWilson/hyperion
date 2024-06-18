@@ -18,6 +18,7 @@ type StateType = {
   offset: number;
   offTime: string;
   zone: string;
+  website:string;
 };
 
 export const states: StateType[] = [
@@ -27,6 +28,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Alaska",
@@ -34,6 +36,7 @@ export const states: StateType[] = [
     offset: -9,
     offTime: "UTC−09:00 AKT",
     zone: "US/Alaska",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Arizona",
@@ -41,6 +44,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 MT",
     zone: "US/Mountain",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Arkansas",
@@ -48,6 +52,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "California",
@@ -55,6 +60,7 @@ export const states: StateType[] = [
     offset: -8,
     offTime: "UTC−08:00 PT",
     zone: "US/Pacific",
+    website:"https://cdicloud.insurance.ca.gov/cal/IndividualNameSearch",
   },
   {
     state: "Colorado",
@@ -62,6 +68,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
   {
     state: "Connecticut",
@@ -69,6 +76,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Delaware",
@@ -76,6 +84,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Florida",
@@ -83,6 +92,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"",
   },
   {
     state: "Georgia",
@@ -90,6 +100,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://licenseesearch.fldfs.com/",
   },
   {
     state: "Hawaii",
@@ -97,6 +108,7 @@ export const states: StateType[] = [
     offset: -10,
     offTime: "UTC−10:00 HT",
     zone: "US/Hawaii",
+    website:"https://www.sircon.com/landingPages/states/georgia/content.jsp",
   },
   {
     state: "Iowa",
@@ -104,6 +116,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://insurance.ehawaii.gov/hils/",
   },
   {
     state: "Idaho",
@@ -111,6 +124,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://apps.doi.idaho.gov/main/PublicForms/LicenseSearch?pn=1&amp;ps=100&amp;sc=0&amp;sd=0&amp;apn=1&amp;aps=100&amp;asc=1&amp;asd=1&amp;fc=1&amp;fv=grady+polcyn&amp;zip=&amp;it=0&amp;st=0",
   },
   {
     state: "Illinois",
@@ -118,6 +132,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Indiana",
@@ -125,14 +140,23 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
-
+  {
+    state: "Iowa",
+    abv: "IA",
+    offset: -6,
+    offTime: "UTC−06:00 CT",
+    zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
+  },
   {
     state: "Kansas",
     abv: "KS",
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Kentucky",
@@ -140,6 +164,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://insurance.ky.gov/ppc/Agent/Default.aspx",
   },
   {
     state: "Louisiana",
@@ -147,6 +172,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://www.ldi.la.gov/onlineservices/ProducerAdjusterSearch/",
   },
   {
     state: "Maine",
@@ -154,6 +180,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://www.maine.gov/pfr/insurance/licensee-search",
   },
   {
     state: "Maryland",
@@ -161,6 +188,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Massachusetts",
@@ -168,6 +196,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Michigan",
@@ -175,6 +204,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://difs.state.mi.us/locators?searchtype=InsAgent",
   },
   {
     state: "Minnesota",
@@ -182,13 +212,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
-  },
-  {
-    state: "Missouri",
-    abv: "MO",
-    offset: -6,
-    offTime: "UTC−06:00 CT",
-    zone: "US/Central",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
   {
     state: "Mississippi",
@@ -196,6 +220,15 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://www.mid.ms.gov/licensing-search/individual-entity-search.aspx",
+  },
+  {
+    state: "Missouri",
+    abv: "MO",
+    offset: -6,
+    offTime: "UTC−06:00 CT",
+    zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Montana",
@@ -203,6 +236,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Nebraska",
@@ -210,6 +244,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Nevada",
@@ -217,6 +252,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
   {
     state: "New Hampshire",
@@ -224,6 +260,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "New Jersey",
@@ -231,6 +268,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "New Mexico",
@@ -238,6 +276,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "New York",
@@ -245,6 +284,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://myportal.dfs.ny.gov/nylinxext/elsearch.alice",
   },
   {
     state: "North Carolina",
@@ -252,6 +292,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "North Dakota",
@@ -259,6 +300,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Ohio",
@@ -266,6 +308,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://gateway.insurance.ohio.gov/UI/ODI.Agent.Public.UI/AgentSearch.mvc/DisplaySearch",
   },
   {
     state: "Oklahoma",
@@ -273,6 +316,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Oregon",
@@ -280,6 +324,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Pennsylvania",
@@ -287,6 +332,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://apps02.ins.pa.gov/producer/ilist1.asp",
   },
   {
     state: "Rhode Island",
@@ -294,6 +340,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "South Carolina",
@@ -301,6 +348,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "South Dakota",
@@ -308,6 +356,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
   {
     state: "Tennessee",
@@ -315,6 +364,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Texas",
@@ -322,6 +372,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://txapps.texas.gov/NASApp/tdi/TdiARManager",
   },
   {
     state: "Utah",
@@ -329,6 +380,7 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
   {
     state: "Vermont",
@@ -336,6 +388,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Virginia",
@@ -343,6 +396,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://scc.virginia.gov/boi/ConsumerInquiry/Search.aspx?searchType=agent",
   },
   {
     state: "Washington",
@@ -350,6 +404,7 @@ export const states: StateType[] = [
     offset: -8,
     offTime: "UTC−08:00 PT",
     zone: "US/Pacific",
+    website:"https://fortress.wa.gov/oic/consumertoolkit/Search.aspx",
   },
   {
     state: "West Virginia",
@@ -357,6 +412,7 @@ export const states: StateType[] = [
     offset: -5,
     offTime: "UTC−05:00 ET",
     zone: "US/Eastern",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Wisconsin",
@@ -364,6 +420,7 @@ export const states: StateType[] = [
     offset: -6,
     offTime: "UTC−06:00 CT",
     zone: "US/Central",
+    website:"https://sbs.naic.org/solar-external-lookup/",
   },
   {
     state: "Wyoming",
@@ -371,5 +428,6 @@ export const states: StateType[] = [
     offset: -7,
     offTime: "UTC−07:00 ET",
     zone: "US/Mountain",
+    website:"https://www.sircon.com/ComplianceExpress/Inquiry/consumerInquiry.do",
   },
 ];

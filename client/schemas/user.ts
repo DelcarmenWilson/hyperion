@@ -1,5 +1,13 @@
 import * as z from "zod";
 
+
+export const UserAboutMeSchema = z.object({
+  id: z.string(),
+  aboutMe: z.optional(z.string()),
+  title: z.optional(z.string()),
+});
+export type UserAboutMeSchemaType = z.infer<typeof UserAboutMeSchema>;
+
 export const UserPhoneNumberSchema = z.object({
   id: z.optional(z.string()),
   phone: z.string().min(10, "10 digits requires ex. 7189892356"),
@@ -9,6 +17,10 @@ export type UserPhoneNumberSchemaType = z.infer<typeof UserPhoneNumberSchema>;
 
 export const UserLicenseSchema = z.object({
   id: z.optional(z.string()),
+  image: z
+    .string()
+    .nullish()
+    .transform((x) => x ?? undefined),
   state: z.string().min(2, "*"),
   type: z.string().min(2, "*"),
   licenseNumber: z.string().min(3, "*"),

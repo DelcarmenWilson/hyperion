@@ -4,7 +4,7 @@ import { Pencil } from "lucide-react";
 
 import { toast } from "sonner";
 
-import { FullLead, LeadGeneralInfo, LeadMainInfo } from "@/types";
+import { FullLead } from "@/types";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
@@ -18,7 +18,11 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
 
 type LeadClientProps = {
   lead: FullLead;
@@ -29,7 +33,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
   const leadName = `${lead.firstName} ${lead.lastName}`;
   const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
 
-  const leadMainInfo: LeadMainInfo = {
+  const leadMainInfo: LeadMainSchemaType = {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
@@ -43,7 +47,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     status: lead.status,
   };
 
-  const leadInfo: LeadGeneralInfo = {
+  const leadInfo: LeadGeneralSchemaType = {
     id: lead.id,
     gender: lead.gender,
     maritalStatus: lead.maritalStatus,

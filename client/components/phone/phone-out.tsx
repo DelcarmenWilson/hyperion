@@ -291,7 +291,7 @@ export const PhoneOut = () => {
                 LEAD INFO
               </Button>
             )}
-            <span className="text-primary font-bold">
+            <span className="text-primary font-bold w-10">
               {formatSecondsToTime(time)}
             </span>
           </div>

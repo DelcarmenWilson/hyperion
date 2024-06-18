@@ -60,6 +60,8 @@ model User {
   image         String?
   password      String?
   role          UserRole  @default(USER)
+  aboutMe       String?   @db.LongText
+  title         String?
   accounts      Account[]
 
   isTwoFactorEnabled    Boolean                @default(false)
@@ -127,9 +129,9 @@ model UserCarrier {
 model UserLicense {
   id String @id @default(cuid())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  image         String?
   state         String
   type          String
   licenseNumber String
