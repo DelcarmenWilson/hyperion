@@ -6,6 +6,7 @@ import { PhoneInModal } from "@/components/phone/phone-in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
 import { FullCall } from "@/types";
 import { CallModal } from "@/components/phone/call-modal";
+import axios from "axios";
 
 type PhoneContextProviderProps = {
   token: string;
@@ -36,10 +37,27 @@ export default function PhoneContextProvider({
   );
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const _device = new Device(token);
+    const getToken = async () => {
+      const reponse = await axios.post("/api/twilio/token");
+      return reponse.data;
+    };
+
+    const startUp = async () => {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const tk = await getToken();
+
+      const _device = new Device(tk);
+
+      _device.on("tokenWillExpire", async () => {
+        const tk = await getToken();
+        console.log("Token update");
+        phone?.updateToken(tk);
+      });
+
       setPhone(_device);
-    });
+    };
+
+    startUp();
   }, []);
   return (
     <PhoneContext.Provider

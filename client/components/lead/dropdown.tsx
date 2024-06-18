@@ -57,6 +57,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const isAssistant = role == "ASSISTANT";
 
   const onTitanToggle = () => {
     setAutoChat((state) => !state);
@@ -88,7 +89,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   };
 
   const preExport = (fileType: string) => {
-    if (role == "ASSISTANT") {
+    if (isAssistant) {
       toast.error("Not Authorized");
       return;
     }
@@ -140,20 +141,24 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
             <Calendar size={16} />
             New Appointment
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer gap-2"
-            onClick={() => setShareDialogOpen(true)}
-          >
-            <Share size={16} />
-            Share Lead
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer gap-2"
-            onClick={() => setIntakeDialogOpen(true)}
-          >
-            <BookText size={16} />
-            Intake Form
-          </DropdownMenuItem>
+          {!isAssistant && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => setShareDialogOpen(true)}
+              >
+                <Share size={16} />
+                Share Lead
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => setIntakeDialogOpen(true)}
+              >
+                <BookText size={16} />
+                Intake Form
+              </DropdownMenuItem>
+            </>
+          )}
           {conversation?.id && (
             <>
               <DropdownMenuItem
@@ -178,28 +183,33 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
               </DropdownMenuItem>
             </>
           )}
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem
-                  className="cursor-pointer gap-2"
-                  onClick={() => preExport("Excel")}
-                >
-                  <FileBarChart size={16} />
-                  Excel
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer gap-2"
-                  onClick={() => preExport("Pdf")}
-                >
-                  <FileText size={16} />
-                  Pdf
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+
+          {!isAssistant && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-2"
+                      onClick={() => preExport("Excel")}
+                    >
+                      <FileBarChart size={16} />
+                      Excel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-2"
+                      onClick={() => preExport("Pdf")}
+                    >
+                      <FileText size={16} />
+                      Pdf
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

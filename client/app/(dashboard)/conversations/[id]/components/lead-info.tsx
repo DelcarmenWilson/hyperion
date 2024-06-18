@@ -14,10 +14,14 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 
-import { LeadMainInfo, LeadGeneralInfo, FullLeadNoConvo } from "@/types";
+import { FullLeadNoConvo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
 
 type ConversationLeadInfoProps = {
   lead: FullLeadNoConvo;
@@ -41,7 +45,7 @@ export const ConversationLeadInfo = ({
   }
 
   const leadName = `${lead.firstName} ${lead.lastName}`;
-  const leadMainInfo: LeadMainInfo = {
+  const leadMainInfo: LeadMainSchemaType = {
     id: lead.id,
     firstName: lead.firstName,
     lastName: lead.lastName,
@@ -55,7 +59,7 @@ export const ConversationLeadInfo = ({
     status: lead.status,
   };
 
-  const leadInfo: LeadGeneralInfo = {
+  const leadInfo: LeadGeneralSchemaType = {
     id: lead.id,
     gender: lead.gender,
     maritalStatus: lead.maritalStatus,

@@ -26,13 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { LeadMainInfo } from "@/types";
 import { leadUpdateByIdMainInfo } from "@/actions/lead";
 
 import { states } from "@/constants/states";
 
 type MainInfoFormProps = {
-  info: LeadMainInfo;
+  info: LeadMainSchemaType;
   onClose: () => void;
 };
 
@@ -54,14 +53,7 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
     setLoading(true);
     const response = await leadUpdateByIdMainInfo(values);
     if (response.success) {
-      userEmitter.emit("mainInfoUpdated", {
-        ...response.success,
-        email: response.success.email?.toString(),
-        address: response.success.address?.toString(),
-        city: response.success.city?.toString(),
-        zipCode: response.success.zipCode?.toString(),
-      });
-
+      userEmitter.emit("mainInfoUpdated", response.success);
       toast.success("Lead demographic info updated");
       onClose();
     } else {
@@ -132,6 +124,7 @@ export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
                     placeholder="347-859-8547"
                     disabled={loading}
                     autoComplete="phone"
+                    // pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
                   />
                 </FormControl>
               </FormItem>

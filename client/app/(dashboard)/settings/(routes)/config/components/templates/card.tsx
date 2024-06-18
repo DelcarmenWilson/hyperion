@@ -4,6 +4,7 @@ import Image from "next/image";
 import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useImageViewer } from "@/hooks/use-image-viewer";
 
 import { UserTemplate } from "@prisma/client";
 
@@ -26,6 +27,7 @@ export const TemplateCard = ({
   initTemplate,
   showSelect,
 }: TemplateCardProps) => {
+  const { onOpen } = useImageViewer();
   const [template, setTemplate] = useState(initTemplate);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -68,9 +70,9 @@ export const TemplateCard = ({
       >
         <TemplateForm template={template} onClose={() => setIsOpen(false)} />
       </DrawerRight>
-      <div className="flex flex-col gap-2 border hover:bg-secondary text-sm p-2">
+      <div className="flex flex-col max-h[100px] gap-2 border hover:bg-secondary  text-sm p-2 overflow-hidden">
         <h2 className="text-primary text-2xl text-center">{template.name}</h2>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 overflow-y-auto">
           <div
             className={cn(
               "flex flex-col gap-2 col-span-2",
@@ -78,7 +80,9 @@ export const TemplateCard = ({
             )}
           >
             <p className="text-muted-foreground">Message:</p>
-            <p className="font-bold">{template.message}</p>
+            <p className="font-bold overflow-ellipsis line-clamp-4">
+              {template.message}
+            </p>
             <p className="text-muted-foreground">Description:</p>
             <p className="font-bold">{template.description}</p>
 
@@ -91,7 +95,8 @@ export const TemplateCard = ({
               <Image
                 height={100}
                 width={100}
-                className="w-20 h-20"
+                className="w-20 h-20 border cursor-pointer hover:border-primary"
+                onClick={() => onOpen(template.attachment, template.name)}
                 loading="lazy"
                 priority={false}
                 src={template.attachment}

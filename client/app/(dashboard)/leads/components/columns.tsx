@@ -2,8 +2,12 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { FullLead, LeadGeneralInfo, LeadMainInfo } from "@/types";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import { FullLead } from "@/types";
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
 
 import { GeneralInfoClient } from "@/components/lead/general-info";
 import { CallInfo } from "@/components/lead/call-info";
@@ -70,7 +74,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "mainInfo",
     header: "",
     cell: ({ row }) => {
-      const leadMainInfo: LeadMainInfo = {
+      const leadMainInfo: LeadMainSchemaType = {
         id: row.original.id,
         firstName: row.original.firstName,
         lastName: row.original.lastName,
@@ -113,7 +117,7 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "appointment",
     header: "",
     cell: ({ row }) => {
-      const leadInfo: LeadGeneralInfo = {
+      const leadInfo: LeadGeneralSchemaType = {
         id: row.original.id,
         gender: row.original.gender,
         maritalStatus: row.original.maritalStatus,

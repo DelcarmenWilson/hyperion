@@ -4,11 +4,13 @@ import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { UserClient } from "./components/client";
 import { SharedCallsClient } from "./components/shared-calls/client";
 import { ReportCallsClient } from "./components/report-calls/client";
+import { AboutMe } from "./components/about-me";
 
 import { callsGetAllByAgentIdFiltered, callsGetAllShared } from "@/data/call";
 import { teamsGetAllByOrganization } from "@/data/team";
 import { userGetByIdReport } from "@/data/user";
 import { weekStartEnd } from "@/formulas/dates";
+import { Credentials } from "./components/credentials";
 
 const UserPage = async ({
   params,
@@ -44,10 +46,20 @@ const UserPage = async ({
   return (
     <>
       <UserClient user={user} callsLength={calls.length} teams={teams} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-        <div className=" col-span-2">
-          <SharedCallsClient calls={sharedCalls} />
-        </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <Credentials licenses={user.licenses} npn={user.npn as string} />
+        <AboutMe
+          firstName={user.firstName}
+          lastName={user.lastName}
+          image={user.image as string}
+          aboutMe={user.aboutMe as string}
+          title={user.title as string}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <SharedCallsClient calls={sharedCalls} />
         <ReportCallsClient
           calls={calls}
           from={from as string}

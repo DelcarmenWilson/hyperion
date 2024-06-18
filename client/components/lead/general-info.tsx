@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 import { GeneralInfoForm } from "./forms/general-info-form";
 
-import { LeadGeneralInfo } from "@/types";
 import { Appointment } from "@prisma/client";
 
 import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
+import { LeadGeneralSchemaType } from "@/schemas/lead";
 
 type GeneralInfoClientProps = {
-  info: LeadGeneralInfo;
+  info: LeadGeneralSchemaType;
   showInfo?: boolean;
 };
 
@@ -23,11 +23,11 @@ export const GeneralInfoClient = ({
   info,
   showInfo = false,
 }: GeneralInfoClientProps) => {
-  const [generalInfo, setGeneralInfo] = useState<LeadGeneralInfo>(info);
+  const [generalInfo, setGeneralInfo] = useState<LeadGeneralSchemaType>(info);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    const onSetInfo = (e: LeadGeneralInfo) => {
+    const onSetInfo = (e: LeadGeneralSchemaType) => {
       if (e.id == info.id) setGeneralInfo(e);
     };
     const onSetLastCall = (leadId: string) => {

@@ -1,5 +1,5 @@
+
 import { db } from "@/lib/db";
-import { tokenGenerator } from "@/lib/twilio/handler";
 
 export const getVerificationTokenByToken = async (token: string) => {
   try {
@@ -20,15 +20,6 @@ export const getVerificationTokenByEmail = async (email: string) => {
     });
 
     return verificationToken;
-  } catch {
-    return null;
-  }
-};
-
-export const getTwilioToken = async (userId: string) => {
-  try {
-    const token = tokenGenerator(userId)
-    return token.token;
   } catch {
     return null;
   }

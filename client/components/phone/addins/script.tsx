@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePhone } from "@/hooks/use-phone";
+import React, { useMemo, useState } from "react";
 import { useGlobalContext } from "@/providers/global";
-import { replaceScript } from "@/formulas/script";
+import { usePhone } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
-import { Button } from "../../ui/button";
-import { Tiptap } from "../../reusable/tiptap";
+
+import { Button } from "@/components/ui/button";
+import { Tiptap } from "@/components/reusable/tiptap";
+import { replaceScript } from "@/formulas/script";
 
 export const PhoneScript = () => {
-  const [editorLoaded, setEditorLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { lead } = usePhone();
 
@@ -18,10 +16,6 @@ export const PhoneScript = () => {
   const formattedScript = useMemo(() => {
     return replaceScript(script?.script!, user?.firstName!, lead!, licenses!);
   }, [script, user, lead, licenses]);
-
-  useEffect(() => {
-    setEditorLoaded(true);
-  }, [script]);
 
   if (!script) {
     return null;
@@ -36,13 +30,6 @@ export const PhoneScript = () => {
         )}
       >
         <Tiptap description={formattedScript} onChange={() => {}} />
-        {/* <ScrollArea className="flex flex-col relative bg-background overflow-hidden pb-10">
-          <CKeditor
-            name="scripts"
-            value={formattedScript}
-            editorLoaded={editorLoaded}
-          />
-        </ScrollArea> */}
       </div>
       <Button
         className="absolute bottom-0 left-1/2 -translate-x-1/2"

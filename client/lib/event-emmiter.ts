@@ -1,12 +1,15 @@
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import {
+  LeadGeneralSchemaType,
+  LeadMainSchemaType,
+  LeadPolicySchemaType,
+} from "@/schemas/lead";
+
 import {
   FullChatMessage,
   FullLeadMedicalCondition,
   FullTeam,
   FullCarrierCondition,
   FullUserCarrier,
-  LeadGeneralInfo,
-  LeadMainInfo,
 } from "@/types";
 
 import {
@@ -41,14 +44,14 @@ type UserEvents = {
   feedbackInserted: [info: Feedback];
   feedbackUpdated: [info: Feedback];
 
-  generalInfoUpdated: [info: LeadGeneralInfo];
+  generalInfoUpdated: [info: LeadGeneralSchemaType];
   leadStatusChanged: [leadId: string, newStatus: string];
   //LICENSES
   licenseDeleted: [id: string];
   licenseInserted: [info: UserLicense];
   licenseUpdated: [info: UserLicense];
 
-  mainInfoUpdated: [info: LeadMainInfo];
+  mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
   messageInserted: [info: Message];
 

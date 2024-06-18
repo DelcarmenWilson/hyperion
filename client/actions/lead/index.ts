@@ -499,8 +499,8 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     user.id,
     existingLead.notes as string
   );
+  
   return { success: newNote };
-  // return { success: "Lead notes have been updated" };
 };
 
 export const leadUpdateByIdQuote = async (id: string, quote: string) => {
@@ -566,8 +566,8 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   if (!existingLead) {
     return { error: "Lead does not exist" };
   }
-
-  if (user.id != existingLead.userId || user.id==existingLead.assistantId) {
+ 
+  if ( ![existingLead.userId ,existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
 
@@ -578,7 +578,6 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
       lastName,
       cellPhone:reFormatPhoneNumber(cellPhone),
       email,
-
       address,
       city,
       state,
@@ -586,7 +585,7 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
     },
   });
   activityInsert(leadInfo.id!, "main", "Main info updated", user.id);
-  return { success: leadInfo };
+  return { success: leadInfo as LeadMainSchemaType };
 };
 export const leadUpdateByIdGeneralInfo = async (
   values: LeadGeneralSchemaType
@@ -615,7 +614,7 @@ export const leadUpdateByIdGeneralInfo = async (
     return { error: "Lead does not exist" };
   }
 
-  if (user.id != existingLead.userId || user.id==existingLead.assistantId) {
+  if ( ![existingLead.userId ,existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
   let dob = dateOfBirth;
@@ -635,7 +634,7 @@ export const leadUpdateByIdGeneralInfo = async (
     },
   });
   activityInsert(leadInfo.id!, "general", "General info updated", user.id);
-  return { success: leadInfo };
+  return { success: leadInfo as LeadGeneralSchemaType };
 };
 export const leadUpdateByIdPolicyInfo = async (
   values: LeadPolicySchemaType

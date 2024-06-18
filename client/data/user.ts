@@ -1,5 +1,7 @@
 import { db } from "@/lib/db";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserRole } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export const usersGetAll = async () => {
   try {
@@ -8,6 +10,18 @@ export const usersGetAll = async () => {
     return users;
   } catch {
     return [];
+  }
+};
+
+export const userGetCurrent = async (id:string) => {  
+    try {
+    const ct = await db.user.findUnique({
+      where: { id},
+    });
+
+    return ct;
+  } catch {
+    return null;
   }
 };
 
@@ -70,9 +84,11 @@ export const userGetByIdReport = async (id: string) => {
         phoneNumbers: true,
         calls: true,
         leads: { include: { policy: true } },
+        licenses:true,
         appointments: true,
         conversations: true,
-        team: { include: { organization: true, owner: true } },
+        team: { include: { organization: true, owner: true }, },
+        
       },
     });
 

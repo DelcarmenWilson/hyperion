@@ -3,21 +3,24 @@
 import { LucideIcon } from "lucide-react";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type CardLayoutProps = {
   icon: LucideIcon;
   title: string;
   topMenu?: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
 };
 export const CardLayout = ({
   icon: Icon,
   title,
   topMenu,
   children,
+  className,
 }: CardLayoutProps) => {
   return (
-    <Card className="flex flex-col relative w-full mb-4">
+    <Card className={cn("flex flex-col relative w-full mb-4", className)}>
       <div className="flex justify-between items-start lg:items-center mb-2">
         <div className="flex items-center gap-2">
           <div className="bg-accent p-4 rounded-br-lg">

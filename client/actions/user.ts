@@ -9,6 +9,8 @@ import { sendVerificationEmail } from "@/lib/mail";
 
 import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
 import {
+  UserAboutMeSchema,
+  UserAboutMeSchemaType,
   UserCarrierSchema,
   UserCarrierSchemaType,
   UserLicenseSchema,
@@ -342,6 +344,32 @@ export const userUpdateByIdImage = async (image: string) => {
   return { success: "User profile image updated!" };
 };
 
+export const userUpdateByIdAboutMe = async (values: UserAboutMeSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const validatedFields = UserAboutMeSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const {
+  id,aboutMe,title
+  } = validatedFields.data;
+
+  await db.user.update({
+    where: {
+      id,
+    },
+    data: {
+      aboutMe,title
+    },
+  });
+
+    return { success: "About Me section updated!" };
+};
+
 //TODO-THIS SHOULD BE IN ITS OWN TABLE (DISPLAY SETTINGS)
 export const userUpdateByIdDataStyle = async (dataStyle: string) => {
   const user = await currentUser();
@@ -630,7 +658,7 @@ export const userLicenseUpdateById = async (
   if (!user) {
     return { error: "Unauthenticated" };
   }
-  const { id, state, type, licenseNumber, dateExpires, comments } =
+  const { id, image,state, type, licenseNumber, dateExpires, comments } =
     validatedFields.data;
 
   const existingLicense = await db.userLicense.findUnique({
@@ -643,6 +671,7 @@ export const userLicenseUpdateById = async (
   const license = await db.userLicense.update({
     where: { id },
     data: {
+      image,
       state,
       type,
       licenseNumber,

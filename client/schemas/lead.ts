@@ -37,20 +37,22 @@ export const LeadSchema = z.object({
 export type LeadSchemaType = z.infer<typeof LeadSchema>;
 
 export const LeadMainSchema = z.object({
-  id: z.optional(z.string()),
+  id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   cellPhone: z.string(),
   email: z.optional(z.string()),
-  address: z.string(),
+  address: z.optional(z.string()),
   city: z.optional(z.string()),
   state: z.string(),
-  zipCode: z.optional(z.string()),
+  zipCode: z.optional(z.string()),  
+  status: z.string(),
+  quote: z.string(),
 });
 export type LeadMainSchemaType = z.infer<typeof LeadMainSchema>;
 
 export const LeadGeneralSchema = z.object({
-  id: z.optional(z.string()),
+  id: z.string(),
   gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,
@@ -58,11 +60,21 @@ export const LeadGeneralSchema = z.object({
     MaritalStatus.Widowed,
     MaritalStatus.Divorced,
   ]),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z
+  .string()
+  .nullish()
+  .transform((x) => x ?? undefined),
   weight: z.optional(z.string()),
   height: z.optional(z.string()),
-  income: z.optional(z.string()),
+  income: z
+  .string()
+  .nullish()
+  .transform((x) => x ?? undefined),
   smoker: z.boolean(),
+  leadName: z.optional(z.string()),
+  lastCall: z.optional(z.date()),
+  nextAppointment: z.optional(z.date()),
+  dob: z.optional(z.date()),
 });
 export type LeadGeneralSchemaType = z.infer<typeof LeadGeneralSchema>;
 
