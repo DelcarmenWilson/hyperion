@@ -25,15 +25,23 @@ import {
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
-import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
+import {
+  concateDate,
+  formatTimeZone,
+  getTommorrow,
+  getYesterday,
+} from "@/formulas/dates";
 import { AppointmentSchemaType } from "@/schemas/appointment";
 import { format } from "date-fns";
+import { states } from "@/constants/states";
+import { CardData } from "../reusable/card-data";
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
   const { schedule, appointments, setAppointments } = useAppointmentContext();
+  const stateData = states.find((e) => e.abv == lead?.state);
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
@@ -95,22 +103,21 @@ export const AppointmentForm = () => {
       comments: comments,
     };
 
-    appointmentInsert(appointment).then((data) => {
-      if (data.success) {
-        //TODO - need to apply the dispatcher for this
-        // setAppointments((apps) => {
-        //   if (!apps) return apps;
-        //   return [...apps!, data.success.appointment];
-        // });
-        userEmitter.emit("appointmentScheduled", data.success.appointment);
-        userEmitter.emit("messageInserted", data.success.message!);
-        toast.success("Appointment scheduled!");
-        onCancel();
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const insertedAppointment = await appointmentInsert(appointment);
+    if (insertedAppointment.success) {
+      //TODO - need to apply the dispatcher for this
+      // setAppointments((apps) => {
+      //   if (!apps) return apps;
+      //   return [...apps!, data.success.appointment];
+      // });
+      userEmitter.emit(
+        "appointmentScheduled",
+        insertedAppointment.success.appointment
+      );
+      userEmitter.emit("messageInserted", insertedAppointment.success.message!);
+      toast.success("Appointment scheduled!");
+      onCancel();
+    } else toast.error(insertedAppointment.error);
 
     setLoading(false);
   };
@@ -131,6 +138,12 @@ export const AppointmentForm = () => {
             <p className="text-xl text-primary text-center font-bold">
               {lead?.firstName} {lead?.lastName}
             </p>
+            <CardData label="Time Zone" center value={stateData?.zone} />
+            <CardData
+              label="Current Time"
+              center
+              value={formatTimeZone(new Date(), stateData?.zone)}
+            />
 
             {/* DATE*/}
 
