@@ -64,18 +64,6 @@ export const PhoneOut = () => {
       console.log("no phone number has been set up");
       return;
     }
-    addDeviceListeners();
-  };
-
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("ready");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
   };
 
   const onStarted = async () => {
