@@ -47,7 +47,6 @@ export const ChatBody = ({
   useEffect(() => {
     ScrollDown();
     socket?.on("chat-message-received", (message: FullChatMessage) => {
-      toast.success(JSON.stringify(message));
       if (message.chatId == chatId) onSetMessage(message);
     });
     userEmitter.on("chatMessageInserted", (info) => {

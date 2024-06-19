@@ -5,6 +5,7 @@
  */
 export const publicRoutes = [
   "/",
+  "/book",
   "/new-verification",
   "/api/appointments/reminder",
   "/api/facebook",

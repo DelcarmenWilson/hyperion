@@ -37,24 +37,42 @@ export default function PhoneContextProvider({
   );
 
   useEffect(() => {
-    const getToken = async () => {
-      const reponse = await axios.post("/api/twilio/token");
-      return reponse.data;
-    };
+    // const getToken = async () => {
+    //   const reponse = await axios.post("/api/twilio/token");
+    //   return reponse.data;
+    // };
 
     const startUp = async () => {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const tk = await getToken();
+      // const timeToLive = 600000; // 10 minutes
+      // const timeToLive = 15000;
+      // const refreshBuffer = 10000; // 30 seconds
+      // const tk = await getToken();
 
-      const _device = new Device(tk);
+      const phone = new Device(token);
 
-      _device.on("tokenWillExpire", async () => {
-        const tk = await getToken();
-        console.log("Token update");
-        phone?.updateToken(tk);
+      // _device.on("tokenWillExpire", async () => {
+      //   const tk = await getToken();
+      //   console.log("Token update");
+      //   console.log(tk);
+      //   phone?.updateToken(tk);
+      // });
+
+      phone.on("ready", function () {
+        console.log("ready");
       });
 
-      setPhone(_device);
+      phone.on("error", function (error: any) {
+        console.log(error);
+      });
+
+      setPhone(phone);
+
+      // setInterval(async () => {
+      //   const tk = await getToken();
+      //   phone.updateToken(tk);
+      //   console.log("token updated");
+      // }, timeToLive - refreshBuffer);
     };
 
     startUp();

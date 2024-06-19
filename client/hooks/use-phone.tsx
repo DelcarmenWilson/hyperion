@@ -29,12 +29,19 @@ type phoneStore = {
   onSetLead: (e?: FullLeadNoConvo) => void;
   onSetLeads: (e?: FullLead[]) => void;
   onSetIndex: (e: number) => void;
-  //CONFERENCE
 
+  //CONFERENCE
   conference?: TwilioShortConference;
   participants?: TwilioParticipant[];
   setConference: (e?: TwilioShortConference) => void;
   setParticipants: (e?: TwilioParticipant[]) => void;
+  //SCRIPT
+  showScript: boolean;
+  onScriptOpen: () => void;
+  onScriptClose: () => void;
+  //CALL
+  isOnCall: boolean;
+  setOnCall: (e: boolean) => void;
 };
 
 export const usePhone = create<phoneStore>((set) => ({
@@ -67,4 +74,9 @@ export const usePhone = create<phoneStore>((set) => ({
   onSetIndex: (e) => set({ pipeIndex: e }),
   setConference: (e) => set({ conference: e }),
   setParticipants: (e) => set({ participants: e }),
+  showScript: false,
+  onScriptOpen: () => set({ showScript: true }),
+  onScriptClose: () => set({ showScript: false }),
+  isOnCall: false,
+  setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));

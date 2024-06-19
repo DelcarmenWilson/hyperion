@@ -71,9 +71,9 @@ export const generateScheduleTimesOLD = (type: string): ScheduleTimeType[] => {
   return scheduleTimes;
 };
 
-
-export const generateScheduleTimes = (schedule: BrokenScheduleType): ScheduleTimeType[] => {
-  const scheduleTimes: ScheduleTimeType[] = [];
+export const generateScheduleTimes = (schedule: BrokenScheduleType,blocked:boolean=false): ScheduleTimeType[] => {
+  const scheduleTimes: ScheduleTimeType[] = []; 
+  const hour = new Date().getHours()+1
   for (let i = schedule.open; i <= schedule.closed; i++) {
     if(schedule.closedhours.find(e=>e.hour==i))
     continue
@@ -86,7 +86,7 @@ export const generateScheduleTimes = (schedule: BrokenScheduleType): ScheduleTim
     const time: ScheduleTimeType = {
       text: `${num} ${identifier}`,
       value: `${num}:00:00 ${identifier}`,
-      disabled: false,
+      disabled: blocked?i<hour:false,
     };
 
     scheduleTimes.push(time);
@@ -94,11 +94,13 @@ export const generateScheduleTimes = (schedule: BrokenScheduleType): ScheduleTim
       const time: ScheduleTimeType = {
         text: `${num}:30 ${identifier}`,
         value: `${num}:30:00 ${identifier}`,
-        disabled: false,
+        disabled: blocked?i<hour:false,
       };
       scheduleTimes.push(time);
     }
   }
+//TODO - dont forget to remove this
+  console.log(scheduleTimes)
 
   return scheduleTimes;
 };

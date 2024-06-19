@@ -42,3 +42,5 @@ next-env.d.ts
 /public/recordings
 /test-data/
 
+# TXT FILES
+*.txt

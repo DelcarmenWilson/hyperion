@@ -6,10 +6,10 @@ Jhonnnnnni
     -withing the boking page ask only the necessary question to a new lead coming in.
 
 LEADS PAGE
-     -- unlock the assistant account o be able to update the lead information
-     
+     -- unlock the assistant account o be able to update the lead information -- CHECK WITH JUAN
 TWILIO
-     --fix issue with token revalidation
+     --fix issue with token revalidation -- CHECK WITH JUAN
+     
 
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    
@@ -24,11 +24,18 @@ TWILIO
 -- calls not being able to be shared user profile
 -- work on the calendar some more before uploading
 
+
+Appointments
+ - when we change a lead to a new timezone it is not updating in the appointment form.
 Voicemails - 
     - let agent call back lead directly from the voicemail (ui done)
 
 Lead 
     -- the leads birthday is not showing up correctly
+    
+FeedBack
+    - add notifications once the feedback has been resolved
+        - cannot edit the feedback once it has been resolved or done
     
 Chat
     - make sure the autochat does not respond to similar messages that are sent back to back
@@ -56,7 +63,7 @@ MISC
     -------- GET WITH JUAN AND SEE WHAT HE HAS NOTICED
 
 --make the quote change automatically with cron job 
---fix the issue where whne you close the dialer the window is giving an error on chrome
+--fix the issue where when you close the dialer the window is giving an error on chrome
 --be able to text any number
 --the default number select is small in the leads client page
 --messed up the team report in the admin

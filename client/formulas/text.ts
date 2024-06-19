@@ -35,12 +35,13 @@ export const replacePreset = (
     .replace("#my_last_name", user.lastName)
     .replace("#my_full_name", `${user.firstName} ${user.lastName}`)
     .replace("#my_company_name", user.team?.name!)
-    .replace("#my_booking_link", `https://hperioncrm.com/book/${user.userName}`)
+    .replace("#my_booking_link", `https://hperioncrm.com/book/${user.userName}?lid=`)
 
     // LEAD INFO
+    .replace("#lead_id", lead.id)
     .replace("#first_name", lead.firstName)
-    .replace("#full_name", lead.lastName)
-    .replace("#first_name", `${lead.firstName} ${lead.lastName}`)
+    .replace("#last_name", lead.lastName)
+    .replace("#full_name", `${lead.firstName} ${lead.lastName}`)
     .replace("#street_adress", lead.address ? lead.address : "")
     .replace("#birthday", formatDob(lead.dateOfBirth))
     .replace("#city", lead.city ? lead.city : "")

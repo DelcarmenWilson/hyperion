@@ -1,6 +1,6 @@
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import {  hangupReponse, voicemailResponse } from "@/lib/twilio/handler";
+import {  hangupResponse, voicemailResponse } from "@/lib/twilio/handler";
 
 import { NextResponse } from "next/server";
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     return new NextResponse(await voicemailResponse(j), { status: 200 });
   }
-  return new NextResponse(await hangupReponse(), { status: 200 });
+  return new NextResponse(await hangupResponse(), { status: 200 });
 }
 
 //TODO - this is the old function that works with the gather.. still need to implemetn this one

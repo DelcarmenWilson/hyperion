@@ -34,9 +34,15 @@ import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { lead, conference, setConference, setParticipants } = usePhone();
+  const {
+    lead,
+    conference,
+    setConference,
+    setParticipants,
+    isOnCall,
+    setOnCall,
+  } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
-  const [onCall, setOnCall] = useState(false);
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -64,18 +70,6 @@ export const PhoneOut = () => {
       console.log("no phone number has been set up");
       return;
     }
-    addDeviceListeners();
-  };
-
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("ready");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
   };
 
   const onStarted = async () => {
@@ -317,7 +311,7 @@ export const PhoneOut = () => {
           <div className="relative flex flex-col gap-2 flex-1 overflow-hidden">
             <TouchPad onNumberClick={onNumberClick} />
 
-            {!onCall ? (
+            {!isOnCall ? (
               <Button
                 className="gap-2"
                 disabled={!disabled}
@@ -334,7 +328,7 @@ export const PhoneOut = () => {
                 <Phone size={16} /> Hang up
               </Button>
             )}
-            {onCall && (
+            {isOnCall && (
               <Button
                 className="gap-2"
                 variant={isCallMuted ? "destructive" : "outlinedestructive"}

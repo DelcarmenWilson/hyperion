@@ -13,7 +13,7 @@ export const tokenGenerator = (identity: string) => {
     cfg.accountSid,
     cfg.apiKey,
     cfg.apiSecret,
-    { identity }
+    { identity, ttl: 28800 }
   );
 
   const grant = new VoiceGrant({
@@ -42,40 +42,41 @@ export const voiceResponse = async (call: TwilioCall) => {
     callSidToCoach,
     voicemailIn,
     masterSwitch,
-    personalNumber
+    personalNumber,
   } = call;
 
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-       twiml.play("/sounds/SSF-Greeting-2.mp3")
-    //   twiml.say(
-    //   { voice:"Polly.Amy" },
-    //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
-    // );
-    
-    twiml.pause({length:1});
-        
-    const inDial = twiml.dial({
-      record: "record-from-answer-dual",
-      recordingStatusCallback: "/api/twilio/voice/recording",
-      action: "/api/twilio/voice/action",
-      timeout: 10,
-      //TODO remove this if it doesn work
-      callerId:masterSwitch=="call-forward"?personalNumber:from
-    },);
-    
-    if(masterSwitch=="on"){
-      inDial.client(agentId);
-    }else if(masterSwitch=="call-forward"){      
-      inDial.number(personalNumber!)
-    } else{
-      twiml.redirect("/api/twilio/voice/action")
-    }   
-      
+      twiml.play("/sounds/SSF-Greeting-2.mp3");
+      //   twiml.say(
+      //   { voice:"Polly.Amy" },
+      //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
+      // );
+
+      twiml.pause({ length: 1 });
+
+      const inDial = twiml.dial({
+        record: "record-from-answer-dual",
+        recordingStatusCallback: "/api/twilio/voice/recording",
+        action: "/api/twilio/voice/action",
+        timeout: 10,
+        //TODO remove this if it doesn work
+        // callerId: masterSwitch == "call-forward" ? personalNumber : from,
+      });
+
+      if (masterSwitch == "on") {
+        inDial.client(agentId);
+      } else if (masterSwitch == "call-forward") {
+        inDial.number(personalNumber!);
+      } else {
+        twiml.redirect("/api/twilio/voice/action");
+      }
+
       break;
     case "outbound":
-      twiml.dial().conference({
+      twiml.dial().conference(
+        {
           participantLabel: agentId,
           startConferenceOnEnter: true,
           endConferenceOnExit: true,
@@ -178,7 +179,7 @@ export const voicemailResponse = async (requestBody: any) => {
   return twiml.toString();
 };
 
-export const hangupReponse = async () => {
+export const hangupResponse = async () => {
   const twiml = new VoiceResponse();
   twiml.hangup();
   return twiml.toString();

@@ -1,12 +1,9 @@
 "use client";
-
 import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
-import { Eye, MoreHorizontal, Trash } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { CalendarX, MoreHorizontal } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -22,29 +19,35 @@ import { FullAppointment } from "@/types";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { AppointmentForm } from "./form";
+import { appointmentUpdateByIdClosed } from "@/actions/appointment";
 
-interface CellActionProps {
-  data: FullAppointment;
-}
-export const CellAction = ({ data }: CellActionProps) => {
-  const router = useRouter();
-  const user = useCurrentUser();
+export const CellAction = ({
+  appointments,
+}: {
+  appointments: FullAppointment;
+}) => {
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const onDelete = async () => {
-    // try {
-    //   setLoading(true);
-    //   await axios.delete(`/api/leads/${data.id}`);
-    //   router.refresh();
-    //   toast.success("Lead deleted.");
-    // } catch (error) {
-    //   toast.error("Something went wrong!");
-    // } finally {
-    //   setLoading(false);
-    //   setAlertOpen(false);
-    // }
+  const onClosed = async () => {
+    try {
+      setLoading(true);
+      const updatedAppointment = await appointmentUpdateByIdClosed(
+        appointments.id
+      );
+      if (updatedAppointment.success) {
+        userEmitter?.emit("appointmentClosed", appointments.id);
+        toast.success("Appointment Succesfully Closed!!");
+      } else {
+        toast.success(updatedAppointment.error);
+      }
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+      setAlertOpen(false);
+    }
   };
 
   return (
@@ -52,8 +55,9 @@ export const CellAction = ({ data }: CellActionProps) => {
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={onClosed}
         loading={loading}
+        height="h-[400px]"
       />
       <DrawerRight
         title={"Appointment"}
@@ -61,7 +65,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         onClose={() => setIsDrawerOpen(false)}
       >
         <AppointmentForm
-          appointment={data}
+          appointment={appointments}
           onClose={() => setIsDrawerOpen(false)}
         />
       </DrawerRight>
@@ -74,10 +78,18 @@ export const CellAction = ({ data }: CellActionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          {appointments.status == "Scheduled" && (
+            <DropdownMenuItem
+              className=" justify-between"
+              onClick={() => setAlertOpen(true)}
+            >
+              Close <CalendarX size={16} />
+            </DropdownMenuItem>
+          )}
 
-          <DropdownMenuItem>
+          <DropdownMenuItem className=" justify-between">
             Copy Id
-            <CopyButton value={data.id} message="Appointment Id" />
+            <CopyButton value={appointments.id} message="Appointment Id" />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

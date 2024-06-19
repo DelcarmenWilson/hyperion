@@ -25,9 +25,6 @@ import { chatUpdateByIdUnread, chatsGetByUserIdUnread } from "@/actions/chat";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-//TODO - need to include a new internal message sound
-// also make sure  ton invalidate the query when a new message comes in.
-// and play the sound - the sound column needs to be added to the database and settings field needs to be updated in the settings page.
 export const NavMessages = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
@@ -88,7 +85,7 @@ export const NavMessages = () => {
           <Button className="relative" size="icon" variant="outline">
             <MessagesSquare size={16} />
             {chats && chats?.length > 0 && (
-              <Badge className="absolute rounded-full text-xs p-1 -bottom-2 -left-2">
+              <Badge className="absolute rounded-full text-xs -top-2 -right-2">
                 {chats.length}
               </Badge>
             )}
@@ -106,7 +103,7 @@ export const NavMessages = () => {
                     onClick={() => mutate(chat.id)}
                   >
                     <div className="relative">
-                      <Badge className="absolute rounded-full text-xs p-1 -top-2 -right-2">
+                      <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
                         {chat.unread}
                       </Badge>
                       <Avatar>

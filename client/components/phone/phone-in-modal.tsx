@@ -48,13 +48,6 @@ export const PhoneInModal = () => {
 
   const addDeviceListeners = () => {
     if (!phone) return;
-    phone.on("ready", function () {
-      console.log("ready");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
 
     phone.on("incoming", async function (incomingCall: Connection) {
       // if (phone.status() == "busy") {
@@ -83,7 +76,6 @@ export const PhoneInModal = () => {
           number: data.cellPhone || incomingCall.parameters.From,
         });
       }
-      console.log("we are herer");
       onPhoneInOpen();
       setCall(incomingCall);
     });

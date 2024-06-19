@@ -25,15 +25,26 @@ import {
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
-import { concateDate, getTommorrow, getYesterday } from "@/formulas/dates";
+import {
+  concateDate,
+  dateTimeDiff,
+  formatDateTimeZone,
+  formatTimeZone,
+  getTommorrow,
+  getYesterday,
+} from "@/formulas/dates";
 import { AppointmentSchemaType } from "@/schemas/appointment";
 import { format } from "date-fns";
+import { states } from "@/constants/states";
+import { CardData } from "../reusable/card-data";
+import { getTimezoneOffset } from "date-fns-tz";
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
   const { lead, onClose } = useAppointmentModal();
   const { schedule, appointments, setAppointments } = useAppointmentContext();
+  const stateData = states.find((e) => e.abv == lead?.state);
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
@@ -52,21 +63,27 @@ export const AppointmentForm = () => {
     if (!brSchedule) return;
 
     const currentapps = appointments?.filter(
-      (e) => new Date(e.startDate).toDateString() == date.toDateString()
+      (e) =>
+        new Date(e.startDate).toDateString() == date.toDateString() &&
+        e.status.toLocaleLowerCase() == "scheduled"
     );
-
+    const currentDate = new Date();
+    let blocked = false;
+    if (date.getDate() == currentDate.getDate()) {
+      blocked = true;
+    }
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
     } else {
-      const sc = generateScheduleTimes(brSchedule[day]);
+      const sc = generateScheduleTimes(brSchedule[day], blocked);
       setTimes(sc);
       setAvailable(true);
     }
 
     setTimes((times) => {
       return times?.map((time) => {
-        time.disabled = false;
+        // time.disabled = false;
         const oldapp = currentapps?.find(
           (e) => new Date(e.startDate).toLocaleTimeString() == time.value
         );
@@ -85,32 +102,38 @@ export const AppointmentForm = () => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const newDate = concateDate(date, time, user?.role == "ASSISTANT");
+    const localDate = concateDate(date, time, user?.role == "ASSISTANT");
+    const newDate = new Date(formatDateTimeZone(localDate, stateData?.zone));
+    const dateDiff = dateTimeDiff(localDate, newDate);
+    const startDate = new Date(localDate);
+    startDate.setHours(startDate.getHours() + dateDiff);
+
     if (!time) return;
     const appointment: AppointmentSchemaType = {
-      startDate: newDate,
+      localDate,
+      startDate,
       agentId: user?.id!,
       leadId: lead?.id!,
       label: "blue",
       comments: comments,
     };
 
-    appointmentInsert(appointment).then((data) => {
-      if (data.success) {
-        //TODO - need to apply the dispatcher for this
-        // setAppointments((apps) => {
-        //   if (!apps) return apps;
-        //   return [...apps!, data.success.appointment];
-        // });
-        userEmitter.emit("appointmentScheduled", data.success.appointment);
-        userEmitter.emit("messageInserted", data.success.message!);
-        toast.success("Appointment scheduled!");
-        onCancel();
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+    const insertedAppointment = await appointmentInsert(appointment, true);
+    if (insertedAppointment.success) {
+      //TODO - need to apply the dispatcher for this
+      // setAppointments((apps) => {
+      //   if (!apps) return apps;
+      //   return [...apps!, data.success.appointment];
+      // });
+      // userEmitter.emit(
+      //   "appointmentScheduled",
+      //   insertedAppointment.success.appointment
+      // );
+      //TODO - dont forget to uncomment this after the testing is completed
+      // userEmitter.emit("messageInserted", insertedAppointment.success.message!);
+      toast.success("Appointment scheduled!");
+      onCancel();
+    } else toast.error(insertedAppointment.error);
 
     setLoading(false);
   };
@@ -131,6 +154,12 @@ export const AppointmentForm = () => {
             <p className="text-xl text-primary text-center font-bold">
               {lead?.firstName} {lead?.lastName}
             </p>
+            <CardData label="Time Zone" center value={stateData?.zone} />
+            <CardData
+              label="Current Time"
+              center
+              value={formatTimeZone(new Date(), stateData?.zone)}
+            />
 
             {/* DATE*/}
 

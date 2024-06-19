@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavMessages } from "./nav-messages";
+import { cn } from "@/lib/utils";
 
 const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
   const { collapsed, onToggleCollapse } = useSidebar((state) => state);
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen, isOnCall, lead } = usePhone();
 
   return (
     <header className="fixed top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -54,9 +55,10 @@ const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
               </Link>
             </Button>
             <Button
-              className="rounded-full"
+              variant={isOnCall ? "blue" : "default"}
+              className={cn("rounded-full", isOnCall && "animate-ping")}
               size="icon"
-              onClick={() => onPhoneOutOpen()}
+              onClick={() => onPhoneOutOpen(isOnCall ? lead : undefined)}
             >
               <Smartphone size={16} />
             </Button>

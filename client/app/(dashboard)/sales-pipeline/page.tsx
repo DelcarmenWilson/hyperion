@@ -13,13 +13,14 @@ const SalesPage = async () => {
   if (!user) return null;
   const leads = await leadsGetAllByAgentId(user.id!);
   const pipelines = await pipelineGetAllByAgentId();
+  //TODO - need to add react query to this page
   return (
     <PageLayout
       title="Sales Pipeline"
       icon={UserSquare}
       topMenu={<TopMenu pipelines={pipelines} />}
     >
-      <SalesClient data={leads} pipelines={pipelines} />
+      <SalesClient leads={leads} pipelines={pipelines} />
     </PageLayout>
   );
 };

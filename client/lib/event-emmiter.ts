@@ -25,6 +25,7 @@ import {
 
 type UserEvents = {
   appointmentScheduled: [info: Appointment];
+  appointmentClosed:[id:string]
 
   //CARRIER CONDITIONS
   carrierConditionDeleted: [id: string];

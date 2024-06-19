@@ -116,7 +116,9 @@ export async function POST(req: Request) {
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     await appointmentInsert(
+      
       {
+        localDate:aptDate,
         startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
@@ -245,6 +247,7 @@ export async function PUT(req: Request) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     await appointmentInsert(
       {
+        localDate:aptDate,
         startDate: aptDate,
         leadId: conversation.leadId,
         agentId: conversation.agentId,
