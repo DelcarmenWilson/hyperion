@@ -91,8 +91,8 @@ export const appointmentInsert = async (
   }
 
   // pusher.publish(appointment)
-  // return { success: { appointment, message } };
-  return { success: { appointment } };
+   return { success: { appointment, message } };
+  //return { success: { appointment } };
 };
 
 export const appointmentInsertBook = async (
