@@ -27,11 +27,8 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import {
   concateDate,
-<<<<<<< HEAD
   dateTimeDiff,
   formatDateTimeZone,
-=======
->>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
   formatTimeZone,
   getTommorrow,
   getYesterday,
@@ -40,10 +37,7 @@ import { AppointmentSchemaType } from "@/schemas/appointment";
 import { format } from "date-fns";
 import { states } from "@/constants/states";
 import { CardData } from "../reusable/card-data";
-<<<<<<< HEAD
 import { getTimezoneOffset } from "date-fns-tz";
-=======
->>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
@@ -124,31 +118,17 @@ export const AppointmentForm = () => {
       comments: comments,
     };
 
-<<<<<<< HEAD
     const insertedAppointment = await appointmentInsert(appointment, true);
-=======
-    const insertedAppointment = await appointmentInsert(appointment);
->>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
     if (insertedAppointment.success) {
-      //TODO - need to apply the dispatcher for this
       // setAppointments((apps) => {
       //   if (!apps) return apps;
-      //   return [...apps!, data.success.appointment];
+      //   return [...apps!, insertedAppointment.success.appointment];
       // });
-<<<<<<< HEAD
-      // userEmitter.emit(
-      //   "appointmentScheduled",
-      //   insertedAppointment.success.appointment
-      // );
-      //TODO - dont forget to uncomment this after the testing is completed
-      // userEmitter.emit("messageInserted", insertedAppointment.success.message!);
-=======
       userEmitter.emit(
         "appointmentScheduled",
         insertedAppointment.success.appointment
       );
       userEmitter.emit("messageInserted", insertedAppointment.success.message!);
->>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
       toast.success("Appointment scheduled!");
       onCancel();
     } else toast.error(insertedAppointment.error);
