@@ -8,7 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
+import {
+  formatDateTime,
+  formatDob,
+  formatTime,
+  getAge,
+} from "@/formulas/dates";
 
 export const columns: ColumnDef<FullAppointment>[] = [
   {
@@ -57,11 +62,22 @@ export const columns: ColumnDef<FullAppointment>[] = [
     header: "Scheduled for",
     cell: ({ row }) => (
       <div>
-        <Badge variant="outlineprimary">{row.original.status}</Badge>
+        <Badge
+          variant={
+            row.original.status == "Scheduled"
+              ? "default"
+              : row.original.status == "Closed"
+              ? "success"
+              : "destructive"
+          }
+        >
+          {row.original.status}
+        </Badge>
         <p>{formatDateTime(row.original.startDate)}</p>
         <p>
           {" "}
-          <span className="font-bold">Local Time:</span> {row.original.time}
+          <span className="font-bold">Local Time:</span>{" "}
+          {formatTime(row.original.localDate)}
         </p>
       </div>
     ),
@@ -113,6 +129,6 @@ export const columns: ColumnDef<FullAppointment>[] = [
   {
     header: "Actions",
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => <CellAction appointments={row.original} />,
   },
 ];

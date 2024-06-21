@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { TopMenu } from "./top-menu";
@@ -27,15 +28,25 @@ export const AppointmentClient = ({
   const [appointments, setAppointments] = useState(data);
   const user = useCurrentUser();
   useEffect(() => {
-    const appointmentHandler = (appointment: FullAppointment) => {
-      setAppointments((current) => {
-        const existingAppointment = current.find((e) => e.id == appointment.id);
-        if (existingAppointment) {
-          return current;
-        }
-        return [...current, appointment];
+    // const appointmentHandler = (appointment: FullAppointment) => {
+    //   setAppointments((current) => {
+    //     const existingAppointment = current.find((e) => e.id == appointment.id);
+    //     if (existingAppointment) {
+    //       return current;
+    //     }
+    //     return [...current, appointment];
+    //   });
+    // };
+
+    const onAppointmentClosed = (id: string) => {
+      setAppointments((apps) => {
+        const appIndex = apps.findIndex((e) => e.id == id);
+        apps[appIndex].status = "Closed";
+        return apps;
       });
     };
+
+    userEmitter.on("appointmentClosed", onAppointmentClosed);
   }, [user?.id]);
 
   return (

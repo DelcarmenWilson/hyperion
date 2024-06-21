@@ -27,6 +27,11 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAppointmentModal } from "@/hooks/use-appointment-modal";
 import {
   concateDate,
+<<<<<<< HEAD
+  dateTimeDiff,
+  formatDateTimeZone,
+=======
+>>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
   formatTimeZone,
   getTommorrow,
   getYesterday,
@@ -35,6 +40,10 @@ import { AppointmentSchemaType } from "@/schemas/appointment";
 import { format } from "date-fns";
 import { states } from "@/constants/states";
 import { CardData } from "../reusable/card-data";
+<<<<<<< HEAD
+import { getTimezoneOffset } from "date-fns-tz";
+=======
+>>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
@@ -60,21 +69,27 @@ export const AppointmentForm = () => {
     if (!brSchedule) return;
 
     const currentapps = appointments?.filter(
-      (e) => new Date(e.startDate).toDateString() == date.toDateString()
+      (e) =>
+        new Date(e.startDate).toDateString() == date.toDateString() &&
+        e.status.toLocaleLowerCase() == "scheduled"
     );
-
+    const currentDate = new Date();
+    let blocked = false;
+    if (date.getDate() == currentDate.getDate()) {
+      blocked = true;
+    }
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
     } else {
-      const sc = generateScheduleTimes(brSchedule[day]);
+      const sc = generateScheduleTimes(brSchedule[day], blocked);
       setTimes(sc);
       setAvailable(true);
     }
 
     setTimes((times) => {
       return times?.map((time) => {
-        time.disabled = false;
+        // time.disabled = false;
         const oldapp = currentapps?.find(
           (e) => new Date(e.startDate).toLocaleTimeString() == time.value
         );
@@ -93,28 +108,47 @@ export const AppointmentForm = () => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const newDate = concateDate(date, time, user?.role == "ASSISTANT");
+    const localDate = concateDate(date, time, user?.role == "ASSISTANT");
+    const newDate = new Date(formatDateTimeZone(localDate, stateData?.zone));
+    const dateDiff = dateTimeDiff(localDate, newDate);
+    const startDate = new Date(localDate);
+    startDate.setHours(startDate.getHours() + dateDiff);
+
     if (!time) return;
     const appointment: AppointmentSchemaType = {
-      startDate: newDate,
+      localDate,
+      startDate,
       agentId: user?.id!,
       leadId: lead?.id!,
       label: "blue",
       comments: comments,
     };
 
+<<<<<<< HEAD
+    const insertedAppointment = await appointmentInsert(appointment, true);
+=======
     const insertedAppointment = await appointmentInsert(appointment);
+>>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
     if (insertedAppointment.success) {
       //TODO - need to apply the dispatcher for this
       // setAppointments((apps) => {
       //   if (!apps) return apps;
       //   return [...apps!, data.success.appointment];
       // });
+<<<<<<< HEAD
+      // userEmitter.emit(
+      //   "appointmentScheduled",
+      //   insertedAppointment.success.appointment
+      // );
+      //TODO - dont forget to uncomment this after the testing is completed
+      // userEmitter.emit("messageInserted", insertedAppointment.success.message!);
+=======
       userEmitter.emit(
         "appointmentScheduled",
         insertedAppointment.success.appointment
       );
       userEmitter.emit("messageInserted", insertedAppointment.success.message!);
+>>>>>>> 7435f1aa216bba12bd1a8ad6e8edee30b4c97590
       toast.success("Appointment scheduled!");
       onCancel();
     } else toast.error(insertedAppointment.error);

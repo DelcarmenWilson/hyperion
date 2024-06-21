@@ -2,6 +2,7 @@ import * as z from "zod";
 import { Gender, MaritalStatus } from "@prisma/client";
 
 export const AppointmentSchema = z.object({
+  localDate:z.date(),
   startDate: z.date(),
   agentId: z.string(),
   leadId: z.string(),

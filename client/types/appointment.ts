@@ -4,10 +4,7 @@ import {
   } from "@prisma/client";
   
   export type FullAppointment = Appointment & {
-    lead: Lead;
-    zone?:string;
-    time?: string
-    
+    lead: Lead;    
   };
 
 //APOINTMENT CONTEXT

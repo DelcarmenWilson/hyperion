@@ -30,7 +30,7 @@ export const appointmentInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { startDate, agentId, leadId, label, comments } = validatedFields.data;
+  const { localDate,startDate, agentId, leadId, label, comments } = validatedFields.data;
   let userId = agentId;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
@@ -54,7 +54,6 @@ export const appointmentInsert = async (
   }
   const config = await db.schedule.findUnique({ where: { userId } });
   const appointmentDate = startDate;
-
   let endDate = new Date(startDate);
 
   if (config?.type == "hourly") {
@@ -66,6 +65,7 @@ export const appointmentInsert = async (
     data: {
       agentId: userId,
       leadId,
+      localDate,
       startDate,
       endDate,
       label,
@@ -91,7 +91,8 @@ export const appointmentInsert = async (
   }
 
   // pusher.publish(appointment)
-  return { success: { appointment, message } };
+  // return { success: { appointment, message } };
+  return { success: { appointment } };
 };
 
 export const appointmentInsertBook = async (
@@ -174,6 +175,28 @@ export const appointmentInsertBook = async (
 
   return { success: "Appointment Scheduled!" };
 };
+
+export const appointmentUpdateByIdClosed=async(id:string)=>{
+const user =await currentUser()
+if(!user){
+  return {error:"Unauthenticated"}
+}
+
+const existingAppointment=await db.appointment.findUnique({where:{id}})
+if(!existingAppointment){
+  return {error:"appointment does not exist"}
+}
+
+if(existingAppointment.agentId !=user.id){  
+  return {error:"Unauthorized"}
+}
+
+const updatedAppointment=await db.appointment.update({where:{id},data:{
+  status:"Closed"
+}})
+
+return {success:{updatedAppointment}}
+}
 
 //APPOINTMENT LABELS
 export const appointmentLabelInsert = async (

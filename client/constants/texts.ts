@@ -15,6 +15,7 @@ export const DefaultKeyWords: StatusType[] = [
   { name: "state", value: "#state" },
   { name: "zip_code", value: "#zip_code" },
   { name: "birthday", value: "#birthday" },
+  { name: "lead id", value: "#lead_id" },
   { name: "my email", value: " #my_email" },
   { name: "my office phone number", value: " #my_office_phone_number" },
   { name: "my forwarding number", value: " #my_forwarding_number" },

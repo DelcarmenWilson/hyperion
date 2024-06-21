@@ -32,6 +32,7 @@ export const AppointmentModal = () => {
       title,
       description,
       label: selectedLabel as string,
+      localDate: new Date(daySelected?.toDate()!),
       startDate: new Date(daySelected?.toDate()!),
       endDate: new Date(),
       status: "scheduled",

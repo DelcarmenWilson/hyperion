@@ -659,12 +659,11 @@ model Message {
 
 model Appointment {
   id        String    @id @default(cuid())
+  localDate DateTime?
   startDate DateTime
   endDate   DateTime?
   title     String?
   label     String    @default("indigo")
-  // labelId   String
-  // label     AppointmentLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
   status    String    @default("Scheduled")
   comments  String?   @db.LongText
 

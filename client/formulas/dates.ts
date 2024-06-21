@@ -126,8 +126,13 @@ export const formatDateTime=(dateTime:Date|string,retval:string =""):string=>{
     return retval
   return format(dateTime,defaultDateTime)
 }
+export const formatDateTimeZone=(date:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
+  if(!date)
+    return retval
+  return formatInTimeZone(date,timeZone,defaultDateTime)
+}
 
-export const formatTime=(time:Date,retval:string =""):string=>{
+export const formatTime=(time:Date|null,retval:string =""):string=>{
   if(!time)
     return retval
   return format(time,defaultTime)
@@ -153,3 +158,19 @@ export const calculateTime = (secs: number) => {
   const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
   return `${returnedMinutes}:${returnedSeconds}`;
 };
+
+
+export const dateTimeDiff = function( date1:Date, date2:Date ) {
+  //Get 1 day in milliseconds
+  var one_day=1000*60*60;
+
+  // Convert both dates to milliseconds
+  var date1_ms = date1.getTime();
+  var date2_ms = date2.getTime();
+
+  // Calculate the difference in milliseconds
+  var difference_ms = date2_ms - date1_ms;
+
+  // Convert back to days and return
+  return Math.round(difference_ms/one_day) *-1; 
+}

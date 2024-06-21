@@ -55,23 +55,23 @@ export const appointmentsGetByUserIdFiltered = async (
       orderBy: { createdAt: "desc" },
     });
 
-    const fullAppointments: FullAppointment[] = appointments.map(
-      (appointment) => {
-        const timeZone =
-          states.find(
-            (e) =>
-              e.abv.toLocaleLowerCase() ==
-              appointment.lead.state.toLocaleLowerCase()
-          )?.zone || "US/Eastern";
-        return {
-          ...appointment,
-          zone: timeZone,
-          time: formatTimeZone(appointment.startDate, timeZone),
-        };
-      }
-    );
+    // const fullAppointments: FullAppointment[] = appointments.map(
+    //   (appointment) => {
+    //     const timeZone =
+    //       states.find(
+    //         (e) =>
+    //           e.abv.toLocaleLowerCase() ==
+    //           appointment.lead.state.toLocaleLowerCase()
+    //       )?.zone || "US/Eastern";
+    //     return {
+    //       ...appointment,
+    //       zone: timeZone,
+    //       time: formatTimeZone(appointment.startDate, timeZone),
+    //     };
+    //   }
+    // );
 
-    return fullAppointments;
+    return appointments;
   } catch {
     return [];
   }

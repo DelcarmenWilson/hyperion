@@ -8,8 +8,7 @@ import { Tiptap } from "@/components/reusable/tiptap";
 import { replaceScript } from "@/formulas/script";
 
 export const PhoneScript = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { lead } = usePhone();
+  const { lead, showScript, onScriptOpen, onScriptClose } = usePhone();
 
   const { script, user, licenses } = useGlobalContext();
 
@@ -26,15 +25,17 @@ export const PhoneScript = () => {
       <div
         className={cn(
           "flex flex-col absolute justify-between items-center -bottom-full transition-[bottom] ease-in-out duration-100 left:0 w-full h-full overflow-hidden",
-          isOpen && "bottom-0"
+          showScript && "bottom-0"
         )}
       >
         <Tiptap description={formattedScript} onChange={() => {}} />
       </div>
       <Button
         className="absolute bottom-0 left-1/2 -translate-x-1/2"
-        variant={isOpen ? "default" : "outline"}
-        onClick={() => setIsOpen(!isOpen)}
+        variant={showScript ? "default" : "outline"}
+        onClick={() => {
+          showScript ? onScriptClose() : onScriptOpen();
+        }}
       >
         Basic Script
       </Button>

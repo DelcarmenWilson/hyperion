@@ -15,12 +15,14 @@ type NoteFormProps = {
   leadId: string;
   intialNotes: string;
   initSharedUser: User | null | undefined;
+  rows?: number;
 };
 
 export const NotesForm = ({
   leadId,
   intialNotes,
   initSharedUser,
+  rows = 3,
 }: NoteFormProps) => {
   const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
@@ -68,7 +70,7 @@ export const NotesForm = ({
         className="rounded-br-none rounded-bl-none"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        rows={3}
+        rows={rows}
       />
       <Button
         className="rounded-tr-none rounded-tl-none"
