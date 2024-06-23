@@ -658,14 +658,14 @@ model Message {
 }
 
 model Appointment {
-  id        String    @id @default(cuid())
-  localDate DateTime?
+  id        String   @id @default(cuid())
+  localDate DateTime
   startDate DateTime
-  endDate   DateTime?
+  endDate   DateTime
   title     String?
-  label     String    @default("indigo")
-  status    String    @default("Scheduled")
-  comments  String?   @db.LongText
+  label     String   @default("indigo")
+  status    String   @default("Scheduled")
+  comments  String?  @db.LongText
 
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
