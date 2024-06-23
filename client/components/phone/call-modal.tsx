@@ -1,6 +1,5 @@
 "use client";
 import { Phone, PhoneOutgoing } from "lucide-react";
-import { toast } from "sonner";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { usePhone } from "@/hooks/use-phone";

@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 
 import {
   AppointmentLabelSchema,
@@ -16,12 +16,75 @@ import {
   smsSendAgentAppointmentNotification,
   smsSendLeadAppointmentNotification,
 } from "./sms";
+import { getEntireDay } from "@/formulas/dates";
+import { Lead } from "@prisma/client";
 
+//DATA
+export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
+  try {
+    const today = getEntireDay();
+    const appointments = await db.appointment.findMany({
+      where: {
+        agentId,
+        status: "Scheduled",
+        startDate: { lt: today.end, gt: today.start },
+      },
+      include: { agent: true, lead: true },
+    });
+
+    return appointments;
+  } catch {
+    return [];
+  }
+};
+export const appointmentsGetByUserIdFiltered = async (
+  userId: string,
+  from: string,
+  to: string
+) => {
+  try {
+    const role = await currentRole();
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    const appointments = await db.appointment.findMany({
+      where: { agentId: userId, startDate: { lte: toDate, gte: fromDate } },
+      include: { lead: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // const fullAppointments: FullAppointment[] = appointments.map(
+    //   (appointment) => {
+    //     const timeZone =
+    //       states.find(
+    //         (e) =>
+    //           e.abv.toLocaleLowerCase() ==
+    //           appointment.lead.state.toLocaleLowerCase()
+    //       )?.zone || "US/Eastern";
+    //     return {
+    //       ...appointment,
+    //       zone: timeZone,
+    //       time: formatTimeZone(appointment.startDate, timeZone),
+    //     };
+    //   }
+    // );
+
+    return appointments;
+  } catch {
+    return [];
+  }
+};
+
+//ACTIONS
 export const appointmentInsert = async (
   values: AppointmentSchemaType,
   sendSms: boolean = false
 ) => {
+  //Get current user
   const user = await currentUser();
+  //If there is no user -- Unathenticated
   if (!user) {
     return { error: "Unathenticated" };
   }
@@ -30,7 +93,8 @@ export const appointmentInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { localDate,startDate, agentId, leadId, label, comments } = validatedFields.data;
+  const { localDate, startDate, agentId, leadId, label, comments } =
+    validatedFields.data;
   let userId = agentId;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
@@ -85,20 +149,21 @@ export const appointmentInsert = async (
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
     if (sendSms) {
       message = (
-        await smsSendLeadAppointmentNotification(userId, lead, appointmentDate)
+        await smsSendLeadAppointmentNotification(userId, lead, localDate)
       ).success;
     }
   }
 
   // pusher.publish(appointment)
-   return { success: { appointment, message } };
+  return { success: { appointment, message } };
   //return { success: { appointment } };
 };
 
 export const appointmentInsertBook = async (
   values: AppointmentLeadSchemaType,
   agentId: string,
-  startDate: Date
+  startDate: Date,
+  localDate: Date
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -122,6 +187,7 @@ export const appointmentInsertBook = async (
   } = validatedFields.data;
 
   let leadId = id;
+  let lead:Lead | undefined
 
   if (!leadId) {
     const st = states.find((e) => e.state == state || e.abv == state);
@@ -131,7 +197,7 @@ export const appointmentInsertBook = async (
 
     const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
     const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
-    const lead = await db.lead.create({
+    lead = await db.lead.create({
       data: {
         firstName,
         lastName,
@@ -146,6 +212,10 @@ export const appointmentInsertBook = async (
     });
 
     leadId = lead.id;
+  } else{
+
+    const dbLead=await db.lead.findUnique({ where: { id: leadId } });
+    if(dbLead){lead=dbLead}
   }
 
   const existingAppointments = await db.appointment.findMany({
@@ -160,11 +230,22 @@ export const appointmentInsertBook = async (
     });
   }
 
+  const config = await db.schedule.findUnique({ where: { userId: agentId } });
+  let endDate = new Date(startDate);
+
+  if (config?.type == "hourly") {
+    endDate.setHours(endDate.getHours() + 1);
+  } else {
+    endDate.setMinutes(endDate.getMinutes() + 30);
+  }
+
   const appointment = await db.appointment.create({
     data: {
       agentId,
       leadId,
       startDate,
+      endDate,
+      localDate,
       comments: "",
     },
   });
@@ -173,30 +254,41 @@ export const appointmentInsertBook = async (
     return { error: "Appointment was not created!" };
   }
 
+  await smsSendAgentAppointmentNotification(agentId, lead , startDate);
+  await smsSendLeadAppointmentNotification(agentId, lead , localDate);
+
   return { success: "Appointment Scheduled!" };
 };
 
-export const appointmentUpdateByIdClosed=async(id:string)=>{
-const user =await currentUser()
-if(!user){
-  return {error:"Unauthenticated"}
-}
+export const appointmentUpdateByIdStatus = async (values: {
+  id: string;
+  status: string;
+}) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+  const { id, status } = values;
+  const existingAppointment = await db.appointment.findUnique({
+    where: { id },
+  });
+  if (!existingAppointment) {
+    return { error: "appointment does not exist" };
+  }
 
-const existingAppointment=await db.appointment.findUnique({where:{id}})
-if(!existingAppointment){
-  return {error:"appointment does not exist"}
-}
+  if (existingAppointment.agentId != user.id) {
+    return { error: "Unauthorized" };
+  }
 
-if(existingAppointment.agentId !=user.id){  
-  return {error:"Unauthorized"}
-}
+  const updatedAppointment = await db.appointment.update({
+    where: { id },
+    data: {
+      status,
+    },
+  });
 
-const updatedAppointment=await db.appointment.update({where:{id},data:{
-  status:"Closed"
-}})
-
-return {success:{updatedAppointment}}
-}
+  return { success: { updatedAppointment } };
+};
 
 //APPOINTMENT LABELS
 export const appointmentLabelInsert = async (
@@ -230,14 +322,14 @@ export const appointmentLabelInsert = async (
       color,
       description,
       userId,
-    }
+    },
   });
 
   if (!label) {
     return { error: "Label was not created!" };
   }
-  
-  return { success:  label } ;
+
+  return { success: label };
 };
 
 export const appointmentLabelUpdateById = async (
@@ -252,7 +344,7 @@ export const appointmentLabelUpdateById = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id,name, color, description } = validatedFields.data;
+  const { id, name, color, description } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
@@ -265,23 +357,24 @@ export const appointmentLabelUpdateById = async (
     return { error: "This label does not exist!" };
   }
 
-  const label = await db.appointmentLabel.update({where:{id},
+  const label = await db.appointmentLabel.update({
+    where: { id },
     data: {
       name,
       color,
       description,
-    }
+    },
   });
 
   if (!label) {
     return { error: "Label was not updated!" };
   }
-  
-  return { success:  label } ;
+
+  return { success: label };
 };
 
 export const appointmentLabelUpdateByChecked = async (
-  values:AppointmentLabelSchemaType
+  values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
   if (!user) {
@@ -292,16 +385,17 @@ export const appointmentLabelUpdateByChecked = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { id,checked } = validatedFields.data;
+  const { id, checked } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
   }
-  await db.appointmentLabel.update({where:{id},
+  await db.appointmentLabel.update({
+    where: { id },
     data: {
-      checked
-    }
+      checked,
+    },
   });
-  
-  return { success:  "Label was updated!" } ;
+
+  return { success: "Label was updated!" };
 };

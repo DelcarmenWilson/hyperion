@@ -4,8 +4,8 @@ import { db } from "@/lib/db";
 
 import { cfg, client } from "@/lib/twilio/config";
 
-import { HyperionLead, Lead } from "@prisma/client";
-import { SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
+import { Conversation, HyperionLead, Lead, Message } from "@prisma/client";
+import { MessageSchemaType, SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
 
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
@@ -16,6 +16,8 @@ import { messageInsert } from "./message";
 import { conversationInsert } from "./conversation";
 import { userGetByAssistant } from "@/data/user";
 import { states } from "@/constants/states";
+import { TwilioSms } from "@/types";
+import { pusherServer } from "@/lib/pusher";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -232,9 +234,12 @@ export const smsSend = async (
 
 export const smsSendAgentAppointmentNotification = async (
   userId: string,
-  lead: Lead,
+  lead: Lead | null | undefined,
   date: Date
 ) => {
+  if(!lead){
+    return {error:"Lead Info requiered"}
+  }
   const user = await db.user.findUnique({
     where: { id: userId },
     include: {
@@ -280,17 +285,20 @@ export const smsSendAgentAppointmentNotification = async (
 
 export const smsSendLeadAppointmentNotification = async (
   userId: string,
-  lead: Lead,
+  lead: Lead|null|undefined,
   date: Date
 ) => {
+  if(!lead){
+    return {error:"Lead Info requiered"}
+  }
    //TODO - update does not go as planned tommorrow - change this back to use the default time ln.292
-  const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
+  //const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
   const message = `Hi ${
     lead.firstName
   },\nThanks for booking an appointment with us! Your meeting is confirmed for ${formatHyperionDate(
     date   
       )} at ${formatTimeZone(
-    date,timeZone)}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
+    date)}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
@@ -345,3 +353,53 @@ export const smsSendNewHyperionLeadNotifications = async (
 
   return { success: "Message sent!" };
 };
+
+
+///TWILIO ROUTES FUNCTIONS
+
+//Returns a key word responsed based on the text message recieved
+export const getKeywordResponse = async (
+  smsFromLead: MessageSchemaType,
+  sms: TwilioSms,
+  conversationId:string,
+  leadId:string
+  
+) => {
+  switch (smsFromLead.content.toLowerCase()) {
+    case "stop":
+    case "cancel":
+      await db.lead.update({
+        where: { id:leadId },
+        data: { status: "Do_Not_Call" },
+      });
+      await smsSend(sms.to, sms.from, defaultOptOut.confirm);
+      return defaultOptOut.confirm;
+    case "reset":
+      await db.conversation.delete({ where: { id:   conversationId } });
+      await smsSend(sms.to, sms.from, "Conversation has been reset");
+      return "Conversation has been reset";
+  }
+  
+  
+  return null;
+};
+
+export const disabledAutoChatResponse=async(conversation:Conversation,message:Message | undefined)=>{
+  const updatedConversation= await db.conversation.update({
+    where: { id: conversation.id },
+    data: {
+      lastMessage: message?.content,
+    },
+  });
+
+  //WOP: This is where i left of: for the text forwarding
+
+  await pusherServer.trigger(
+    conversation.agentId,
+    "conversation:updated",
+    updatedConversation
+  );
+  await pusherServer.trigger(conversation.id, "message:new", message);
+  await pusherServer.trigger(conversation.agentId, "message:notify", null);
+  return updatedConversation
+}

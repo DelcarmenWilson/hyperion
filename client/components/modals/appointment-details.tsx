@@ -1,0 +1,117 @@
+"use client";
+import { useCallback, useEffect, useState } from "react";
+import { useAppointment } from "@/hooks/use-appointment";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CardData } from "@/components/reusable/card-data";
+import { formatPhoneNumber } from "@/formulas/phones";
+import { formatDate, formatDateTime, formatTime } from "@/formulas/dates";
+import { apppointmentStatus } from "@/constants/texts";
+import { toast } from "sonner";
+import { appointmentUpdateByIdStatus } from "@/actions/appointment";
+
+export const AppointmentDetailsModal = () => {
+  const queryClient = useQueryClient();
+  const { isDetailsOpen, onDetailsClose, appointment } = useAppointment();
+  const [status, setStatus] = useState(appointment?.status);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: appointmentUpdateByIdStatus,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("appointment has been updated!!!", {
+          id: "appointment-update",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["agentAppointments"],
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    setStatus(appointment?.status);
+  }, [appointment]);
+
+  if (!appointment) return null;
+  const lead = appointment.lead;
+
+  return (
+    <Dialog open={isDetailsOpen} onOpenChange={onDetailsClose}>
+      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+        <h4 className="text-2xl font-semibold py-2 text-primary">
+          Appointment Details
+        </h4>
+        <p className="text-xl">
+          <span>Lead: </span>
+          <span>
+            {lead.firstName} {lead.lastName}
+          </span>
+        </p>
+        <CardData
+          label="Date"
+          value={formatDate(appointment.startDate, "MM-dd-yy")}
+        />
+        <CardData
+          label="Lead Date"
+          value={formatDateTime(appointment.localDate)}
+        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 ">
+          <CardData
+            label="Start Time"
+            value={formatTime(appointment.startDate)}
+          />
+          <CardData
+            label="End Time"
+            value={formatTime(appointment.endDate as Date, "hh:mm aaaa")}
+          />
+        </div>
+
+        {appointment.status == "Scheduled" ? (
+          <div className="flex items-center gap-2">
+            <p className="font-semibold">Status:</p>
+            <Select
+              name="ddlStatus"
+              onValueChange={setStatus}
+              defaultValue={status}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a status" />
+              </SelectTrigger>
+              <SelectContent>
+                {apppointmentStatus.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : (
+          <CardData label="Status" value={appointment.status} />
+        )}
+
+        <CardData label="Phone #" value={formatPhoneNumber(lead.cellPhone)} />
+        <CardData label="Email" value={lead.email} />
+        {appointment.status != status && (
+          <Button
+            disabled={isPending}
+            onClick={() =>
+              mutate({ id: appointment.id, status: status as string })
+            }
+          >
+            Save
+          </Button>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};

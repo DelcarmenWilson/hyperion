@@ -3,82 +3,95 @@ import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { TopMenu } from "./top-menu";
 import { DatesFilter } from "@/components/reusable/dates-filter";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 
 import { FullAppointment } from "@/types";
+import { weekStartEnd } from "@/formulas/dates";
+import {
+  appointmentsGetAllByUserIdToday,
+  appointmentsGetByUserIdFiltered,
+} from "@/actions/appointment";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { DateRange } from "react-day-picker";
+import { AppointmentDetailsModal } from "@/components/modals/appointment-details";
 
 type AppointmentClientProps = {
-  data: FullAppointment[];
   showDate?: boolean;
   showLink?: boolean;
 };
 
 export const AppointmentClient = ({
-  data,
   showDate = false,
   showLink = false,
 }: AppointmentClientProps) => {
-  const [appointments, setAppointments] = useState(data);
   const user = useCurrentUser();
-  useEffect(() => {
-    // const appointmentHandler = (appointment: FullAppointment) => {
-    //   setAppointments((current) => {
-    //     const existingAppointment = current.find((e) => e.id == appointment.id);
-    //     if (existingAppointment) {
-    //       return current;
-    //     }
-    //     return [...current, appointment];
-    //   });
-    // };
+  const queryClient = useQueryClient();
+  const [dates, setDates] = useState<DateRange | undefined>(weekStartEnd());
 
-    const onAppointmentClosed = (id: string) => {
-      setAppointments((apps) => {
-        const appIndex = apps.findIndex((e) => e.id == id);
-        apps[appIndex].status = "Closed";
-        return apps;
-      });
-    };
+  const { data: appointments, isFetching } = useQuery<FullAppointment[]>({
+    queryKey: ["agentAppointments"],
+    queryFn: () =>
+      showDate
+        ? appointmentsGetByUserIdFiltered(
+            user?.id as string,
+            dates?.from?.toString() as string,
+            dates?.to?.toString() as string
+          )
+        : appointmentsGetAllByUserIdToday(user?.id as string),
+  });
 
-    userEmitter.on("appointmentClosed", onAppointmentClosed);
-  }, [user?.id]);
+  const onDateSelected = (e: DateRange) => {
+    if (!e) return;
+    setDates(e);
+    invalidate();
+  };
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["agentAppointments"],
+    });
+  };
+
+  // useEffect(() => {
+  //   userEmitter.on("appointmentUpdated", invalidate);
+  // }, [user?.id]);
 
   return (
-    <PageLayout
-      title="Appointments"
-      icon={Calendar}
-      topMenu={<TopMenu showLink={showLink} />}
-    >
-      <DataTable
-        columns={columns}
-        data={appointments}
-        headers
-        topMenu={showDate ? <DatesFilter link="/appointments" /> : null}
-      />
-    </PageLayout>
-  );
-};
-
-export const AppointmentBoxSkeleton = () => {
-  return (
-    <Card className="relative overflow-hidden w-full">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
-          <Skeleton className="w-[50px] aspect-square rounded-br-lg" />
-          <CardTitle>
-            <Skeleton className="w-[100px] h-5" />
-          </CardTitle>
-        </div>
-      </div>
-      <CardContent className="items-center space-y-0 pb-2">
-        {/* <DashBoardTable columns={columns} data={data} /> */}
-      </CardContent>
-    </Card>
+    <>
+      <AppointmentDetailsModal />
+      <PageLayout
+        title="Appointments"
+        icon={Calendar}
+        topMenu={<TopMenu showLink={showLink} />}
+      >
+        <SkeletonWrapper isLoading={isFetching}>
+          <DataTable
+            columns={columns}
+            data={appointments || []}
+            headers
+            hidden={{
+              status: false,
+            }}
+            topMenu={
+              showDate ? (
+                <DatesFilter
+                  colSpan
+                  onDateSelected={onDateSelected}
+                  link="/appointments"
+                />
+              ) : null
+            }
+            filterType={showDate ? "appointment" : undefined}
+          />
+          {/* {JSON.stringify(appointments)} */}
+        </SkeletonWrapper>
+      </PageLayout>
+    </>
   );
 };

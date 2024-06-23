@@ -9,7 +9,7 @@ import { chatFetch } from "@/actions/gpt";
 import { defaultOptOut } from "@/placeholder/chat";
 import { appointmentInsert } from "@/actions/appointment";
 import { formatObject } from "@/formulas/objects";
-import { smsSend } from "@/actions/sms";
+import { disabledAutoChatResponse, getKeywordResponse, smsSend } from "@/actions/sms";
 import { TwilioSms } from "@/types";
 import { formatDateTime } from "@/formulas/dates";
 
@@ -45,37 +45,16 @@ export async function POST(req: Request) {
   //Create a new message from the leads response
   const newMessage = (await messageInsert(smsFromLead)).success;
 
-  switch (smsFromLead.content.toLowerCase()) {
-    case "stop":
-    case "cancel":
-      await db.lead.update({
-        where: { id: conversation.leadId },
-        data: { status: "Do_Not_Call" },
-      });
-      await smsSend(sms.to, sms.from, defaultOptOut.confirm);
-      return new NextResponse(defaultOptOut.confirm, { status: 200 });
-    case "reset":
-      await db.conversation.delete({ where: { id: conversation.id } });
-      await smsSend(sms.to, sms.from, "Conversation has been reset");
-      return new NextResponse("Conversation has been reset", { status: 200 });
-  }
+  //Get Keword Response based ont the leads text
+  //If a reponse is generated end the flow and return a success message to the lead
+  const keywordResponse=await getKeywordResponse(smsFromLead,sms,conversation.id,conversation.leadId)
+  if(keywordResponse)    
+       return new NextResponse(keywordResponse, { status: 200 });
+      
 
   //If autochat is disabled - exit the workflow
   if (!conversation.autoChat) {
-    updatedConversation = await db.conversation.update({
-      where: { id: conversation.id },
-      data: {
-        lastMessage: newMessage?.content,
-      },
-    });
-
-    await pusherServer.trigger(
-      conversation.agentId,
-      "conversation:updated",
-      updatedConversation
-    );
-    await pusherServer.trigger(conversation.id, "message:new", newMessage);
-    await pusherServer.trigger(conversation.agentId, "message:notify", null);
+    updatedConversation = await disabledAutoChatResponse(conversation,newMessage)
     return new NextResponse(null, { status: 200 });
   }
 
@@ -115,8 +94,8 @@ export async function POST(req: Request) {
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
-    await appointmentInsert(
-      
+    //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
+    await appointmentInsert(      
       {
         localDate:aptDate,
         startDate: aptDate,
@@ -166,6 +145,11 @@ export async function POST(req: Request) {
   return new NextResponse(content, { status: 200 });
 }
 
+
+
+
+
+//TODO - check id this is being used and remove if not
 export async function PUT(req: Request) {
   const body = await req.formData();
 

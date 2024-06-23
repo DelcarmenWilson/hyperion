@@ -35,3 +35,6 @@ export const DefaultStatus: StatusType[] = [
   { name: "Done", value: "Done" },
   { name: "Resolved", value: "Resolved" },
 ];
+
+
+export const apppointmentStatus = ["Closed", "No-Show", "Scheduled", "Rescheduled"];

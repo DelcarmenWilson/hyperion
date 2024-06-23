@@ -24,9 +24,10 @@ TWILIO
 -- calls not being able to be shared user profile
 -- work on the calendar some more before uploading
 
-
 Appointments
  - when we change a lead to a new timezone it is not updating in the appointment form.
+    - add a no-show status and let the agent be able to change the status
+
 Voicemails - 
     - let agent call back lead directly from the voicemail (ui done)
 
@@ -48,6 +49,16 @@ Chat
 IN SALE
     -- finish the intake form
     -- fix the dailer(big task)
+
+    implementing text forwarding call
+
+
+
+- appoitment -  Check the timeing for 12 am
+- convert all the times to the current leads time before scheduling
+- the appointmetns should show up as 12 am to 12 am same day
+
+- agent shares leads should have full acces to thier numbers when sending info to a lead
 
 add appoinment reminder send to the client to the sms
 -- fixed the time for the appoitment reminder
@@ -107,6 +118,9 @@ tab called blueprint > personalized businees plan for the indivdual.
    --let the agent send out voicemail on answering machine pickup
    --let the call get Forwarded to the agents voicemail if its setup else leave the default.
 
+Srini (Appointments)
+    - if the previous days are showing in the current day give a message to the agent to look at the next day.
+    
 -----BUGS
 -- in the appointment for todays days should populate todays schedule but doesnt (on load) -- check
 

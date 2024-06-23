@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+import { useAppointment } from "@/hooks/use-appointment";
 
 import { AlertModal } from "@/components/modals/alert";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -50,7 +50,7 @@ type DropDownProps = {
 
 export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const role = useCurrentRole();
-  const useAppointment = useAppointmentModal();
+  const { onFormOpen } = useAppointment();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
 
   const [intakeDialogOpen, setIntakeDialogOpen] = useState(false);
@@ -136,7 +136,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
           <DropdownMenuItem
             disabled={lead.status == "Do_Not_Call"}
             className="cursor-pointer gap-2"
-            onClick={() => useAppointment.onOpen(lead)}
+            onClick={() => onFormOpen(lead)}
           >
             <Calendar size={16} />
             New Appointment
