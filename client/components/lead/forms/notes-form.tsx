@@ -15,6 +15,7 @@ type NoteFormProps = {
   leadId: string;
   intialNotes: string;
   initSharedUser: User | null | undefined;
+  showShared?: boolean;
   rows?: number;
 };
 
@@ -22,6 +23,7 @@ export const NotesForm = ({
   leadId,
   intialNotes,
   initSharedUser,
+  showShared = true,
   rows = 3,
 }: NoteFormProps) => {
   const user = useCurrentUser();
@@ -81,7 +83,7 @@ export const NotesForm = ({
         UPDATE NOTES
       </Button>
 
-      {sharedUser && user?.role != "ASSISTANT" && (
+      {showShared && sharedUser && user?.role != "ASSISTANT" && (
         <div className="text-lg text-center bg-primary text-secondary mt-2">
           {user?.id == sharedUser.id ? (
             <h4 className="relative font-bold text-lg  text-center">

@@ -23,6 +23,7 @@ export const TouchPad = ({ onNumberClick }: TouchPadProps) => {
           leadId={lead?.id as string}
           intialNotes={lead?.notes as string}
           initSharedUser={lead?.sharedUser}
+          showShared={false}
           rows={9}
         />
       </div>
