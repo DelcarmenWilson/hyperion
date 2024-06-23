@@ -1,14 +1,18 @@
 "use client";
 
-import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+import { useAppointment } from "@/hooks/use-appointment";
 import { AppointmentForm } from "@/components/custom/appointment-form";
 import { DrawerRight } from "../custom/drawer-right";
 
 export const AppointmentModal = () => {
-  const { isOpen, onClose } = useAppointmentModal();
+  const { isFormOpen, onFormClose } = useAppointment();
 
   return (
-    <DrawerRight title="New appointment" isOpen={isOpen} onClose={onClose}>
+    <DrawerRight
+      title="New appointment"
+      isOpen={isFormOpen}
+      onClose={onFormClose}
+    >
       <AppointmentForm />
     </DrawerRight>
   );

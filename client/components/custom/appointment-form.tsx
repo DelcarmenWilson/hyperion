@@ -18,13 +18,14 @@ import {
 import { appointmentInsert } from "@/actions/appointment";
 import {
   BrokenScheduleType,
+  NewScheduleTimeType,
   ScheduleTimeType,
   breakDownSchedule,
   generateScheduleTimes,
 } from "@/constants/schedule-times";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useAppointmentModal } from "@/hooks/use-appointment-modal";
+import { useAppointment } from "@/hooks/use-appointment";
 import {
   concateDate,
   dateTimeDiff,
@@ -32,33 +33,39 @@ import {
   formatTimeZone,
   getTommorrow,
   getYesterday,
+  timeDifference,
 } from "@/formulas/dates";
 import { AppointmentSchemaType } from "@/schemas/appointment";
 import { format } from "date-fns";
 import { states } from "@/constants/states";
 import { CardData } from "../reusable/card-data";
-import { getTimezoneOffset } from "date-fns-tz";
 
 export const AppointmentForm = () => {
   const [loading, setLoading] = useState(false);
   const user = useCurrentUser();
-  const { lead, onClose } = useAppointmentModal();
+  const { lead, onFormClose } = useAppointment();
   const { schedule, appointments, setAppointments } = useAppointmentContext();
+
   const stateData = states.find((e) => e.abv == lead?.state);
+  const timeDiff = timeDifference(stateData?.zone);
 
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(true);
   const [brSchedule] = useState<BrokenScheduleType[]>(
     breakDownSchedule(schedule!)
   );
-  const [times, setTimes] = useState<ScheduleTimeType[]>();
-  const [date, setDate] = useState<Date>(getTommorrow);
-  const [time, setTime] = useState("");
+
+  const [times, setTimes] = useState<NewScheduleTimeType[]>();
+  const [selectedDate, setSelectedDate] = useState<Date>(getTommorrow);
+  const [selectedTime, setSelectedTime] = useState<
+    NewScheduleTimeType | undefined
+  >();
   const [comments, setComments] = useState("");
 
   const OnDateSlected = (date: Date) => {
     if (!date) return;
-    setDate(date);
+    setSelectedDate(date);
+    setSelectedTime(undefined);
     const day = date.getDay();
     if (!brSchedule) return;
 
@@ -76,7 +83,12 @@ export const AppointmentForm = () => {
       setTimes([]);
       setAvailable(false);
     } else {
-      const sc = generateScheduleTimes(brSchedule[day], blocked);
+      const sc = generateScheduleTimes(
+        date,
+        brSchedule[day],
+        blocked,
+        timeDiff
+      );
       setTimes(sc);
       setAvailable(true);
     }
@@ -85,7 +97,9 @@ export const AppointmentForm = () => {
       return times?.map((time) => {
         // time.disabled = false;
         const oldapp = currentapps?.find(
-          (e) => new Date(e.startDate).toLocaleTimeString() == time.value
+          (e) =>
+            new Date(e.startDate).toLocaleTimeString() ==
+            time.agentDate.toLocaleTimeString()
         );
         if (oldapp) {
           time.disabled = true;
@@ -97,21 +111,14 @@ export const AppointmentForm = () => {
     setCalOpen(false);
   };
 
-  const onCancel = () => onClose();
-
   const onSubmit = async (e: any) => {
     e.preventDefault();
+    if (!selectedTime) return;
     setLoading(true);
-    const localDate = concateDate(date, time, user?.role == "ASSISTANT");
-    const newDate = new Date(formatDateTimeZone(localDate, stateData?.zone));
-    const dateDiff = dateTimeDiff(localDate, newDate);
-    const startDate = new Date(localDate);
-    startDate.setHours(startDate.getHours() + dateDiff);
 
-    if (!time) return;
     const appointment: AppointmentSchemaType = {
-      localDate,
-      startDate,
+      localDate: selectedTime.localDate,
+      startDate: selectedTime.agentDate,
       agentId: user?.id!,
       leadId: lead?.id!,
       label: "blue",
@@ -120,6 +127,7 @@ export const AppointmentForm = () => {
 
     const insertedAppointment = await appointmentInsert(appointment, true);
     if (insertedAppointment.success) {
+      // const newApps=[...appointments!,insertedAppointment.success.appointment]
       // setAppointments((apps) => {
       //   if (!apps) return apps;
       //   return [...apps!, insertedAppointment.success.appointment];
@@ -130,7 +138,7 @@ export const AppointmentForm = () => {
       );
       userEmitter.emit("messageInserted", insertedAppointment.success.message!);
       toast.success("Appointment scheduled!");
-      onCancel();
+      onFormClose();
     } else toast.error(insertedAppointment.error);
 
     setLoading(false);
@@ -160,7 +168,6 @@ export const AppointmentForm = () => {
             />
 
             {/* DATE*/}
-
             <div className="flex justify-center items-center flex-col pt-2">
               <Popover open={calOpen}>
                 <PopoverTrigger asChild>
@@ -168,18 +175,22 @@ export const AppointmentForm = () => {
                     variant={"outline"}
                     className={cn(
                       "w-[280px] justify-start text-left font-normal gap-2",
-                      !date && "text-muted-foreground"
+                      !selectedDate && "text-muted-foreground"
                     )}
                     onClick={() => setCalOpen(true)}
                   >
                     <CalendarIcon size={16} />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {selectedDate ? (
+                      format(selectedDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={date}
+                    selected={selectedDate}
                     onSelect={(e) => OnDateSlected(e!)}
                     disabled={(date) =>
                       date <= getYesterday() || date < new Date("1900-01-01")
@@ -195,13 +206,23 @@ export const AppointmentForm = () => {
               <div className="grid grid-cols-4 font-bold text-sm gap-2">
                 {times?.map((tm) => (
                   <Button
-                    variant={time == tm.value ? "default" : "outlineprimary"}
+                    className="flex-col"
+                    variant={
+                      selectedTime?.localDate == tm.localDate
+                        ? "default"
+                        : "outlineprimary"
+                    }
                     disabled={tm.disabled}
-                    key={tm.value}
-                    onClick={() => setTime(tm.value)}
+                    key={tm.text}
+                    onClick={() => setSelectedTime(tm)}
                     type="button"
                   >
                     {tm.text}
+                    {tm.localDate.getDate() != selectedDate.getDate() && (
+                      <span className="text-xs">
+                        {format(tm.localDate, "MM-dd")}
+                      </span>
+                    )}
                   </Button>
                 ))}
               </div>
@@ -224,10 +245,10 @@ export const AppointmentForm = () => {
 
         <Separator className="my-2" />
         <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-          <Button onClick={onCancel} type="button" variant="outline">
+          <Button onClick={onFormClose} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={loading} type="submit">
+          <Button disabled={loading || selectedTime == undefined} type="submit">
             Create
           </Button>
         </div>

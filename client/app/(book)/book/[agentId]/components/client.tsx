@@ -32,7 +32,7 @@ import {
   generateScheduleTimes,
   breakDownSchedule,
   BrokenScheduleType,
-  ScheduleTimeType,
+  NewScheduleTimeType,
 } from "@/constants/schedule-times";
 import { states } from "@/constants/states";
 import {
@@ -64,20 +64,22 @@ export const BookAgentClient = ({
   const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>(
     breakDownSchedule(schedule)
   );
-  const [times, setTimes] = useState<ScheduleTimeType[]>();
-  const [selectedDate, setselectedDate] = useState(tommorrow);
-  const [selectedTime, setselectedTime] = useState("");
+  const [times, setTimes] = useState<NewScheduleTimeType[]>();
+  const [selectedDate, setSelectedDate] = useState(tommorrow);
+  const [selectedTime, setSelectedTime] = useState<
+    NewScheduleTimeType | undefined
+  >();
 
   const OnDateSlected = (date: Date) => {
     if (!date) return;
-    setselectedDate(date);
-    setselectedTime("");
+    setSelectedDate(date);
+    setSelectedTime(undefined);
     const day = date.getDay();
     if (brSchedule[day].day == "Not Available") {
       setTimes([]);
       setAvailable(false);
     } else {
-      const sc = generateScheduleTimes(brSchedule[day]);
+      const sc = generateScheduleTimes(date, brSchedule[day]);
       setTimes(sc);
       setAvailable(true);
     }
@@ -90,7 +92,9 @@ export const BookAgentClient = ({
       return times?.map((time) => {
         time.disabled = false;
         const oldapp = currentapps.find(
-          (e) => e.startDate.toLocaleTimeString() == time.value
+          (e) =>
+            e.startDate.toLocaleTimeString() ==
+            time.agentDate.toLocaleTimeString()
         );
         if (oldapp) {
           time.disabled = true;
@@ -119,19 +123,21 @@ export const BookAgentClient = ({
   };
 
   const onSubmit = async (values: AppointmentLeadSchemaType) => {
+    if (!selectedTime) return;
     setLoading(true);
-    const newDate = concateDate(selectedDate, selectedTime);
-    await appointmentInsertBook(values, schedule.userId, newDate).then(
-      (data) => {
-        if (data.success) {
-          toast.success(data.success);
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      }
+
+    const insertedAppointment = await appointmentInsertBook(
+      values,
+      schedule.userId,
+      selectedTime.agentDate,
+      selectedTime.localDate
     );
+
+    if (insertedAppointment.success) toast.success(insertedAppointment.success);
+    else {
+      form.reset();
+      toast.error(insertedAppointment.error);
+    }
 
     setLoading(false);
   };
@@ -176,18 +182,18 @@ export const BookAgentClient = ({
                   <div className="flex-center flex-1">
                     {available ? (
                       <div className="grid grid-cols-4 font-bold text-sm gap-2">
-                        {times?.map((time) => (
+                        {times?.map((tm) => (
                           <Button
                             variant={
-                              selectedTime == time.value
+                              selectedTime?.localDate == tm.localDate
                                 ? "default"
                                 : "outlineprimary"
                             }
-                            disabled={time.disabled}
-                            key={time.value}
-                            onClick={() => setselectedTime(time.value)}
+                            disabled={tm.disabled}
+                            key={tm.text}
+                            onClick={() => setSelectedTime(tm)}
                           >
-                            {time.text}
+                            {tm.text}
                           </Button>
                         ))}
                       </div>
@@ -211,7 +217,7 @@ export const BookAgentClient = ({
               <TabsList className="w-full">
                 <TabsTrigger className="w-full flex gap-2" value="schedule">
                   <Badge>Date: {selectedDate.toDateString()}</Badge>
-                  <Badge>Time: {selectedTime}</Badge>
+                  <Badge>Time: {selectedTime?.localDate.toTimeString()}</Badge>
                   <Button className="ml-auto" variant="outlineprimary">
                     Change
                   </Button>

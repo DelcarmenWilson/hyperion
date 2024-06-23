@@ -37,45 +37,7 @@ export const appointmentsGetAllByUserId = async (userId: string) => {
     return [];
   }
 };
-export const appointmentsGetByUserIdFiltered = async (
-  userId: string,
-  from: string,
-  to: string
-) => {
-  try {
-    const role = await currentRole();
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
-    const appointments = await db.appointment.findMany({
-      where: { agentId: userId, startDate: { lte: toDate, gte: fromDate } },
-      include: { lead: true },
-      orderBy: { createdAt: "desc" },
-    });
 
-    // const fullAppointments: FullAppointment[] = appointments.map(
-    //   (appointment) => {
-    //     const timeZone =
-    //       states.find(
-    //         (e) =>
-    //           e.abv.toLocaleLowerCase() ==
-    //           appointment.lead.state.toLocaleLowerCase()
-    //       )?.zone || "US/Eastern";
-    //     return {
-    //       ...appointment,
-    //       zone: timeZone,
-    //       time: formatTimeZone(appointment.startDate, timeZone),
-    //     };
-    //   }
-    // );
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
 
 export const appointmentsGetAllByUserIdUpcoming = async (
   agentId: string,
@@ -89,24 +51,6 @@ export const appointmentsGetAllByUserIdUpcoming = async (
 
     const appointments = await db.appointment.findMany({
       where: { agentId, status: "Scheduled", startDate: { gte: today } },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
-
-export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
-  try {
-    const today = getEntireDay();
-    const appointments = await db.appointment.findMany({
-      where: {
-        agentId,
-        status: "Scheduled",
-        startDate: { lt: today.end, gt: today.start },
-      },
-      include: { agent: true, lead: true },
     });
 
     return appointments;

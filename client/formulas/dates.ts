@@ -121,7 +121,7 @@ export const formatDob=(date:Date|string|undefined|null,retval:string =""):strin
   return format(date,"MM/dd/yy")
 }
 
-export const formatDateTime=(dateTime:Date|string,retval:string =""):string=>{
+export const formatDateTime=(dateTime:Date|string|undefined|null,retval:string =""):string=>{
   if(!dateTime)
     return retval
   return format(dateTime,defaultDateTime)
@@ -138,10 +138,17 @@ export const formatTime=(time:Date|null,retval:string =""):string=>{
   return format(time,defaultTime)
 }
 
-export const formatHyperionDate=(date:Date,retval:string =""):string=>{
+export const timeDifference=(timeZone:string|undefined="US/Eastern",agentDate:Date=new Date()):number=>{      
+  //LEADS DATE TX (9 to 8)
+  const leadDate=new Date(formatDateTimeZone(agentDate, timeZone));
+  const timeDiff = dateTimeDiff(agentDate, leadDate);  
+return timeDiff
+}
+
+export const formatHyperionDate=(date:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
   if(!date)
     return retval
-  return format(date,hyperionDate)
+  return formatInTimeZone(date,timeZone,hyperionDate)
 }
 
 export const formatTimeZone=(time:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
@@ -160,7 +167,7 @@ export const calculateTime = (secs: number) => {
 };
 
 
-export const dateTimeDiff = function( date1:Date, date2:Date ) {
+export const dateTimeDiff = function( date1:Date, date2:Date ):number {
   //Get 1 day in milliseconds
   var one_day=1000*60*60;
 

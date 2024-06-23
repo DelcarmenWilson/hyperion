@@ -11,7 +11,6 @@ import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
 
 import { adminQuotesGetActive } from "@/actions/admin/quote";
-import { appointmentsGetAllByUserIdToday } from "@/data/appointment";
 import { callsGetAllByAgentIdLast24Hours } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/actions/lead";
@@ -21,8 +20,6 @@ const DahsBoardPage = async () => {
   const user = await currentUser();
   const leadCount = await leadsGetByAgentIdTodayCount(user?.id!);
   const messagesCount = await messagesGetByAgentIdUnSeen(user?.id!);
-
-  const appointments = await appointmentsGetAllByUserIdToday(user?.id!);
 
   const agents = await usersGetSummaryByTeamId(
     user?.id!,
@@ -64,7 +61,7 @@ const DahsBoardPage = async () => {
           outBoundCallsCount={outBoundCallsCount}
         />
         <QuoteClient initQuote={quote!} />
-        <AppointmentClient data={appointments} showLink />
+        <AppointmentClient showLink />
 
         <AgentSummaryClient initialData={formattedAgents} />
         <div className="flex flex-col items-center gap-4 h-[400px] lg:flex-row">

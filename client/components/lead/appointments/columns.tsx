@@ -1,19 +1,12 @@
 "use client";
-import Link from "next/link";
 import { FullAppointment } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-
-import { formatPhoneNumber } from "@/formulas/phones";
-import {
-  formatDateTime,
-  formatDob,
-  formatTime,
-  getAge,
-} from "@/formulas/dates";
+import { formatDateTime, getAge } from "@/formulas/dates";
+import { CellDetails } from "./cell-details";
 
 export const columns: ColumnDef<FullAppointment>[] = [
   {
@@ -39,23 +32,17 @@ export const columns: ColumnDef<FullAppointment>[] = [
     enableHiding: false,
   },
   {
+    id: "status",
+    accessorKey: "status",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
     accessorKey: "fullName",
     header: "Appointment with",
-    cell: ({ row }) => (
-      <div>
-        <p className="capitalize font-bold">
-          {row.original.lead.firstName} {row.original.lead.lastName}
-        </p>
+    cell: ({ row }) => <CellDetails lead={row.original.lead} />,
 
-        <Link
-          className="text-primary font-bold opacity-80 hover:underline italic"
-          href={`/leads/${row.original.lead.id}`}
-        >
-          {formatPhoneNumber(row.original.lead.cellPhone)}
-        </Link>
-        <p className="lowercase">{row.original.lead.email}</p>
-      </div>
-    ),
+    enableGlobalFilter: true,
   },
   {
     accessorKey: "date",
@@ -75,9 +62,10 @@ export const columns: ColumnDef<FullAppointment>[] = [
         </Badge>
         <p>{formatDateTime(row.original.startDate)}</p>
         <p>
-          {" "}
-          <span className="font-bold">Local Time:</span>{" "}
-          {formatTime(row.original.localDate)}
+          <span className="font-bold">Lead Time:</span>{" "}
+          {/* {formatTime(row.original.localDate)} */}
+          {/* //TODO - */}
+          {formatDateTime(row.original.localDate)}
         </p>
       </div>
     ),
@@ -129,6 +117,6 @@ export const columns: ColumnDef<FullAppointment>[] = [
   {
     header: "Actions",
     id: "actions",
-    cell: ({ row }) => <CellAction appointments={row.original} />,
+    cell: ({ row }) => <CellAction appointment={row.original} />,
   },
 ];

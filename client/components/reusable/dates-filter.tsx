@@ -6,12 +6,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { weekStartEnd } from "@/formulas/dates";
 import { DateRangePicker } from "@/components/custom/date-range-picker";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 type DatesFilterProps = {
   link: string;
+  colSpan?: boolean;
+  onDateSelected?: (e: DateRange) => void;
 };
 
-export const DatesFilter = ({ link }: DatesFilterProps) => {
+export const DatesFilter = ({
+  link,
+  colSpan = false,
+  onDateSelected,
+}: DatesFilterProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
@@ -20,22 +28,27 @@ export const DatesFilter = ({ link }: DatesFilterProps) => {
     to: new Date(searchParams.get("to") as string),
   };
 
-  const [dates, setDates] = useState(from ? searchDates : weekStartEnd());
-
-  const onDateSelected = (e: any) => {
-    setDates(e);
-  };
+  const [dates, setDates] = useState<DateRange | undefined>(
+    from ? searchDates : weekStartEnd()
+  );
 
   const onUpdate = () => {
+    if (!dates) return;
     router.push(
-      `${link}?from=${dates.from.toLocaleDateString()}&to=${dates.to.toLocaleDateString()}`
+      `${link}?from=${dates.from?.toLocaleDateString()}&to=${dates.to?.toLocaleDateString()}`
     );
-    router.refresh();
+
+    if (onDateSelected) onDateSelected(dates);
   };
 
   return (
-    <div className="w-full col-span-3 flex flex-col lg:flex-row justify-end items-end gap-2">
-      <DateRangePicker setDate={onDateSelected} date={dates} className="flex" />
+    <div
+      className={cn(
+        "w-full col-span-3 flex flex-col lg:flex-row justify-end items-end gap-2",
+        colSpan && "col-span-2"
+      )}
+    >
+      <DateRangePicker setDate={setDates} date={dates} className="flex" />
       <Button onClick={onUpdate}>Update</Button>
     </div>
   );
