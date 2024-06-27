@@ -12,7 +12,7 @@ import {
 } from "@prisma/client";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
-
+//TODO - i believe this code plus the associated page can be removed. including the db calls
 export const convertUsers = (result: any): User[] => {
   let mapped: User[] = [];
   result.data.map((d: any) => {
@@ -244,7 +244,8 @@ export const convertConversations = (result: any): Conversation[] => {
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
       autoChat: d["autoChat"] == "f" ? false : true,
-      lastMessage: d["lastMessage"],
+      lastMessageId: d["lastMessageId"],
+      unread: d["lastMessageId"],
     };
     mapped.push(newobj);
   });

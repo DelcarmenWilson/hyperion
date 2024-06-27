@@ -27,8 +27,10 @@ import {
 
 import {
   FullMessage,
+  ShortConvo,
   ShortConversation,
   FullConversation,
+  LeadAndConversation,
   ShortChat,
   FullChat,
   FullChatMessage,
@@ -139,8 +141,10 @@ export type {
 //MESSAGE
 export type {
   FullMessage,
+  ShortConvo,
   ShortConversation,
-  FullConversation,
+  FullConversation,  
+  LeadAndConversation,
   ShortChat,
   FullChat,
   FullChatMessage,

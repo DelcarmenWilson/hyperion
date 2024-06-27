@@ -9,7 +9,17 @@ LEADS PAGE
      -- unlock the assistant account o be able to update the lead information -- CHECK WITH JUAN
 TWILIO
      --fix issue with token revalidation -- CHECK WITH JUAN
-     
+
+PHONE
+    -make cursor appear withing the phone number inout box automatically
+    - remove alphabet on keyboard input
+    - disable the editing in sms phone number 
+LEAD STATUS
+    - make the default let status stored in alaphabetical order     
+NEW LEAD FORM
+    - phone numbers should be masked as we type
+SCEDULE
+    - add a posibility for multiple breaks
 
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    

@@ -47,6 +47,7 @@ export const NotificationSettingsSchema = z.object({
   appointments: z.boolean(),
   messages: z.boolean(),
   voicemails: z.boolean(),
+  textForward:z.boolean(),
 });
 
 

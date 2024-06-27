@@ -11,7 +11,7 @@ import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
 
 import { adminQuotesGetActive } from "@/actions/admin/quote";
-import { callsGetAllByAgentIdLast24Hours } from "@/data/call";
+import { callsGetAllByAgentIdToday } from "@/data/call";
 import { messagesGetByAgentIdUnSeen } from "@/data/message";
 import { leadsGetByAgentIdTodayCount } from "@/actions/lead";
 import { usersGetSummaryByTeamId } from "@/data/user";
@@ -39,7 +39,7 @@ const DahsBoardPage = async () => {
     currentCall: agent.chatSettings?.currentCall!,
   }));
 
-  const calls = await callsGetAllByAgentIdLast24Hours(user?.id!);
+  const calls = await callsGetAllByAgentIdToday(user?.id!);
 
   const outBoundCallsCount = calls.filter(
     (call) => call.direction.toLowerCase() === "outbound"

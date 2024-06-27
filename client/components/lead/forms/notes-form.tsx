@@ -9,7 +9,7 @@ import { User } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { leadUpdateByIdNotes, leadUpdateByIdShare } from "@/actions/lead";
+import { leadUpdateByIdNotes, leadUpdateByIdUnShare } from "@/actions/lead";
 
 type NoteFormProps = {
   leadId: string;
@@ -46,16 +46,12 @@ export const NotesForm = ({
     } else toast.error(updatedNotes.error);
     setLoading(false);
   };
-  const onUnShareLead = () => {
-    setSharedUser(null);
-    leadUpdateByIdShare(leadId, undefined).then((data) => {
-      if (data.success) {
-        toast.success(data.success);
-      }
-      if (data.error) {
-        toast.error(data.error);
-      }
-    });
+  const onUnShareLead = async () => {
+    const updatedLead = await leadUpdateByIdUnShare(leadId);
+    if (updatedLead.success) {
+      setSharedUser(null);
+      toast.success(updatedLead.success);
+    } else toast.error(updatedLead.error);
   };
   useEffect(() => {
     setNotes(intialNotes);

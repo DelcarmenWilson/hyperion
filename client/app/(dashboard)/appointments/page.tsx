@@ -10,7 +10,7 @@ const AppointmentsPage = async () => {
 
   return (
     <AppointmentClient showDate />
-    //<CalendarClient />
+    // <CalendarClient />
   );
 };
 

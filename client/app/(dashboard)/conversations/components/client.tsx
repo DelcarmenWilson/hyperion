@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { ShortConversation } from "@/types";
+import { ShortConversation, ShortConvo } from "@/types";
 import { Conversation, Message } from "@prisma/client";
 import { ConversationCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
@@ -19,7 +19,7 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
   useEffect(() => {
     pusherClient.subscribe(user?.id as string);
 
-    const convoHandler = (updatedConvo: Conversation) => {
+    const convoHandler = (updatedConvo: ShortConvo) => {
       setConversations((current) => {
         const convo = current.find((e) => e.id == updatedConvo.id);
         if (convo) {
@@ -27,7 +27,7 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
           if (!convo || index == -1) {
             return current;
           }
-          convo.message = updatedConvo.lastMessage!;
+          convo.message = updatedConvo.lastMessage?.content!;
           convo.updatedAt = updatedConvo.updatedAt;
           current.unshift(current.splice(index, 1)[0]);
 

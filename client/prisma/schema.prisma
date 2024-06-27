@@ -200,6 +200,7 @@ model NotificationSettings {
   appointments Boolean @default(false)
   messages     Boolean @default(false)
   voicemails   Boolean @default(false)
+  textForward  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -396,7 +397,7 @@ model Lead {
   foreignVisited  String?
 
   defaultNumber String
-  notes         String?
+  notes         String? @db.LongText
 
   beneficiaries LeadBeneficiary[]
   conditions    LeadMedicalCondition[]
@@ -625,7 +626,8 @@ model Conversation {
 
   messages Message[]
 
-  lastMessage String? @db.LongText
+  lastMessageId String?  @unique
+  lastMessage   Message? @relation("lastConversationMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
 
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String
@@ -634,6 +636,7 @@ model Conversation {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  unread    Int      @default(0)
 }
 
 model Message {
@@ -641,7 +644,8 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
 
-  role MessageRole @default(user)
+  role        MessageRole   @default(user)
+  lastMessage Conversation? @relation("lastConversationMessage")
 
   content    String  @db.LongText
   attachment String?

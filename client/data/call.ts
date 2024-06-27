@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getLast24hrs } from "@/formulas/dates";
+import { getEntireDay, getLast24hrs } from "@/formulas/dates";
 
 export const callsGetAllByAgentId = async (userId: string) => {
   try {
@@ -54,10 +54,10 @@ export const callsGetAllByAgentIdFiltered = async (
   }
 };
 
-export const callsGetAllByAgentIdLast24Hours = async (userId: string) => {
+export const callsGetAllByAgentIdToday = async (userId: string) => {
   try {
     const calls = await db.call.findMany({
-      where: { userId, createdAt: { gte: getLast24hrs() } },
+      where: { userId, createdAt: { gte: getEntireDay().start } },
       include: { lead: true },
       orderBy: { createdAt: "desc" },
     });

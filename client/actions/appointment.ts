@@ -79,8 +79,7 @@ export const appointmentsGetByUserIdFiltered = async (
 
 //ACTIONS
 export const appointmentInsert = async (
-  values: AppointmentSchemaType,
-  sendSms: boolean = false
+  values: AppointmentSchemaType
 ) => {
   //Get current user
   const user = await currentUser();
@@ -93,7 +92,7 @@ export const appointmentInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { localDate, startDate, agentId, leadId, label, comments } =
+  const { localDate, startDate, agentId, leadId, label, comments,reminder } =
     validatedFields.data;
   let userId = agentId;
   if (user.role == "ASSISTANT") {
@@ -147,7 +146,7 @@ export const appointmentInsert = async (
   let message;
   if (lead) {
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
-    if (sendSms) {
+    if (reminder) {
       message = (
         await smsSendLeadAppointmentNotification(userId, lead, localDate)
       ).success;

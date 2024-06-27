@@ -16,7 +16,7 @@ import { messageInsert } from "./message";
 import { conversationInsert } from "./conversation";
 import { userGetByAssistant } from "@/data/user";
 import { states } from "@/constants/states";
-import { TwilioSms } from "@/types";
+import { LeadAndConversation, TwilioSms } from "@/types";
 import { pusherServer } from "@/lib/pusher";
 
 export const smsCreateInitial = async (leadId: string) => {
@@ -383,23 +383,30 @@ export const getKeywordResponse = async (
   
   return null;
 };
-
-export const disabledAutoChatResponse=async(conversation:Conversation,message:Message | undefined)=>{
+// Reponse when the autoChat is turned off
+export const disabledAutoChatResponse=async(conversation:LeadAndConversation,message:Message | undefined)=>{
   const updatedConversation= await db.conversation.update({
-    where: { id: conversation.id },
+    where: { id: conversation.id },include:{lastMessage:true,lead:true},
     data: {
-      lastMessage: message?.content,
+      lastMessageId: message?.id,
     },
   });
+  const lead=conversation.lead
+  const settings=await db.notificationSettings.findUnique({where:{userId:lead.userId}})
 
-  //WOP: This is where i left of: for the text forwarding
+  
+  if(settings?.textForward && settings.phoneNumber){
+    
+    const agentMessage=`${lead.firstName} ${lead.lastName} said: \n${message?.content}`
+    await smsSend(lead.defaultNumber,settings.phoneNumber,agentMessage)
+  }
 
-  await pusherServer.trigger(
+    await pusherServer.trigger(
     conversation.agentId,
     "conversation:updated",
     updatedConversation
   );
   await pusherServer.trigger(conversation.id, "message:new", message);
   await pusherServer.trigger(conversation.agentId, "message:notify", null);
-  return updatedConversation
+  // return updatedConversation
 }

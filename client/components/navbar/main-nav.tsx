@@ -1,6 +1,7 @@
 "use client";
-import { useContext, useEffect, useRef, useState } from "react";
-import { pusherClient } from "@/lib/pusher";
+import { useContext, useEffect, useState } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
+import Link from "next/link";
 import SocketContext from "@/providers/socket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
@@ -8,18 +9,11 @@ import { toast } from "sonner";
 
 import { CoachNotification } from "../phone/coach-notification";
 import { TwilioShortConference } from "@/types";
-import { Button } from "../ui/button";
-import { Play } from "lucide-react";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { onPhoneInOpen, conference, setConference } = usePhone();
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const onPlay = () => {
-    if (!audioRef.current) return;
-    audioRef.current.play();
-  };
+  const { conference, setConference } = usePhone();
 
   //COACH NOTIFICATION
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -40,6 +34,7 @@ export const MainNav = () => {
   };
 
   useEffect(() => {
+    //COACHING
     socket?.on(
       "coach-request-received",
       (data: { conference: TwilioShortConference }) => {
@@ -55,40 +50,66 @@ export const MainNav = () => {
       ${data.reason}`);
       }
     );
+    //LEAD SHARING
+    socket?.on(
+      "lead-shared-received",
+      (data: { agentName: string; leadId: string; leadFirstName: string }) => {
+        const { agentName, leadId, leadFirstName } = data;
+        const link = <LeadLink leadId={leadId} />;
+        const message = (
+          <p className="flex flex-col justify-center items-center gap-2 text-center">
+            {`${agentName} has shared ${leadFirstName}'s information with you.`}{" "}
+            {link}
+          </p>
+        );
+        toast.success(message);
+      }
+    );
+    socket?.on(
+      "lead-unshared-received",
+      (data: { agentName: string; leadFirstName: string }) => {
+        const { agentName, leadFirstName } = data;
+        const message = (
+          <p className="flex flex-col justify-center items-center gap-2 text-center">
+            {`${agentName} has stopped sharing ${leadFirstName}'s information with you.`}
+          </p>
+        );
+        toast.error(message);
+      }
+    );
+    //LEAD TRANSFER
+    socket?.on(
+      "lead-transfered-received",
+      (data: { agentName: string; leadId: string; leadFirstName: string }) => {
+        const { agentName, leadId, leadFirstName } = data;
+        const link = <LeadLink leadId={leadId} />;
+        const message = (
+          <p className="flex flex-col justify-center items-center gap-2 text-center">
+            {`${agentName} has transfered ${leadFirstName}'s information to you.`}{" "}
+            {link}
+          </p>
+        );
+        userEmitter.emit("leadTransferedRecieved", leadId);
+        toast.success(message);
+      }
+    );
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    pusherClient.subscribe(user?.id as string);
-    pusherClient.bind("message:notify", onPlay);
-    return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("message:notify", onPlay);
-    };
-  }, [user?.id]);
-
   return (
-    <>
-      <CoachNotification
-        conference={conference}
-        isOpen={isNotificationOpen}
-        onJoinCall={onJoinCall}
-        onRejectCall={onRejectCall}
-      />
+    <CoachNotification
+      conference={conference}
+      isOpen={isNotificationOpen}
+      onJoinCall={onJoinCall}
+      onRejectCall={onRejectCall}
+    />
+  );
+};
 
-      <div>
-        <audio
-          ref={audioRef}
-          src={`/sounds/${user?.messageNotification}.wav`}
-        />
-        {/* <Button onClick={onPlay} type="button">
-          <Play size={16} />
-        </Button> */}
-      </div>
-      {/* <Button onClick={onPhoneInOpen}>Open Modal</Button>
-      <Button onClick={() => setIsNotificationOpen(true)}>
-        Open Notifications
-      </Button> */}
-    </>
+export const LeadLink = ({ leadId }: { leadId: string }) => {
+  return (
+    <Link className="bg-emerald-700 text-white" href={`/leads/${leadId}`}>
+      View Details
+    </Link>
   );
 };

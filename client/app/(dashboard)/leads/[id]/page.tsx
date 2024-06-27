@@ -1,19 +1,25 @@
 import { User } from "lucide-react";
-import { LeadClient } from "./components/client";
+import { currentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeadTabsClient } from "./components/tabs-client";
+import { LeadClient } from "./components/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
-import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 import { LeadHeader } from "@/components/lead/header";
+import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
   const lead = await leadGetById(params.id);
+  const user = await currentUser();
   if (!lead) return null;
-  // const prevNext = await leadGetPrevNextById(params.id, lead.userId);
+
+  if (![lead.userId, lead.sharedUserId].includes(user?.id!)) {
+    redirect("/leads");
+  }
   const prevNext = await leadGetPrevNextById(params.id);
   return (
     <PageLayout

@@ -1,8 +1,8 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
-import { X } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import SocketContext from "@/providers/socket";
+import { userEmitter } from "@/lib/event-emmiter";
 
 import axios from "axios";
 import { toast } from "sonner";
@@ -17,50 +17,35 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/reusable/loader";
-
-import { leadUpdateByIdShare, leadUpdateByIdUnShare } from "@/actions/lead";
+import { leadUpdateByIdTransfer } from "@/actions/lead";
 
 type ShareFormProps = {
   leadId: string;
-  sharedUser: User | null | undefined;
   onClose: () => void;
 };
-export const ShareForm = ({ leadId, sharedUser, onClose }: ShareFormProps) => {
+export const TransferForm = ({ leadId, onClose }: ShareFormProps) => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const [selectedUserId, setSelectedUserId] = useState(sharedUser?.id);
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>();
 
-  const onShareLead = async () => {
-    if (!selectedUserId) return;
-    const updatedLead = await leadUpdateByIdShare(leadId, selectedUserId);
-    if (updatedLead.success) {
-      toast.success(updatedLead.message);
+  const onTransferLead = async () => {
+    const transferedLead = await leadUpdateByIdTransfer(leadId, selectedUserId);
+    if (transferedLead.success) {
+      toast.success(transferedLead.success);
       socket?.emit(
-        "lead-shared",
+        "lead-transfered",
         selectedUserId,
         user?.name,
         leadId,
-        updatedLead.success
+        transferedLead.success
       );
+      userEmitter.emit("leadTransfered", leadId);
       onClose();
-    } else toast.error(updatedLead.error);
+    } else toast.error(transferedLead.error);
   };
-  const onUnShareLead = async () => {
-    const updatedLead = await leadUpdateByIdUnShare(leadId);
-    if (updatedLead.success) {
-      toast.success(updatedLead.message);
-      socket?.emit(
-        "lead-unshared",
-        selectedUserId,
-        user?.name,
-        updatedLead.success
-      );
-      setSelectedUserId(undefined);
-      onClose();
-    } else toast.error(updatedLead.error);
-  };
+  //TODO - see if we can put this in a use hook
 
   useEffect(() => {
     axios
@@ -79,24 +64,9 @@ export const ShareForm = ({ leadId, sharedUser, onClose }: ShareFormProps) => {
         <Loader text="Loading Users..." />
       ) : (
         <>
-          {sharedUser && (
-            <div>
-              <h4 className="text-md text-muted-foreground font-bold">
-                Currently Sharing Lead with:
-              </h4>
-              <p className="font-bold text-lg  text-center">
-                {sharedUser.firstName} {sharedUser.lastName}
-                <Button className="ms-2" size="sm" onClick={onUnShareLead}>
-                  <X size={16} />
-                </Button>
-              </p>
-            </div>
-          )}
           <p className="text-md text-muted-foreground font-bold">
-            Select {sharedUser ? "a new" : "an"} agent
+            Select a agent to transfer the lead to
           </p>
-
-          {/* //TODO - create a new component for slecatable users */}
           <Select
             name="ddlUsers"
             disabled={loading}
@@ -104,7 +74,7 @@ export const ShareForm = ({ leadId, sharedUser, onClose }: ShareFormProps) => {
             defaultValue={selectedUserId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select an agent" />
+              <SelectValue placeholder="Select a User" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               {users?.map((user) => (
@@ -120,10 +90,10 @@ export const ShareForm = ({ leadId, sharedUser, onClose }: ShareFormProps) => {
               Cancel
             </Button>
             <Button
-              disabled={loading || sharedUser?.id == selectedUserId}
-              onClick={onShareLead}
+              disabled={loading || !selectedUserId}
+              onClick={onTransferLead}
             >
-              Share
+              Transfer
             </Button>
           </div>
         </>

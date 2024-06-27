@@ -10,7 +10,7 @@ const InboxPage = async () => {
       fullName: `${conversation.lead.firstName} ${conversation.lead.lastName}`,
       disposition: "",
       cellPhone: conversation.lead.cellPhone,
-      message: conversation.lastMessage!,
+      message: conversation.lastMessage?.content!,
       updatedAt: conversation.updatedAt,
       unread: conversation.messages.filter((message) => !message.hasSeen)
         .length,

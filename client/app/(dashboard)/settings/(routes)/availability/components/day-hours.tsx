@@ -2,74 +2,46 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useScheduleBreak } from "@/hooks/use-schedule-break";
+import { Button } from "@/components/ui/button";
+import { ScheduleDay } from "@/formulas/schedule";
+import { formatJustTime } from "@/formulas/dates";
 
-interface DayHoursProps {
-  day: string;
-  hours: string;
-  setHours: (e: string) => void;
+type DayHoursProps = {
+  schedule: ScheduleDay;
   disabled: boolean;
-}
-export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
-  const [available, setAvailable] = useState(hours != "Not Available");
-  const scheduleBreak = hours.split(",");
-  const [workFrom, setWorkFrom] = useState(
-    available ? scheduleBreak[0].split("-")[0] : "09:00"
-  );
-  const [workTo, setWorkTo] = useState(
-    available ? scheduleBreak[0].split("-")[1] : "18:00"
-  );
+  onSetAvail: (e: number, a: boolean) => void;
+};
 
-  const [breakFrom, setBreakFrom] = useState(
-    available ? scheduleBreak[1].split("-")[0] : "12:00"
-  );
-  const [breakTo, setBreakTo] = useState(
-    available ? scheduleBreak[1].split("-")[1] : "13:00"
-  );
+export const DayHour = ({ schedule, disabled, onSetAvail }: DayHoursProps) => {
+  const { onOpen } = useScheduleBreak();
+  const [available, setAvailable] = useState(schedule.available);
 
   const onSetAvailable = (e: boolean) => {
-    if (e) setHours("09:00-18:00,12:00-13:00");
-    else setHours("Not Available");
     setAvailable(e);
-  };
-
-  const onSetWorkFrom = (time: string) => {
-    setWorkFrom(time);
-    setHours(`${time}-${workTo},${breakFrom}-${breakTo}`);
-  };
-  const onSetWorkTo = (time: string) => {
-    setWorkTo(time);
-    setHours(`${workFrom}-${time},${breakFrom}-${breakTo}`);
-  };
-  const onSetBreakFrom = (time: string) => {
-    setBreakFrom(time);
-    setHours(`${workFrom}-${workTo},${time}-${breakTo}`);
-  };
-  const onSetBreakTo = (time: string) => {
-    setBreakTo(time);
-    setHours(`${workFrom}-${workTo},${breakFrom}-${time}`);
+    onSetAvail(schedule.index, e);
   };
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 items-center gap-2 mb-2">
+    <div className="grid grid-cols-2 lg:grid-cols-6 items-center gap-2 mb-2">
       <div className="flex justify-between gap-2 text-sm text-muted-foreground">
-        <p>{day}</p>
+        <p className=" capitalize">{schedule.day}</p>
         <div>
           <Switch
             disabled={disabled}
-            name="cblRecord"
+            name="cblAvailable"
             checked={available}
             onCheckedChange={(e) => onSetAvailable(e)}
           />
         </div>
       </div>
       {available ? (
-        <div className="grid col-span-4 grid-cols-2 lg:grid-cols-4 items-center gap-2">
+        <div className="grid col-span-5 grid-cols-2 lg:grid-cols-4 items-center gap-2">
           <Input
             name="txtWorkFrom"
             disabled={disabled}
             type="time"
-            defaultValue={workFrom}
-            onChange={(e) => onSetWorkFrom(e.target.value)}
+            defaultValue={schedule.workFrom}
             autoComplete="time"
             step="300"
           />
@@ -77,32 +49,38 @@ export const DayHour = ({ day, hours, setHours, disabled }: DayHoursProps) => {
             name="txtWorkTo"
             disabled={disabled}
             type="time"
-            defaultValue={workTo}
-            onChange={(e) => onSetWorkTo(e.target.value)}
+            defaultValue={schedule.workTo}
             autoComplete="time"
             step="300"
           />
-          <Input
-            name="txtBreakFrom"
-            disabled={disabled}
-            type="time"
-            defaultValue={breakFrom}
-            onChange={(e) => onSetBreakFrom(e.target.value)}
-            autoComplete="time"
-            step="300"
-          />
-          <Input
-            name="txtWorkTo"
-            disabled={disabled}
-            type="time"
-            defaultValue={breakTo}
-            onChange={(e) => onSetBreakTo(e.target.value)}
-            autoComplete="time"
-            step="300"
-          />
+          <Button
+            className="justify-between col-span-2"
+            type="button"
+            variant="secondary"
+            onClick={() => onOpen(schedule)}
+          >
+            <span>
+              {formatJustTime(schedule.breakFrom1)}
+              {" - "}
+              {formatJustTime(schedule.breakTo1)}
+            </span>
+            {!schedule.breakFrom1 && <span> No Breaks</span>}
+            {schedule.breakFrom2 && <span>|</span>}
+            <span>
+              {formatJustTime(schedule.breakFrom2)}
+              {" - "}
+              {formatJustTime(schedule.breakTo2)}
+            </span>
+          </Button>
         </div>
       ) : (
-        <Input disabled type="text" value="Not Available" autoComplete="time" />
+        <Input
+          className="text-center"
+          disabled
+          type="text"
+          value="Not Available"
+          autoComplete="time"
+        />
       )}
     </div>
   );

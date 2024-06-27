@@ -19,8 +19,9 @@ import { userGetByAssistant } from "@/data/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { formatTimeZone, getYesterday } from "@/formulas/dates";
+import { formatTimeZone, getEntireDay, getToday, getYesterday } from "@/formulas/dates";
 import { FullLead } from "@/types";
+import { disconnect } from "process";
 
 //LEAD
 
@@ -194,11 +195,12 @@ export const leadGetPrevNextById = async (id: string) => {
 
 export const leadsGetByAgentIdTodayCount = async (userId: string) => {
   try {
+    const date=getEntireDay()
     const leads = await db.lead.aggregate({
       _count: { id: true },
       where: {
         userId,
-        createdAt: { gte: getYesterday() },
+        createdAt: { gte: date.start},
       },
     });
 
@@ -707,7 +709,7 @@ export const leadUpdateByIdPolicyInfo = async (
 
 
 
-//LEAD ASSISTANT AND SHARE
+//LEAD ASSISTANT SHARE AND TRANSFER
 export const leadUpdateByIdAsssitant = async (
   id: string,
   assistantId: string | null | undefined
@@ -738,7 +740,7 @@ export const leadUpdateByIdAsssitant = async (
 };
 export const leadUpdateByIdShare = async (
   id: string,
-  userId: string | null | undefined
+  userId:string
 ) => {
   const user = await currentUser();
 
@@ -746,21 +748,85 @@ export const leadUpdateByIdShare = async (
     return { error: "Unathenticated" };
   }
 
-  if (!userId) {
-    await db.lead.update({
+  const lead=await db.lead.findUnique({where:{id}})
+  if(!lead){
+    return {error:"Lead does not exists!!"}
+  }
+ 
+  if(lead.userId!=user.id){
+    return {error:"Unauthorized!!"}
+  }
+
+  const sharedUser=await db.user.findUnique({where:{id:userId}})
+  if(!sharedUser){
+    return {error:"User does not exists!!"}
+  }
+  const sharedLead=await db.lead.update({
+    where: { id },
+    data: {
+      sharedUserId: sharedUser.id,
+    },
+  });
+
+  return { success:sharedLead.firstName ,message:`Lead is now shared with ${sharedUser.firstName}!` };
+};
+export const leadUpdateByIdUnShare = async (
+  id: string
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+
+  const lead=await db.lead.findUnique({where:{id}})
+  if(!lead){
+    return {error:"Lead does not exists!!"}
+  }
+ 
+  if(lead.userId!=user.id){
+    return {error:"Unauthorized!!"}
+  }
+
+    const unsharedLead=await db.lead.update({
       where: { id },
       data: {
         sharedUser: { disconnect: true },
       },
     });
-    return { success: "Lead sharing has been deactivated!" };
-  }
-  await db.lead.update({
-    where: { id },
-    data: {
-      sharedUserId: userId,
-    },
-  });
-
-  return { success: " Lead is now shared!" };
+    return { success: unsharedLead.firstName,message:"Lead sharing has been deactivated!" };
+ 
 };
+export const leadUpdateByIdTransfer = async (
+  id: string,
+  userId: string 
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+
+  const lead=await db.lead.findUnique({where:{id}})
+  if(!lead){
+    return {error:"Lead does not exists!!"}
+  }
+  const tfUser=await db.user.findUnique({where:{id:userId}})
+  if(!tfUser){
+    return {error:"User does not exists!!"}
+  }
+  if(lead.userId!=user.id){
+    return {error:"Unauthorized!!"}
+  }
+
+  await db.lead.update({where:{id},data:{
+    sharedUser:{disconnect:true},
+    assistant:{disconnect:true}
+  }})
+
+  const transferendLead=await db.lead.update({where:{id},data:{
+    userId:tfUser.id,   
+  }})
+
+  return { success: transferendLead.firstName,message:`Lead is now transfered to ${tfUser.firstName}!`};
+}; 

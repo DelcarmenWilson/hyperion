@@ -102,24 +102,23 @@ export class ServerSocket {
       });
     });
     //LEAD SHARING
-    socket.on("lead-shared", (userId, leadId, sharedUser) => {
+    socket.on("lead-shared", (userId,agentName,leadId,leadFirstName) => {
       const uid = this.GetSocketIdFromUid(userId);
       this.SendUserMessage("lead-shared-received", uid, {
-        leadId,
-        sharedUser,
-      });
-      socket.emit("lead-shared-received", uid, {
-        leadId,
-        sharedUser,
+        agentName,leadId,leadFirstName
       });
     });
-    socket.on("lead-unshared", (userId, leadId) => {
+    socket.on("lead-unshared", (userId,agentName,leadFirstName) => {
       const uid = this.GetSocketIdFromUid(userId);
       this.SendUserMessage("lead-unshared-received", uid, {
-        leadId,
+        agentName,leadFirstName
       });
-      socket.emit("lead-shared-received", uid, {
-        leadId,
+    });
+    //LEAD TRANSFER
+    socket.on("lead-transfered", (userId,agentName,leadId,leadFirstName) => {
+      const uid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("lead-transfered-received", uid, {
+        agentName,leadId,leadFirstName
       });
     });
   };

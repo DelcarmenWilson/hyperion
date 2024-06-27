@@ -18,6 +18,7 @@ export const conversationsGetByUserId = async () => {
       where: { agentId },
       include: {
         lead: true,
+        lastMessage:true,
         messages: true,
       },
       orderBy: { updatedAt: "desc" },
@@ -62,6 +63,7 @@ export const conversationGetById = async (conversationId: string) => {
       include: {
         lead: {
           include: {
+
             calls: true,
             appointments: true,
             activities: true,
@@ -71,6 +73,7 @@ export const conversationGetById = async (conversationId: string) => {
             policy: true,
           },
         },
+        lastMessage:true,
         messages: true,
       },
     });

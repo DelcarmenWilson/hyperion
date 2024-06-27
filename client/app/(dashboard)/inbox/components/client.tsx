@@ -5,10 +5,10 @@ import { pusherClient } from "@/lib/pusher";
 import { MessagesSquare } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
+import { ShortConvo } from "@/types";
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { DataTable } from "./data-table";
 import { InboxColumn, columns } from "./columns";
-import { Conversation } from "@prisma/client";
 
 type InboxClientProps = {
   convos: InboxColumn[];
@@ -19,12 +19,12 @@ export const InboxClient = ({ convos }: InboxClientProps) => {
   useEffect(() => {
     pusherClient.subscribe(user?.id as string);
 
-    const convoHandler = (updatedConvo: Conversation) => {
+    const convoHandler = (updatedConvo: ShortConvo) => {
       setConversations((current) => {
         const convo = current.find((e) => e.id == updatedConvo.id);
         if (convo) {
           const index = current.findIndex((e) => e.id == updatedConvo.id);
-          convo.message = updatedConvo.lastMessage!;
+          convo.message = updatedConvo.lastMessage?.content!;
           convo.updatedAt = updatedConvo.updatedAt;
           current.unshift(current.splice(index, 1)[0]);
 

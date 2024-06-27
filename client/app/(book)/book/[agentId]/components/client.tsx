@@ -1,13 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { FaUser } from "react-icons/fa";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Gender, MaritalStatus, Schedule } from "@prisma/client";
+import { Appointment } from "@prisma/client";
+import {
+  AppointmentLeadSchema,
+  AppointmentLeadSchemaType,
+} from "@/schemas/appointment";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Form,
   FormField,
@@ -16,7 +24,8 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -25,25 +34,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Gender, MaritalStatus, Schedule } from "@prisma/client";
-import { Appointment } from "@prisma/client";
-
-import {
-  generateScheduleTimes,
-  breakDownSchedule,
-  BrokenScheduleType,
-  NewScheduleTimeType,
-} from "@/constants/schedule-times";
 import { states } from "@/constants/states";
+
+import { getTommorrow } from "@/formulas/dates";
 import {
-  AppointmentLeadSchema,
-  AppointmentLeadSchemaType,
-} from "@/schemas/appointment";
-import { Badge } from "@/components/ui/badge";
-import { concateDate, getTommorrow } from "@/formulas/dates";
+  breakDownSchedule,
+  generateScheduleTimes,
+  NewScheduleTimeType,
+} from "@/formulas/schedule";
 import { appointmentInsertBook } from "@/actions/appointment";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FaUser } from "react-icons/fa";
 
 type BookAgentClientProps = {
   userImage: string;
@@ -61,9 +60,8 @@ export const BookAgentClient = ({
   const tommorrow = getTommorrow();
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState(true);
-  const [brSchedule, setBrSchedule] = useState<BrokenScheduleType[]>(
-    breakDownSchedule(schedule)
-  );
+  const brSchedule = breakDownSchedule(schedule);
+
   const [times, setTimes] = useState<NewScheduleTimeType[]>();
   const [selectedDate, setSelectedDate] = useState(tommorrow);
   const [selectedTime, setSelectedTime] = useState<
@@ -74,12 +72,12 @@ export const BookAgentClient = ({
     if (!date) return;
     setSelectedDate(date);
     setSelectedTime(undefined);
-    const day = date.getDay();
-    if (brSchedule[day].day == "Not Available") {
+    const selectedDay = brSchedule[date.getDay()];
+    if (selectedDay.day == "Not Available") {
       setTimes([]);
       setAvailable(false);
     } else {
-      const sc = generateScheduleTimes(date, brSchedule[day]);
+      const sc = generateScheduleTimes(date, selectedDay);
       setTimes(sc);
       setAvailable(true);
     }
