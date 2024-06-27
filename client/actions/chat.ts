@@ -271,7 +271,10 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
     where: { id: chatId },
     include: { lastMessage: true },
   });
+if(!conversation){
 
+  return { error: "Conversation does not exists!" };
+}
   const newMessage = await db.chatMessage.create({
     data: {
       chatId,
@@ -287,7 +290,7 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
     data: {
       lastMessageId: newMessage.id,
       unread:
-        conversation?.lastMessage?.senderId == senderId
+        conversation.lastMessage?.senderId == senderId
           ? conversation.unread + 1
           : 0,
     },

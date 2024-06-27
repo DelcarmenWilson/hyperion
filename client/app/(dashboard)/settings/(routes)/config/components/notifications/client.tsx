@@ -98,7 +98,7 @@ export const NotificationClient = ({
                     </div>
                     <FormControl>
                       <Switch
-                        name="cblCalls"
+                        name="cbCalls"
                         disabled={isPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -107,7 +107,7 @@ export const NotificationClient = ({
                   </FormItem>
                 )}
               />
-
+              {/* APPOINTMENTS */}
               <FormField
                 control={form.control}
                 name="appointments"
@@ -122,6 +122,29 @@ export const NotificationClient = ({
                     <FormControl>
                       <Switch
                         name="cblAppointments"
+                        disabled={isPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* TEXT FORWARDING */}
+              <FormField
+                control={form.control}
+                name="textForward"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Text Forward</FormLabel>
+                      <FormDescription>
+                        Enable text forwading to your personal number
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cbTextFoward"
                         disabled={isPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -145,7 +168,7 @@ export const NotificationClient = ({
                     </div>
                     <FormControl>
                       <Switch
-                        name="cblMessages"
+                        name="cbMessages"
                         disabled={isPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -167,7 +190,7 @@ export const NotificationClient = ({
                     </div>
                     <FormControl>
                       <Switch
-                        name="cblVoicemails"
+                        name="cbVoicemails"
                         disabled={isPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -176,12 +199,12 @@ export const NotificationClient = ({
                   </FormItem>
                 )}
               />
+              <div className="flex justify-end mt-2">
+                <Button disabled={isPending} type="submit">
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-end mt-2">
-            <Button disabled={isPending} type="submit">
-              Save
-            </Button>
           </div>
         </form>
       </Form>

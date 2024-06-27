@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { scheduleTimes } from "@/constants/schedule-times";
+import { scheduleTimes } from "@/formulas/schedule";
 
 export const BookClient = () => {
   const [times, setTimes] = useState(scheduleTimes);

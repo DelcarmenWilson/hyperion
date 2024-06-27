@@ -12,6 +12,15 @@ export const messageInsert = async (values: MessageSchemaType) => {
   const { role, content, conversationId, attachment, senderId, hasSeen, sid } =
     validatedFields.data;
 
+    const conversation = await db.conversation.findUnique({
+      where: { id: conversationId }
+    });
+
+  if(!conversation){
+  
+    return { error: "Conversation does not exists!" };
+  }
+
   const newMessage = await db.message.create({
     data: {
       conversationId,
@@ -26,7 +35,11 @@ export const messageInsert = async (values: MessageSchemaType) => {
 
    await db.conversation.update({
     where: { id: conversationId },
-    data: { lastMessage: content },
+    data: { lastMessageId: newMessage.id, 
+      unread:
+      conversation.leadId == senderId
+        ? conversation.unread + 1
+        : 0, },
   });
 
   return { success: newMessage };

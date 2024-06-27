@@ -132,10 +132,16 @@ export const formatDateTimeZone=(date:Date,timeZone:string="US/Eastern",retval:s
   return formatInTimeZone(date,timeZone,defaultDateTime)
 }
 
-export const formatTime=(time:Date|null,retval:string =""):string=>{
+export const formatTime=(time:Date|string|null|undefined,retval:string =""):string=>{
   if(!time)
     return retval
   return format(time,defaultTime)
+}
+export const formatJustTime=(time:string|null|undefined,retval:string =""):string=>{
+  if(!time||time=="-")
+    return retval
+  const date=new Date("1970-01-01T" + time)
+  return format(date,defaultTime)
 }
 
 export const timeDifference=(timeZone:string|undefined="US/Eastern",agentDate:Date=new Date()):number=>{      

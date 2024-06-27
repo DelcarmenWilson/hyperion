@@ -10,6 +10,7 @@ import {
   ChevronDown,
   FileBarChart,
   FileText,
+  Reply,
   Share,
   Trash,
   X,
@@ -42,6 +43,7 @@ import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { ShareForm } from "./forms/share-form";
+import { TransferForm } from "./forms/transfer-form";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -55,35 +57,30 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
 
   const [intakeDialogOpen, setIntakeDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const isAssistant = role == "ASSISTANT";
 
-  const onTitanToggle = () => {
+  const onTitanToggle = async () => {
     setAutoChat((state) => !state);
-    conversationUpdateByIdAutoChat(conversation?.id as string, !autoChat).then(
-      (data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-        }
-      }
+    const updateAutoChat = await conversationUpdateByIdAutoChat(
+      conversation?.id as string,
+      !autoChat
     );
+
+    if (updateAutoChat.success) toast.success(updateAutoChat.success);
+    else toast.error(updateAutoChat.error);
   };
 
   const onDelete = async () => {
     setLoading(true);
-    conversationDeleteById(conversation?.id as string).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
-    });
-
+    const deletedConversation = await conversationDeleteById(
+      conversation?.id as string
+    );
+    if (deletedConversation.success) toast.success(deletedConversation.success);
+    else toast.error(deletedConversation.error);
     setLoading(false);
     setAlertOpen(false);
   };
@@ -126,6 +123,18 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
           />
         </DialogContent>
       </Dialog>
+      <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
+        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
+          <h3 className="text-2xl font-semibold py-2">
+            Transfer Lead{" - "}
+            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
+          </h3>
+          <TransferForm
+            leadId={lead.id}
+            onClose={() => setTransferDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="rounded-full" size="icon">
@@ -149,6 +158,13 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
               >
                 <Share size={16} />
                 Share Lead
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => setTransferDialogOpen(true)}
+              >
+                <Reply size={16} />
+                Transfer Lead
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"

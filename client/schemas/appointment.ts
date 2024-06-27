@@ -8,6 +8,7 @@ export const AppointmentSchema = z.object({
   leadId: z.string(),
   label: z.string(),
   comments: z.string(),
+  reminder:z.boolean()
 });
 export type AppointmentSchemaType = z.infer<typeof AppointmentSchema>;
 

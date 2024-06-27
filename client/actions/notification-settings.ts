@@ -36,13 +36,20 @@ export const notificationSettingsUpdateByUserId = async (
     return { error: "Invalid fields!" };
   }
 
-  const { userId, phoneNumber, calls, appointments, messages, voicemails } =
-    validatedFields.data;
+  const {
+    userId,
+    phoneNumber,
+    calls,
+    appointments,
+    messages,
+    voicemails,
+    textForward,
+  } = validatedFields.data;
 
   if (!userId) {
     return { error: "No User Id!" };
   }
-const validPhoneNumber=reFormatPhoneNumber(phoneNumber)
+  const validPhoneNumber = reFormatPhoneNumber(phoneNumber);
 
   await db.notificationSettings.update({
     where: { userId },
@@ -52,10 +59,15 @@ const validPhoneNumber=reFormatPhoneNumber(phoneNumber)
       appointments,
       messages,
       voicemails,
+      textForward,
     },
   });
 
-  return { success: `Notifications Settings Updated! ${!validPhoneNumber?"Phone Number is not valid":""}` };
+  return {
+    success: `Notifications Settings Updated! ${
+      !validPhoneNumber ? "Phone Number is not valid" : ""
+    }`,
+  };
 };
 
 //TODO - dont forget to remove this as it should only sun once

@@ -1,3 +1,4 @@
+import { ScheduleDay } from "@/formulas/schedule";
 import {
   LeadGeneralSchemaType,
   LeadMainSchemaType,
@@ -46,6 +47,11 @@ type UserEvents = {
 
   generalInfoUpdated: [info: LeadGeneralSchemaType];
   leadStatusChanged: [leadId: string, newStatus: string];
+
+//LEAD SHARING AND TRANSFERING
+leadTransfered:[id:string];
+leadTransferedRecieved:[id:string];
+
   //LICENSES
   licenseDeleted: [id: string];
   licenseInserted: [info: UserLicense];
@@ -67,6 +73,9 @@ type UserEvents = {
   //CONFERENCE AND PARTICIPANTS
   participantsFetch: [conferenceId: string];
   joinCall: [callSid: string];
+
+  //SCHEDULE BREAKS
+  scheduleBreakUpdated:[info:ScheduleDay]
 
   userLeadStatusDeleted: [id: string];
   userLeadStatusInserted: [info: LeadStatus];

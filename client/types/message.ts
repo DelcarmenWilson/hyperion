@@ -1,4 +1,4 @@
-import { Conversation, Message, User, Chat, ChatMessage } from "@prisma/client";
+import { Conversation, Message, User, Chat, ChatMessage, Lead } from "@prisma/client";
 
 import { FullLeadNoConvo } from "./lead";
 
@@ -6,6 +6,11 @@ export type FullMessage = Message & {
   sender?: User | null;
 };
 
+// CHAT
+export type ShortConvo = Conversation & {
+  lead:Lead,
+  lastMessage:Message | null
+};
 export type ShortConversation = {
   id: string;
   firstName: string;
@@ -21,6 +26,10 @@ export type FullConversation = Conversation & {
   lead: FullLeadNoConvo;
   messages: FullMessage[];
 };
+
+export type LeadAndConversation =   Conversation & {
+    lead: Lead;
+  };
 
 // CHAT
 export type ShortChat = Chat & {

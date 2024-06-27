@@ -9,7 +9,11 @@ import { chatFetch } from "@/actions/gpt";
 import { defaultOptOut } from "@/placeholder/chat";
 import { appointmentInsert } from "@/actions/appointment";
 import { formatObject } from "@/formulas/objects";
-import { disabledAutoChatResponse, getKeywordResponse, smsSend } from "@/actions/sms";
+import {
+  disabledAutoChatResponse,
+  getKeywordResponse,
+  smsSend,
+} from "@/actions/sms";
 import { TwilioSms } from "@/types";
 import { formatDateTime } from "@/formulas/dates";
 
@@ -17,7 +21,11 @@ export async function POST(req: Request) {
   const body = await req.formData();
 
   const sms: TwilioSms = formatObject(body);
+
+  //TODO - Need to find a way to repond to agent text via sms
+
   let updatedConversation;
+
   //Pulling the entire conversation based on the phone number
   const conversation = await db.conversation.findFirst({
     where: {
@@ -25,6 +33,7 @@ export async function POST(req: Request) {
         cellPhone: sms.from,
       },
     },
+    include: { lead: true },
   });
 
   //If the conversation does not exist - exit the work flow
@@ -37,8 +46,8 @@ export async function POST(req: Request) {
   const smsFromLead: MessageSchemaType = {
     role: "user",
     content: sms.body,
-    conversationId: conversation?.id!,
-    senderId: conversation?.agentId!,
+    conversationId: conversation.id,
+    senderId: conversation.leadId,
     hasSeen: false,
   };
 
@@ -47,14 +56,21 @@ export async function POST(req: Request) {
 
   //Get Keword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
-  const keywordResponse=await getKeywordResponse(smsFromLead,sms,conversation.id,conversation.leadId)
-  if(keywordResponse)    
-       return new NextResponse(keywordResponse, { status: 200 });
-      
+  const keywordResponse = await getKeywordResponse(
+    smsFromLead,
+    sms,
+    conversation.id,
+    conversation.leadId
+  );
+  if (keywordResponse)
+    return new NextResponse(keywordResponse, { status: 200 });
 
   //If autochat is disabled - exit the workflow
   if (!conversation.autoChat) {
-    updatedConversation = await disabledAutoChatResponse(conversation,newMessage)
+     await disabledAutoChatResponse(
+      conversation,
+      newMessage
+    );
     return new NextResponse(null, { status: 200 });
   }
 
@@ -95,17 +111,15 @@ export async function POST(req: Request) {
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
-    await appointmentInsert(      
-      {
-        localDate:aptDate,
-        startDate: aptDate,
-        leadId: conversation.leadId,
-        agentId: conversation.agentId,
-        label: "blue",
-        comments: "",
-      },
-      false
-    );
+    await appointmentInsert({
+      localDate: aptDate,
+      startDate: aptDate,
+      leadId: conversation.leadId,
+      agentId: conversation.agentId,
+      label: "blue",
+      comments: "",
+      reminder: false,
+    });
 
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
@@ -126,8 +140,9 @@ export async function POST(req: Request) {
   if (newChatMessage) {
     updatedConversation = await db.conversation.update({
       where: { id: conversation.id },
+      include: { lastMessage: true, lead: true },
       data: {
-        lastMessage: newChatMessage?.content,
+        lastMessageId: newChatMessage.id,
       },
     });
 
@@ -145,11 +160,7 @@ export async function POST(req: Request) {
   return new NextResponse(content, { status: 200 });
 }
 
-
-
-
-
-//TODO - check id this is being used and remove if not
+//TODO - check if this is being used and remove if not
 export async function PUT(req: Request) {
   const body = await req.formData();
 
@@ -168,7 +179,7 @@ export async function PUT(req: Request) {
     role: "user",
     content: j.body,
     conversationId: conversation?.id!,
-    senderId: conversation?.agentId!,
+    senderId: conversation?.leadId!,
     hasSeen: false,
   };
 
@@ -229,17 +240,15 @@ export async function PUT(req: Request) {
 
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
-    await appointmentInsert(
-      {
-        localDate:aptDate,
-        startDate: aptDate,
-        leadId: conversation.leadId,
-        agentId: conversation.agentId,
-        label: "blue",
-        comments: "",
-      },
-      false
-    );
+    await appointmentInsert({
+      localDate: aptDate,
+      startDate: aptDate,
+      leadId: conversation.leadId,
+      agentId: conversation.agentId,
+      label: "blue",
+      comments: "",
+      reminder: false,
+    });
 
     return new NextResponse(
       `Appointment has been schedule for ${formatDateTime(aptDate)}`,

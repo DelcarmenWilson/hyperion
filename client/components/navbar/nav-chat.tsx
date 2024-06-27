@@ -1,12 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-import { pusherClient } from "@/lib/pusher";
+import SocketContext from "@/providers/socket";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { MessagesSquare } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Bot, User } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+import { FullChatMessage, UnreadShortChat } from "@/types";
 
 import {
   DropdownMenu,
@@ -17,40 +19,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import SkeletonWrapper from "@/components//skeleton-wrapper";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import SkeletonWrapper from "../skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
 
-import { ShortConvo } from "@/types";
+import { chatUpdateByIdUnread, chatsGetByUserIdUnread } from "@/actions/chat";
 
-import {
-  conversationsGetByUserIdUnread,
-  conversationUpdateByIdUnread,
-} from "@/actions/conversation";
-
-//TODO - see if we can consolidate the UI with nav Chats
-export const NavMessages = () => {
+export const NavChat = () => {
+  const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const { data: conversations, isFetching: chatsIsFectching } = useQuery<
-    ShortConvo[]
+  const { data: chats, isFetching: chatsIsFectching } = useQuery<
+    UnreadShortChat[]
   >({
-    queryKey: ["navbarMessages"],
-    queryFn: () => conversationsGetByUserIdUnread(),
+    queryKey: ["navbarChats"],
+    queryFn: () => chatsGetByUserIdUnread(),
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: conversationUpdateByIdUnread,
+    mutationFn: chatUpdateByIdUnread,
     onSuccess: (result) => {
       if (result.success?.length) {
-        router.push(`/conversation/${result.success}`);
+        router.push(`/chat/${result.success}`);
       }
       queryClient.invalidateQueries({
-        queryKey: ["navbarMessages"],
+        queryKey: ["navbarChats"],
       });
     },
     onError: (error) => {
@@ -59,43 +58,46 @@ export const NavMessages = () => {
   });
 
   const onPlay = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["navbarMessages"],
-    });
     if (!audioRef.current) return;
     audioRef.current.volume = 0.5;
     audioRef.current.play();
   };
 
   useEffect(() => {
-    pusherClient.subscribe(user?.id as string);
-    pusherClient.bind("message:notify", onPlay);
-    return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("message:notify", onPlay);
-    };
-  }, [user?.id]);
+    socket?.on("chat-message-received", (message: FullChatMessage) => {
+      if (pathname.startsWith("/chat")) return;
+      queryClient.invalidateQueries({
+        queryKey: ["navbarChats"],
+      });
+      onPlay();
+      // toast.success(`New message recieved from ${message.sender.firstName} `);
+    });
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div>
-      <audio ref={audioRef} src={`/sounds/${user?.messageNotification}.wav`} />
+      <audio
+        ref={audioRef}
+        src={`/sounds/${user?.messageInternalNotification}.wav`}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="relative" size="icon" variant="outline">
-            <MessagesSquare size={16} />
-            {conversations && conversations?.length > 0 && (
+            <Bot size={16} />
+            {chats && chats?.length > 0 && (
               <Badge className="absolute rounded-full text-xs -top-2 -right-2">
-                {conversations.length}
+                {chats.length}
               </Badge>
             )}
           </Button>
         </DropdownMenuTrigger>
         <SkeletonWrapper isLoading={chatsIsFectching}>
           <DropdownMenuContent className="w-full lg:w-[300px]" align="start">
-            <DropdownMenuLabel>Lead Messages</DropdownMenuLabel>
-            {conversations?.length ? (
+            <DropdownMenuLabel>Agent Chat</DropdownMenuLabel>
+            {chats?.length ? (
               <>
-                {conversations?.map((chat) => (
+                {chats?.map((chat) => (
                   <DropdownMenuItem
                     key={chat.id}
                     className="flex gap-2 border-b"
@@ -106,21 +108,24 @@ export const NavMessages = () => {
                       <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
                         {chat.unread}
                       </Badge>
-                      <div className="flex-center bg-primary text-accent rounded-full p-1 mr-2">
-                        <span className="text-lg font-semibold">{`${chat.lead.firstName.substring(
-                          0,
-                          1
-                        )} ${chat.lead.lastName.substring(0, 1)}`}</span>
-                      </div>
+                      <Avatar>
+                        <AvatarImage
+                          src={chat.lastMessage?.sender.image || ""}
+                          loading="lazy"
+                        />
+                        <AvatarFallback className="bg-primary dark:bg-accent">
+                          <User className="text-accent dark:text-primary" />
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
                         <h4 className=" font-bold ms-2">
-                          {chat.lead.firstName}
+                          {chat.lastMessage?.sender.firstName}
                         </h4>
                         <p className="text-end text-muted-foreground text-sm">
                           {formatDate(chat.lastMessage?.createdAt)}
-                        </p>
+                        </p>{" "}
                       </div>
                       <p>{chat.lastMessage?.content}</p>
                     </div>

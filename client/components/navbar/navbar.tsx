@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Menu, MessageSquarePlus, Smartphone } from "lucide-react";
 import { useSidebar } from "@/store/use-sidebar";
@@ -9,8 +10,8 @@ import { Button } from "@/components/ui/button";
 
 import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
+import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
-import { cn } from "@/lib/utils";
 
 const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
   const { collapsed, onToggleCollapse } = useSidebar((state) => state);
@@ -44,6 +45,7 @@ const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
         {showPhone && (
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <NavMessages />
+            <NavChat />
             <MasterSwitch />
             <Button asChild>
               <Link

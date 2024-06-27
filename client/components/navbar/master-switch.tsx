@@ -15,44 +15,39 @@ import { notificationsUpdateByIdMasterSwitch } from "@/actions/notification-sett
 export const MasterSwitch = () => {
   const user = useCurrentUser();
 
-  const onMasterSwitchChange = (master: string) => {
-    notificationsUpdateByIdMasterSwitch(master).then((data) => {
-      if (data.success) toast.success(data.success);
-      else toast.error(data.error);
-    });
+  const onMasterSwitchChange = async (master: string) => {
+    const updatedNotification = await notificationsUpdateByIdMasterSwitch(
+      master
+    );
+    if (updatedNotification.success) toast.success(updatedNotification.success);
+    else toast.error(updatedNotification.error);
   };
   return (
-    <div className="flex gap-2 items-center">
-      <div className="flex items-center gap-2">
-        <Phone size={16} /> Options
-      </div>
-
-      <Select
-        name="ddlMaster"
-        onValueChange={onMasterSwitchChange}
-        defaultValue={user?.masterSwitch}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select State" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="on">
-            <div className="flex items-center gap-2 w-full">
-              <Phone size={16} /> ON
-            </div>
-          </SelectItem>
-          <SelectItem value="off">
-            <div className="flex items-center gap-2 w-full">
-              <PhoneOff size={16} /> OFF
-            </div>
-          </SelectItem>
-          <SelectItem value="call-forward" disabled={!user?.personalNumber}>
-            <div className="flex items-center gap-2 w-full">
-              <PhoneForwarded size={16} /> Call Forward
-            </div>
-          </SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select
+      name="ddlMaster"
+      onValueChange={onMasterSwitchChange}
+      defaultValue={user?.masterSwitch}
+    >
+      <SelectTrigger className="w-[150px]">
+        <SelectValue placeholder="Select Status" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="on">
+          <div className="flex items-center gap-2 w-full">
+            <Phone size={16} /> ON
+          </div>
+        </SelectItem>
+        <SelectItem value="off">
+          <div className="flex items-center gap-2 w-full">
+            <PhoneOff size={16} /> OFF
+          </div>
+        </SelectItem>
+        <SelectItem value="call-forward" disabled={!user?.personalNumber}>
+          <div className="flex items-center gap-2 w-full">
+            <PhoneForwarded size={16} /> Call Forward
+          </div>
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 };
