@@ -4,7 +4,7 @@ Jhonnnnnni
 
     -identity and financial information should be hidden for the lead shared holder
     -withing the boking page ask only the necessary question to a new lead coming in.
-
+Error IN intial loadingof the site when cache is cleared.
 LEADS PAGE
      -- unlock the assistant account o be able to update the lead information -- CHECK WITH JUAN
 TWILIO
@@ -52,6 +52,7 @@ Chat
     - make sure the autochat does not respond to similar messages that are sent back to back
     - change company name to strongSide
     - let ai generate the initail text based on the lead type (provide a lead type variable for the preset messages)
+    - lets make the chat send messages at a fix rate of time
     
 --revisit the expense sheet
     -- need to send income to back end

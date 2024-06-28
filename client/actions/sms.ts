@@ -74,10 +74,10 @@ export const smsCreateInitial = async (leadId: string) => {
  //if the user doesnt not have any presetText use the hyperion's default message
   let message = preset ? preset.content : defaultChat.message;
 
-  //replace the pompt and message variable content with the lead an user information
+  //replace the prompt and message variable content with the lead an user information
   prompt = replacePreset(prompt, user, lead);
   message = replacePreset(message, user, lead);
-  message += ` ${defaultOptOut.request}`;
+  //message += ` ${defaultOptOut.request}`;
 
   //include the lead info and add it to the end of prompt 
     const leadInfo = {
