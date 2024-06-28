@@ -29,7 +29,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
     >
       <Tabs defaultValue="general" className="h-full">
         <LeadHeader lead={lead} />
-        <TabsList className="flex flex-col lg:flex-row w-full h-auto">
+        <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
           <TabsTrigger value="conditions">Conditions</TabsTrigger>

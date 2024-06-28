@@ -37,6 +37,7 @@ import { scheduleInsert } from "./schedule";
 import { UserRole } from "@prisma/client";
 
 //DATA
+
 export const usersGetAllByRole = async (role: UserRole) => {
   try {
     const users = await db.user.findMany({

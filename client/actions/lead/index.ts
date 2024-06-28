@@ -811,13 +811,21 @@ export const leadUpdateByIdTransfer = async (
   if(!lead){
     return {error:"Lead does not exists!!"}
   }
-  const tfUser=await db.user.findUnique({where:{id:userId}})
+  const tfUser=await db.user.findUnique({where:{id:userId},include:{phoneNumbers:true}})
+
   if(!tfUser){
     return {error:"User does not exists!!"}
   }
   if(lead.userId!=user.id){
     return {error:"Unauthorized!!"}
   }
+  const st = states.find(
+    (e) =>
+      e.state.toLowerCase() == lead.state.toLowerCase() ||
+      e.abv.toLowerCase() == lead.state.toLowerCase()
+  );
+  const defaultNumber = tfUser.phoneNumbers.find((e) => e.status == "Default");
+  const phoneNumber = tfUser.phoneNumbers.find((e) => e.state == st?.abv);
 
   await db.lead.update({where:{id},data:{
     sharedUser:{disconnect:true},
@@ -826,6 +834,7 @@ export const leadUpdateByIdTransfer = async (
 
   const transferendLead=await db.lead.update({where:{id},data:{
     userId:tfUser.id,   
+    defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone,
   }})
 
   return { success: transferendLead.firstName,message:`Lead is now transfered to ${tfUser.firstName}!`};

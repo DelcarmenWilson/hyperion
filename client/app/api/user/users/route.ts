@@ -8,11 +8,10 @@ export async function POST(req: Request) {
     const { role } = body;
 
     let users;
-    if (role=="all") {
+    if (role == "all") 
       users = await usersGetAll();
-    }else{
-    users = await usersGetAllByRole(role);}
-
+     else 
+      users = await usersGetAllByRole(role);
     
 
     return NextResponse.json(users);
