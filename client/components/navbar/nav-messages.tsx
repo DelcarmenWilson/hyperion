@@ -47,7 +47,7 @@ export const NavMessages = () => {
     mutationFn: conversationUpdateByIdUnread,
     onSuccess: (result) => {
       if (result.success?.length) {
-        router.push(`/conversation/${result.success}`);
+        router.push(`/conversations/${result.success}`);
       }
       queryClient.invalidateQueries({
         queryKey: ["navbarMessages"],
@@ -98,7 +98,7 @@ export const NavMessages = () => {
                 {conversations?.map((chat) => (
                   <DropdownMenuItem
                     key={chat.id}
-                    className="flex gap-2 border-b"
+                    className="flex gap-2 border-b cursor-pointer"
                     disabled={isPending}
                     onClick={() => mutate(chat.id)}
                   >

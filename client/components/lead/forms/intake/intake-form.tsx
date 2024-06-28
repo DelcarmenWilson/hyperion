@@ -544,7 +544,7 @@ export const IntakeForm = ({ leadId }: { leadId: string }) => {
             <div className="grid grid-cols-2 gap-2">
               <TextGroup label="Carrier" value={policy?.carrier} />
               <TextGroup label="Policy Number" value={policy?.policyNumber} />
-              <TextGroup label="Atatus" value={policy?.status} />
+              <TextGroup label="Status" value={policy?.status} />
               <TextGroup
                 label="Ap"
                 value={USDollar.format(parseInt(policy?.ap as string))}
