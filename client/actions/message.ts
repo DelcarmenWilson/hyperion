@@ -16,8 +16,7 @@ export const messageInsert = async (values: MessageSchemaType) => {
       where: { id: conversationId }
     });
 
-  if(!conversation){
-  
+  if(!conversation){  
     return { error: "Conversation does not exists!" };
   }
 

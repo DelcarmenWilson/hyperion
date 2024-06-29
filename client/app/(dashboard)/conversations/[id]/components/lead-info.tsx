@@ -57,6 +57,7 @@ export const ConversationLeadInfo = ({
     zipCode: lead.zipCode || undefined,
     quote: lead.quote,
     status: lead.status,
+    textCode: lead.textCode!,
   };
 
   const leadInfo: LeadGeneralSchemaType = {

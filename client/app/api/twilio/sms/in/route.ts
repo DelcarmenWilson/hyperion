@@ -13,6 +13,7 @@ import {
   disabledAutoChatResponse,
   getKeywordResponse,
   smsSend,
+  forwardTextToLead,
 } from "@/actions/sms";
 import { TwilioSms } from "@/types";
 import { formatDateTime } from "@/formulas/dates";
@@ -24,8 +25,26 @@ export async function POST(req: Request) {
 
   //TODO - Need to find a way to repond to agent text via sms
 
-  let updatedConversation;
+  //Find the agent with this personal numner - from number
+  // CHECK the from number - agents personal number
+  const agent = await db.notificationSettings.findFirst({
+    where: { phoneNumber: sms.from },
+  });
+  if (agent) {
+    // Check the to number
+    const agentNumber = await db.phoneNumber.findFirst({
+      where: { phone: sms.to },
+    });
 
+    // if from number nad to number bothe belong to the agent
+    if (agentNumber) {
+      //Start Agent to Lead Message Process
+      await forwardTextToLead(sms, agent.userId);
+      return new NextResponse(null, { status: 200 });
+    }
+  }
+
+  let updatedConversation;
   //Pulling the entire conversation based on the phone number
   const conversation = await db.conversation.findFirst({
     where: {
@@ -67,10 +86,7 @@ export async function POST(req: Request) {
 
   //If autochat is disabled - exit the workflow
   if (!conversation.autoChat) {
-     await disabledAutoChatResponse(
-      conversation,
-      newMessage
-    );
+    await disabledAutoChatResponse(conversation, newMessage);
     return new NextResponse(null, { status: 200 });
   }
 

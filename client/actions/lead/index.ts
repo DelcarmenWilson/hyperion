@@ -22,6 +22,7 @@ import { states } from "@/constants/states";
 import { formatTimeZone, getEntireDay, getToday, getYesterday } from "@/formulas/dates";
 import { FullLead } from "@/types";
 import { disconnect } from "process";
+import { generateTextCode } from "@/formulas/phone";
 
 //LEAD
 
@@ -257,6 +258,8 @@ export const leadInsert = async (values: LeadSchemaType) => {
 
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+  
+  
   let newLead;
   if (existingLead) {
     newLead = await db.leadDuplicates.create({
@@ -277,6 +280,16 @@ export const leadInsert = async (values: LeadSchemaType) => {
       },
     });
   } else {
+///Gnerate a new Text code
+let code=generateTextCode(firstName,lastName,cellPhone)
+
+//If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+const exisitingCode=await db.lead.findFirst({where:{textCode:code}})
+if(exisitingCode){
+  code=generateTextCode(firstName,lastName,cellPhone,true)
+}
+
+
     newLead = await db.lead.create({
       data: {
         firstName,
@@ -295,6 +308,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         userId: user.id,
         height: "",
         weight: "",
+        textCode:code
       },
     });
   }

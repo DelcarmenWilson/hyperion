@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { generateTextCode } from "@/formulas/phone";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { Quote } from "@prisma/client";
 import axios from "axios";
@@ -13,12 +14,12 @@ export const QuoteClient = ({ initQuote }: QuoteClientProps) => {
   const [quote, setQuote] = useState(initQuote);
   if (!quote) return null;
   const onSetNewQuote = () => {
-    axios.post("/api/quote").then((response) => {
-      const data = response.data;
-      if (data.success) {
-        setQuote(data.success);
-      }
-    });
+    // axios.post("/api/quote").then((response) => {
+    //   const data = response.data;
+    //   if (data.success) {
+    //     setQuote(data.success);
+    //   }
+    // });
   };
   return (
     <div className="flex flex-col relative p-4 rounded-xl border bg-card text-card-foreground shadow w-full">

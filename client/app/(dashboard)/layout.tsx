@@ -31,6 +31,7 @@ export default async function DashBoardLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
+
   if (!user) {
     redirect("/login");
   }

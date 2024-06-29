@@ -48,13 +48,19 @@ FeedBack
     - add notifications once the feedback has been resolved
         - cannot edit the feedback once it has been resolved or done
     
-Chat
+CHAT
     - make sure the autochat does not respond to similar messages that are sent back to back
     - change company name to strongSide
     - let ai generate the initail text based on the lead type (provide a lead type variable for the preset messages)
     - lets make the chat send messages at a fix rate of time
     - generate unique codes for each lead as they are introduced ito the into the system (f initial and last 4 of number)
     - if titan cannot response to a lead question immediatly send text an agent.
+
+LEAD TRANSFERING 
+    make sure the the old agent get kick out after sharing or transfering a lead
+
+  PENDING LEAD
+    -- after certain time with no movement with a lead send a call or call to the agent
     
 --revisit the expense sheet
     -- need to send income to back end
@@ -64,8 +70,6 @@ IN SALE
     -- fix the dailer(big task)
 
     implementing text forwarding call
-
-
 
 - appoitment -  Check the timeing for 12 am
 - convert all the times to the current leads time before scheduling
@@ -127,7 +131,7 @@ tab called blueprint > personalized businees plan for the indivdual.
 -- work more on the local time function
 -- make the app send a sms if you dont log in.
 -- make the app send you motivational speeches every now and then.
---let each agent create thier own incoming and outgoing voicemail
+-- let each agent create thier own incoming and outgoing voicemail
    --let the agent send out voicemail on answering machine pickup
    --let the call get Forwarded to the agents voicemail if its setup else leave the default.
 
