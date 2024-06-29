@@ -45,6 +45,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     zipCode: lead.zipCode || undefined,
     quote: lead.quote,
     status: lead.status,
+    textCode: lead.textCode!,
   };
 
   const leadInfo: LeadGeneralSchemaType = {

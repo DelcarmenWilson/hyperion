@@ -86,6 +86,7 @@ export const columns: ColumnDef<FullLead>[] = [
         zipCode: row.original.zipCode || undefined,
         status: row.original.status,
         quote: row.original.quote,
+        textCode: row.original.textCode!,
       };
       return (
         <MainInfoClient

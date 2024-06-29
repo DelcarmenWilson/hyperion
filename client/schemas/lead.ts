@@ -48,6 +48,7 @@ export const LeadMainSchema = z.object({
   zipCode: z.optional(z.string()),  
   status: z.string(),
   quote: z.string(),
+  textCode:z.string()
 });
 export type LeadMainSchemaType = z.infer<typeof LeadMainSchema>;
 

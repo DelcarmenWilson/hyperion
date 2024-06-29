@@ -395,9 +395,8 @@ export const disabledAutoChatResponse=async(conversation:LeadAndConversation,mes
   const settings=await db.notificationSettings.findUnique({where:{userId:lead.userId}})
 
   
-  if(settings?.textForward && settings.phoneNumber){
-    
-    const agentMessage=`${lead.firstName} ${lead.lastName} said: \n${message?.content}`
+  if(settings?.textForward && settings.phoneNumber){    
+    const agentMessage=`${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`
     await smsSend(lead.defaultNumber,settings.phoneNumber,agentMessage)
   }
 
@@ -409,4 +408,37 @@ export const disabledAutoChatResponse=async(conversation:LeadAndConversation,mes
   await pusherServer.trigger(conversation.id, "message:new", message);
   await pusherServer.trigger(conversation.agentId, "message:notify", null);
   // return updatedConversation
+}
+
+//FORWARD TEXT MESSAGE TO LEAD
+
+export const forwardTextToLead=async(sms:TwilioSms,agentId:string)=>{
+
+  const message= sms.body.split("-")
+  if(message.length==1){
+    return {error:"Message nrequiered!"}
+  }
+const lead=await db.lead.findFirst({where:{textCode:message[0]}})
+if(!lead){
+  return {error:"Lead does not exist!"}
+}
+const conversation=await db.conversation.findFirst({where:{leadId:lead.id,agentId}})
+if(!conversation){
+  return {error:"Conversation does not exist!"}
+}
+//Update Messages And conversation
+const insertedMessage=(await messageInsert(
+  { role: "user" ,
+     content: message[1],
+      conversationId: conversation.id,
+       senderId: agentId,
+      hasSeen: true,
+        sid:sms.smsSid }
+)).success
+
+//Send Message to lead
+
+await smsSend(sms.to, lead.cellPhone, insertedMessage?.content as string)
+
+
 }

@@ -98,6 +98,7 @@ export const MainInfoClient = ({
             </span>
           )}
           <CopyButton value={info.cellPhone} message="Lead phone#" />
+          <span>{info.textCode}</span>
         </p>
         <div className="relative group">
           <p>{leadInfo.email}</p>
