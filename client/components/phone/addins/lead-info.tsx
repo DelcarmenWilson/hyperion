@@ -57,6 +57,7 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     zipCode: lead.zipCode || undefined,
     quote: lead.quote,
     status: lead.status,
+    textCode: lead.textCode as string,
   };
 
   const leadInfo: LeadGeneralSchemaType = {

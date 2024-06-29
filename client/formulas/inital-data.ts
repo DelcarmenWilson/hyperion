@@ -170,6 +170,7 @@ export const convertLeads = (result: any): Lead[] => {
       cuaseOfDeath: d["cuaseOfDeath"],
 
       foreignVisited: d["foreignVisited"],
+      textCode: d["textCode"],
     };
     mapped.push(newobj);
   });
