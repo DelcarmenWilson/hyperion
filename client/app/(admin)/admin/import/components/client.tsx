@@ -10,10 +10,11 @@ import { AppointmentsBox } from "./appointments/appointments-box";
 import { ConversationsBox } from "./conversations/conversations-box";
 import { MessagesBox } from "./messages/messages-box";
 import { PhoneNumbersBox } from "./phonenumbers/phonenumbers-box";
+import { DisasterClient } from "./disaster/disaster-box";
 export const ImportClient = () => {
   return (
     <div className="min-h-[400px] w-full">
-      <Tabs defaultValue="users" className="pt-2">
+      <Tabs defaultValue="disaster" className="pt-2">
         <div className="w-full text-center">
           <TabsList className="w-full flex-wrap h-auto">
             <TabsTrigger value="users">USERS</TabsTrigger>
@@ -26,6 +27,7 @@ export const ImportClient = () => {
             <TabsTrigger value="conversations">CONVERSATIONS</TabsTrigger>
             <TabsTrigger value="messages">MESSAGES</TabsTrigger>
             <TabsTrigger value="phoneNumber">PHONENUMBERS</TabsTrigger>
+            <TabsTrigger value="disaster">DISASTER</TabsTrigger>
           </TabsList>
         </div>
 
@@ -59,6 +61,9 @@ export const ImportClient = () => {
           </TabsContent>
           <TabsContent value="phoneNumber">
             <PhoneNumbersBox />
+          </TabsContent>
+          <TabsContent value="disaster">
+            <DisasterClient />
           </TabsContent>
         </div>
       </Tabs>

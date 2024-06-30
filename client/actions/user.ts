@@ -8,6 +8,7 @@ import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 
 import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
+import { SummaryUser } from "@/types";
 import {
   UserAboutMeSchema,
   UserAboutMeSchemaType,
@@ -45,6 +46,30 @@ export const usersGetAllByRole = async (role: UserRole) => {
       orderBy: { firstName: "asc" },
     });
     return users;
+  } catch {
+    return [];
+  }
+};
+
+export const usersGetSummaryByTeamId = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return [];
+    }
+     if (user.role != "MASTER") return [];
+
+    const agents = await db.user.findMany({
+      where: { teamId:user.team, NOT: { id: user.id } },
+      include: {
+        phoneNumbers: {
+          where: { status: "default" },
+        },
+        chatSettings: true,        
+      },
+    });
+
+    return agents as SummaryUser[];
   } catch {
     return [];
   }

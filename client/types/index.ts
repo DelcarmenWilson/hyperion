@@ -37,14 +37,17 @@ import {
   UnreadShortChat,
 } from "./message";
 import { FullPhoneNumber, PhoneType } from "./phone";
+
 import {
   HalfUser,
   ShortUser,
+  SummaryUser,
   FullUser,
   FullUserReport,
   FullUserTeamReport,
   FullUserCarrier,
 } from "./user";
+
 import {
   TwilioNumber,
   TwilioCall,
@@ -116,6 +119,7 @@ export type UserSocket = {
   id: string;
   sid: string;
   role: string;
+  firstName: string;
 };
 //TERM CARRIER
 export type FullCarrierCondition = CarrierCondition & {
@@ -143,7 +147,7 @@ export type {
   FullMessage,
   ShortConvo,
   ShortConversation,
-  FullConversation,  
+  FullConversation,
   LeadAndConversation,
   ShortChat,
   FullChat,
@@ -157,6 +161,7 @@ export type { FullPhoneNumber, PhoneType };
 export type {
   HalfUser,
   ShortUser,
+  SummaryUser,
   FullUser,
   FullUserReport,
   FullUserTeamReport,

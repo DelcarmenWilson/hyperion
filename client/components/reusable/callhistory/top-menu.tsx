@@ -1,10 +1,17 @@
 import { formatSecondsToHours } from "@/formulas/numbers";
 import Link from "next/link";
 import { DatesFilter } from "../dates-filter";
+import { DateRange } from "react-day-picker";
 
-type TopMenuProps = { duration: number; showLink: boolean; showDate: boolean };
+type TopMenuProps = {
+  duration: number;
+  onDateSelected?: (e: DateRange) => void;
+  showLink: boolean;
+  showDate: boolean;
+};
 export const TopMenu = ({
   duration,
+  onDateSelected,
   showLink = false,
   showDate = false,
 }: TopMenuProps) => {
@@ -15,9 +22,8 @@ export const TopMenu = ({
           View All
         </Link>
       )}
-
       {showDate ? (
-        <DatesFilter link="/calls" />
+        <DatesFilter link="/calls" onDateSelected={onDateSelected} />
       ) : (
         <p>{formatSecondsToHours(duration)}</p>
       )}

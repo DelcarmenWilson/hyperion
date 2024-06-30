@@ -5,6 +5,7 @@ type User = {
   id: string;
   sid: string;
   role: string;
+  userName:string
 };
 
 export class ServerSocket {
@@ -35,7 +36,7 @@ export class ServerSocket {
 
     socket.on(
       "handshake",
-      (userId, role, callback: (uid: string, users: User[]) => void) => {
+      (userId, role,userName, callback: (uid: string, users: User[]) => void) => {
         console.info("Handshake received from: " + socket.id, userId);
 
         const reconnected = this.users.find((e) => e.sid == socket.id);
@@ -50,7 +51,7 @@ export class ServerSocket {
             return;
           }
         }
-        this.users.push({ id: userId, sid: socket.id, role: role });
+        this.users.push({ id: userId, sid: socket.id, role,userName });
 
         console.info("Sending callback ...");
         callback(userId, this.users);
@@ -108,10 +109,10 @@ export class ServerSocket {
         agentName,leadId,leadFirstName
       });
     });
-    socket.on("lead-unshared", (userId,agentName,leadFirstName) => {
+    socket.on("lead-unshared", (userId,agentName,leadId,leadFirstName) => {
       const uid = this.GetSocketIdFromUid(userId);
       this.SendUserMessage("lead-unshared-received", uid, {
-        agentName,leadFirstName
+        agentName,leadId,leadFirstName
       });
     });
     //LEAD TRANSFER

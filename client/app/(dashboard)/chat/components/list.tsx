@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { User } from "@prisma/client";
 import axios from "axios";
-import { UserCard } from "./user-card";
+import { UserCard } from "@/components/user/card";
 import Loader from "@/components/reusable/loader";
 
 type ChatUsersListProps = {

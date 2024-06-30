@@ -1,5 +1,6 @@
 "use server";
 
+import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import { db } from "@/lib/db";
 import {
   Appointment,
@@ -105,7 +106,7 @@ export const initialMessages = async (values: Message[]) => {
 };
 
 export const initialPhoneNumbers = async (values: PhoneNumber[]) => {
-  const phoneNumber  = await db.phoneNumber.createMany({
+  const phoneNumber = await db.phoneNumber.createMany({
     data: values,
     skipDuplicates: true,
   });
@@ -114,4 +115,75 @@ export const initialPhoneNumbers = async (values: PhoneNumber[]) => {
   };
 };
 
+//TODO - dont forget to remove this after the fix
+// DISISTER
+export const initialDisasterMessages = async (values: DisasterType[]) => {
+  let insertedMessages=0
+  let createdConvos=0
+  for (const message of values) {
+    const {
+      agentId,
+      leadId,
+      createdAt,
+      content,
+      senderId,
+      sid,
+      role,
+      price,
+      status,
+      error,
+      hasSeen,
+    } = message;
+    const lead = await db.lead.findUnique({ where: { id: leadId } });
+    if (!lead) {
+      break;
+    }
 
+    let conversation = await db.conversation.findFirst({
+      where: { agentId, leadId },
+    });
+    if (!conversation) {
+      conversation = await db.conversation.create({
+        data: {
+          leadId,
+          agentId,
+          createdAt,
+          updatedAt: createdAt,
+        },
+      });
+      createdConvos++
+    }
+    if (!conversation) {
+      break;
+    }
+
+    const newMessage = await db.message.create({
+      data: {
+        conversationId: conversation.id,
+        content,
+        createdAt,
+        senderId,
+        role,
+        price,
+        status,
+        error,
+        hasSeen,
+        sid,
+      },
+    });
+    
+    if (newMessage) {
+      insertedMessages++
+      await db.conversation.update({
+        where: { id: newMessage.conversationId },
+        data: {
+          lastMessageId: newMessage.id,
+          updatedAt:newMessage.createdAt
+        },
+      });
+    }
+  }
+  return {
+    success: `${insertedMessages} messages out of ${values.length} have been imported. ${createdConvos} conversatioin created`,
+  };
+};
