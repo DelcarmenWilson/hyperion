@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Calendar } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { userEmitter } from "@/lib/event-emmiter";
@@ -7,7 +7,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { TopMenu } from "./top-menu";
-import { DatesFilter } from "@/components/reusable/dates-filter";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 
@@ -68,7 +67,13 @@ export const AppointmentClient = ({
       <PageLayout
         title="Appointments"
         icon={Calendar}
-        topMenu={<TopMenu showLink={showLink} />}
+        topMenu={
+          <TopMenu
+            showLink={showLink}
+            showDate={showDate}
+            onDateSelected={onDateSelected}
+          />
+        }
       >
         <SkeletonWrapper isLoading={isFetching}>
           <DataTable
@@ -78,15 +83,6 @@ export const AppointmentClient = ({
             hidden={{
               status: false,
             }}
-            topMenu={
-              showDate ? (
-                <DatesFilter
-                  colSpan
-                  onDateSelected={onDateSelected}
-                  link="/appointments"
-                />
-              ) : null
-            }
             filterType={showDate ? "appointment" : undefined}
           />
           {/* {JSON.stringify(appointments)} */}

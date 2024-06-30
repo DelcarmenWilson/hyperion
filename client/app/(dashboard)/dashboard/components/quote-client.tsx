@@ -1,43 +1,61 @@
 "use client";
+
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import {
+  adminQuoteUpdateActive,
+  adminQuotesGetActive,
+} from "@/actions/admin/quote";
 import { Button } from "@/components/ui/button";
-import { generateTextCode } from "@/formulas/phone";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { Quote } from "@prisma/client";
-import axios from "axios";
-import { useState } from "react";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { toast } from "sonner";
 
-type QuoteClientProps = {
-  initQuote: Quote;
-};
-export const QuoteClient = ({ initQuote }: QuoteClientProps) => {
+export const QuoteClient = () => {
   const role = useCurrentRole();
-  const [quote, setQuote] = useState(initQuote);
-  if (!quote) return null;
-  const onSetNewQuote = () => {
-    // axios.post("/api/quote").then((response) => {
-    //   const data = response.data;
-    //   if (data.success) {
-    //     setQuote(data.success);
-    //   }
-    // });
-  };
+
+  const queryClient = useQueryClient();
+  const { data: quote, isFetching } = useQuery<Quote | null>({
+    queryKey: ["pageQuote"],
+    queryFn: () => adminQuotesGetActive(),
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: adminQuoteUpdateActive,
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Quote Updated!!", {
+          id: "update-active-quote",
+        });
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["pageQuote"],
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return (
     <div className="flex flex-col relative p-4 rounded-xl border bg-card text-card-foreground shadow w-full">
-      {(role == "ADMIN" || role == "MASTER") && (
-        <Button
-          className="absolute top-2 right-2"
-          variant="outlineprimary"
-          onClick={onSetNewQuote}
-        >
-          NEW QUOTE
-        </Button>
-      )}
-      <p className="font-medium italic p-4 text-3xl lg:text-5xl lg:p-20">
-        &quot;{quote.quote}&quot;
-      </p>
-      <div className="text-end font-bold text-2xl lg:text-3xl text-primary italic pr-3">
-        - {quote.author}
-      </div>
+      <SkeletonWrapper isLoading={isFetching}>
+        {(role == "ADMIN" || role == "MASTER") && (
+          <Button
+            className="absolute top-2 right-2"
+            variant="outlineprimary"
+            onClick={() => mutate()}
+          >
+            NEW QUOTE
+          </Button>
+        )}
+        <p className="font-medium italic p-4 text-3xl lg:text-5xl lg:p-20">
+          &quot;{quote?.quote}&quot;
+        </p>
+        <div className="text-end font-bold text-2xl lg:text-3xl text-primary italic pr-3">
+          - {quote?.author}
+        </div>
+      </SkeletonWrapper>
     </div>
   );
 };

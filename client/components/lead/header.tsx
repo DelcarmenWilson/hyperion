@@ -1,12 +1,28 @@
 "use client";
-import { LeadDropDown } from "@/components/lead/dropdown";
+import { useContext, useEffect } from "react";
+import { redirect } from "next/navigation";
+import SocketContext from "@/providers/socket";
+import { userEmitter } from "@/lib/event-emmiter";
+
 import { FullLeadNoConvo } from "@/types";
+import { LeadDropDown } from "@/components/lead/dropdown";
 
 type LeadHeaderProps = {
   lead: FullLeadNoConvo;
 };
 
 export const LeadHeader = ({ lead }: LeadHeaderProps) => {
+  const { socket } = useContext(SocketContext).SocketState;
+  useEffect(() => {
+    const onSetLead = (leadId: string) => {
+      if (leadId == lead.id) redirect("/leads");
+    };
+
+    userEmitter.on("leadTransfered", onSetLead);
+    socket?.on("lead-unshared-received", (data: { leadId: string }) => {
+      onSetLead(data.leadId);
+    });
+  }, []);
   return (
     <>
       <div className="flex justify-center items-center gap-2 bg-secondary">

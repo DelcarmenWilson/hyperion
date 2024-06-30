@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { currentUser } from "@/lib/auth";
 
 export const usersGetAll = async () => {
   try {
@@ -13,10 +14,10 @@ export const usersGetAll = async () => {
   }
 };
 
-export const userGetCurrent = async (id:string) => {  
-    try {
+export const userGetCurrent = async (id: string) => {
+  try {
     const ct = await db.user.findUnique({
-      where: { id},
+      where: { id },
     });
 
     return ct;
@@ -84,11 +85,10 @@ export const userGetByIdReport = async (id: string) => {
         phoneNumbers: true,
         calls: true,
         leads: { include: { policy: true } },
-        licenses:true,
+        licenses: true,
         appointments: true,
         conversations: true,
-        team: { include: { organization: true, owner: true }, },
-        
+        team: { include: { organization: true, owner: true } },
       },
     });
 
@@ -111,29 +111,7 @@ export const userGetByUserName = async (userName: string) => {
   }
 };
 
-export const usersGetSummaryByTeamId = async (
-  userId: string,
-  role: UserRole,
-  teamId: string
-) => {
-  try {
-    if (role != "MASTER") return [];
 
-    const agents = await db.user.findMany({
-      where: { teamId, NOT: { id: userId } },
-      include: {
-        phoneNumbers: {
-          where: { status: "default" },
-        },
-        chatSettings: true,
-      },
-    });
-
-    return agents;
-  } catch {
-    return [];
-  }
-};
 
 // USER LICENSES
 export const userLicensesGetAllByUserId = async (

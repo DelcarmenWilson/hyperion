@@ -50,7 +50,7 @@ export const NotesForm = ({
     const updatedLead = await leadUpdateByIdUnShare(leadId);
     if (updatedLead.success) {
       setSharedUser(null);
-      toast.success(updatedLead.success);
+      toast.success(updatedLead.message);
     } else toast.error(updatedLead.error);
   };
   useEffect(() => {

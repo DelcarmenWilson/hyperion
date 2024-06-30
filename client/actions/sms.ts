@@ -160,7 +160,7 @@ export const smsCreate = async (values: SmsMessageSchemaType) => {
       agentId = (await userGetByAssistant(user.id)) as string;
     }
     const existingConversation = await db.conversation.findUnique({
-      where: { leadId: lead.id },
+      where: { leadId_agentId:{leadId: lead.id ,agentId}},
     });
     if (existingConversation) {
       convoid = existingConversation.id;

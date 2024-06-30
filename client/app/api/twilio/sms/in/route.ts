@@ -6,7 +6,6 @@ import { MessageSchemaType } from "@/schemas/message";
 import { messageInsert } from "@/actions/message";
 import { chatFetch } from "@/actions/gpt";
 
-import { defaultOptOut } from "@/placeholder/chat";
 import { appointmentInsert } from "@/actions/appointment";
 import { formatObject } from "@/formulas/objects";
 import {
@@ -23,17 +22,14 @@ export async function POST(req: Request) {
 
   const sms: TwilioSms = formatObject(body);
 
-  //TODO - Need to find a way to repond to agent text via sms
-
   //Find the agent with this personal numner - from number
-  // CHECK the from number - agents personal number
   const agent = await db.notificationSettings.findFirst({
     where: { phoneNumber: sms.from },
   });
   if (agent) {
     // Check the to number
     const agentNumber = await db.phoneNumber.findFirst({
-      where: { phone: sms.to },
+      where: { phone: sms.to,agentId:agent.userId },
     });
 
     // if from number nad to number bothe belong to the agent
@@ -73,7 +69,7 @@ export async function POST(req: Request) {
   //Create a new message from the leads response
   const newMessage = (await messageInsert(smsFromLead)).success;
 
-  //Get Keword Response based ont the leads text
+  //Get Keyword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
   const keywordResponse = await getKeywordResponse(
     smsFromLead,
@@ -84,9 +80,10 @@ export async function POST(req: Request) {
   if (keywordResponse)
     return new NextResponse(keywordResponse, { status: 200 });
 
-  //If autochat is disabled - exit the workflow
+  //If autochat is disabled
   if (!conversation.autoChat) {
     await disabledAutoChatResponse(conversation, newMessage);
+    //exit the workflow
     return new NextResponse(null, { status: 200 });
   }
 
@@ -173,105 +170,5 @@ export async function POST(req: Request) {
     ]);
     await pusherServer.trigger(conversation.agentId, "message:notify", null);
   }
-  return new NextResponse(content, { status: 200 });
-}
-
-//TODO - check if this is being used and remove if not
-export async function PUT(req: Request) {
-  const body = await req.formData();
-
-  const j: any = formatObject(body);
-
-  //Pulling the entire conversation based on the phone number
-  const conversation = await db.conversation.findFirst({
-    where: {
-      lead: {
-        cellPhone: j.from,
-      },
-    },
-  });
-  //The incoming message from the lead
-  const textFromLead: MessageSchemaType = {
-    role: "user",
-    content: j.body,
-    conversationId: conversation?.id!,
-    senderId: conversation?.leadId!,
-    hasSeen: false,
-  };
-
-  if (!conversation) {
-    return new NextResponse(null, { status: 500 });
-  }
-
-  const newMessage = await messageInsert(textFromLead);
-
-  if (newMessage.success) {
-    userEmitter.emit("messageInserted", newMessage.success);
-  }
-
-  switch (textFromLead.content.toLowerCase()) {
-    case "stop":
-      await db.lead.update({
-        where: { id: conversation.leadId },
-        data: { status: "Do_Not_Call" },
-      });
-      return new NextResponse(defaultOptOut.confirm, { status: 200 });
-    case "reset":
-      await db.conversation.delete({ where: { id: conversation.id } });
-      return new NextResponse("Conversation has been reset", { status: 200 });
-  }
-
-  if (!conversation.autoChat) {
-    return new NextResponse(null, { status: 200 });
-  }
-  //If auto chat is enable continue to respond to the lead
-  const messages = await db.message.findMany({
-    where: { conversationId: conversation.id },
-  });
-
-  let chatmessages = messages.map((message) => {
-    return { role: message.role, content: message.content };
-  });
-  chatmessages.push({ role: textFromLead.role, content: textFromLead.content });
-
-  const chatresponse = await chatFetch(chatmessages);
-  const { role, content } = chatresponse.choices[0].message;
-
-  if (!content) {
-    return new NextResponse("Thank you for your message", { status: 200 });
-  }
-
-  setTimeout(async () => {
-    const chatReponse = await messageInsert({
-      role,
-      content,
-      conversationId: conversation.id,
-      senderId: conversation.agentId,
-      hasSeen: false,
-    });
-    if (chatReponse.success) {
-      userEmitter.emit("messageInserted", chatReponse.success);
-    }
-  }, 5000);
-
-  if (content.includes("{schedule}")) {
-    const aptDate = new Date(content.replace("{schedule}", "").trim());
-    await appointmentInsert({
-      localDate: aptDate,
-      startDate: aptDate,
-      leadId: conversation.leadId,
-      agentId: conversation.agentId,
-      label: "blue",
-      comments: "",
-      reminder: false,
-    });
-
-    return new NextResponse(
-      `Appointment has been schedule for ${formatDateTime(aptDate)}`,
-      { status: 200 }
-    );
-  }
-  console.log("we made it here");
-
   return new NextResponse(content, { status: 200 });
 }

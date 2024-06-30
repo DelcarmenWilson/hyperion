@@ -39,7 +39,8 @@ import {
   };
   
   export type FullLead = Lead & {
-    conversation: Conversation | null;
+    conversations: Conversation[] | null;
+    conversation?: Conversation | null;
     calls: Call[];
     appointments: Appointment[];
     activities: Activity[];

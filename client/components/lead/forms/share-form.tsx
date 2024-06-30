@@ -50,6 +50,7 @@ export const ShareForm = ({ leadId, sharedUser, onClose }: ShareFormProps) => {
         "lead-unshared",
         selectedUserId,
         user?.name,
+        leadId,
         updatedLead.success
       );
       setSelectedUserId(undefined);

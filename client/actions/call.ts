@@ -1,6 +1,90 @@
 "use server";
 import { db } from "@/lib/db";
+import { getEntireDay, getLast24hrs } from "@/formulas/dates";
+import { currentUser } from "@/lib/auth";
+//DATA
+export const callsGetAllByAgentIdToday = async () => {
+  try {
+    const user=await currentUser()
+    if(!user){
+      return []
+    }
 
+    const calls = await db.call.findMany({
+      where: { userId:user.id, createdAt: { gte: getEntireDay().start } },
+      include: { lead: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return calls;
+  } catch {
+    return [];
+  }
+};
+
+export const callsGetAllByUserIdFiltered = async (
+  from: string,
+  to: string
+) => {
+  try {
+    const user=await currentUser()
+    if(!user){
+      return []
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    const calls = await db.call.findMany({
+      where: { userId:user.id, createdAt: { lte: toDate, gte: fromDate } },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            cellPhone: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return calls;
+  } catch {
+    return [];
+  }
+};
+
+export const callsGetAllByAgentIdFiltered = async (
+  userId:string,
+  from: string,
+  to: string
+) => {
+  try {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    const calls = await db.call.findMany({
+      where: { userId, createdAt: { lte: toDate, gte: fromDate } },
+      include: {
+        lead: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            cellPhone: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return calls;
+  } catch {
+    return [];
+  }
+};
+//ACTIONS
 export const callInsert = async (
   id: string,
   userId: string,

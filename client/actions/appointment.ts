@@ -22,6 +22,10 @@ import { Lead } from "@prisma/client";
 //DATA
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
   try {
+    const role = await currentRole();
+    if (role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(agentId)) as string;
+    }
     const today = getEntireDay();
     const appointments = await db.appointment.findMany({
       where: {

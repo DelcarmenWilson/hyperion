@@ -97,7 +97,7 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 col-span-3 gap-2">
           <MainInfoClient
             info={leadMainInfo}
-            noConvo={lead.conversation?.id ? true : false}
+            noConvo={lead.conversation ? true : false}
           />
           <NotesForm
             leadId={lead.id}
