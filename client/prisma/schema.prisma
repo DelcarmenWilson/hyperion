@@ -103,6 +103,7 @@ model User {
   schedule             Schedule?
 
   feedbacks   Feedback[]
+  feeds       Feed[]
   // ONE TO ONE RELATIONS
   assitantRel User?      @relation("AssitantToUser")
 
@@ -922,6 +923,18 @@ model ChatMessage {
   sender   User   @relation(fields: [senderId], references: [id])
 
   read Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feed {
+  id      String  @id @default(cuid())
+  content String  @db.LongText
+  link    String?
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
+  read    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

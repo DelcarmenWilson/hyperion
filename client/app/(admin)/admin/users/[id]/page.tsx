@@ -6,7 +6,8 @@ import { SharedCallsClient } from "./components/shared-calls/client";
 import { ReportCallsClient } from "./components/report-calls/client";
 import { AboutMe } from "./components/about-me";
 
-import { callsGetAllByAgentIdFiltered, callsGetAllShared } from "@/data/call";
+import { callsGetAllByAgentIdFiltered } from "@/actions/call";
+import { callsGetAllShared } from "@/data/call";
 import { teamsGetAllByOrganization } from "@/data/team";
 import { userGetByIdReport } from "@/data/user";
 import { weekStartEnd } from "@/formulas/dates";
@@ -66,7 +67,7 @@ const UserPage = async ({
           to={to as string}
         />
       </div>
-      <CallHistoryClient initialCalls={calls} duration={duration} />
+      <CallHistoryClient userId={params.id} duration={duration} />
     </>
   );
 };

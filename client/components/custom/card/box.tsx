@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type CardBoxProps = {
   icon: LucideIcon;
@@ -10,6 +11,7 @@ type CardBoxProps = {
   value: number;
   href: string;
   hrefTitle: string;
+  isFetching: boolean;
 };
 export const CardBox = ({
   icon: Icon,
@@ -17,29 +19,35 @@ export const CardBox = ({
   value,
   href,
   hrefTitle,
+  isFetching = false,
 }: CardBoxProps) => {
   return (
     <Card className="relative overflow-hidden w-full group">
-      <div className="flex justify-between items-center mb-2">
-        <div className="bg-accent p-4 rounded-br-lg">
-          <Icon size={20} className="text-primary group-hover:animate-bounce" />
+      <SkeletonWrapper isLoading={isFetching}>
+        <div className="flex justify-between items-center mb-2">
+          <div className="bg-accent p-4 rounded-br-lg">
+            <Icon
+              size={20}
+              className="text-primary group-hover:animate-bounce"
+            />
+          </div>
+          <CardTitle className=" text-sm text-muted-foreground text-right mr-6">
+            <span className="text-sm text-muted-foreground block">{title}</span>
+            <span className="text-lg text-primary font-medium">{value}</span>
+          </CardTitle>
         </div>
-        <CardTitle className=" text-sm text-muted-foreground text-right mr-6">
-          <span className="text-sm text-muted-foreground block">{title}</span>
-          <span className="text-lg text-primary font-medium">{value}</span>
-        </CardTitle>
-      </div>
 
-      <Separator />
-      <CardContent className="flex p-2">
-        <Link
-          href={href}
-          className="text-primary flex items-center hover:font-semibold gap-1"
-        >
-          <Icon size={16} />
-          <span>{hrefTitle}</span>
-        </Link>
-      </CardContent>
+        <Separator />
+        <CardContent className="flex p-2">
+          <Link
+            href={href}
+            className="text-primary flex items-center hover:font-semibold gap-1"
+          >
+            <Icon size={16} />
+            <span>{hrefTitle}</span>
+          </Link>
+        </CardContent>
+      </SkeletonWrapper>
     </Card>
   );
 };

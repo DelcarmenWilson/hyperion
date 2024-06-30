@@ -12,7 +12,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { ChatCard } from "./card";
-import { ChatUsersList } from "./form";
+import { ChatUsersList } from "./list";
 import { chatGetById, chatInsert } from "@/actions/chat";
 import { FullChatMessage, ShortChat } from "@/types";
 

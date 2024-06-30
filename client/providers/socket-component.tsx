@@ -86,6 +86,7 @@ const SocketContextComponent: React.FunctionComponent<
       "handshake",
       user?.id,
       user?.role.toLocaleLowerCase(),
+      user?.name,
       async (uid: string, users: UserSocket[]) => {
         console.info("User handshake callback message received");
         SocketDispatch({ type: "update_users", payload: users });
