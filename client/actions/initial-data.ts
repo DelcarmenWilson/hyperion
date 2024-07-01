@@ -1,6 +1,7 @@
 "use server";
 
 import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
+import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import { db } from "@/lib/db";
 import {
   Appointment,
@@ -106,6 +107,7 @@ export const initialMessages = async (values: Message[]) => {
 };
 
 export const initialPhoneNumbers = async (values: PhoneNumber[]) => {
+  const phoneNumber = await db.phoneNumber.createMany({
   const phoneNumber = await db.phoneNumber.createMany({
     data: values,
     skipDuplicates: true,
