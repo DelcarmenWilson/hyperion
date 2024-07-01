@@ -2,14 +2,14 @@
 
 import { useState, useTransition } from "react";
 import Papa from "papaparse";
+import { toast } from "sonner";
 
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { columns, DisasterType } from "./columns";
-import { toast } from "sonner";
-import { convertDisaster } from "@/formulas/inital-data";
-import { initialDisasterMessages } from "@/actions/initial-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { convertDisaster } from "@/formulas/inital-data";
+import { initialDisasterMessages } from "@/actions/initial-data";
 
 export const DisasterClient = () => {
   const [messages, setMessages] = useState<DisasterType[]>([]);
@@ -33,6 +33,7 @@ export const DisasterClient = () => {
           onCancel();
           toast.success(data.success);
         }
+        // else toast.success(data.error);
       });
     });
   };

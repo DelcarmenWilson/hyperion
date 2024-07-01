@@ -407,7 +407,7 @@ model Lead {
   beneficiaries LeadBeneficiary[]
   conditions    LeadMedicalCondition[]
   expenses      LeadExpense[]
-  conversation  Conversation?
+  conversations Conversation[]
   appointments  Appointment[]
   calls         Call[]
   activities    Activity[]
@@ -627,7 +627,7 @@ model Conversation {
   id String @id @default(cuid())
 
   lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String @unique
+  leadId String
 
   messages Message[]
 
@@ -642,6 +642,8 @@ model Conversation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   unread    Int      @default(0)
+
+  @@unique([leadId, agentId])
 }
 
 model Message {

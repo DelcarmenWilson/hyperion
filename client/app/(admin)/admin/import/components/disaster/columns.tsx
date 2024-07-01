@@ -42,42 +42,45 @@ export const columns: ColumnDef<DisasterType>[] = [
   {
     accessorKey: "content",
     header: "Content",
+    cell: ({ row }) => (
+      <div className=" max-w-[300px]">{row.original.content}</div>
+    ),
   },
   {
     accessorKey: "status",
     header: "Status",
   },
-  {
-    accessorKey: "role",
-    header: "Role",
-  },
+  // {
+  //   accessorKey: "role",
+  //   header: "Role",
+  // },
   {
     accessorKey: "sid",
     header: "Sid",
   },
+  // {
+  //   accessorKey: "direction",
+  //   header: "Direction",
+  // },
+  // {
+  //   accessorKey: "price",
+  //   header: "Price",
+  // },
+  // {
+  //   accessorKey: "hasSeen",
+  //   header: "Has Seen",
+  // },
+  // {
+  //   accessorKey: "agentId",
+  //   header: "Agent Id",
+  // },
+  // {
+  //   accessorKey: "leadId",
+  //   header: "Lead Id",
+  // },
   {
-    accessorKey: "direction",
-    header: "Direction",
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-  },
-  {
-    accessorKey: "hasSeen",
-    header: "Has Seen",
-  },
-  {
-    accessorKey: "agentId",
-    header: "Agent Id",
-  },
-  {
-    accessorKey: "leadId",
-    header: "Lead Id",
-  },
-  {
-    accessorKey: "leadId",
-    header: "Lead Id",
+    accessorKey: "createdAt",
+    header: "Created At",
     cell: ({ row }) => formatDate(row.original.createdAt),
   },
 ];

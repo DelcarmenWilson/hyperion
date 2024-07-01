@@ -87,7 +87,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          {!data.conversation?.id && (
+          {!data.conversation && (
             <DropdownMenuItem className="gap-2" onClick={onStartConversation}>
               <MessageCircle size={16} />
               Start Convo

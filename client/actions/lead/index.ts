@@ -22,12 +22,10 @@ import { states } from "@/constants/states";
 import {
   formatTimeZone,
   getEntireDay,
-  getToday,
-  getYesterday,
 } from "@/formulas/dates";
 import { FullLead } from "@/types";
-import { disconnect } from "process";
 import { generateTextCode } from "@/formulas/phone";
+import { feedInsert } from "../feed";
 import { feedInsert } from "../feed";
 
 //LEAD
@@ -35,7 +33,7 @@ import { feedInsert } from "../feed";
 //DATA
 export const leadsGetAll = async () => {
   try {
-    const leads = await db.lead.findMany({ include: { conversation: true } });
+    const leads = await db.lead.findMany({ include: { conversations: true } });
 
     return leads;
   } catch {
@@ -46,11 +44,12 @@ export const leadsGetAll = async () => {
 export const leadsGetAllByAgentId = async (userId: string) => {
   try {
     const leads = await db.lead.findMany({
+    const leads = await db.lead.findMany({
       where: {
         OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
       },
       include: {
-        conversation: true,
+        conversations: {where:{agentId:userId}},
         appointments: { where: { status: "scheduled" } },
         calls: true,
         activities: true,
@@ -62,14 +61,15 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         sharedUser: true,
       },
     });
+    const currentTime = new Date();
     const fullLeads: FullLead[] = leads.map((lead) => {
       const timeZone =
         states.find(
           (e) => e.abv.toLocaleLowerCase() == lead.state.toLocaleLowerCase()
         )?.zone || "US/Eastern";
-      const currentTime = new Date();
       return {
         ...lead,
+        conversation:lead.conversations[0],
         zone: timeZone,
         time: formatTimeZone(currentTime, timeZone),
       };
@@ -118,7 +118,7 @@ export const leadGetById = async (id: string) => {
         id,
       },
       include: {
-        conversation: true,
+        conversations: true,
         appointments: { orderBy: { startDate: "desc" } },
         calls: {
           where: { status: "completed" },
@@ -145,7 +145,7 @@ export const leadGetByPhone = async (cellPhone: string) => {
         cellPhone,
       },
       include: {
-        conversation: true,
+        conversations: true,
         appointments: { orderBy: { startDate: "desc" } },
         calls: {
           where: { status: "completed" },
@@ -209,10 +209,12 @@ export const leadGetPrevNextById = async (id: string) => {
 export const leadsGetByAgentIdTodayCount = async (userId: string) => {
   try {
     const date = getEntireDay();
+    const date = getEntireDay();
     const leads = await db.lead.aggregate({
       _count: { id: true },
       where: {
         userId,
+        createdAt: { gte: date.start },
         createdAt: { gte: date.start },
       },
     });
@@ -271,6 +273,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
+
   let newLead;
   if (existingLead) {
     newLead = await db.leadDuplicates.create({
@@ -293,7 +296,16 @@ export const leadInsert = async (values: LeadSchemaType) => {
   } else {
     ///Gnerate a new Text code
     let code = generateTextCode(firstName, lastName, cellPhone);
+    ///Gnerate a new Text code
+    let code = generateTextCode(firstName, lastName, cellPhone);
 
+    //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+    const exisitingCode = await db.lead.findFirst({
+      where: { textCode: code },
+    });
+    if (exisitingCode) {
+      code = generateTextCode(firstName, lastName, cellPhone, true);
+    }
     //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
     const exisitingCode = await db.lead.findFirst({
       where: { textCode: code },
@@ -321,6 +333,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         height: "",
         weight: "",
         textCode: code,
+        textCode: code,
       },
     });
   }
@@ -337,6 +350,11 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
+  let assistant;
+  const assistantId = values[0].assistantId;
+  if (assistantId) {
+    assistant = (await db.user.findUnique({ where: { id: assistantId } }))
+      ?.firstName;
   let assistant;
   const assistantId = values[0].assistantId;
   if (assistantId) {
@@ -442,11 +460,15 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           userId: user?.id,
           status,
           assistantId,
+          assistantId,
         },
       });
     }
   }
   return {
+    success: `${values.length} Leads have been imported ${
+      assistant && `and assigned to ${assistant} `
+    } - duplicates(${duplicates})`,
     success: `${values.length} Leads have been imported ${
       assistant && `and assigned to ${assistant} `
     } - duplicates(${duplicates})`,
@@ -531,6 +553,7 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     existingLead.notes as string
   );
 
+
   return { success: newNote };
 };
 
@@ -597,6 +620,17 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
     state,
     zipCode,
   } = validatedFields.data;
+  const {
+    id,
+    firstName,
+    lastName,
+    cellPhone,
+    email,
+    address,
+    city,
+    state,
+    zipCode,
+  } = validatedFields.data;
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
@@ -608,6 +642,8 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   }
 
   if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
+
+  if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
 
@@ -616,6 +652,7 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
     data: {
       firstName,
       lastName,
+      cellPhone: reFormatPhoneNumber(cellPhone),
       cellPhone: reFormatPhoneNumber(cellPhone),
       email,
       address,
@@ -654,6 +691,7 @@ export const leadUpdateByIdGeneralInfo = async (
     return { error: "Lead does not exist" };
   }
 
+  if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
   if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
@@ -775,6 +813,7 @@ export const leadUpdateByIdAsssitant = async (
   return { success: "Assistant has been added to the lead!" };
 };
 export const leadUpdateByIdShare = async (id: string, userId: string) => {
+export const leadUpdateByIdShare = async (id: string, userId: string) => {
   const user = await currentUser();
 
   if (!user) {
@@ -784,7 +823,13 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
   const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) {
     return { error: "Lead does not exists!!" };
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) {
+    return { error: "Lead does not exists!!" };
   }
+
+  if (lead.userId != user.id) {
+    return { error: "Unauthorized!!" };
 
   if (lead.userId != user.id) {
     return { error: "Unauthorized!!" };
@@ -793,7 +838,11 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
   const sharedUser = await db.user.findUnique({ where: { id: userId } });
   if (!sharedUser) {
     return { error: "User does not exists!!" };
+  const sharedUser = await db.user.findUnique({ where: { id: userId } });
+  if (!sharedUser) {
+    return { error: "User does not exists!!" };
   }
+  const sharedLead = await db.lead.update({
   const sharedLead = await db.lead.update({
     where: { id },
     data: {
@@ -810,7 +859,17 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
     success: sharedLead.firstName,
     message: `Lead is now shared with ${sharedUser.firstName}!`,
   };
+    //MINE Feed
+    feedInsert( `You shared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,"",user.id,true)
+    //Next Agent Feed
+    feedInsert( `${user.name} shared a lead: ${lead.firstName} with you`,`/leads/${lead.id}`,sharedUser?.id as string)
+
+  return {
+    success: sharedLead.firstName,
+    message: `Lead is now shared with ${sharedUser.firstName}!`,
+  };
 };
+export const leadUpdateByIdUnShare = async (id: string) => {
 export const leadUpdateByIdUnShare = async (id: string) => {
   const user = await currentUser();
 
@@ -821,7 +880,13 @@ export const leadUpdateByIdUnShare = async (id: string) => {
   const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) {
     return { error: "Lead does not exists!!" };
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) {
+    return { error: "Lead does not exists!!" };
   }
+
+  if (lead.userId != user.id) {
+    return { error: "Unauthorized!!" };
 
   if (lead.userId != user.id) {
     return { error: "Unauthorized!!" };
@@ -854,7 +919,36 @@ export const leadUpdateByIdUnShare = async (id: string) => {
     success: unsharedLead.firstName,
     message: "Lead sharing has been deactivated!",
   };
+  const sharedUser = await db.user.findUnique({
+    where: { id: lead.sharedUserId as string },
+  });
+  const unsharedLead = await db.lead.update({
+    where: { id },
+    data: {
+      sharedUser: { disconnect: true },
+    },
+  });
+
+  //MINE Feed
+  feedInsert(
+    `You unshared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,
+    "",
+    user.id,
+    true
+  );
+  //Next Agent Feed
+  feedInsert(
+    `${user.name} unshared a lead: ${lead.firstName} with you`,
+    "",
+    sharedUser?.id as string
+  );
+
+  return {
+    success: unsharedLead.firstName,
+    message: "Lead sharing has been deactivated!",
+  };
 };
+export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
 export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
   const user = await currentUser();
 
@@ -865,7 +959,14 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
   const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) {
     return { error: "Lead does not exists!!" };
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) {
+    return { error: "Lead does not exists!!" };
   }
+  const tfUser = await db.user.findUnique({
+    where: { id: userId },
+    include: { phoneNumbers: true },
+  });
   const tfUser = await db.user.findUnique({
     where: { id: userId },
     include: { phoneNumbers: true },
@@ -873,7 +974,11 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
 
   if (!tfUser) {
     return { error: "User does not exists!!" };
+  if (!tfUser) {
+    return { error: "User does not exists!!" };
   }
+  if (lead.userId != user.id) {
+    return { error: "Unauthorized!!" };
   if (lead.userId != user.id) {
     return { error: "Unauthorized!!" };
   }
@@ -892,7 +997,33 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
       assistant: { disconnect: true },
     },
   });
+  await db.lead.update({
+    where: { id },
+    data: {
+      sharedUser: { disconnect: true },
+      assistant: { disconnect: true },
+    },
+  });
 
+  const transferendLead = await db.lead.update({
+    where: { id },
+    data: {
+      userId: tfUser.id,
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone,
+    },
+  });
+
+
+  //MINE Feed
+  feedInsert( `You transfered ${lead.firstName}'s information to ${transferendLead?.firstName}`,"",user.id,true)
+  //Next Agent Feed
+  feedInsert( `${user.name} transfered ${lead.firstName}'s information to you`,`/leads/${lead.id}`,transferendLead?.id as string)
+
+  return {
+    success: transferendLead.firstName,
+    message: `Lead is now transfered to ${tfUser.firstName}!`,
+  };
+};
   const transferendLead = await db.lead.update({
     where: { id },
     data: {
