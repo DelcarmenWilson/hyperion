@@ -1,7 +1,6 @@
 "use server";
 
 import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
-import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import { db } from "@/lib/db";
 import {
   Appointment,
@@ -108,7 +107,6 @@ export const initialMessages = async (values: Message[]) => {
 
 export const initialPhoneNumbers = async (values: PhoneNumber[]) => {
   const phoneNumber = await db.phoneNumber.createMany({
-  const phoneNumber = await db.phoneNumber.createMany({
     data: values,
     skipDuplicates: true,
   });
@@ -122,70 +120,7 @@ export const initialPhoneNumbers = async (values: PhoneNumber[]) => {
 export const initialDisasterMessages = async (values: DisasterType[]) => {
   let insertedMessages = 0;
   let createdConvos = 0;
-  let passedMessages = 0;
-  //for (let i = 0; i < values.length; i++) {
-
-  // for (const message of values) {
-  //   passedMessages++;
-  //   const {
-  //     agentId,
-  //     leadId,
-  //     createdAt,
-  //     content,
-  //     senderId,
-  //     sid,
-  //     role,
-  //     price,
-  //     status,
-  //     error,
-  //     hasSeen,
-  //   } = message;
-  //   const lead = await db.lead.findUnique({ where: { id: leadId } });
-  //   if (lead) {
-  //     let conversation = await db.conversation.findFirst({
-  //       where: { agentId, leadId },
-  //     });
-  //     if (!conversation) {
-  //       conversation = await db.conversation.create({
-  //         data: {
-  //           leadId,
-  //           agentId,
-  //           createdAt,
-  //           updatedAt: createdAt,
-  //         },
-  //       });
-  //       createdConvos++;
-  //     }
-  //     if (conversation) {
-  //       const newMessage = await db.message.create({
-  //         data: {
-  //           //@ts-ignore
-  //           conversationId: conversation.id,
-  //           content,
-  //           createdAt,
-  //           senderId,
-  //           role,
-  //           price,
-  //           status,
-  //           error,
-  //           hasSeen,
-  //           sid,
-  //         },
-  //       });
-
-  //       if (newMessage) {
-  //         insertedMessages++;
-  //         await db.conversation.update({
-  //           where: { id: newMessage.conversationId },
-  //           data: {
-  //             lastMessageId: newMessage.id,
-  //             updatedAt: newMessage.createdAt,
-  //           },
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
+  let passedMessages = 0;  
 
   await Promise.all(
     values.map(async (message) => {
