@@ -71,7 +71,7 @@ export class ServerSocket {
 
       if (uid) {
         this.users = this.users.filter((e) => e.id != uid);
-        this.SendMessage("user_disconnected", this.users, socket.id);
+        this.SendMessage("user_disconnected", this.users, uid);
       }
     });
     //CONFERENCE

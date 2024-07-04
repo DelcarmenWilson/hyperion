@@ -8,6 +8,7 @@ import { ModalProvider } from "@/providers/modal";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 import SocketContextComponent from "@/providers/socket-component";
 import { ImageViewerModal } from "@/components/modals/image-viewer-modal";
+import { ChatDrawer } from "@/components/chat/chat-drawer";
 
 const queryClient = new QueryClient({});
 const RootProviders = ({ children }: { children: ReactNode }) => {
@@ -19,10 +20,12 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
+        {/* <SocketContextComponent>{children}</SocketContextComponent> */}
+        {children}
         <ModalProvider />
-        <SocketContextComponent>{children}</SocketContextComponent>
         <ThemeSwitcher />
         <ImageViewerModal />
+        {/* <ChatDrawer /> */}
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

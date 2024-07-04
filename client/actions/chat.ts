@@ -53,6 +53,31 @@ export const chatGetById = async (id: string) => {
     return null;
   }
 };
+export const chatGetBUserId = async (userId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user?.email) {
+      return null;
+    }
+    const chat = await db.chat.findFirst({
+      where: {
+        OR: [
+          { userOneId: userId, userTwoId: user.id },
+          { userOneId: user.id, userTwoId: userId },
+        ],
+      },
+      include: {
+        messages: { include: { sender: true } },
+        userOne: true,
+        userTwo: true,
+        lastMessage: true,
+      },
+    });
+    return chat;
+  } catch (error) {
+    return null;
+  }
+};
 
 export const chatsGetByUserIdUnread = async () => {
   try {
@@ -265,19 +290,47 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
     return { error: "Invalid fields!" };
   }
 
-  const { chatId, content, attachment, senderId } = validatedFields.data;
+  const { chatId, content, attachment, senderId, userId } =
+    validatedFields.data;
 
-  const conversation = await db.chat.findUnique({
-    where: { id: chatId },
-    include: { lastMessage: true },
-  });
-if(!conversation){
+  let cid = chatId;
+  let conversation;
 
-  return { error: "Conversation does not exists!" };
-}
+  if (cid)
+    conversation = await db.chat.findUnique({
+      where: { id: cid },
+      include: { lastMessage: true },
+    });
+  else {
+    conversation = await db.chat.findFirst({
+      where: {
+        OR: [
+          { userOneId: senderId, userTwoId: userId },
+          { userOneId: userId, userTwoId: senderId },
+        ],
+      },
+      include: { lastMessage: true },
+    });
+    if (!conversation) {
+    conversation = await db.chat.create({
+      data: {
+        userOneId: senderId,
+        userTwoId: userId as string,
+        isGroup: false,
+        name: "",
+      },
+      include: { lastMessage: true },
+    });}
+    cid = conversation.id;
+  }
+
+  if (!conversation) {
+    return { error: "Conversation was not created!!!" };
+  }
+
   const newMessage = await db.chatMessage.create({
     data: {
-      chatId,
+      chatId: cid as string,
       content,
       attachment,
       senderId,
@@ -286,7 +339,7 @@ if(!conversation){
   });
 
   await db.chat.update({
-    where: { id: chatId },
+    where: { id: cid },
     data: {
       lastMessageId: newMessage.id,
       unread:

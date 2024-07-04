@@ -20,6 +20,9 @@ export type HalfUser = {
 export type ShortUser = User & {
   team?: Team | null;
 };
+export type OnlineUser = User & { 
+ online:boolean
+};
 
 export type SummaryUser = User & {
   phoneNumbers: PhoneNumber[];
