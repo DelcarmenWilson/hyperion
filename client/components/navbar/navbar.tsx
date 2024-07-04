@@ -1,7 +1,12 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Menu, MessageSquarePlus, Smartphone } from "lucide-react";
+import {
+  Menu,
+  MessageSquareDot,
+  MessageSquarePlus,
+  Smartphone,
+} from "lucide-react";
 import { useSidebar } from "@/store/use-sidebar";
 import Link from "next/link";
 
@@ -12,10 +17,12 @@ import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
+import { useChat } from "@/hooks/use-chat";
 
 const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
   const { collapsed, onToggleCollapse } = useSidebar((state) => state);
   const { onPhoneOutOpen, isOnCall, lead } = usePhone();
+  const { isChatOpen, onChatOpen } = useChat();
 
   return (
     <header className="fixed top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,6 +53,13 @@ const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <NavMessages />
             <NavChat />
+            <Button
+              variant={isChatOpen ? "default" : "outline"}
+              size="icon"
+              onClick={onChatOpen}
+            >
+              <MessageSquareDot size={15} />
+            </Button>
             <MasterSwitch />
             <Button asChild>
               <Link

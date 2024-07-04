@@ -27,7 +27,7 @@ import {
   RegisterSchema,
   RegisterSchemaType,
 } from "@/schemas/register";
-import {  SettingsSchemaType } from "@/schemas/settings";
+import { SettingsSchemaType } from "@/schemas/settings";
 
 import { chatSettingsInsert } from "./chat-settings";
 import { getVerificationTokenByToken } from "@/data/verification-token";
@@ -36,8 +36,27 @@ import { userGetByAssistant, userGetByEmail, userGetById } from "@/data/user";
 import { notificationSettingsInsert } from "./notification-settings";
 import { scheduleInsert } from "./schedule";
 import { UserRole } from "@prisma/client";
+import { OnlineUser } from "@/types/user";
 
 //DATA
+export const usersGetAllChat = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return [];
+    const dbUsers = await db.user.findMany({
+      // where: { NOT: { role: "MASTER", id: user.id } },
+      where: { role: { not: "MASTER" }, id: { not: user.id } },
+      orderBy: { firstName: "asc" },
+    });
+    const users: OnlineUser[] = dbUsers.map((user) => {
+      return { ...user, online: false };
+    });
+
+    return users;
+  } catch {
+    return [];
+  }
+};
 
 export const usersGetAllByRole = async (role: UserRole) => {
   try {
@@ -57,15 +76,15 @@ export const usersGetSummaryByTeamId = async () => {
     if (!user) {
       return [];
     }
-     if (user.role != "MASTER") return [];
+    if (user.role != "MASTER") return [];
 
     const agents = await db.user.findMany({
-      where: { teamId:user.team, NOT: { id: user.id } },
+      where: { teamId: user.team, NOT: { id: user.id } },
       include: {
         phoneNumbers: {
           where: { status: "default" },
         },
-        chatSettings: true,        
+        chatSettings: true,
       },
     });
 
@@ -74,6 +93,7 @@ export const usersGetSummaryByTeamId = async () => {
     return [];
   }
 };
+
 //ACTIONS
 export const userInsert = async (values: RegisterSchemaType) => {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -139,9 +159,7 @@ export const userInsert = async (values: RegisterSchemaType) => {
   return { success: "Account created continue to login" };
 };
 
-export const userInsertAssistant = async (
-  values: RegisterSchemaType
-) => {
+export const userInsertAssistant = async (values: RegisterSchemaType) => {
   const validatedFields = RegisterSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -211,9 +229,7 @@ export const userInsertAssistant = async (
   return { success: "Asistant account created" };
 };
 
-export const userInsertMaster = async (
-  values: MasterRegisterSchemaType
-) => {
+export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
   const validatedFields = MasterRegisterSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -294,9 +310,7 @@ export const userInsertMaster = async (
   return { success: "Master account created" };
 };
 
-export const userUpdateById = async (
-  values:SettingsSchemaType
-) => {
+export const userUpdateById = async (values: SettingsSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthorized" };
@@ -380,20 +394,19 @@ export const userUpdateByIdAboutMe = async (values: UserAboutMeSchemaType) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const {
-  id,aboutMe,title
-  } = validatedFields.data;
+  const { id, aboutMe, title } = validatedFields.data;
 
   await db.user.update({
     where: {
       id,
     },
     data: {
-      aboutMe,title
+      aboutMe,
+      title,
     },
   });
 
-    return { success: "About Me section updated!" };
+  return { success: "About Me section updated!" };
 };
 
 //TODO-THIS SHOULD BE IN ITS OWN TABLE (DISPLAY SETTINGS)
@@ -535,9 +548,7 @@ export const userLeadStatusDeleteById = async (id: string) => {
 
   return { success: "Lead Status deleted!" };
 };
-export const userLeadStatusInsert = async (
-  values: LeadStatusSchemaType
-) => {
+export const userLeadStatusInsert = async (values: LeadStatusSchemaType) => {
   const user = await currentUser();
 
   if (!user) {
@@ -637,9 +648,7 @@ export const userLicenseDeleteById = async (id: string) => {
 
   return { success: "License Deleted" };
 };
-export const userLicenseInsert = async (
-  values: UserLicenseSchemaType
-) => {
+export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
   const validatedFields = UserLicenseSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -672,9 +681,7 @@ export const userLicenseInsert = async (
 
   return { success: license };
 };
-export const userLicenseUpdateById = async (
-  values: UserLicenseSchemaType
-) => {
+export const userLicenseUpdateById = async (values: UserLicenseSchemaType) => {
   const validatedFields = UserLicenseSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -684,7 +691,7 @@ export const userLicenseUpdateById = async (
   if (!user) {
     return { error: "Unauthenticated" };
   }
-  const { id, image,state, type, licenseNumber, dateExpires, comments } =
+  const { id, image, state, type, licenseNumber, dateExpires, comments } =
     validatedFields.data;
 
   const existingLicense = await db.userLicense.findUnique({
@@ -733,9 +740,7 @@ export const userCarrierDeleteById = async (id: string) => {
 
   return { success: "Carrier Deleted" };
 };
-export const userCarrierInsert = async (
-  values: UserCarrierSchemaType
-) => {
+export const userCarrierInsert = async (values: UserCarrierSchemaType) => {
   const validatedFields = UserCarrierSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -766,9 +771,7 @@ export const userCarrierInsert = async (
 
   return { success: carrier };
 };
-export const userCarrierUpdateById = async (
-  values: UserCarrierSchemaType
-) => {
+export const userCarrierUpdateById = async (values: UserCarrierSchemaType) => {
   const validatedFields = UserCarrierSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -827,9 +830,7 @@ export const userTemplateDeleteById = async (id: string) => {
 
   return { success: "Template deleted!" };
 };
-export const userTemplateInsert = async (
-  values:  UserTemplateSchemaType
-) => {
+export const userTemplateInsert = async (values: UserTemplateSchemaType) => {
   const validatedFields = UserTemplateSchema.safeParse(values);
   if (!validatedFields.success) {
     console.log("USERTEMPLATE_INSERT_ERROR");

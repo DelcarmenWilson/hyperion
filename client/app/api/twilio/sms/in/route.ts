@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { userEmitter } from "@/lib/event-emmiter";
 import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 import { MessageSchemaType } from "@/schemas/message";
@@ -64,6 +63,7 @@ export async function POST(req: Request) {
     conversationId: conversation.id,
     senderId: conversation.leadId,
     hasSeen: false,
+    sid:sms.smsSid
   };
 
   //Create a new message from the leads response
@@ -109,16 +109,7 @@ export async function POST(req: Request) {
     return new NextResponse("Thank you for your message", { status: 200 });
   }
 
-  //Insert the new message from chat gpt into the conversation
-  const newChatMessage = (
-    await messageInsert({
-      role,
-      content,
-      conversationId: conversation.id,
-      senderId: conversation.agentId,
-      hasSeen: false,
-    })
-  ).success;
+ 
 
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
@@ -145,11 +136,26 @@ export async function POST(req: Request) {
   }
   //Wait 5 seconds before inserting the new message from chatGpt
   // const delay = Math.round(content.length / 35) * 8;
+ const words = content.split;
+ const wpm = 38;
+ const delay = Math.round(words.length / wpm);
+ const sid=(await smsSend(sms.to, sms.from, content, delay)).success;
 
-  const words = content.split;
-  const wpm = 38;
-  const delay = Math.round(words.length / wpm);
-  await smsSend(sms.to, sms.from, content, delay);
+
+  
+ //Insert the new message from chat gpt into the conversation
+ const newChatMessage = (
+  await messageInsert({
+    role,
+    content,
+    conversationId: conversation.id,
+    senderId: conversation.agentId,
+    hasSeen: false,
+    sid
+  })
+).success;
+
+ 
   if (newChatMessage) {
     updatedConversation = await db.conversation.update({
       where: { id: conversation.id },

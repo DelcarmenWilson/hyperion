@@ -1,8 +1,5 @@
 import { db } from "@/lib/db";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserRole } from "@prisma/client";
-import { redirect } from "next/navigation";
-import { currentUser } from "@/lib/auth";
 
 export const usersGetAll = async () => {
   try {

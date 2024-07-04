@@ -9,9 +9,11 @@ import {
   UserTemplate,
 } from "@prisma/client";
 import { FullUserCarrier } from "@/types";
+import { OnlineUser } from "@/types/user";
 
 type GlobalContextProviderProps = {
   initUser: User;
+  initUsers: OnlineUser[];
   initStatus: LeadStatus[];
   intScript: Script;
   initLicenses: UserLicense[];
@@ -24,6 +26,8 @@ type GlobalContextProviderProps = {
 type GlobalContext = {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  users: OnlineUser[] | null;
+  setUsers: React.Dispatch<React.SetStateAction<OnlineUser[] | null>>;
   leadStatus: LeadStatus[] | null;
   setLeadStatus: React.Dispatch<React.SetStateAction<LeadStatus[] | null>>;
   script: Script | null;
@@ -42,6 +46,7 @@ export const GlobalContext = createContext<GlobalContext | null>(null);
 
 export default function GlobalContextProvider({
   initUser,
+  initUsers,
   initStatus,
   intScript,
   initLicenses,
@@ -51,6 +56,7 @@ export default function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   const [user, setUser] = useState<User | null>(initUser);
+  const [users, setUsers] = useState<OnlineUser[] | null>(initUsers);
   const [leadStatus, setLeadStatus] = useState<LeadStatus[] | null>(initStatus);
   const [script, setScript] = useState<Script | null>(intScript);
   const [licenses, setLicenses] = useState<UserLicense[] | null>(initLicenses);
@@ -69,6 +75,8 @@ export default function GlobalContextProvider({
       value={{
         user,
         setUser,
+        users,
+        setUsers,
         leadStatus,
         setLeadStatus,
         script,

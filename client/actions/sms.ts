@@ -10,7 +10,7 @@ import { MessageSchemaType, SmsMessageSchema,SmsMessageSchemaType } from "@/sche
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { replacePreset } from "@/formulas/text";
 import { getRandomNumber } from "@/formulas/numbers";
-import { formatHyperionDate, formatTime, formatTimeZone } from "@/formulas/dates";
+import { formatDateTimeZone, formatHyperionDate, formatTime, formatTimeZone } from "@/formulas/dates";
 
 import { messageInsert } from "./message";
 import { conversationInsert } from "./conversation";
@@ -229,7 +229,7 @@ export const smsSend = async (
     return { error: "Message was not sent!" };
   }
 
-  return { success: "Message sent!" };
+  return { success:result.sid,message:"Message sent!"  };
 };
 
 export const smsSendAgentAppointmentNotification = async (
@@ -266,7 +266,7 @@ export const smsSendAgentAppointmentNotification = async (
    //TODO - update does not go as planned tommorrow - change this back to use the default time ln.264
   const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
-  } has booked an appointment for ${formatHyperionDate(date)} at ${formatTimeZone(
+  } has booked an appointment for ${formatDateTimeZone(date)} at ${formatTimeZone(
     date
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
@@ -312,17 +312,19 @@ export const smsSendLeadAppointmentNotification = async (
   if (!convoid) {
     convoid = (await conversationInsert(userId, lead.id)).success;
   }
+ 
+
+  if (!result.success) {
+    return { error: "Message was not sent!" };
+  }
   const newMessage = await messageInsert({
     role: "assistant",
     content: message,
     conversationId: convoid!,
     senderId: userId,
     hasSeen: true,
+    sid:result.success
   });
-
-  if (!result.success) {
-    return { error: "Message was not sent!" };
-  }
   if (!newMessage.success) {
     return { error: newMessage.error };
   }
@@ -426,6 +428,11 @@ const conversation=await db.conversation.findFirst({where:{leadId:lead.id,agentI
 if(!conversation){
   return {error:"Conversation does not exist!"}
 }
+
+//Send Message to lead
+const sid=(await smsSend(sms.to, lead.cellPhone, message[1])).success 
+
+
 //Update Messages And conversation
 const insertedMessage=(await messageInsert(
   { role: "user" ,
@@ -433,12 +440,9 @@ const insertedMessage=(await messageInsert(
       conversationId: conversation.id,
        senderId: agentId,
       hasSeen: true,
-        sid:sms.smsSid }
+        sid:sid}
 )).success
 
-//Send Message to lead
-
-await smsSend(sms.to, lead.cellPhone, insertedMessage?.content as string)
 
 
 }

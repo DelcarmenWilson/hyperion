@@ -24,6 +24,9 @@ import {
 
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
+import { usersGetAllChat } from "@/actions/user";
+import SocketContextComponent from "@/providers/socket-component";
+import { ChatDrawer } from "@/components/chat/chat-drawer";
 
 export default async function DashBoardLayout({
   children,
@@ -36,6 +39,7 @@ export default async function DashBoardLayout({
     redirect("/login");
   }
   const initUser = await userGetByIdDefault(user.id);
+  const initUsers = await usersGetAllChat();
   const status = await leadStatusGetAllByAgentIdDefault(user.id);
   const script = await scriptGetOne();
   const voicemails = await voicemailGetUnHeard(user.id);
@@ -59,6 +63,7 @@ export default async function DashBoardLayout({
           <div className="flex flex-col flex-1 w-full  mt-14 px-1 lg:px-2 lg:mb-2 overflow-y-auto">
             <GlobalContextProvider
               initUser={initUser!}
+              initUsers={initUsers}
               initStatus={status}
               intScript={script!}
               initLicenses={licenses}
@@ -66,15 +71,21 @@ export default async function DashBoardLayout({
               initCarriers={carriers}
               initTemplates={templates}
             >
-              <PhoneContextProvider initVoicemails={voicemails} token={token!}>
-                <AppointmentContextComponent
-                  initSchedule={schedule!}
-                  initAppointments={appointments}
-                  initLabels={appointmentLabels}
+              <SocketContextComponent>
+                <PhoneContextProvider
+                  initVoicemails={voicemails}
+                  token={token!}
                 >
-                  {children}
-                </AppointmentContextComponent>
-              </PhoneContextProvider>
+                  <AppointmentContextComponent
+                    initSchedule={schedule!}
+                    initAppointments={appointments}
+                    initLabels={appointmentLabels}
+                  >
+                    {children}
+                  </AppointmentContextComponent>
+                </PhoneContextProvider>
+              </SocketContextComponent>
+              <ChatDrawer />
             </GlobalContextProvider>
           </div>
         </div>
