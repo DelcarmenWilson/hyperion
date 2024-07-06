@@ -22,6 +22,7 @@ import {
   Presets,
   UserLicense,
   UserTemplate,
+  WorkFlow,
 } from "@prisma/client";
 
 type UserEvents = {
@@ -85,6 +86,7 @@ leadTransferedRecieved:[id:string];
   //NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];
+  
   //VOICEMAIL
   voicemailDeleted: [id: string];
 };

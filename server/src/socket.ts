@@ -68,11 +68,10 @@ export class ServerSocket {
       console.info("Disconnect received from: " + socket.id);
 
       const uid = this.GetUidFromSocketId(socket.id);
-
       if (uid) {
-        this.users = this.users.filter((e) => e.id != uid);
         this.SendMessage("user_disconnected", this.users, uid);
-      }
+      }      
+      this.users = this.users.filter((e) => e.sid != socket.id);
     });
     //CONFERENCE
     socket.on("coach-request", (conference) => {

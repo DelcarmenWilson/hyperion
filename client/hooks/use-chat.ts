@@ -17,7 +17,7 @@ type useChatStore = {
 export const useChat = create<useChatStore>((set) => ({
   isChatOpen: false,
   onChatOpen: () => set({ isChatOpen: true }),
-  onChatClose: () => set({ isChatOpen: false }),
+  onChatClose: () => set({ isChatOpen: false,isChatInfoOpen: false  }),
   
   setChatId: (c) => set({ chatId: c }),
   isChatInfoOpen: false,
