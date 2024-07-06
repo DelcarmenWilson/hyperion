@@ -35,6 +35,7 @@ import {
   Users,
   Video,
   Voicemail,
+  Workflow,
 } from "lucide-react";
 export type NavType = {
   title: string;
@@ -91,6 +92,11 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Temp Folder",
     href: "/admin/temp-folder",
     icon: Folder,
+  },
+  {
+    title: "WorkFlows",
+    href: "/admin/workflows",
+    icon: Workflow,
   },
 ];
 
@@ -179,6 +185,12 @@ export const MainSidebarRoutes: NavType[] = [
   //   href: "/email",
   //   icon: Mail,
   // },
+  {
+    title: "Work Flows",
+    href: "/workflows",
+    icon: Workflow,
+    assistant: true,
+  },
   {
     title: "Account settings",
     href: "/settings",

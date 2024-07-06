@@ -81,6 +81,7 @@ model User {
   conversations Conversation[]
   appointments  Appointment[]
   activities    Activity[]
+  workFlows     WorkFlow[]
 
   assistants  Lead[] @relation("LeadAssistant")
   sharedUsers Lead[] @relation("LeadSharedUser")
@@ -938,6 +939,58 @@ model Feed {
   user    User    @relation(fields: [userId], references: [id])
   read    Boolean @default(false)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// REACT FLOW TABLES
+
+model WorkFlow {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  nodes       Node[]
+  nodeEdges   NodeEdge[]
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Node {
+  id         String        @id @default(cuid())
+  position   NodePosition?
+  data       Json
+  type       String
+  workFlowId String?
+  workFlow   WorkFlow?     @relation(fields: [workFlowId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model NodePosition {
+  nodeId String @unique
+  node   Node   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  x      Int    @default(0)
+  y      Int    @default(0)
+}
+
+model NodeEdge {
+  id         String    @id @default(cuid())
+  source     String
+  target     String
+  animated   Boolean
+  WorkFlow   WorkFlow? @relation(fields: [workFlowId], references: [id], onDelete: Cascade)
+  workFlowId String?
+}
+
+//TRIGGERS
+model Trigger {
+  id        String   @id @default(cuid())
+  name      String
+  data      Json
+  type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

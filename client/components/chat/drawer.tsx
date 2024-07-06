@@ -6,15 +6,12 @@ import { useChat } from "@/hooks/use-chat";
 import { ChatInfo } from "./info";
 
 export const ChatDrawer = () => {
-  const { isChatOpen, onChatClose, onChatInfoClose } = useChat();
+  const { isChatOpen, onChatClose } = useChat();
   return (
     <DrawerRight
       title="Agents"
       isOpen={isChatOpen}
-      onClose={() => {
-        onChatClose();
-        onChatInfoClose();
-      }}
+      onClose={onChatClose}
       scroll={false}
       size="w-auto"
     >

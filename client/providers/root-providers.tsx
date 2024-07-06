@@ -6,9 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ModalProvider } from "@/providers/modal";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
-import SocketContextComponent from "@/providers/socket-component";
 import { ImageViewerModal } from "@/components/modals/image-viewer-modal";
-import { ChatDrawer } from "@/components/chat/chat-drawer";
 
 const queryClient = new QueryClient({});
 const RootProviders = ({ children }: { children: ReactNode }) => {
@@ -20,12 +18,10 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
-        {/* <SocketContextComponent>{children}</SocketContextComponent> */}
         {children}
         <ModalProvider />
         <ThemeSwitcher />
         <ImageViewerModal />
-        {/* <ChatDrawer /> */}
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

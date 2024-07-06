@@ -9,7 +9,6 @@ export const feedsGetAllByAgentId = async () => {
   }
 
   const feeds = await db.feed.findMany({ where: { userId: user.id } });
-  console.log(feeds);
   return feeds;
 };
 

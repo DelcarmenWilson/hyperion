@@ -26,7 +26,7 @@ import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
 import SocketContextComponent from "@/providers/socket-component";
-import { ChatDrawer } from "@/components/chat/chat-drawer";
+import { ChatDrawer } from "@/components/chat/drawer";
 
 export default async function DashBoardLayout({
   children,

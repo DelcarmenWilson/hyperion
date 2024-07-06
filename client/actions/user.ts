@@ -649,14 +649,14 @@ export const userLicenseDeleteById = async (id: string) => {
   return { success: "License Deleted" };
 };
 export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
-  const validatedFields = UserLicenseSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
+  
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated" };
+  }
+  const validatedFields = UserLicenseSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
   }
   const { state, type, licenseNumber, dateExpires, comments } =
     validatedFields.data;
