@@ -1,15 +1,17 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TriggerCard } from "./card";
-import { triggersGetAll } from "@/actions/triggers";
-import { Trigger } from "@prisma/client";
+
+import { WorkflowDefaultNode } from "@prisma/client";
+import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
+
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { TriggerSchemaType } from "@/schemas/trigger";
+import { TriggerCard } from "./card";
+import { workflowNodesGetAllByType } from "@/actions/workflow/default";
 
 export const TriggerList = () => {
-  const { data: triggers, isFetching } = useQuery<Trigger[]>({
+  const { data: triggers, isFetching } = useQuery<WorkflowDefaultNode[]>({
     queryKey: ["adminTriggers"],
-    queryFn: () => triggersGetAll(),
+    queryFn: () => workflowNodesGetAllByType("trigger"),
   });
 
   return (
@@ -18,7 +20,7 @@ export const TriggerList = () => {
         {triggers?.map((trigger) => (
           <TriggerCard
             key={trigger.id}
-            trigger={trigger as unknown as TriggerSchemaType}
+            trigger={trigger as unknown as WorkflowTriggerSchemaType}
           />
         ))}
       </div>

@@ -1,19 +1,25 @@
 
-import { PaymentCountry } from "@/components/react-flow/payment-country";
-import { PaymentInit } from "@/components/react-flow/payment-init";
-import { PaymentProvider } from "@/components/react-flow/payment-provider";
-import { CustomEdge } from "@/components/react-flow/custom-edge";
-import TriggerComponent from "@/components/react-flow/trigger-component";
+import { PaymentCountry } from "@/components/react-flow/test/payment-country";
+import { PaymentInit } from "@/components/react-flow/test/payment-init";
+import { PaymentProvider } from "@/components/react-flow/test/payment-provider";
+import TriggerComponent from "@/components/react-flow/triggers/component";
+import ActionComponent from "@/components/react-flow/actions/component";
+import { CustomBezier,CustomSmoothStep,CustomStraight,CustomStep } from "@/components/react-flow/edge/custom";
 
 export const NODE_TYPES = {
     paymentInit: PaymentInit,
     paymentCountry: PaymentCountry,
     paymentProvider: PaymentProvider,
-    trigger:TriggerComponent
+    trigger:TriggerComponent,
+    action:ActionComponent
+
   };
 
  export const EDGE_TYPES = {
-    customEdge: CustomEdge,
+  customBezier: CustomBezier,
+  customStraight:CustomStraight,
+  customStep:CustomStep,
+  customSmoothStep:CustomSmoothStep
   };
 
   export const PAYMENT_PROVIDER_IMAGE_MAP: { [code: string]: string } = {

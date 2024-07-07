@@ -3,41 +3,25 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   FullNodeSchemaType,
+  WorkflowEdgeSchema,
+  WorkflowEdgeSchemaType,
   WorkFlowSchema,
   WorkFlowSchemaType,
-} from "@/schemas/workflow";
+} from "@/schemas/workflow/workflow";
 import { JsonObject } from "@prisma/client/runtime/library";
 //DATA
-export const flowGetAll = async () => {
-  //   const user = await currentUser();
-  //   if (!user) {
-  //     return [];
-  //   }
-  //TODO remove this after the new test is completed
-  // const nodes = await db.node.findMany({
-  //   include: {
-  //     data: { select: { label: true } },
-  //     position: { select: { x: true, y: true } },
-  //   },
-  // });
-  const nodes = await db.node.findMany({
-    include: {
-      position: { select: { x: true, y: true } },
-    },
-  });
-  return nodes;
-};
+
 export const workFlowGetById = async (id: string) => {
   const user = await currentUser();
   if (!user) {
     return null;
   }
 
-  const workFlow = await db.workFlow.findUnique({
+  const workFlow = await db.workflow.findUnique({
     where: { id },
     include: {
       nodes: { include: { position: true } },
-      nodeEdges: true,
+      edges: true,
     },
   });
   return workFlow;
@@ -49,7 +33,7 @@ export const workFlowsGetAllByUserId = async () => {
     return [];
   }
 
-  const workFlows = await db.workFlow.findMany({ where: { userId: user.id } });
+  const workFlows = await db.workflow.findMany({ where: { userId: user.id } });
   return workFlows;
 };
 
@@ -67,7 +51,7 @@ export const workFlowInsert = async (values: WorkFlowSchemaType) => {
 
   const { title, description } = validatedFields.data;
 
-  const existingWorkFlow = await db.workFlow.findFirst({
+  const existingWorkFlow = await db.workflow.findFirst({
     where: { userId: user.id, title },
   });
 
@@ -75,7 +59,7 @@ export const workFlowInsert = async (values: WorkFlowSchemaType) => {
     return { error: "Workflow with this title already exists!!" };
   }
 
-  const newWorkFlow = await db.workFlow.create({
+  const newWorkFlow = await db.workflow.create({
     data: {
       title,
       description,
@@ -98,13 +82,13 @@ export const workFlowUpdateById = async (values: WorkFlowSchemaType) => {
 
   const { id, title, description } = validatedFields.data;
 
-  const existingWorkFlow = await db.workFlow.findUnique({ where: { id } });
+  const existingWorkFlow = await db.workflow.findUnique({ where: { id } });
 
   if (!existingWorkFlow) {
     return { error: "Workflow does not exists!!" };
   }
 
-  const updatedWorkFlow = await db.workFlow.update({
+  const updatedWorkFlow = await db.workflow.update({
     where: { id },
     data: {
       title,
@@ -120,7 +104,7 @@ export const workFlowDeleteById = async (id: string) => {
     return { error: "Unathenticated" };
   }
 
-  const existingWorkFlow = await db.workFlow.findUnique({ where: { id } });
+  const existingWorkFlow = await db.workflow.findUnique({ where: { id } });
 
   if (!existingWorkFlow) {
     return { error: "Workflow does not exists!!" };
@@ -130,14 +114,14 @@ export const workFlowDeleteById = async (id: string) => {
     return { error: "Unauthorized!!" };
   }
 
-  await db.workFlow.delete({ where: { id: existingWorkFlow.id } });
+  await db.workflow.delete({ where: { id: existingWorkFlow.id } });
   return { success: "WorkFlow deleted!!" };
 };
 
 // NODES
 export const nodeInsert = async (
   workflowId: string,
-  json: any,
+  id: string,
   type: string
 ) => {
   const user = await currentUser();
@@ -145,84 +129,37 @@ export const nodeInsert = async (
     return { error: "Unathenticated" };
   }
 
-  //Create a new node
-  const newNode = await db.node.create({
-    data: { workFlowId: workflowId, data: json, type },
-  });
-
-  //Create a new position
-  await db.nodePosition.create({
-    data: {
-      nodeId: newNode.id,
-      x: Math.random() * 120 * -1,
-      y: Math.random() * 120 * -1,
-    },
-  });
-
-  //Create a new data
-  //await db.nodeData.create({ data: { nodeId: newNode.id } });
-
-  //Update the node with the data and position
-  const updateNode = await db.node.findUnique({
-    where: { id: newNode.id },
-    include: {
-      position: true,
-    },
-  });
-
-  return { success: updateNode as FullNodeSchemaType };
-};
-export const nodeInsert2 = async (workflowId: string, triggerId: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
   //Check if trigger already exist inside the workflow
-  const exisitingTrigger = await db.node.findFirst({
-    where: { workFlowId: workflowId, type: "trigger" },
-  });
+  if (type == "trigger") {
+    const exisitingTrigger = await db.workflowNode.findFirst({
+      where: {  workflowId, type },
+    });
 
-  if (exisitingTrigger) {
-    return { error: "Only one trigger allowed per workflow!" };
+    if (exisitingTrigger) {
+      return { error: "Only one trigger allowed per workflow!" };
+    }
+  }
+  //Find the corresponding node
+  const node = await db.workflowDefaultNode.findUnique({ where: { id: id } });
+  if(!node){
+    return { error: "Node does not exists!" };
   }
 
-  //Find Trigger
-  const trigger = await db.trigger.findUnique({ where: { id: triggerId } });
-  if (!trigger) {
-    return { error: "Trigger does not exist" };
-  }
   //Create a new node
-  const newNode = await db.node.create({
+  const newNode = await db.workflowNode.create({
     data: {
-      workFlowId: workflowId,
-      data: trigger.data as JsonObject,
-      type: trigger.type,
-      position:{create:{
-        x:Math.random() * 120 * -1,y:Math.random() * 120 * -1,
-      }}
-    },include:{position:true}
+       workflowId,
+      data: node.data as JsonObject,
+      type,
+      position: {
+        create: {
+          x: Math.random() * 120 * -1,
+          y: Math.random() * 120 * -1,
+        },
+      },
+    },
+    include: { position: true },
   });
-
-  //Create a new position
-  // await db.nodePosition.create({
-  //   data: {
-  //     nodeId: newNode.id,
-  //     x: Math.random() * 120 * -1,
-  //     y: Math.random() * 120 * -1,
-  //   },
-  // });
-
-  //Create a new data
-  //await db.nodeData.create({ data: { nodeId: newNode.id } });
-
-  //Update the node with the data and position
-  // const updateNode = await db.node.findUnique({
-  //   where: { id: newNode.id },
-  //   include: {
-  //     position: true,
-  //   },
-  // });
 
   return { success: newNode as FullNodeSchemaType };
 };
@@ -233,17 +170,17 @@ export const nodeDeleteById = async (id: string) => {
     return { error: "Unathenticated" };
   }
 
-  const existingNode = await db.node.findUnique({ where: { id } });
+  const existingNode = await db.workflowNode.findUnique({ where: { id } });
 
   if (!existingNode) {
     return { error: "Node does not exists!!" };
   }
 
-  await db.nodeEdge.deleteMany({
+  await db.workflowNodeEdge.deleteMany({
     where: { OR: [{ source: id }, { target: id }] },
   });
 
-  await db.node.delete({ where: { id } });
+  await db.workflowNode.delete({ where: { id } });
   return { success: "Node Deleted!!" };
 };
 
@@ -254,7 +191,7 @@ export const nodesUpdateAllPosition = async (nodes: FullNodeSchemaType[]) => {
   }
 
   for (const node of nodes) {
-    await db.nodePosition.update({
+    await db.workflowNodePosition.update({
       where: { nodeId: node.id },
       data: {
         x: node.position.x,
@@ -268,23 +205,49 @@ export const nodesUpdateAllPosition = async (nodes: FullNodeSchemaType[]) => {
 
 //EDGES
 
-export const edgeInsert = async (source: string, target: string) => {
+export const edgeInsert = async (edge: WorkflowEdgeSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
   }
+  const validatedFields = WorkflowEdgeSchema.safeParse(edge);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const {workflowId, source, target,animated,type } = validatedFields.data;
 
   //Create a new node
-  const newEdge = await db.nodeEdge.create({
+  //TODO - need to add the tpe and change worflowid casing
+  const newEdge = await db.workflowNodeEdge.create({
     data: {
-      source,
-      target,
-      workFlowId: "cly7qebji00012v01l9u2fswt",
-      animated: false,
+      workflowId, source, target,animated,type:type||""
     },
   });
 
   return { success: newEdge };
+};
+
+export const edgeUpdateById = async (edge: WorkflowEdgeSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  const validatedFields = WorkflowEdgeSchema.safeParse(edge);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const {id, source, target,animated,type } = validatedFields.data;
+
+  //Update Edge 
+  const updatedEdge = await db.workflowNodeEdge.update({where:{id},
+    data: {
+       source, target,animated,type:type||""
+    },
+  });
+
+  return { success: updatedEdge };
 };
 
 export const edgeDeleteById = async (id: string) => {
@@ -293,12 +256,12 @@ export const edgeDeleteById = async (id: string) => {
     return { error: "Unathenticated" };
   }
 
-  const existingEdge = await db.nodeEdge.findUnique({ where: { id } });
+  const existingEdge = await db.workflowNodeEdge.findUnique({ where: { id } });
 
   if (!existingEdge) {
     return { error: "Edge does not exists!!" };
   }
 
-  await db.nodeEdge.delete({ where: { id } });
+  await db.workflowNodeEdge.delete({ where: { id } });
   return { success: "Edge Deleted!!" };
 };

@@ -6,7 +6,10 @@ import {
   nodesUpdateAllPosition,
 } from "@/actions/workflow";
 import { Button } from "@/components/ui/button";
-import { FullNodeSchemaType, FullWorkFlowSchemaType } from "@/schemas/workflow";
+import {
+  FullNodeSchemaType,
+  FullWorkFlowSchemaType,
+} from "@/schemas/workflow/workflow";
 import { Plus } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import ReactFlow, {
@@ -32,7 +35,7 @@ export const ReactFlowClient = ({
   workflow: FullWorkFlowSchemaType;
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(workflow.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(workflow.nodeEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(workflow.edges);
 
   const [disabled, setDisabled] = useState(true);
 
@@ -47,23 +50,23 @@ export const ReactFlowClient = ({
 
   const onConnect = async (e: Connection) => {
     if (!e.source || !e.target) return;
-    const insertedEdge = await edgeInsert(e.source, e.target);
-    if (insertedEdge.success) {
-      setEdges((eds) => {
-        const data = addEdge(e, eds);
-        data[0].id = insertedEdge.success.id;
-        return data;
-      });
-    }
+    // const insertedEdge = await edgeInsert(e.source, e.target);
+    // if (insertedEdge.success) {
+    //   setEdges((eds) => {
+    //     const data = addEdge(e, eds);
+    //     data[0].id = insertedEdge.success.id;
+    //     return data;
+    //   });
+    // }
   };
   const onCreateNode = async () => {
     const json = { name: "Google Pay", code: "Gp" };
-    const newNode = await nodeInsert(workflow.id, json, "paymentProvider");
-    if (newNode.success) {
-      setNodes([...nodes, newNode.success]);
-    } else {
-      toast.error("There was an error creating the Node!");
-    }
+    // const newNode = await nodeInsert(workflow.id, json, "paymentProvider");
+    // if (newNode.success) {
+    //   setNodes([...nodes, newNode.success]);
+    // } else {
+    //   toast.error("There was an error creating the Node!");
+    // }
   };
 
   const onChangeNodes = (e: NodeChange[]) => {

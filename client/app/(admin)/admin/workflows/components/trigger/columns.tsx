@@ -1,14 +1,10 @@
 "use client";
-import { useImageViewer } from "@/hooks/use-image-viewer";
-import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Workflow } from "@prisma/client";
+import { WorkflowDefaultNode } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
-export const columns: ColumnDef<Workflow>[] = [
+export const columns: ColumnDef<WorkflowDefaultNode>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -31,13 +27,22 @@ export const columns: ColumnDef<Workflow>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   accessorKey: "id",
+  //   header: "Id",
+  // },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "name",
+    header: "Name",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "data",
+    header: "Data",
+    cell: ({ row }) => JSON.stringify(row.original.data),
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
   },
 
   {
@@ -56,15 +61,6 @@ export const columns: ColumnDef<Workflow>[] = [
       <span className="text-primary italic font-bold">
         {formatDate(row.original.updatedAt)}
       </span>
-    ),
-  },
-  {
-    header: "Actions",
-    id: "actions",
-    cell: ({ row }) => (
-      <Button>
-        <Link href={`/workflows/${row.original.id}`}>Details</Link>
-      </Button>
     ),
   },
 ];

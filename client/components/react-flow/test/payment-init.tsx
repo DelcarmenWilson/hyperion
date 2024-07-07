@@ -1,6 +1,6 @@
 import React from "react";
 import { NodeProps, Position } from "reactflow";
-import { CustomHandle } from "./custom-handle";
+import { CustomCircle } from "../handle/custom";
 
 export const PaymentInit = ({
   data: { amount },
@@ -13,7 +13,7 @@ export const PaymentInit = ({
       <div className="p-2">
         <p className="text-2xl text-blue-600">${amount}</p>
       </div>
-      <CustomHandle type="source" position={Position.Right} />
+      <CustomCircle type="source" position={Position.Right} />
     </div>
   );
 };

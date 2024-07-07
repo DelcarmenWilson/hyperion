@@ -10,23 +10,35 @@ import { Fragment } from "react";
 
 type DrawerRightProps = {
   title: string;
+  description?: string;
   isOpen: boolean;
   onClose: () => void;
   scroll?: boolean;
   children: React.ReactNode;
   size?: string;
+  closeButton?: "simple" | "default";
+  autoClose?: boolean;
 };
 export const DrawerRight = ({
   title,
+  description,
   isOpen,
   onClose,
   scroll = true,
   children,
   size = "max-w-sm",
+  closeButton = "default",
+  autoClose = false,
 }: DrawerRightProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={() => {}}>
+      <Dialog
+        as="div"
+        className="relative z-50"
+        onClose={() => {
+          if (autoClose) onClose();
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-500"
@@ -54,8 +66,17 @@ export const DrawerRight = ({
                 >
                   <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
                     <div className=" flex items-center justify-between px-2">
-                      <p className=" font-semibold text-xl">{title}</p>
-                      <Button size="sm" onClick={onClose}>
+                      <div>
+                        <h2 className="font-semibold text-xl tracking-tight">
+                          {title}
+                        </h2>
+                        {description && (
+                          <p className="text-sm text-muted-foreground">
+                            {description}
+                          </p>
+                        )}
+                      </div>
+                      <Button variant={closeButton} size="sm" onClick={onClose}>
                         <span className="sr-only">Close panel</span>
                         <X size={16} />
                       </Button>

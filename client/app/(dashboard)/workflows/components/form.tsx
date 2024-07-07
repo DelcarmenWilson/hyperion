@@ -5,6 +5,12 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Workflow } from "@prisma/client";
+import {
+  WorkFlowSchema,
+  WorkFlowSchemaType,
+} from "@/schemas/workflow/workflow";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,18 +22,15 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { WorkFlowSchema, WorkFlowSchemaType } from "@/schemas/workflow";
-
-import { WorkFlow } from "@prisma/client";
 import { Textarea } from "@/components/ui/textarea";
 import { workFlowInsert, workFlowUpdateById } from "@/actions/workflow";
 
-type WorkFlowFormProps = {
-  workflow?: WorkFlow;
+type WorkflowFormProps = {
+  workflow?: Workflow;
   onClose: () => void;
 };
 
-export const WorkFlowForm = ({ workflow, onClose }: WorkFlowFormProps) => {
+export const WorkflowForm = ({ workflow, onClose }: WorkflowFormProps) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const btnText = workflow ? "Update" : "Create";

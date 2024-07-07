@@ -1,12 +1,12 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { TriggerCard } from "./card";
-import { Trigger } from "@prisma/client";
+import { WorkflowDefaultNode } from "@prisma/client";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { TriggerSchemaType } from "@/schemas/trigger";
+import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
 type TriggerListProps = {
-  triggers: Trigger[];
+  triggers: WorkflowDefaultNode[];
   size?: string;
   isLoading?: boolean;
 };
@@ -26,13 +26,13 @@ export const TriggerList = ({
         >
           {triggers.map((trigger) => (
             <SkeletonWrapper key={trigger.id} isLoading={isLoading}>
-              <TriggerCard initTrigger={trigger as TriggerSchemaType} />
+              <TriggerCard trigger={trigger as WorkflowTriggerSchemaType} />
             </SkeletonWrapper>
           ))}
         </div>
       ) : (
         <div>
-          <p className="font-semibold text-center">No WorkFlows Found</p>
+          <p className="font-semibold text-center">No Triggers Found</p>
         </div>
       )}
     </>

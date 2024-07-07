@@ -72,6 +72,16 @@ export const themes = [
     },
   },
 
+  {
+    name: "gold",
+    label: "Gold",
+    activeColor: {
+      light: "54 100% 50%",
+      dark: "54 100% 50%",
+    },
+  },
+
+
   
 ] as const;
 

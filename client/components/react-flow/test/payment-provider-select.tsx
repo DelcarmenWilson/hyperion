@@ -1,4 +1,8 @@
-import { nodeInsert } from "@/actions/workflow";
+import { useWorkFlow } from "@/hooks/use-workflow";
+import { Plus } from "lucide-react";
+import { Node } from "reactflow";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,10 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PAYMENT_PROVIDERS } from "@/constants/react-flow/node-types";
-import { useWorkFlow } from "@/hooks/use-workflow";
-import { Plus } from "lucide-react";
-import { Node, useReactFlow } from "reactflow";
-import { toast } from "sonner";
+import { nodeInsert } from "@/actions/workflow";
 
 export const PaymentProviderSelect = ({
   workFlowId,
@@ -29,7 +30,7 @@ export const PaymentProviderSelect = ({
     React.SetStateAction<Node<{}, string | undefined>[]>
   >;
 }) => {
-  const { onTriggerOpen } = useWorkFlow();
+  const { onDrawerOpen } = useWorkFlow();
   // const { setNodes } = useReactFlow();
   const onProviderClick = async ({
     name,
@@ -39,12 +40,12 @@ export const PaymentProviderSelect = ({
     name: string;
   }) => {
     const json = { name, code };
-    const newNode = await nodeInsert(workFlowId, json, "paymentProvider");
-    if (newNode.success) {
-      setNodes((prevNodes) => [...prevNodes, newNode.success]);
-    } else {
-      toast.error("There was an error creating the Node!");
-    }
+    // const newNode = await nodeInsert(workFlowId, json, "paymentProvider");
+    // if (newNode.success) {
+    //   setNodes((prevNodes) => [...prevNodes, newNode.success]);
+    // } else {
+    //   toast.error("There was an error creating the Node!");
+    // }
   };
 
   return (
@@ -58,8 +59,16 @@ export const PaymentProviderSelect = ({
         <DropdownMenuLabel>Nodes</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => onTriggerOpen(workFlowId)}>
+          <DropdownMenuItem
+            onClick={() => onDrawerOpen(workFlowId, "triggerlist")}
+          >
             Trigger
+            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onDrawerOpen(workFlowId, "actionlist")}
+          >
+            Action
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
