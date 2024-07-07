@@ -22,7 +22,6 @@ import {
   Presets,
   UserLicense,
   UserTemplate,
-  WorkFlow,
 } from "@prisma/client";
 
 type UserEvents = {

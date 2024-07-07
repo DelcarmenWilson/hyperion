@@ -1,15 +1,15 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { WorkFlowCard } from "./card";
-import { WorkFlow } from "@prisma/client";
+import { WorkflowCard } from "./card";
+import { Workflow } from "@prisma/client";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type WorkFlowListProps = {
-  workflows: WorkFlow[];
+  workflows: Workflow[];
   size?: string;
   isLoading?: boolean;
 };
-export const WorkFlowList = ({
+export const WorkflowList = ({
   workflows,
   size = "full",
   isLoading = false,
@@ -25,7 +25,7 @@ export const WorkFlowList = ({
         >
           {workflows.map((workflow) => (
             <SkeletonWrapper key={workflow.id} isLoading={isLoading}>
-              <WorkFlowCard initWorkFlow={workflow} />
+              <WorkflowCard initWorkFlow={workflow} />
             </SkeletonWrapper>
           ))}
         </div>

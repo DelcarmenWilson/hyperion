@@ -22,7 +22,7 @@ export const FullWorkFlowSchema = z.object({
       }),
     })
   ),
-  nodeEdges: z.array(z.object({
+  edges: z.array(z.object({
     id: z.string(),
     source: z.string(),
     target: z.string(),
@@ -41,3 +41,13 @@ export const FullNodeSchema = z.object({
   type: z.optional(z.string()),
 });
 export type FullNodeSchemaType = z.infer<typeof FullNodeSchema>;
+
+export const WorkflowEdgeSchema = z.object({
+  id: z.optional(z.string()),
+  workflowId:z.string(),
+  source:z.string(),
+  target:z.string(),
+  animated:z.boolean(),
+  type: z.optional(z.string()),
+});
+export type WorkflowEdgeSchemaType = z.infer<typeof WorkflowEdgeSchema>;

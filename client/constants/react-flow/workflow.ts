@@ -24,58 +24,61 @@ export type TriggerType = {
   Icon: LucideIcon;
 };
 
-export const TRIGGER_ICONS_SELECT:TriggerType[] = [
+export const TRIGGER_CATEGORIES_SELECT = ["contact"];
+export const TRIGGER_ICONS_SELECT: TriggerType[] = [
   {
-    name:"bell",
+    name: "bell",
     Icon: Bell,
-  }, {
-    name:"cake",
+  },
+  {
+    name: "cake",
     Icon: Cake,
-  }, {
-    name:"calendar",
+  },
+  {
+    name: "calendar",
     Icon: Calendar,
-  }, {
-    name:"checkSquare",
+  },
+  {
+    name: "checkSquare",
     Icon: CheckSquare,
-  }, {
-    name:"clipboardcheck",
+  },
+  {
+    name: "clipboardcheck",
     Icon: ClipboardCheck,
-  }, {
-    name:"file",
+  },
+  {
+    name: "file",
     Icon: File,
-  },{
-    name:"files",
+  },
+  {
+    name: "files",
     Icon: Files,
-  },{
-    name:"tag",
+  },
+  {
+    name: "tag",
     Icon: Tag,
-  },{
-    name:"userplus",
+  },
+  {
+    name: "userplus",
     Icon: UserPlus,
   },
   {
-    name:"users",
+    name: "users",
     Icon: Users,
-  },{
-    name:"xcircle",
+  },
+  {
+    name: "xcircle",
     Icon: XCircle,
   },
 ];
 
-export const TRIGGER_ICONS:{ [icon: string]: LucideIcon } = {
-  cake: Cake,
+export const getTriggerIcon = (name: string): LucideIcon => {
+  const icon = TRIGGER_ICONS_SELECT.find(
+    (e) => e.name == name.toLocaleLowerCase()
+  )?.Icon;
+  if (!icon) return Unlink2;
+  return icon;
 };
-
-export const getTriggerIcon=(name:string):LucideIcon=>{
-  const icon =TRIGGER_ICONS_SELECT.find(e=>e.name==name)?.Icon
-  if(!icon)
-    return Unlink2
-  return icon
-
-}
-
-
-
 
 // export const ALLTRIGGERS: TriggerType[] = [
 //   //CONTACT
@@ -135,3 +138,20 @@ export const getTriggerIcon=(name:string):LucideIcon=>{
 //     type: "contact",
 //   },
 // ];
+
+type EdgeType = {
+  text: string;
+  value: string;
+};
+
+export const edgeTypes: EdgeType[] = [
+  { value: "default", text:"Bezier" },
+    {value: "step", text:"Step" },
+    {value: "smoothstep", text:"Smooth Step" },
+    {value: "straight", text:"Straight" },
+    {value: "customBezier", text:"Custom Bezier" },
+    
+    {value: "customStep", text:"Custom Step" },
+    {value: "customSmoothStep", text:"Custom Smooth Step" },
+    {value: "customStraight", text:"Custom Straight" },
+];

@@ -1,14 +1,10 @@
 "use client";
-import { useImageViewer } from "@/hooks/use-image-viewer";
-import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trigger } from "@prisma/client";
+import { PageUpdate } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
-export const columns: ColumnDef<Trigger>[] = [
+export const columns: ColumnDef<PageUpdate>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -40,15 +36,9 @@ export const columns: ColumnDef<Trigger>[] = [
     header: "Name",
   },
   {
-    accessorKey: "data",
-    header: "Data",
-    cell: ({ row }) => JSON.stringify(row.original.data),
+    accessorKey: "description",
+    header: "Description",
   },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-
   {
     accessorKey: "createdAt",
     header: "Created At",

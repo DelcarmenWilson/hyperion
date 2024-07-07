@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { toast } from "sonner";
-import Link from "next/link";
+import { Trash } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { Trigger } from "@prisma/client";
+import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -13,18 +13,15 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { TriggerForm } from "./form";
 
-import { triggerDeleteById } from "@/actions/triggers";
 import { formatDate } from "@/formulas/dates";
-import { TriggerSchemaType } from "@/schemas/trigger";
-import { Trash } from "lucide-react";
+import { workflowNodeDeleteById } from "@/actions/workflow/default";
 
-type TriggerCardProps = {
-  initTrigger: TriggerSchemaType;
-};
-export const TriggerCard = ({ initTrigger }: TriggerCardProps) => {
+export const TriggerCard = ({
+  trigger,
+}: {
+  trigger: WorkflowTriggerSchemaType;
+}) => {
   const queryClient = useQueryClient();
-
-  const [trigger, setTrigger] = useState(initTrigger);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,11 +29,11 @@ export const TriggerCard = ({ initTrigger }: TriggerCardProps) => {
   const onDeleteTrigger = async () => {
     if (!trigger.id) return;
     setLoading(true);
-    const deletedTrigger = await triggerDeleteById(trigger.id);
+    const deletedTrigger = await workflowNodeDeleteById(trigger.id);
 
     if (deletedTrigger.success) {
       queryClient.invalidateQueries({
-        queryKey: ["agentTriggers"],
+        queryKey: ["adminTriggers"],
       });
       toast.success(deletedTrigger.success);
     } else toast.error(deletedTrigger.error);
@@ -60,7 +57,7 @@ export const TriggerCard = ({ initTrigger }: TriggerCardProps) => {
         onClose={() => setIsOpen(false)}
       >
         <TriggerForm
-          trigger={trigger as TriggerSchemaType}
+          trigger={trigger as WorkflowTriggerSchemaType}
           onClose={() => setIsOpen(false)}
         />
       </DrawerRight>

@@ -5,7 +5,7 @@ import { NodeProps, Position, useReactFlow } from "reactflow";
 import { Button } from "@/components/ui/button";
 import { nodeDeleteById } from "@/actions/workflow";
 import { toast } from "sonner";
-import { CustomHandle } from "./custom-handle";
+import { CustomCircle } from "../handle/custom";
 import { PAYMENT_PROVIDER_IMAGE_MAP } from "@/constants/react-flow/node-types";
 
 export const PaymentProvider = ({
@@ -42,7 +42,7 @@ export const PaymentProvider = ({
         <X size={10} />
       </Button>
 
-      <CustomHandle type="target" position={Position.Left} />
+      <CustomCircle type="target" position={Position.Left} />
     </div>
   );
 };

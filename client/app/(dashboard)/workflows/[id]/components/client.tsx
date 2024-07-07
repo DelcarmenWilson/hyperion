@@ -1,89 +1,97 @@
 "use client";
-import { PaymentProviderSelect } from "@/components/react-flow/payment-provider-select";
 import React, { useCallback, useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useWorkFlow } from "@/hooks/use-workflow";
+import "reactflow/dist/style.css";
+
 import ReactFlow, {
   addEdge,
   Background,
   BackgroundVariant,
   Connection,
   Controls,
+  Edge,
+  EdgeChange,
   MiniMap,
-  Node,
   NodeChange,
   Panel,
   useEdgesState,
   useNodesState,
 } from "reactflow";
 
-import "reactflow/dist/style.css";
-import { FullWorkFlowSchemaType } from "@/schemas/workflow";
-import { TriggerDrawer } from "@/components/react-flow/triggers/drawer";
 import { NODE_TYPES, EDGE_TYPES } from "@/constants/react-flow/node-types";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { nodesUpdateAllPosition } from "@/actions/workflow";
-import { toast } from "sonner";
+import {
+  FullWorkFlowSchemaType,
+  WorkflowEdgeSchemaType,
+  WorkFlowSchemaType,
+} from "@/schemas/workflow/workflow";
 
-const initialNodes: Node[] = [
-  {
-    id: "1",
-    position: { x: 0, y: 0 },
-    data: { code: "St", name: "Stripe" },
-    type: "paymentProvider",
-  },
-  {
-    id: "2",
-    position: { x: 200, y: 200 },
-    data: { amount: "10" },
-    type: "paymentInit",
-  },
-  {
-    id: "3",
-    position: { x: -10, y: -5 },
-    data: { currency: "$", country: "United States", countryCode: "US" },
-    type: "paymentCountry",
-  },
-  {
-    id: "4",
-    position: { x: -50, y: -5 },
-    data: { text: "This is a sample Text", name: "BirthReminder" },
-    type: "trigger",
-  },
-  {
-    id: "5",
-    position: { x: -30, y: -15 },
-    data: { text: "This is a sample Text too", name: "BirthReminder" },
-    type: "trigger",
-  },
-];
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { AlertModal } from "@/components/modals/alert";
+import { WorkFlowDrawer } from "@/components/react-flow/drawer";
+import { NodeSelect } from "@/components/react-flow/node-select";
+
+import { edgeInsert, nodesUpdateAllPosition } from "@/actions/workflow";
+import { WorkflowForm } from "@/components/react-flow/form";
+import { Pencil } from "lucide-react";
 
 export const WorkFlowClient = ({
-  workflow,
+  initWorkflow,
 }: {
-  workflow: FullWorkFlowSchemaType;
+  initWorkflow: FullWorkFlowSchemaType;
 }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(workflow.nodes || []);
+  const [workflow, setWorkflow] = useState(initWorkflow);
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    initWorkflow.nodes || []
+  );
   const [edges, setEdges, onEdgesChange] = useEdgesState(
-    workflow.nodeEdges || []
+    initWorkflow.edges || []
   );
   const [disabled, setDisabled] = useState(true);
+  const router = useRouter();
 
-  const onConnect = useCallback((connection: Connection) => {
-    const edge = {
-      ...connection,
+  const { onDrawerOpen } = useWorkFlow();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [workflowDialogOpen, setWorkflowDialogOpen] = useState(false);
+
+  const onConnect = useCallback(async (e: Connection) => {
+    if (!e.source || !e.target) return;
+    const insertedEdge = await edgeInsert({
+      workflowId: workflow.id,
+      source: e.source,
+      target: e.target,
       animated: true,
-      id: `${edges.length + 1}`,
-      type: "customEdge",
-    };
-    setEdges((prevEdges) => addEdge(edge, prevEdges));
+      type: "customBezier",
+    });
+    if (insertedEdge.success) {
+      setEdges((eds) => addEdge(insertedEdge.success, eds));
+    }
   }, []);
 
   const onChangeNodes = (e: NodeChange[]) => {
     const el = e[0];
-    if (el.type == "position") {
+    if (el.type === "position") {
       setDisabled(false);
     }
     onNodesChange(e);
+  };
+
+  const onChangeEdges = (e: EdgeChange[]) => {
+    const el = e[0];
+    if (el.type === "remove") {
+      //TODO- need to see how we can incluse this in the store
+      // onDeleteEdge(el.id);
+    }
+    onEdgesChange(e);
+  };
+
+  const onEdgeClick = (
+    event: React.MouseEvent<Element, MouseEvent>,
+    edge: Edge<any>
+  ) => {
+    onDrawerOpen(workflow.id, "edge", edge as WorkflowEdgeSchemaType);
   };
 
   const onSaveChanges = async () => {
@@ -94,46 +102,90 @@ export const WorkFlowClient = ({
     } else toast.error(updatedNodes.error);
   };
 
+  const onSetWorkFlow = (w: WorkFlowSchemaType) => {
+    setWorkflow((work) => {
+      return { ...work, title: w.title, description: w.description };
+    });
+  };
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center bg-white p-1 border-b">
-        <Button>
-          <Link href="/workflows">Back to Workflows</Link>
-        </Button>
-        <p className="flex items-center">
-          <span className="text-2xl font-bold">{workflow.title}</span>
-          <span> - {workflow.description}</span>
-        </p>
-        <div className="flex items-center gap-2">
-          <PaymentProviderSelect workFlowId={workflow.id} setNodes={setNodes} />
-          <Button disabled={disabled} onClick={onSaveChanges}>
-            Save Changes
+    <>
+      <Dialog open={workflowDialogOpen} onOpenChange={setWorkflowDialogOpen}>
+        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+          <h3 className="text-2xl font-semibold py-2">
+            WorkFlow Info -{" "}
+            <span className="text-primary">{workflow.title}</span>
+          </h3>
+          <WorkflowForm
+            workflow={workflow}
+            setWorkFlow={onSetWorkFlow}
+            onClose={() => setWorkflowDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <AlertModal
+        title="Are you sure you want to exit without saving changes?"
+        description="This action cannot be undone."
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        onConfirm={() => router.push("/workflows")}
+        loading={false}
+        height="300px"
+      />
+
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center bg-white p-1 border-b">
+          <Button
+            onClick={() => {
+              if (!disabled) setIsAlertOpen(true);
+              else router.push("/workflows");
+            }}
+          >
+            Back to Workflows
           </Button>
+          <p className="flex items-center gap-2">
+            <span className="text-2xl font-bold">{workflow.title}</span>
+            <span> - {workflow.description}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setWorkflowDialogOpen(true)}
+            >
+              <Pencil size={16} />
+            </Button>
+          </p>
+          <div className="flex items-center gap-2">
+            <NodeSelect workFlowId={workflow.id} nodesCount={nodes.length} />
+            <Button disabled={disabled} onClick={onSaveChanges}>
+              Save Changes
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onChangeNodes}
+            onEdgesChange={onChangeEdges}
+            onEdgeDoubleClick={onEdgeClick}
+            onConnect={onConnect}
+            nodeTypes={NODE_TYPES}
+            edgeTypes={EDGE_TYPES}
+            deleteKeyCode={["Delete", "Backspace"]}
+            defaultMarkerColor="#555"
+            fitView
+          >
+            <Panel className="h-full" position="top-right">
+              <WorkFlowDrawer />
+            </Panel>
+            <Background variant={BackgroundVariant.Cross} />
+            <Controls />
+            <MiniMap zoomable pannable />
+          </ReactFlow>
         </div>
       </div>
-
-      <div className="flex-1">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onChangeNodes}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={NODE_TYPES}
-          edgeTypes={EDGE_TYPES}
-          fitView
-        >
-          {/* <Panel position="top-right">
-            <PaymentProviderSelect workFlowId={workflow.id} />
-          </Panel> */}
-          <Panel className="h-full" position="top-right">
-            <TriggerDrawer />
-          </Panel>
-          <Background variant={BackgroundVariant.Cross} />
-          <Controls />
-          <MiniMap zoomable pannable />
-        </ReactFlow>
-      </div>
-    </div>
+    </>
   );
 };

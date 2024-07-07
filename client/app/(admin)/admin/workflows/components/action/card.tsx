@@ -1,39 +1,42 @@
 "use client";
 import { useState } from "react";
+import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { Workflow } from "@prisma/client";
-
+import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 
-import { WorkflowForm } from "./form";
+import { ActionForm } from "./form";
 
-import { workFlowDeleteById } from "@/actions/workflow";
 import { formatDate } from "@/formulas/dates";
+import { workflowNodeDeleteById } from "@/actions/workflow/default";
 
-export const WorkflowCard = ({ initWorkFlow }: { initWorkFlow: Workflow }) => {
+export const ActionCard = ({
+  action,
+}: {
+  action: WorkflowActionSchemaType;
+}) => {
   const queryClient = useQueryClient();
 
-  const [workflow, setWorkFlow] = useState(initWorkFlow);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteWorkFlow = async () => {
+  const onDeleteAction = async () => {
+    if (!action.id) return;
     setLoading(true);
-    const deletedWorkFlow = await workFlowDeleteById(workflow.id);
+    const deletedAction = await workflowNodeDeleteById(action.id);
 
-    if (deletedWorkFlow.success) {
+    if (deletedAction.success) {
       queryClient.invalidateQueries({
-        queryKey: ["agentWorkFlows"],
+        queryKey: ["adminActions"],
       });
-      toast.success(deletedWorkFlow.success);
-    } else toast.error(deletedWorkFlow.error);
+      toast.success(deletedAction.success);
+    } else toast.error(deletedAction.error);
 
     setAlertOpen(false);
     setLoading(false);
@@ -44,36 +47,39 @@ export const WorkflowCard = ({ initWorkFlow }: { initWorkFlow: Workflow }) => {
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteWorkFlow}
+        onConfirm={onDeleteAction}
         loading={loading}
         height="auto"
       />
       <DrawerRight
-        title="Edit WorkFlow"
+        title="Edit Action"
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >
-        <WorkflowForm workflow={workflow} onClose={() => setIsOpen(false)} />
+        <ActionForm
+          action={action as WorkflowActionSchemaType}
+          onClose={() => setIsOpen(false)}
+        />
       </DrawerRight>
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm gap-2">
         <h3 className="text-2xl text-primary font-semibold text-center">
-          {workflow.title}
+          {action.name}
         </h3>
 
-        <CardData label="Description" value={workflow.description} />
-        <CardData label="Date Created" value={formatDate(workflow.createdAt)} />
-        <CardData label="Date Updated" value={formatDate(workflow.updatedAt)} />
+        <CardData label="Type" value={action.type} />
+        <CardData label="Data" value={JSON.stringify(action.data)} />
+        <CardData label="Date Created" value={formatDate(action.createdAt)} />
+        <CardData label="Date Updated" value={formatDate(action.updatedAt)} />
         <div className="flex group gap-2 justify-end items-center mt-auto border-t pt-2">
           <Button
             variant="destructive"
             className="opacity-0 group-hover:opacity-100"
             onClick={() => setAlertOpen(true)}
+            size="icon"
           >
-            Delete
+            <Trash size={15} />
           </Button>
-          <Button variant="ghost">
-            <Link href={`/workflows/${workflow.id}`}>Details</Link>
-          </Button>
+
           <Button onClick={() => setIsOpen(true)}>Edit</Button>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -7,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   Form,
   FormField,
@@ -15,35 +15,29 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import {
-  TriggerDataSchema,
-  TriggerSchema,
-  TriggerSchemaType,
-} from "@/schemas/trigger";
-
-import { Trigger } from "@prisma/client";
 import { Textarea } from "@/components/ui/textarea";
-import { triggerInsert, triggerUpdateById } from "@/actions/triggers";
+import {
+  WorkFlowSchema,
+  WorkFlowSchemaType,
+} from "@/schemas/workflow/workflow";
+import { workFlowUpdateById } from "@/actions/workflow";
 
-type TriggerFormProps = {
-  trigger?: TriggerSchemaType;
+type WorkflowFormProps = {
+  workflow: WorkFlowSchemaType;
+  setWorkFlow: (e: WorkFlowSchemaType) => void;
   onClose: () => void;
 };
 
-export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
-  const queryClient = useQueryClient();
+export const WorkflowForm = ({
+  workflow,
+  setWorkFlow,
+  onClose,
+}: WorkflowFormProps) => {
   const [loading, setLoading] = useState(false);
-  const btnText = trigger ? "Update" : "Create";
 
-  const form = useForm<TriggerSchemaType>({
-    resolver: zodResolver(TriggerSchema),
-    //@ts-ignore
-    defaultValues: trigger || {
-      name: "",
-      data: TriggerDataSchema,
-      type: "trigger",
-    },
+  const form = useForm<WorkFlowSchemaType>({
+    resolver: zodResolver(WorkFlowSchema),
+    defaultValues: workflow,
   });
 
   const onCancel = () => {
@@ -51,32 +45,20 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
     form.reset();
     onClose();
   };
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["adminTriggers"],
-    });
-  };
 
-  const onSubmit = async (values: TriggerSchemaType) => {
+  const onSubmit = async (values: WorkFlowSchemaType) => {
     setLoading(true);
 
-    if (trigger) {
-      const updatedTrigger = await triggerUpdateById(values);
-      if (updatedTrigger.success) {
-        invalidate();
-        toast.success("Trigger Updated!");
-        onCancel();
-      } else toast.error(updatedTrigger.error);
-    } else {
-      const InsertedTrigger = await triggerInsert(values);
-      if (InsertedTrigger.success) {
-        invalidate();
-        toast.success("Trigger created!");
-        onCancel();
-      } else toast.error(InsertedTrigger.error);
-    }
+    const updatedWorkFlow = await workFlowUpdateById(values);
+    if (updatedWorkFlow.success) {
+      setWorkFlow(updatedWorkFlow.success);
+      toast.success("WorkFlow Updated!");
+      onCancel();
+    } else toast.error(updatedWorkFlow.error);
+
     setLoading(false);
   };
+
   return (
     <div>
       <Form {...form}>
@@ -85,22 +67,22 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="flex flex-col gap-2">
-            {/* NAME */}
+            {/* TYPE */}
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between items-center">
-                    Name
+                    Title
                     <FormMessage />
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="New Trigger"
+                      placeholder="New Work Flow"
                       disabled={loading}
-                      autoComplete="Name"
+                      autoComplete="Title"
                     />
                   </FormControl>
                 </FormItem>
@@ -110,20 +92,20 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
             {/* DESCRIPTION*/}
             <FormField
               control={form.control}
-              name="data.icon"
+              name="description"
               render={({ field }) => (
                 <FormItem className="flex flex-col pt-2">
                   <FormLabel className="flex justify-between items-center">
-                    Icon
+                    Description
                     <FormMessage />
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Icon"
+                      placeholder="Work Flow Description"
                       disabled={loading}
                       rows={6}
-                      autoComplete="type"
+                      autoComplete="description"
                     />
                   </FormControl>
                 </FormItem>
@@ -135,7 +117,7 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              {btnText}
+              Update
             </Button>
           </div>
         </form>

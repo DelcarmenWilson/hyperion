@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { Trigger } from "@prisma/client";
+import { WorkflowDefaultNode } from "@prisma/client";
 
 import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -12,15 +12,15 @@ import { columns } from "./columns";
 import { TriggerForm } from "./form";
 import { TriggerList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { triggersGetAll } from "@/actions/triggers";
+import { workflowNodesGetAllByType } from "@/actions/workflow/default";
 
 export const TriggersClient = () => {
   const user = useCurrentUser();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
-  const { data: triggers, isFetching } = useQuery<Trigger[]>({
+  const { data: triggers, isFetching } = useQuery<WorkflowDefaultNode[]>({
     queryKey: ["adminTriggers"],
-    queryFn: () => triggersGetAll(),
+    queryFn: () => workflowNodesGetAllByType("trigger"),
   });
   const topMenu = (
     <ListGridTopMenu
