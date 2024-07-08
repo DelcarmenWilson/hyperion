@@ -1,20 +1,15 @@
 "use client";
-import React, { useContext, useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import SocketContext from "@/providers/socket";
-import { userEmitter } from "@/lib/event-emmiter";
-import { toast } from "sonner";
+import React, { useState } from "react";
+import { useLead, useLeadActions } from "@/hooks/use-lead";
 import { Button } from "@/components/ui/button";
-import { leadUpdateByIdTransfer } from "@/actions/lead";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { UserSelect } from "@/components/user/select";
 
-type ShareFormProps = {
-  leadId: string;
-  onClose: () => void;
-};
-export const TransferForm = ({ leadId, onClose }: ShareFormProps) => {
-  const { socket } = useContext(SocketContext).SocketState;
-  const user = useCurrentUser();
+export const TransferForm = () => {
+  const { isTransferFormOpen, onTransferFormClose, leadId, leadFullName } =
+    useLead();
+  const { onLeadUpdateByIdTransfer } = useLeadActions();
+
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>(
     undefined
   );
@@ -23,36 +18,39 @@ export const TransferForm = ({ leadId, onClose }: ShareFormProps) => {
   const onTransferLead = async () => {
     if (!selectedUserId) return;
     setLoading(true);
-    const transferedLead = await leadUpdateByIdTransfer(leadId, selectedUserId);
-    if (transferedLead.success) {
-      toast.success(transferedLead.success);
-      socket?.emit(
-        "lead-transfered",
-        selectedUserId,
-        user?.name,
-        leadId,
-        transferedLead.success
-      );
-      userEmitter.emit("leadTransfered", leadId);
-      onClose();
-    } else toast.error(transferedLead.error);
+    const transferedLead = await onLeadUpdateByIdTransfer(
+      leadId,
+      selectedUserId
+    );
+    if (transferedLead) {
+      onTransferFormClose();
+    }
     setLoading(false);
   };
 
   return (
-    <div>
-      <p className="text-md text-muted-foreground font-bold">
-        Select a agent to transfer the lead to
-      </p>
-      <UserSelect userId={selectedUserId} setUserId={setSelectedUserId} />
-      <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-        <Button onClick={onClose} type="button" variant="outline">
-          Cancel
-        </Button>
-        <Button disabled={loading || !selectedUserId} onClick={onTransferLead}>
-          Transfer
-        </Button>
-      </div>
-    </div>
+    <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormClose}>
+      <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
+        <h3 className="text-2xl font-semibold py-2">
+          Transfer Lead{" - "}
+          <span className="text-primary">{leadFullName}</span>
+        </h3>
+        <p className="text-md text-muted-foreground font-bold">
+          Select a agent to transfer the lead to
+        </p>
+        <UserSelect userId={selectedUserId} setUserId={setSelectedUserId} />
+        <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+          <Button onClick={onTransferFormClose} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button
+            disabled={loading || !selectedUserId}
+            onClick={onTransferLead}
+          >
+            Transfer
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -17,6 +17,14 @@ export const LeadStatusClient = () => {
   const { leadStatus, setLeadStatus } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Status"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+    />
+  );
 
   useEffect(() => {
     const onUserLeadStatusDeleted = (id: string) => {
@@ -77,25 +85,13 @@ export const LeadStatusClient = () => {
           data={leadStatus?.filter((e) => e.type != "default")!}
           headers
           title="Lead Status"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Status"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Lead Status</h4>
-            <ListGridTopMenu
-              text="Add Status"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-            />
+            {topMenu}
           </div>
           <LeadStatusList
             leadStatus={leadStatus?.filter((e) => e.type != "default")!}

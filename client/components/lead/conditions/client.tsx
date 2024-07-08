@@ -27,30 +27,20 @@ export const ConditionsClient = ({
   const user = useCurrentUser();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Condition"
+      setIsDrawerOpen={setIsDrawerOpen}
+      isList={isList}
+      setIsList={setIsList}
+      size={size}
+    />
+  );
 
   const conditionsQuery = useQuery<FullLeadMedicalCondition[]>({
     queryKey: ["leadConditions", `lead-${leadId}`],
     queryFn: () => leadConditionsGetAllById(leadId),
   });
-
-  // const onConditionDeleted = (id: string) => {
-  //   setConditions((conditions) => conditions.filter((e) => e.id !== id));
-  // };
-  // const onConditionInserted = (newCondition: FullLeadMedicalCondition) => {
-  //   const existing = conditions.find((e) => e.id == newCondition.id);
-  //   if (existing == undefined)
-  //     setConditions((conditions) => [...conditions, newCondition]);
-  // };
-
-  // useEffect(() => {
-  //   setConditions(initConditions);
-  //   userEmitter.on("conditionInserted", (info) => onConditionInserted(info));
-  //   userEmitter.on("conditionDeleted", (id) => onConditionDeleted(id));
-  //   return () => {
-  //     userEmitter.off("conditionInserted", (info) => onConditionInserted(info));
-  //     userEmitter.off("conditionDeleted", (id) => onConditionDeleted(id));
-  //   };
-  // }, [initConditions]);
 
   return (
     <>
@@ -66,14 +56,7 @@ export const ConditionsClient = ({
           columns={columns}
           data={conditionsQuery.data || []}
           headers
-          topMenu={
-            <ListGridTopMenu
-              text="Add Condition"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
@@ -84,13 +67,7 @@ export const ConditionsClient = ({
             )}
           >
             <h4 className="text-2xl font-semibold">Medical Conditions</h4>
-            <ListGridTopMenu
-              text="Add Condition"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-              size={size}
-            />
+            {topMenu}
           </div>
           <ConditionsList conditions={conditionsQuery.data || []} size={size} />
         </>

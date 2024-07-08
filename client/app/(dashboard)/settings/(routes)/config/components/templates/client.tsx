@@ -19,6 +19,14 @@ export const UserTemplateClient = () => {
   const { templates, setTemplates } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Template"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+    />
+  );
 
   useEffect(() => {
     const onTemplateDeleted = (id: string) => {
@@ -64,25 +72,13 @@ export const UserTemplateClient = () => {
           data={templates!}
           headers
           title="Templates"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Template"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Templates</h4>
-            <ListGridTopMenu
-              text="Add Template"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-            />
+            {topMenu}
           </div>
           <TemplateList templates={templates!} />
         </>

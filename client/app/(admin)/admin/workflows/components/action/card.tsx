@@ -1,27 +1,25 @@
 "use client";
 import { useState } from "react";
 import { Trash } from "lucide-react";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 
 import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
-import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+
 import { AlertModal } from "@/components/modals/alert";
+import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
+import { DrawerRight } from "@/components/custom/drawer-right";
 
 import { ActionForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";
-import { workflowNodeDeleteById } from "@/actions/workflow/default";
 
 export const ActionCard = ({
   action,
 }: {
   action: WorkflowActionSchemaType;
 }) => {
-  const queryClient = useQueryClient();
-
+  const { onDeleteWorkflowDefaultById } = useWorkFlowDefaultData();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -29,15 +27,7 @@ export const ActionCard = ({
   const onDeleteAction = async () => {
     if (!action.id) return;
     setLoading(true);
-    const deletedAction = await workflowNodeDeleteById(action.id);
-
-    if (deletedAction.success) {
-      queryClient.invalidateQueries({
-        queryKey: ["adminActions"],
-      });
-      toast.success(deletedAction.success);
-    } else toast.error(deletedAction.error);
-
+    onDeleteWorkflowDefaultById(action.id, "action");
     setAlertOpen(false);
     setLoading(false);
   };

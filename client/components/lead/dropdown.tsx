@@ -42,8 +42,8 @@ import {
 import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { ShareForm } from "./forms/share-form";
 import { TransferForm } from "./forms/transfer-form";
+import { useLead } from "@/hooks/use-lead";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -53,15 +53,13 @@ type DropDownProps = {
 export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
   const role = useCurrentRole();
   const { onFormOpen } = useAppointment();
+  const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } = useLead();
   const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
-
-  const [intakeDialogOpen, setIntakeDialogOpen] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const isAssistant = role == "ASSISTANT";
+  const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
   const onTitanToggle = async () => {
     setAutoChat((state) => !state);
@@ -101,40 +99,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
         loading={loading}
         height="h-auto"
       />
-      <Dialog open={intakeDialogOpen} onOpenChange={setIntakeDialogOpen}>
-        <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
-          <h3 className="text-2xl font-semibold py-2">
-            Intake Form -{" "}
-            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
-          </h3>
-          <IntakeForm leadId={lead.id} />
-        </DialogContent>
-      </Dialog>
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
-          <h3 className="text-2xl font-semibold py-2">
-            Share Lead -{" "}
-            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
-          </h3>
-          <ShareForm
-            leadId={lead.id}
-            sharedUser={lead.sharedUser}
-            onClose={() => setShareDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-      <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
-        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
-          <h3 className="text-2xl font-semibold py-2">
-            Transfer Lead{" - "}
-            <span className="text-primary">{`${lead.firstName} ${lead.lastName}`}</span>
-          </h3>
-          <TransferForm
-            leadId={lead.id}
-            onClose={() => setTransferDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="rounded-full" size="icon">
@@ -154,21 +119,23 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
             <>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => setShareDialogOpen(true)}
+                onClick={() =>
+                  onShareFormOpen(lead.id, leadFullName, lead.sharedUser!)
+                }
               >
                 <Share size={16} />
                 Share Lead
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => setTransferDialogOpen(true)}
+                onClick={() => onTransferFormOpen(lead.id, leadFullName)}
               >
                 <Reply size={16} />
                 Transfer Lead
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => setIntakeDialogOpen(true)}
+                onClick={() => onIntakeFormOpen(lead.id, leadFullName)}
               >
                 <BookText size={16} />
                 Intake Form

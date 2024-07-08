@@ -19,6 +19,15 @@ export const LicenseClient = () => {
   const { licenses, setLicenses } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add License"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+      showButton={user?.role != "ASSISTANT"}
+    />
+  );
 
   useEffect(() => {
     const onLicenseDeleted = (id: string) => {
@@ -64,27 +73,13 @@ export const LicenseClient = () => {
           data={licenses!}
           headers
           title="Licences"
-          topMenu={
-            <ListGridTopMenu
-              text="Add License"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-              showButton={user?.role != "ASSISTANT"}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Licenses</h4>
-            <ListGridTopMenu
-              text="Add License"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-              showButton={user?.role != "ASSISTANT"}
-            />
+            {topMenu}
           </div>
           <LicenseList licenses={licenses!} />
         </>

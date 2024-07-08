@@ -1,9 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
-import { WorkflowDefaultNode } from "@prisma/client";
 
 import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -12,16 +9,16 @@ import { columns } from "./columns";
 import { TriggerForm } from "./form";
 import { TriggerList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { workflowNodesGetAllByType } from "@/actions/workflow/default";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 
 export const TriggersClient = () => {
   const user = useCurrentUser();
+
+  const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
-  const { data: triggers, isFetching } = useQuery<WorkflowDefaultNode[]>({
-    queryKey: ["adminTriggers"],
-    queryFn: () => workflowNodesGetAllByType("trigger"),
-  });
+
+  const { data, isFetching } = onGetWorkflowDefaultNodesByType("trigger");
   const topMenu = (
     <ListGridTopMenu
       text="Add Trigger"
@@ -45,7 +42,7 @@ export const TriggersClient = () => {
         <SkeletonWrapper isLoading={isFetching}>
           <DataTable
             columns={columns}
-            data={triggers || []}
+            data={data || []}
             headers
             title=""
             topMenu={topMenu}
@@ -57,7 +54,7 @@ export const TriggersClient = () => {
             <h4 className="text-2xl font-semibold">Triggers</h4>
             {topMenu}
           </div>
-          <TriggerList triggers={triggers || []} isLoading={isFetching} />
+          <TriggerList triggers={data || []} isLoading={isFetching} />
         </>
       )}
     </>

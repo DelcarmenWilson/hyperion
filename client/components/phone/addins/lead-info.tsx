@@ -26,20 +26,8 @@ import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 
-type PhoneLeadInfo = {
-  open?: boolean;
-};
-
-export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
-  const { lead } = usePhone();
-  const [isOpen, setIsOpen] = useState(open);
-
-  useEffect(() => {
-    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
-    return () => {
-      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
-    };
-  }, []);
+export const PhoneLeadInfo = () => {
+  const { lead, isLeadInfoOpen } = usePhone();
 
   if (!lead) {
     return null;
@@ -90,13 +78,19 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     updatedAt: lead.policy?.updatedAt!,
   };
   return (
-    <div className="flex flex-1 justify-start relative overflow-hidden">
+    <div className="flex flex-1 justify-start relative overflow-hidden ">
       <div
         className={cn(
-          "flex  flex-col relative transition-[right] -right-full ease-in-out duration-500 h-full w-0 overflow-hidden",
-          isOpen && "w-full right-0"
+          "flex  flex-col bg-white relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
+          isLeadInfoOpen && "w-full right-0"
         )}
       >
+        {/* <div
+        className={cn(
+          "flex flex-col bg-white relative opacity-0 transition-[opacity] ease-in-out duration-500 h-full w-full overflow-hidden",
+          isOpen && "opacity-100"
+        )}
+      > */}
         <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
           <LeadHeader lead={lead} />
           <TabsList className="flex w-full h-auto">

@@ -16,6 +16,15 @@ export const HyperionLeadClient = ({ initLeads }: HyperionLeadClientProps) => {
   const user = useCurrentUser();
   const [leads, setLeads] = useState(initLeads);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Lead"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={() => {}}
+      showButton={false}
+    />
+  );
 
   useEffect(() => {
     const onHyperionLeadDeleted = (id: string) => {
@@ -65,27 +74,13 @@ export const HyperionLeadClient = ({ initLeads }: HyperionLeadClientProps) => {
           data={leads!}
           headers
           title="Hyperion Lead"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Lead"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={() => {}}
-              showButton={false}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">HyperionLeads</h4>
-            <ListGridTopMenu
-              text="Add Lead"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={() => {}}
-              showButton={false}
-            />
+            {topMenu}
           </div>
           <HyperionLeadList leads={leads!} />
         </>

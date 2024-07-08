@@ -132,7 +132,7 @@ export const nodeInsert = async (
   //Check if trigger already exist inside the workflow
   if (type == "trigger") {
     const exisitingTrigger = await db.workflowNode.findFirst({
-      where: {  workflowId, type },
+      where: { workflowId, type },
     });
 
     if (exisitingTrigger) {
@@ -141,14 +141,14 @@ export const nodeInsert = async (
   }
   //Find the corresponding node
   const node = await db.workflowDefaultNode.findUnique({ where: { id: id } });
-  if(!node){
+  if (!node) {
     return { error: "Node does not exists!" };
   }
 
   //Create a new node
   const newNode = await db.workflowNode.create({
     data: {
-       workflowId,
+      workflowId,
       data: node.data as JsonObject,
       type,
       position: {
@@ -215,13 +215,15 @@ export const edgeInsert = async (edge: WorkflowEdgeSchemaType) => {
     return { error: "Invalid fields!" };
   }
 
-  const {workflowId, source, target,animated,type } = validatedFields.data;
-
-  //Create a new node
-  //TODO - need to add the tpe and change worflowid casing
+  const { workflowId, source, target, animated, type } = validatedFields.data;
+//Create new edge
   const newEdge = await db.workflowNodeEdge.create({
     data: {
-      workflowId, source, target,animated,type:type||""
+      workflowId,
+      source,
+      target,
+      animated,
+      type: type || "",
     },
   });
 
@@ -238,12 +240,16 @@ export const edgeUpdateById = async (edge: WorkflowEdgeSchemaType) => {
     return { error: "Invalid fields!" };
   }
 
-  const {id, source, target,animated,type } = validatedFields.data;
+  const { id, source, target, animated, type } = validatedFields.data;
 
-  //Update Edge 
-  const updatedEdge = await db.workflowNodeEdge.update({where:{id},
+  //Update Edge
+  const updatedEdge = await db.workflowNodeEdge.update({
+    where: { id },
     data: {
-       source, target,animated,type:type||""
+      source,
+      target,
+      animated,
+      type: type || "",
     },
   });
 

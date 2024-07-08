@@ -33,11 +33,17 @@ import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 
 export const PhoneInModal = () => {
   const user = useCurrentUser();
-  const { isPhoneInOpen, onPhoneInClose, onPhoneInOpen, onSetLead, lead } =
-    usePhone();
+  const {
+    isPhoneInOpen,
+    onPhoneInClose,
+    onPhoneInOpen,
+    onSetLead,
+    lead,
+    isLeadInfoOpen,
+    onToggleLeadInfo,
+  } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const [agent, setAgent] = useState("");
-  const [showLeadInfo, setShowLeadInfo] = useState(false);
 
   // PHONE VARIABLES
   // const [call, setInComingCall] = useState<Connection>();
@@ -163,7 +169,7 @@ export const PhoneInModal = () => {
           <div
             className={cn(
               "flex justify-center w-full h-full overflow-hidden pointer-events-none p-10",
-              showLeadInfo ? "" : "items-center"
+              isLeadInfoOpen ? "" : "items-center"
             )}
           >
             <Transition.Child
@@ -178,13 +184,13 @@ export const PhoneInModal = () => {
               <Dialog.Panel
                 className={cn(
                   "pointer-events-auto w-screen",
-                  showLeadInfo ? " min-w-full" : "w-[400px]"
+                  isLeadInfoOpen ? " min-w-full" : "w-[400px]"
                 )}
               >
-                {showLeadInfo ? (
+                {isLeadInfoOpen ? (
                   <div className="relative flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
                     <div className=" flex gap-2 absolute top-2 left-2 z-50">
-                      <Button size="sm" onClick={() => setShowLeadInfo(false)}>
+                      <Button size="sm" onClick={onToggleLeadInfo}>
                         Return to call
                       </Button>
                       {!onCall ? (
@@ -217,7 +223,7 @@ export const PhoneInModal = () => {
                         </Button>
                       )}
                     </div>
-                    <PhoneLeadInfo open={true} />
+                    <PhoneLeadInfo />
                   </div>
                 ) : (
                   <div className="flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
@@ -231,7 +237,7 @@ export const PhoneInModal = () => {
                         <Button
                           size="sm"
                           className="ml-auto"
-                          onClick={() => setShowLeadInfo(true)}
+                          onClick={onToggleLeadInfo}
                         >
                           Show Lead
                         </Button>

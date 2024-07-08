@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -35,7 +33,6 @@ import {
   TRIGGER_CATEGORIES_SELECT,
   TRIGGER_ICONS_SELECT,
 } from "@/constants/react-flow/workflow";
-import { triggerInsert, triggerUpdateById } from "@/actions/workflow/default";
 
 type TriggerFormProps = {
   trigger?: WorkflowTriggerSchemaType;
@@ -43,7 +40,8 @@ type TriggerFormProps = {
 };
 
 export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
-  const queryClient = useQueryClient();
+  const { onInsertWorkflowDefaultNode, onUpdateWorkflowDefaultNode } =
+    useWorkFlowDefaultData();
   const [loading, setLoading] = useState(false);
   const btnText = trigger ? "Update" : "Create";
   const data: WorkflowTriggerDataSchemaType = {
@@ -70,29 +68,16 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
     form.reset();
     onClose();
   };
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["adminTriggers"],
-    });
-  };
 
   const onSubmit = async (values: WorkflowTriggerSchemaType) => {
     setLoading(true);
 
     if (trigger) {
-      const updatedTrigger = await triggerUpdateById(values);
-      if (updatedTrigger.success) {
-        invalidate();
-        toast.success("Trigger Updated!");
-        onCancel();
-      } else toast.error(updatedTrigger.error);
+      const updatedTrigger = await onUpdateWorkflowDefaultNode(values);
+      if (updatedTrigger) onCancel();
     } else {
-      const InsertedTrigger = await triggerInsert(values);
-      if (InsertedTrigger.success) {
-        invalidate();
-        toast.success("Trigger created!");
-        onCancel();
-      } else toast.error(InsertedTrigger.error);
+      const insertedTrigger = await onInsertWorkflowDefaultNode(values);
+      if (insertedTrigger) onCancel();
     }
     setLoading(false);
   };

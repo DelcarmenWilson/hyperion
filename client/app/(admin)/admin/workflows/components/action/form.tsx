@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -31,7 +29,6 @@ import {
 } from "@/components/ui/select";
 
 import { Textarea } from "@/components/ui/textarea";
-import { actionInsert, actionUpdateById } from "@/actions/workflow/default";
 //TODO - need to change this to react off the actions ts
 import {
   TRIGGER_CATEGORIES_SELECT,
@@ -44,7 +41,8 @@ type ActionFormProps = {
 };
 
 export const ActionForm = ({ action, onClose }: ActionFormProps) => {
-  const queryClient = useQueryClient();
+  const { onInsertWorkflowDefaultNode, onUpdateWorkflowDefaultNode } =
+    useWorkFlowDefaultData();
   const [loading, setLoading] = useState(false);
   const btnText = action ? "Update" : "Create";
   const data: WorkflowActionDataSchemaType = {
@@ -71,29 +69,16 @@ export const ActionForm = ({ action, onClose }: ActionFormProps) => {
     form.reset();
     onClose();
   };
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["adminActions"],
-    });
-  };
 
   const onSubmit = async (values: WorkflowActionSchemaType) => {
     setLoading(true);
 
     if (action) {
-      const updatedAction = await actionUpdateById(values);
-      if (updatedAction.success) {
-        invalidate();
-        toast.success("Action Updated!");
-        onCancel();
-      } else toast.error(updatedAction.error);
+      const updatedAction = await onUpdateWorkflowDefaultNode(values);
+      if (updatedAction) onCancel();
     } else {
-      const InsertedAction = await actionInsert(values);
-      if (InsertedAction.success) {
-        invalidate();
-        toast.success("Action created!");
-        onCancel();
-      } else toast.error(InsertedAction.error);
+      const insertedAction = await onInsertWorkflowDefaultNode(values);
+      if (insertedAction) onCancel();
     }
     setLoading(false);
   };

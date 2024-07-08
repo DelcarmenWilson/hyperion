@@ -9,7 +9,7 @@ import { EdgeForm } from "./edge/form";
 
 export const WorkFlowDrawer = () => {
   const { isDrawerOpen, onDrawerClose, type } = useWorkFlow();
-  const title = capitalize(type as string).replace("list", "");
+  const title = type ? capitalize(type).replace("list", "") : "";
   return (
     <DrawerRight
       title={`Workflow ${title}s`}

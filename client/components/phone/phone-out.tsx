@@ -41,11 +41,12 @@ export const PhoneOut = () => {
     setParticipants,
     isOnCall,
     setOnCall,
+    isLeadInfoOpen,
+    onToggleLeadInfo,
   } = usePhone();
   const { phone, call, setCall } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [isConferenceOpen, setIsConferenceOpen] = useState(false);
 
   const [empty, setEmpty] = useState(false);
@@ -183,12 +184,12 @@ export const PhoneOut = () => {
     setDisabled(false);
   };
 
-  const toggleLeadInfo = () => {
-    setIsOpen((open) => {
-      userEmitter.emit("toggleLeadInfo", !open);
-      return !open;
-    });
-  };
+  // const toggleLeadInfo = () => {
+  //   setIsOpen((open) => {
+  //     userEmitter.emit("toggleLeadInfo", !open);
+  //     return !open;
+  //   });
+  // };
   //CONFERENCES AND PARTICIPANTS
   const onGetParticipants = async (
     conferenceId: string,
@@ -235,7 +236,7 @@ export const PhoneOut = () => {
     onCheckNumber();
     startupClient();
     if (!lead) return;
-    toggleLeadInfo();
+    onToggleLeadInfo();
   }, []);
 
   useEffect(() => {
@@ -278,9 +279,9 @@ export const PhoneOut = () => {
             {lead && (
               <Button
                 ref={btnLeadRef}
-                variant={isOpen ? "default" : "outlineprimary"}
+                variant={isLeadInfoOpen ? "default" : "outlineprimary"}
                 size="sm"
-                onClick={toggleLeadInfo}
+                onClick={onToggleLeadInfo}
               >
                 LEAD INFO
               </Button>

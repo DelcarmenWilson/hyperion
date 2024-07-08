@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
-import { toast } from "sonner";
 import Link from "next/link";
-import { useQueryClient } from "@tanstack/react-query";
+import { useWorkFlowData } from "@/hooks/use-workflow";
 
 import { Workflow } from "@prisma/client";
 
@@ -13,28 +12,19 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { WorkflowForm } from "./form";
 
-import { workFlowDeleteById } from "@/actions/workflow";
 import { formatDate } from "@/formulas/dates";
 
 export const WorkflowCard = ({ initWorkFlow }: { initWorkFlow: Workflow }) => {
-  const queryClient = useQueryClient();
+  const { onDeleteWorkflowById } = useWorkFlowData();
 
   const [workflow, setWorkFlow] = useState(initWorkFlow);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteWorkFlow = async () => {
+  const onDeleteWorkFlow = () => {
     setLoading(true);
-    const deletedWorkFlow = await workFlowDeleteById(workflow.id);
-
-    if (deletedWorkFlow.success) {
-      queryClient.invalidateQueries({
-        queryKey: ["agentWorkFlows"],
-      });
-      toast.success(deletedWorkFlow.success);
-    } else toast.error(deletedWorkFlow.error);
-
+    onDeleteWorkflowById(workflow.id);
     setAlertOpen(false);
     setLoading(false);
   };

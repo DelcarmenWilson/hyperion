@@ -10,6 +10,7 @@ import { TaskForm } from "./form";
 import { columns } from "./columns";
 import { TaskList } from "./list";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
+import { TopMenu } from "@/components/reusable/callhistory/top-menu";
 
 type TaskClientProps = {
   initTasks: Task[];
@@ -20,6 +21,14 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
   const [tasks, setTasks] = useState(initTasks);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="New Task"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+    />
+  );
   const onTaskCreated = (e?: Task) => {
     if (e) {
       setTasks((tasks) => {
@@ -38,29 +47,10 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
         <TaskForm onClose={onTaskCreated} />
       </DrawerRight>
       {isList ? (
-        <DataTable
-          columns={columns}
-          data={tasks}
-          headers
-          topMenu={
-            <ListGridTopMenu
-              text="New Task"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-            />
-          }
-        />
+        <DataTable columns={columns} data={tasks} headers topMenu={topMenu} />
       ) : (
         <>
-          <div className="p-2">
-            <ListGridTopMenu
-              text="New Task"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-            />
-          </div>
+          <div className="p-2">{topMenu}</div>
           <TaskList initTasks={tasks} />
         </>
       )}

@@ -7,22 +7,22 @@ import {
 } from "@/schemas/workflow/action";
 
 import {
-  WorkflowTriggerDataSchemaType,
   WorkflowTriggerSchema,
   WorkflowTriggerSchemaType,
 } from "@/schemas/workflow/trigger";
-import { Prisma } from "@prisma/client";
 
 //DATA
-export const workflowNodesGetAll = async () => {
-  const actions = await db.workflowDefaultNode.findMany();
-  return actions;
+export const workflowDefaultNodesGetAll = async () => {
+  const nodes = await db.workflowDefaultNode.findMany();
+  return nodes;
 };
-export const workflowNodesGetAllByType = async (type: "trigger" | "action") => {
+export const workflowDefaultNodesGetAllByType = async (
+  type: "trigger" | "action"
+) => {
   const nodes = await db.workflowDefaultNode.findMany({ where: { type } });
-  return nodes 
+  return nodes;
 };
-export const workflowNodeGetById = async (id: string) => {
+export const workflowDefaultNodeGetById = async (id: string) => {
   const user = await currentUser();
   if (!user) {
     return null;
@@ -35,45 +35,51 @@ export const workflowNodeGetById = async (id: string) => {
 };
 
 //ACTIONS
-export const workflowNodeDeleteById = async (id: string) => {
+export const workflowDefaultNodeDeleteById = async (id: string) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
   }
 
-  const existingTrigger = await db.workflowDefaultNode.findUnique({
+  const existingNode = await db.workflowDefaultNode.findUnique({
     where: { id },
   });
 
-  if (!existingTrigger) {
+  if (!existingNode) {
     return { error: "Node does not exists!!" };
   }
 
-  await db.workflowNode.delete({ where: { id: existingTrigger.id } });
+  await db.workflowDefaultNode.delete({ where: { id: existingNode.id } });
   return { success: "Node deleted!!" };
 };
-export const actionInsert = async (values: WorkflowActionSchemaType) => {
+export const workflowDefaultNodeInsert = async (
+  values: WorkflowTriggerSchemaType | WorkflowActionSchemaType
+) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
   }
 
-  const validatedFields = WorkflowActionSchema.safeParse(values);
+  const validatedFields =
+    values.type == "action"
+      ? WorkflowActionSchema.safeParse(values)
+      : WorkflowTriggerSchema.safeParse(values);
+
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
 
   const { name, data, type, category } = validatedFields.data;
 
-  const existingAction = await db.workflowDefaultNode.findFirst({
-    where: { name },
+  const existingNode = await db.workflowDefaultNode.findFirst({
+    where: { name, type },
   });
 
-  if (existingAction) {
-    return { error: "Action with this name already exists!!" };
+  if (existingNode) {
+    return { error: `${type} with this name already exists!!` };
   }
 
-  const newAction = await db.workflowDefaultNode.create({
+  const insertedNode = await db.workflowDefaultNode.create({
     data: {
       name,
       data,
@@ -81,28 +87,34 @@ export const actionInsert = async (values: WorkflowActionSchemaType) => {
       category,
     },
   });
-  return { success: newAction };
+  return { success: insertedNode };
 };
 
-export const actionUpdateById = async (values: WorkflowActionSchemaType) => {
+export const workflowDefaultNodeUpdateById = async (
+  values: WorkflowTriggerSchemaType | WorkflowActionSchemaType
+) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
   }
 
-  const validatedFields = WorkflowActionSchema.safeParse(values);
+  const validatedFields =
+    values.type == "action"
+      ? WorkflowActionSchema.safeParse(values)
+      : WorkflowTriggerSchema.safeParse(values);
+
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
 
   const { id, name, type, data } = validatedFields.data;
 
-  const existingAction = await db.workflowDefaultNode.findUnique({
+  const existingNode = await db.workflowDefaultNode.findUnique({
     where: { id },
   });
 
-  if (!existingAction) {
-    return { error: "Action does not exists!!" };
+  if (!existingNode) {
+    return { error: `${type} does not exists!!` };
   }
 
   const updatedAction = await db.workflowDefaultNode.update({
@@ -114,68 +126,4 @@ export const actionUpdateById = async (values: WorkflowActionSchemaType) => {
     },
   });
   return { success: updatedAction };
-};
-
-export const triggerInsert = async (values: WorkflowTriggerSchemaType) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const validatedFields = WorkflowTriggerSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const { name, data, type, category } = validatedFields.data;
-
-  const existingTrigger = await db.workflowDefaultNode.findFirst({
-    where: { name },
-  });
-
-  if (existingTrigger) {
-    return { error: "Trigger with this name already exists!!" };
-  }
-
-  const newTrigger = await db.workflowDefaultNode.create({
-    data: {
-      name,
-      data,
-      type,
-      category,
-    },
-  });
-  return { success: newTrigger };
-};
-
-export const triggerUpdateById = async (values: WorkflowTriggerSchemaType) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const validatedFields = WorkflowTriggerSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const { id, name, type, data } = validatedFields.data;
-
-  const existingTrigger = await db.workflowDefaultNode.findUnique({
-    where: { id },
-  });
-
-  if (!existingTrigger) {
-    return { error: "Trigger does not exists!!" };
-  }
-
-  const updatedTrigger = await db.workflowDefaultNode.update({
-    where: { id },
-    data: {
-      name,
-      type,
-      data,
-    },
-  });
-  return { success: updatedTrigger };
 };

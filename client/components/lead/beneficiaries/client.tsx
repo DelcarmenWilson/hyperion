@@ -28,6 +28,15 @@ export const BeneficiariesClient = ({
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Beneficiary"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+      size={size}
+    />
+  );
 
   const beneficiariesQuery = useQuery<LeadBeneficiary[]>({
     queryKey: ["leadBeneficiaries", `lead-${leadId}`],
@@ -52,14 +61,7 @@ export const BeneficiariesClient = ({
             columns={columns}
             data={beneficiariesQuery.data || []}
             headers
-            topMenu={
-              <ListGridTopMenu
-                text="Add Beneficiary"
-                isList={isList}
-                setIsList={setIsList}
-                setIsDrawerOpen={setIsDrawerOpen}
-              />
-            }
+            topMenu={topMenu}
           />
         </SkeletonWrapper>
       ) : (
@@ -71,13 +73,7 @@ export const BeneficiariesClient = ({
             )}
           >
             <h4 className="text-2xl font-semibold">Beneficiaries</h4>
-            <ListGridTopMenu
-              text="Add Beneficiary"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-              size={size}
-            />
+            {topMenu}
           </div>
           <SkeletonWrapper isLoading={beneficiariesQuery.isFetching}>
             <BeneficiariesList

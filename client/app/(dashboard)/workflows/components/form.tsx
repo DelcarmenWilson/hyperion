@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
+import { useWorkFlowData } from "@/hooks/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -23,7 +21,6 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { workFlowInsert, workFlowUpdateById } from "@/actions/workflow";
 
 type WorkflowFormProps = {
   workflow?: Workflow;
@@ -31,7 +28,7 @@ type WorkflowFormProps = {
 };
 
 export const WorkflowForm = ({ workflow, onClose }: WorkflowFormProps) => {
-  const queryClient = useQueryClient();
+  const { onInsertWorkflow, onUpdateWorkflow } = useWorkFlowData();
   const [loading, setLoading] = useState(false);
   const btnText = workflow ? "Update" : "Create";
 
@@ -49,29 +46,15 @@ export const WorkflowForm = ({ workflow, onClose }: WorkflowFormProps) => {
     form.reset();
     onClose();
   };
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["agentWorkFlows"],
-    });
-  };
 
   const onSubmit = async (values: WorkFlowSchemaType) => {
     setLoading(true);
-
     if (workflow) {
-      const updatedWorkFlow = await workFlowUpdateById(values);
-      if (updatedWorkFlow.success) {
-        invalidate();
-        toast.success("WorkFlow Updated!");
-        onCancel();
-      } else toast.error(updatedWorkFlow.error);
+      const updatedWorkFlow = await onUpdateWorkflow(values);
+      if (updatedWorkFlow) onCancel();
     } else {
-      const InsertedWorkFlow = await workFlowInsert(values);
-      if (InsertedWorkFlow.success) {
-        invalidate();
-        toast.success("WorkFlow created!");
-        onCancel();
-      } else toast.error(InsertedWorkFlow.error);
+      const insertedWorkFlow = await onInsertWorkflow(values);
+      if (insertedWorkFlow) onCancel();
     }
     setLoading(false);
   };

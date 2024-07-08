@@ -1,27 +1,25 @@
 "use client";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Trash } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 
 import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
-import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
+import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
+import { DrawerRight } from "@/components/custom/drawer-right";
 
 import { TriggerForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";
-import { workflowNodeDeleteById } from "@/actions/workflow/default";
 
 export const TriggerCard = ({
   trigger,
 }: {
   trigger: WorkflowTriggerSchemaType;
 }) => {
-  const queryClient = useQueryClient();
+  const { onDeleteWorkflowDefaultById } = useWorkFlowDefaultData();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -29,15 +27,7 @@ export const TriggerCard = ({
   const onDeleteTrigger = async () => {
     if (!trigger.id) return;
     setLoading(true);
-    const deletedTrigger = await workflowNodeDeleteById(trigger.id);
-
-    if (deletedTrigger.success) {
-      queryClient.invalidateQueries({
-        queryKey: ["adminTriggers"],
-      });
-      toast.success(deletedTrigger.success);
-    } else toast.error(deletedTrigger.error);
-
+    onDeleteWorkflowDefaultById(trigger.id, "trigger");
     setAlertOpen(false);
     setLoading(false);
   };

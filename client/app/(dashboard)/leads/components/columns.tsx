@@ -15,12 +15,29 @@ import { LeadDropDown } from "@/components/lead/dropdown";
 import { PolicyInfoClient } from "@/components/lead/policy-info";
 import { MainInfoClient } from "@/components/lead/main-info";
 import { NotesForm } from "@/components/lead/forms/notes-form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
     id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => (
-      <div className="flex flex-col justify-center items-center gap-2">
+      <div className="relative flex-center gap-2 h-full">
+        <Checkbox
+          className="absolute -top-20 -left-1"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
         <LeadDropDown
           lead={row.original}
           conversation={row.original.conversation!}
@@ -30,6 +47,19 @@ export const columns: ColumnDef<FullLead>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   id: "select",
+  //   cell: ({ row }) => (
+  //     <div className="flex flex-col justify-center items-center gap-2">
+  //       <LeadDropDown
+  //         lead={row.original}
+  //         conversation={row.original.conversation!}
+  //       />
+  //     </div>
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     id: "firstName",
     accessorKey: "firstName",
@@ -72,7 +102,7 @@ export const columns: ColumnDef<FullLead>[] = [
   },
   {
     accessorKey: "mainInfo",
-    header: "",
+    header: "Info",
     cell: ({ row }) => {
       const leadMainInfo: LeadMainSchemaType = {
         id: row.original.id,
@@ -89,17 +119,19 @@ export const columns: ColumnDef<FullLead>[] = [
         textCode: row.original.textCode!,
       };
       return (
-        <MainInfoClient
-          info={leadMainInfo}
-          noConvo={!!row.original.conversation?.id}
-          showInfo
-        />
+        <div className="w-[400px]">
+          <MainInfoClient
+            info={leadMainInfo}
+            noConvo={!!row.original.conversation?.id}
+            showInfo
+          />
+        </div>
       );
     },
   },
   {
     accessorKey: "notes",
-    header: "",
+    header: "Notes",
     cell: ({ row }) => (
       <NotesForm
         leadId={row.original.id}

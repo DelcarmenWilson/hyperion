@@ -6,6 +6,9 @@ import { DataTable } from "@/components/tables/data-table";
 
 import { columns } from "./columns";
 import axios from "axios";
+import { ShareForm } from "@/components/lead/forms/share-form";
+import { TransferForm } from "@/components/lead/forms/transfer-form";
+import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
 
 export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
   const [leads, setLeads] = useState(initLeads);
@@ -28,21 +31,28 @@ export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
     userEmitter.on("leadTransferedRecieved", onSetNewLead);
   }, []);
   return (
-    <DataTable
-      columns={columns}
-      data={leads}
-      hidden={{
-        firstName: false,
-        lastName: false,
-        cellPhone: false,
-        email: false,
-        status: false,
-        vendor: false,
-        state: false,
-      }}
-      placeHolder="Search First | Last | Phone | Email"
-      paginationType="advance"
-      filterType="lead"
-    />
+    <>
+      <ShareForm />
+      <TransferForm />
+      <IntakeForm />
+      <DataTable
+        columns={columns}
+        data={leads}
+        striped
+        hidden={{
+          firstName: false,
+          lastName: false,
+          cellPhone: false,
+          email: false,
+          status: false,
+          vendor: false,
+          state: false,
+        }}
+        headers
+        placeHolder="Search First | Last | Phone | Email"
+        paginationType="advance"
+        filterType="lead"
+      />
+    </>
   );
 };

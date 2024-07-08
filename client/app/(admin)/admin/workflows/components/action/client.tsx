@@ -1,9 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
-import { WorkflowDefaultNode } from "@prisma/client";
 
 import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -12,16 +9,15 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { columns } from "./columns";
 import { ActionForm } from "./form";
 import { ActionList } from "./list";
-import { workflowNodesGetAllByType } from "@/actions/workflow/default";
+import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 
 export const ActionsClient = () => {
   const user = useCurrentUser();
+  const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
-  const { data: actions, isFetching } = useQuery<WorkflowDefaultNode[] | []>({
-    queryKey: ["adminActions"],
-    queryFn: () => workflowNodesGetAllByType("action"),
-  });
+  const { data, isFetching } = onGetWorkflowDefaultNodesByType("action");
+
   const topMenu = (
     <ListGridTopMenu
       text="Add Action"
@@ -45,7 +41,7 @@ export const ActionsClient = () => {
         <SkeletonWrapper isLoading={isFetching}>
           <DataTable
             columns={columns}
-            data={actions || []}
+            data={data || []}
             headers
             title=""
             topMenu={topMenu}
@@ -57,7 +53,7 @@ export const ActionsClient = () => {
             <h4 className="text-2xl font-semibold">Actions</h4>
             {topMenu}
           </div>
-          <ActionList actions={actions || []} isLoading={isFetching} />
+          <ActionList actions={data || []} isLoading={isFetching} />
         </>
       )}
     </>

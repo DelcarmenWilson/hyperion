@@ -16,6 +16,15 @@ export const TeamClient = ({ intitTeams }: TeamClientProps) => {
   const user = useCurrentUser();
   const [teams, setTeams] = useState(intitTeams);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Team"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={() => {}}
+      showButton={false}
+    />
+  );
 
   useEffect(() => {
     const onTeamDeleted = (id: string) => {
@@ -53,27 +62,13 @@ export const TeamClient = ({ intitTeams }: TeamClientProps) => {
           data={teams!}
           headers
           title="Teams"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Team"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={() => {}}
-              showButton={false}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Teams</h4>
-            <ListGridTopMenu
-              text="Add Team"
-              setIsDrawerOpen={() => {}}
-              isList={isList}
-              setIsList={setIsList}
-              showButton={false}
-            />
+            {topMenu}
           </div>
           <TeamList teams={teams!} />
         </>

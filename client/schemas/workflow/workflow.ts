@@ -51,3 +51,4 @@ export const WorkflowEdgeSchema = z.object({
   type: z.optional(z.string()),
 });
 export type WorkflowEdgeSchemaType = z.infer<typeof WorkflowEdgeSchema>;
+

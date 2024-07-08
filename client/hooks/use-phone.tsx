@@ -30,6 +30,10 @@ type phoneStore = {
   onSetLeads: (e?: FullLead[]) => void;
   onSetIndex: (e: number) => void;
 
+  // LEADINFO
+  isLeadInfoOpen: boolean;
+  onToggleLeadInfo: () => void;
+
   //CONFERENCE
   conference?: TwilioShortConference;
   participants?: TwilioParticipant[];
@@ -44,7 +48,7 @@ type phoneStore = {
   setOnCall: (e: boolean) => void;
 };
 
-export const usePhone = create<phoneStore>((set) => ({
+export const usePhone = create<phoneStore>((set, get) => ({
   pipeIndex: 0,
   isPhoneInOpen: false,
   isPhoneDialerOpen: false,
@@ -63,7 +67,7 @@ export const usePhone = create<phoneStore>((set) => ({
   onPhoneOutOpen: (e, c) =>
     set({ isPhoneOutOpen: true, lead: e, conference: c }),
 
-  onPhoneOutClose: () => set({ isPhoneOutOpen: false }),
+  onPhoneOutClose: () => set({ isLeadInfoOpen: false, isPhoneOutOpen: false }),
 
   onCallOpen: (e, t = "call") =>
     set({ isCallOpen: true, call: e, callType: t }),
@@ -74,6 +78,10 @@ export const usePhone = create<phoneStore>((set) => ({
   onSetIndex: (e) => set({ pipeIndex: e }),
   setConference: (e) => set({ conference: e }),
   setParticipants: (e) => set({ participants: e }),
+  // LEADINFO
+  isLeadInfoOpen: false,
+  onToggleLeadInfo: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen }),
+  //SCRIPT
   showScript: false,
   onScriptOpen: () => set({ showScript: true }),
   onScriptClose: () => set({ showScript: false }),

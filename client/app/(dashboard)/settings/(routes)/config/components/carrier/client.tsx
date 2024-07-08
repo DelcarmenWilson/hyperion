@@ -17,6 +17,15 @@ export const CarrierClient = () => {
   const { carriers, setCarriers } = useGlobalContext();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Carrier"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+      showButton={user?.role != "ASSISTANT"}
+    />
+  );
 
   useEffect(() => {
     const onCarrierDeleted = (id: string) => {
@@ -66,27 +75,13 @@ export const CarrierClient = () => {
           data={carriers!}
           headers
           title="Carrier"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Carrier"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-              showButton={user?.role != "ASSISTANT"}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Carriers</h4>
-            <ListGridTopMenu
-              text="Add Carrier"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-              showButton={user?.role != "ASSISTANT"}
-            />
+            {topMenu}
           </div>
           <CarrierList carriers={carriers!} />
         </>

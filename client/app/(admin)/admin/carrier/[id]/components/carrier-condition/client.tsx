@@ -38,6 +38,15 @@ export const CarrierConditionClient = ({
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const topMenu = (
+    <ListGridTopMenu
+      text="Add Carrier Condition"
+      isList={isList}
+      setIsList={setIsList}
+      setIsDrawerOpen={setIsDrawerOpen}
+      showButton={user?.role != "ASSISTANT"}
+    />
+  );
 
   useEffect(() => {
     const onCarrierConditionDeleted = (conditionId: string) => {
@@ -126,27 +135,13 @@ export const CarrierConditionClient = ({
           data={carrierConditions!}
           headers
           title="Carrier Conditions"
-          topMenu={
-            <ListGridTopMenu
-              text="Add Carrier Condition"
-              isList={isList}
-              setIsList={setIsList}
-              setIsDrawerOpen={setIsDrawerOpen}
-              showButton={user?.role != "ASSISTANT"}
-            />
-          }
+          topMenu={topMenu}
         />
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
             <h4 className="text-2xl font-semibold">Grid Sheet</h4>
-            <ListGridTopMenu
-              text="Add Carrier Condition"
-              setIsDrawerOpen={setIsDrawerOpen}
-              isList={isList}
-              setIsList={setIsList}
-              showButton={user?.role != "ASSISTANT"}
-            />
+            {topMenu}
           </div>
           <CarrierConditionsList carrierConditions={carrierConditions!} />
         </>
