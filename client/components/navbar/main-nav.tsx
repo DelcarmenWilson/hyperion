@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 import { CoachNotification } from "../phone/coach-notification";
 import { TwilioShortConference } from "@/types";
-import { leadGetById } from "@/actions/lead";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;

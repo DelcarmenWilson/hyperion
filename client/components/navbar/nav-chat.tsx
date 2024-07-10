@@ -74,7 +74,7 @@ export const NavChat = () => {
     });
     // eslint-disable-next-line
   }, []);
-
+  if (user?.role != "ADMIN") return;
   return (
     <div>
       <audio

@@ -112,7 +112,7 @@ export const useLead = create<useLeadStore>((set) => ({
     }),
 }));
 
-export const useLeadActions = () => {
+export const useLeadActions = (onClose: () => void) => {
   const user = useCurrentUser();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -133,9 +133,13 @@ export const useLeadActions = () => {
         leadId,
         updatedShare.success
       );
-      return true;
+      console.log("lead-shared",
+        sharedUserId,
+        user?.name,
+        leadId,
+        updatedShare.success)
+            onClose();
     } else toast.error(updatedShare.error);
-    return false;
   };
 
   const onLeadUpdateByIdUnShare = async (
@@ -154,9 +158,8 @@ export const useLeadActions = () => {
         leadId,
         updatedShare.success
       );
-      return true;
+      onClose();
     } else toast.error(updatedShare.error);
-    return false;
   };
   //TRANSFER
   const onLeadUpdateByIdTransfer = async (
@@ -177,9 +180,8 @@ export const useLeadActions = () => {
       );
       userEmitter.emit("leadTransfered", leadId);
 
-      return true;
+      onClose();
     } else toast.error(transferedLead.error);
-    return false;
   };
 
   return {

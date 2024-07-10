@@ -16,24 +16,21 @@ export const ShareForm = () => {
     leadFullName,
     sharedUser,
   } = useLead();
-  const { onLeadUpdateByIdShare, onLeadUpdateByIdUnShare } = useLeadActions();
+  const { onLeadUpdateByIdShare, onLeadUpdateByIdUnShare } =
+    useLeadActions(onShareFormClose);
 
   const [selectedUserId, setSelectedUserId] = useState(sharedUser?.id);
   const [loading, setLoading] = useState(false);
 
-  const onShareLead = async () => {
+  const onShareLead = () => {
     setLoading(true);
-    const updatedLead = await onLeadUpdateByIdShare(leadId, selectedUserId);
-    if (updatedLead) onShareFormClose();
+    onLeadUpdateByIdShare(leadId, selectedUserId);
     setLoading(false);
   };
-  const onUnShareLead = async () => {
+  const onUnShareLead = () => {
     setLoading(true);
-    const updatedLead = await onLeadUpdateByIdUnShare(leadId);
-    if (updatedLead) {
-      setSelectedUserId(undefined);
-      onShareFormClose();
-    }
+    onLeadUpdateByIdUnShare(leadId);
+    setSelectedUserId(undefined);
     setLoading(false);
   };
 
