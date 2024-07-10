@@ -48,7 +48,7 @@ export const IntakeForm = () => {
     onIntakeDialogOpen,
     onIntakeDialogClose,
   } = useLead();
-  const { getIntakeData } = useLeadIntakeActions();
+  const { getIntakeData } = useLeadIntakeActions(leadId as string);
   const {
     personal,
     personalIsFectching,
@@ -64,7 +64,7 @@ export const IntakeForm = () => {
     policyIsFectching,
     medical,
     medicalIsFectching,
-  } = getIntakeData(leadId as string);
+  } = getIntakeData();
 
   if (!personal || !leadId) return null;
   return (

@@ -76,3 +76,11 @@ export const CarrierConditionSchema = z.object({
   condition:z.optional(z.string()),
 });
 export type CarrierConditionSchemaType = z.infer<typeof CarrierConditionSchema>;
+
+//PAGE UPDATE
+export const PageUpdateSchema = z.object({
+  id: z.optional(z.string()),
+  name: z.string().min(2, "*"),
+  description: z.string(),
+});
+export type PageUpdateSchemaType = z.infer<typeof PageUpdateSchema>;

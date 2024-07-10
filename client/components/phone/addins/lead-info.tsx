@@ -81,7 +81,7 @@ export const PhoneLeadInfo = () => {
     <div className="flex flex-1 justify-start relative overflow-hidden ">
       <div
         className={cn(
-          "flex  flex-col bg-white relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
+          "flex  flex-col bg-background relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
           isLeadInfoOpen && "w-full right-0"
         )}
       >
@@ -93,7 +93,7 @@ export const PhoneLeadInfo = () => {
       > */}
         <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
           <LeadHeader lead={lead} />
-          <TabsList className="flex w-full h-auto">
+          <TabsList className="flex w-full h-auto rounded-none">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
             <TabsTrigger value="conditions">Conditions</TabsTrigger>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useWorkFlow } from "@/hooks/use-workflow";
@@ -33,9 +34,9 @@ import { AlertModal } from "@/components/modals/alert";
 import { WorkFlowDrawer } from "@/components/react-flow/drawer";
 import { NodeSelect } from "@/components/react-flow/node-select";
 
-import { edgeInsert, nodesUpdateAllPosition } from "@/actions/workflow";
 import { WorkflowForm } from "@/components/react-flow/form";
-import { Pencil } from "lucide-react";
+import { NodeDrawer } from "@/components/react-flow/node-drawer";
+import { edgeInsert, nodesUpdateAllPosition } from "@/actions/workflow";
 
 export const WorkFlowClient = ({
   initWorkflow,
@@ -72,9 +73,14 @@ export const WorkFlowClient = ({
 
   const onChangeNodes = (e: NodeChange[]) => {
     const el = e[0];
-    if (el.type === "position") {
+    // console.log(el);
+    if (el.type === "position" && el.dragging) {
       setDisabled(false);
     }
+    // if (el.type == "select" && el.selected) {
+    //   const selectedNode = nodes.find((e) => e.id == el.id);
+    //   console.log(selectedNode);
+    // }
     onNodesChange(e);
   };
 
@@ -135,7 +141,7 @@ export const WorkFlowClient = ({
       />
 
       <div className="flex flex-col h-full">
-        <div className="flex justify-between items-center bg-white p-1 border-b">
+        <div className="flex justify-between items-center bg-background p-1 border-b">
           <Button
             onClick={() => {
               if (!disabled) setIsAlertOpen(true);
@@ -179,6 +185,7 @@ export const WorkFlowClient = ({
           >
             <Panel className="h-full" position="top-right">
               <WorkFlowDrawer />
+              <NodeDrawer />
             </Panel>
             <Background variant={BackgroundVariant.Cross} />
             <Controls />

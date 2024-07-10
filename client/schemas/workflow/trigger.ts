@@ -17,3 +17,17 @@ export const WorkflowTriggerSchema = z.object({
   updatedAt: z.date(),
 });
 export type WorkflowTriggerSchemaType = z.infer<typeof WorkflowTriggerSchema>;
+
+
+
+export const WorkflowBirthdayTriggerDataSchema = z.object({
+  name: z.string(),
+  text: z.string(),
+});
+export type WorkflowBirthdayTriggerDataSchemaType = z.infer<typeof WorkflowBirthdayTriggerDataSchema>;
+
+export const WorkflowBirthdayTriggerSchema = z.object({
+  id: z.optional(z.string()),
+  data: WorkflowTriggerDataSchema,
+});
+export type WorkflowBirthdayTriggerSchemaType = z.infer<typeof WorkflowTriggerSchema>;

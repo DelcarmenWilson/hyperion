@@ -1,20 +1,13 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import ReactDatePicker from "react-datepicker";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 import {
   IntakeMedicalInfoSchema,
   IntakeMedicalInfoSchemaType,
 } from "@/schemas/lead";
 
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Form,
   FormField,
@@ -23,8 +16,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import { leadUpdateByIdIntakeMedicalInfo } from "@/actions/lead/intake";
+import ReactDatePicker from "react-datepicker";
 
 type MedicalInfoFormProps = {
   leadId: string;
@@ -37,25 +29,11 @@ export const MedicalInfoForm = ({
   leadId,
   onClose,
 }: MedicalInfoFormProps) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadUpdateByIdIntakeMedicalInfo,
-    onSuccess: (result) => {
-      toast.success(result.success, {
-        id: "update-medical-info",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadInfo", `lead-${info.leadId}`, "leadIntakeMedicalInfo"],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { medicalIsPending, onMedicalSubmit } = useLeadIntakeActions(
+    leadId,
+    onClose,
+    info ? true : false
+  );
 
   const form = useForm<IntakeMedicalInfoSchemaType>({
     resolver: zodResolver(IntakeMedicalInfoSchema),
@@ -68,21 +46,12 @@ export const MedicalInfoForm = ({
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: IntakeMedicalInfoSchemaType) => {
-      const toastString = "Updating Medical Information...";
-      toast.loading(toastString, { id: "update-medical-info" });
-
-      mutate(values);
-    },
-    [mutate]
-  );
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 px-2 w-full h-full overflow-y-auto"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onMedicalSubmit)}
         >
           {/* HEALTH ISSUES */}
           <FormField
@@ -426,7 +395,7 @@ export const MedicalInfoForm = ({
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={medicalIsPending} type="submit">
               Update
             </Button>
           </div>

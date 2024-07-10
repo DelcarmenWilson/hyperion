@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useWorkFlow, useWorkFlowChanges } from "@/hooks/use-workflow";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,7 +36,7 @@ import { useStore } from "reactflow";
 import { Label } from "@/components/ui/label";
 
 export const EdgeForm = () => {
-  const { onUpdateEdge } = useWorkFlowChanges();
+  const { onUpdateEdge, onDeleteEdge } = useWorkFlowChanges();
   const { edge, onDrawerClose } = useWorkFlow();
   const [loading, setLoading] = useState(false);
   const nodes = useStore((s) => {
@@ -60,12 +59,11 @@ export const EdgeForm = () => {
   const onSubmit = (values: WorkflowEdgeSchemaType) => {
     setLoading(true);
     onUpdateEdge(values).then((success) => {
-      if (success) {
-        onDrawerClose();
-      }
+      if (success) onCancel();
     });
     setLoading(false);
   };
+
   return (
     <div className="w-full pt-4">
       {nodes.map((node, i) => (
@@ -155,6 +153,16 @@ export const EdgeForm = () => {
           </div>
         </form>
       </Form>
+      <Button
+        variant="destructive"
+        className="w-full mt-4"
+        onClick={() => {
+          onDeleteEdge(edge?.id);
+          onDrawerClose();
+        }}
+      >
+        Delete Edge
+      </Button>
     </div>
   );
 };

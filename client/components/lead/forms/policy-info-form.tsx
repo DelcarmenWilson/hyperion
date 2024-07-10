@@ -1,16 +1,11 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { userEmitter } from "@/lib/event-emmiter";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import ReactDatePicker from "react-datepicker";
+import { useGlobalContext } from "@/providers/global";
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -19,7 +14,8 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
+import { Input } from "@/components/ui/input";
+import ReactDatePicker from "react-datepicker";
 import {
   Select,
   SelectContent,
@@ -27,9 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { leadUpdateByIdPolicyInfo } from "@/actions/lead";
-import { useGlobalContext } from "@/providers/global";
 
 type PolicyInfoFormProps = {
   policyInfo: LeadPolicySchemaType;
@@ -41,38 +34,10 @@ export const PolicyInfoForm = ({
   onClose,
 }: PolicyInfoFormProps) => {
   const { carriers } = useGlobalContext();
-
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadUpdateByIdPolicyInfo,
-    onSuccess: (result) => {
-      if (result.success) {
-        userEmitter.emit("policyInfoUpdated", {
-          ...result.success,
-          startDate: result.success?.startDate || undefined,
-        });
-        userEmitter.emit("leadStatusChanged", result.success.leadId, "Sold");
-
-        toast.success("Lead Policy Info Updated", {
-          id: "update-policy-info",
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: [
-            "leadInfo",
-            `lead-${policyInfo.leadId}`,
-            "leadIntakePolicy",
-          ],
-        });
-
-        onClose();
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { policyIsPending, onPolicySubmit } = useLeadIntakeActions(
+    policyInfo.leadId,
+    onClose
+  );
 
   const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
@@ -85,21 +50,12 @@ export const PolicyInfoForm = ({
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: LeadPolicySchemaType) => {
-      const toastString = "Updating Policy Information...";
-      toast.loading(toastString, { id: "update-policy-info" });
-
-      mutate(values);
-    },
-    [mutate]
-  );
   return (
     <div className="h-full overflow-y-auto">
       <Form {...form}>
         <form
           className="space-y-2 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onPolicySubmit)}
         >
           <div className="grid grid-cols-2 gap-2">
             {/* CARRIER */}
@@ -111,7 +67,7 @@ export const PolicyInfoForm = ({
                   <FormLabel>Carrier</FormLabel>
                   <Select
                     name="ddlCarrier"
-                    disabled={isPending}
+                    disabled={policyIsPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -168,7 +124,7 @@ export const PolicyInfoForm = ({
                       {...field}
                       className="flex-1"
                       placeholder="7"
-                      disabled={isPending}
+                      disabled={policyIsPending}
                       autoComplete="coverageAmount"
                       type="number"
                     />
@@ -190,7 +146,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="EX2548745"
-                      disabled={isPending}
+                      disabled={policyIsPending}
                       autoComplete="policyNumber"
                       type="text"
                     />
@@ -207,7 +163,7 @@ export const PolicyInfoForm = ({
                   <FormLabel>Status</FormLabel>
                   <Select
                     name="ddlStatus"
-                    disabled={isPending}
+                    disabled={policyIsPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -287,7 +243,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="120"
-                      disabled={isPending}
+                      disabled={policyIsPending}
                       autoComplete="ap"
                       type="number"
                     />
@@ -306,7 +262,7 @@ export const PolicyInfoForm = ({
                     <Input
                       {...field}
                       placeholder="52"
-                      disabled={isPending}
+                      disabled={policyIsPending}
                       autoComplete="commision"
                       type="number"
                     />
@@ -320,7 +276,7 @@ export const PolicyInfoForm = ({
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={policyIsPending} type="submit">
               Update
             </Button>
           </div>

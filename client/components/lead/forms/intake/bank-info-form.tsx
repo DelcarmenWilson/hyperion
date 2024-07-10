@@ -1,17 +1,9 @@
-import { useCallback } from "react";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 
 import { IntakeBankInfoSchema, IntakeBankInfoSchemaType } from "@/schemas/lead";
-
-import ReactDatePicker from "react-datepicker";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -20,11 +12,8 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import {
-  leadInsertIntakeBankInfo,
-  leadUpdateByIdIntakeBankInfo,
-} from "@/actions/lead/intake";
+import { Input } from "@/components/ui/input";
+import ReactDatePicker from "react-datepicker";
 
 type BankInfoFormProps = {
   leadId: string;
@@ -33,25 +22,11 @@ type BankInfoFormProps = {
 };
 
 export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: info ? leadUpdateByIdIntakeBankInfo : leadInsertIntakeBankInfo,
-    onSuccess: (result) => {
-      toast.success(result.success, {
-        id: "insert-update-bank-info",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeBankInfo"],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { bankIsPending, onBankSubmit } = useLeadIntakeActions(
+    leadId,
+    onClose,
+    info ? true : false
+  );
 
   const form = useForm<IntakeBankInfoSchemaType>({
     resolver: zodResolver(IntakeBankInfoSchema),
@@ -68,24 +43,12 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: IntakeBankInfoSchemaType) => {
-      const toastString = info
-        ? "Updating Bank Information..."
-        : "Creating Bank Information...";
-      toast.loading(toastString, { id: "insert-update-bank-info" });
-
-      mutate(values);
-    },
-    [mutate, info]
-  );
-
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 px-2 w-full h-full overflow-hidden"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onBankSubmit)}
         >
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             {/* NAME */}
@@ -99,7 +62,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="Chase"
-                      disabled={isPending}
+                      disabled={bankIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -119,7 +82,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="00220025"
-                      disabled={isPending}
+                      disabled={bankIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -139,7 +102,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="0000054542"
-                      disabled={isPending}
+                      disabled={bankIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -178,7 +141,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder=""
-                      disabled={isPending}
+                      disabled={bankIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -210,7 +173,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={bankIsPending} type="submit">
               Update
             </Button>
           </div>

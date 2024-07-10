@@ -42,7 +42,7 @@ type ActionFormProps = {
 
 export const ActionForm = ({ action, onClose }: ActionFormProps) => {
   const { onInsertWorkflowDefaultNode, onUpdateWorkflowDefaultNode } =
-    useWorkFlowDefaultData();
+    useWorkFlowDefaultData(onClose);
   const [loading, setLoading] = useState(false);
   const btnText = action ? "Update" : "Create";
   const data: WorkflowActionDataSchemaType = {
@@ -70,15 +70,13 @@ export const ActionForm = ({ action, onClose }: ActionFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: WorkflowActionSchemaType) => {
+  const onSubmit = (values: WorkflowActionSchemaType) => {
     setLoading(true);
 
     if (action) {
-      const updatedAction = await onUpdateWorkflowDefaultNode(values);
-      if (updatedAction) onCancel();
+      onUpdateWorkflowDefaultNode(values);
     } else {
-      const insertedAction = await onInsertWorkflowDefaultNode(values);
-      if (insertedAction) onCancel();
+      onInsertWorkflowDefaultNode(values);
     }
     setLoading(false);
   };

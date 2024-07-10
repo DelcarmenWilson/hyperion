@@ -41,7 +41,7 @@ type TriggerFormProps = {
 
 export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
   const { onInsertWorkflowDefaultNode, onUpdateWorkflowDefaultNode } =
-    useWorkFlowDefaultData();
+    useWorkFlowDefaultData(onClose);
   const [loading, setLoading] = useState(false);
   const btnText = trigger ? "Update" : "Create";
   const data: WorkflowTriggerDataSchemaType = {
@@ -69,15 +69,13 @@ export const TriggerForm = ({ trigger, onClose }: TriggerFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: WorkflowTriggerSchemaType) => {
+  const onSubmit = (values: WorkflowTriggerSchemaType) => {
     setLoading(true);
 
     if (trigger) {
-      const updatedTrigger = await onUpdateWorkflowDefaultNode(values);
-      if (updatedTrigger) onCancel();
+      onUpdateWorkflowDefaultNode(values);
     } else {
-      const insertedTrigger = await onInsertWorkflowDefaultNode(values);
-      if (insertedTrigger) onCancel();
+      onInsertWorkflowDefaultNode(values);
     }
     setLoading(false);
   };
