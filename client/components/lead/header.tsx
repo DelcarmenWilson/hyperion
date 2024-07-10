@@ -25,7 +25,7 @@ export const LeadHeader = ({ lead }: LeadHeaderProps) => {
   }, []);
   return (
     <>
-      <div className="flex justify-center items-center gap-2 bg-secondary">
+      <div className="flex justify-center items-center gap-2 bg-secondary pt-2 mt-2">
         <h3 className="text-2xl  font-bold">
           <span className="text-primary">
             {lead.firstName} {lead.lastName}

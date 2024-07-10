@@ -2,6 +2,10 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
+  WorkflowBirthdayTriggerSchema,
+  WorkflowBirthdayTriggerSchemaType,
+} from "@/schemas/workflow/trigger";
+import {
   FullNodeSchemaType,
   WorkflowEdgeSchema,
   WorkflowEdgeSchemaType,
@@ -184,6 +188,29 @@ export const nodeDeleteById = async (id: string) => {
   return { success: "Node Deleted!!" };
 };
 
+export const nodeUpdateById = async (node: WorkflowBirthdayTriggerSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  const validatedFields = WorkflowBirthdayTriggerSchema.safeParse(node);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { id, data } = validatedFields.data;
+
+  //Update Node
+  const updatedNode = await db.workflowNode.update({
+    where: { id },
+    data: {
+      data,
+    },
+  });
+
+  return { success: updatedNode };
+};
+
 export const nodesUpdateAllPosition = async (nodes: FullNodeSchemaType[]) => {
   const user = await currentUser();
   if (!user) {
@@ -216,7 +243,7 @@ export const edgeInsert = async (edge: WorkflowEdgeSchemaType) => {
   }
 
   const { workflowId, source, target, animated, type } = validatedFields.data;
-//Create new edge
+  //Create new edge
   const newEdge = await db.workflowNodeEdge.create({
     data: {
       workflowId,

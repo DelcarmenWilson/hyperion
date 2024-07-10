@@ -1,19 +1,14 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import ReactDatePicker from "react-datepicker";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 
 import {
   IntakeDoctorInfoSchema,
   IntakeDoctorInfoSchemaType,
 } from "@/schemas/lead";
 
+import ReactDatePicker from "react-datepicker";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -22,11 +17,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import {
-  leadInsertIntakeDoctorInfo,
-  leadUpdateByIdIntakeDoctorInfo,
-} from "@/actions/lead/intake";
+import { Input } from "@/components/ui/input";
 
 type DoctorInfoFormProps = {
   leadId: string;
@@ -39,27 +30,11 @@ export const DoctorInfoForm = ({
   info,
   onClose,
 }: DoctorInfoFormProps) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: info
-      ? leadUpdateByIdIntakeDoctorInfo
-      : leadInsertIntakeDoctorInfo,
-    onSuccess: (result) => {
-      toast.success(result.success, {
-        id: "insert-update-doctor-info",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeDoctorInfo"],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { doctorIsPending, onDoctorSubmit } = useLeadIntakeActions(
+    leadId,
+    onClose,
+    info ? true : false
+  );
 
   const form = useForm<IntakeDoctorInfoSchemaType>({
     resolver: zodResolver(IntakeDoctorInfoSchema),
@@ -78,24 +53,12 @@ export const DoctorInfoForm = ({
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: IntakeDoctorInfoSchemaType) => {
-      const toastString = info
-        ? "Updating Doctor Information..."
-        : "Creating Doctor Information...";
-      toast.loading(toastString, { id: "insert-update-doctor-info" });
-
-      mutate(values);
-    },
-    [mutate, info]
-  );
-
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 px-2 w-full h-full overflow-hidden"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onDoctorSubmit)}
         >
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             {/* NAME */}
@@ -109,7 +72,7 @@ export const DoctorInfoForm = ({
                     <Input
                       {...field}
                       placeholder="Dr. Joe"
-                      disabled={isPending}
+                      disabled={doctorIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -129,7 +92,7 @@ export const DoctorInfoForm = ({
                     <Input
                       {...field}
                       placeholder="123 Main St"
-                      disabled={isPending}
+                      disabled={doctorIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -169,7 +132,7 @@ export const DoctorInfoForm = ({
                     <Input
                       {...field}
                       placeholder="555-555-5555"
-                      disabled={isPending}
+                      disabled={doctorIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -189,7 +152,7 @@ export const DoctorInfoForm = ({
                     <Input
                       {...field}
                       placeholder="Check Up"
-                      disabled={isPending}
+                      disabled={doctorIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -202,7 +165,7 @@ export const DoctorInfoForm = ({
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={doctorIsPending} type="submit">
               Update
             </Button>
           </div>

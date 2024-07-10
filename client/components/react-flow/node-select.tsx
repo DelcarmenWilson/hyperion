@@ -41,6 +41,7 @@ export const NodeSelect = ({
             <DropdownMenuShortcut>⇧⌘T</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
+            disabled={nodesCount == 0}
             onClick={() => onDrawerOpen(workFlowId, "actionlist")}
           >
             Action

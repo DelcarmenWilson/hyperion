@@ -8,6 +8,7 @@ import { CustomCircle, CustomRectangle } from "../handle/custom";
 const ActionComponent = ({
   data: { name },
   id,
+  type,
 }: NodeProps<{ name: string }>) => {
   const { onNodeDelete } = useWorkFlowChanges();
   return (
@@ -26,7 +27,7 @@ const ActionComponent = ({
         variant="simple"
         size="xxs"
         aria-label="Delete Trigger"
-        onClick={() => onNodeDelete(id)}
+        onClick={() => onNodeDelete(id, type)}
       >
         <X size={10} />
       </Button>

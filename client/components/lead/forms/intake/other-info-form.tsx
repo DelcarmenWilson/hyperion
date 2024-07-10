@@ -1,19 +1,13 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 
 import {
   IntakeOtherInfoSchema,
   IntakeOtherInfoSchemaType,
 } from "@/schemas/lead";
 
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -22,8 +16,8 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import { leadUpdateByIdIntakeOtherInfo } from "@/actions/lead/intake";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 type OtherInfoFormProps = {
   info: IntakeOtherInfoSchemaType;
@@ -31,25 +25,10 @@ type OtherInfoFormProps = {
 };
 
 export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadUpdateByIdIntakeOtherInfo,
-    onSuccess: (result) => {
-      toast.success(result.success, {
-        id: "update-other-info",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadInfo", `lead-${info.id}`, "leadIntakeOtherInfo"],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { otherIsPending, onOtherSubmit } = useLeadIntakeActions(
+    info.id,
+    onClose
+  );
 
   const form = useForm<IntakeOtherInfoSchemaType>({
     resolver: zodResolver(IntakeOtherInfoSchema),
@@ -62,21 +41,12 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: IntakeOtherInfoSchemaType) => {
-      const toastString = "Updating Other Information...";
-      toast.loading(toastString, { id: "update-other-info" });
-
-      mutate(values);
-    },
-    [mutate]
-  );
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 px-2 w-full h-full overflow-hidden"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onOtherSubmit)}
         >
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             {/* WEIGHT THIS YEAR */}
@@ -90,7 +60,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="180"
-                      disabled={isPending}
+                      disabled={otherIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -110,7 +80,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="175"
-                      disabled={isPending}
+                      disabled={otherIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -130,7 +100,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="5'3"
-                      disabled={isPending}
+                      disabled={otherIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -167,7 +137,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder="5"
-                      disabled={isPending}
+                      disabled={otherIsPending}
                       autoComplete="off"
                       type="number"
                     />
@@ -188,7 +158,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
                     <Input
                       {...field}
                       placeholder=""
-                      disabled={isPending}
+                      disabled={otherIsPending}
                       autoComplete="off"
                     />
                   </FormControl>
@@ -201,7 +171,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={otherIsPending} type="submit">
               Update
             </Button>
           </div>

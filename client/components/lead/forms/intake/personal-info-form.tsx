@@ -1,7 +1,3 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -40,7 +36,7 @@ import {
 import { MaritalStatus } from "@prisma/client";
 
 import { states } from "@/constants/states";
-import { leadUpdateByIdIntakePersonalInfo } from "@/actions/lead/intake";
+import { useLeadIntakeActions } from "@/hooks/use-lead";
 
 type PersonalInfoFormProps = {
   info: IntakePersonalInfoSchemaType;
@@ -48,25 +44,10 @@ type PersonalInfoFormProps = {
 };
 
 export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadUpdateByIdIntakePersonalInfo,
-    onSuccess: (result) => {
-      toast.success(result.success, {
-        id: "update-personal-info",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadInfo", `lead-${info.id}`, "leadIntakePersonalInfo"],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { personalIsPending, onPersonalSubmit } = useLeadIntakeActions(
+    info.id,
+    onClose
+  );
 
   const form = useForm<IntakePersonalInfoSchemaType>({
     resolver: zodResolver(IntakePersonalInfoSchema),
@@ -79,21 +60,12 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = useCallback(
-    (values: IntakePersonalInfoSchemaType) => {
-      const toastString = "Updating Personal Information...";
-      toast.loading(toastString, { id: "update-personal-info" });
-
-      mutate(values);
-    },
-    [mutate]
-  );
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col space-y-2 px-2 w-full h-full overflow-hidden"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onPersonalSubmit)}
         >
           <Tabs
             defaultValue="general"
@@ -122,7 +94,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="first name"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="firstName"
                         />
                       </FormControl>
@@ -142,7 +114,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="last name"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="lastName"
                         />
                       </FormControl>
@@ -163,7 +135,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <Input
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         autoComplete="email"
                         type="email"
                       />
@@ -183,7 +155,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <Input
                         {...field}
                         placeholder="123 main street"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         autoComplete="address"
                       />
                     </FormControl>
@@ -202,7 +174,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <Input
                         {...field}
                         placeholder="Queens"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         autoComplete="address-level2"
                       />
                     </FormControl>
@@ -219,7 +191,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <FormLabel>State</FormLabel>
                       <Select
                         name="ddlState"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         autoComplete="address-level2"
@@ -253,7 +225,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="15468"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="postal-code"
                         />
                       </FormControl>
@@ -272,7 +244,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="Dob"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           type="date"
                           autoComplete="DateOfBirth"
                         />
@@ -290,7 +262,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <FormLabel>Marital Status</FormLabel>
                       <Select
                         name="ddlMaritalStatus"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
@@ -330,7 +302,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="Country"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="off"
                         />
                       </FormControl>
@@ -348,7 +320,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <FormLabel>Birth State</FormLabel>
                       <Select
                         name="ddlBirthState"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         autoComplete="off"
@@ -389,7 +361,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="ssn"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="off"
                         />
 
@@ -442,7 +414,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <Input
                           {...field}
                           placeholder="DF584-8596-45"
-                          disabled={isPending}
+                          disabled={personalIsPending}
                           autoComplete="off"
                         />
                       </FormControl>
@@ -460,7 +432,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                       <FormLabel>State</FormLabel>
                       <Select
                         name="ddlLicenseState"
-                        disabled={isPending}
+                        disabled={personalIsPending}
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         autoComplete="off"
@@ -521,7 +493,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="work"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                           />
                         </FormControl>
@@ -541,7 +513,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="121 north st"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                           />
                         </FormControl>
@@ -561,7 +533,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="359-895-5625"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                           />
                         </FormControl>
@@ -582,7 +554,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="Sales"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                           />
                         </FormControl>
@@ -601,7 +573,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="experience"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                           />
                         </FormControl>
@@ -620,7 +592,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="50,000"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                             type="number"
                           />
@@ -641,7 +613,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                           <Input
                             {...field}
                             placeholder="150,000"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             autoComplete="off"
                             type="number"
                           />
@@ -669,7 +641,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <FormControl>
                           <Select
                             name="ddlState"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                             autoComplete="off"
@@ -706,7 +678,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                               <Input
                                 {...field}
                                 placeholder="gfh5868"
-                                disabled={isPending}
+                                disabled={personalIsPending}
                                 autoComplete="off"
                               />
                             </FormControl>
@@ -726,7 +698,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                               <Input
                                 {...field}
                                 placeholder="30"
-                                disabled={isPending}
+                                disabled={personalIsPending}
                                 autoComplete="off"
                               />
                             </FormControl>
@@ -748,7 +720,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                         <FormControl>
                           <Select
                             name="ddlParentsLiving"
-                            disabled={isPending}
+                            disabled={personalIsPending}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                             autoComplete="off"
@@ -781,7 +753,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                             <Input
                               {...field}
                               placeholder="cuase"
-                              disabled={isPending}
+                              disabled={personalIsPending}
                               autoComplete="off"
                             />
                           </FormControl>
@@ -802,7 +774,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                               <Input
                                 {...field}
                                 placeholder="60"
-                                disabled={isPending}
+                                disabled={personalIsPending}
                                 autoComplete="off"
                                 type="number"
                               />
@@ -823,7 +795,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
                               <Input
                                 {...field}
                                 placeholder="59"
-                                disabled={isPending}
+                                disabled={personalIsPending}
                                 autoComplete="off"
                                 type="number"
                               />
@@ -842,7 +814,7 @@ export const PersonalInfoForm = ({ info, onClose }: PersonalInfoFormProps) => {
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={personalIsPending} type="submit">
               Update
             </Button>
           </div>

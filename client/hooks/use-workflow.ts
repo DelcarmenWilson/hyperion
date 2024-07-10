@@ -1,4 +1,4 @@
-import { useReactFlow } from 'reactflow';
+import { useNodes, useReactFlow } from "reactflow";
 import { toast } from "sonner";
 import { create } from "zustand";
 import {
@@ -10,6 +10,7 @@ import {
   edgeUpdateById,
   nodeDeleteById,
   nodeInsert,
+  nodeUpdateById,
   workFlowDeleteById,
   workFlowInsert,
   workFlowsGetAllByUserId,
@@ -24,30 +25,42 @@ import {
   workflowDefaultNodeUpdateById,
 } from "@/actions/workflow/default";
 import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
-import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
+import { WorkflowBirthdayTriggerSchemaType, WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
 type TypeList = "actionlist" | "triggerlist" | "edge";
 type useWorkFlowStore = {
+  //DEFAULT NODES
   workflowId?: string;
   type?: TypeList;
   edge?: WorkflowEdgeSchemaType;
   isDrawerOpen: boolean;
   onDrawerOpen: (w: string, t: TypeList, e?: WorkflowEdgeSchemaType) => void;
   onDrawerClose: () => void;
+  //LIVE NODES
+  node?: WorkflowTriggerSchemaType;
+  isNodeDrawerOpen: boolean;
+  onNodeDrawerOpen: (n: WorkflowTriggerSchemaType) => void;
+  onNodeDrawerClose: () => void;
 };
 
-export const useWorkFlow = create<useWorkFlowStore>((set) => ({ 
+export const useWorkFlow = create<useWorkFlowStore>((set) => ({
+  //DEFAULT NODES
   isDrawerOpen: false,
   onDrawerOpen: (w, t, e) =>
     set({ workflowId: w, type: t, edge: e, isDrawerOpen: true }),
   onDrawerClose: () => set({ isDrawerOpen: false }),
+  //LIVE NODES
+  isNodeDrawerOpen: false,
+  onNodeDrawerOpen: (w) => set({ node: w, isNodeDrawerOpen: true }),
+  onNodeDrawerClose: () => set({ isNodeDrawerOpen: false }),
 }));
 
-export const useWorkFlowChanges = () => {
+export const useWorkFlowChanges = (onClose?: () => void) => {
   const { setEdges, setNodes } = useReactFlow();
-
+const nodes= useNodes()
   //EDGES
-  const onDeleteEdge = async (id: string) => {
+  const onDeleteEdge = async (id?: string) => {
+    if (!id) return;
     const deletedEdge = await edgeDeleteById(id);
     if (deletedEdge.success)
       setEdges((eds) => eds.filter((edge) => edge.id != id));
@@ -78,11 +91,29 @@ export const useWorkFlowChanges = () => {
     } else toast.error(insertedNode.error);
     return false;
   };
-  const onNodeDelete = async (id: string) => {
+  const onNodeDelete = async (id: string,type:string) => {
+    if(type=="trigger"&& nodes.length>1){
+      toast.error("Please delete the actions first")
+      return}
     const deletedNode = await nodeDeleteById(id);
     if (deletedNode.success)
       setNodes((prevNodes) => prevNodes.filter((e) => e.id != id));
     else toast.error(deletedNode.error);
+  };
+  const onNodeUpdate = async (values: WorkflowBirthdayTriggerSchemaType) => {
+    const updatedNode = await nodeUpdateById(values);
+    if (updatedNode.success) {
+      setNodes((prevNodes) =>
+        // prevNodes.filter((e) => e.id != id)
+        prevNodes.map((prevNodes) => {
+          if (prevNodes.id === values.id) {
+            prevNodes = { ...prevNodes, ...values };
+          }
+          return prevNodes;
+        })
+      );
+      if (onClose) onClose();
+    } else toast.error(updatedNode.error);
   };
 
   return {
@@ -90,10 +121,11 @@ export const useWorkFlowChanges = () => {
     onUpdateEdge,
     onNodeInsert,
     onNodeDelete,
+    onNodeUpdate,
   };
 };
 
-export const useWorkFlowDefaultData = () => {
+export const useWorkFlowDefaultData = (onClose?: () => void) => {
   const queryClient = useQueryClient();
   const invalidate = (key: string) => {
     queryClient.invalidateQueries({
@@ -125,9 +157,8 @@ export const useWorkFlowDefaultData = () => {
     if (insertedNode.success) {
       invalidate(values.type);
       toast.success(`${values.type} created!`);
-      return true;
+      if(onClose)onClose()
     } else toast.error(insertedNode.error);
-    return false;
   };
   const onUpdateWorkflowDefaultNode = async (
     values: WorkflowActionSchemaType | WorkflowTriggerSchemaType
@@ -136,9 +167,8 @@ export const useWorkFlowDefaultData = () => {
     if (updatedNode.success) {
       invalidate(values.type);
       toast.success(`${values.type} updated!`);
-      return true;
+      if (onClose) onClose();
     } else toast.error(updatedNode.error);
-    return false;
   };
 
   return {
