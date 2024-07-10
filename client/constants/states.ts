@@ -111,14 +111,6 @@ export const states: StateType[] = [
     website:"https://www.sircon.com/landingPages/states/georgia/content.jsp",
   },
   {
-    state: "Iowa",
-    abv: "IA",
-    offset: -6,
-    offTime: "UTC−06:00 CT",
-    zone: "US/Central",
-    website:"https://insurance.ehawaii.gov/hils/",
-  },
-  {
     state: "Idaho",
     abv: "ID",
     offset: -7,

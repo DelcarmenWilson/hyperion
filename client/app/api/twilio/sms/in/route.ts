@@ -21,18 +21,19 @@ export async function POST(req: Request) {
 
   const sms: TwilioSms = formatObject(body);
 
-  //Find the agent with this personal numner - from number
+  //Find the agent with this personal number - from number
   const agent = await db.notificationSettings.findFirst({
     where: { phoneNumber: sms.from },
   });
+  const agentNumber = await db.phoneNumber.findFirst({
+    where: { phone: sms.to },
+  });
   if (agent) {
     // Check the to number
-    const agentNumber = await db.phoneNumber.findFirst({
-      where: { phone: sms.to,agentId:agent.userId },
-    });
+    
 
-    // if from number nad to number bothe belong to the agent
-    if (agentNumber) {
+    // if from number and to number both belong to the agent
+    if (agentNumber?.agentId==agent.userId) {
       //Start Agent to Lead Message Process
       await forwardTextToLead(sms, agent.userId);
       return new NextResponse(null, { status: 200 });
@@ -45,6 +46,7 @@ export async function POST(req: Request) {
     where: {
       lead: {
         cellPhone: sms.from,
+        userId:agentNumber?.agentId!
       },
     },
     include: { lead: true },

@@ -8,7 +8,7 @@ import { UserSelect } from "@/components/user/select";
 export const TransferForm = () => {
   const { isTransferFormOpen, onTransferFormClose, leadId, leadFullName } =
     useLead();
-  const { onLeadUpdateByIdTransfer } = useLeadActions();
+  const { onLeadUpdateByIdTransfer } = useLeadActions(onTransferFormClose);
 
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>(
     undefined
@@ -16,15 +16,8 @@ export const TransferForm = () => {
   const [loading, setLoading] = useState(false);
 
   const onTransferLead = async () => {
-    if (!selectedUserId) return;
     setLoading(true);
-    const transferedLead = await onLeadUpdateByIdTransfer(
-      leadId,
-      selectedUserId
-    );
-    if (transferedLead) {
-      onTransferFormClose();
-    }
+    onLeadUpdateByIdTransfer(leadId, selectedUserId);
     setLoading(false);
   };
 

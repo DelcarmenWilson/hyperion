@@ -915,7 +915,7 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
   //MINE Feed
   await feedInsert( `You transfered ${lead.firstName}'s information to ${transferendLead?.firstName}`,"",user.id,true)
   //Next Agent Feed
-  await feedInsert( `${user.name} transfered ${lead.firstName}'s information to you`,`/leads/${lead.id}`,transferendLead?.id as string)
+  await feedInsert( `${user.name} transfered ${lead.firstName}'s information to you`,`/leads/${lead.id}`,transferendLead?.userId as string)
 
   return {
     success: transferendLead.firstName,
