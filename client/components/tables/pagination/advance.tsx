@@ -85,7 +85,7 @@ export function AdvancePagination<TData>({
               ))}
             </SelectContent>
           </Select>
-          <p className="text-sm font-medium">Got to Page</p>
+          <p className="text-sm font-medium">Go to Page</p>
           <Input
             value={pageNumber}
             onChange={(e) => setPageNumber(e.target.value)}

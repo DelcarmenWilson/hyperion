@@ -1,18 +1,11 @@
-import { useState } from "react";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import {
-  PageUpdateSchema,
-  PageUpdateSchemaType,
-  QuoteSchema,
-  QuoteSchemaType,
-} from "@/schemas/admin";
+import { PageUpdateSchema, PageUpdateSchemaType } from "@/schemas/admin";
+
 import {
   Form,
   FormField,
@@ -23,16 +16,11 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
-import { adminQuoteInsert } from "@/actions/admin/quote";
-import { PageUpdate } from "@prisma/client";
-import { pageUpdateInsert } from "@/actions/page-update";
 
-export const UpdateForm = ({
-  onClose,
-}: {
-  onClose?: (e?: PageUpdate) => void;
-}) => {
-  const [loading, setLoading] = useState(false);
+import { useAdminData } from "@/hooks/use-admin";
+
+export const UpdateForm = ({ onClose }: { onClose: () => void }) => {
+  const { loading, onPageUpdatedInsert } = useAdminData(onClose);
 
   const form = useForm<PageUpdateSchemaType>({
     resolver: zodResolver(PageUpdateSchema),
@@ -50,22 +38,12 @@ export const UpdateForm = ({
     }
   };
 
-  const onSubmit = async (values: PageUpdateSchemaType) => {
-    setLoading(true);
-    const insertedUpdate = await pageUpdateInsert(values);
-    if (insertedUpdate.success) {
-      form.reset();
-      if (onClose) onClose(insertedUpdate.success);
-      toast.success("Update created!");
-    } else toast.error(insertedUpdate.error);
-    setLoading(false);
-  };
   return (
     <div>
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onPageUpdatedInsert)}
         >
           <div className="flex flex-col gap-2">
             {/* NAME */}

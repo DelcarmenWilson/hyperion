@@ -13,7 +13,6 @@ export const adminMedicalConditionsGetAll = async () => {
     const conditions = await db.medicalCondition.findMany({
       orderBy: { name: "asc" },
     });
-    console.log(conditions);
     return conditions;
   } catch (error) {
     return [];

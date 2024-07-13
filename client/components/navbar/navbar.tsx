@@ -18,8 +18,10 @@ import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
 import { useChat } from "@/hooks/use-chat";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
+  const user = useCurrentUser();
   const { collapsed, onToggleCollapse } = useSidebar((state) => state);
   const { onPhoneOutOpen, isOnCall, lead } = usePhone();
   const { isChatOpen, onChatOpen } = useChat();
@@ -51,15 +53,21 @@ const NavBar = ({ showPhone = true }: { showPhone?: boolean }) => {
         </div>
         {showPhone && (
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            {/* messages list */}
             <NavMessages />
+            {/*srini- Agent chat */}
             <NavChat />
-            <Button
-              variant={isChatOpen ? "default" : "outline"}
-              size="icon"
-              onClick={onChatOpen}
-            >
-              <MessageSquareDot size={15} />
-            </Button>
+            {/* srini- online chat button */}
+            {user?.role == "ADMIN" && (
+              <Button
+                variant={isChatOpen ? "default" : "outline"}
+                size="icon"
+                onClick={onChatOpen}
+              >
+                <MessageSquareDot size={15} />
+              </Button>
+            )}
+
             <MasterSwitch />
             <Button asChild>
               <Link

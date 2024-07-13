@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
@@ -8,6 +8,8 @@ import { create } from "zustand";
 import { LeadBeneficiary, User } from "@prisma/client";
 
 import {
+  leadUpdateByIdAssistantAdd,
+  leadUpdateByIdAssistantRemove,
   leadUpdateByIdPolicyInfo,
   leadUpdateByIdShare,
   leadUpdateByIdTransfer,
@@ -49,8 +51,8 @@ type DialogType =
 type useLeadStore = {
   leadId?: string;
   leadFullName?: string;
-  sharedUser?: User | null;
   // SHARE
+  initUser?: User | null;
   isShareFormOpen: boolean;
   onShareFormOpen: (l: string, n: string, u: User) => void;
   onShareFormClose: () => void;
@@ -58,6 +60,10 @@ type useLeadStore = {
   isTransferFormOpen: boolean;
   onTransferFormOpen: (l: string, n: string) => void;
   onTransferFormClose: () => void;
+  //ASSISTANT
+  isAssistantFormOpen: boolean;
+  onAssistantFormOpen: (l: string,n:string, u?: User) => void;
+  onAssistantFormClose: () => void;
   //INTAKE FORM
   isIntakeFormOpen: boolean;
   onIntakeFormOpen: (l: string, n: string) => void;
@@ -72,12 +78,12 @@ export const useLead = create<useLeadStore>((set) => ({
   //SHARE
   isShareFormOpen: false,
   onShareFormOpen: (l, n, u) =>
-    set({ leadId: l, leadFullName: n, sharedUser: u, isShareFormOpen: true }),
+    set({ leadId: l, leadFullName: n, initUser: u, isShareFormOpen: true }),
   onShareFormClose: () =>
     set({
       leadId: "",
       leadFullName: "",
-      sharedUser: null,
+      initUser: null,
       isShareFormOpen: false,
     }),
   //TRANSFER
@@ -88,6 +94,16 @@ export const useLead = create<useLeadStore>((set) => ({
     set({
       leadId: "",
       isTransferFormOpen: false,
+    }),
+
+    //ASSISTANT
+    isAssistantFormOpen: false,
+     onAssistantFormOpen: (l, n,u?) =>
+    set({ leadId: l, leadFullName: n,initUser: u, isAssistantFormOpen: true }),
+     onAssistantFormClose: () =>
+    set({
+      leadId: "",
+      isAssistantFormOpen: false,
     }),
   //INTAKE
   isIntakeFormOpen: false,
@@ -112,82 +128,120 @@ export const useLead = create<useLeadStore>((set) => ({
     }),
 }));
 
-export const useLeadActions = (onClose: () => void) => {
+export const useLeadActions = (
+  onClose: () => void,
+  leadId?: string,
+  uId?: string
+) => {
   const user = useCurrentUser();
   const { socket } = useContext(SocketContext).SocketState;
-
+  const [userId, setUserId] = useState(uId);
+  const [loading, setLoading] = useState(false);
   //SHARING
-  const onLeadUpdateByIdShare = async (
-    leadId?: string,
-    sharedUserId?: string
-  ) => {
-    if (!leadId || !sharedUserId) return;
-    const updatedShare = await leadUpdateByIdShare(leadId, sharedUserId);
+  const onLeadUpdateByIdShare = async () => {
+    if (!leadId || !userId) return;
+    setLoading(true);
+    const updatedShare = await leadUpdateByIdShare(leadId, userId);
 
     if (updatedShare.success) {
-      toast.success(updatedShare.message);
       socket?.emit(
         "lead-shared",
-        sharedUserId,
+        userId,
         user?.name,
         leadId,
         updatedShare.success
       );
-      console.log("lead-shared",
-        sharedUserId,
-        user?.name,
-        leadId,
-        updatedShare.success)
-            onClose();
+      toast.success(updatedShare.message);
+      onClose();
     } else toast.error(updatedShare.error);
+
+    setLoading(false);
   };
 
-  const onLeadUpdateByIdUnShare = async (
-    leadId?: string,
-    sharedUserId?: string
-  ) => {
+  const onLeadUpdateByIdUnShare = async () => {
     if (!leadId) return;
+
+    setLoading(true);
     const updatedShare = await leadUpdateByIdUnShare(leadId);
 
     if (updatedShare.success) {
-      toast.success(updatedShare.message);
       socket?.emit(
         "lead-unshared",
-        sharedUserId,
+        userId,
         user?.name,
         leadId,
         updatedShare.success
       );
+      setUserId(undefined);
+      toast.success(updatedShare.message);
       onClose();
     } else toast.error(updatedShare.error);
+
+    setLoading(false);
   };
   //TRANSFER
-  const onLeadUpdateByIdTransfer = async (
-    leadId?: string,
-    selectedUserId?: string
-  ) => {
-    if (!leadId || !selectedUserId) return;
-    const transferedLead = await leadUpdateByIdTransfer(leadId, selectedUserId);
+  const onLeadUpdateByIdTransfer = async () => {
+    if (!leadId || !userId) return;
 
+    setLoading(true);
+    const transferedLead = await leadUpdateByIdTransfer(leadId, userId);
     if (transferedLead.success) {
-      toast.success(transferedLead.success);
       socket?.emit(
         "lead-transfered",
-        selectedUserId,
+        userId,
         user?.name,
         leadId,
         transferedLead.success
       );
       userEmitter.emit("leadTransfered", leadId);
 
+      toast.success(transferedLead.message);
       onClose();
     } else toast.error(transferedLead.error);
+    setLoading(false);
+  };
+
+  //ASSISTANT
+  const onLeadUpdateByIdAssistantAdd = async () => {
+    if (!leadId || !userId) return;
+    setLoading(true);
+    const updatedAssistant = await leadUpdateByIdAssistantAdd(leadId, userId);
+    if (updatedAssistant.success) {
+      socket?.emit(
+        "lead-assistant-added",
+        userId,
+        user?.name,
+        leadId,
+        updatedAssistant.success
+      );
+      toast.success(updatedAssistant.message);
+      onClose();
+    } else toast.error(updatedAssistant.error);
+
+    setLoading(false);
+  };
+
+  const onLeadUpdateByIdAssistantRemove = async () => {
+    if (!leadId) return;
+    setLoading(true);
+    const updatedAssistant = await leadUpdateByIdAssistantRemove(leadId);
+    if (updatedAssistant.success) {
+      toast.success(updatedAssistant.message);
+      onClose();
+    } else toast.error(updatedAssistant.error);
+
+    setLoading(false);
   };
 
   return {
+    userId,
+    setUserId,
+    loading,
     onLeadUpdateByIdShare,
     onLeadUpdateByIdUnShare,
     onLeadUpdateByIdTransfer,
+    onLeadUpdateByIdAssistantAdd,
+    onLeadUpdateByIdAssistantRemove,
   };
 };
 

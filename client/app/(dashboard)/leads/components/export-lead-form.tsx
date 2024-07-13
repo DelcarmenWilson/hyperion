@@ -62,6 +62,13 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
     if (onClose) onClose();
   };
 
+  const createFileName = (values: LeadExportSchemaType) => {
+    const date = `${formatDate(values.from)}_${formatDate(values.to)}`;
+    const state = values.state.toLowerCase() == "all" ? "" : `${values.state}`;
+    const vendor =
+      values.vendor.toLowerCase() == "all" ? "" : `${values.vendor}`;
+    return `${state} ${vendor} ${date}`;
+  };
   const onSubmit = async (values: LeadExportSchemaType) => {
     setLoading(true);
     axios.post("/api/leads/export", values).then((reponse) => {
@@ -70,7 +77,8 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
       if (!data.length) {
         toast.error("No data return");
       } else {
-        exportLeads(values.type, data);
+        const fileName = createFileName(values);
+        exportLeads(values.type, data, fileName);
 
         toast.success("Leads exported succesfully!");
       }

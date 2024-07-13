@@ -189,7 +189,6 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Work Flows",
     href: "/workflows",
     icon: Workflow,
-    assistant: true,
   },
   {
     title: "Account settings",

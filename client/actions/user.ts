@@ -37,19 +37,28 @@ import { notificationSettingsInsert } from "./notification-settings";
 import { scheduleInsert } from "./schedule";
 import { UserRole } from "@prisma/client";
 import { OnlineUser } from "@/types/user";
+import { getEntireDay } from "@/formulas/dates";
 
 //DATA
+export const usersGetAll = async () => {
+  try {
+    const users = await db.user.findMany({ orderBy: { firstName: "asc" } });
+    return users;
+  } catch {
+    return [];
+  }
+};
+
 export const usersGetAllChat = async () => {
   try {
     const user = await currentUser();
     if (!user) return [];
     const dbUsers = await db.user.findMany({
-      // where: { NOT: { role: "MASTER", id: user.id } },
-      where: { role: { not: "MASTER" }, id: { not: user.id } },
+      where: { role: { not: "MASTER" }, id: { not: user.id } },include:{calls:{where:{createdAt: { gte: getEntireDay().start } }}},
       orderBy: { firstName: "asc" },
     });
     const users: OnlineUser[] = dbUsers.map((user) => {
-      return { ...user, online: false };
+      return { ...user, online: false,calls:user.calls.length,time:256 };
     });
 
     return users;
@@ -649,7 +658,6 @@ export const userLicenseDeleteById = async (id: string) => {
   return { success: "License Deleted" };
 };
 export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
-  
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated" };
