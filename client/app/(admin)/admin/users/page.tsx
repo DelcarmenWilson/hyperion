@@ -3,7 +3,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
 import { UserTopMenu } from "./components/top-menu";
 
-import { usersGetAll } from "@/data/user";
+import { usersGetAll } from "@/actions/user";
 import { usersGetAllByRole } from "@/actions/user";
 import { teamsGetAll } from "@/data/team";
 

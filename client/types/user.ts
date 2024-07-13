@@ -21,6 +21,8 @@ export type ShortUser = User & {
   team?: Team | null;
 };
 export type OnlineUser = User & { 
+  calls:number,
+  time:number,
  online:boolean
 };
 

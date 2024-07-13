@@ -2,11 +2,16 @@ import React, { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 
-import NavBar from "@/components/navbar/navbar";
-import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
+import SocketContextComponent from "@/providers/socket-component";
+
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
+
+import NavBar from "@/components/navbar/navbar";
+import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
+import { ChatDrawer } from "@/components/chat/chat-drawer";
+
 import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/data/script";
 import {
@@ -25,8 +30,7 @@ import {
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
-import SocketContextComponent from "@/providers/socket-component";
-import { ChatDrawer } from "@/components/chat/drawer";
+// import { ChatDrawer } from "@/components/chat/drawer";
 
 export default async function DashBoardLayout({
   children,
@@ -85,6 +89,7 @@ export default async function DashBoardLayout({
                   </AppointmentContextComponent>
                 </PhoneContextProvider>
               </SocketContextComponent>
+              {/* <ChatDrawer /> */}
               <ChatDrawer />
             </GlobalContextProvider>
           </div>

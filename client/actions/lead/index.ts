@@ -19,10 +19,7 @@ import { userGetByAssistant } from "@/data/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import {
-  formatTimeZone,
-  getEntireDay,
-} from "@/formulas/dates";
+import { formatTimeZone, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { FullLead } from "@/types";
@@ -47,7 +44,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
       },
       include: {
-        conversations: {where:{agentId:userId}},
+        conversations: { where: { agentId: userId } },
         appointments: { where: { status: "scheduled" } },
         calls: true,
         activities: true,
@@ -67,7 +64,7 @@ export const leadsGetAllByAgentId = async (userId: string) => {
         )?.zone || "US/Eastern";
       return {
         ...lead,
-        conversation:lead.conversations[0],
+        conversation: lead.conversations[0],
         zone: timeZone,
         time: formatTimeZone(currentTime, timeZone),
       };
@@ -269,7 +266,6 @@ export const leadInsert = async (values: LeadSchemaType) => {
   const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
-
   let newLead;
   if (existingLead) {
     newLead = await db.leadDuplicates.create({
@@ -292,7 +288,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
   } else {
     ///Gnerate a new Text code
     let code = generateTextCode(firstName, lastName, cellPhone);
-   
+
     //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
     const exisitingCode = await db.lead.findFirst({
       where: { textCode: code },
@@ -530,7 +526,6 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     existingLead.notes as string
   );
 
-
   return { success: newNote };
 };
 
@@ -582,13 +577,12 @@ export const leadUpdateByIdType = async (leadId: string, type: string) => {
   return { success: "Lead type has been updated" };
 };
 
-
 export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   const validatedFields = LeadMainSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  
+
   const {
     id,
     firstName,
@@ -609,7 +603,6 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
   if (!existingLead) {
     return { error: "Lead does not exist" };
   }
-
 
   if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
@@ -658,7 +651,6 @@ export const leadUpdateByIdGeneralInfo = async (
     return { error: "Lead does not exist" };
   }
 
- 
   if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
@@ -751,33 +743,95 @@ export const leadUpdateByIdPolicyInfo = async (
 };
 
 //LEAD ASSISTANT SHARE AND TRANSFER
-export const leadUpdateByIdAsssitant = async (
+export const leadUpdateByIdAssistantAdd = async (
   id: string,
-  assistantId: string | null | undefined
+  assistantId: string
 ) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
   }
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) {
+    return { error: "Lead does not exists!!" };
+  }
+  if (lead.userId != user.id) {
+    return { error: "Unauthorized!!" };
+  }
+  const afUser = await db.user.findUnique({
+    where: { id: assistantId },
+  });
 
-  if (!assistantId) {
-    await db.lead.update({
-      where: { id },
-      data: {
-        assistant: { disconnect: true },
-      },
-    });
-    return { success: "Assistant has been removed from the lead!" };
+  if (!afUser) {
+    return { error: "User does not exists!!" };
+  }
+
+  await db.lead.update({
+    where: { id },
+    data: {
+      assistantId,
+    },
+  });
+
+  //MINE Feed
+  await feedInsert(
+    `You gave ${afUser.firstName} access to  ${lead.firstName}'s information`,
+    `/leads/${lead.id}`,
+    user.id,
+    true
+  );
+  //Next Agent Feed
+  await feedInsert(
+    `${user.name} gave you acces to ${lead.firstName}'s information`,
+    `/leads/${lead.id}`,
+    afUser.id
+  );
+
+  return {
+    success: lead.firstName,
+    message: `${afUser.firstName} now has access to  ${lead.firstName}'s information !`,
+  };
+};
+export const leadUpdateByIdAssistantRemove = async (id: string) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unathenticated" };
+  }
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) {
+    return { error: "Lead does not exists!!" };
+  }
+  if (lead.userId != user.id) {
+    return { error: "Unauthorized!!" };
+  }
+  const afUser = await db.user.findUnique({
+    where: { id: lead.assistantId as string },
+  });
+
+  if (!afUser) {
+    return { error: "User does not exists!!" };
   }
   await db.lead.update({
     where: { id },
     data: {
-      assistantId: assistantId,
+      assistant: { disconnect: true },
     },
   });
 
-  return { success: "Assistant has been added to the lead!" };
+  //MINE Feed
+  await feedInsert(
+    `You removed ${afUser.firstName} access to ${lead.firstName}'s information`,
+    `/leads/${lead.id}`,
+    user.id,
+    true
+  );
+  
+ return {
+    success: lead.firstName,
+    message: `${afUser.firstName} access to  ${lead.firstName}'s information has been revoked!`,
+  };
 };
 
 export const leadUpdateByIdShare = async (id: string, userId: string) => {
@@ -788,19 +842,17 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
   }
 
   const lead = await db.lead.findUnique({ where: { id } });
-  if (!lead) 
-    return { error: "Lead does not exists!!" };
+  if (!lead) return { error: "Lead does not exists!!" };
 
   if (lead.userId != user.id) {
     return { error: "Unauthorized!!" };
   }
 
- 
   const sharedUser = await db.user.findUnique({ where: { id: userId } });
   if (!sharedUser) {
     return { error: "User does not exists!!" };
   }
-  
+
   const sharedLead = await db.lead.update({
     where: { id },
     data: {
@@ -808,10 +860,19 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
     },
   });
 
-    //MINE Feed
-    feedInsert( `You shared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,"",user.id,true)
-    //Next Agent Feed
-    feedInsert( `${user.name} shared a lead: ${lead.firstName} with you`,`/leads/${lead.id}`,sharedUser?.id as string)
+  //MINE Feed
+  feedInsert(
+    `You shared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,
+    "",
+    user.id,
+    true
+  );
+  //Next Agent Feed
+  feedInsert(
+    `${user.name} shared a lead: ${lead.firstName} with you`,
+    `/leads/${lead.id}`,
+    sharedUser?.id as string
+  );
 
   return {
     success: sharedLead.firstName,
@@ -827,10 +888,12 @@ export const leadUpdateByIdUnShare = async (id: string) => {
 
   const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) {
-    return { error: "Lead does not exists!!" };}
+    return { error: "Lead does not exists!!" };
+  }
 
   if (lead.userId != user.id) {
-    return { error: "Unauthorized!!" };}
+    return { error: "Unauthorized!!" };
+  }
 
   const sharedUser = await db.user.findUnique({
     where: { id: lead.sharedUserId as string },
@@ -885,7 +948,7 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
   if (!tfUser) {
     return { error: "User does not exists!!" };
   }
-  
+
   const st = states.find(
     (e) =>
       e.state.toLowerCase() == lead.state.toLowerCase() ||
@@ -894,7 +957,6 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
   const defaultNumber = tfUser.phoneNumbers.find((e) => e.status == "Default");
   const phoneNumber = tfUser.phoneNumbers.find((e) => e.state == st?.abv);
 
-
   await db.lead.update({
     where: { id },
     data: {
@@ -902,7 +964,7 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
       assistant: { disconnect: true },
     },
   });
-    
+
   const transferendLead = await db.lead.update({
     where: { id },
     data: {
@@ -911,11 +973,19 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
     },
   });
 
-
   //MINE Feed
-  await feedInsert( `You transfered ${lead.firstName}'s information to ${transferendLead?.firstName}`,"",user.id,true)
+  await feedInsert(
+    `You transfered ${lead.firstName}'s information to ${tfUser.firstName}`,
+    "",
+    user.id,
+    true
+  );
   //Next Agent Feed
-  await feedInsert( `${user.name} transfered ${lead.firstName}'s information to you`,`/leads/${lead.id}`,transferendLead?.userId as string)
+  await feedInsert(
+    `${user.name} transfered ${lead.firstName}'s information to you`,
+    `/leads/${lead.id}`,
+    tfUser.id
+  );
 
   return {
     success: transferendLead.firstName,

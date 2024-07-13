@@ -16,6 +16,7 @@ import { DrawerRight } from "@/components/custom/drawer-right";
 import { ImportLeadsForm } from "./import/import-leads-form";
 import { NewLeadForm } from "./new-lead-form";
 import { ExportLeadForm } from "./export-lead-form";
+import Link from "next/link";
 
 export const TopMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +37,9 @@ export const TopMenu = () => {
       >
         <ExportLeadForm onClose={() => setIsExportOpen(false)} />
       </DrawerRight>
+      <Button size="sm">
+        <Link href="/duplicate-leads">DUPLICATE LEADS</Link>
+      </Button>
       <Dialog>
         <Tooltip>
           <TooltipTrigger asChild>

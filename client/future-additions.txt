@@ -24,8 +24,7 @@ LEAD STATUS
     - make the default let status stored in alaphabetical order     
 NEW LEAD FORM
     - phone numbers should be masked as we type
-SCEDULE
-    - add a posibility for multiple breaks
+    
 
 --s3 bucket working. concentrate on the rest of the commands
     -- seperate the lib into its own file    
@@ -154,4 +153,4 @@ Srini (Appointments)
 reset link
 `${domain}/new-password?token=${token}`;
 
-https://hperioncrm.com/new-password?token=bbb9d0cc-487a-4582-847d-71bf5bd746c9
+https://hperioncrm.com/new-password?token=1c60c877-c572-42f8-95bc-3706148ddb1a

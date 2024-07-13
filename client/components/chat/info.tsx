@@ -4,22 +4,23 @@ import { usePhone } from "@/hooks/use-phone";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserIcon } from "lucide-react";
+import { ArrowRight, UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatBody } from "./body";
 import { ChatForm } from "./form";
+import { Button } from "../ui/button";
 
 export const ChatInfo = () => {
-  const { isChatInfoOpen, onChatInfoOpen, onChatInfoClose, user } = useChat();
+  const { isChatInfoOpen, onChatInfoClose, user } = useChat();
 
   if (!user) return null;
   return (
     <div className="flex flex-1 justify-start relative overflow-hidden">
       <div
         className={cn(
-          "flex  flex-col relative transition-[right] -right-full ease-in-out duration-500 h-full w-0 overflow-hidden",
-          isChatInfoOpen && "w-full right-0"
+          "flex  flex-col relative transition-[right] -right-full bg-background ease-in-out duration-600 h-full w-full overflow-hidden",
+          isChatInfoOpen && "right-0"
         )}
       >
         <div className="flex gap-2 flex-col w-[500px] h-full p-4">
@@ -43,6 +44,11 @@ export const ChatInfo = () => {
 
               <span className=" lowercase"> ({user.role})</span>
             </p>
+
+            <Button size="sm" className="ml-auto" onClick={onChatInfoClose}>
+              <span className="sr-only">Close panel</span>
+              <ArrowRight size={16} />
+            </Button>
           </div>
 
           {/* BODY */}

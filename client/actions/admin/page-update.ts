@@ -6,7 +6,6 @@ import { PageUpdateSchema, PageUpdateSchemaType } from "@/schemas/admin";
 export const pageUpdatesGetAll = async()=> {
 const updates=await db.pageUpdate.findMany()
 return updates
-
 }
 
 export const pageUpdateInsert = async (values: PageUpdateSchemaType) => {

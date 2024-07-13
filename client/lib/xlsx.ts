@@ -3,17 +3,17 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { Lead } from "@prisma/client";
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { jsPDF } from "jspdf";
-export const exportLeads = (fileType: string, leads: Lead[]) => {
+export const exportLeads = (fileType: string, leads: Lead[],fileName?:string) => {
   switch (fileType.toLowerCase()) {
     case "excel":
-      exportLeadsToExcel(leads);
+      exportLeadsToExcel(leads,fileName);
       break;
     default:
-      exportLeadsToPdf(leads);
+      exportLeadsToPdf(leads,fileName);
       break;
   }
 };
-function exportLeadsToExcel(leads: Lead[]) {
+function exportLeadsToExcel(leads: Lead[],fileName?:string) {
   let columns: IJsonSheet[] = [
     {
       sheet: "Leads",
@@ -56,11 +56,11 @@ function exportLeadsToExcel(leads: Lead[]) {
     },
   ];
   let settings = {
-    fileName: "Hyperion Leads",
+    fileName: `Hyperion Lead ${fileName?` - ${fileName}`:"s"}`,
   };
   xlsx(columns, settings);
 }
-function exportLeadsToPdf(leads: Lead[]) {
+function exportLeadsToPdf(leads: Lead[],fileName?:string) {
   const doc = new jsPDF();
   doc.deletePage(1);
   leads.forEach((lead) => {
@@ -114,5 +114,5 @@ function exportLeadsToPdf(leads: Lead[]) {
         { lineHeightFactor: 1.25 }
       );
   });
-  doc.save("Hyperion_Leads.pdf");
+  doc.save(`Hyperion Lead ${fileName?` - ${fileName}`:"s"}.pdf`);
 }

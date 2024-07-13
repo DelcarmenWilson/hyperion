@@ -88,7 +88,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
       toast.error("Not Authorized");
       return;
     }
-    exportLeads(fileType, [lead]);
+    exportLeads(fileType, [lead], `${lead.firstName} ${lead.lastName}`);
   };
   return (
     <>

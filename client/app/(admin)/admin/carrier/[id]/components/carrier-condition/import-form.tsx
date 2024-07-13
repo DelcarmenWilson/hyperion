@@ -13,6 +13,7 @@ import { CarrierConditionSchemaType } from "@/schemas/admin";
 import { convertCarrierCondition } from "@/formulas/admin";
 import { Carrier, MedicalCondition } from "@prisma/client";
 import { adminCarrierConditionsImport } from "@/actions/admin/carrier-condition";
+import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
 
 export const ImportCarrierConditionsForm = ({
   carrier,
@@ -23,9 +24,10 @@ export const ImportCarrierConditionsForm = ({
   const [carrierConditions, setCarrierConditions] = useState<
     CarrierConditionSchemaType[]
   >([]);
+
   const conditionsQuery = useQuery<MedicalCondition[]>({
     queryKey: ["adminConditions"],
-    queryFn: () => fetch(`/api/admin/conditions`).then((res) => res.json()),
+    queryFn: adminMedicalConditionsGetAll,
   });
 
   const [isPending, startTransition] = useTransition();

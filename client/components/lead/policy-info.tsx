@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FilePenLine } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useLead } from "@/hooks/use-lead";
 
 import { User } from "@prisma/client";
 import { LeadPolicySchemaType } from "@/schemas/lead";
@@ -12,7 +13,6 @@ import { InputGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
 
 import { PolicyInfoForm } from "./forms/policy-info-form";
-import { AssistantForm } from "./forms/assistant-form";
 
 import { formatDate } from "@/formulas/dates";
 
@@ -32,7 +32,7 @@ export const PolicyInfoClient = ({
   const user = useCurrentUser();
   const [policyInfo, setPolicyInfo] = useState(info);
   const [policyDialogOpen, setPolicyDialogOpen] = useState(false);
-  const [assitantDialogOpen, setAssitantDialogOpen] = useState(false);
+  const { onAssistantFormOpen } = useLead();
 
   useEffect(() => {
     setPolicyInfo(info);
@@ -44,7 +44,7 @@ export const PolicyInfoClient = ({
       userEmitter.off("policyInfoUpdated", (info) => onSetInfo(info));
     };
   }, [info]);
-
+  if (user?.role == "ASSISTANT") return null;
   return (
     <>
       <Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
@@ -58,18 +58,7 @@ export const PolicyInfoClient = ({
           />
         </DialogContent>
       </Dialog>
-      <Dialog open={assitantDialogOpen} onOpenChange={setAssitantDialogOpen}>
-        <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm">
-          <h3 className="text-2xl font-semibold py-2">
-            Assistant for - <span className="text-primary">{leadName}</span>
-          </h3>
-          <AssistantForm
-            leadId={leadId}
-            assistant={assistant}
-            onClose={() => setAssitantDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
+
       <div className="flex flex-col gap-1 text-sm">
         {user?.role == "ADMIN" && (
           <div className="border rounded-sm shadow-md p-2">
@@ -82,7 +71,7 @@ export const PolicyInfoClient = ({
             <Button
               className="w-full"
               size="sm"
-              onClick={() => setAssitantDialogOpen(true)}
+              onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}
             >
               {assistant ? "Change" : "Add"}
             </Button>

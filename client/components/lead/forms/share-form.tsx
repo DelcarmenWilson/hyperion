@@ -14,25 +14,16 @@ export const ShareForm = () => {
     onShareFormClose,
     leadId,
     leadFullName,
-    sharedUser,
+    initUser: sharedUser,
   } = useLead();
-  const { onLeadUpdateByIdShare, onLeadUpdateByIdUnShare } =
-    useLeadActions(onShareFormClose);
 
-  const [selectedUserId, setSelectedUserId] = useState(sharedUser?.id);
-  const [loading, setLoading] = useState(false);
-
-  const onShareLead = () => {
-    setLoading(true);
-    onLeadUpdateByIdShare(leadId, selectedUserId);
-    setLoading(false);
-  };
-  const onUnShareLead = () => {
-    setLoading(true);
-    onLeadUpdateByIdUnShare(leadId);
-    setSelectedUserId(undefined);
-    setLoading(false);
-  };
+  const {
+    loading,
+    userId,
+    setUserId,
+    onLeadUpdateByIdShare,
+    onLeadUpdateByIdUnShare,
+  } = useLeadActions(onShareFormClose, leadId, sharedUser?.id);
 
   return (
     <Dialog open={isShareFormOpen} onOpenChange={onShareFormClose}>
@@ -47,7 +38,11 @@ export const ShareForm = () => {
             </h4>
             <p className="font-bold text-lg  text-center">
               {sharedUser.firstName} {sharedUser.lastName}
-              <Button className="ms-2" size="sm" onClick={onUnShareLead}>
+              <Button
+                className="ms-2"
+                size="sm"
+                onClick={onLeadUpdateByIdUnShare}
+              >
                 <X size={16} />
               </Button>
             </p>
@@ -57,15 +52,15 @@ export const ShareForm = () => {
           Select {sharedUser ? "a new" : "an"} agent
         </p>
 
-        <UserSelect userId={selectedUserId} setUserId={setSelectedUserId} />
+        <UserSelect userId={userId} setUserId={setUserId} />
 
         <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
           <Button onClick={onShareFormClose} type="button" variant="outline">
             Cancel
           </Button>
           <Button
-            disabled={loading || sharedUser?.id == selectedUserId}
-            onClick={onShareLead}
+            disabled={loading || sharedUser?.id == userId}
+            onClick={onLeadUpdateByIdShare}
           >
             Share
           </Button>
