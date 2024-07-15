@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import SocketContext from "@/providers/socket";
 import Link from "next/link";
 
 import { pusherClient } from "@/lib/pusher";
@@ -32,6 +33,7 @@ import {
 export const NavMessages = () => {
   const user = useCurrentUser();
   const router = useRouter();
+  const { socket } = useContext(SocketContext).SocketState;
   const queryClient = useQueryClient();
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -66,6 +68,11 @@ export const NavMessages = () => {
     audioRef.current.volume = 0.5;
     audioRef.current.play();
   };
+
+  // useEffect(() => {
+  //   socket?.on("lead-message-recieved", onPlay);
+  //   // eslint-disable-next-line
+  // }, []);
 
   useEffect(() => {
     pusherClient.subscribe(user?.id as string);

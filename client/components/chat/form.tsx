@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
@@ -45,6 +45,7 @@ export const ChatForm = () => {
   const [loading, setLoading] = useState(false);
 
   const [attachment, setAttachment] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ChatMessageSchemaType>({
     resolver: zodResolver(ChatMessageSchema),
@@ -72,6 +73,9 @@ export const ChatForm = () => {
     form.reset();
     setAttachment([]);
     setLoading(false);
+    //form.setFocus("content", { shouldSelect: true });
+    // if (!inputRef.current) return;
+    // inputRef.current.focus();
   };
   useEffect(() => {
     const onTemplateSelected = (tp: UserTemplate) => {
@@ -91,6 +95,9 @@ export const ChatForm = () => {
     };
     // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    form.setValue("chatId", chatId);
+  }, [chatId]);
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -145,8 +152,10 @@ export const ChatForm = () => {
                         {...field}
                         placeholder="message"
                         disabled={loading}
-                        autoComplete="Message"
+                        autoComplete="off"
                         type="text"
+                        ref={inputRef}
+                        autoFocus
                       />
                     </FormControl>
                     <FormMessage />

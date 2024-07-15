@@ -48,7 +48,7 @@ export const PolicyInfoClient = ({
   return (
     <>
       <Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
-        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
           <h3 className="text-2xl font-semibold py-2">
             Policy Info - <span className="text-primary">{leadName}</span>
           </h3>

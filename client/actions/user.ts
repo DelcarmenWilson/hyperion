@@ -54,17 +54,39 @@ export const usersGetAllChat = async () => {
     const user = await currentUser();
     if (!user) return [];
     const dbUsers = await db.user.findMany({
-      where: { role: { not: "MASTER" }, id: { not: user.id } },include:{calls:{where:{createdAt: { gte: getEntireDay().start } }}},
+      where: { role: { not: "MASTER" }, id: { not: user.id } },
+      include: {
+        calls: { where: { createdAt: { gte: getEntireDay().start } } },
+        loginStatus: { where: { createdAt: { gte: getEntireDay().start } } },
+      },
       orderBy: { firstName: "asc" },
     });
-    const users: OnlineUser[] = dbUsers.map((user) => {
-      return { ...user, online: false,calls:user.calls.length,time:256 };
+    const users: OnlineUser[] = dbUsers.map((usr) => {
+      return {
+        ...usr,
+        chatId: "",
+        online: false,
+        calls: usr.calls.length,
+        duration: usr.loginStatus.reduce((sum, login) => sum + login.duration, 0),
+      };
     });
 
     return users;
   } catch {
     return [];
   }
+};
+
+const getChatId = async (myUserId: string, otherUserId: string) => {
+  const chat=await db.chat.findFirst({
+    where: {
+      OR: [
+        { userOneId: myUserId, userTwoId: otherUserId },
+        { userOneId: otherUserId, userTwoId: myUserId },
+      ],
+    },
+  });
+  return chat?.id;
 };
 
 export const usersGetAllByRole = async (role: UserRole) => {

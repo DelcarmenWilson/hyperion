@@ -1,17 +1,21 @@
-import { chatGetById, chatGetBUserId as chatGetByUserId } from "@/actions/chat";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useChat } from "@/hooks/use-chat";
 import { FullChat } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { MessageCard } from "./message";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { chatGetById, chatGetBUserId } from "@/actions/chat";
+import SkeletonWrapper from "../skeleton-wrapper";
 
 export const ChatBody = () => {
-  const { user, setChatId, chatId } = useChat();
+  const currentUser = useCurrentUser();
+  const { user, chatId } = useChat();
+  const bottomRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const { data: chat } = useQuery<FullChat | null>({
+  const { data: chat, isFetching } = useQuery<FullChat | null>({
     queryKey: ["agentMessages", `user-${user?.id}`],
-    queryFn: () => chatGetByUserId(user?.id as string),
+    queryFn: () => chatGetById(chatId as string),
   });
 
   const inValidate = () => {
@@ -21,27 +25,30 @@ export const ChatBody = () => {
   };
 
   useEffect(() => {
-    if (!chat) return;
-    setChatId(chat.messages[0].id);
-  }, [chat]);
-
-  useEffect(() => {
     userEmitter.on("chatMessageInserted", (newMessage) => {
-      inValidate();
-      console.log(newMessage);
+      if (newMessage.chatId == chatId) inValidate();
     });
   });
 
+  useEffect(() => {
+    if (isFetching) return;
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [user?.id, isFetching]);
+
   return (
     <div className="flex-1 flex flex-col border gap-2 p-1 rounded overflow-y-auto">
-      {chat?.messages?.map((message) => (
-        <MessageCard
-          key={message.id}
-          username={message.sender.userName}
-          content={message.content!}
-          createdAt={message.createdAt}
-        />
-      ))}
+      <SkeletonWrapper isLoading={isFetching}>
+        {chat?.messages?.map((message) => (
+          <MessageCard
+            key={message.id}
+            username={message.sender.userName}
+            content={message.content!}
+            createdAt={message.createdAt}
+            isOwn={currentUser?.id == message.senderId}
+          />
+        ))}
+        <div className="p-2" ref={bottomRef}></div>
+      </SkeletonWrapper>
     </div>
   );
 };

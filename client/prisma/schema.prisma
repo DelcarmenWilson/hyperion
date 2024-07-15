@@ -166,9 +166,8 @@ model LoginStatus {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  Duration Int?
+  duration Int @default(0)
 
-  comments  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -999,7 +998,6 @@ model WorkflowDefaultNode {
 }
 
 //THIS IS FOR PAGEUPDATES
-
 model PageUpdate {
   id          String @id @default(cuid())
   name        String

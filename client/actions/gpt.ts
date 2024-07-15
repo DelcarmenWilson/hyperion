@@ -7,7 +7,7 @@ export const chatFetch = async (messages: any=[]) => {
   });
   
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages: messages,
     temperature: 0,
     max_tokens: 1024,
