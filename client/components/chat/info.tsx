@@ -12,7 +12,7 @@ import { ChatForm } from "./form";
 import { Button } from "../ui/button";
 
 export const ChatInfo = () => {
-  const { isChatInfoOpen, onChatInfoClose, user } = useChat();
+  const { isChatInfoOpen, onChatInfoClose, user, chatId } = useChat();
 
   if (!user) return null;
   return (
@@ -42,7 +42,7 @@ export const ChatInfo = () => {
             <p>
               <span className="text-lg font-bold">{user.userName}</span>
 
-              <span className=" lowercase"> ({user.role})</span>
+              <span className="lowercase"> ({user.role})</span>
             </p>
 
             <Button size="sm" className="ml-auto" onClick={onChatInfoClose}>

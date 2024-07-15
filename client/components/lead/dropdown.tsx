@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 import { toast } from "sonner";
-
-import { cn } from "@/lib/utils";
 import {
   BookText,
   Calendar,
@@ -15,6 +13,10 @@ import {
   Trash,
   X,
 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { useCurrentRole } from "@/hooks/user-current-role";
+import { useLead } from "@/hooks/use-lead";
 
 import {
   DropdownMenu,
@@ -32,8 +34,6 @@ import { Button } from "@/components/ui/button";
 import { useAppointment } from "@/hooks/use-appointment";
 
 import { AlertModal } from "@/components/modals/alert";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
 import { FullLeadNoConvo } from "@/types";
 import {
   conversationDeleteById,
@@ -41,9 +41,6 @@ import {
 } from "@/actions/conversation";
 import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
-import { useCurrentRole } from "@/hooks/user-current-role";
-import { TransferForm } from "./forms/transfer-form";
-import { useLead } from "@/hooks/use-lead";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;

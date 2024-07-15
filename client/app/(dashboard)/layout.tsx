@@ -10,7 +10,8 @@ import GlobalContextProvider from "@/providers/global";
 
 import NavBar from "@/components/navbar/navbar";
 import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
-import { ChatDrawer } from "@/components/chat/chat-drawer";
+import { ChatDrawer } from "@/components/chat/drawer";
+import { LoginStatusModal } from "@/components/login-status/modal";
 
 import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/data/script";
@@ -89,8 +90,8 @@ export default async function DashBoardLayout({
                   </AppointmentContextComponent>
                 </PhoneContextProvider>
               </SocketContextComponent>
-              {/* <ChatDrawer /> */}
               <ChatDrawer />
+              <LoginStatusModal />
             </GlobalContextProvider>
           </div>
         </div>

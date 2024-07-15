@@ -10,7 +10,7 @@ type useChatStore = {
   chatId?:string;
   setChatId:(c?: string) => void;
   isChatInfoOpen: boolean;
-  onChatInfoOpen: (u?: OnlineUser) => void;
+  onChatInfoOpen: (u?: OnlineUser,c?:string) => void;
   onChatInfoClose: () => void;
 };
 
@@ -21,6 +21,6 @@ export const useChat = create<useChatStore>((set) => ({
   
   setChatId: (c) => set({ chatId: c }),
   isChatInfoOpen: false,
-  onChatInfoOpen: (u?) => set({user:u, isChatInfoOpen: true }),
+  onChatInfoOpen: (u?,c?) => set({user:u,chatId:c, isChatInfoOpen: true }),
   onChatInfoClose: () => set({ isChatInfoOpen: false }),
 }));

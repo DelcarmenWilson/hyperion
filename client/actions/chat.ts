@@ -151,13 +151,9 @@ export const chatInsert = async (userId: string) => {
 
   const exisitingChat = await db.chat.findFirst({
     where: {
-      AND: [
-        {
-          OR: [
-            { userOneId: userId, userTwoId: user.id },
-            { userOneId: user.id, userTwoId: userId },
-          ],
-        },
+      OR: [
+        { userOneId: userId, userTwoId: user.id },
+        { userOneId: user.id, userTwoId: userId },
       ],
     },
   });
@@ -290,47 +286,55 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
     return { error: "Invalid fields!" };
   }
 
-  const { chatId, content, attachment, senderId, userId } =
-    validatedFields.data;
+  const { chatId, content, attachment, senderId } = validatedFields.data;
 
-  let cid = chatId;
-  let conversation;
+  // let cid = chatId;
+  // let conversation;
 
-  if (cid)
-    conversation = await db.chat.findUnique({
-      where: { id: cid },
-      include: { lastMessage: true },
-    });
-  else {
-    conversation = await db.chat.findFirst({
-      where: {
-        OR: [
-          { userOneId: senderId, userTwoId: userId },
-          { userOneId: userId, userTwoId: senderId },
-        ],
-      },
-      include: { lastMessage: true },
-    });
-    if (!conversation) {
-    conversation = await db.chat.create({
-      data: {
-        userOneId: senderId,
-        userTwoId: userId as string,
-        isGroup: false,
-        name: "",
-      },
-      include: { lastMessage: true },
-    });}
-    cid = conversation.id;
-  }
+  // if (cid)
+  //   conversation = await db.chat.findUnique({
+  //     where: { id: cid },
+  //     include: { lastMessage: true },
+  //   });
+  // else {
+  //   conversation = await db.chat.findFirst({
+  //     where: {
+  //       OR: [
+  //         { userOneId: senderId, userTwoId: userId },
+  //         { userOneId: userId, userTwoId: senderId },
+  //       ],
+  //     },
+  //     include: { lastMessage: true },
+  //   });
+  //   if (!conversation) {
+  //     conversation = await db.chat.create({
+  //       data: {
+  //         userOneId: senderId,
+  //         userTwoId: userId as string,
+  //         isGroup: false,
+  //         name: "",
+  //       },
+  //       include: { lastMessage: true },
+  //     });
+  //   }
+  //   cid = conversation.id;
+  // }
 
+  // if (!conversation) {
+  //   return { error: "Conversation was not created!!!" };
+  // }
+
+  const conversation = await db.chat.findUnique({
+    where: { id: chatId },
+    include: { lastMessage: true },
+  });
   if (!conversation) {
-    return { error: "Conversation was not created!!!" };
+    return { error: "Conversation does not exists!!" };
   }
 
   const newMessage = await db.chatMessage.create({
     data: {
-      chatId: cid as string,
+      chatId: chatId as string,
       content,
       attachment,
       senderId,
@@ -339,7 +343,7 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
   });
 
   await db.chat.update({
-    where: { id: cid },
+    where: { id: chatId },
     data: {
       lastMessageId: newMessage.id,
       unread:

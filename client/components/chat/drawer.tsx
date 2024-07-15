@@ -1,26 +1,91 @@
 "use client";
-import React from "react";
-import { DrawerRight } from "@/components/custom/drawer-right";
-import { ChatList } from "./list";
-import { useChat } from "@/hooks/use-chat";
-import { ChatInfo } from "./info";
 
-export const ChatDrawer = () => {
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+
+import { Dialog, Transition } from "@headlessui/react";
+import { X } from "lucide-react";
+import { Fragment } from "react";
+import { ChatList } from "./list";
+import { ChatInfo } from "./info";
+import { useChat } from "@/hooks/use-chat";
+
+type DrawerRightProps = {
+  size?: string;
+  closeButton?: "simple" | "default";
+  autoClose?: boolean;
+};
+export const ChatDrawer = ({
+  size = "w-auto",
+  closeButton = "default",
+  autoClose = false,
+}: DrawerRightProps) => {
   const { isChatOpen, onChatClose } = useChat();
   return (
-    <DrawerRight
-      title="Agents"
-      isOpen={isChatOpen}
-      onClose={onChatClose}
-      scroll={false}
-      size="w-auto"
-    >
-      {/* <ChatList /> */}
-      <div className="flex flex-1 border-t h-full overflow-hidden">
-        <ChatInfo />
+    <Transition.Root show={isChatOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-50"
+        onClose={() => {
+          if (autoClose) onChatClose();
+        }}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-500"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-500"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-40" />
+        </Transition.Child>
+        <div className="fixed inset-0 overflow-hidden">
+          <div className="absolute indent-0 overflow-hidden">
+            <div className="flex fixed inset-y-0 right-[350px] max-w-full">
+              <ChatInfo />
+            </div>
+            <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full pl-10">
+              <Transition.Child
+                as={Fragment}
+                enter="transform transition ease-in-out duration-500"
+                enterFrom="translate-x-full"
+                enterTo="translate-x-0"
+                leave="transform transition ease-in-out duration-500"
+                leaveTo="translate-x-full"
+              >
+                <Dialog.Panel
+                  className={cn("pointer-events-auto w-screen", size)}
+                >
+                  <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
+                    <div className=" flex items-center justify-between px-2">
+                      <div>
+                        <h2 className="font-semibold text-xl tracking-tight">
+                          Agents
+                        </h2>
+                      </div>
+                      <Button
+                        variant={closeButton}
+                        size="sm"
+                        onClick={onChatClose}
+                      >
+                        <span className="sr-only">Close panel</span>
+                        <X size={16} />
+                      </Button>
+                    </div>
 
-        <ChatList />
-      </div>
-    </DrawerRight>
+                    <div className="flex flex-col w-[350px] flex-1 h-full p-2 overflow-hidden">
+                      <ChatList />
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+    </Transition.Root>
   );
 };

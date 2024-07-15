@@ -6,7 +6,7 @@ export const getRandomNumber = (min: number, max: number): number => {
 //TODO these needs to be moved to dates
 export const formatSecondsToTime = (sec_num: number|undefined|null) => {
   if(!sec_num)
-    return ""
+    return "0"
   var hours: any = Math.floor(sec_num / 3600);
   var minutes: any = Math.floor((sec_num - hours * 3600) / 60);
   var seconds: any = sec_num - hours * 3600 - minutes * 60;
