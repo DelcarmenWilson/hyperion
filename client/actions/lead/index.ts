@@ -366,6 +366,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
       status,
       assistantId,
       recievedAt,
+      notes
     } = values[i];
 
     const st = states.find(
@@ -436,7 +437,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
             : defaultNumber?.phone!,
           userId: user?.id,
           status,
-          assistantId,
+          assistantId,notes
         },
       });
     }

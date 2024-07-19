@@ -58,25 +58,25 @@ export default async function DashBoardLayout({
   const templates = await userTemplatesGetAllByUserId(user.id);
 
   return (
-    <div className="relative flex h-full flex-col">
-      <NavBar />
-      <main className="flex flex-1 h-[calc(100vh-3.6rem)] z-30 overflow-hidden">
-        <Suspense fallback={<SidebarSkeleton />}>
-          <SideBar main />
-        </Suspense>
-        <div className="flex flex-1 flex-col h-full ms-[70px] md:ms-0 ">
-          <div className="flex flex-col flex-1 w-full  mt-14 px-1 lg:px-2 lg:mb-2 overflow-y-auto">
-            <GlobalContextProvider
-              initUser={initUser!}
-              initUsers={initUsers}
-              initStatus={status}
-              intScript={script!}
-              initLicenses={licenses}
-              initAvailableCarriers={availableCarriers}
-              initCarriers={carriers}
-              initTemplates={templates}
-            >
-              <SocketContextComponent>
+    <GlobalContextProvider
+      initUser={initUser!}
+      initUsers={initUsers}
+      initStatus={status}
+      intScript={script!}
+      initLicenses={licenses}
+      initAvailableCarriers={availableCarriers}
+      initCarriers={carriers}
+      initTemplates={templates}
+    >
+      <SocketContextComponent>
+        <div className="relative flex h-full flex-col">
+          <NavBar />
+          <main className="flex flex-1 h-[calc(100vh-3.6rem)] z-30 overflow-hidden">
+            <Suspense fallback={<SidebarSkeleton />}>
+              <SideBar main />
+            </Suspense>
+            <div className="flex flex-1 flex-col h-full ms-[70px] md:ms-0 ">
+              <div className="flex flex-col flex-1 w-full  mt-14 px-1 lg:px-2 lg:mb-2 overflow-y-auto">
                 <PhoneContextProvider
                   initVoicemails={voicemails}
                   token={token!}
@@ -89,13 +89,13 @@ export default async function DashBoardLayout({
                     {children}
                   </AppointmentContextComponent>
                 </PhoneContextProvider>
-              </SocketContextComponent>
-              <ChatDrawer />
-              <LoginStatusModal />
-            </GlobalContextProvider>
-          </div>
+                <ChatDrawer />
+                <LoginStatusModal />
+              </div>
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </SocketContextComponent>
+    </GlobalContextProvider>
   );
 }

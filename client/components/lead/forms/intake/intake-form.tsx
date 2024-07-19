@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import { useLead, useLeadIntakeActions } from "@/hooks/use-lead";
 
 import {
@@ -47,6 +47,7 @@ export const IntakeForm = () => {
     isIntakeDialogOpen,
     onIntakeDialogOpen,
     onIntakeDialogClose,
+    onPolicyFormOpen,
   } = useLead();
   const { getIntakeData } = useLeadIntakeActions(leadId as string);
   const {
@@ -104,12 +105,6 @@ export const IntakeForm = () => {
             />
           )}
 
-          {dialogType == "policy" && (
-            <PolicyInfoForm
-              policyInfo={policy as LeadPolicySchemaType}
-              onClose={onIntakeDialogClose}
-            />
-          )}
           {dialogType == "medical" && (
             <MedicalInfoForm
               leadId={leadId}
@@ -530,7 +525,9 @@ export const IntakeForm = () => {
                 button={
                   <Button
                     size="sm"
-                    onClick={() => onIntakeDialogOpen("policy")}
+                    onClick={() =>
+                      onPolicyFormOpen(leadId, leadFullName!, policy!)
+                    }
                   >
                     Edit
                   </Button>

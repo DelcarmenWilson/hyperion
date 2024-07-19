@@ -13,37 +13,15 @@ import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { ChatCard } from "./card";
 import { ChatUsersList } from "./list";
-import { chatGetById, chatInsert } from "@/actions/chat";
-import { FullChatMessage, ShortChat } from "@/types";
+import { chatInsert } from "@/actions/chat";
+import { useChatData } from "@/hooks/use-chat";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
+export const ChatsClient = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const router = useRouter();
-  const [chats, setChats] = useState<ShortChat[]>(initChats);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const onSetChats = (message: FullChatMessage) => {
-    setChats((current) => {
-      const convo = current.find((e) => e.id == message.chatId);
-      if (convo) {
-        const index = current.findIndex((e) => e.id == message.chatId);
-        if (!convo || index == -1) {
-          return current;
-        }
-        convo.lastMessage = message;
-        convo.updatedAt = message.updatedAt;
-        current.unshift(current.splice(index, 1)[0]);
-
-        return [...current];
-      }
-
-      chatGetById(message.chatId).then((data) => {
-        if (data) return [data, ...current];
-        else return [...current];
-      });
-      return [...current];
-    });
-  };
+  const { fullChats, fullChatsIsFetching } = useChatData("empty");
 
   const onSelectUser = (e: string) => {
     chatInsert(e).then((data) => {
@@ -54,17 +32,6 @@ export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
     });
   };
 
-  useEffect(() => {
-    socket?.on("chat-message-received", (message: FullChatMessage) => {
-      onSetChats(message);
-    });
-    userEmitter.on("chatMessageInserted", (info) => {
-      onSetChats(info);
-    });
-    return () => {
-      userEmitter.off("chatMessageInserted", (info) => onSetChats(info));
-    };
-  }, []);
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -85,10 +52,12 @@ export const ChatsClient = ({ initChats }: { initChats: ShortChat[] }) => {
           </Button>
         </div>
         <div className="flex-1 space-y-2 overflow-y-auto h-full">
-          {chats.length > 0 ? (
+          {fullChats?.length ? (
             <>
-              {chats.map((chat) => (
-                <ChatCard key={chat.id} chat={chat} />
+              {fullChats?.map((chat) => (
+                <SkeletonWrapper key={chat.id} isLoading={fullChatsIsFetching}>
+                  <ChatCard chat={chat} />
+                </SkeletonWrapper>
               ))}
             </>
           ) : (

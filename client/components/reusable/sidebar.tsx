@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/store/use-sidebar";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkle } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -45,6 +45,12 @@ export const SideBar = ({ main = false }: { main?: boolean }) => {
         ))}
       </ScrollArea>
       <div className="flex flex-col mt-auto items-center space-y-4">
+        <IconLink
+          title="updates"
+          href="/update-page"
+          active={pathname.includes("update-page")}
+          icon={Sparkle}
+        />
         <UserButton />
       </div>
     </aside>

@@ -21,16 +21,22 @@ import {
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { chatInsert } from "@/actions/chat";
 import { useLoginStatus } from "@/hooks/use-login-status";
+import { cn } from "@/lib/utils";
 
 const ChatCard = ({ user }: { user: OnlineUser }) => {
-  const { onChatInfoOpen } = useChat();
+  const { onChatInfoOpen, user: agent } = useChat();
   const { onLoginStatusOpen } = useLoginStatus();
   const onChatClick = async () => {
     const chat = await chatInsert(user.id);
     onChatInfoOpen(user, chat.success?.id);
   };
   return (
-    <div className="relative border rounded hover:bg-secondary p-2 cursor-pointer w-full my-1">
+    <div
+      className={cn(
+        "relative border rounded  p-2 cursor-pointer w-full my-1",
+        agent?.id == user.id ? "bg-primary/25" : "hover:bg-secondary"
+      )}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

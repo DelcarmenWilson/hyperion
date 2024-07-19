@@ -1,18 +1,15 @@
 "use client";
-
-import { usePhone } from "@/hooks/use-phone";
+import { ArrowRight, UserIcon } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowRight, UserIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { ChatBody } from "./body";
 import { ChatForm } from "./form";
-import { Button } from "../ui/button";
 
 export const ChatInfo = () => {
-  const { isChatInfoOpen, onChatInfoClose, user, chatId } = useChat();
+  const { isChatInfoOpen, onChatInfoClose, user } = useChat();
 
   if (!user) return null;
   return (

@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import SocketContext from "@/providers/socket";
 import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
+import { useChat, useChatActions } from "@/hooks/use-chat";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -32,17 +33,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ImageGrid } from "@/components/reusable/image-grid";
 
-import { TemplateList } from "@/app/(dashboard)/settings/(routes)/config/components/templates/list";
-import { chatMessageInsert } from "@/actions/chat";
-import { toast } from "sonner";
-import { useChat } from "@/hooks/use-chat";
+import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 
 export const ChatForm = () => {
   const { user, templates } = useGlobalContext();
+  const { socket } = useContext(SocketContext).SocketState;
   const { user: agent, chatId } = useChat();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const [attachment, setAttachment] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +54,17 @@ export const ChatForm = () => {
       userId: agent?.id,
     },
   });
+  const reset = () => {
+    form.clearErrors();
+    form.reset();
+    setAttachment([]);
+  };
+
+  const { loading, onChatMessageInsert } = useChatActions(
+    chatId as string,
+    reset
+  );
+
   const disabled: boolean =
     !form.getValues("content") && !form.getValues("attachment");
 
@@ -63,30 +72,13 @@ export const ChatForm = () => {
     setAttachment([]);
     form.setValue("attachment", undefined);
   };
-  const onSubmit = async (values: ChatMessageSchemaType) => {
-    setLoading(true);
-    const message = await chatMessageInsert(values);
-    if (message.success)
-      userEmitter.emit("chatMessageInserted", message.success);
-    else toast.error(message.error);
-    form.clearErrors();
-    form.reset();
-    setAttachment([]);
-    setLoading(false);
-    //form.setFocus("content", { shouldSelect: true });
-    // if (!inputRef.current) return;
-    // inputRef.current.focus();
-  };
+
   useEffect(() => {
     const onTemplateSelected = (tp: UserTemplate) => {
       if (tp.attachment) {
         setAttachment([tp.attachment]);
         form.setValue("attachment", tp.attachment);
       }
-      // if (tp.message) {
-      //   const message = replacePreset(tp.message, user!, lead!);
-      //   form.setValue("content", message);
-      // }
       setDialogOpen(false);
     };
     userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
@@ -98,6 +90,13 @@ export const ChatForm = () => {
   useEffect(() => {
     form.setValue("chatId", chatId);
   }, [chatId]);
+
+  // useEffect(() => {
+  //   socket?.on("chat-message-received", (cid: string) => {
+  //     console.log(cid, chatId);
+  //     if (cid == chatId) invalidate();
+  //   });
+  // }, []);
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -110,7 +109,7 @@ export const ChatForm = () => {
         <Form {...form}>
           <form
             className="space-6 px-2 w-full"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onChatMessageInsert)}
           >
             <ImageGrid
               images={attachment}

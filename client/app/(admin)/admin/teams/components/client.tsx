@@ -48,9 +48,9 @@ export const TeamClient = ({ intitTeams }: TeamClientProps) => {
     adminEmitter.on("teamInserted", (info) => onTeamInserted(info));
     adminEmitter.on("teamUpdated", (info) => onTeamUpdated(info));
     return () => {
-      adminEmitter.on("teamDeleted", (id) => onTeamDeleted(id));
-      adminEmitter.on("teamInserted", (info) => onTeamInserted(info));
-      adminEmitter.on("teamUpdated", (info) => onTeamUpdated(info));
+      adminEmitter.off("teamDeleted", (id) => onTeamDeleted(id));
+      adminEmitter.off("teamInserted", (info) => onTeamInserted(info));
+      adminEmitter.off("teamUpdated", (info) => onTeamUpdated(info));
     };
   }, []);
 

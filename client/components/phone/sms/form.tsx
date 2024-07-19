@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ImageGrid } from "@/components/reusable/image-grid";
 import { replacePreset } from "@/formulas/text";
-import { TemplateList } from "@/app/(dashboard)/settings/(routes)/config/components/templates/list";
+import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 import { FullLeadNoConvo } from "@/types";
 
 type SmsFormProps = {

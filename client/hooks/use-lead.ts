@@ -51,6 +51,11 @@ type DialogType =
 type useLeadStore = {
   leadId?: string;
   leadFullName?: string;
+  //POLICY
+  policyInfo?: LeadPolicySchemaType;
+  isPolicyFormOpen: boolean;
+  onPolicyFormOpen: (l: string,n:string,p?: LeadPolicySchemaType) => void;
+  onPolicyFormClose: () => void;
   // SHARE
   initUser?: User | null;
   isShareFormOpen: boolean;
@@ -75,6 +80,15 @@ type useLeadStore = {
 };
 
 export const useLead = create<useLeadStore>((set) => ({
+  isPolicyFormOpen: false,
+  onPolicyFormOpen: (l, n,p) =>
+    set({ leadId: l, leadFullName: n,policyInfo:p, isPolicyFormOpen: true }),
+  onPolicyFormClose: () =>
+    set({
+      leadId: "",
+      isPolicyFormOpen: false,
+      isIntakeFormOpen:true
+    }),
   //SHARE
   isShareFormOpen: false,
   onShareFormOpen: (l, n, u) =>
@@ -452,6 +466,7 @@ export const useLeadIntakeActions = (
 
   const onPolicySubmit = useCallback(
     (values: LeadPolicySchemaType) => {
+      console.log(values)
       const toastString = "Updating Policy Information...";
       toast.loading(toastString, { id: "update-policy-info" });
 

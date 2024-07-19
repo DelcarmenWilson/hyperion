@@ -36,6 +36,7 @@ export const allVendors: VendorType[] = [
     value: "Manually_Created",
     name: "Manually Created",
   },
+  { value: "Amm_Leads", name: "Amm Leads" },
   {
     value: "Avalanche_Leads",
     name: "Avalanche Leads",
@@ -72,66 +73,66 @@ export const allVendors: VendorType[] = [
 
 export const importVendors: VendorType[] = allVendors.slice(1);
 
-type LeadExpenseType={
-  leadId:string
-  name:string
-  type:string  
-  isDefault:boolean
-}
+type LeadExpenseType = {
+  leadId: string;
+  name: string;
+  type: string;
+  isDefault: boolean;
+};
 export const defaultLeadExpenses: LeadExpenseType[] = [
   {
-    leadId:"",   
+    leadId: "",
     name: "Rent/Mortgage",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Vehicle Expenses",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Utilities",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
-  
+
   {
-    leadId:"",   
+    leadId: "",
     name: "Groceries",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Entertainment",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Taxes",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Credit Cards",
-    type: "Expense", 
-    isDefault:true
+    type: "Expense",
+    isDefault: true,
   },
   {
-    leadId:"",   
+    leadId: "",
     name: "Salary",
-    type: "Income", 
-    isDefault:true
-  },   
+    type: "Income",
+    isDefault: true,
+  },
   {
-    leadId:"",   
+    leadId: "",
     name: "Retirement Plan",
-    type: "Income", 
-    isDefault:true
-  }, 
+    type: "Income",
+    isDefault: true,
+  },
 ];
