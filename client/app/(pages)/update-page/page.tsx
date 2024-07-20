@@ -1,10 +1,7 @@
 import React from "react";
 import { Sparkle } from "lucide-react";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+  Accordion
 } from "@/components/ui/accordion";
 import { PageLayout } from "@/components/custom/layout/page-layout";
 import { PageUpdateList } from "./components/list";
