@@ -80,7 +80,9 @@ export type CarrierConditionSchemaType = z.infer<typeof CarrierConditionSchema>;
 //PAGE UPDATE
 export const PageUpdateSchema = z.object({
   id: z.optional(z.string()),
-  name: z.string().min(2, "*"),
+  title: z.string().min(2, "*"),
+  type: z.string().min(2, "*"),
+  image:z.optional(z.string()),
   description: z.string(),
 });
 export type PageUpdateSchemaType = z.infer<typeof PageUpdateSchema>;

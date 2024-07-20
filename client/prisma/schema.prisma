@@ -999,9 +999,11 @@ model WorkflowDefaultNode {
 
 //THIS IS FOR PAGEUPDATES
 model PageUpdate {
-  id          String @id @default(cuid())
-  name        String
-  description String @db.LongText
+  id          String  @id @default(cuid())
+  type        String
+  title       String
+  image       String?
+  description String  @db.LongText
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
