@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { ShortChat } from "@/types";
 import { formatDistance } from "date-fns";
+import { useChat } from "@/hooks/use-chat";
+import { cn } from "@/lib/utils";
 
 export const ChatCard = ({ chat }: { chat: ShortChat }) => {
   const user = useCurrentUser();
@@ -13,10 +15,18 @@ export const ChatCard = ({ chat }: { chat: ShortChat }) => {
     1
   )} ${otherUser.lastName.substring(0, 1)}`;
   const fullName = `${otherUser.firstName} ${otherUser.lastName}`;
+  const { chatId, setChatId } = useChat();
   return (
-    <Link
-      href={`/chat/${chat.id}`}
-      className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
+    // <Link
+    //   href={`/chat/${chat.id}`}
+    //   className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
+    // >
+    <div
+      className={cn(
+        "relative border rounded  p-2 cursor-pointer w-full my-1",
+        chatId == chat.id ? "bg-primary/25" : "hover:bg-secondary"
+      )}
+      onClick={() => setChatId(chat.id)}
     >
       <div className="flex justify-between items-center">
         <div className="relative">
@@ -45,6 +55,6 @@ export const ChatCard = ({ chat }: { chat: ShortChat }) => {
         </span>
         {/*<span>{chat.updatedAt.toString()}</span> */}
       </div>
-    </Link>
+    </div>
   );
 };

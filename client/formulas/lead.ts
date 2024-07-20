@@ -52,6 +52,8 @@ export const convertLead = (
   switch (vendor) {
     case "Avalanche_Leads":
       return Avalanche_Leads(result, vendor, type, status, assistantId);
+    case "Amm_Leads":
+      return Amm_Leads(result, vendor, type, status, assistantId);
     case "Hyperion":
       return Hyperion(result, vendor, type, status, assistantId);
     case "Leadrilla":
@@ -97,7 +99,48 @@ const Avalanche_Leads = (
       vendor,
       type,
       status,
-      assistantId
+      assistantId,
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
+
+const Amm_Leads = (
+  result: any,
+  vendor: string,
+  type: string,
+  status: string,
+  assistantId: string | undefined
+): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
+  result.data.map((d: any) => {
+    const newobj: LeadSchemaType = {
+      id: "",
+      firstName: capitalize(d["first_name"]),
+      lastName: capitalize(d["last_name"]),
+      email: d["email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["phone_number"]),
+      cellPhone: reFormatPhoneNumber(d["phone_number"]),
+      dateOfBirth: d["date_of_birth"].trim(),
+      address: "N/A",
+      city: "N/A",
+      state: capitalize(d["state"]),
+      zipCode: "N/A",
+      gender: "NA",
+      maritalStatus: "Single",
+      height: "",
+      recievedAt: d["created_time"],
+      vendor,
+      type,
+      status,
+      assistantId,
+      currentlyInsured:
+        d["do_you_currently_have_coverage?"] ==
+        "no,_and_i_am_looking_for_coverage"
+          ? false
+          : true,notes:`Beneficary:${d["if_you_qualify_who_will_be_your_beneficiary?"]}`
+          
     };
     mapped.push(newobj);
   });

@@ -32,8 +32,8 @@
     "app/api/user/voicemails",
     "lib/events.js",
     "server.js",
-    "app/(dashboard)/flow/page.tsx",
-    "app/(dashboard)/flow-example/page.jsx"
+    "app/(pages)/flow/page.tsx",
+    "app/(pages)/flow-example/page.jsx"
   ],
   "exclude": ["node_modules"]
 }

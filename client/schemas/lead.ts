@@ -33,6 +33,7 @@ export const LeadSchema = z.object({
   recievedAt: z.optional(z.string()),
   status: z.optional(z.string()),
   assistantId: z.optional(z.string()),
+  notes: z.optional(z.string()),
 });
 export type LeadSchemaType = z.infer<typeof LeadSchema>;
 
@@ -80,16 +81,16 @@ export const LeadGeneralSchema = z.object({
 export type LeadGeneralSchemaType = z.infer<typeof LeadGeneralSchema>;
 
 export const LeadPolicySchema = z.object({
-  leadId: z.string(),
-  carrier: z.string(),
-  policyNumber: z.string(),
-  status: z.string(),
-  ap: z.string(),
-  commision: z.string(),
-  coverageAmount: z.string(),
-  startDate: z.optional(z.date()),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  leadId: z.string({required_error:"*"}),
+  carrier: z.string({required_error:"*"}),
+  policyNumber: z.string({required_error:"*"}),
+  status: z.string({required_error:"*"}),
+  ap: z.string({required_error:"*"}),
+  commision: z.string({required_error:"*"}),
+  coverageAmount: z.string({required_error:"*"}),
+  startDate:  z.optional(z.date())
+  // createdAt: z.date(),
+  // updatedAt: z.date(),
 });
 export type LeadPolicySchemaType = z.infer<typeof LeadPolicySchema>;
 

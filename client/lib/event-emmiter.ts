@@ -97,7 +97,6 @@ type AdminEvents = {
   teamDeleted: [id: string];
   teamInserted: [info: FullTeam];
   teamUpdated: [info: FullTeam];
-  tempImageDeleted: [id: string];
 };
 
 type Listener<T extends Array<any>> = (...args: T) => void;

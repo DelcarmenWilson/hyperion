@@ -8,11 +8,8 @@ import { useLead } from "@/hooks/use-lead";
 import { User } from "@prisma/client";
 import { LeadPolicySchemaType } from "@/schemas/lead";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { InputGroup } from "@/components/reusable/input-group";
 import { Button } from "@/components/ui/button";
-
-import { PolicyInfoForm } from "./forms/policy-info-form";
+import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDate } from "@/formulas/dates";
 
@@ -31,7 +28,7 @@ export const PolicyInfoClient = ({
 }: PolicyInfoClientProps) => {
   const user = useCurrentUser();
   const [policyInfo, setPolicyInfo] = useState(info);
-  const [policyDialogOpen, setPolicyDialogOpen] = useState(false);
+  const { onPolicyFormOpen } = useLead();
   const { onAssistantFormOpen } = useLead();
 
   useEffect(() => {
@@ -47,18 +44,6 @@ export const PolicyInfoClient = ({
   if (user?.role == "ASSISTANT") return null;
   return (
     <>
-      <Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
-        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
-          <h3 className="text-2xl font-semibold py-2">
-            Policy Info - <span className="text-primary">{leadName}</span>
-          </h3>
-          <PolicyInfoForm
-            policyInfo={policyInfo}
-            onClose={() => setPolicyDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
       <div className="flex flex-col gap-1 text-sm">
         {user?.role == "ADMIN" && (
           <div className="border rounded-sm shadow-md p-2">
@@ -111,13 +96,15 @@ export const PolicyInfoClient = ({
             />
             <Button
               className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => setPolicyDialogOpen(true)}
+              onClick={() => onPolicyFormOpen(leadId, leadName, policyInfo)}
             >
               <FilePenLine size={16} />
             </Button>
           </div>
         ) : (
-          <Button onClick={() => setPolicyDialogOpen(true)}>
+          <Button
+            onClick={() => onPolicyFormOpen(leadId, leadName, policyInfo)}
+          >
             Create Policy
           </Button>
         )}

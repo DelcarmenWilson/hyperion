@@ -2,12 +2,20 @@ Jhonnnnnni
     - working on prompt enginering (ML)
     - working on workflow+
 
+    7-19-24
+    work on the intake form.
+    intake form does not open up in the phone box
+    not able to submit policy information
+    error when adding medical conditions in the lead
+    work on formula for underwriting
+    work on the blue print
+        - add prospecting
+
 BUGS
     --there is an error when selected a date to shcedule and appoint.. look into anothony's lead on the live server
     -- after transfering or sharing a lead the new agent does nto see the lead come up immediatly - check the server call
            -- may need to move all the socket function back to their original location or make it work withing the hooks ?????
     --leads page scroll up not working after first time
-
 
     -identity and financial information should be hidden for the lead shared holder
     -withing the boking page ask only the necessary question to a new lead coming in.

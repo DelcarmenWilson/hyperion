@@ -1,54 +1,81 @@
-import { userEmitter } from "@/lib/event-emmiter";
-import { useChat } from "@/hooks/use-chat";
-import { FullChat } from "@/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useRef } from "react";
-import { MessageCard } from "./message";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useChat, useChatData } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { chatGetById, chatGetBUserId } from "@/actions/chat";
-import SkeletonWrapper from "../skeleton-wrapper";
+import { Button } from "@/components/ui/button";
+import { MessageCard } from "./message";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { cn } from "@/lib/utils";
 
 export const ChatBody = () => {
   const currentUser = useCurrentUser();
   const { user, chatId } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
-  const queryClient = useQueryClient();
-  const { data: chat, isFetching } = useQuery<FullChat | null>({
-    queryKey: ["agentMessages", `user-${user?.id}`],
-    queryFn: () => chatGetById(chatId as string),
-  });
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [loaded, setLoaded] = useState(true);
 
-  const inValidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["agentMessages", `user-${user?.id}`],
+  const { chat, chatIsFetching } = useChatData(chatId as string);
+
+  // handles the animation when scrolling to the top
+  const scrollToBottom = (type: boolean = false) => {
+    bottomRef.current?.scrollIntoView({
+      behavior: type ? "smooth" : loaded ? "instant" : "smooth",
     });
   };
 
   useEffect(() => {
-    userEmitter.on("chatMessageInserted", (newMessage) => {
-      if (newMessage.chatId == chatId) inValidate();
-    });
-  });
+    if (chatIsFetching) return;
+    scrollToBottom();
+    setLoaded(true);
+  }, [user?.id, chatIsFetching]);
 
   useEffect(() => {
-    if (isFetching) return;
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [user?.id, isFetching]);
+    if (!parentRef.current) return;
+    const toggleVisibility = () => {
+      const height = parentRef.current?.scrollHeight! - 800;
+      const scrolled = parentRef.current?.scrollTop!;
+      // if the user scrolls up, show the button
+      scrolled < height - 800 ? setIsVisible(true) : setIsVisible(false);
+    };
+    // listen for scroll events
+    parentRef.current?.addEventListener("scroll", toggleVisibility);
+
+    // clear the listener on component unmount
+    return () => {
+      parentRef.current?.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
 
   return (
-    <div className="flex-1 flex flex-col border gap-2 p-1 rounded overflow-y-auto">
-      <SkeletonWrapper isLoading={isFetching}>
-        {chat?.messages?.map((message) => (
-          <MessageCard
-            key={message.id}
-            username={message.sender.userName}
-            content={message.content!}
-            createdAt={message.createdAt}
-            isOwn={currentUser?.id == message.senderId}
-          />
-        ))}
-        <div className="p-2" ref={bottomRef}></div>
-      </SkeletonWrapper>
+    <div className="relative flex-1 border p-1 rounded overflow-hidden">
+      <div
+        ref={parentRef}
+        className="flex flex-col h-full gap-2 overflow-y-auto px-2"
+      >
+        <SkeletonWrapper isLoading={chatIsFetching}>
+          {chat?.messages?.map((message) => (
+            <MessageCard
+              key={message.id}
+              username={message.sender.userName}
+              content={message.content!}
+              createdAt={message.createdAt}
+              isOwn={currentUser?.id == message.senderId}
+            />
+          ))}
+          <div className="p-2" ref={bottomRef}></div>
+        </SkeletonWrapper>
+      </div>
+      <Button
+        className={cn(
+          "absolute bottom-2 right-6 opacity-0",
+          isVisible && "opacity-100"
+        )}
+        onClick={() => scrollToBottom(true)}
+        size="icon"
+      >
+        <ChevronDown size={16} />
+      </Button>
     </div>
   );
 };

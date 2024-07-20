@@ -3,7 +3,7 @@ import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 
-type phoneStore = {
+type PhoneStore = {
   isPhoneInOpen: boolean;
   onPhoneInOpen: () => void;
   onPhoneInClose: () => void;
@@ -48,7 +48,7 @@ type phoneStore = {
   setOnCall: (e: boolean) => void;
 };
 
-export const usePhone = create<phoneStore>((set, get) => ({
+export const usePhone = create<PhoneStore>((set, get) => ({
   pipeIndex: 0,
   isPhoneInOpen: false,
   isPhoneDialerOpen: false,

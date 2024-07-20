@@ -6,10 +6,11 @@ import { FullLead } from "@/types";
 import { DataTable } from "@/components/tables/data-table";
 
 import { columns } from "./columns";
+import { AssistantForm } from "@/components/lead/forms/assistant-form";
+import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
+import { PolicyInfoForm } from "@/components/lead/forms/policy-info-form";
 import { ShareForm } from "@/components/lead/forms/share-form";
 import { TransferForm } from "@/components/lead/forms/transfer-form";
-import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
-import { AssistantForm } from "@/components/lead/forms/assistant-form";
 
 export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
   const [leads, setLeads] = useState(initLeads);
@@ -32,6 +33,7 @@ export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
   }, []);
   return (
     <>
+      <PolicyInfoForm />
       <ShareForm />
       <TransferForm />
       <IntakeForm />
