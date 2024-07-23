@@ -69,13 +69,9 @@ export const ImportLeadsForm = () => {
           setLeads(mapped);
           const fls: ImportLeadColumn[] = mapped.map((lead) => ({
             id: "",
+            ...lead,
             fullName: `${lead.firstName} ${lead.lastName}`,
-            email: lead.email,
-            cellPhone: lead.cellPhone,
             dob: lead.dateOfBirth || "",
-            address: lead.address,
-            city: lead.city,
-            state: lead.state,
             zip: lead.zipCode,
           }));
           setFormmatedLeads(fls);

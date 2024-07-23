@@ -21,9 +21,11 @@ const UpdatePage = async () => {
     dates.push(dt);
   });
 
+  if (!dates) return null;
+
   return (
     <PageLayout title="Page Updates" icon={Sparkle}>
-      <Accordion type="multiple" className="w-full">
+      <Accordion type="multiple" className="w-full" defaultValue={[...dates]}>
         {dates.map((date) => (
           <PageUpdateList
             key={date.toString()}

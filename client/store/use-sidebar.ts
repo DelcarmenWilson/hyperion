@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
 type SidebarStore ={
-  collapsed: boolean;
-  onToggleCollapse:(e:boolean)=>void
+  isOpen: boolean;
+  onToggleCollapse:()=>void
   // onExpand: () => void;
   // onCollapse: () => void;
 }
 
 export const useSidebar = create<SidebarStore>((set) => ({
-  collapsed: true,  
-  onToggleCollapse:(e)=>set(()=>({ collapsed:e})),
+  isOpen: false,  
+  onToggleCollapse:()=>set((state)=>({ isOpen:!state.isOpen})),
   // onExpand:()=>set(()=>({ collapsed:false})),
   // onCollapse:()=>set(()=>({ collapsed:true}))
 }));

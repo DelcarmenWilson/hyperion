@@ -15,8 +15,13 @@ import axios from "axios";
 import { getPhoneStatusText } from "@/formulas/phone";
 
 export const CallModal = () => {
-  const { isCallOpen, onCallClose, call, callType, onPhoneOutOpen } =
-    usePhone();
+  const {
+    isCallOpen,
+    onCallClose,
+    fullCall: call,
+    callType,
+    onPhoneOutOpen,
+  } = usePhone();
   const from = call?.lead
     ? `${call?.lead?.firstName} ${call?.lead?.lastName}`
     : formatPhoneNumber(call?.from as string);

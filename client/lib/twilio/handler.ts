@@ -75,18 +75,24 @@ export const voiceResponse = async (call: TwilioCall) => {
 
       break;
     case "outbound":
-      twiml.dial().conference(
-        {
-          participantLabel: agentId,
-          startConferenceOnEnter: true,
-          endConferenceOnExit: true,
-          beep: "false",
-          waitUrl: "",
-          record: "record-from-start",
-          recordingStatusCallback: "/api/twilio/voice/conference/recording",
-        },
-        agentId
-      );
+      // twiml.dial().conference(
+      //   {
+      //     participantLabel: agentId,
+      //     startConferenceOnEnter: true,
+      //     endConferenceOnExit: true,
+      //     beep: "false",
+      //     waitUrl: "",
+      //     record: "record-from-start",
+      //     recordingStatusCallback: "/api/twilio/voice/conference/recording",
+      //   },
+      //   agentId
+      // );
+           //TODO - this is a test to see if the conference are the issues
+      const attr = isAValidPhoneNumber(to) ? "number" : "client";
+      const outDial = twiml.dial({callerId: agentNumber,
+        record: "record-from-answer",
+        recordingStatusCallback: "/api/twilio/voice/recording",});
+      outDial[attr](to);
       break;
     case "coach":
       const dialCoach = twiml.dial();
@@ -100,16 +106,7 @@ export const voiceResponse = async (call: TwilioCall) => {
         },
         conferenceId as string
       );
-      console.log(
-        "dialCoach:",
-        dialCoach,
-        "callSidToCoach:",
-        callSidToCoach,
-        "conferenceId:",
-        conferenceId,
-        "agentId:",
-        agentId
-      );
+      
       break;
     default:
       twiml.say({ voice: "alice" }, "Thanks for calling!");

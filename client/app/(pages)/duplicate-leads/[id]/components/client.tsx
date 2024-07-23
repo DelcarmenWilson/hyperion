@@ -71,8 +71,6 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
     commision: lead.policy?.commision!,
     coverageAmount: lead.policy?.coverageAmount!,
     startDate: lead.policy?.startDate!,
-    createdAt: lead.createdAt,
-    updatedAt: lead.policy?.updatedAt!,
   };
 
   const onSetDefaultNumber = async (phoneNumber: string) => {
