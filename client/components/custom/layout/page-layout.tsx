@@ -11,6 +11,7 @@ type PageLayoutProps = {
   topMenu?: React.ReactNode;
   children: React.ReactNode;
   justify?: boolean;
+  show?: boolean;
 };
 export const PageLayout = ({
   icon: Icon,
@@ -18,9 +19,15 @@ export const PageLayout = ({
   topMenu,
   children,
   justify = true,
+  show = false,
 }: PageLayoutProps) => {
   return (
-    <Card className="flex flex-col flex-1 relative overflow-hidden w-full">
+    <Card
+      className={cn(
+        "flex flex-col flex-1 relative w-full",
+        !show && "overflow-hidden"
+      )}
+    >
       <div
         className={cn(
           "flex lg:items-center mb-1 lg:flex-row border-b ",

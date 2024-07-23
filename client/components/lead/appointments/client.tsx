@@ -57,16 +57,13 @@ export const AppointmentClient = ({
     });
   };
 
-  // useEffect(() => {
-  //   userEmitter.on("appointmentUpdated", invalidate);
-  // }, [user?.id]);
-
   return (
     <>
       <AppointmentDetailsModal />
       <PageLayout
         title="Appointments"
         icon={Calendar}
+        show={!showDate}
         topMenu={
           <TopMenu
             showLink={showLink}
@@ -85,7 +82,6 @@ export const AppointmentClient = ({
             }}
             filterType={showDate ? "appointment" : undefined}
           />
-          {/* {JSON.stringify(appointments)} */}
         </SkeletonWrapper>
       </PageLayout>
     </>
