@@ -8,6 +8,7 @@ import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 
+import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
 import { SideBar, SidebarSkeleton } from "@/components/sidebar";
 import { ChatDrawer } from "@/components/chat/drawer";
@@ -31,8 +32,6 @@ import {
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
-import BlurPage from "@/components/global/blur-page";
-// import { ChatDrawer } from "@/components/chat/drawer";
 export default async function DashBoardLayout({
   children,
 }: {

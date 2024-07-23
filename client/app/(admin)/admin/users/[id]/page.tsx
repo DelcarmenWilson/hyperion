@@ -43,9 +43,9 @@ const UserPage = async ({
   if (!user) {
     return <p className="text-sm text-muted-foreground">User not found!</p>;
   }
-
+  //TODO - need to make the second div scrollable
   return (
-    <>
+    <div className="flex flex-col h-full overflow-y-auto">
       <UserClient user={user} callsLength={calls.length} teams={teams} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
@@ -68,7 +68,7 @@ const UserPage = async ({
         />
       </div>
       <CallHistoryClient userId={params.id} duration={duration} />
-    </>
+    </div>
   );
 };
 

@@ -2,31 +2,18 @@
 import {
   Bot,
   Calendar,
-  CarTaxiFront,
-  ClipboardList,
-  Cog,
-  Computer,
-  ComputerIcon,
-  DollarSign,
-  Facebook,
-  Folder,
-  Globe2,
   Heading,
   Home,
   Import,
   Key,
-  LineChart,
   ListTodo,
-  Lock,
   LucideIcon,
-  Mail,
   MessageSquare,
   MessageSquarePlus,
   MessagesSquare,
   MilestoneIcon,
   Phone,
   ScrollText,
-  Server,
   Settings,
   ShieldHalf,
   TestTube,
@@ -34,9 +21,9 @@ import {
   UserSquare,
   Users,
   Video,
-  Voicemail,
   Workflow,
 } from "lucide-react";
+
 export type NavType = {
   title: string;
   href: string;
@@ -87,11 +74,6 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "Tasks",
     href: "/admin/tasks",
     icon: ListTodo,
-  },
-  {
-    title: "Temp Folder",
-    href: "/admin/temp-folder",
-    icon: Folder,
   },
   {
     title: "WorkFlows",
