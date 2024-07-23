@@ -15,24 +15,49 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Textarea } from "@/components/ui/textarea";
 
 import { useAdminData } from "@/hooks/use-admin";
+import { ImageUpload } from "@/components/custom/image-upload";
+import { useState } from "react";
 
 export const UpdateForm = ({ onClose }: { onClose: () => void }) => {
   const { loading, onPageUpdatedInsert } = useAdminData(onClose);
+  const [file, setFile] = useState<{
+    image: File | null;
+    url: string | null;
+  }>({ image: null, url: null });
 
   const form = useForm<PageUpdateSchemaType>({
     resolver: zodResolver(PageUpdateSchema),
     defaultValues: {
-      name: "",
+      title: "",
       description: "",
+      type: "Change",
     },
   });
+
+  const onImageUpdate = (image: File, url: string) => {
+    setFile({ image, url });
+    form.setValue("image", url);
+  };
+  const onImageRemove = () => {
+    setFile({ image: null, url: null });
+    form.setValue("image", undefined);
+  };
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
+    onImageRemove();
     if (onClose) {
       onClose();
     }
@@ -43,17 +68,53 @@ export const UpdateForm = ({ onClose }: { onClose: () => void }) => {
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onPageUpdatedInsert)}
+          onSubmit={form.handleSubmit((e) =>
+            onPageUpdatedInsert(e, file?.image)
+          )}
         >
           <div className="flex flex-col gap-2">
+            <ImageUpload
+              selectedImage={form.getValues("image")!}
+              onImageUpdate={onImageUpdate}
+              onImageRemove={onImageRemove}
+            />
+            {/* TYPE */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    name="ddlType"
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Add">Add</SelectItem>
+                      <SelectItem value="Bug-Fix">Bug Fix</SelectItem>
+                      <SelectItem value="Change">Change</SelectItem>
+                      <SelectItem value="Delete">Delete</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* NAME */}
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem className="flex flex-col pt-2">
                   <FormLabel className="flex justify-between items-center">
-                    Name
+                    Title
                     <FormMessage />
                   </FormLabel>
                   <FormControl>

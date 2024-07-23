@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
+import { SideBar, SidebarSkeleton } from "@/components/sidebar";
 import { currentRole } from "@/lib/auth";
 import NavBar from "@/components/navbar/navbar";
 

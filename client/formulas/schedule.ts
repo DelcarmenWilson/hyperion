@@ -10,8 +10,8 @@ export const daysOfTheWeek = [
   "saturday",
 ];
 export type ScheduleDay = {
-  index:number;
-  available:boolean
+  index: number;
+  available: boolean;
   day: string;
   type: string;
   workFrom: string | undefined;
@@ -24,26 +24,54 @@ export type ScheduleDay = {
   closed: number;
   closedhours: BreakHourType[];
 };
+export const defaultDay: ScheduleDay = {
+  available: true,
+  breakFrom1: "12:00",
+  breakFrom2: "14:00",
+  breakTo1: "13:00",
+  breakTo2: "15:00",
+  closed: 18,
+  closedhours: [{ hour: 12 }, { hour: 14 }],
+  day: "monday",
+  index: 1,
+  open: 9,
+  type: "hourly",
+  workFrom: "09:00",
+  workTo: "18:00",
+};
 
 type BreakHourType = {
   hour: number;
 };
 export const breakDownSchedule = (schedule: Schedule): ScheduleDay[] => {
-const {sunday,monday,tuesday,wednesday,thursday,friday,saturday}=schedule
-  const sch: ScheduleDay[] = [sunday,monday,tuesday,wednesday,thursday,friday,saturday].map((day,index)=>{
-    return breakDownDay(index,day,schedule.type)
-  })
+  const { sunday, monday, tuesday, wednesday, thursday, friday, saturday } =
+    schedule;
+  const sch: ScheduleDay[] = [
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+  ].map((day, index) => {
+    return breakDownDay(index, day, schedule.type);
+  });
   return sch;
 };
 
 const breakDownDay = (
-  index:number,
+  index: number,
   schedule: string,
   type: string
 ): ScheduleDay => {
   const hours = schedule == "Not Available" ? null : schedule.split(",");
   const availabelHours = hours ? hours[0] : undefined;
-  const breakHours = hours ? hours[1]?hours[1].split("|") : undefined:undefined;
+  const breakHours = hours
+    ? hours[1]
+      ? hours[1].split("|")
+      : undefined
+    : undefined;
   const break1Hours = breakHours ? breakHours[0] : undefined;
   const break2Hours = breakHours ? breakHours[1] : undefined;
 
@@ -74,9 +102,9 @@ const breakDownDay = (
       closedhours.push({ hour: i });
     }
   const newDay: ScheduleDay = {
-    available:schedule != "Not Available",
+    available: schedule != "Not Available",
     index,
-    day:daysOfTheWeek[index],
+    day: daysOfTheWeek[index],
     type,
     workFrom,
     workTo,
@@ -119,15 +147,22 @@ export const consolitateSchedule = (
 };
 
 export const consolitateDay = (schedule: ScheduleDay): string => {
-  const { workFrom, workTo, breakFrom1, breakTo1, breakFrom2, breakTo2,available } =
-    schedule;
+  const {
+    workFrom,
+    workTo,
+    breakFrom1,
+    breakTo1,
+    breakFrom2,
+    breakTo2,
+    available,
+  } = schedule;
   if (!available) return "Not Available";
   const work = `${workFrom}-${workTo}`;
   const break1 = `${breakFrom1}-${breakTo1}`;
   const break2 = `${breakFrom2}-${breakTo2}`;
   let day = `${work},`;
 
-  if(breakFrom1){
+  if (breakFrom1) {
     day = `${day}${break1}`;
   }
   if (breakFrom2) {
@@ -190,7 +225,7 @@ export const generateScheduleTimes = (
     const agentDate = new Date(date.setHours(i));
 
     const localDate = new Date(agentDate);
-    localDate.setHours(localDate.getHours() + timeDiff*-1);
+    localDate.setHours(localDate.getHours() + timeDiff * -1);
 
     const textDate = new Date(localDate);
     textDate.setHours(textDate.getHours());

@@ -10,11 +10,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { UserButton } from "@/components/auth/user-button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { IconLink, IconLinkSkeleton } from "./icon-link";
+
 import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
+import { IconLink, IconLinkSkeleton } from "../reusable/icon-link";
 
 export const SideBar = ({ main = false }: { main?: boolean }) => {
-  const { collapsed } = useSidebar((state) => state);
+  const { isOpen } = useSidebar((state) => state);
   const role = useCurrentRole();
   const pathname = usePathname();
   const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
@@ -30,7 +31,7 @@ export const SideBar = ({ main = false }: { main?: boolean }) => {
     <aside
       className={cn(
         "flex flex-col fixed top-14 z-30 h-[calc(100vh-3.5rem)] w-60 shrink-0 md:sticky bg-background border-r py-2 transition-[width] ease-in-out",
-        collapsed && "w-[70px]"
+        isOpen && "w-[70px]"
       )}
     >
       <ScrollArea className="p-2 flex-1">

@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { PageUpdateSchema, PageUpdateSchemaType } from "@/schemas/admin";
 
 export const pageUpdatesGetAll = async()=> {
-const updates=await db.pageUpdate.findMany()
+const updates=await db.pageUpdate.findMany({orderBy:{updatedAt:"desc"}})
 return updates
 }
 
@@ -23,17 +23,16 @@ export const pageUpdateInsert = async (values: PageUpdateSchemaType) => {
       return { error: "Invalid fields!" };
     }
   
-    const { name, description } = validatedFields.data;
+    const { type,title,image, description } = validatedFields.data;
   
-    const existingUpdate = await db.pageUpdate.findFirst({ where: { name } });
+    const existingUpdate = await db.pageUpdate.findFirst({ where: { title } });
     if (existingUpdate) {
       return { error: "Update already exists" };
     }
   
     const newUpdate = await db.pageUpdate.create({
       data: {
-        name,
-        description,
+        type,title,image, description
       },
     });
   

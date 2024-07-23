@@ -2,8 +2,6 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
-import { useSidebar } from "@/store/use-sidebar";
-import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type IconLinkProps = {
@@ -19,19 +17,15 @@ export const IconLink = ({
   active,
   icon: Icon,
 }: IconLinkProps) => {
-  const { collapsed } = useSidebar((state) => state);
   return (
     <Link href={href}>
       <Button
         variant={active ? "default" : "ghost"}
         size="sm"
-        className={cn(
-          "w-full flex items-center group mb-2",
-          collapsed ? "justify-center" : "justify-start"
-        )}
+        className={"w-full flex items-center group mb-2"}
       >
         <Icon size={16} className="group-hover:animate-spin" />
-        {!collapsed && <span className="ml-2">{title}</span>}
+        <span className="ml-2">{title}</span>
       </Button>
     </Link>
   );

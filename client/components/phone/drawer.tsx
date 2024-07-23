@@ -8,6 +8,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import { Fragment } from "react";
 import { PhoneLeadInfo } from "./addins/lead-info";
+import { usePhone } from "@/hooks/use-phone";
 
 type PhoneDrawerProps = {
   title: string;
@@ -31,6 +32,7 @@ export const PhoneDrawer = ({
   closeButton = "default",
   autoClose = false,
 }: PhoneDrawerProps) => {
+  const { isLeadInfoOpen } = usePhone();
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -54,7 +56,16 @@ export const PhoneDrawer = ({
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute indent-0 overflow-hidden">
             <div className="fixed inset-y-0 right-[415px] flex max-w-full">
-              <PhoneLeadInfo />
+              <div className="flex flex-1 justify-start relative overflow-hidden ">
+                <div
+                  className={cn(
+                    "relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
+                    isLeadInfoOpen && "w-full right-0"
+                  )}
+                >
+                  <PhoneLeadInfo />
+                </div>
+              </div>
             </div>
             <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full pl-10">
               <Transition.Child

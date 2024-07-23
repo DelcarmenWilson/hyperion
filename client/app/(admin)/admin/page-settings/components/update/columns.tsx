@@ -32,8 +32,12 @@ export const columns: ColumnDef<PageUpdate>[] = [
   //   header: "Id",
   // },
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "type",
+    header: "Type",
+  },
+  {
+    accessorKey: "title",
+    header: "Title",
   },
   {
     accessorKey: "description",

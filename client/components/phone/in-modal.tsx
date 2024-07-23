@@ -2,15 +2,9 @@
 
 import { Connection } from "twilio-client";
 import { Fragment, useEffect, useState } from "react";
-import {
-  Phone,
-  PhoneForwarded,
-  PhoneIncoming,
-  PhoneOff,
-  X,
-} from "lucide-react";
+import { Phone, PhoneForwarded, PhoneIncoming, PhoneOff } from "lucide-react";
 import axios from "axios";
-import { userEmitter } from "@/lib/event-emmiter";
+import { cn } from "@/lib/utils";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -25,32 +19,30 @@ import { usePhone } from "@/hooks/use-phone";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
-import { cn } from "@/lib/utils";
 import { PhoneLeadInfo } from "./addins/lead-info";
-
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 
 export const PhoneInModal = () => {
-  const user = useCurrentUser();
   const {
+    call,
+    isRunning,
+    time,
+    setTime,
+    isOnCall,
+    onPhoneInConnect,
+    onPhoneDisconnect,
     isPhoneInOpen,
-    onPhoneInClose,
     onPhoneInOpen,
     onSetLead,
     lead,
     isLeadInfoOpen,
-    onToggleLeadInfo,
+    onLeadInfoToggle: onToggleLeadInfo,
   } = usePhone();
-  const { phone, call, setCall } = usePhoneContext();
+  const { phone } = usePhoneContext();
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
-  // const [call, setInComingCall] = useState<Connection>();
-  const [onCall, setOnCall] = useState(false);
   const [from, setFrom] = useState<{ name: string; number: string }>();
-  const [time, setTime] = useState(0);
-  const [running, setRunning] = useState(false);
 
   const addDeviceListeners = () => {
     if (!phone) return;
@@ -82,44 +74,38 @@ export const PhoneInModal = () => {
           number: data.cellPhone || incomingCall.parameters.From,
         });
       }
-      onPhoneInOpen();
-      setCall(incomingCall);
+      onPhoneInOpen(incomingCall);
     });
   };
   ///Disconnect an in progress call
   const onCallDisconnect = () => {
     chatSettingsUpdateCurrentCall("");
     call?.disconnect();
-    setOnCall(false);
-    setRunning(false);
-    setTime(0);
-    onPhoneInClose();
+    onPhoneDisconnect();
   };
   ///Accept an incoming call
   const onIncomingCallAccept = () => {
     chatSettingsUpdateCurrentCall(call?.parameters.CallSid!);
     call?.accept();
-    setOnCall(true);
-    setRunning(true);
+    onPhoneInConnect();
   };
   //Disconnect an in progress call - Direct the call to voicemail
   const onIncomingCallReject = () => {
     call?.reject();
-    setOnCall(false);
-    onPhoneInClose();
+    onPhoneDisconnect();
   };
 
   useEffect(() => {
     let interval: any;
-    if (running) {
+    if (isRunning) {
       interval = setInterval(() => {
-        setTime((time) => time + 1);
+        setTime();
       }, 1000);
     } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [running]);
+  }, [isRunning]);
 
   useEffect(() => {
     if (phone?.status() == "busy") return;
@@ -193,7 +179,7 @@ export const PhoneInModal = () => {
                       <Button size="sm" onClick={onToggleLeadInfo}>
                         Return to call
                       </Button>
-                      {!onCall ? (
+                      {!isOnCall ? (
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -249,7 +235,7 @@ export const PhoneInModal = () => {
                         {formatSecondsToTime(time)}
                       </span>
                     </div>
-                    {!onCall ? (
+                    {!isOnCall ? (
                       <div className="flex flex-col gap-2">
                         <Button
                           className="gap-2"

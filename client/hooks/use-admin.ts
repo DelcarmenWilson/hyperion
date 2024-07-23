@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageUpdateSchemaType } from "@/schemas/admin";
+import { handleFileUpload } from "@/lib/utils";
 
 export const useAdminData = (onClose?: () => void) => {
   const [loading, setLoading] = useState(false);
@@ -24,8 +25,14 @@ export const useAdminData = (onClose?: () => void) => {
     queryFn: () => pageUpdatesGetAll(),
   });
 
-  const onPageUpdatedInsert = async (values: PageUpdateSchemaType) => {
+  const onPageUpdatedInsert = async (values: PageUpdateSchemaType,image?:File|null) => {
     setLoading(true);
+    if (image) {
+      values.image = await handleFileUpload({
+        newFile: image,
+        filePath: "page-updates",
+      });
+    }
     const insertedUpdate = await pageUpdateInsert(values);
     if (insertedUpdate.success) {
       if (onClose) onClose();

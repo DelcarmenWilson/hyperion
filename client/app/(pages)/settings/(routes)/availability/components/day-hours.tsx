@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useSchedule } from "@/hooks/use-schedule";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useScheduleBreak } from "@/hooks/use-schedule-break";
-import { Button } from "@/components/ui/button";
+
 import { ScheduleDay } from "@/formulas/schedule";
 import { formatJustTime } from "@/formulas/dates";
 
@@ -11,17 +13,23 @@ type DayHoursProps = {
   schedule: ScheduleDay;
   disabled: boolean;
   onSetAvail: (e: number, a: boolean) => void;
+  onSetWorkHours: (e: number, type: "from" | "to", time: string) => void;
 };
 
-export const DayHour = ({ schedule, disabled, onSetAvail }: DayHoursProps) => {
-  const { onOpen } = useScheduleBreak();
+export const DayHour = ({
+  schedule,
+  disabled,
+  onSetAvail,
+  onSetWorkHours,
+}: DayHoursProps) => {
+  const { onOpen } = useSchedule();
   const [available, setAvailable] = useState(schedule.available);
+  const index = schedule.index;
 
   const onSetAvailable = (e: boolean) => {
     setAvailable(e);
-    onSetAvail(schedule.index, e);
+    onSetAvail(index, e);
   };
-
   return (
     <div className="grid grid-cols-2 lg:grid-cols-6 items-center gap-2 mb-2">
       <div className="flex justify-between gap-2 text-sm text-muted-foreground">
@@ -44,6 +52,9 @@ export const DayHour = ({ schedule, disabled, onSetAvail }: DayHoursProps) => {
             defaultValue={schedule.workFrom}
             autoComplete="time"
             step="300"
+            onChange={(e) => {
+              onSetWorkHours(index, "from", e.target.value);
+            }}
           />
           <Input
             name="txtWorkTo"
@@ -52,6 +63,9 @@ export const DayHour = ({ schedule, disabled, onSetAvail }: DayHoursProps) => {
             defaultValue={schedule.workTo}
             autoComplete="time"
             step="300"
+            onChange={(e) => {
+              onSetWorkHours(index, "to", e.target.value);
+            }}
           />
           <Button
             className="justify-between col-span-2"
