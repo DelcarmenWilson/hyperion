@@ -9,7 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone } from "@/hooks/use-phone-old";
 import { usePhoneContext } from "@/providers/phone";
 
 import {

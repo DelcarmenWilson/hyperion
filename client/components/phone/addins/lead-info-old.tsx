@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone } from "@/hooks/use-phone-old";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { cn } from "@/lib/utils";
