@@ -26,20 +26,8 @@ import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 
-type PhoneLeadInfo = {
-  open?: boolean;
-};
-
-export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
-  const { lead } = usePhone();
-  const [isOpen, setIsOpen] = useState(open);
-
-  useEffect(() => {
-    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
-    return () => {
-      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
-    };
-  }, []);
+export const PhoneLeadInfo = () => {
+  const { lead, isLeadInfoOpen } = usePhone();
 
   if (!lead) {
     return null;
@@ -88,56 +76,57 @@ export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
     startDate: lead.policy?.startDate!,
   };
   return (
-    <div className="flex flex-1 justify-start relative overflow-hidden">
-      <div
-        className={cn(
-          "flex  flex-col relative transition-[right] -right-full ease-in-out duration-500 h-full w-0 overflow-hidden",
-          isOpen && "w-full right-0"
-        )}
-      >
-        <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-          <LeadHeader lead={lead} />
-          <TabsList className="flex w-full h-auto">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
-            <TabsTrigger value="conditions">Conditions</TabsTrigger>
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          </TabsList>
+    // <div className="flex flex-1 justify-start relative overflow-hidden ">
+    //   <div
+    //     className={cn(
+    //       "flex  flex-col bg-background relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
+    //       isLeadInfoOpen && "w-full right-0"
+    //     )}
+    //   >
+    <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
+      <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
+        <LeadHeader lead={lead} />
+        <TabsList className="flex w-full h-auto rounded-none">
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
+          <TabsTrigger value="conditions">Conditions</TabsTrigger>
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+        </TabsList>
 
-          <TabsContent
-            className="flex-1 overflow-hidden overflow-y-auto"
-            value="general"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
-              <MainInfoClient info={leadMainInfo} noConvo={false} />
-              <GeneralInfoClient info={leadInfo} showInfo />
-              <CallInfo info={lead!} showBtnCall={false} />
-              <PolicyInfoClient
-                leadId={lead.id}
-                leadName={leadName}
-                info={leadPolicy}
-                assistant={lead.assistant}
-              />
-              <NotesForm
-                leadId={lead?.id as string}
-                intialNotes={lead?.notes as string}
-                initSharedUser={lead.sharedUser}
-              />
-            </div>
-          </TabsContent>
-          <TabsContent value="beneficiaries">
-            <BeneficiariesClient leadId={lead.id} />
-          </TabsContent>
-          <TabsContent value="conditions">
-            <ConditionsClient leadId={lead.id} />
-          </TabsContent>
-          <TabsContent value="expenses">
-            <ExpensesClient leadId={lead.id} />
-          </TabsContent>
-        </Tabs>
+        <TabsContent
+          className="flex-1 overflow-hidden overflow-y-auto"
+          value="general"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
+            <MainInfoClient info={leadMainInfo} noConvo={false} />
+            <GeneralInfoClient info={leadInfo} showInfo />
+            <CallInfo info={lead!} showBtnCall={false} />
+            <PolicyInfoClient
+              leadId={lead.id}
+              leadName={leadName}
+              info={leadPolicy}
+              assistant={lead.assistant}
+            />
+            <NotesForm
+              leadId={lead?.id as string}
+              intialNotes={lead?.notes as string}
+              initSharedUser={lead.sharedUser}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value="beneficiaries">
+          <BeneficiariesClient leadId={lead.id} />
+        </TabsContent>
+        <TabsContent value="conditions">
+          <ConditionsClient leadId={lead.id} />
+        </TabsContent>
+        <TabsContent value="expenses">
+          <ExpensesClient leadId={lead.id} />
+        </TabsContent>
+      </Tabs>
 
-        <PhoneScript />
-      </div>
+      <PhoneScript />
     </div>
+    // </div>
   );
 };

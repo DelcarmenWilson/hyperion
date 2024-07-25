@@ -3,28 +3,19 @@
 import { usePhone } from "@/hooks/use-phone";
 import { DrawerRight } from "../custom/drawer-right";
 import PhoneShell from "@/components/phone/addins/shell";
-import { PhoneDrawer } from "./drawer";
 
 export const PhoneOutModal = () => {
-  const { isPhoneOutOpen, onPhoneOutClose } = usePhone();
+  const { isPhoneOutOpen: isDialerOpen, onPhoneOutClose: onDialerClose } =
+    usePhone();
   return (
-    // <DrawerRight
-    //   title="Phone"
-    //   isOpen={isDialerOpen}
-    //   onClose={onDialerClose}
-    //   scroll={false}
-    //   size="w-auto"
-    // >
-    //   <PhoneShell />
-    // </DrawerRight>
-    <PhoneDrawer
+    <DrawerRight
       title="Phone"
-      isOpen={isPhoneOutOpen}
-      onClose={onPhoneOutClose}
+      isOpen={isDialerOpen}
+      onClose={onDialerClose}
       scroll={false}
       size="w-auto"
     >
       <PhoneShell />
-    </PhoneDrawer>
+    </DrawerRight>
   );
 };
