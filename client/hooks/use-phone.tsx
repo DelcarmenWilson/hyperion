@@ -3,7 +3,7 @@ import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 
-type PhoneStore = {
+type phoneStore = {
   isPhoneInOpen: boolean;
   onPhoneInOpen: () => void;
   onPhoneInClose: () => void;
@@ -30,10 +30,6 @@ type PhoneStore = {
   onSetLeads: (e?: FullLead[]) => void;
   onSetIndex: (e: number) => void;
 
-  // LEADINFO
-  isLeadInfoOpen: boolean;
-  onToggleLeadInfo: () => void;
-
   //CONFERENCE
   conference?: TwilioShortConference;
   participants?: TwilioParticipant[];
@@ -48,7 +44,7 @@ type PhoneStore = {
   setOnCall: (e: boolean) => void;
 };
 
-export const usePhone = create<PhoneStore>((set, get) => ({
+export const usePhone = create<phoneStore>((set) => ({
   pipeIndex: 0,
   isPhoneInOpen: false,
   isPhoneDialerOpen: false,
@@ -67,7 +63,7 @@ export const usePhone = create<PhoneStore>((set, get) => ({
   onPhoneOutOpen: (e, c) =>
     set({ isPhoneOutOpen: true, lead: e, conference: c }),
 
-  onPhoneOutClose: () => set({ isLeadInfoOpen: false, isPhoneOutOpen: false }),
+  onPhoneOutClose: () => set({ isPhoneOutOpen: false }),
 
   onCallOpen: (e, t = "call") =>
     set({ isCallOpen: true, call: e, callType: t }),
@@ -78,10 +74,6 @@ export const usePhone = create<PhoneStore>((set, get) => ({
   onSetIndex: (e) => set({ pipeIndex: e }),
   setConference: (e) => set({ conference: e }),
   setParticipants: (e) => set({ participants: e }),
-  // LEADINFO
-  isLeadInfoOpen: false,
-  onToggleLeadInfo: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen }),
-  //SCRIPT
   showScript: false,
   onScriptOpen: () => set({ showScript: true }),
   onScriptClose: () => set({ showScript: false }),

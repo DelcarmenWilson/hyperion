@@ -81,8 +81,6 @@ export const ConversationLeadInfo = ({
     commision: lead.policy?.commision!,
     coverageAmount: lead.policy?.coverageAmount!,
     startDate: lead.policy?.startDate!,
-    createdAt: lead.policy?.createdAt!,
-    updatedAt: lead.policy?.updatedAt!,
   };
   return (
     <div

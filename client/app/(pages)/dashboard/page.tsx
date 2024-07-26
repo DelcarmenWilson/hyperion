@@ -10,7 +10,7 @@ import { QuoteClient } from "./components/quote-client";
 const DashBoardPage = async () => {
   const user = await currentUser();
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-y-auto">
       <DashBoardClient />
       <QuoteClient />
       <AppointmentClient showLink />

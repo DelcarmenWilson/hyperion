@@ -9,7 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone } from "@/hooks/use-phone-old";
 import { usePhoneContext } from "@/providers/phone";
 
 import {
@@ -35,22 +35,30 @@ export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const {
+    call,
+    time,
+    setTime,
+    isRunning,
+    isCallMuted,
+    onCallMutedToggle,
+    onPhoneConnect,
+    onPhoneDisconnect,
     lead,
+    isConferenceOpen,
     conference,
     setConference,
     setParticipants,
+    onConferenceToggle,
     isOnCall,
-    setOnCall,
     isLeadInfoOpen,
-    onToggleLeadInfo,
+    onLeadInfoToggle: onToggleLeadInfo,
   } = usePhone();
-  const { phone, call, setCall } = usePhoneContext();
+  const { phone } = usePhoneContext();
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
-  const [isConferenceOpen, setIsConferenceOpen] = useState(false);
 
   const [empty, setEmpty] = useState(false);
-  const btnLeadRef = useRef<HTMLButtonElement>(null);
+
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
     name: lead ? leadFullName : "New Call",
@@ -61,9 +69,6 @@ export const PhoneOut = () => {
       user?.phoneNumbers[0]?.phone ||
       ""
   );
-  const [time, setTime] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [isCallMuted, setIsCallMuted] = useState(false);
 
   const startupClient = () => {
     if (!user?.phoneNumbers.length) {
@@ -97,52 +102,46 @@ export const PhoneOut = () => {
       AgentName: `${user?.name} (Agent)`,
     });
 
-    setTimeout(async () => {
-      const participant = await addParticipant({
-        conferenceSid: user?.id as string,
-        from: myNumber as string,
-        to: reFormatPhoneNumber(to.number),
-        label: lead?.id as string,
-        record: true,
-        coaching: false,
-        callSidToCoach: null,
-        earlyMedia: true,
-        endConferenceOnExit: true,
-        startConferenceOnEnter: true,
-      });
+    chatSettingsUpdateCurrentCall(call.parameters.callSid);
 
-      onGetParticipants(participant.conferenceSid, participant);
+    // setTimeout(async () => {
+    //   const participant = await addParticipant({
+    //     conferenceSid: user?.id as string,
+    //     from: myNumber as string,
+    //     to: reFormatPhoneNumber(to.number),
+    //     label: lead?.id as string,
+    //     record: true,
+    //     coaching: false,
+    //     callSidToCoach: null,
+    //     earlyMedia: true,
+    //     endConferenceOnExit: true,
+    //     startConferenceOnEnter: true,
+    //   });
 
-      const conf: TwilioShortConference = {
-        agentId: user?.id as string,
-        agentName: user?.name as string,
-        conferenceSid: participant.conferenceSid,
-        callSidToCoach: call.parameters.CallSid,
-        coaching: false,
-        leadId: lead?.id as string,
-        leadName: to.name,
-      };
-      setConference(conf);
-      chatSettingsUpdateCurrentCall(participant.callSid);
-    }, 2000);
+    //   onGetParticipants(participant.conferenceSid, participant);
+
+    //   const conf: TwilioShortConference = {
+    //     agentId: user?.id as string,
+    //     agentName: user?.name as string,
+    //     conferenceSid: participant.conferenceSid,
+    //     callSidToCoach: call.parameters.CallSid,
+    //     coaching: false,
+    //     leadId: lead?.id as string,
+    //     leadName: to.name,
+    //   };
+    //   setConference(conf);
+    //   chatSettingsUpdateCurrentCall(participant.callSid);
+    // }, 2000);
 
     call.on("disconnect", onDisconnect);
     userEmitter.emit("newCall", lead?.id!);
-    setOnCall(true);
-    setRunning(true);
-    setCall(call);
+    onPhoneConnect(call);
   };
 
   const onDisconnect = () => {
     call?.disconnect();
-    setOnCall(false);
-    setConference(undefined);
-    setParticipants(undefined);
-    setIsConferenceOpen(false);
-    setRunning(false);
-    setTime(0);
+    onPhoneDisconnect();
     chatSettingsUpdateCurrentCall(null);
-    setCall(null);
   };
 
   const onNumberClick = (num: string) => {
@@ -171,11 +170,8 @@ export const PhoneOut = () => {
 
   const onCallMuted = () => {
     if (call) {
-      call.mute(false);
-      setIsCallMuted((state) => {
-        call.mute(!state);
-        return !state;
-      });
+      call.mute(!isCallMuted);
+      onCallMutedToggle();
     }
   };
 
@@ -235,8 +231,6 @@ export const PhoneOut = () => {
   useEffect(() => {
     onCheckNumber();
     startupClient();
-    if (!lead) return;
-    onToggleLeadInfo();
   }, []);
 
   useEffect(() => {
@@ -252,15 +246,15 @@ export const PhoneOut = () => {
 
   useEffect(() => {
     let interval: any;
-    if (running) {
+    if (isRunning) {
       interval = setInterval(() => {
-        setTime((time) => time + 1);
+        setTime();
       }, 1000);
     } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [running]);
+  }, [isRunning]);
   //TODO - Test data dont forget to remove
   // useEffect(() => {
   //   setConference(testConference);
@@ -278,7 +272,6 @@ export const PhoneOut = () => {
 
             {lead && (
               <Button
-                ref={btnLeadRef}
                 variant={isLeadInfoOpen ? "default" : "outlineprimary"}
                 size="sm"
                 onClick={onToggleLeadInfo}
@@ -353,14 +346,14 @@ export const PhoneOut = () => {
                 isConferenceOpen && " bottom-0"
               )}
             >
-              <ParticipantList onClose={() => setIsConferenceOpen(false)} />
+              <ParticipantList onClose={onConferenceToggle} />
             </div>
             {conference?.agentId == user?.id && (
               <Button
                 className="mt-auto"
                 variant="outlineprimary"
                 size="sm"
-                onClick={() => setIsConferenceOpen((open) => !open)}
+                onClick={onConferenceToggle}
               >
                 See Paricipants
               </Button>

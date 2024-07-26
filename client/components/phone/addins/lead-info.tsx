@@ -26,8 +26,20 @@ import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 
-export const PhoneLeadInfo = () => {
-  const { lead, isLeadInfoOpen } = usePhone();
+type PhoneLeadInfo = {
+  open?: boolean;
+};
+
+export const PhoneLeadInfo = ({ open = false }: PhoneLeadInfo) => {
+  const { lead } = usePhone();
+  const [isOpen, setIsOpen] = useState(open);
+
+  useEffect(() => {
+    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
+    return () => {
+      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
+    };
+  }, []);
 
   if (!lead) {
     return null;
@@ -74,26 +86,18 @@ export const PhoneLeadInfo = () => {
     commision: lead.policy?.commision!,
     coverageAmount: lead.policy?.coverageAmount!,
     startDate: lead.policy?.startDate!,
-    createdAt: lead.policy?.createdAt!,
-    updatedAt: lead.policy?.updatedAt!,
   };
   return (
-    <div className="flex flex-1 justify-start relative overflow-hidden ">
+    <div className="flex flex-1 justify-start relative overflow-hidden">
       <div
         className={cn(
-          "flex  flex-col bg-background relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
-          isLeadInfoOpen && "w-full right-0"
+          "flex  flex-col relative transition-[right] -right-full ease-in-out duration-500 h-full w-0 overflow-hidden",
+          isOpen && "w-full right-0"
         )}
       >
-        {/* <div
-        className={cn(
-          "flex flex-col bg-white relative opacity-0 transition-[opacity] ease-in-out duration-500 h-full w-full overflow-hidden",
-          isOpen && "opacity-100"
-        )}
-      > */}
         <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
           <LeadHeader lead={lead} />
-          <TabsList className="flex w-full h-auto rounded-none">
+          <TabsList className="flex w-full h-auto">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
             <TabsTrigger value="conditions">Conditions</TabsTrigger>

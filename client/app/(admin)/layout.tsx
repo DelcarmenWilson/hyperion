@@ -1,40 +1,92 @@
 import React, { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { SideBar, SidebarSkeleton } from "@/components/reusable/sidebar";
-import { currentRole } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
+
+import SocketContextComponent from "@/providers/socket-component";
+
+import AppointmentContextComponent from "@/providers/app-component";
+import PhoneContextProvider from "@/providers/phone";
+import GlobalContextProvider from "@/providers/global";
+
+import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
+import { SideBar, SidebarSkeleton } from "@/components/sidebar";
+import { ChatDrawer } from "@/components/chat/drawer";
+import { LoginStatusModal } from "@/components/login-status/modal";
 
-type ProtectedLayoutProps = {
-  children: React.ReactNode;
-};
-const ProtectedLayout = async ({ children }: ProtectedLayoutProps) => {
-  const role = await currentRole();
+import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
+import { scriptGetOne } from "@/data/script";
+import {
+  userCarriersGetAllByUserId,
+  userGetByIdDefault,
+  userLicensesGetAllByUserId,
+  userTemplatesGetAllByUserId,
+} from "@/data/user";
+import { voicemailGetUnHeard } from "@/actions/voicemail";
+import { scheduleGetByUserId } from "@/data/schedule";
+import {
+  appointmentLabelsGetAllByUserId,
+  appointmentsGetAllByUserId,
+} from "@/data/appointment";
 
-  if (role != "MASTER" && role != "ADMIN") {
+import { adminCarriersGetAll } from "@/actions/admin/carrier";
+import { getTwilioToken } from "@/actions/twilio";
+import { usersGetAllChat } from "@/actions/user";
+
+const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await currentUser();
+
+  if (user?.role != "MASTER" && user?.role != "ADMIN") {
     redirect("/dashboard");
   }
+  const initUser = await userGetByIdDefault(user.id);
+  const initUsers = await usersGetAllChat();
+  const status = await leadStatusGetAllByAgentIdDefault(user.id);
+  const script = await scriptGetOne();
+  const voicemails = await voicemailGetUnHeard(user.id);
+  const token = await getTwilioToken();
+  const licenses = await userLicensesGetAllByUserId(user.id);
+  const carriers = await userCarriersGetAllByUserId(user.id);
+  const availableCarriers = await adminCarriersGetAll();
+  const schedule = await scheduleGetByUserId(user.id, user.role);
+  const appointments = await appointmentsGetAllByUserId(user.id);
+  const appointmentLabels = await appointmentLabelsGetAllByUserId(user.id);
+  const templates = await userTemplatesGetAllByUserId(user.id);
+
   return (
-    <>
-      {/* <SideBar />
-      <div className="flex flex-col ml-[70px] h-full ">
-        <div className="flex flex-col flex-1 w-full lg:px-4 lg:mb-4 overflow-hidden overflow-y-auto">
-          {children}
-        </div>
-      </div> */}
-      <div className="relative flex h-full flex-col">
-        <NavBar />
-        <main className="flex flex-1 h-[calc(100vh-3.6rem)] z-30 overflow-hidden">
-          <Suspense fallback={<SidebarSkeleton />}>
-            <SideBar />
-          </Suspense>
-          <div className="flex flex-1 flex-col h-full">
-            <div className="flex flex-col flex-1 w-full mt-14 px-1 lg:px-2 lg:mb-2 overflow-y-auto">
-              {children}
+    <GlobalContextProvider
+      initUser={initUser!}
+      initUsers={initUsers}
+      initStatus={status}
+      intScript={script!}
+      initLicenses={licenses}
+      initAvailableCarriers={availableCarriers}
+      initCarriers={carriers}
+      initTemplates={templates}
+    >
+      <SocketContextComponent>
+        <div className="h-screen overflow-hidden">
+          <SideBar />
+
+          <div className="md:pl-[180px]">
+            <NavBar />
+            <div className="relative ">
+              <PhoneContextProvider initVoicemails={voicemails} token={token!}>
+                <AppointmentContextComponent
+                  initSchedule={schedule!}
+                  initAppointments={appointments}
+                  initLabels={appointmentLabels}
+                >
+                  <BlurPage>{children}</BlurPage>
+                </AppointmentContextComponent>
+              </PhoneContextProvider>
+              <ChatDrawer />
+              <LoginStatusModal />
             </div>
           </div>
-        </main>
-      </div>
-    </>
+        </div>
+      </SocketContextComponent>
+    </GlobalContextProvider>
   );
 };
 

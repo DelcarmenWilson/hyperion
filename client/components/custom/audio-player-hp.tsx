@@ -11,7 +11,7 @@ type AudioPlayerHpProps = {
   src: string | undefined;
   onListened?: () => void;
 };
-
+//TODO - the play functionality is broken
 export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const role = useCurrentRole();
   // const [playing, setPlaying] = useState(false);
@@ -35,6 +35,8 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [ellapsedtime, setEllapsedtime] = useState(0);
+  const [maxTime, setMaxTime] = useState(0);
 
   // references
   const audioPlayer = useRef<HTMLAudioElement>(null);
@@ -62,7 +64,8 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
 
   const whilePlaying = () => {
     if (!progressBar.current || !audioPlayer.current) return;
-    progressBar.current.value = audioPlayer.current.currentTime;
+
+    setEllapsedtime(audioPlayer.current.currentTime);
     changePlayerCurrentTime();
     animationRef.current = requestAnimationFrame(whilePlaying);
   };
@@ -86,7 +89,7 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
 
   const onStep = (num: number) => {
     if (!progressBar.current) return;
-    progressBar.current.value = progressBar.current.value + num;
+    setEllapsedtime((time) => time + num);
     changeRange();
   };
   const reset = () => {
@@ -100,6 +103,8 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
     if (!audioPlayer.current || !progressBar.current) return;
     const seconds = Math.floor(audioPlayer.current.duration);
     setDuration(seconds);
+    console.log(seconds);
+    setMaxTime(seconds);
     // progressBar.current.max = seconds;
   }, [
     audioPlayer?.current?.onloadedmetadata,
@@ -107,14 +112,14 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   ]);
   if (role == "ASSISTANT") return null;
   return (
-    <div className="bg-secondary w-full p-2">
+    <div className="bg-background w-full p-2">
       <audio ref={audioPlayer} src={src} preload="metadata" />
       <div className="flex gap-2 items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => onStep(-30)}>
           <SkipBack size={20} /> 30
         </Button>
         <Button
-          className="rounded-full p-4"
+          className="rounded-full"
           onClick={togglePlayPause}
           disabled={!src}
         >
@@ -129,8 +134,9 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
         <progress
           className={styles.progressBar}
           defaultValue="0"
-          max={0}
+          max={maxTime}
           ref={progressBar}
+          value={ellapsedtime}
           onChange={changeRange}
         />
         <div>{duration && !isNaN(duration) && calculateTime(duration)}</div>

@@ -1,7 +1,7 @@
 "use client";
 import { MessageSquare, Phone, Voicemail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PhoneOut } from "@/components/phone/phone-out";
+import { PhoneOut } from "@/components/phone/out";
 import { usePhoneContext } from "@/providers/phone";
 import { VoicemailList } from "@/components/phone/voicemail/list";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
@@ -12,8 +12,7 @@ const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
-      {/* //TODO - If every one agree with the changes remove this */}
-      {/* <PhoneLeadInfo /> */}
+      <PhoneLeadInfo />
       <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
         <TabsList className="w-full h-auto">
           <TabsTrigger

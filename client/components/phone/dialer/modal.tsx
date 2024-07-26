@@ -91,7 +91,7 @@ export const PhoneDialerModal = () => {
                       </ScrollArea>
                     </div>
                     <div className="flex flex-col flex-1 border border-secondary h-full overflow-hidden">
-                      {lead && <PhoneLeadInfo />}
+                      {lead && <PhoneLeadInfo open />}
                     </div>
                   </div>
                 </div>
