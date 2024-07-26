@@ -53,6 +53,7 @@ export function AvailabilityClient({
     setLoading(true);
     const cs = consolitateSchedule(brSchedule);
     values = { ...values, ...cs };
+    console.log(cs)
 
     const updatedSchedule = await scheduleUpdateByUserId(values);
     if (updatedSchedule.success) toast.success(updatedSchedule.success);

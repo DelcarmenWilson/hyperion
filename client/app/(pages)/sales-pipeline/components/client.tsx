@@ -14,7 +14,7 @@ type SaleClientProps = {
 export const SalesClient = ({ leads, pipelines }: SaleClientProps) => {
   return (
     <>
-      {pipelines.length > 1 ? (
+      {pipelines.length > 0 ? (
         <PipeLineList leads={leads} initPipelines={pipelines} />
       ) : (
         <EmptyCard

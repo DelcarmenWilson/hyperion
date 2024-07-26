@@ -179,8 +179,8 @@ export const columns: ColumnDef<FullLead>[] = [
         status: row.original.policy?.status!,
         commision: row.original.policy?.commision!,
         coverageAmount: row.original.policy?.coverageAmount!,
-        createdAt: row.original.createdAt,
-        updatedAt: row.original.policy?.updatedAt!,
+        // createdAt: row.original.createdAt,
+        // updatedAt: row.original.policy?.updatedAt!,
       };
       const leadName = `${row.original.firstName} ${row.original.lastName}`;
       return (

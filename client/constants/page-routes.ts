@@ -11,6 +11,7 @@ import {
   Facebook,
   Folder,
   Globe2,
+  GoalIcon,
   Heading,
   Home,
   Import,
@@ -179,6 +180,11 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Sms",
     href: "/sms",
     icon: MessageSquare,
+  },
+  {
+    title: "Blue Print",
+    href: "/blueprint",
+    icon: GoalIcon,
   },
   // {
   //   title: "Email",
