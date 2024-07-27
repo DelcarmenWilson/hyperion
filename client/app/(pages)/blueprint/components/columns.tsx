@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { BluePrint } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
+import { Checkbox } from "@/components/ui/checkbox";
 
 
 export const columns: ColumnDef<BluePrint>[] = [
@@ -44,7 +45,8 @@ export const columns: ColumnDef<BluePrint>[] = [
     id: "active",
     accessorKey: "active",
     header: "Active",
-    enableHiding: true,
+   
+    cell:({row})=>(<Checkbox disabled checked={row.original.active}/>)
   },
 
   {

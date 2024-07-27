@@ -7,7 +7,7 @@ const PhonePage = async () => {
   const user = await currentUser();
   const phoneNumbers = await phoneNumbersGetByAgentId(user?.id as string);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 overflow-y-auto">
       <PurchasePhoneNumberForm />
       <MyPhoneNumbers phoneNumbers={phoneNumbers} />
     </div>

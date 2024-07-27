@@ -21,8 +21,10 @@ import {
 } from "@/components/ui/select";
 import { bluePrintInsert } from "@/actions/blueprint";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const BluePrintForm = ({onClose}:{onClose:()=>void}) => {
+  const queryClient= useQueryClient()
   const form = useForm<BluePrintSchemaType>({
     resolver: zodResolver(BluePrintSchema),
     defaultValues: { period: "Week", type: "Call" },
@@ -32,6 +34,7 @@ const BluePrintForm = ({onClose}:{onClose:()=>void}) => {
     if (newBluePrint.error) {
       toast.error(newBluePrint.error);
     } else {
+      queryClient.invalidateQueries({queryKey:["agentBluePrints"]})
       onClose();
       toast.success("new blue print created");
     }
