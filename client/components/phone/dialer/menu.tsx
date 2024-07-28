@@ -51,6 +51,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     matrix: 3,
     pause: 5,
   });
+  const [stop, setStop] = useState(false);
 
   const addDeviceListeners = () => {
     if (!phone) return;
@@ -63,29 +64,39 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     });
   };
 
-  const startCall = (dial: boolean = true) => {
-    if (!dial) return;
+  const startCall = (keepDialing: boolean = true) => {
+    if (!keepDialing) {
+      return;
+    }
     if (!phone || !lead || !user) return;
+
+    // getting default no. for that lead
     const agentNumber =
       user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone;
     const call = phone.connect({
       To: reFormatPhoneNumber(lead.cellPhone),
       AgentNumber: agentNumber,
-      Direction: "outbound",
+      CallDirection: "outbound",
     });
 
-    call.on("disconnect", onNextCall);
+    call.on("disconnect", onCallDisconnect);
     onPhoneConnect(call);
+  };
+  const onCallDisconnect = (e: any) => {
+    console.log(e);
+    call?.disconnect();
+    // if(stop) return;
+    // onNextCall();
   };
 
   const onNextCall = () => {
     call?.disconnect();
-    let dial = true;
+    let keepDialing = true;
     setDialNumber((num) => {
       const newNum = num + 1;
       if (pipeIndex == leads?.length! - 1 && newNum > settings.matrix) {
-        dial = false;
+        keepDialing = false;
         onStopDailing();
         onReset();
         toast.success("stage completed!");
@@ -98,7 +109,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
       return newNum;
     });
 
-    startCall(dial);
+    startCall(keepDialing);
   };
 
   const onCallMuted = () => {
@@ -113,6 +124,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
 
   const onStopDailing = () => {
     call?.disconnect();
+    setStop(true);
     onPhoneDisconnect();
     startCall(false);
   };

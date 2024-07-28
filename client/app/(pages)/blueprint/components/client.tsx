@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { bluePrintsGetAllByUserId } from "@/actions/blueprint";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-const BluePrintClient = ({ bluePrintData }: { bluePrintData: BluePrint[] }) => {
+const BluePrintClient = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data, isFetching } = useQuery<BluePrint[]>({
     queryFn: () => bluePrintsGetAllByUserId(),
