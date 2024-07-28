@@ -106,7 +106,7 @@ export const PhoneOut = () => {
     });
 
     chatSettingsUpdateCurrentCall(call.parameters.callSid);
-
+    //TODO - see if we can get this working
     // setTimeout(async () => {
     //   const participant = await addParticipant({
     //     conferenceSid: user?.id as string,
