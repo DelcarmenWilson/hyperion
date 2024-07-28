@@ -34,16 +34,6 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-//   await db.bluePrint.create({
-//     data: {
-//       plannedTarget: validatedFields.data.plannedTarget,
-//       type: validatedFields.data.type,
-//       period: validatedFields.data.period,
-//       userId: user.id,
-//       endDate: new Date(),
-//       actualTarget: 0,
-//     },
-//   });
 
 const{plannedTarget,type,period}=validatedFields.data
 

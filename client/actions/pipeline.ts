@@ -4,6 +4,7 @@ import {  currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PipeLine } from "@prisma/client";
 import { userGetByAssistant } from "@/data/user";
+import { PipelineSchemaType,PipelineSchema } from "@/schemas/pipeline";
 
 //DATA
 export const pipelineGetAllByAgentId = async () => {
@@ -27,12 +28,20 @@ export const pipelineGetAllByAgentId = async () => {
   }
 };
 //ACTIONS
-export const pipelineInsert = async (statusId: string, name: string) => {
+export const pipelineInsert = async (values:PipelineSchemaType) => {
   const user = await currentUser();
 
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
+
+ 
+  const validatedFields = PipelineSchema.safeParse(values);
+  if (!validatedFields.success) return { error: "Invalid Fields" };
+
+
+const{statusId,name}=validatedFields.data
+
   let userId=user.id;
   if (user.role=="ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
