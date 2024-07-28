@@ -115,7 +115,7 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
           </nav>
           <div className="flex flex-col mt-auto items-center space-y-2">
             <IconLink
-              title="updates"
+              title="UPDATES"
               href="/update-page"
               active={pathname.includes("update-page")}
               icon={Sparkle}

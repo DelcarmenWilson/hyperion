@@ -2,22 +2,19 @@
 import { useState } from "react";
 import { FullPipeline } from "@/types";
 import { RefreshCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useModal } from "@/providers/modal";
 
 import { toast } from "sonner";
-import { AnimatePresence, Reorder } from "framer-motion";
+import { Reorder } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 
 import { pipelineUpdateOrder } from "@/actions/pipeline";
 import { formatDate } from "@/formulas/dates";
-import { useRouter } from "next/navigation";
 
-type StageListProps = {
-  pipelines: FullPipeline[];
-  setStagesOpen: () => void;
-};
-
-export const StageList = ({ pipelines, setStagesOpen }: StageListProps) => {
+export const StageList = ({ pipelines }: { pipelines: FullPipeline[] }) => {
+  const { setClose } = useModal();
   const router = useRouter();
   const [stages, setStages] = useState(pipelines);
   const [loading, setLoading] = useState(false);
@@ -35,8 +32,8 @@ export const StageList = ({ pipelines, setStagesOpen }: StageListProps) => {
     if (updatePipeline.success) {
       toast.success(updatePipeline.success);
       setButtonEnabled(false);
-      setStagesOpen;
       router.refresh();
+      setClose();
     } else toast.error(updatePipeline.error);
 
     setLoading(false);
@@ -54,7 +51,6 @@ export const StageList = ({ pipelines, setStagesOpen }: StageListProps) => {
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold py-2">Organize you pipeline</h3>
       <div className="grid grid-cols-3 gap-2 text-sm text-muted-foreground border-b items-center">
         <p>Status</p>
         <p>Title</p>
@@ -95,7 +91,7 @@ type StageCardProps = {
 export const StageCard = ({ stage }: StageCardProps) => {
   return (
     <Reorder.Item value={stage}>
-      <li className="grid grid-cols-3 p-2 text-sm border-b items-center hover:text-[1rem]">
+      <li className="grid grid-cols-3 p-2 text-sm border-b items-center hover:bg-secondary hover:text-[0.85rem] cursor-move">
         <p>{stage.status.status}</p>
         <p>{stage.name}</p>
         <p className="text-end">{formatDate(stage.createdAt)}</p>

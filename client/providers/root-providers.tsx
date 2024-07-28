@@ -19,7 +19,7 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
-        <ModalProvider>{children}</ModalProvider>
+        {children}
 
         <MasterModalProvider />
         <ThemeSwitcher />
