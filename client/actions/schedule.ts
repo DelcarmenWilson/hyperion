@@ -81,6 +81,7 @@ export const scheduleUpdateByUserId = async (
         friday,
         saturday,
       },
+
     });
 
     return { success: "schedule has been updated!" };

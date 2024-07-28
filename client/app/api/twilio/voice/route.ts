@@ -11,11 +11,15 @@ export async function POST(req: Request) {
   //get all the variable from the body into the twlio cal type
   const call: TwilioCall = formatObject(body);
 
-  //check if this number is a lead or a client
+   //check if this number is a lead or a client
   const lead = await db.lead.findFirst({
     where: { cellPhone: call.direction == "outbound" ? call.to : call.from },
   });
-
+ 
+if(call.callDirection=="outbound"){
+  call.agentId = call.caller.replace("client:", "");
+  call.direction="outbound"
+}else{
   switch (call.direction) {
     //INCOMING CALL
     case "inbound":
@@ -24,11 +28,11 @@ export async function POST(req: Request) {
         where: { phone: call.to },
       });
       //get chat settings based on the agent ID
-      const settings = await db.chatSettings.findUnique({
+      const settings = await db.chatSettings.findFirst({
         where: { userId: phonenumber?.agentId! },
       });
 
-      const notificationSettings = await db.notificationSettings.findUnique({
+      const notificationSettings = await db.notificationSettings.findFirst({
         where: { userId: settings?.userId },
       });
 
@@ -50,9 +54,10 @@ export async function POST(req: Request) {
       call.agentId = call.caller.replace("client:", "");
       break;
   }
+}
 
   //Set a new record for the call in the database
-  if (call.direction == "inbound" || call.direction == "outbound") {
+  if (["inbound","outbound"].includes(call.direction)) {
     await db.call.create({
       data: {
         id: call.callSid,

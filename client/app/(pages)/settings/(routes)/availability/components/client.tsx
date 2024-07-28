@@ -45,6 +45,31 @@ export function AvailabilityClient({
     defaultValues: schedule,
   });
 
+  const onSubmit = async (values: ScheduleSchemaType) => {
+    setLoading(true);
+    const cs = consolitateSchedule(brSchedule);
+    values = { ...values, ...cs };
+    console.log(cs)
+
+    const updatedSchedule = await scheduleUpdateByUserId(values);
+    if (updatedSchedule.success) toast.success(updatedSchedule.success);
+    else toast.error(updatedSchedule.error);
+
+    setLoading(false);
+  };
+
+  const onSetDay = (e: ScheduleDay) => {
+    const newSc = Array.from(brSchedule);
+    newSc[e.index] = e;
+    setBrSchedule(newSc);
+  };
+
+  const onSetAvailable = (idx: number, available: boolean) => {
+    const newSc = Array.from(brSchedule);
+    newSc[idx].available = available;
+    setBrSchedule(newSc);
+  };
+
   return (
     <>
       <ScheduleBreakModal setDay={onSetDay} />

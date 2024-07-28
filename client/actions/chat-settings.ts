@@ -86,7 +86,7 @@ export const chatSettingsUpdateCoach = async (coach: boolean) => {
 };
 
 export const chatSettingsUpdateCurrentCall = async (
-  currentCall: string | null
+  currentCall: string
 ) => {
   const user = await currentUser();
 
@@ -98,6 +98,24 @@ export const chatSettingsUpdateCurrentCall = async (
     where: { userId: user.id },
     data: {
       currentCall,
+    },
+  });
+
+  return { success: "current Call has been updated" };
+};
+
+export const chatSettingsUpdateRemoveCurrentCall = async (
+) => {
+  const user = await currentUser();
+
+  if (!user) {
+    return { error: "Unauthenticated" };
+  }
+
+  await db.chatSettings.update({
+    where: { userId: user.id },
+    data: {
+      currentCall:null,
     },
   });
 

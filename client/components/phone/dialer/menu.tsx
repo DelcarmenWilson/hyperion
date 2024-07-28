@@ -28,26 +28,29 @@ type DialerMenuProps = {
 export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
   const user = useCurrentUser();
   const {
+    call,
+    isRunning,
+    time,
+    setTime,
+    isCallMuted,
+    onCallMutedToggle,
+    onPhoneConnect,
+    onPhoneDisconnect,
     onPhoneDialerClose,
     leads,
     lead,
     pipeline,
-    pipeIndex: pipIndex,
+    pipeIndex,
   } = usePhone();
 
   const [dialNumber, setDialNumber] = useState(1);
-  const [dialing, setDialing] = useState(false);
 
   // PHONE VARIABLES
-  const { phone, call, setCall } = usePhoneContext();
+  const { phone } = usePhoneContext();
   const [settings, setSettings] = useState<DialerSettingsType>({
     matrix: 3,
     pause: 5,
   });
-
-  const [isCallMuted, setIsCallMuted] = useState(false);
-
-  const [time, setTime] = useState(0);
 
   const addDeviceListeners = () => {
     if (!phone) return;
@@ -73,7 +76,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     });
 
     call.on("disconnect", onNextCall);
-    setCall(call);
+    onPhoneConnect(call);
   };
 
   const onNextCall = () => {
@@ -81,7 +84,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     let dial = true;
     setDialNumber((num) => {
       const newNum = num + 1;
-      if (pipIndex == leads?.length! - 1 && newNum > settings.matrix) {
+      if (pipeIndex == leads?.length! - 1 && newNum > settings.matrix) {
         dial = false;
         onStopDailing();
         onReset();
@@ -100,21 +103,17 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
 
   const onCallMuted = () => {
     if (!call) return;
-    setIsCallMuted((state) => {
-      call.mute(!state);
-      return !state;
-    });
+    onCallMutedToggle();
+    call.mute(!isCallMuted);
   };
 
   const onStartDialing = () => {
-    setDialing(true);
     startCall();
   };
 
   const onStopDailing = () => {
     call?.disconnect();
-    setCall(call);
-    setDialing(false);
+    onPhoneDisconnect();
     startCall(false);
   };
 
@@ -129,15 +128,15 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
 
   useEffect(() => {
     let interval: any;
-    if (dialing) {
+    if (isRunning) {
       interval = setInterval(() => {
-        setTime((state) => state + 1);
+        setTime();
       }, 1000);
     } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [dialing]);
+  }, [isRunning]);
 
   useEffect(() => {
     addDeviceListeners();
@@ -155,7 +154,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
           </span>
         </div>
         <div className="flex gap-2 items-start">
-          {!dialing && (
+          {!isRunning && (
             <>
               <Button
                 variant="outlineprimary"
@@ -166,7 +165,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
                 <RefreshCcw size={16} /> Reset
               </Button>
               <Button
-                disabled={pipIndex >= leads?.length! - 1}
+                disabled={pipeIndex >= leads?.length! - 1}
                 className="gap-2"
                 size="sm"
                 onClick={() => onNextLead()}
@@ -177,7 +176,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
           )}
 
           {/* {call && ( */}
-          {dialing && (
+          {isRunning && (
             <>
               <Button
                 className="gap-2"
@@ -208,11 +207,11 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
         </div>
         <div className="flex gap-2 items-center">
           <DialerSettings
-            disabled={dialing}
+            disabled={isRunning}
             settings={settings}
             setSettings={setSettings}
           />
-          {dialing ? (
+          {isRunning ? (
             <Button variant="destructive" size="sm" onClick={onStopDailing}>
               Stop Dialing
             </Button>
@@ -221,14 +220,14 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
               Start Dialing
             </Button>
           )}
-          <Button disabled={dialing} size="sm" onClick={onPhoneDialerClose}>
+          <Button disabled={isRunning} size="sm" onClick={onPhoneDialerClose}>
             <X size={16} />
           </Button>
         </div>
       </div>
       <div className="flex items-center justify-between text-muted-foreground">
         <span>
-          Stage: {pipeline?.name} - {pipIndex + 1} of {leads?.length} Leads
+          Stage: {pipeline?.name} - {pipeIndex + 1} of {leads?.length} Leads
         </span>
 
         <span>Call # {dialNumber}</span>

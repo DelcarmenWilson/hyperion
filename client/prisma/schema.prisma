@@ -116,6 +116,11 @@ model User {
   // ONE TO ONE RELATIONS
   assitantRel User?      @relation("AssitantToUser")
 
+  //link with target table
+     blueprints BluePrint[]
+    
+
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -1078,4 +1083,18 @@ model Media {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+model BluePrint {
+  id          String  @id @default(cuid())
+ userId String 
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  plannedTarget Int
+  actualTarget Int
+  type String
+  period String
+  active Boolean @default(true)
+  endDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

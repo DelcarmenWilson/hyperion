@@ -33,7 +33,10 @@ export const TopMenu = ({ pipelines }: { pipelines: FullPipeline[] }) => {
   const [stageOpen, setStageOpen] = useState(false);
 
   const onStageInsert = () => {
-    if (!title || !status) return;
+    if (!title || !status) {
+      toast.error("Title is required!");
+      return;
+    }
     setLoading(true);
     pipelineInsert(status, title).then((data) => {
       if (data.error) {
@@ -71,6 +74,7 @@ export const TopMenu = ({ pipelines }: { pipelines: FullPipeline[] }) => {
             <p className="text-base text-muted-foreground xl:min-w-12">
               Status
             </p>
+
             <Select
               name="ddlStatus"
               disabled={loading}

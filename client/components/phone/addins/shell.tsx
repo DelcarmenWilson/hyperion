@@ -12,7 +12,8 @@ const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
-      <PhoneLeadInfo />
+      {/* //TODO - If every one agree with the changes remove this */}
+      {/* <PhoneLeadInfo /> */}
       <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
         <TabsList className="w-full h-auto">
           <TabsTrigger

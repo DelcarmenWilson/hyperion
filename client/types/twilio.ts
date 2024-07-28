@@ -18,6 +18,7 @@ export type TwilioNumber = {
 export type TwilioCall = {
   callSid: string;
   direction: string;
+  callDirection:string;
   to: string;
   from: string;
   callerName: string;

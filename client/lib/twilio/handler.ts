@@ -48,7 +48,7 @@ export const voiceResponse = async (call: TwilioCall) => {
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-      twiml.play("/sounds/SSF-Greeting-2.mp3");
+       twiml.play("/sounds/SSF-Greeting-2.mp3");
       //   twiml.say(
       //   { voice:"Polly.Amy" },
       //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
@@ -75,18 +75,19 @@ export const voiceResponse = async (call: TwilioCall) => {
 
       break;
     case "outbound":
-      twiml.dial().conference(
-        {
-          participantLabel: agentId,
-          startConferenceOnEnter: true,
-          endConferenceOnExit: true,
-          beep: "false",
-          waitUrl: "",
-          record: "record-from-start",
-          recordingStatusCallback: "/api/twilio/voice/conference/recording",
-        },
-        agentId
-      );
+      twiml.dial({callerId:agentNumber,record:"record-from-answer", recordingStatusCallback: "/api/twilio/voice/recording"},to)
+      // twiml.dial().conference(
+      //   {
+      //     participantLabel: agentId,
+      //     startConferenceOnEnter: true,
+      //     endConferenceOnExit: true,
+      //     beep: "false",
+      //     waitUrl: "",
+      //     record: "record-from-start",
+      //     recordingStatusCallback: "/api/twilio/voice/conference/recording",
+      //   },
+      //   agentId
+      // );
       break;
     case "coach":
       const dialCoach = twiml.dial();
@@ -115,6 +116,7 @@ export const voiceResponse = async (call: TwilioCall) => {
       twiml.say({ voice: "alice" }, "Thanks for calling!");
       break;
   }
+  
   return twiml.toString();
 };
 
