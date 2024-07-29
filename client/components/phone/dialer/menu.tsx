@@ -12,7 +12,7 @@ import { MdDialpad } from "react-icons/md";
 import { toast } from "sonner";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     pipeline,
     pipeIndex,
   } = usePhone();
-
+  const data = usePhoneData(isRunning, setTime);
   const [dialNumber, setDialNumber] = useState(1);
 
   // PHONE VARIABLES
@@ -52,17 +52,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     pause: 5,
   });
   const [stop, setStop] = useState(false);
-
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("Dialer ready");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
-  };
 
   const startCall = (keepDialing: boolean = true) => {
     if (!keepDialing) {
@@ -80,12 +69,14 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
       CallDirection: "outbound",
     });
 
+    call.on("hangup", onCallDisconnect);
     call.on("disconnect", onCallDisconnect);
     onPhoneConnect(call);
   };
   const onCallDisconnect = (e: any) => {
     console.log(e);
     call?.disconnect();
+    onPhoneDisconnect();
     // if(stop) return;
     // onNextCall();
   };
@@ -138,22 +129,17 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     setIndex(true);
   };
 
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime();
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    addDeviceListeners();
-    // eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   let interval: any;
+  //   if (isRunning) {
+  //     interval = setInterval(() => {
+  //       setTime();
+  //     }, 1000);
+  //   } else {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isRunning])
 
   return (
     <>

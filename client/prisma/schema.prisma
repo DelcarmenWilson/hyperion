@@ -117,9 +117,9 @@ model User {
   assitantRel User?      @relation("AssitantToUser")
 
   //link with target table
-     blueprints BluePrint[]
-    
-  fullTimeInfo  FullTimeInfo?
+  blueprints BluePrint[]
+
+  fullTimeInfo FullTimeInfo?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -238,9 +238,10 @@ model PhoneNumber {
   phone String
   state String
 
-  agent   User?   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agent   User?    @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String?
-
+  sid     String   @default("PNab929a6bd46eb8c96dd1d34f0b6602bf")
+  app     String   @default("AP7be1b9b81ad29a698a869a1b5f7a926a")
   renewAt DateTime
 
   status    String   @default("Active")
@@ -1086,27 +1087,25 @@ model Media {
 }
 
 model BluePrint {
-  id          String  @id @default(cuid())
- userId String 
- user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   plannedTarget Int
-  actualTarget Int
-  type String
-  period String
-  active Boolean @default(true)
-  endDate DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  actualTarget  Int
+  type          String
+  period        String
+  active        Boolean  @default(true)
+  endDate       DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model FullTimeInfo {
- userId String @unique
- user User @relation(fields:[userId],references:[id],onDelete:Cascade)
- workType String
- workingDays String
- workingHours String
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workType     String
+  workingDays  String
+  workingHours String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
-
-

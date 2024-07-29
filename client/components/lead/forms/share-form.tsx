@@ -12,9 +12,10 @@ export const ShareForm = () => {
   const {
     isShareFormOpen,
     onShareFormClose,
-    leadId,
+    leadIds,
     leadFullName,
     initUser: sharedUser,
+    onTableClose,
   } = useLead();
 
   const {
@@ -23,7 +24,7 @@ export const ShareForm = () => {
     setUserId,
     onLeadUpdateByIdShare,
     onLeadUpdateByIdUnShare,
-  } = useLeadActions(onShareFormClose, leadId, sharedUser?.id);
+  } = useLeadActions(onShareFormClose, leadIds, sharedUser?.id, onTableClose);
 
   return (
     <Dialog open={isShareFormOpen} onOpenChange={onShareFormClose}>
@@ -36,16 +37,18 @@ export const ShareForm = () => {
             <h4 className="text-md text-muted-foreground font-bold">
               Currently Sharing Lead with:
             </h4>
-            <p className="font-bold text-lg  text-center">
-              {sharedUser.firstName} {sharedUser.lastName}
-              <Button
-                className="ms-2"
-                size="sm"
-                onClick={onLeadUpdateByIdUnShare}
-              >
-                <X size={16} />
-              </Button>
-            </p>
+            {leadIds?.length && leadIds.length == 1 && (
+              <p className="font-bold text-lg  text-center">
+                {sharedUser.firstName} {sharedUser.lastName}
+                <Button
+                  className="ms-2"
+                  size="sm"
+                  onClick={onLeadUpdateByIdUnShare}
+                >
+                  <X size={16} />
+                </Button>
+              </p>
+            )}
           </div>
         )}
         <p className="text-md text-muted-foreground font-bold">

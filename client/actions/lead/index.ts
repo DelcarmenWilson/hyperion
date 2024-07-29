@@ -366,7 +366,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
       status,
       assistantId,
       recievedAt,
-      notes
+      notes,
     } = values[i];
 
     const st = states.find(
@@ -437,7 +437,8 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
             : defaultNumber?.phone!,
           userId: user?.id,
           status,
-          assistantId,notes
+          assistantId,
+          notes,
         },
       });
     }
@@ -828,25 +829,18 @@ export const leadUpdateByIdAssistantRemove = async (id: string) => {
     user.id,
     true
   );
-  
- return {
+
+  return {
     success: lead.firstName,
     message: `${afUser.firstName} access to  ${lead.firstName}'s information has been revoked!`,
   };
 };
 
-export const leadUpdateByIdShare = async (id: string, userId: string) => {
+export const leadUpdateByIdShare = async (ids: string[], userId: string) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
-  }
-
-  const lead = await db.lead.findUnique({ where: { id } });
-  if (!lead) return { error: "Lead does not exists!!" };
-
-  if (lead.userId != user.id) {
-    return { error: "Unauthorized!!" };
   }
 
   const sharedUser = await db.user.findUnique({ where: { id: userId } });
@@ -854,29 +848,55 @@ export const leadUpdateByIdShare = async (id: string, userId: string) => {
     return { error: "User does not exists!!" };
   }
 
-  const sharedLead = await db.lead.update({
-    where: { id },
-    data: {
-      sharedUserId: sharedUser.id,
-    },
-  });
+  for (let id of ids) {
+    const lead = await db.lead.findUnique({ where: { id } });
+    if (!lead) return { error: "Lead does not exists!!" };
 
-  //MINE Feed
-  feedInsert(
-    `You shared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,
-    "",
-    user.id,
-    true
-  );
-  //Next Agent Feed
-  feedInsert(
-    `${user.name} shared a lead: ${lead.firstName} with you`,
-    `/leads/${lead.id}`,
-    sharedUser?.id as string
-  );
+    if (lead.userId != user.id) {
+      return { error: "Unauthorized!!" };
+    }
+
+    await db.lead.update({
+      where: { id },
+      data: {
+        sharedUserId: sharedUser.id,
+      },
+    });
+  }
+
+  const lead = await db.lead.findUnique({ where: { id: ids[0] } });
+  if (ids.length == 1) {
+    //MINE Feed
+    feedInsert(
+      `You shared a lead: ${lead?.firstName} with ${sharedUser?.firstName}`,
+      "",
+      user.id,
+      true
+    );
+    //Next Agent Feed
+    feedInsert(
+      `${user.name} shared a lead: ${lead?.firstName} with you`,
+      `/leads/${lead?.id}`,
+      sharedUser?.id as string
+    );
+  } else {
+    //MINE Feed
+    await feedInsert(
+      `You shared multiple leads with ${sharedUser?.firstName}`,
+      "",
+      user.id,
+      true
+    );
+    //Next Agent Feed
+    await feedInsert(
+      `${user.name} transfered multiple leads to you`,
+      "",
+      sharedUser?.id
+    );
+  }
 
   return {
-    success: sharedLead.firstName,
+    success: lead?.firstName,
     message: `Lead is now shared with ${sharedUser.firstName}!`,
   };
 };
@@ -926,19 +946,11 @@ export const leadUpdateByIdUnShare = async (id: string) => {
   };
 };
 
-export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
+export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
   const user = await currentUser();
 
   if (!user) {
     return { error: "Unathenticated" };
-  }
-
-  const lead = await db.lead.findUnique({ where: { id } });
-  if (!lead) {
-    return { error: "Lead does not exists!!" };
-  }
-  if (lead.userId != user.id) {
-    return { error: "Unauthorized!!" };
   }
 
   const tfUser = await db.user.findUnique({
@@ -950,46 +962,76 @@ export const leadUpdateByIdTransfer = async (id: string, userId: string) => {
     return { error: "User does not exists!!" };
   }
 
-  const st = states.find(
-    (e) =>
-      e.state.toLowerCase() == lead.state.toLowerCase() ||
-      e.abv.toLowerCase() == lead.state.toLowerCase()
-  );
-  const defaultNumber = tfUser.phoneNumbers.find((e) => e.status == "Default");
-  const phoneNumber = tfUser.phoneNumbers.find((e) => e.state == st?.abv);
+  for (let id of ids) {
+    const lead = await db.lead.findUnique({ where: { id } });
+    if (!lead) {
+      return { error: "Lead does not exists!!" };
+    }
+    if (lead.userId != user.id) {
+      return { error: "Unauthorized!!" };
+    }
 
-  await db.lead.update({
-    where: { id },
-    data: {
-      sharedUser: { disconnect: true },
-      assistant: { disconnect: true },
-    },
-  });
+    const st = states.find(
+      (e) =>
+        e.state.toLowerCase() == lead.state.toLowerCase() ||
+        e.abv.toLowerCase() == lead.state.toLowerCase()
+    );
+    const defaultNumber = tfUser.phoneNumbers.find(
+      (e) => e.status == "Default"
+    );
+    const phoneNumber = tfUser.phoneNumbers.find((e) => e.state == st?.abv);
 
-  const transferendLead = await db.lead.update({
-    where: { id },
-    data: {
-      userId: tfUser.id,
-      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone,
-    },
-  });
+    await db.lead.update({
+      where: { id },
+      data: {
+        sharedUser: { disconnect: true },
+        assistant: { disconnect: true },
+      },
+    });
 
-  //MINE Feed
-  await feedInsert(
-    `You transfered ${lead.firstName}'s information to ${tfUser.firstName}`,
-    "",
-    user.id,
-    true
-  );
-  //Next Agent Feed
-  await feedInsert(
-    `${user.name} transfered ${lead.firstName}'s information to you`,
-    `/leads/${lead.id}`,
-    tfUser.id
-  );
+    await db.lead.update({
+      where: { id },
+      data: {
+        userId: tfUser.id,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone,
+      },
+    });
+  }
+  const lead = await db.lead.findUnique({ where: { id: ids[0] } });
+  if (ids.length == 1) {
+    //MINE Feed
+    await feedInsert(
+      `You transfered ${lead?.firstName}'s information to ${tfUser.firstName}`,
+      "",
+      user.id,
+      true
+    );
+    //Next Agent Feed
+    await feedInsert(
+      `${user.name} transfered ${lead?.firstName}'s information to you`,
+      `/leads/${lead?.id}`,
+      tfUser.id
+    );
+  } else {
+    //MINE Feed
+    await feedInsert(
+      `You transfered multiple leads to ${tfUser.firstName}`,
+      "",
+      user.id,
+      true
+    );
+    //Next Agent Feed
+    await feedInsert(
+      `${user.name} transfered multiple leads to you`,
+      "",
+      tfUser.id
+    );
+  }
 
   return {
-    success: transferendLead.firstName,
-    message: `Lead is now transfered to ${tfUser.firstName}!`,
+    success: lead?.firstName,
+    message: `Lead${ids.length > 1 ? "s are" : " is"} now transfered to ${
+      tfUser.firstName
+    }!`,
   };
 };

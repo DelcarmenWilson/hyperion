@@ -80,16 +80,27 @@ export const MainNav = () => {
     //LEAD TRANSFER
     socket?.on(
       "lead-transfered-received",
-      (data: { agentName: string; leadId: string; leadFirstName: string }) => {
-        const { agentName, leadId, leadFirstName } = data;
-        const link = <LeadLink leadId={leadId} />;
+      (data: {
+        agentName: string;
+        leadIds: string[];
+        leadFirstName: string;
+      }) => {
+        const { agentName, leadIds, leadFirstName } = data;
+        const link =
+          leadIds.length == 1 ? <LeadLink leadId={leadIds[0]} /> : "";
         const message = (
           <p className="flex flex-col justify-center items-center gap-2 text-center">
-            {`${agentName} has transfered ${leadFirstName}'s information to you.`}{" "}
-            {link}
+            {leadIds.length == 1 ? (
+              <span>
+                {`${agentName} has transfered ${leadFirstName}'s information to you.`}{" "}
+                {link}
+              </span>
+            ) : (
+              <span>{`${agentName} has transfered multiple leads to you.`}</span>
+            )}
           </p>
         );
-        userEmitter.emit("leadTransferedRecieved", leadId);
+        userEmitter.emit("leadTransferedRecieved", leadIds);
         toast.success(message);
       }
     );

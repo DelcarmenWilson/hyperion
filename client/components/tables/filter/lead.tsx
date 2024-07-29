@@ -13,6 +13,7 @@ import { states } from "@/constants/states";
 import { allVendors } from "@/constants/lead";
 import { Button } from "@/components/ui/button";
 import { FullLead } from "@/types";
+import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
 
 type LeadFilterProps<TData> = {
   table: Table<TData>;
@@ -33,7 +34,9 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
       const call = row.original as FullLead;
       return call.id;
     });
-    console.log(ids);
+    return ids;
+  };
+  const onTableClose = () => {
     table.resetRowSelection();
   };
 
@@ -45,7 +48,8 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
     <>
       {table.getIsAllPageRowsSelected() ||
       (table.getIsSomePageRowsSelected() && "indeterminate") ? (
-        <Button onClick={onGetRows}>Get Rows</Button>
+        // <Button onClick={onGetRows}>Get Rows</Button>
+        <LeadFilterDropDown leadIds={onGetRows()} onClose={onTableClose} />
       ) : (
         <>
           <div className="flex items-center gap-2">

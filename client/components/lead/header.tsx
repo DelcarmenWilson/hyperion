@@ -14,13 +14,13 @@ type LeadHeaderProps = {
 export const LeadHeader = ({ lead }: LeadHeaderProps) => {
   const { socket } = useContext(SocketContext).SocketState;
   useEffect(() => {
-    const onSetLead = (leadId: string) => {
-      if (leadId == lead.id) redirect("/leads");
+    const onSetLead = (leadIds: string[]) => {
+      if (leadIds.includes(lead.id)) redirect("/leads");
     };
 
     userEmitter.on("leadTransfered", onSetLead);
-    socket?.on("lead-unshared-received", (data: { leadId: string }) => {
-      onSetLead(data.leadId);
+    socket?.on("lead-unshared-received", (data: { leadIds: string[] }) => {
+      onSetLead(data.leadIds);
     });
   }, []);
   return (

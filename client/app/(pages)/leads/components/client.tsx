@@ -16,13 +16,13 @@ export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
   const [leads, setLeads] = useState(initLeads);
 
   useEffect(() => {
-    const onSetLeads = (leadId: string) => {
-      setLeads((lds) => lds.filter((e) => e.id != leadId));
+    const onSetLeads = (leadIds: string[]) => {
+      setLeads((lds) => lds.filter((e) => !leadIds.includes(e.id)));
     };
 
-    const onSetNewLead = async (leadId: string) => {
+    const onSetNewLead = async (leadIds: string[]) => {
       const response = await axios.post("/api/leads/details/by-id", {
-        leadId: leadId,
+        leadId: leadIds[0],
       });
       const lead = response.data;
       setLeads((lds) => [lead, ...lds]);

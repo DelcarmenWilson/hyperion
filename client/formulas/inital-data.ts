@@ -284,6 +284,8 @@ export const convertPhoneNumbers = (result: any): PhoneNumber[] => {
       phone: d["phone"],
       state: d["state"],
       agentId: d["agentId"],
+      sid:d["sid"],
+      app:d["app"],
       status: d["status"],
       renewAt: new Date(d["renewAt"]),
       createdAt: new Date(d["createdAt"]),

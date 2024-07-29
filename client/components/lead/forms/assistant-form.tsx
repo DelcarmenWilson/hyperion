@@ -12,7 +12,7 @@ export const AssistantForm = () => {
   const {
     isAssistantFormOpen,
     onAssistantFormClose,
-    leadId,
+    leadIds,
     leadFullName,
     initUser: assistant,
   } = useLead();
@@ -23,7 +23,7 @@ export const AssistantForm = () => {
     loading,
     onLeadUpdateByIdAssistantAdd,
     onLeadUpdateByIdAssistantRemove,
-  } = useLeadActions(onAssistantFormClose, leadId, assistant?.id);
+  } = useLeadActions(onAssistantFormClose, leadIds, assistant?.id);
 
   return (
     <Dialog open={isAssistantFormOpen} onOpenChange={onAssistantFormClose}>

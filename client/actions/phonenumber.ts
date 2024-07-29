@@ -51,7 +51,9 @@ export const phoneNumberInsert = async (values:  UserPhoneNumberSchemaType) => {
 export const phoneNumberInsertTwilio = async (
   phone: string,
   state: string,
-  agentId: string | null
+  agentId: string | null,
+  sid:string,
+  app:string
 ) => {
   // const user = await currentUser();
   // if (!user) {
@@ -84,6 +86,8 @@ export const phoneNumberInsertTwilio = async (
       agentId,
       status,
       renewAt: date,
+      sid,
+      app
     },
   });
 
@@ -213,4 +217,30 @@ export const phoneNumberUpdateByIdAssign = async (
   });
 
   return { success: "Phone number is now assigned!" };
+};
+
+
+export const phoneNumberUpdateByIdApp = async (
+  id: string,
+  app: string
+) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+
+  const thisNumber = await db.phoneNumber.findUnique({
+    where: { id },
+  });
+
+  if (!thisNumber) {
+    return { error: "Number does not exist!" };
+  }
+  
+  await db.phoneNumber.update({
+    where: { id: thisNumber?.id },
+    data: { app},
+  });
+
+  return { success: "Phone number app updated!" };
 };

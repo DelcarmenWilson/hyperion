@@ -117,7 +117,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() =>
-                  onShareFormOpen(lead.id, leadFullName, lead.sharedUser!)
+                  onShareFormOpen([lead.id], leadFullName, lead.sharedUser!)
                 }
               >
                 <Share size={16} />
@@ -125,7 +125,7 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => onTransferFormOpen(lead.id, leadFullName)}
+                onClick={() => onTransferFormOpen([lead.id], leadFullName)}
               >
                 <Reply size={16} />
                 Transfer Lead
