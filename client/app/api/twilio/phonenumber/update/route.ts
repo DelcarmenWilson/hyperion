@@ -8,24 +8,14 @@ export async function POST(req: Request) {
     return NextResponse.json("Unauthorized", { status: 401 });
   }
   const body = await req.json();
-  const { option, state, areaCode } = body;
-
-  const params:any={    
-    limit: 20,
-    voiceEnabled: true,
-    mmsEnabled: true,
-    smsEnabled: true,
-  }
-
-  if(option=="state"){
-    params.inRegion=state
-  }else{    
-    params.areaCode=areaCode
-  }
+  const { sid, app } = body;
 
   const results = await client
-    .availablePhoneNumbers("US")
-    .local.list(params);
+  .incomingPhoneNumbers(sid)
+  .update({
+    smsApplicationSid: app,
+    voiceApplicationSid: app,
+  });
 
   return NextResponse.json(results, { status: 200 });
 }

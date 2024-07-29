@@ -49,8 +49,8 @@ type UserEvents = {
   leadStatusChanged: [leadId: string, newStatus: string];
 
 //LEAD SHARING AND TRANSFERING
-leadTransfered:[id:string];
-leadTransferedRecieved:[id:string];
+leadTransfered:[ids:string[]];
+leadTransferedRecieved:[ids:string[]];
 
   //LICENSES
   licenseDeleted: [id: string];

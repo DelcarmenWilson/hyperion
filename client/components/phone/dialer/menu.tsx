@@ -12,7 +12,7 @@ import { MdDialpad } from "react-icons/md";
 import { toast } from "sonner";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     pipeline,
     pipeIndex,
   } = usePhone();
-
+  const data = usePhoneData(isRunning, setTime);
   const [dialNumber, setDialNumber] = useState(1);
 
   // PHONE VARIABLES
@@ -51,41 +51,43 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     matrix: 3,
     pause: 5,
   });
+  const [stop, setStop] = useState(false);
 
-  const addDeviceListeners = () => {
-    if (!phone) return;
-    phone.on("ready", function () {
-      console.log("Dialer ready");
-    });
-
-    phone.on("error", function (error: any) {
-      console.log(error);
-    });
-  };
-
-  const startCall = (dial: boolean = true) => {
-    if (!dial) return;
+  const startCall = (keepDialing: boolean = true) => {
+    if (!keepDialing) {
+      return;
+    }
     if (!phone || !lead || !user) return;
+
+    // getting default no. for that lead
     const agentNumber =
       user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone;
     const call = phone.connect({
       To: reFormatPhoneNumber(lead.cellPhone),
       AgentNumber: agentNumber,
-      Direction: "outbound",
+      CallDirection: "outbound",
     });
 
-    call.on("disconnect", onNextCall);
+    call.on("hangup", onCallDisconnect);
+    call.on("disconnect", onCallDisconnect);
     onPhoneConnect(call);
+  };
+  const onCallDisconnect = (e: any) => {
+    console.log(e);
+    call?.disconnect();
+    onPhoneDisconnect();
+    // if(stop) return;
+    // onNextCall();
   };
 
   const onNextCall = () => {
     call?.disconnect();
-    let dial = true;
+    let keepDialing = true;
     setDialNumber((num) => {
       const newNum = num + 1;
       if (pipeIndex == leads?.length! - 1 && newNum > settings.matrix) {
-        dial = false;
+        keepDialing = false;
         onStopDailing();
         onReset();
         toast.success("stage completed!");
@@ -98,7 +100,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
       return newNum;
     });
 
-    startCall(dial);
+    startCall(keepDialing);
   };
 
   const onCallMuted = () => {
@@ -113,6 +115,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
 
   const onStopDailing = () => {
     call?.disconnect();
+    setStop(true);
     onPhoneDisconnect();
     startCall(false);
   };
@@ -126,22 +129,17 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     setIndex(true);
   };
 
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime();
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    addDeviceListeners();
-    // eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   let interval: any;
+  //   if (isRunning) {
+  //     interval = setInterval(() => {
+  //       setTime();
+  //     }, 1000);
+  //   } else {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [isRunning])
 
   return (
     <>

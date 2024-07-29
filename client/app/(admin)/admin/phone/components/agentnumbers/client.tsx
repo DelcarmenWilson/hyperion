@@ -5,12 +5,11 @@ import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { FullPhoneNumber } from "@/types";
 
-type AgentNumbersClientProps = {
-  phoneNumbers: FullPhoneNumber[];
-};
 export const AgentNumbersClient = ({
   phoneNumbers,
-}: AgentNumbersClientProps) => {
+}: {
+  phoneNumbers: FullPhoneNumber[];
+}) => {
   return (
     <CardLayout title="Agent Numbers" icon={ClipboardList}>
       <DataTable data={phoneNumbers} columns={columns} headers />

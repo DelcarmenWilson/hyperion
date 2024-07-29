@@ -3,6 +3,7 @@ import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Connection } from "twilio-client";
+import { useEffect } from "react";
 
 type PhoneStore = {
   //PHONE SPECIFIC
@@ -135,3 +136,17 @@ export const usePhone = create<PhoneStore>((set, get) => ({
   isOnCall: false,
   setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));
+
+export const usePhoneData = (isRunning: boolean, setTime: () => void) => {
+  useEffect(() => {
+    let interval: any;
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTime();
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning]);
+};

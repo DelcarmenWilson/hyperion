@@ -49,25 +49,28 @@ type DialogType =
   | "policy"
   | "medical";
 type useLeadStore = {
+  onTableClose?: () => void;
   leadId?: string;
+  leadIds?: string[];
   leadFullName?: string;
   //POLICY
   policyInfo?: LeadPolicySchemaType;
   isPolicyFormOpen: boolean;
-  onPolicyFormOpen: (l: string,n:string,p?: LeadPolicySchemaType) => void;
+  onPolicyFormOpen: (l: string, n: string, p?: LeadPolicySchemaType) => void;
   onPolicyFormClose: () => void;
   // SHARE
   initUser?: User | null;
   isShareFormOpen: boolean;
-  onShareFormOpen: (l: string, n: string, u: User) => void;
+  onShareFormOpen: (l: string[], n: string, u?: User, f?: () => void) => void;
   onShareFormClose: () => void;
   //TRANSFER
   isTransferFormOpen: boolean;
-  onTransferFormOpen: (l: string, n: string) => void;
+  onTransferFormOpen: (l: string[], n: string, f?: () => void) => void;
   onTransferFormClose: () => void;
   //ASSISTANT
   isAssistantFormOpen: boolean;
-  onAssistantFormOpen: (l: string,n:string, u?: User) => void;
+  //TODO - this should be multiple leads
+  onAssistantFormOpen: (l: string, n: string, u?: User) => void;
   onAssistantFormClose: () => void;
   //INTAKE FORM
   isIntakeFormOpen: boolean;
@@ -81,42 +84,58 @@ type useLeadStore = {
 
 export const useLead = create<useLeadStore>((set) => ({
   isPolicyFormOpen: false,
-  onPolicyFormOpen: (l, n,p) =>
-    set({ leadId: l, leadFullName: n,policyInfo:p, isPolicyFormOpen: true }),
+  onPolicyFormOpen: (l, n, p) =>
+    set({ leadId: l, leadFullName: n, policyInfo: p, isPolicyFormOpen: true }),
   onPolicyFormClose: () =>
     set({
-      leadId: "",
+      leadId: undefined,
       isPolicyFormOpen: false,
-      isIntakeFormOpen:true
+      isIntakeFormOpen: true,
     }),
   //SHARE
   isShareFormOpen: false,
-  onShareFormOpen: (l, n, u) =>
-    set({ leadId: l, leadFullName: n, initUser: u, isShareFormOpen: true }),
+  onShareFormOpen: (l, n, u, f) =>
+    set({
+      leadIds: l,
+      leadFullName: n,
+      initUser: u,
+      isShareFormOpen: true,
+      onTableClose: f,
+    }),
   onShareFormClose: () =>
     set({
-      leadId: "",
+      leadIds: [],
       leadFullName: "",
       initUser: null,
       isShareFormOpen: false,
     }),
   //TRANSFER
   isTransferFormOpen: false,
-  onTransferFormOpen: (l, n) =>
-    set({ leadId: l, leadFullName: n, isTransferFormOpen: true }),
+  onTransferFormOpen: (l, n, f) =>
+    set({
+      leadIds: l,
+      leadFullName: n,
+      isTransferFormOpen: true,
+      onTableClose: f,
+    }),
   onTransferFormClose: () =>
     set({
-      leadId: "",
+      leadIds: [],
       isTransferFormOpen: false,
     }),
 
-    //ASSISTANT
-    isAssistantFormOpen: false,
-     onAssistantFormOpen: (l, n,u?) =>
-    set({ leadId: l, leadFullName: n,initUser: u, isAssistantFormOpen: true }),
-     onAssistantFormClose: () =>
+  //ASSISTANT
+  isAssistantFormOpen: false,
+  onAssistantFormOpen: (l, n, u?) =>
     set({
-      leadId: "",
+      leadId: l,
+      leadFullName: n,
+      initUser: u,
+      isAssistantFormOpen: true,
+    }),
+  onAssistantFormClose: () =>
+    set({
+      leadId:undefined,
       isAssistantFormOpen: false,
     }),
   //INTAKE
@@ -125,7 +144,7 @@ export const useLead = create<useLeadStore>((set) => ({
     set({ leadId: l, leadFullName: n, isIntakeFormOpen: true }),
   onIntakeFormClose: () =>
     set({
-      leadId: "",
+      leadId: undefined,
       isIntakeFormOpen: false,
     }),
 
@@ -144,8 +163,9 @@ export const useLead = create<useLeadStore>((set) => ({
 
 export const useLeadActions = (
   onClose: () => void,
-  leadId?: string,
-  uId?: string
+  leadIds?: string[],
+  uId?: string,
+  onTableClose?: () => void
 ) => {
   const user = useCurrentUser();
   const { socket } = useContext(SocketContext).SocketState;
@@ -153,26 +173,28 @@ export const useLeadActions = (
   const [loading, setLoading] = useState(false);
   //SHARING
   const onLeadUpdateByIdShare = async () => {
-    if (!leadId || !userId) return;
+    if (!leadIds || !userId) return;
     setLoading(true);
-    const updatedShare = await leadUpdateByIdShare(leadId, userId);
+    const updatedShare = await leadUpdateByIdShare(leadIds, userId);
 
     if (updatedShare.success) {
       socket?.emit(
         "lead-shared",
         userId,
         user?.name,
-        leadId,
+        leadIds,
         updatedShare.success
       );
       toast.success(updatedShare.message);
+      if (onTableClose) onTableClose();
       onClose();
     } else toast.error(updatedShare.error);
-
     setLoading(false);
   };
 
   const onLeadUpdateByIdUnShare = async () => {
+    if (!leadIds) return;
+    const leadId = leadIds[0];
     if (!leadId) return;
 
     setLoading(true);
@@ -195,21 +217,22 @@ export const useLeadActions = (
   };
   //TRANSFER
   const onLeadUpdateByIdTransfer = async () => {
-    if (!leadId || !userId) return;
+    if (!leadIds || !userId) return;
 
     setLoading(true);
-    const transferedLead = await leadUpdateByIdTransfer(leadId, userId);
+    const transferedLead = await leadUpdateByIdTransfer(leadIds, userId);
     if (transferedLead.success) {
       socket?.emit(
         "lead-transfered",
         userId,
         user?.name,
-        leadId,
+        leadIds,
         transferedLead.success
       );
-      userEmitter.emit("leadTransfered", leadId);
+      userEmitter.emit("leadTransfered", leadIds);
 
       toast.success(transferedLead.message);
+      if (onTableClose) onTableClose();
       onClose();
     } else toast.error(transferedLead.error);
     setLoading(false);
@@ -217,6 +240,8 @@ export const useLeadActions = (
 
   //ASSISTANT
   const onLeadUpdateByIdAssistantAdd = async () => {
+    if (!leadIds) return;
+    const leadId = leadIds[0];
     if (!leadId || !userId) return;
     setLoading(true);
     const updatedAssistant = await leadUpdateByIdAssistantAdd(leadId, userId);
@@ -236,6 +261,8 @@ export const useLeadActions = (
   };
 
   const onLeadUpdateByIdAssistantRemove = async () => {
+    if (!leadIds) return;
+    const leadId = leadIds[0];
     if (!leadId) return;
     setLoading(true);
     const updatedAssistant = await leadUpdateByIdAssistantRemove(leadId);
@@ -466,7 +493,7 @@ export const useLeadIntakeActions = (
 
   const onPolicySubmit = useCallback(
     (values: LeadPolicySchemaType) => {
-      console.log(values)
+      console.log(values);
       const toastString = "Updating Policy Information...";
       toast.loading(toastString, { id: "update-policy-info" });
 
