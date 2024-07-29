@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Mic, MicOff, Phone, X } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -9,7 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import {
@@ -28,10 +28,7 @@ import { TouchPad } from "./addins/touch-pad";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
-import {
-  chatSettingsUpdateCurrentCall,
-  chatSettingsUpdateRemoveCurrentCall,
-} from "@/actions/chat-settings";
+import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -57,6 +54,16 @@ export const PhoneOut = () => {
     onLeadInfoToggle: onToggleLeadInfo,
   } = usePhone();
   const { phone } = usePhoneContext();
+  const { onDisconnect, onCallMuted } = usePhoneData(
+    phone,
+    call,
+    isCallMuted,
+    onCallMutedToggle,
+    () => {},
+    onPhoneDisconnect,
+    isRunning,
+    setTime
+  );
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [disabled, setDisabled] = useState(false);
 
@@ -141,15 +148,6 @@ export const PhoneOut = () => {
     onPhoneConnect(call);
   };
 
-  const onDisconnect = () => {
-    call?.disconnect();
-    onPhoneDisconnect();
-    phone?.connections.forEach((connection) => {
-      connection.disconnect();
-    });
-    chatSettingsUpdateRemoveCurrentCall();
-  };
-
   const onNumberClick = (num: string) => {
     if (call) {
       call.sendDigits(num);
@@ -174,24 +172,11 @@ export const PhoneOut = () => {
     }
   };
 
-  const onCallMuted = () => {
-    if (call) {
-      call.mute(!isCallMuted);
-      onCallMutedToggle();
-    }
-  };
-
   const onReset = () => {
     setTo({ name: "", number: "" });
     setDisabled(false);
   };
 
-  // const toggleLeadInfo = () => {
-  //   setIsOpen((open) => {
-  //     userEmitter.emit("toggleLeadInfo", !open);
-  //     return !open;
-  //   });
-  // };
   //CONFERENCES AND PARTICIPANTS
   const onGetParticipants = async (
     conferenceId: string,
@@ -250,17 +235,6 @@ export const PhoneOut = () => {
     );
   }, [socket, conference]);
 
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime();
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
   //TODO - Test data dont forget to remove
   // useEffect(() => {
   //   setConference(testConference);

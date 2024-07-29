@@ -3,16 +3,18 @@ import { Cake, CalendarX, FilePenLine, Phone, XCircle } from "lucide-react";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
+import { Appointment } from "@prisma/client";
+import { LeadGeneralSchemaType } from "@/schemas/lead";
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
-import { GeneralInfoForm } from "./forms/general-info-form";
 
-import { Appointment } from "@prisma/client";
+import { GeneralInfoForm } from "../forms/general-info-form";
 
 import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
-import { LeadGeneralSchemaType } from "@/schemas/lead";
+import { cn } from "@/lib/utils";
 
 type GeneralInfoClientProps = {
   info: LeadGeneralSchemaType;
@@ -66,7 +68,12 @@ export const GeneralInfoClient = ({
       </Dialog>
       <div className="flex flex-col gap-2 text-sm">
         {generalInfo.lastCall && (
-          <div className="flex items-center  gap-1">
+          <div
+            className={cn(
+              "flex items-center  gap-1",
+              !showInfo && "flex-col items-start"
+            )}
+          >
             <Badge className="gap-1 w-fit">
               <Phone size={16} /> Last Call
             </Badge>
@@ -75,13 +82,16 @@ export const GeneralInfoClient = ({
         )}
 
         {generalInfo.nextAppointment && (
-          <div>
-            <div className="flex items-center  gap-1">
-              <Badge className="gap-1 w-fit">
-                <CalendarX size={16} /> Appt Set
-              </Badge>
-              {formatDateTime(generalInfo.nextAppointment)}
-            </div>
+          <div
+            className={cn(
+              "flex items-center  gap-1",
+              !showInfo && "flex-col items-start"
+            )}
+          >
+            <Badge className="gap-1 w-fit">
+              <CalendarX size={16} /> Appt Set
+            </Badge>
+            {formatDateTime(generalInfo.nextAppointment)}
           </div>
         )}
 

@@ -1,53 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { Phone } from "lucide-react";
 import { usePhone } from "@/hooks/use-phone";
-import { allLeadTypes } from "@/constants/lead";
 
 import { pusherClient } from "@/lib/pusher";
+
+import { FullLead, FullLeadNoConvo } from "@/types";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FullLead, FullLeadNoConvo } from "@/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { leadUpdateByIdType } from "@/actions/lead";
-import { leadUpdateByIdStatus } from "@/actions/lead/status";
-import { useGlobalContext } from "@/providers/global";
 
-interface CallInfoProps {
+import { LeadStatusSelect } from "@/components/lead/select/status-select";
+import { LeadTypeSelect } from "@/components/lead/select/type-select";
+
+type Props = {
   info: FullLead | FullLeadNoConvo;
   showBtnCall?: boolean;
-}
-export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
+};
+export const CallInfo = ({ info, showBtnCall = true }: Props) => {
   const usePm = usePhone();
   const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
   const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;
 
   const [callCount, setCallCount] = useState(leadcount || 0);
-  const { leadStatus } = useGlobalContext();
-
-  const onStatusUpdated = async (e: string) => {
-    const reponse = await leadUpdateByIdStatus(lead.id, e);
-    if (reponse.success) {
-      userEmitter.emit("leadStatusChanged", lead.id, e);
-      toast.success(reponse.success);
-    } else toast.error(reponse.error);
-  };
-
-  const onTypeUpdated = async (type: string) => {
-    const reponse = await leadUpdateByIdType(lead.id, type);
-    if (reponse.success) toast.success(reponse.success);
-    else toast.error(reponse.error);
-  };
 
   useEffect(() => {
     pusherClient.subscribe(lead.id as string);
@@ -111,48 +89,16 @@ export const CallInfo = ({ info, showBtnCall = true }: CallInfoProps) => {
           )}
         </div>
       )}
-      <div className="text-muted-foreground text-sm space-y-2">
+      <div className="text-sm space-y-2">
         <div className="flex items-center gap-2">
-          <p>Type</p>
-          <Select
-            name="ddlLeadType"
-            defaultValue={lead.type}
-            onValueChange={onTypeUpdated}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Lead Type" />
-            </SelectTrigger>
-            <SelectContent className="max-h-80">
-              {allLeadTypes.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <p className="w-[80px]">Type</p>
+          <LeadTypeSelect id={lead.id} type={lead.type} />
         </div>
         <div className="flex items-center gap-2">
-          <p>Status</p>
-          <Select
-            disabled={lead.status == "Do_Not_Call"}
-            name="ddlLeadStatus"
-            defaultValue={lead.status}
-            onValueChange={onStatusUpdated}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Disposition" />
-            </SelectTrigger>
-            <SelectContent className="max-h-80">
-              {leadStatus?.map((status) => (
-                <SelectItem key={status.id} value={status.status}>
-                  {status.status}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <p className="w-[80px]">Status</p>
+          <LeadStatusSelect id={lead.id} status={lead.status} />
         </div>
       </div>
-      <div></div>
     </div>
   );
 };

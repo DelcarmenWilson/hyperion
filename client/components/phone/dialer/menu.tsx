@@ -42,11 +42,20 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     pipeline,
     pipeIndex,
   } = usePhone();
-  const data = usePhoneData(isRunning, setTime);
+  const { phone } = usePhoneContext();
+  const data = usePhoneData(
+    phone,
+    call,
+    isCallMuted,
+    onCallMutedToggle,
+    () => {},
+    onPhoneDisconnect,
+    isRunning,
+    setTime
+  );
   const [dialNumber, setDialNumber] = useState(1);
 
   // PHONE VARIABLES
-  const { phone } = usePhoneContext();
   const [settings, setSettings] = useState<DialerSettingsType>({
     matrix: 3,
     pause: 5,
@@ -128,18 +137,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
   const onReset = () => {
     setIndex(true);
   };
-
-  // useEffect(() => {
-  //   let interval: any;
-  //   if (isRunning) {
-  //     interval = setInterval(() => {
-  //       setTime();
-  //     }, 1000);
-  //   } else {
-  //     clearInterval(interval);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [isRunning])
 
   return (
     <>

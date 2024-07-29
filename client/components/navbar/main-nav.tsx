@@ -7,13 +7,15 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhone } from "@/hooks/use-phone";
 import { toast } from "sonner";
 
-import { CoachNotification } from "../phone/coach-notification";
 import { TwilioShortConference } from "@/types";
+
+import { Button } from "@/components/ui/button";
+import { CoachNotification } from "../phone/coach-notification";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { conference, setConference } = usePhone();
+  const { conference, setConference, onPhoneInOpen } = usePhone();
 
   //COACH NOTIFICATION
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -108,12 +110,15 @@ export const MainNav = () => {
   }, []);
 
   return (
-    <CoachNotification
-      conference={conference}
-      isOpen={isNotificationOpen}
-      onJoinCall={onJoinCall}
-      onRejectCall={onRejectCall}
-    />
+    <>
+      {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
+      <CoachNotification
+        conference={conference}
+        isOpen={isNotificationOpen}
+        onJoinCall={onJoinCall}
+        onRejectCall={onRejectCall}
+      />
+    </>
   );
 };
 

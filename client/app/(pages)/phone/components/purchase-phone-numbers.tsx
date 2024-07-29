@@ -52,6 +52,7 @@ export const PurchasePhoneNumberForm = () => {
 
   const onSubmit = (values: UserPhoneNumberSchemaType) => {
     setLoading(true);
+    //TODO - need to work on this functionally in the server.. THIS may need to be remover completelty
     phoneNumberInsert(values).then((data) => {
       if (data.success) {
         // userEmitter.emit("policyInfoUpdated", {
@@ -62,10 +63,10 @@ export const PurchasePhoneNumberForm = () => {
 
         toast.success(data.success);
       }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
+      // if (data.error) {
+      //   form.reset();
+      //   toast.error(data.error);
+      // }
     });
 
     setLoading(false);

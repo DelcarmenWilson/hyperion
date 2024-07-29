@@ -12,7 +12,7 @@ import { PolicyInfoForm } from "@/components/lead/forms/policy-info-form";
 import { ShareForm } from "@/components/lead/forms/share-form";
 import { TransferForm } from "@/components/lead/forms/transfer-form";
 
-export const LeadClient = ({ initLeads }: { initLeads: FullLead[] }) => {
+export const LeadsClient = ({ initLeads }: { initLeads: FullLead[] }) => {
   const [leads, setLeads] = useState(initLeads);
 
   useEffect(() => {

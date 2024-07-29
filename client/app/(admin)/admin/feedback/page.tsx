@@ -7,7 +7,9 @@ const FeedbackPage = async () => {
   const feedbacks = await feedbacksGetAll();
   return (
     <PageLayoutAdmin
-      title={`User Feedback (${feedbacks.length})`}
+      title={`User Feedback (${
+        feedbacks.filter((e) => e.status == "New").length
+      })`}
       description="Manage feedback and bugs"
     >
       <FeedbacksClient feedbacks={feedbacks} />

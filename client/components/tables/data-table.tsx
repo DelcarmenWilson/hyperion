@@ -112,8 +112,8 @@ export function DataTable<TData, TValue>({
           {topMenu}
         </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border w-full">
+        <Table className="w-full">
           {headers && (
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

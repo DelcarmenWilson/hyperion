@@ -9,11 +9,11 @@ import {
   LeadPolicySchemaType,
 } from "@/schemas/lead";
 
-import { GeneralInfoClient } from "@/components/lead/general-info";
-import { CallInfo } from "@/components/lead/call-info";
+import { GeneralInfoClient } from "@/components/lead/info/general-info";
+import { CallInfo } from "@/components/lead/info/call-info";
 import { LeadDropDown } from "@/components/lead/dropdown";
-import { PolicyInfoClient } from "@/components/lead/policy-info";
-import { MainInfoClient } from "@/components/lead/main-info";
+import { PolicyInfoClient } from "@/components/lead/info/policy-info";
+import { MainInfoClient } from "@/components/lead/info/main-info";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -119,7 +119,7 @@ export const columns: ColumnDef<FullLead>[] = [
         textCode: row.original.textCode!,
       };
       return (
-        <div className="w-[400px]">
+        <div className="max-w-[260px]">
           <MainInfoClient
             info={leadMainInfo}
             noConvo={!!row.original.conversation?.id}
@@ -133,11 +133,13 @@ export const columns: ColumnDef<FullLead>[] = [
     accessorKey: "notes",
     header: "Notes",
     cell: ({ row }) => (
-      <NotesForm
-        leadId={row.original.id}
-        intialNotes={row.original.notes!}
-        initSharedUser={row.original.sharedUser}
-      />
+      <div className="max-w-[260px]">
+        <NotesForm
+          leadId={row.original.id}
+          intialNotes={row.original.notes!}
+          initSharedUser={row.original.sharedUser}
+        />
+      </div>
     ),
   },
   {
@@ -164,7 +166,11 @@ export const columns: ColumnDef<FullLead>[] = [
         lastCall: row.original.calls[0]?.createdAt,
         nextAppointment: row.original.appointments[0]?.startDate,
       };
-      return <GeneralInfoClient info={leadInfo} />;
+      return (
+        <div className="min-w-[180px] max-w-[260px]">
+          <GeneralInfoClient info={leadInfo} />
+        </div>
+      );
     },
   },
   {
@@ -182,12 +188,14 @@ export const columns: ColumnDef<FullLead>[] = [
       };
       const leadName = `${row.original.firstName} ${row.original.lastName}`;
       return (
-        <PolicyInfoClient
-          leadId={row.original.id}
-          leadName={leadName}
-          assistant={row.original.assistant}
-          info={leadPolicy}
-        />
+        <div className="max-w-[260px]">
+          <PolicyInfoClient
+            leadId={row.original.id}
+            leadName={leadName}
+            assistant={row.original.assistant}
+            info={leadPolicy}
+          />
+        </div>
       );
     },
   },
