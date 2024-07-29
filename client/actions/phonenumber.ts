@@ -6,44 +6,44 @@ import { reFormatPhoneNumber } from "@/formulas/phones";
 import { UserPhoneNumberSchema,UserPhoneNumberSchemaType } from "@/schemas/user";
 
 export const phoneNumberInsert = async (values:  UserPhoneNumberSchemaType) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
-  const validatedFields = UserPhoneNumberSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const {
-    state,phone
-  } = validatedFields.data;
+  // const user = await currentUser();
+  // if (!user) {
+  //   return { error: "Unauthenticated!" };
+  // }
+  // const validatedFields = UserPhoneNumberSchema.safeParse(values);
+  // if (!validatedFields.success) {
+  //   return { error: "Invalid fields!" };
+  // }
+  // const {
+  //   state,phone
+  // } = validatedFields.data;
 
-  const existingPhoneNumber = await db.phoneNumber.findFirst({
-    where: { phone },
-  });
+  // const existingPhoneNumber = await db.phoneNumber.findFirst({
+  //   where: { phone },
+  // });
 
-  if (existingPhoneNumber) {
-    return { error: "Phone number already exists" };
-  }
+  // if (existingPhoneNumber) {
+  //   return { error: "Phone number already exists" };
+  // }
 
-  const usernumbers = await db.phoneNumber.findFirst({
-    where: { agentId: user.id },
-  });
-  var date = new Date();
-  date.setDate(date.getDate() + 30);
-  const newPhoneNumber = await db.phoneNumber.create({
-    data: {
-      phone: reFormatPhoneNumber(phone),
-      state,
-      agentId: user.id,
-      status: usernumbers ? "Active" : "Default",
-      renewAt: date,
-    },
-  });
+  // const usernumbers = await db.phoneNumber.findFirst({
+  //   where: { agentId: user.id },
+  // });
+  // var date = new Date();
+  // date.setDate(date.getDate() + 30);
+  // const newPhoneNumber = await db.phoneNumber.create({
+  //   data: {
+  //     phone: reFormatPhoneNumber(phone),
+  //     state,
+  //     agentId: user.id,
+  //     status: usernumbers ? "Active" : "Default",
+  //     renewAt: date,
+  //   },
+  // });
 
-  if (!newPhoneNumber) {
-    return { error: "Phone number was not purchased!" };
-  }
+  // if (!newPhoneNumber) {
+  //   return { error: "Phone number was not purchased!" };
+  // }
 
   return { success: "Phone number was purchased!" };
 };

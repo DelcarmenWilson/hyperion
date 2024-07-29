@@ -6,7 +6,7 @@ import { PageLayout } from "@/components/custom/layout/page-layout";
 import { TopMenu } from "./components/top-menu";
 
 import { leadsGetAllByAgentId } from "@/actions/lead";
-import { LeadClient } from "./components/client";
+import { LeadsClient } from "./components/client";
 const LeadsPage = async () => {
   const user = await currentUser();
   if (!user) return null;
@@ -18,7 +18,7 @@ const LeadsPage = async () => {
       icon={Users}
       topMenu={user.role != "ASSISTANT" && <TopMenu />}
     >
-      <LeadClient initLeads={leads} />
+      <LeadsClient initLeads={leads} />
     </PageLayout>
   );
 };

@@ -235,18 +235,19 @@ model Presets {
 
 model PhoneNumber {
   id    String @id @default(cuid())
-  phone String
+  phone String @unique
   state String
 
   agent   User?    @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String?
-  sid     String   @default("PNab929a6bd46eb8c96dd1d34f0b6602bf")
+  sid     String   @unique
   app     String   @default("AP7be1b9b81ad29a698a869a1b5f7a926a")
   renewAt DateTime
 
-  status    String   @default("Active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status     String   @default("Active")
+  registered Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Schedule {

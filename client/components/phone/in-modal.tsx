@@ -1,11 +1,17 @@
 "use client";
-
 import { Connection } from "twilio-client";
 import { Fragment, useEffect, useState } from "react";
-import { Phone, PhoneForwarded, PhoneIncoming, PhoneOff } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  Phone,
+  PhoneForwarded,
+  PhoneIncoming,
+  PhoneOff,
+} from "lucide-react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhone, usePhoneData } from "@/hooks/use-phone";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -20,15 +26,13 @@ import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
 import { PhoneLeadInfo } from "./addins/lead-info";
-import {
-  chatSettingsUpdateCurrentCall,
-  chatSettingsUpdateRemoveCurrentCall,
-} from "@/actions/chat-settings";
 
 export const PhoneInModal = () => {
   const {
     call,
     isRunning,
+    isCallMuted,
+    onCallMutedToggle,
     time,
     setTime,
     isOnCall,
@@ -42,6 +46,21 @@ export const PhoneInModal = () => {
     onLeadInfoToggle: onToggleLeadInfo,
   } = usePhone();
   const { phone } = usePhoneContext();
+  const {
+    onDisconnect,
+    onCallMuted,
+    onIncomingCallAccept,
+    onIncomingCallReject,
+  } = usePhoneData(
+    phone,
+    call,
+    isCallMuted,
+    onCallMutedToggle,
+    onPhoneInConnect,
+    onPhoneDisconnect,
+    isRunning,
+    setTime
+  );
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES
@@ -58,7 +77,7 @@ export const PhoneInModal = () => {
 
       ["disconnect", "cancel"].forEach((type) => {
         incomingCall.on(type, function (error: any) {
-          onCallDisconnect();
+          onDisconnect();
         });
       });
 
@@ -83,37 +102,6 @@ export const PhoneInModal = () => {
       onPhoneInOpen(incomingCall);
     });
   };
-  ///Disconnect an in progress call
-  const onCallDisconnect = () => {
-    call?.disconnect();
-    chatSettingsUpdateRemoveCurrentCall();
-    onPhoneDisconnect();
-  };
-  ///Accept an incoming call
-  const onIncomingCallAccept = () => {
-    if (!call) return;
-    call.accept();
-    //TODO - this is not working as intended
-    chatSettingsUpdateCurrentCall(call.parameters.CallSid);
-    onPhoneInConnect();
-  };
-  //Disconnect an in progress call - Direct the call to voicemail
-  const onIncomingCallReject = () => {
-    call?.reject();
-    onPhoneDisconnect();
-  };
-
-  useEffect(() => {
-    let interval: any;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime();
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
 
   useEffect(() => {
     if (phone?.status() == "busy") return;
@@ -178,16 +166,44 @@ export const PhoneInModal = () => {
               <Dialog.Panel
                 className={cn(
                   "pointer-events-auto w-screen",
-                  isLeadInfoOpen ? " min-w-full" : "w-[400px]"
+                  isLeadInfoOpen ? " min-w-full h-full" : "w-[400px]"
                 )}
               >
                 {isLeadInfoOpen ? (
-                  <div className="relative flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
-                    <div className=" flex gap-2 absolute top-2 left-2 z-50">
+                  <div className="relative flex flex-col bg-background gap-2 pt-6 p-2 shadow-xl rounded-md text-sm h-full overflow-y-auto lg:pt-2">
+                    <div className="flex gap-2 absolute top-2 left-2 z-50">
                       <Button size="sm" onClick={onToggleLeadInfo}>
                         Return to call
                       </Button>
-                      {!isOnCall ? (
+                      {isOnCall ? (
+                        <div className="flex gap-2">
+                          <Button
+                            className="gap-2"
+                            variant={
+                              isCallMuted ? "destructive" : "outlinedestructive"
+                            }
+                            onClick={onCallMuted}
+                          >
+                            {isCallMuted ? (
+                              <>
+                                <MicOff size={16} /> Muted
+                              </>
+                            ) : (
+                              <>
+                                <Mic size={16} /> Mute
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="gap-2"
+                            onClick={onDisconnect}
+                          >
+                            <PhoneOff size={16} /> Hang Up
+                          </Button>
+                        </div>
+                      ) : (
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -206,15 +222,6 @@ export const PhoneInModal = () => {
                             <PhoneOff size={16} /> Reject
                           </Button>
                         </div>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="gap-2"
-                          onClick={onCallDisconnect}
-                        >
-                          <PhoneOff size={16} /> Hang Up
-                        </Button>
                       )}
                     </div>
                     <PhoneLeadInfo />
@@ -243,7 +250,34 @@ export const PhoneInModal = () => {
                         {formatSecondsToTime(time)}
                       </span>
                     </div>
-                    {!isOnCall ? (
+                    {isOnCall ? (
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          className="gap-2"
+                          variant={
+                            isCallMuted ? "destructive" : "outlinedestructive"
+                          }
+                          onClick={onCallMuted}
+                        >
+                          {isCallMuted ? (
+                            <>
+                              <MicOff size={16} /> Muted
+                            </>
+                          ) : (
+                            <>
+                              <Mic size={16} /> Mute
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="gap-2"
+                          onClick={onDisconnect}
+                        >
+                          <PhoneOff size={16} /> Hang Up
+                        </Button>
+                      </div>
+                    ) : (
                       <div className="flex flex-col gap-2">
                         <Button
                           className="gap-2"
@@ -260,17 +294,9 @@ export const PhoneInModal = () => {
                           <PhoneOff size={16} /> Reject
                         </Button>
                       </div>
-                    ) : (
-                      <Button
-                        variant="destructive"
-                        className="gap-2"
-                        onClick={onCallDisconnect}
-                      >
-                        <PhoneOff size={16} /> Hang Up
-                      </Button>
                     )}
 
-                    <Select name="ddlState" onValueChange={(e) => setAgent(e)}>
+                    <Select name="ddlAgent" onValueChange={(e) => setAgent(e)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Forward to agent" />
                       </SelectTrigger>
@@ -289,20 +315,6 @@ export const PhoneInModal = () => {
                     >
                       <PhoneForwarded size={16} /> Forward Call
                     </Button>
-
-                    {/* <div className="grid grid-cols-2 items-center gap-2">
-                      <Button className="gap-2" onClick={onGetConferences}>
-                        Get Conference
-                      </Button>
-
-                      <Button
-                        variant="outlineprimary"
-                        className="gap-2"
-                        onClick={onStarted}
-                      >
-                        Start Conference
-                      </Button>
-                    </div> */}
                   </div>
                 )}
               </Dialog.Panel>

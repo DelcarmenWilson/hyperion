@@ -9,10 +9,10 @@ import { FullLead } from "@/types";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { Button } from "@/components/ui/button";
-import { GeneralInfoClient } from "@/components/lead/general-info";
-import { PolicyInfoClient } from "@/components/lead/policy-info";
-import { CallInfo } from "@/components/lead/call-info";
-import { MainInfoClient } from "@/components/lead/main-info";
+import { GeneralInfoClient } from "@/components/lead/info/general-info";
+import { PolicyInfoClient } from "@/components/lead/info/policy-info";
+import { CallInfo } from "@/components/lead/info/call-info";
+import { MainInfoClient } from "@/components/lead/info/main-info";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
@@ -89,32 +89,27 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
   };
 
   return (
-    <>
-      {/*DATA  */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 ">
-        <div className="grid grid-cols-1 lg:grid-cols-3 col-span-3 gap-2">
-          <MainInfoClient
-            info={leadMainInfo}
-            noConvo={lead.conversation ? true : false}
-          />
-          <NotesForm
-            leadId={lead.id}
-            intialNotes={lead.notes!}
-            initSharedUser={lead.sharedUser}
-          />
-          <CallInfo info={lead} />
-        </div>
-        <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
-          <GeneralInfoClient info={leadInfo} showInfo />
-          <PolicyInfoClient
-            leadId={lead.id}
-            leadName={leadName}
-            assistant={lead.assistant}
-            info={leadPolicy}
-          />
-        </div>
-      </div>
-      <div className="text-sm font-light px-4">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+      <MainInfoClient
+        info={leadMainInfo}
+        noConvo={lead.conversation ? true : false}
+      />
+      <GeneralInfoClient info={leadInfo} showInfo />
+      <CallInfo info={lead} />
+      <NotesForm
+        leadId={lead.id}
+        intialNotes={lead.notes!}
+        initSharedUser={lead.sharedUser}
+      />
+
+      <PolicyInfoClient
+        leadId={lead.id}
+        leadName={leadName}
+        assistant={lead.assistant}
+        info={leadPolicy}
+      />
+      <div></div>
+      <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>
         <p>
           -Type: <span className="font-bold">unknown</span>
@@ -144,6 +139,6 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

@@ -11,9 +11,9 @@ import { FilePenLine, MessageSquare } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
-import { MainInfoForm } from "./forms/main-info-form";
+import { MainInfoForm } from "../forms/main-info-form";
 import { CopyButton } from "@/components/reusable/copy-button";
-import { FieldBox } from "./field-box";
+import { FieldBox } from "../field-box";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 

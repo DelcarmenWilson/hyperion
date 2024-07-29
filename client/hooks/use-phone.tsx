@@ -2,8 +2,12 @@ import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
-import { Connection } from "twilio-client";
+import { Connection, Device } from "twilio-client";
 import { useEffect } from "react";
+import {
+  chatSettingsUpdateCurrentCall,
+  chatSettingsUpdateRemoveCurrentCall,
+} from "@/actions/chat-settings";
 
 type PhoneStore = {
   //PHONE SPECIFIC
@@ -19,7 +23,7 @@ type PhoneStore = {
   onPhoneDisconnect: () => void;
 
   isPhoneInOpen: boolean;
-  onPhoneInOpen: (c: Connection) => void;
+  onPhoneInOpen: (c?: Connection) => void;
   onPhoneInClose: () => void;
 
   isPhoneDialerOpen: boolean;
@@ -137,7 +141,48 @@ export const usePhone = create<PhoneStore>((set, get) => ({
   setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));
 
-export const usePhoneData = (isRunning: boolean, setTime: () => void) => {
+export const usePhoneData = (
+  phone: Device | null,
+  call: Connection | undefined,
+  isCallMuted: boolean,
+  onCallMutedToggle: () => void,
+  onPhoneInConnect: () => void,
+  onPhoneDisconnect: () => void,
+  isRunning: boolean,
+  setTime: () => void
+) => {
+  //GENERAL FUNCTIIONS
+  ///Disconnect an in progress call
+  const onDisconnect = () => {
+    call?.disconnect();
+    onPhoneDisconnect();
+    phone?.connections.forEach((connection) => {
+      connection.disconnect();
+    });
+    chatSettingsUpdateRemoveCurrentCall();
+  };
+  const onCallMuted = () => {
+    if (call) {
+      call.mute(!isCallMuted);
+      onCallMutedToggle();
+    }
+  };
+
+  //INCOMING FUNCTIONS
+  ///Accept an incoming call
+  const onIncomingCallAccept = () => {
+    if (!call) return;
+    call.accept();
+    //TODO - this is not working as intended
+    chatSettingsUpdateCurrentCall(call.parameters.CallSid);
+    onPhoneInConnect();
+  };
+  //Disconnect an in progress call - Direct the call to voicemail
+  const onIncomingCallReject = () => {
+    call?.reject();
+    onPhoneDisconnect();
+  };
+  //TIME FUNCTION
   useEffect(() => {
     let interval: any;
     if (isRunning) {
@@ -149,4 +194,11 @@ export const usePhoneData = (isRunning: boolean, setTime: () => void) => {
     }
     return () => clearInterval(interval);
   }, [isRunning]);
+
+  return {
+    onDisconnect,
+    onCallMuted,
+    onIncomingCallAccept,
+    onIncomingCallReject,
+  };
 };

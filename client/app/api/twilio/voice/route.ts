@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
    //check if this number is a lead or a client
   const lead = await db.lead.findFirst({
-    where: { cellPhone: call.direction == "outbound" ? call.to : call.from },
+    where: { cellPhone: call.callDirection == "outbound" ? call.to : call.from },
   });
  
 if(call.callDirection=="outbound"){
