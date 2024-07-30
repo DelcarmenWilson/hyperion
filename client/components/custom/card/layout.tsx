@@ -20,7 +20,7 @@ export const CardLayout = ({
   className,
 }: CardLayoutProps) => {
   return (
-    <Card className={cn("flex flex-col relative w-full mb-4", className)}>
+    <Card className={cn("flex flex-col relative w-full", className)}>
       <div className="flex justify-between items-start lg:items-center mb-2">
         <div className="flex items-center gap-2">
           <div className="bg-accent p-4 rounded-br-lg">

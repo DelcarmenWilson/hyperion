@@ -33,13 +33,7 @@ const TeamPage = async ({
   }
 
   const teamReport: FullTeamReport = {
-    id: team.id,
-    organization: team.organization,
-    name: team.name,
-    image: team.image,
-    banner: team.banner,
-    userId: team.userId,
-    owner: team.owner,
+    ...team,
     calls: team.users.reduce((sum, user) => sum + user.calls.length, 0),
     appointments: team.users.reduce(
       (sum, user) => sum + user.appointments.length,
@@ -54,10 +48,7 @@ const TeamPage = async ({
   };
 
   const userReport: FullUserTeamReport[] = team.users.map((user) => ({
-    id: user.id,
-    image: user.image,
-    userName: user.userName,
-    role: user.role,
+    ...user,
     calls: user.calls.length,
     appointments: user.appointments.length,
     conversations: user.conversations.length,
@@ -68,7 +59,7 @@ const TeamPage = async ({
   }));
 
   return (
-    <>
+    <div className="h-full overflow-y-auto">
       <TeamClient team={teamReport} users={users} />
 
       <div className="grid gap-y-4 lg:gap-4 grid-cols-1 lg:grid-cols-3 mt-4">
@@ -79,15 +70,15 @@ const TeamPage = async ({
       <Card className="mt-4">
         <CardHeader>
           <Heading
-            title={`Users (${team.users.length})`}
-            description={`${team.name}'s users`}
+            title={`Agents (${team.users.length})`}
+            description={`${team.name}'s agents`}
           />
           <CardContent className="p-0">
             <UsersClient users={userReport} teamId={params.id} />
           </CardContent>
         </CardHeader>
       </Card>
-    </>
+    </div>
   );
 };
 

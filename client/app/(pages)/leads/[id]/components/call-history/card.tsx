@@ -1,13 +1,12 @@
 "use client";
 import { PhoneOutgoing } from "lucide-react";
-
-import { Call } from "@prisma/client";
-import { AudioPlayer } from "@/components/custom/audio-player";
+import { FullCall } from "@/types";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { formatDateTime } from "@/formulas/dates";
+import { CallHistoryActions } from "@/components/reusable/callhistory/actions";
 
-export const CallHistoryCard = ({ call }: { call: Call }) => {
+export const CallHistoryCard = ({ call }: { call: FullCall }) => {
   return (
     <div className="grid grid-cols-5 items-center gap-2 border-b py-2 ">
       <div className="flex gap-2 items-center">
@@ -24,7 +23,10 @@ export const CallHistoryCard = ({ call }: { call: Call }) => {
       <div className="col-span-2">
         {call.createdAt && formatDateTime(call.createdAt)}
       </div>
-      <div>{call.recordUrl && <AudioPlayer src={call.recordUrl} />}</div>
+      {/* <div>{call.recordUrl && <AudioPlayer src={call.recordUrl} />}</div> */}
+      <div>
+        <CallHistoryActions call={call} />
+      </div>
     </div>
   );
 };

@@ -1,17 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { useSidebar } from "@/store/use-sidebar";
+import { Sparkle } from "lucide-react";
 import Image from "next/image";
-import { Menu, Sparkle } from "lucide-react";
-import { useCurrentRole } from "@/hooks/user-current-role";
-
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -20,12 +16,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+} from "@/components/ui/sheet";
 
-import { Separator } from "@/components/ui/separator";
 import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
-import { AspectRatio } from "../ui/aspect-ratio";
-import { UserButton } from "../auth/user-button";
-import { IconLink } from "../reusable/icon-link";
+import { UserButton } from "@/components/auth/user-button";
+import { IconLink } from "@/components/reusable/icon-link";
 
 type Props = {
   defaultOpen?: boolean;
@@ -57,15 +57,18 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
         showX={!defaultOpen}
         side={"left"}
         className={cn(
-          "flex flex-col h-full bg-background/80 backdrop-blur-xl fixed top-0 border-r px-2 pb-2 pt-0",
+          "flex flex-col h-full bg-background/80 backdrop-blur-xl fixed top-0 border-0 px-2 pb-2 pt-0",
           {
             "hidden md:inline-block z-0 w-[180px]": defaultOpen,
             "inline-block md:hidden z-[100] w-full": !defaultOpen,
           }
         )}
       >
+        <SheetHeader>
+          <SheetDescription />
+        </SheetHeader>
         <div className="flex flex-col h-full flex-1">
-          <a className="flex h-14 gap-2 items-center border-b" href="/">
+          <a className="flex h-14 gap-2 items-center" href="/">
             <Image
               src="/logo3.png"
               alt="hyperion logo"

@@ -86,7 +86,7 @@ export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
               <ActivityList initActivities={lead.activities!} />
             </TabsContent>
             <TabsContent value="call">
-              <CallHistoryClient leadId={lead.id} initialCalls={lead.calls!} />
+              <CallHistoryClient leadId={lead.id} />
             </TabsContent>
             <TabsContent value="events">
               <CalendarEvents appointments={lead.appointments!} />

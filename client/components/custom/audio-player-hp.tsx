@@ -1,20 +1,18 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { FastForward, Pause, Play, Rewind } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import styles from "./audioplayer.module.css";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { calculateTime } from "@/formulas/dates";
 
 type AudioPlayerHpProps = {
   src: string | undefined;
   onListened?: () => void;
 };
-//TODO - the play functionality is broken
+
 export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const role = useCurrentRole();
-  // const [playing, setPlaying] = useState(false);
   // const audioRef = useRef<HTMLAudioElement>(null);
   // const onPlayPause = () => {
   //   if (!audioRef.current) return;
@@ -35,16 +33,13 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [ellapsedtime, setEllapsedtime] = useState(0);
-  const [maxTime, setMaxTime] = useState(0);
 
   // references
   const audioPlayer = useRef<HTMLAudioElement>(null);
-  const progressBar = useRef<HTMLProgressElement>(null);
   const animationRef = useRef(0);
 
   const togglePlayPause = () => {
-    if (!audioPlayer.current || !progressBar.current) return;
+    if (!audioPlayer.current) return;
     const prevValue = isPlaying;
     setIsPlaying(!prevValue);
     if (!prevValue) {
@@ -63,60 +58,50 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   };
 
   const whilePlaying = () => {
-    if (!progressBar.current || !audioPlayer.current) return;
-
-    setEllapsedtime(audioPlayer.current.currentTime);
-    changePlayerCurrentTime();
+    if (!audioPlayer.current) return;
+    setCurrentTime(audioPlayer.current.currentTime);
     animationRef.current = requestAnimationFrame(whilePlaying);
   };
 
-  const changeRange = () => {
+  const onValueChange = (e: number[]) => {
     if (!audioPlayer.current) return;
-    const pnum = Number(progressBar?.current?.value);
-    audioPlayer.current.currentTime = pnum;
-    changePlayerCurrentTime();
-  };
-
-  const changePlayerCurrentTime = () => {
-    if (!progressBar.current) return;
-    const pnum = progressBar.current.value;
-    progressBar.current.style.setProperty(
-      "--seek-before-width",
-      `${(pnum / duration) * 100}%`
-    );
-    setCurrentTime(pnum);
+    const val = e[0];
+    audioPlayer.current.currentTime = val;
+    setCurrentTime(val);
   };
 
   const onStep = (num: number) => {
-    if (!progressBar.current) return;
-    setEllapsedtime((time) => time + num);
-    changeRange();
+    let time = currentTime + num;
+    if (time > duration) time = duration - 2;
+    else if (time < 0) time = 0;
+    onValueChange([time]);
   };
+
   const reset = () => {
-    if (!progressBar.current) return;
-    progressBar.current.value = 0;
+    setCurrentTime(0);
     setIsPlaying(false);
-    changeRange();
   };
 
   useEffect(() => {
-    if (!audioPlayer.current || !progressBar.current) return;
+    if (!audioPlayer.current) return;
     const seconds = Math.floor(audioPlayer.current.duration);
     setDuration(seconds);
-    console.log(seconds);
-    setMaxTime(seconds);
-    // progressBar.current.max = seconds;
   }, [
     audioPlayer?.current?.onloadedmetadata,
     audioPlayer?.current?.readyState,
   ]);
   if (role == "ASSISTANT") return null;
   return (
-    <div className="bg-background w-full p-2">
+    <div className="bg-background border rounded-sm w-full *:p-1">
       <audio ref={audioPlayer} src={src} preload="metadata" />
-      <div className="flex gap-2 items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => onStep(-30)}>
-          <SkipBack size={20} /> 30
+      <div className="flex gap-2 items-center justify-center">
+        <Button
+          className="flex gap-2"
+          variant="ghost"
+          size="sm"
+          onClick={() => onStep(-10)}
+        >
+          <Rewind size={20} />
         </Button>
         <Button
           className="rounded-full"
@@ -125,21 +110,24 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
         >
           {isPlaying ? <Pause size={20} /> : <Play size={20} />}
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => onStep(30)}>
-          30 <SkipForward size={20} />
+        <Button variant="ghost" size="sm" onClick={() => onStep(10)}>
+          <FastForward size={20} />
         </Button>
       </div>
-      <div className="flex gap-2 items-center justify-between px-2">
-        <div>{calculateTime(currentTime)}</div>
-        <progress
-          className={styles.progressBar}
-          defaultValue="0"
-          max={maxTime}
-          ref={progressBar}
-          value={ellapsedtime}
-          onChange={changeRange}
+      <div className="flex gap-2 items-center justify-between ">
+        <div className="text-sm w-[90px]">{calculateTime(currentTime)}</div>
+
+        <Slider
+          defaultValue={[currentTime]}
+          max={duration}
+          step={1}
+          value={[currentTime]}
+          onValueChange={onValueChange}
         />
-        <div>{duration && !isNaN(duration) && calculateTime(duration)}</div>
+
+        <div className="text-sm w-[90px] text-end">
+          {duration && !isNaN(duration) && calculateTime(duration)}
+        </div>
       </div>
     </div>
   );
