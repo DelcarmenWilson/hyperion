@@ -1,9 +1,13 @@
 "use client";
 import React, { useState } from "react";
+import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { usePhone } from "@/hooks/use-phone";
+import axios from "axios";
 
 import { FullCall } from "@/types";
+import { Call } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,17 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AudioPlayer } from "@/components/custom/audio-player";
+
 import { callUpdateByIdShare } from "@/actions/call";
-import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
-import axios from "axios";
 
-type CallHistoryActionsProps = {
-  call: FullCall;
-};
-
-export const CallHistoryActions = ({ call }: CallHistoryActionsProps) => {
+export const CallHistoryActions = ({ call }: { call: FullCall }) => {
   const user = useCurrentUser();
   const { onCallOpen, onPhoneOutOpen } = usePhone();
   const [isShared, setIsShared] = useState(call.shared);
@@ -31,7 +28,7 @@ export const CallHistoryActions = ({ call }: CallHistoryActionsProps) => {
   const onCallBack = async () => {
     //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
     const response = await axios.post("/api/leads/details/by-id", {
-      leadId: call.lead?.id,
+      leadId: call.leadId,
     });
     const lead = response.data;
     onPhoneOutOpen(lead);

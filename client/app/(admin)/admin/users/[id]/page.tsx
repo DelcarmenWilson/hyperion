@@ -2,12 +2,11 @@ import React from "react";
 import { CallHistoryClient } from "@/components/reusable/callhistory/client";
 
 import { UserClient } from "./components/client";
-import { SharedCallsClient } from "./components/shared-calls/client";
+import { SharedCallsClient } from "@/components/global/shared-calls";
 import { ReportCallsClient } from "./components/report-calls/client";
 import { AboutMe } from "./components/about-me";
 
 import { callsGetAllByAgentIdFiltered } from "@/actions/call";
-import { callsGetAllShared } from "@/data/call";
 import { teamsGetAllByOrganization } from "@/data/team";
 import { userGetByIdReport } from "@/data/user";
 import { weekStartEnd } from "@/formulas/dates";
@@ -32,8 +31,6 @@ const UserPage = async ({
     to as string
   );
   const duration = calls.reduce((sum, call) => sum + call.duration!, 0);
-
-  const sharedCalls = await callsGetAllShared();
 
   const user = await userGetByIdReport(params.id);
   const teams = await teamsGetAllByOrganization(
@@ -60,7 +57,7 @@ const UserPage = async ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <SharedCallsClient calls={sharedCalls} />
+        <SharedCallsClient />
         <ReportCallsClient
           calls={calls}
           from={from as string}

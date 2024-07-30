@@ -1,32 +1,33 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { pusherClient } from "@/lib/pusher";
 
-import { CallHistoryCard } from "./card";
 import { Call } from "@prisma/client";
+import { FullCall } from "@/types";
 
-interface CallHistoryClientProps {
-  leadId: string;
-  initialCalls: Call[];
-}
+import { CallHistoryCard } from "./card";
+import { callsGetAllByLeadId } from "@/actions/call";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const CallHistoryClient = ({
-  leadId,
-  initialCalls,
-}: CallHistoryClientProps) => {
-  const [calls, setCalls] = useState<Call[]>(initialCalls);
+export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
+  const { data: calls, isFetching } = useQuery<FullCall[]>({
+    queryFn: () => callsGetAllByLeadId(leadId),
+    queryKey: ["leadCalls"],
+  });
 
   useEffect(() => {
     pusherClient.subscribe(leadId as string);
 
     const callHandler = (newCall: Call) => {
-      setCalls((current) => {
-        const existingCall = current.find((e) => e.id == newCall.id);
-        if (existingCall) {
-          current.shift();
-        }
-        return [newCall, ...current];
-      });
+      //TODO - need to invalidate the quesry instead
+      // setCalls((current) => {
+      //   const existingCall = current.find((e) => e.id == newCall.id);
+      //   if (existingCall) {
+      //     current.shift();
+      //   }
+      //   return [newCall, ...current];
+      // });
     };
     pusherClient.bind("call:coach", callHandler);
     return () => {
@@ -35,19 +36,27 @@ export const CallHistoryClient = ({
     };
   }, [leadId]);
   return (
-    <div className="text-sm">
-      <div className="grid grid-cols-5 items-center  gap-2 text-md text-muted-foreground">
-        <span>Direction</span>
-        <span>Duration</span>
-        <span className="col-span-2">Date / Time</span>
-        <span>Recording</span>
+    <SkeletonWrapper isLoading={isFetching}>
+      <div className="text-sm">
+        <div className="grid grid-cols-5 items-center  gap-2 text-md text-muted-foreground">
+          <span>Direction</span>
+          <span>Duration</span>
+          <span className="col-span-2">Date / Time</span>
+          <span>Actions</span>
+        </div>
+
+        {calls?.length ? (
+          <>
+            {calls?.map((call) => (
+              <CallHistoryCard key={call.id} call={call} />
+            ))}
+          </>
+        ) : (
+          <p className="text-muted-foreground text-center mt-2">
+            No calls found
+          </p>
+        )}
       </div>
-      {calls?.map((call) => (
-        <CallHistoryCard key={call.id} call={call} />
-      ))}
-      {!calls.length && (
-        <p className="text-muted-foreground text-center mt-2">No calls found</p>
-      )}
-    </div>
+    </SkeletonWrapper>
   );
 };
