@@ -1,10 +1,12 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { userEmitter } from "@/lib/event-emmiter";
-import { Message } from "@prisma/client";
-import { MessageCard } from "./message-card";
-import { pusherClient } from "@/lib/pusher";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import SocketContext from "@/providers/socket";
 import axios from "axios";
+import { userEmitter } from "@/lib/event-emmiter";
+
+import { Message } from "@prisma/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { MessageCard } from "./message-card";
+import { FullMessage } from "@/types";
 
 type SmsBodyProps = {
   initConversationId?: string;
@@ -19,6 +21,7 @@ export const SmsBody = ({
   leadName,
   userName,
 }: SmsBodyProps) => {
+  const { socket } = useContext(SocketContext).SocketState;
   const [conversationId, setConversationId] = useState(initConversationId);
   const [messages, setMessages] = useState(initMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -42,17 +45,11 @@ export const SmsBody = ({
     ScrollDown();
   };
 
-  const onSetMessages = (newMessages: Message[]) => {
-    const existing = messages?.find((e) => e.id == newMessages[0].id);
-    if (existing != undefined) return;
-    if (!conversationId) {
-      setConversationId(newMessages[0].conversationId);
-    }
-    setMessages((messages) => [...messages!, ...newMessages]);
-    ScrollDown();
-  };
-
   useEffect(() => {
+    if (conversationId) {
+      axios.post(`/api/conversations/${conversationId}/seen`);
+      userEmitter.emit("conversationSeen", conversationId as string);
+    }
     ScrollDown();
     userEmitter.on("messageInserted", (info) => onSetMessage(info));
     return () => {
@@ -62,28 +59,23 @@ export const SmsBody = ({
   }, []);
 
   useEffect(() => {
-    if (conversationId) {
-      pusherClient.subscribe(conversationId as string);
-      axios.post(`/api/conversations/${conversationId}/seen`);
-      userEmitter.emit("conversationSeen", conversationId as string);
-    }
-
-    const messagesHandler = (messages: Message[]) => {
-      axios.post(`/api/conversations/${conversationId}/seen`);
-      onSetMessages(messages);
-    };
     const messageHandler = (message: Message) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
       onSetMessage(message);
     };
-    pusherClient.bind("messages:new", messagesHandler);
-    pusherClient.bind("message:new", messageHandler);
+    socket?.on("conversation-messages-new", (data: { dt: FullMessage[] }) => {
+      data.dt.forEach((message) => messageHandler(message));
+    });
     return () => {
-      pusherClient.unsubscribe(conversationId as string);
-      pusherClient.unbind("messages:new", messagesHandler);
-      pusherClient.unbind("message:new", messageHandler);
+      socket?.off(
+        "conversation-messages-new",
+        (data: { dt: FullMessage[] }) => {
+          data.dt.forEach((message) => messageHandler(message));
+        }
+      );
     };
-  }, [conversationId]);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">

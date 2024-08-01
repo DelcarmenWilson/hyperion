@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { pusherClient } from "@/lib/pusher";
 
 import { Call } from "@prisma/client";
 import { FullCall } from "@/types";
@@ -15,10 +14,8 @@ export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
     queryFn: () => callsGetAllByLeadId(leadId),
     queryKey: ["leadCalls"],
   });
-
+  //TODO find the other component that looks just like this one
   useEffect(() => {
-    pusherClient.subscribe(leadId as string);
-
     const callHandler = (newCall: Call) => {
       //TODO - need to invalidate the quesry instead
       // setCalls((current) => {
@@ -29,12 +26,9 @@ export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
       //   return [newCall, ...current];
       // });
     };
-    pusherClient.bind("call:coach", callHandler);
-    return () => {
-      pusherClient.unsubscribe(leadId as string);
-      pusherClient.unbind("call:coach", callHandler);
-    };
-  }, [leadId]);
+
+    return () => {};
+  }, []);
   return (
     <SkeletonWrapper isLoading={isFetching}>
       <div className="text-sm">

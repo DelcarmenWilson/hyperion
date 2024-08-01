@@ -1,8 +1,8 @@
-import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+import axios from "axios";
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
+import { formatObject } from "@/formulas/objects";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -24,8 +24,10 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    await pusherServer.trigger(call?.leadId, "calllog:new", call);
-    await pusherServer.trigger(call?.userId, "calllog:new", call);
+    axios.post("http://localhost:4000/socket", {
+      userId: call.userId,
+      type: "calllog:new",
+    });
   }
   return new NextResponse("", { status: 200 });
 }

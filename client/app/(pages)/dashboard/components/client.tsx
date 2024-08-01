@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
+import SocketContext from "@/providers/socket";
 import {
   LucideIcon,
   MessageSquarePlus,
@@ -12,11 +13,10 @@ import {
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { CardBox, BoxSkeleton } from "@/components/custom/card/box";
-import { pusherClient } from "@/lib/pusher";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { dashboardGetAllCards } from "@/actions/dashboard";
 import { DashboardDataType } from "@/types/dashboard";
+
+import { CardBox, BoxSkeleton } from "@/components/custom/card/box";
+import { dashboardGetAllCards } from "@/actions/dashboard";
 
 export type DataType = {
   icon: LucideIcon;
@@ -27,7 +27,7 @@ export type DataType = {
 };
 
 export const DashBoardClient = () => {
-  const user = useCurrentUser();
+  const { socket } = useContext(SocketContext).SocketState;
   const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -81,21 +81,12 @@ export const DashBoardClient = () => {
   };
 
   useEffect(() => {
-    pusherClient.subscribe(user?.id as string);
-
-    const messageHandler = (message: string) => {
-      // axios.post(`/api/conversations/${conversationId}/seen`);
-      if (audioRef.current) {
-        audioRef.current.play();
-      }
-      invalidate();
-    };
-    pusherClient.bind("messages:new", messageHandler);
+    socket?.on("conversation-messages-new", () => invalidate());
     return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("messages:new", messageHandler);
+      socket?.on("conversation-messages-new", () => invalidate());
     };
-  }, [user?.id]);
+    // eslint-disable-next-line
+  }, []);
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
       {dataCard.map((data) => (

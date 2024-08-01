@@ -1,18 +1,15 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import SocketContext from "@/providers/socket";
 
 import useConversation from "@/hooks/user-conversation";
 import axios from "axios";
-import { pusherClient } from "@/lib/pusher";
 
 import { FullConversation, FullMessage } from "@/types";
 import { MessageBox } from "@/components/reusable/message-box";
 
-type BodyProps = {
-  initialData: FullConversation;
-};
-export const Body = ({ initialData }: BodyProps) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
+export const Body = ({ initialData }: { initialData: FullConversation }) => {
+  const { socket } = useContext(SocketContext).SocketState;
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState(initialData.messages);
@@ -25,14 +22,10 @@ export const Body = ({ initialData }: BodyProps) => {
   }, [conversationId]);
 
   useEffect(() => {
-    pusherClient.subscribe(conversationId as string);
     bottomRef?.current?.scrollIntoView();
 
     const messageHandler = (message: FullMessage) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
-      if (message.role == "user" && audioRef.current) {
-        audioRef.current.play();
-      }
       setMessages((current) => {
         const existingMessage = current.find((e) => e.id == message.id);
         if (existingMessage) {
@@ -43,10 +36,17 @@ export const Body = ({ initialData }: BodyProps) => {
 
       bottomRef?.current?.scrollIntoView();
     };
-    pusherClient.bind("messages:new", messageHandler);
+
+    socket?.on("conversation-messages-new", (data: { dt: FullMessage[] }) => {
+      data.dt.forEach((message) => messageHandler(message));
+    });
     return () => {
-      pusherClient.unsubscribe(conversationId as string);
-      pusherClient.unbind("messages:new", messageHandler);
+      socket?.off(
+        "conversation-messages-new",
+        (data: { dt: FullMessage[] }) => {
+          data.dt.forEach((message) => messageHandler(message));
+        }
+      );
     };
   }, [conversationId, messages]);
 
@@ -61,7 +61,6 @@ export const Body = ({ initialData }: BodyProps) => {
         />
       ))}
       <div ref={bottomRef} className="pt-24" />
-      <audio ref={audioRef} src="/sounds/message.mp3" />
     </div>
   );
 };

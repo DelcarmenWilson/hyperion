@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import axios from "axios";
-import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 import { MessageSchemaType } from "@/schemas/message";
 import { messageInsert } from "@/actions/message";
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
   const agentNumber = await db.phoneNumber.findFirst({
     where: { phone: sms.to },
   });
-  
+
   if (!agentNumber) {
     return new NextResponse(null, { status: 500 });
   }
@@ -167,20 +166,16 @@ export async function POST(req: Request) {
       },
     });
 
-    await pusherServer.trigger(
-      conversation.agentId,
-      "conversation:updated",
-      updatedConversation
-    );
-    await pusherServer.trigger(conversation.id, "messages:new", [
-      newMessage,
-      newChatMessage,
-    ]);
-    await pusherServer.trigger(conversation.agentId, "message:notify", null);
+    axios.post("http://localhost:4000/socket", {
+      userId: conversation.agentId,
+      type: "conversation:updated",
+      dt: updatedConversation,
+    });
+    axios.post("http://localhost:4000/socket", {
+      userId: conversation.agentId,
+      type: "conversation-messages:new",
+      dt: [newMessage,newChatMessage],
+    });
   }
-  // axios.post("http://localhost:4000/message", {
-  //   user: conversation.agentId,
-  //   message: newMessage,
-  // });
   return new NextResponse(content, { status: 200 });
 }

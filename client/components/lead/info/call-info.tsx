@@ -1,12 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
+import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { Phone } from "lucide-react";
 import { usePhone } from "@/hooks/use-phone";
-
-import { pusherClient } from "@/lib/pusher";
 
 import { FullLead, FullLeadNoConvo } from "@/types";
 
@@ -15,28 +13,31 @@ import { Button } from "@/components/ui/button";
 
 import { LeadStatusSelect } from "@/components/lead/select/status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
+import { Call } from "@prisma/client";
 
 type Props = {
   info: FullLead | FullLeadNoConvo;
   showBtnCall?: boolean;
 };
 export const CallInfo = ({ info, showBtnCall = true }: Props) => {
-  const usePm = usePhone();
+  const { socket } = useContext(SocketContext).SocketState;
+  const { onPhoneOutOpen } = usePhone();
   const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
   const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;
 
   const [callCount, setCallCount] = useState(leadcount || 0);
 
   useEffect(() => {
-    pusherClient.subscribe(lead.id as string);
-
-    const callHandler = () => {
-      setCallCount((count) => count + 1);
+    const callHandler = (leadId: string | null) => {
+      if (leadId == lead.id) setCallCount((count) => count + 1);
     };
-    pusherClient.bind("call:new", callHandler);
+    socket?.on("calllog:new", (data: { dt: Call }) =>
+      callHandler(data.dt.leadId)
+    );
     return () => {
-      pusherClient.unsubscribe(lead.id as string);
-      pusherClient.unbind("call:new", callHandler);
+      socket?.off("calllog:new", (data: { dt: Call }) =>
+        callHandler(data.dt.leadId)
+      );
     };
   }, [lead.id]);
 
@@ -75,7 +76,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           <Button
             className="gap-2"
             disabled={lead.status == "Do_Not_Call"}
-            onClick={() => usePm.onPhoneOutOpen(lead)}
+            onClick={() => onPhoneOutOpen(lead)}
             size="sm"
           >
             <Phone size={16} />

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { pusherClient } from "@/lib/pusher";
 
 import { CallHistoryCard } from "./card";
 import { Call } from "@prisma/client";
@@ -17,8 +16,6 @@ export const CallHistoryClient = ({
   const [calls, setCalls] = useState<Call[]>(initialCalls);
 
   useEffect(() => {
-    pusherClient.subscribe(leadId as string);
-
     const callHandler = (newCall: Call) => {
       setCalls((current) => {
         const existingCall = current.find((e) => e.id == newCall.id);
@@ -28,10 +25,9 @@ export const CallHistoryClient = ({
         return [newCall, ...current];
       });
     };
-    pusherClient.bind("call:coach", callHandler);
+
     return () => {
-      pusherClient.unsubscribe(leadId as string);
-      pusherClient.unbind("call:coach", callHandler);
+      //TODO - ps client was here for cach calling
     };
   }, [leadId]);
   return (
