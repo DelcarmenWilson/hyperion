@@ -166,12 +166,12 @@ export async function POST(req: Request) {
       },
     });
 
-    axios.post("http://localhost:4000/socket", {
+    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
       userId: conversation.agentId,
       type: "conversation:updated",
       dt: updatedConversation,
     });
-    axios.post("http://localhost:4000/socket", {
+    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
       userId: conversation.agentId,
       type: "conversation-messages:new",
       dt: [newMessage,newChatMessage],

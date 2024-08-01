@@ -400,12 +400,12 @@ export const disabledAutoChatResponse=async(conversation:LeadAndConversation,mes
     const agentMessage=`${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`
     await smsSend(lead.defaultNumber,settings.phoneNumber,agentMessage)
   }
-  axios.post("http://localhost:4000/socket", {
+  axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
     userId: conversation.agentId,
     type: "conversation:updated",
     dt: updatedConversation,
   });
-  axios.post("http://localhost:4000/socket", {
+  axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
     userId: conversation.agentId,
     type: "conversation-messages:new",
     dt: [message],
