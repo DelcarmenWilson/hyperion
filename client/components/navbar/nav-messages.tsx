@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import SocketContext from "@/providers/socket";
 import Link from "next/link";
 
-import { pusherClient } from "@/lib/pusher";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { MessagesSquare } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,19 +68,13 @@ export const NavMessages = () => {
     audioRef.current.play();
   };
 
-  // useEffect(() => {
-  //   socket?.on("lead-message-recieved", onPlay);
-  //   // eslint-disable-next-line
-  // }, []);
-
   useEffect(() => {
-    pusherClient.subscribe(user?.id as string);
-    pusherClient.bind("message:notify", onPlay);
+    socket?.on("conversation-message-notify", onPlay);
     return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("message:notify", onPlay);
+      socket?.off("conversation-message-notify", onPlay);
     };
-  }, [user?.id]);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div>

@@ -1,23 +1,22 @@
 "use server";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import axios from "axios";
 
 import { cfg, client } from "@/lib/twilio/config";
 
-import { Conversation, HyperionLead, Lead, Message } from "@prisma/client";
+import { LeadAndConversation, TwilioSms } from "@/types";
+import { HyperionLead, Lead, Message } from "@prisma/client";
 import { MessageSchemaType, SmsMessageSchema,SmsMessageSchemaType } from "@/schemas/message";
-
-import { defaultChat, defaultOptOut } from "@/placeholder/chat";
-import { replacePreset } from "@/formulas/text";
-import { getRandomNumber } from "@/formulas/numbers";
-import { formatDateTimeZone, formatHyperionDate, formatTime, formatTimeZone } from "@/formulas/dates";
 
 import { messageInsert } from "./message";
 import { conversationInsert } from "./conversation";
 import { userGetByAssistant } from "@/data/user";
-import { states } from "@/constants/states";
-import { LeadAndConversation, TwilioSms } from "@/types";
-import { pusherServer } from "@/lib/pusher";
+
+import { defaultChat, defaultOptOut } from "@/placeholder/chat";
+import { getRandomNumber } from "@/formulas/numbers";
+import { replacePreset } from "@/formulas/text";
+import { formatDateTimeZone, formatHyperionDate, formatTimeZone } from "@/formulas/dates";
 
 export const smsCreateInitial = async (leadId: string) => {
   const dbuser = await currentUser();
@@ -401,15 +400,16 @@ export const disabledAutoChatResponse=async(conversation:LeadAndConversation,mes
     const agentMessage=`${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`
     await smsSend(lead.defaultNumber,settings.phoneNumber,agentMessage)
   }
-
-    await pusherServer.trigger(
-    conversation.agentId,
-    "conversation:updated",
-    updatedConversation
-  );
-  await pusherServer.trigger(conversation.id, "message:new", message);
-  await pusherServer.trigger(conversation.agentId, "message:notify", null);
-  // return updatedConversation
+  axios.post("http://localhost:4000/socket", {
+    userId: conversation.agentId,
+    type: "conversation:updated",
+    dt: updatedConversation,
+  });
+  axios.post("http://localhost:4000/socket", {
+    userId: conversation.agentId,
+    type: "conversation-messages:new",
+    dt: [message],
+  });
 }
 
 //FORWARD TEXT MESSAGE TO LEAD

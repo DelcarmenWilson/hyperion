@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { formatObject } from "@/formulas/objects";
-import { pusherServer } from "@/lib/pusher";
+import axios from "axios";
 import { client } from "@/lib/twilio/config";
+import { NextResponse } from "next/server";
 import { TwilioCallResult } from "@/types";
+import { formatObject } from "@/formulas/objects";
+
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
 export async function POST(req: Request) {
@@ -11,8 +12,9 @@ export async function POST(req: Request) {
 
   const callResult: TwilioCallResult = formatObject(body);
 
-  
-  const existingCall = await db.call.findUnique({ where: { id: callResult.callSid } });
+  const existingCall = await db.call.findUnique({
+    where: { id: callResult.callSid },
+  });
   if (!existingCall) {
     console.log("CALL_RESULT_POST_ERROR");
     return new NextResponse("Error", { status: 500 });
@@ -31,8 +33,11 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    await pusherServer.trigger(call?.leadId, "calllog:new", call);
-    await pusherServer.trigger(call?.userId, "calllog:new", call);
+    axios.post("http://localhost:4000/socket", {
+      userId: call.userId,
+      type: "calllog:new",
+      dt:call
+    });
   }
 
   return new NextResponse("", { status: 200 });

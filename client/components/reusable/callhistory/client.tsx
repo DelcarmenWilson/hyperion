@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import SocketContext from "@/providers/socket";
 import { Phone } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -16,8 +17,6 @@ import {
   callsGetAllByUserIdFiltered,
   callsGetAllByAgentIdFiltered,
 } from "@/actions/call";
-import { pusherClient } from "@/lib/pusher";
-import { useCurrentUser } from "@/hooks/use-current-user";
 
 type CallHistoryClientProps = {
   userId?: string;
@@ -32,7 +31,7 @@ export const CallHistoryClient = ({
   showLink = false,
   showDate = false,
 }: CallHistoryClientProps) => {
-  const user = useCurrentUser();
+  const { socket } = useContext(SocketContext).SocketState;
   const queryClient = useQueryClient();
   const [dates, setDates] = useState<DateRange | undefined>(weekStartEnd());
 
@@ -66,16 +65,9 @@ export const CallHistoryClient = ({
   };
 
   useEffect(() => {
-    if (!user?.id) return;
-    pusherClient.subscribe(user?.id as string);
-
-    const callHandler = (newCall: FullCall) => {
-      invalidate();
-    };
-    pusherClient.bind("calllog:new", callHandler);
+    socket?.on("calllog-new", invalidate);
     return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("calllog:new", callHandler);
+      socket?.off("calllog-new", invalidate);
     };
   }, []);
   return (

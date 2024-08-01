@@ -1,46 +1,24 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { pusherClient } from "@/lib/pusher";
+import { useContext, useEffect, useState } from "react";
+import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { ShortConversation, ShortConvo } from "@/types";
-import { Conversation, Message } from "@prisma/client";
+import { Message } from "@prisma/client";
 import { ConversationCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
 
-type ConversationsClientProps = {
+export const ConversationsClient = ({
+  convos,
+}: {
   convos: ShortConversation[];
-};
-export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
-  const user = useCurrentUser();
+}) => {
+  const { socket } = useContext(SocketContext).SocketState;
   const [conversations, setConversations] =
     useState<ShortConversation[]>(convos);
   useEffect(() => {
-    pusherClient.subscribe(user?.id as string);
-
-    const convoHandler = (updatedConvo: ShortConvo) => {
-      setConversations((current) => {
-        const convo = current.find((e) => e.id == updatedConvo.id);
-        if (convo) {
-          const index = current.findIndex((e) => e.id == updatedConvo.id);
-          if (!convo || index == -1) {
-            return current;
-          }
-          convo.message = updatedConvo.lastMessage?.content!;
-          convo.updatedAt = updatedConvo.updatedAt;
-          current.unshift(current.splice(index, 1)[0]);
-
-          return [...current];
-        }
-        return [...current];
-      });
-    };
-
     const onMessageInserted = (newMessage: Message) => {
-      // if (message.role == "user" && audioRef.current) {
-      //   audioRef.current.play();
-      // }
+      if (!newMessage) return;
+
       setConversations((current) => {
         const convo = current.find((e) => e.id == newMessage.conversationId);
         if (convo) {
@@ -71,19 +49,23 @@ export const ConversationsClient = ({ convos }: ConversationsClientProps) => {
         return [...current];
       });
     };
-    pusherClient.bind("conversation:updated", convoHandler);
+    socket?.on("conversation-messages-new", (data: { dt: Message[] }) => {
+      data.dt.forEach((message) => onMessageInserted(message));
+    });
+
     userEmitter.on("messageInserted", (info) => onMessageInserted(info));
     userEmitter.on("conversationSeen", (conversationId) =>
       onConversationSeen(conversationId)
     );
     return () => {
-      pusherClient.unsubscribe(user?.id as string);
-      pusherClient.unbind("messages:new", convoHandler);
       userEmitter.off("conversationSeen", (conversationId) =>
         onConversationSeen(conversationId)
       );
+      socket?.off("conversation-messages-new", (data: { dt: Message[] }) => {
+        data.dt.forEach((message) => onMessageInserted(message));
+      });
     };
-  }, [user?.id]);
+  }, []);
   return (
     <div className="flex flex-col h-full w-[250px] gap-1 p-1">
       <h4 className="text-lg text-muted-foreground font-semibold">

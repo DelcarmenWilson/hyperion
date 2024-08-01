@@ -1,9 +1,8 @@
+import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 import { client } from "@/lib/twilio/config";
-import { pusherServer } from "@/lib/pusher";
-import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -54,8 +53,8 @@ export async function POST(req: Request) {
       },
       include: { agent: true, messages: true },
     });
-
-    await pusherServer.trigger(conversationId, "messages:new", newMessage);
+//TODO - see if this is really needed
+    // await pusherServer.trigger(conversationId, "messages:new", newMessage);
     // return NextResponse.json(newMessage);
     return NextResponse.json(result);
   } catch (error) {

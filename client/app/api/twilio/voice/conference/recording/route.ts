@@ -1,9 +1,9 @@
-import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+import axios from "axios";
 import { client } from "@/lib/twilio/config";
-import { TwilioConferenceRecording } from "@/types";
 import { NextResponse } from "next/server";
+import { TwilioConferenceRecording } from "@/types";
+import { formatObject } from "@/formulas/objects";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -26,8 +26,10 @@ export async function POST(req: Request) {
   });
 
   if (newCall?.leadId) {
-    await pusherServer.trigger(newCall?.leadId, "calllog:new", newCall);
-    await pusherServer.trigger(newCall?.userId, "calllog:new", newCall);
+    axios.post("http://localhost:4000/socket", {
+      userId: newCall.userId,
+      type: "calllog:new",
+    });
   }
   return new NextResponse("", { status: 200 });
 }
