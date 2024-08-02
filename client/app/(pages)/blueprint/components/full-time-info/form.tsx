@@ -1,7 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FullTimeInfoSchema, FullTimeInfoSchemaType } from "@/schemas/blueprint";
+import {
+  FullTimeInfoSchema,
+  FullTimeInfoSchemaType,
+} from "@/schemas/blueprint";
 import {
   Form,
   FormControl,
@@ -19,26 +22,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fullTimeInfoUpdateByUserId } from "@/actions/blueprint";
+import { fullTimeInfoInsert, fullTimeInfoUpdateByUserId } from "@/actions/blueprint";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { FullTimeInfo } from "@prisma/client";
-type Props={
-  fullTimeInfo?:FullTimeInfo
-  onClose:()=>void
-}
-export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
-  const queryClient= useQueryClient()
+import { TargetList } from "./list";
+import { calculateDailyBluePrint } from "@/constants/blue-print";
+type Props = {
+  fullTimeInfo?: FullTimeInfo;
+  onClose: () => void;
+};
+export const FullTimeInfoForm = ({ onClose, fullTimeInfo }: Props) => {
+  const queryClient = useQueryClient();
   const form = useForm<FullTimeInfoSchemaType>({
     resolver: zodResolver(FullTimeInfoSchema),
-    defaultValues: fullTimeInfo||{ workType: "PartTime"},
+    defaultValues: fullTimeInfo || { workType: "PartTime" },
   });
   const fullTimeInfoFormSubmit = async (values: FullTimeInfoSchemaType) => {
-    const newFullTimeInfo = await fullTimeInfoUpdateByUserId(values);
+    // const newFullTimeInfo = await fullTimeInfoUpdateByUserId(values);
+    // if (newFullTimeInfo.error) {
+    //   toast.error(newFullTimeInfo.error);
+    // } else {
+    //   queryClient.invalidateQueries({ queryKey: ["agentFullTimeInfo"] });
+    //   onClose();
+    //   toast.success("Agent details got updated");
+    // }
+    const newFullTimeInfo = await fullTimeInfoInsert(values);
     if (newFullTimeInfo.error) {
       toast.error(newFullTimeInfo.error);
     } else {
-      queryClient.invalidateQueries({queryKey:["agentFullTimeInfo"]})
+      queryClient.invalidateQueries({ queryKey: ["agentFullTimeInfo"] });
       onClose();
       toast.success("Agent details got updated");
     }
@@ -46,7 +59,6 @@ export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
 
   return (
     <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center">
-    
       <Form {...form}>
         <form onSubmit={form.handleSubmit(fullTimeInfoFormSubmit)}>
           <FormField
@@ -83,7 +95,6 @@ export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
               </FormItem>
             )}
           />
-        
 
           <FormField
             control={form.control}
@@ -101,13 +112,13 @@ export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
             )}
           />
 
-           <FormField
+          <FormField
             control={form.control}
             name="workingHours"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                Working Hours
+                  Working Hours
                   <FormMessage />
                 </FormLabel>
                 <FormControl>
@@ -117,8 +128,28 @@ export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="annualTarget"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Annual Target
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Please enter annual target" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+<TargetList targets={calculateDailyBluePrint(form.getValues("annualTarget"))}/>
+
           <div className="flex mt-2 gap-2 justify-end">
-            <Button variant="outlineprimary" type="button" onClick={onClose}>Cancel</Button>
+            <Button variant="outlineprimary" type="button" onClick={onClose}>
+              Cancel
+            </Button>
             <Button>Submit</Button>
           </div>
         </form>
@@ -126,4 +157,3 @@ export const FullTimeInfoForm = ({onClose,fullTimeInfo}:Props) => {
     </div>
   );
 };
-

@@ -13,5 +13,6 @@ export const FullTimeInfoSchema = z.object({
   workType: z.string().min(1),
   workingDays: z.string().min(1),
   workingHours: z.string().min(1),
+  annualTarget: z.coerce.number().min(40000).max(300000),
 });
 export type FullTimeInfoSchemaType = z.infer<typeof FullTimeInfoSchema>;

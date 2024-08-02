@@ -4,7 +4,9 @@ import React from "react";
 import BluePrintClient from "./components/client";
 import { FullTimeInfoClient } from "./components/full-time-info/client";
 
+
 const BluePrintPage = () => {
+
   return (
 
     <div>

@@ -11,6 +11,8 @@ import { fullTimeInfoGetByUserId } from "@/actions/blueprint";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { FullTimeInfoForm } from "./form";
+import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { TargetList } from "./list";
 
 export const FullTimeInfoClient = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +20,8 @@ export const FullTimeInfoClient = () => {
     queryFn: () => fullTimeInfoGetByUserId(),
     queryKey: ["agentFullTimeInfo"],
   });
+  const formula =calculateDailyBluePrint(data?.annualTarget||0)
+  
   return (
     <>
       <Dialog onOpenChange={setIsOpen} open={isOpen}>
@@ -31,14 +35,19 @@ export const FullTimeInfoClient = () => {
       <Card>
       <SkeletonWrapper isLoading={isFetching}>
         <CardTitle>FullTime Details</CardTitle>
-        <CardContent>
+        <CardContent className="flex gap-2">
+          <div>
           <p>{data?.userId}</p>
           <p>{data?.workType}</p>
           <p>{data?.workingDays}</p>
           <p>{data?.workingHours}</p>
+          <p>Annual Target: {data?.annualTarget}</p>
           <p>{data?.createdAt.toDateString()}</p>
           <p>{data?.updatedAt.toDateString()}</p>
        <Button onClick={()=>setIsOpen(true)}>Edit</Button>
+       </div>
+       {formula.length&&(<TargetList targets={formula}/>)}
+
        </CardContent>
       </SkeletonWrapper>
       </Card>

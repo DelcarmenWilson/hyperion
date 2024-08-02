@@ -1,7 +1,12 @@
 "use server";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { BluePrintSchema, BluePrintSchemaType, FullTimeInfoSchema, FullTimeInfoSchemaType } from "@/schemas/blueprint";
+import {
+  BluePrintSchema,
+  BluePrintSchemaType,
+  FullTimeInfoSchema,
+  FullTimeInfoSchemaType,
+} from "@/schemas/blueprint";
 import { error } from "console";
 import Sync from "twilio/lib/rest/Sync";
 
@@ -71,8 +76,35 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
 };
 
 //ACTIONS FOR FULLTIMEINFO
+export const fullTimeInfoInsert = async (values: FullTimeInfoSchemaType) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unathenticated" };
 
-export const fullTimeInfoUpdateByUserId = async (values: FullTimeInfoSchemaType) => {
+  const validatedFields = FullTimeInfoSchema.safeParse(values);
+  if (!validatedFields.success) return { error: "Invalid Fields" };
+
+  const { workType, workingDays, workingHours, annualTarget } =
+    validatedFields.data;
+  const fullTimeInfoOld = await db.fullTimeInfo.findUnique({
+    where: { userId: user.id },
+  });
+  if (fullTimeInfoOld) return { error: "FullTime details already exists" };
+
+  const newFullTimeInfo = await db.fullTimeInfo.create({
+    data: {
+      userId: user.id,
+      workType,
+      workingDays,
+      workingHours,
+      annualTarget,
+    },
+  });
+
+  return { success: newFullTimeInfo };
+};
+export const fullTimeInfoUpdateByUserId = async (
+  values: FullTimeInfoSchemaType
+) => {
   const user = await currentUser();
   if (!user) return { error: "Unathenticated" };
 
@@ -80,16 +112,17 @@ export const fullTimeInfoUpdateByUserId = async (values: FullTimeInfoSchemaType)
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
   const { workType, workingDays, workingHours } = validatedFields.data;
-const fullTimeInfoOld = await db.fullTimeInfo.findUnique({where:{userId:user.id} })
-if(!fullTimeInfoOld) return {error:"FullTime details not available"}
+  const fullTimeInfoOld = await db.fullTimeInfo.findUnique({
+    where: { userId: user.id },
+  });
+  if (!fullTimeInfoOld) return { error: "FullTime details not available" };
 
   const newFullTimeInfo = await db.fullTimeInfo.update({
-    where:{userId:user.id},
+    where: { userId: user.id },
     data: {
       workType,
       workingDays,
       workingHours,
-      
     },
   });
 
