@@ -23,6 +23,7 @@ import { calculateDailyBluePrint } from "@/constants/blue-print";
 import { TargetList } from "./list";
 import BluePrintClient from "../client";
 import { DetailsCard } from "./details-card";
+import { TargetCard } from "./target-card";
 
 export const FullTimeInfoClient = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,7 @@ export const FullTimeInfoClient = () => {
     queryFn: () => fullTimeInfoGetByUserId(),
     queryKey: ["agentFullTimeInfo"],
   });
-  const formula = calculateDailyBluePrint(data?.annualTarget || 0);
+  const targets = calculateDailyBluePrint(data?.annualTarget || 0);
 
   return (
     <>
@@ -51,17 +52,25 @@ export const FullTimeInfoClient = () => {
               <CardDescription>
                 <CardTitle>FullTime Details</CardTitle>
               </CardDescription>
-              <CardContent className="flex justify-center items-center gap-2">
-                <div className="w-[40%]">
+              <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
+                <div className="w-ful lg:w-[40%]">
                   <DetailsCard info={data} />
                   <Button onClick={() => setIsOpen(true)}>Edit Details</Button>
                 </div>
-                {formula.length && (
-                  <TargetList
-                    selectedTarget={data.targetType!}
-                    targets={formula.filter((e) => e.type == data.targetType)}
-                    onChange={() => {}}
-                  />
+                {targets.length && (
+                  <div className="w-full text-center lg:text-start lg:w-[25%] h-full bg-secondary-foreground text-background p-2">
+                    <h4>Current Plan</h4>
+                    <TargetCard
+                      target={targets.find((e) => e.type == data.targetType)!}
+                      size="sm"
+                    />
+                  </div>
+
+                  // <TargetList
+                  //   selectedTarget={data.targetType!}
+                  //   targets={formula.filter((e) => e.type == data.targetType)}
+                  //   onChange={() => {}}
+                  // />
                 )}
               </CardContent>
             </Card>
