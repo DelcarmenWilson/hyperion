@@ -15,7 +15,7 @@ import { DetailsCard } from "@/app/(pages)/blueprint/components/full-time-info/d
 import { TargetCard } from "@/app/(pages)/blueprint/components/full-time-info/target-card";
 
 import { bluePrintActive, fullTimeInfoGetByUserId } from "@/actions/blueprint";
-import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 
 export const BluePrintClient = () => {
   const { data: blueprint, isFetching } = useQuery<BluePrint | null>({
@@ -28,7 +28,7 @@ export const BluePrintClient = () => {
       queryFn: () => fullTimeInfoGetByUserId(),
       queryKey: ["agentFullTimeInfo"],
     });
-  const targets = calculateDailyBluePrint(fullTimeInfoData?.annualTarget || 0);
+  const targets = calculateWeeklyBluePrint(fullTimeInfoData?.annualTarget || 0);
   return (
     <CardLayout icon={GoalIcon} title="Blue Print">
       <Tabs defaultValue="blueprint">
@@ -54,7 +54,7 @@ export const BluePrintClient = () => {
           </TabsContent>
           <TabsContent className="h-full" value="plan">
             {fullTimeInfoData ? (
-              <div className="w-full h-full bg-secondary-foreground text-background p-2">
+              <div className="w-full h-full bg-muted p-2">
                 <TargetCard
                   target={
                     targets.find((e) => e.type == fullTimeInfoData.targetType)!

@@ -19,7 +19,7 @@ import {
 import { EmptyCard } from "@/components/reusable/empty-card";
 
 import { FullTimeInfoForm } from "./form";
-import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { TargetList } from "./list";
 import BluePrintClient from "../client";
 import { DetailsCard } from "./details-card";
@@ -31,7 +31,7 @@ export const FullTimeInfoClient = () => {
     queryFn: () => fullTimeInfoGetByUserId(),
     queryKey: ["agentFullTimeInfo"],
   });
-  const targets = calculateDailyBluePrint(data?.annualTarget || 0);
+  const targets = calculateWeeklyBluePrint(data?.annualTarget || 0);
 
   return (
     <>
@@ -58,7 +58,7 @@ export const FullTimeInfoClient = () => {
                   <Button onClick={() => setIsOpen(true)}>Edit Details</Button>
                 </div>
                 {targets.length && (
-                  <div className="w-full text-center lg:text-start lg:w-[25%] h-full bg-secondary-foreground text-background p-2">
+                  <div className="w-full text-center lg:text-start lg:w-[25%] h-full bg-muted p-2">
                     <h4>Current Plan</h4>
                     <TargetCard
                       target={targets.find((e) => e.type == data.targetType)!}

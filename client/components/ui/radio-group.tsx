@@ -57,7 +57,7 @@ const RadioGroupCustomItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "relative rounded-md aspect-square shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 hover:bg-secondary-foreground hover:text-background [&[data-state=checked]]:bg-secondary-foreground [&[data-state=checked]]:text-background",
+        "relative rounded-md aspect-square shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 hover:bg-muted-foreground hover:text-background [&[data-state=checked]]:bg-muted-foreground [&[data-state=checked]]:text-background",
         className
       )}
       {...props}

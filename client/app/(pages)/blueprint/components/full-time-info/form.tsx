@@ -34,7 +34,7 @@ import {
   fullTimeInfoInsert,
   fullTimeInfoUpdateByUserId,
 } from "@/actions/blueprint";
-import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { daysOfTheWeek } from "@/formulas/schedule";
 
 type FullTimeInfoFormProps = {
@@ -182,7 +182,7 @@ export const FullTimeInfoForm = ({
                 </FormLabel>
                 <FormControl>
                   <TargetList
-                    targets={calculateDailyBluePrint(
+                    targets={calculateWeeklyBluePrint(
                       form.getValues("annualTarget")
                     )}
                     selectedTarget={field.value}
@@ -250,7 +250,7 @@ const WorkingDays = ({ defaultValue, onChange }: Props) => {
 const WorkingHours = ({ defaultValue, onChange }: Props) => {
   const [hours, setHours] = useState<{ from: string; to: string }>({
     from: defaultValue ? defaultValue.split("-")[0] : "",
-    to: defaultValue ? defaultValue.split("-")[0] : "",
+    to: defaultValue ? defaultValue.split("-")[1] : "",
   });
 
   const onSetHours = (type: "from" | "to", value: string) => {

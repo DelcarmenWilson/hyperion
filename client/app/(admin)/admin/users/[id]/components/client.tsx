@@ -95,7 +95,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
 
   return (
     <>
-      <div className="flex bg-user items-center justify-between gap-2 my-1">
+      <div className="flex bg-user items-center justify-between gap-2">
         <div className="w-full h-[100px] text-center group">
           <div className="flex items-center gap-4 w-full h-full p-4">
             <Image
@@ -156,7 +156,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 my-4">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
         {data.map((d) => (
           <CardCountUp
             key={d.title}

@@ -42,10 +42,10 @@ const UserPage = async ({
   }
   //TODO - need to make the second div scrollable
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
+    <div className="flex flex-col h-full overflow-y-auto gap-4">
       <UserClient user={user} callsLength={calls.length} teams={teams} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Credentials licenses={user.licenses} npn={user.npn as string} />
         <AboutMe
           firstName={user.firstName}

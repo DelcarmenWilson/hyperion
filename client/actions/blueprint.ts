@@ -1,5 +1,5 @@
 "use server";
-import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { weekStartEnd } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -127,7 +127,7 @@ export const fullTimeInfoInsert = async (values: FullTimeInfoSchemaType) => {
     },
   });
 
-  const target = calculateDailyBluePrint(annualTarget).find(
+  const target = calculateWeeklyBluePrint(annualTarget).find(
     (e) => e.type == targetType
   );
 

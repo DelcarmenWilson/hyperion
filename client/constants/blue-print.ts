@@ -25,22 +25,42 @@ const dailyBluePrint: BluePrintType = {
   premium: 375,
 };
 
-export const calculateDailyBluePrint = (target: number): BluePrintType[] => {
-    if(target==0)
-        return[]
-  const days = 52 * 5;
-  const premium = target / days;
-  const percent = premium / dailyBluePrint.premium;
+// export const calculateDailyBluePrint = (target: number): BluePrintType[] => {
+//     if(target==0)
+//         return[]
+//   const days = 52 * 5;
+//   const premium = target / days;
+//   const percent = premium / dailyBluePrint.premium;
 
-  const regularDailyBluePrint: BluePrintType = {
-    type:"regular",
-    calls: Math.ceil(dailyBluePrint.calls * percent),
-    appointments: Math.ceil(dailyBluePrint.appointments * percent),
-    premium: Math.ceil(dailyBluePrint.premium * percent),
-  };
+//   const regularDailyBluePrint: BluePrintType = {
+//     type:"regular",
+//     calls: Math.ceil(dailyBluePrint.calls * percent),
+//     appointments: Math.ceil(dailyBluePrint.appointments * percent),
+//     premium: Math.ceil(dailyBluePrint.premium * percent),
+//   };
 
 
-  return multipleBluePrint(regularDailyBluePrint);
+//   return multipleBluePrint(regularDailyBluePrint);
+// };
+
+
+export const calculateWeeklyBluePrint = (target: number): BluePrintType[] => {
+  if(target==0)
+      return[]
+const week = 52;
+const targetPremium = target / week;
+const {calls,appointments,premium}=weeklyBluePrint;
+const percent = targetPremium / premium;
+
+const regularWeeklyBluePrint: BluePrintType = {
+  type:"regular",
+  calls: Math.ceil(calls * percent),
+  appointments: Math.ceil(appointments * percent),
+  premium: Math.ceil(premium * percent),
+};
+
+
+return multipleBluePrint(regularWeeklyBluePrint);
 };
 
 const multipleBluePrint = (regular: BluePrintType): BluePrintType[] => {
