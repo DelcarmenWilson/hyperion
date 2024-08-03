@@ -41,4 +41,34 @@ const RadioGroupItem = React.forwardRef<
 });
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
 
-export { RadioGroup, RadioGroupItem };
+const RadioGroupCustomItem = React.forwardRef<
+  React.ElementRef<typeof RadioGroupPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
+>(({ className, ...props }, ref) => {
+  return (
+    // <RadioGroupPrimitive.Item
+    //   ref={ref}
+    //   className={cn(
+    //     "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+    //     className
+    //   )}
+    //   {...props}
+    // >
+    <RadioGroupPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative rounded-md aspect-square shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 hover:bg-secondary-foreground hover:text-background [&[data-state=checked]]:bg-secondary-foreground [&[data-state=checked]]:text-background",
+        className
+      )}
+      {...props}
+    >
+      <RadioGroupPrimitive.Indicator className="border border-primary rounded-full absolute flex items-center justify-center top-2 left-2">
+        <CheckIcon className="h-3.5 w-3.5 fill-primary" />
+      </RadioGroupPrimitive.Indicator>
+      {props.children}
+    </RadioGroupPrimitive.Item>
+  );
+});
+RadioGroupCustomItem.displayName = RadioGroupPrimitive.Item.displayName;
+
+export { RadioGroup, RadioGroupItem, RadioGroupCustomItem };

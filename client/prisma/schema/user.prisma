@@ -1,0 +1,122 @@
+model User {
+    id            String    @id @default(cuid())
+    userName      String    @unique
+    firstName     String
+    lastName      String
+    phoneNumber   String?
+    npn           String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    password      String?
+    role          UserRole  @default(USER)
+    aboutMe       String?   @db.LongText
+    title         String?
+    accounts      Account[]
+
+    isTwoFactorEnabled    Boolean                @default(false)
+    twoFactorConfirmation TwoFactorConfirmation?
+
+    teamId String?
+    team   Team?   @relation("UsersToTeam", fields: [teamId], references: [id])
+
+    teamOwned Team? @relation("UserToTeam")
+
+    assitantId String? @unique
+    assitant   User?   @relation("AssitantToUser", fields: [assitantId], references: [id])
+
+    //LEAD COLUMNS
+    leads         Lead[]
+    calls         Call[]
+    conversations Conversation[]
+    appointments  Appointment[]
+    activities    Activity[]
+
+    assistants  Lead[] @relation("LeadAssistant")
+    sharedUsers Lead[] @relation("LeadSharedUser")
+
+    //WORKFLOWS
+    workflows Workflow[]
+
+    //FUNNELS
+    funnels Funnel[]
+
+    //MEDIAS
+    medias Media[]
+
+    //CHAT MESSAGES
+    userOne      Chat[]        @relation("userOneChat")
+    userTwo      Chat[]        @relation("userTwoChat")
+    chatMessages ChatMessage[]
+
+    //USER COLUMNS
+    carriers    UserCarrier[]
+    licenses    UserLicense[]
+    templates   UserTemplate[]
+    loginStatus LoginStatus[]
+
+    presets              Presets[]
+    phoneNumbers         PhoneNumber[]
+    chatSettings         ChatSettings?
+    notificationSettings NotificationSettings?
+    schedule             Schedule?
+
+    feedbacks   Feedback[]
+    feeds       Feed[]
+    // ONE TO ONE RELATIONS
+    assitantRel User?      @relation("AssitantToUser")
+
+    //link with target table
+    blueprints BluePrint[]
+
+    fullTimeInfo FullTimeInfo?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model UserCarrier {
+    id String @id @default(cuid())
+
+    agentId String
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+
+    carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+    carrierId String
+
+    comments  String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model UserLicense {
+    id String @id @default(cuid())
+
+    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId        String
+    image         String?
+    state         String
+    type          String
+    licenseNumber String
+    dateExpires   DateTime
+
+    comments  String?  @default("")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model UserTemplate {
+    id String @id @default(cuid())
+
+    user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
+    name        String
+    description String?
+    attachment  String?
+    message     String  @db.LongText
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

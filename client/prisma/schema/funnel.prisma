@@ -1,0 +1,64 @@
+//FUNNEL EDITOR
+model Funnel {
+    id            String       @id @default(cuid())
+    name          String
+    description   String?
+    published     Boolean      @default(false)
+    subDomainName String?      @unique
+    favicon       String?      @db.Text
+    userId        String
+    user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    funnelPages   FunnelPage[]
+    liveProducts  String?      @default("[]")
+    className     ClassName[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+}
+
+model ClassName {
+    id         String  @id @default(cuid())
+    name       String
+    color      String
+    funnelId   String
+    customData String? @db.LongText
+    funnel     Funnel  @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([funnelId])
+}
+
+model FunnelPage {
+    id           String  @id @default(cuid())
+    name         String
+    pathName     String  @default("")
+    visits       Int     @default(0)
+    content      String? @db.LongText
+    order        Int
+    previewImage String? @db.Text
+    funnelId     String
+    funnel       Funnel  @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([funnelId])
+}
+
+model Media {
+    id     String @id @default(uuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    type      String?
+    name      String
+    link      String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+}

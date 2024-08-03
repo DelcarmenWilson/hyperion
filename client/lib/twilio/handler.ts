@@ -101,16 +101,7 @@ export const voiceResponse = async (call: TwilioCall) => {
         },
         conferenceId as string
       );
-      console.log(
-        "dialCoach:",
-        dialCoach,
-        "callSidToCoach:",
-        callSidToCoach,
-        "conferenceId:",
-        conferenceId,
-        "agentId:",
-        agentId
-      );
+     
       break;
     default:
       twiml.say({ voice: "alice" }, "Thanks for calling!");

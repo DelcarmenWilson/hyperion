@@ -112,7 +112,7 @@ export const getLast24hrs = (): Date => {
 export const formatDate=(date:Date|string|undefined,retval:string =""):string=>{
   if(!date)
     return retval
-  return format(date,defaultDate)
+  return format(date,retval||defaultDate)
 }
 
 export const formatDob=(date:Date|string|undefined|null,retval:string =""):string=>{

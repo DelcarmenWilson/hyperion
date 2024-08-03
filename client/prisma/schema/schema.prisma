@@ -1,0 +1,336 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex", "prismaSchemaFolder"]
+}
+
+datasource db {
+  //provider  = "postgresql"
+  provider  = "mysql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+//ENUMS
+enum UserRole {
+  MASTER
+  ADMIN
+  USER
+  ASSISTANT
+  STUDENT
+}
+
+enum Preset {
+  Birthday
+  FollowUp
+  Reminder
+  Text
+  Away
+}
+
+enum Gender {
+  NA
+  Male
+  Female
+}
+
+enum MaritalStatus {
+  Single
+  Married
+  Divorced
+  Widowed
+}
+
+enum MessageRole {
+  system
+  assistant
+  user
+}
+
+model LoginStatus {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  duration Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  teams     Team[]   @relation("OrganizationToTeam")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation("OrganizationToTeam", fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name   String
+  image  String?
+  banner String?
+
+  users  User[] @relation("UsersToTeam")
+  userId String
+
+  owner     User?    @relation("UserToTeam", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//CALLS
+model Call {
+  id String @id @unique
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  from   String
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String?
+
+  type String @default("call")
+
+  direction String  @default("inbound")
+  status    String?
+  duration  Int?
+  price     String?
+
+  recordId        String?
+  recordUrl       String?
+  recordStartTime DateTime?
+  recordStatus    String?
+  recordDuration  Int?
+  recordPrice     String?
+
+  transcriptionId   String?
+  transcriptionUrl  String?
+  transcriptionText String?
+  listened          Boolean @default(true)
+  shared            Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//LEAD CONVERSATIONS
+model Conversation {
+  id String @id @default(cuid())
+
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String
+
+  messages Message[]
+
+  lastMessageId String?  @unique
+  lastMessage   Message? @relation("lastConversationMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
+
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId String
+
+  autoChat Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  unread    Int      @default(0)
+
+  @@unique([leadId, agentId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  role        MessageRole   @default(user)
+  lastMessage Conversation? @relation("lastConversationMessage")
+
+  content    String  @db.LongText
+  attachment String?
+
+  sid    String?
+  status String  @default("sent")
+  error  String?
+  price  String?
+
+  senderId String?
+
+  hasSeen   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  localDate DateTime
+  startDate DateTime
+  endDate   DateTime
+  title     String?
+  label     String   @default("indigo")
+  status    String   @default("Scheduled")
+  comments  String?  @db.LongText
+
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId String
+
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AppointmentLabel {
+  id          String  @id @default(cuid())
+  name        String
+  color       String
+  description String? @db.LongText
+  checked     Boolean @default(true)
+
+  // appointments Appointment[]
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Activity {
+  id String @id @default(cuid())
+
+  type     String  @default("general")
+  activity String
+  newValue String?
+
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PipeLine {
+  id   String @id @default(cuid())
+  name String
+
+  status   LeadStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId String
+
+  index Int @default(0)
+  order Int @default(0)
+
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feedback {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  headLine String
+  page     String
+
+  feedback String  @db.LongText
+  images   String? @db.LongText
+
+  status   String  @default("New")
+  comments String? @db.LongText
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//TASK
+model Task {
+  id String @id @default(cuid())
+
+  headLine    String
+  description String  @db.LongText
+  images      String? @db.LongText
+
+  status   String @default("Pending")
+  comments String @db.LongText
+
+  startAt   DateTime
+  endAt     DateTime
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id       String        @id @default(cuid())
+  name     String
+  icon     String?
+  isGroup  Boolean
+  messages ChatMessage[]
+
+  lastMessageId String?      @unique
+  lastMessage   ChatMessage? @relation("lastChatMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
+
+  userOneId String
+  userOne   User   @relation("userOneChat", fields: [userOneId], references: [id])
+
+  userTwoId String
+  userTwo   User     @relation("userTwoChat", fields: [userTwoId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  unread Int @default(0)
+}
+
+model ChatMessage {
+  id String @id @default(cuid())
+
+  chatId String
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  lastMessage Chat? @relation("lastChatMessage")
+
+  content    String? @db.LongText
+  attachment String?
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id])
+
+  read Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feed {
+  id      String  @id @default(cuid())
+  content String  @db.LongText
+  link    String?
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
+  read    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//THIS IS FOR PAGEUPDATES
+model PageUpdate {
+  id          String  @id @default(cuid())
+  type        String
+  title       String
+  image       String?
+  description String  @db.LongText
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

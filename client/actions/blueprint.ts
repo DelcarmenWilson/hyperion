@@ -1,4 +1,6 @@
 "use server";
+import { calculateDailyBluePrint } from "@/constants/blue-print";
+import { weekStartEnd } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
@@ -46,7 +48,6 @@ export const fullTimeInfoGetByUserId = async () => {
 };
 
 //ACTIONS
-
 export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const user = await currentUser();
   if (!user) return { error: "Unathenticated" };
@@ -54,7 +55,8 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-  const { plannedTarget, type, period } = validatedFields.data;
+  const { callsTarget, appointmentsTarget, premiumTarget, period } =
+    validatedFields.data;
 
   await db.bluePrint.updateMany({
     where: { active: true },
@@ -63,16 +65,40 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
 
   const newBluePrint = await db.bluePrint.create({
     data: {
-      plannedTarget,
-      type,
-      period,
+      callsTarget,
+      appointmentsTarget,
+      premiumTarget,
       userId: user.id,
       endDate: new Date(),
-      actualTarget: 0,
     },
   });
 
   return { success: newBluePrint };
+};
+
+export const bluePrintUpdateByUserIdData = async (
+  userId: string,
+  type: "calls" | "appointments" | "premium",
+  value?: number
+) => {
+  const oldBluePrint = await db.bluePrint.findFirst({
+    where: { userId, active: true },
+  });
+  if (!oldBluePrint) return { error: "bluePrint does not exists!!" };
+
+  await db.bluePrint.update({
+    where: { id: oldBluePrint.id },
+    data: {
+      calls: type == "calls" ? oldBluePrint.calls + 1 : oldBluePrint.calls,
+      appointments:
+        type == "appointments"
+          ? oldBluePrint.appointments + 1
+          : oldBluePrint.appointments,
+      premium:
+        type == "premium" ? oldBluePrint.premium + value! : oldBluePrint.premium,
+    },
+  });
+  return {success:"BluPrint Updated!"}
 };
 
 //ACTIONS FOR FULLTIMEINFO
@@ -83,7 +109,7 @@ export const fullTimeInfoInsert = async (values: FullTimeInfoSchemaType) => {
   const validatedFields = FullTimeInfoSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-  const { workType, workingDays, workingHours, annualTarget } =
+  const { workType, workingDays, workingHours, annualTarget, targetType } =
     validatedFields.data;
   const fullTimeInfoOld = await db.fullTimeInfo.findUnique({
     where: { userId: user.id },
@@ -97,6 +123,21 @@ export const fullTimeInfoInsert = async (values: FullTimeInfoSchemaType) => {
       workingDays,
       workingHours,
       annualTarget,
+      targetType,
+    },
+  });
+
+  const target = calculateDailyBluePrint(annualTarget).find(
+    (e) => e.type == targetType
+  );
+
+  await db.bluePrint.create({
+    data: {
+      callsTarget: target?.calls || 0,
+      appointmentsTarget: target?.appointments || 0,
+      premiumTarget: target?.premium || 0,
+      userId: user.id,
+      endDate: weekStartEnd().to,
     },
   });
 

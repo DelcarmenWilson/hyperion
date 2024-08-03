@@ -1,6 +1,5 @@
-import { number } from "zod";
 
-export type BluePrintType = {title?:string; calls: number; appointments: number; premium: number };
+export type BluePrintType = {type?:string; calls: number; appointments: number; premium: number };
 
 const yearlyBluePrint: BluePrintType = {
   calls: 14400,
@@ -34,7 +33,7 @@ export const calculateDailyBluePrint = (target: number): BluePrintType[] => {
   const percent = premium / dailyBluePrint.premium;
 
   const regularDailyBluePrint: BluePrintType = {
-    title:"regular",
+    type:"regular",
     calls: Math.ceil(dailyBluePrint.calls * percent),
     appointments: Math.ceil(dailyBluePrint.appointments * percent),
     premium: Math.ceil(dailyBluePrint.premium * percent),
@@ -48,14 +47,14 @@ const multipleBluePrint = (regular: BluePrintType): BluePrintType[] => {
   const { calls, appointments, premium } = regular;
   const percent = 0.2;
   const multipleBluePrints: BluePrintType[] = [
-    {   title:"moderate",
+    {   type:"moderate",
       calls: Math.ceil(calls - calls * percent),
       appointments: Math.ceil(appointments - appointments * percent),
       premium: Math.ceil(premium - premium * percent),
     },
     regular,
     {
-        title:"aggresive",
+        type:"aggresive",
       calls: Math.ceil(calls + calls * percent),
       appointments: Math.ceil(appointments + appointments * percent),
       premium: Math.ceil(premium + premium * percent),

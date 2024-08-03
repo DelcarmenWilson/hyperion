@@ -32,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ImageGrid } from "@/components/reusable/image-grid";
+import { Textarea } from "@/components//ui/textarea";
 
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 
@@ -44,6 +45,7 @@ export const ChatForm = () => {
 
   const [attachment, setAttachment] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const form = useForm<ChatMessageSchemaType>({
     resolver: zodResolver(ChatMessageSchema),
@@ -97,6 +99,13 @@ export const ChatForm = () => {
   //     if (cid == chatId) invalidate();
   //   });
   // }, []);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height = textareaRef.current?.scrollHeight + "px";
+  }, [form.getValues("content")]);
+
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -147,13 +156,23 @@ export const ChatForm = () => {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormControl>
-                      <Input
+                      {/* <Input
                         {...field}
                         placeholder="message"
                         disabled={loading}
                         autoComplete="off"
                         type="text"
                         ref={inputRef}
+                        autoFocus
+                      /> */}
+                      <Textarea
+                        {...field}
+                        className="resize-none"
+                        placeholder="Type a message"
+                        disabled={loading}
+                        autoComplete="off"
+                        rows={1}
+                        ref={textareaRef}
                         autoFocus
                       />
                     </FormControl>

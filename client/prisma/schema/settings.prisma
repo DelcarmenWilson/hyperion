@@ -1,0 +1,138 @@
+// SETTINGS
+model ChatSettings {
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    defaultPrompt   String @db.LongText
+    defaultFunction String @db.LongText
+
+    autoChat                    Boolean @default(false)
+    coach                       Boolean @default(false)
+    messageNotification         String  @default("access-allowed")
+    messageInternalNotification String  @default("bubble-pop-up")
+    dataStyle                   String  @default("list")
+
+    currentCall  String?
+    voicemailIn  String?
+    voicemailOut String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+model NotificationSettings {
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    masterSwitch String  @default("on")
+    phoneNumber  String
+    calls        Boolean @default(false)
+    appointments Boolean @default(false)
+    messages     Boolean @default(false)
+    voicemails   Boolean @default(false)
+    textForward  Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Presets {
+    id String @id @default(cuid())
+
+    agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+    agentId String
+    type    Preset @default(Text)
+
+    content String @db.LongText
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model PhoneNumber {
+    id    String @id @default(cuid())
+    phone String @unique
+    state String
+
+    agent   User?    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+    agentId String?
+    sid     String   @unique
+    app     String   @default("AP7be1b9b81ad29a698a869a1b5f7a926a")
+    renewAt DateTime
+
+    status     String   @default("Active")
+    registered Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model Schedule {
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    title     String
+    subTitle  String
+    type      String   @default("hourly")
+    sunday    String
+    monday    String
+    tuesday   String
+    wednesday String
+    thursday  String
+    friday    String
+    saturday  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+    id      String   @id @default(cuid())
+    email   String
+    token   String   @unique
+    expires DateTime
+
+    @@unique([email, token])
+}
+
+model PasswordResetToken {
+    id      String   @id @default(cuid())
+    email   String
+    token   String   @unique
+    expires DateTime
+
+    @@unique([email, token])
+}
+
+model TwoFactorToken {
+    id      String   @id @default(cuid())
+    email   String
+    token   String   @unique
+    expires DateTime
+
+    @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+    id     String @id @default(cuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId])
+}
