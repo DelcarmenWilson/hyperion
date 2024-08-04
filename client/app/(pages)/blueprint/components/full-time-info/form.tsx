@@ -224,6 +224,7 @@ const WorkingDays = ({ defaultValue, onChange }: Props) => {
     <div className="flex flex-wrap gap-2">
       {daysOfTheWeek.map((day) => (
         <Button
+          key={day}
           variant={days.includes(day) ? "default" : "outlineprimary"}
           size="sm"
           onClick={() => onSetDay(day)}

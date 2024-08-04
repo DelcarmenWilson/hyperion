@@ -21,7 +21,7 @@ export const TargetList = ({
       className="flex-1 grid grid-cols-3 gap-2"
     >
       {targets.map((target) => (
-        <RadioGroupCustomItem value={target.type!}>
+        <RadioGroupCustomItem key={target.type} value={target.type!}>
           <TargetCard target={target} />
         </RadioGroupCustomItem>
       ))}

@@ -208,6 +208,7 @@ export const convertCalls = (result: any): Call[] => {
       price: d["price"],
       recordPrice: d["recordPrice"],
       shared: false,
+      appointmentId: d["appointmentId"],
     };
     mapped.push(newobj);
   });
