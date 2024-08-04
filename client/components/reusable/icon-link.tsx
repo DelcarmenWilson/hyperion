@@ -18,16 +18,18 @@ export const IconLink = ({
   icon: Icon,
 }: IconLinkProps) => {
   return (
-    <Link href={href}>
+    
       <Button
-        variant={active ? "default" : "ghost"}
+        variant={active ? "default" : "sidebar"}
         size="sm"
-        className={"w-full flex items-center group mb-2"}
+        className="group mb-2"
       >
+        <Link href={href} className={"w-full flex items-center"}>
         <Icon size={16} className="group-hover:animate-spin" />
         <span className="ml-2">{title}</span>
+        </Link>
       </Button>
-    </Link>
+    
   );
 };
 
