@@ -5,16 +5,16 @@ import {
   endOfWeek,
   format,
   startOfMonth,
-  startOfWeek
+  startOfWeek,
 } from "date-fns";
- import {
-   format as ftz,
-   formatInTimeZone
- } from "date-fns-tz";
+import { format as ftz, formatInTimeZone } from "date-fns-tz";
 
 const defaultDate: string = "MM-dd-yyyy";
 const defaultTime: string = "hh:mm aa";
-const defaultDateTime: string = `${defaultDate} ${defaultTime}`
+const defaultDateTime: string = `${defaultDate} ${defaultTime}`;
+//Get 1 day in milliseconds
+const ONE_DAY_MS = 1000 * 60 * 60;
+const ONE_MINUTE =  1000*60;
 
 export const hyperionDate: string = "MMMM do yyyy";
 export const getAge = (dateOfBirth: any): string => {
@@ -81,7 +81,7 @@ export const getTommorrow = (): Date => {
   return tommorrow;
 };
 
-export const  getToday = (): Date => {
+export const getToday = (): Date => {
   let today = new Date();
   today.setHours(0, 0);
   return today;
@@ -109,59 +109,81 @@ export const getLast24hrs = (): Date => {
 };
 
 //FORMAT DATE AND TIME
-export const formatDate=(date:Date|string|undefined,retval:string =""):string=>{
-  if(!date)
-    return retval
-  return format(date,defaultDate)
-}
+export const formatDate = (
+  date: Date | string | undefined,
+  retval: string = ""
+): string => {
+  if (!date) return retval;
+  return format(date, retval || defaultDate);
+};
 
-export const formatDob=(date:Date|string|undefined|null,retval:string =""):string=>{
-  if(!date)
-    return retval
-  return format(date,"MM/dd/yy")
-}
+export const formatDob = (
+  date: Date | string | undefined | null,
+  retval: string = ""
+): string => {
+  if (!date) return retval;
+  return format(date, "MM/dd/yy");
+};
 
-export const formatDateTime=(dateTime:Date|string|undefined|null,retval:string =""):string=>{
-  if(!dateTime)
-    return retval
-  return format(dateTime,defaultDateTime)
-}
-export const formatDateTimeZone=(date:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
-  if(!date)
-    return retval
-  return formatInTimeZone(date,timeZone,defaultDateTime)
-}
+export const formatDateTime = (
+  dateTime: Date | string | undefined | null,
+  retval: string = ""
+): string => {
+  if (!dateTime) return retval;
+  return format(dateTime, defaultDateTime);
+};
+export const formatDateTimeZone = (
+  date: Date,
+  timeZone: string = "US/Eastern",
+  retval: string = ""
+): string => {
+  if (!date) return retval;
+  return formatInTimeZone(date, timeZone, defaultDateTime);
+};
 
-export const formatTime=(time:Date|string|null|undefined,retval:string =""):string=>{
-  if(!time)
-    return retval
-  return format(time,defaultTime)
-}
-export const formatJustTime=(time:string|null|undefined,retval:string =""):string=>{
-  if(!time||time=="-")
-    return retval
-  const date=new Date("1970-01-01T" + time)
-  return format(date,defaultTime)
-}
+export const formatTime = (
+  time: Date | string | null | undefined,
+  retval: string = ""
+): string => {
+  if (!time) return retval;
+  return format(time, defaultTime);
+};
+export const formatJustTime = (
+  time: string | null | undefined,
+  retval: string = ""
+): string => {
+  if (!time || time == "-") return retval;
+  const date = new Date("1970-01-01T" + time);
+  return format(date, defaultTime);
+};
 
-export const timeDifference=(timeZone:string|undefined="US/Eastern",agentDate:Date=new Date()):number=>{      
+export const timeDifference = (
+  timeZone: string | undefined = "US/Eastern",
+  agentDate: Date = new Date()
+): number => {
   //LEADS DATE TX (9 to 8)
-  const leadDate=new Date(formatDateTimeZone(agentDate, timeZone));
-  const timeDiff = dateTimeDiff(agentDate, leadDate);  
-return timeDiff
-}
+  const leadDate = new Date(formatDateTimeZone(agentDate, timeZone));
+  const timeDiff = dateTimeDiff(agentDate, leadDate);
+  return timeDiff;
+};
 
-export const formatHyperionDate=(date:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
-  if(!date)
-    return retval
-  return formatInTimeZone(date,timeZone,hyperionDate)
-}
+export const formatHyperionDate = (
+  date: Date,
+  timeZone: string = "US/Eastern",
+  retval: string = ""
+): string => {
+  if (!date) return retval;
+  return formatInTimeZone(date, timeZone, hyperionDate);
+};
 
-export const formatTimeZone=(time:Date,timeZone:string="US/Eastern",retval:string =""):string=>{
-  if(!time)
-    return retval
-  return formatInTimeZone(time,timeZone,defaultTime)
-}
+export const formatTimeZone = (
+  time: Date,
+  timeZone: string = "US/Eastern",
+  retval: string = ""
+): string => {
+  if (!time) return retval;
+  return formatInTimeZone(time, timeZone, defaultTime);
+};
 
 // TIME
 export const calculateTime = (secs: number) => {
@@ -172,18 +194,28 @@ export const calculateTime = (secs: number) => {
   return `${returnedMinutes}:${returnedSeconds}`;
 };
 
-
-export const dateTimeDiff = function( date1:Date, date2:Date ):number {
-  //Get 1 day in milliseconds
-  var one_day=1000*60*60;
-
+export const dateTimeDiff = function (date1: Date, date2: Date): number {
   // Convert both dates to milliseconds
-  var date1_ms = date1.getTime();
-  var date2_ms = date2.getTime();
+  const date1_ms = date1.getTime();
+  const date2_ms = date2.getTime();
 
   // Calculate the difference in milliseconds
-  var difference_ms = date2_ms - date1_ms;
+  const difference_ms = date2_ms - date1_ms;
+  console.log("date1",date1,"date2",date2,"date1_ms",date1_ms,"date2_ms",date2_ms)
 
   // Convert back to days and return
-  return Math.round(difference_ms/one_day) *-1; 
-}
+  return Math.round(difference_ms / ONE_DAY_MS) * -1;
+};
+
+export const timeDiff = function (date1: Date, date2: Date): number {
+  // Convert both dates to milliseconds
+  const date1_ms = date1.getTime();
+  const date2_ms = date2.getTime();
+
+  // Calculate the difference in milliseconds
+  const difference_ms = date2_ms - date1_ms;
+  console.log("date1",date1,"date2",date2,"date1_ms",date1_ms,"date2_ms",date2_ms)
+
+  // Convert back to days and return
+  return Math.round(difference_ms / ONE_MINUTE) ;
+};

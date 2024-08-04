@@ -1,6 +1,6 @@
 import { formatSecondsToHours } from "@/formulas/numbers";
 import Link from "next/link";
-import { DatesFilter } from "../dates-filter";
+import { DatesFilter } from "../reusable/dates-filter";
 import { DateRange } from "react-day-picker";
 
 type TopMenuProps = {

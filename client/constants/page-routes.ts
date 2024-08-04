@@ -178,12 +178,12 @@ export const MainSidebarRoutes: NavType[] = [
     href: "/workflows",
     icon: Workflow,
   },
-  {
-    title: "Account settings",
-    href: "/settings",
-    icon: Settings,
-    assistant: true,
-  },
+  // {
+  //   title: "Account settings",
+  //   href: "/settings",
+  //   icon: Settings,
+  //   assistant: true,
+  // },
   // {
   //   title: "Billing",
   //   href: "/billing",

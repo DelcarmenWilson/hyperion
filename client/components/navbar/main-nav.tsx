@@ -11,6 +11,8 @@ import { TwilioShortConference } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { CoachNotification } from "../phone/coach-notification";
+import { useGroupMessage } from "@/hooks/use-group-message";
+import { callUpdateByIdAppointment } from "@/actions/call";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -19,6 +21,8 @@ export const MainNav = () => {
 
   //COACH NOTIFICATION
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  //GROUP MESSAGE
+  const { onOpen } = useGroupMessage();
 
   const onJoinCall = () => {
     setIsNotificationOpen(false);
@@ -34,8 +38,22 @@ export const MainNav = () => {
     setIsNotificationOpen(false);
     socket?.emit("coach-reject", conference?.agentId, user?.name, reason);
   };
-
+  const onCallAppointment = async () => {
+    const updatedCall = await callUpdateByIdAppointment(
+      "clrztcw0i0000l6b1spp7wduq",
+      "clt0f12o30001qtlhb0eey911"
+    );
+    if (updatedCall.success) toast.success(updatedCall.success);
+    else toast.error(updatedCall.error);
+  };
   useEffect(() => {
+    //GROUP MESSAGE
+    socket?.on(
+      "group-message-received",
+      (data: { message: string; username: string }) => {
+        onOpen(data.message, data.username);
+      }
+    );
     //COACHING
     socket?.on(
       "coach-request-received",
@@ -111,7 +129,10 @@ export const MainNav = () => {
 
   return (
     <>
+      {/* TODO - dont forget remove these test buttons */}
       {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
+      {/* <Button onClick={() => onOpen("Text", "Text")}>Open Group Message</Button> */}
+      <Button onClick={onCallAppointment}>Update Call</Button>
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

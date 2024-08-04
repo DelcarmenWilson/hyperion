@@ -1,0 +1,252 @@
+model Lead {
+    id               String        @id @default(cuid())
+    firstName        String
+    lastName         String
+    address          String?
+    city             String?
+    state            String
+    zipCode          String?
+    homePhone        String?
+    cellPhone        String        @unique
+    gender           Gender        @default(NA)
+    maritalStatus    MaritalStatus @default(Single)
+    email            String?
+    ssn              String        @default("")
+    dateOfBirth      String?       @default("")
+    weight           String?
+    //for intake form
+    weightLastYear   String?
+    height           String?
+    income           String?
+    policyAmount     String?
+    smoker           Boolean       @default(false)
+    //for intake form
+    yearsSmoking     Int           @default(0)
+    currentlyInsured Boolean       @default(false)
+    currentInsuranse String?
+
+    vendor String @default("Manually_Created")
+    type   String @default("General")
+    status String @default("New")
+
+    quote String @default("0.00")
+
+    //TODO -  ALL OF THE OLD FIELDS NEED TO BE REMOVED
+    apOld             String @default("0.00")
+    commisionOld      String @default("0.00")
+    coverageAmountOld String @default("0.00")
+    carrierOld        String @default("NA")
+
+    // INFO NEED FOR THE INTAKE FORM
+    //TODO - dont forget to organize these
+    placeOfBirth String?
+    stateOfBirth String?
+
+    licenseNumber   String?
+    licenseState    String?
+    licenseExpires  DateTime?
+    annualIncome    Int       @default(0)
+    experience      String    @default("N/A")
+    netWorth        Int       @default(0)
+    employer        String?
+    employerAddress String?
+    employerPhone   String?
+    occupation      String?
+    greenCardNum    String    @default("N/A")
+    citizenShip     String    @default("Citizen")
+    yearsInUs       Int       @default(0)
+    parentLiving    String    @default("Yes")
+    fatherAge       Int       @default(0)
+    motherAge       Int       @default(0)
+    cuaseOfDeath    String    @default("N/A")
+    foreignVisited  String?
+
+    defaultNumber String
+    notes         String? @db.LongText
+
+    //Code for text forwarding
+    textCode String?
+    // textCode String @unique
+
+    beneficiaries LeadBeneficiary[]
+    conditions    LeadMedicalCondition[]
+    expenses      LeadExpense[]
+    conversations Conversation[]
+    appointments  Appointment[]
+    calls         Call[]
+    activities    Activity[]
+    policy        LeadPolicy?
+    dotor         LeadDoctor?
+    bank          LeadBank?
+    medical       LeadMedicalQuestions?
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+
+    assistantId String?
+    assistant   User?   @relation(name: "LeadAssistant", fields: [assistantId], references: [id])
+
+    sharedUserId String?
+    sharedUser   User?   @relation(name: "LeadSharedUser", fields: [sharedUserId], references: [id])
+
+    recievedAt DateTime @default(now())
+    createdAt  DateTime @default(now())
+    updatedBy  String?
+    updatedAt  DateTime @updatedAt
+}
+
+model LeadPolicy {
+    leadId         String    @unique
+    lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    carrier        String
+    policyNumber   String    @default("NA")
+    ap             String    @default("0.00")
+    commision      String    @default("0.00")
+    coverageAmount String    @default("0.00")
+    startDate      DateTime?
+    status         String    @default("Pending")
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+}
+
+model LeadBeneficiary {
+    id           String   @id @default(cuid())
+    leadId       String
+    lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    type         String   @default("Primary")
+    relationship String   @default("")
+    firstName    String
+    lastName     String
+    address      String   @default("")
+    city         String   @default("")
+    state        String
+    zipCode      String   @default("")
+    cellPhone    String   @default("")
+    gender       Gender   @default(NA)
+    email        String   @default("noemail@email.com")
+    dateOfBirth  String   @default("")
+    share        String   @default("")
+    ssn          String   @default("")
+    notes        String   @default("")
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+model LeadMedicalCondition {
+    id          String           @id @default(cuid())
+    leadId      String
+    lead        Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    conditionId String
+    condition   MedicalCondition @relation("LeadToCondition", fields: [conditionId], references: [id])
+    diagnosed   String           @default("")
+    medications String           @default("")
+    notes       String           @default("")
+    createdAt   DateTime         @default(now())
+    updatedAt   DateTime         @updatedAt
+}
+
+model LeadExpense {
+    id        String   @id @default(cuid())
+    leadId    String
+    lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    type      String   @default("Expense")
+    name      String
+    value     Int      @default(0)
+    isDefault Boolean  @default(false)
+    notes     String   @default("")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model LeadDoctor {
+    leadId         String   @unique
+    lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    name           String
+    address        String
+    lastVisit      DateTime
+    phone          String
+    reasonForVisit String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+}
+
+model LeadBank {
+    leadId     String   @unique
+    lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    name       String
+    routing    String
+    account    String
+    draftDate  DateTime
+    signature  String
+    signedDate DateTime
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model LeadMedicalQuestions {
+    leadId            String    @unique
+    lead              Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    healthIssues      Boolean
+    prescription      Boolean
+    heartAttacks      Boolean
+    bloodThinners     Boolean
+    cancer            Boolean
+    diabetes          Boolean
+    gabapentin        Boolean
+    complications     Boolean
+    dateDisgnosed     DateTime?
+    a1cReading        DateTime?
+    aids              Boolean
+    highBloodPressure Boolean
+    asthma            Boolean
+    copd              Boolean
+    anxiety           Boolean
+    bipolar           Boolean
+    hospitalizations  Boolean
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+}
+
+model LeadDuplicates {
+    id               String        @id @default(cuid())
+    firstName        String
+    lastName         String
+    address          String?
+    city             String?
+    state            String
+    zipCode          String?
+    homePhone        String?
+    cellPhone        String?
+    gender           Gender        @default(NA)
+    maritalStatus    MaritalStatus @default(Single)
+    email            String?
+    dateOfBirth      String?       @default("")
+    weight           String?
+    height           String?
+    income           String?
+    policyAmount     String?
+    smoker           Boolean       @default(false)
+    currentlyInsured Boolean       @default(false)
+    currentInsuranse String?
+
+    vendor String @default("Manually_Created")
+    type   String @default("General")
+
+    userId String
+
+    recievedAt DateTime @default(now())
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model LeadStatus {
+    id          String  @id @default(cuid())
+    status      String
+    type        String  @default("User Generated")
+    description String?
+    userId      String
+
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    PipeLine  PipeLine[]
+}

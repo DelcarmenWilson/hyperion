@@ -9,7 +9,27 @@ import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 import { ImageViewerModal } from "@/components/modals/image-viewer-modal";
 import ModalProvider from "./modal";
 
-const queryClient = new QueryClient({});
+const queryClient = new QueryClient({defaultOptions: {
+  queries: {
+    retry: false, // Disables automatic retries
+    retryOnMount: false,
+    staleTime: 10000, // Time in milliseconds a query is considered fresh
+    // Cache time for inactive queries
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
+    
+    networkMode: 'always',
+
+    structuralSharing: true,
+  
+   
+ 
+    behavior: undefined
+    }
+  }});
 const RootProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>

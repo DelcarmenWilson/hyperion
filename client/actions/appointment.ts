@@ -18,6 +18,8 @@ import {
 } from "./sms";
 import { getEntireDay } from "@/formulas/dates";
 import { Lead } from "@prisma/client";
+import { bluePrintUpdateByUserIdData } from "./blueprint";
+import { callUpdateByIdAppointment } from "./call";
 
 //DATA
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
@@ -80,11 +82,23 @@ export const appointmentsGetByUserIdFiltered = async (
     return [];
   }
 };
+export const appointmentsGetById = async (
+  id: string,
+) => {
+  try {
+    
+    const appointment = await db.appointment.findUnique({
+      where: { id },
+      include: { lead: true },
+    });
+    return appointment;
+  } catch {
+    return null;
+  }
+};
 
 //ACTIONS
-export const appointmentInsert = async (
-  values: AppointmentSchemaType
-) => {
+export const appointmentInsert = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
   //If there is no user -- Unathenticated
@@ -96,7 +110,7 @@ export const appointmentInsert = async (
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { localDate, startDate, agentId, leadId, label, comments,reminder } =
+  const { localDate, startDate, agentId, leadId, label, comments, reminder } =
     validatedFields.data;
   let userId = agentId;
   if (user.role == "ASSISTANT") {
@@ -141,11 +155,14 @@ export const appointmentInsert = async (
     include: { lead: true },
   });
 
+  await callUpdateByIdAppointment(appointment.leadId,appointment.id)
+
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-  //TODO - if the update goes well tommorrow pl;ease remove
-  // appointmentDate.setHours(appointmentDate.getHours() - 4);
+  //Update the blueprint appointments
+  await bluePrintUpdateByUserIdData(user.id, "appointments");
+
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   let message;
   if (lead) {
@@ -190,7 +207,7 @@ export const appointmentInsertBook = async (
   } = validatedFields.data;
 
   let leadId = id;
-  let lead:Lead | undefined
+  let lead: Lead | undefined;
 
   if (!leadId) {
     const st = states.find((e) => e.state == state || e.abv == state);
@@ -215,10 +232,11 @@ export const appointmentInsertBook = async (
     });
 
     leadId = lead.id;
-  } else{
-
-    const dbLead=await db.lead.findUnique({ where: { id: leadId } });
-    if(dbLead){lead=dbLead}
+  } else {
+    const dbLead = await db.lead.findUnique({ where: { id: leadId } });
+    if (dbLead) {
+      lead = dbLead;
+    }
   }
 
   const existingAppointments = await db.appointment.findMany({
@@ -257,8 +275,8 @@ export const appointmentInsertBook = async (
     return { error: "Appointment was not created!" };
   }
 
-  await smsSendAgentAppointmentNotification(agentId, lead , startDate);
-  await smsSendLeadAppointmentNotification(agentId, lead , localDate);
+  await smsSendAgentAppointmentNotification(agentId, lead, startDate);
+  await smsSendLeadAppointmentNotification(agentId, lead, localDate);
 
   return { success: "Appointment Scheduled!" };
 };

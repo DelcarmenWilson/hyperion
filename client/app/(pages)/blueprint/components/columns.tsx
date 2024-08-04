@@ -2,41 +2,30 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-
 import { BluePrint } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 export const columns: ColumnDef<BluePrint>[] = [
- 
-
   {
-    id: "type",
-    accessorKey: "type",
-    header: "Type",
+    id: "callsTarget",
+    accessorKey: "callsTarget",
+    header: "Calls Target",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
+    id: "appointmentsTarget",
+    accessorKey: "appointmentsTarget",
+    header: "Apps Target",
     enableGlobalFilter: true,
     enableHiding: true,
   },
 
   {
-    id: "plannedTarget",
-    accessorKey: "plannedTarget",
-    header: "Planned Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
-  },
-  {
-    id: "actualTarget",
-    accessorKey: "actualTarget",
-    header: "Actual Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
-  },
-  {
-    id: "period",
-    accessorKey: "period",
-    header: "Period",
+    id: "premiumTarget",
+    accessorKey: "premiumTarget",
+    header: "Premium Target",
     enableGlobalFilter: true,
     enableHiding: true,
   },
@@ -45,23 +34,22 @@ export const columns: ColumnDef<BluePrint>[] = [
     id: "active",
     accessorKey: "active",
     header: "Active",
-   
-    cell:({row})=>(<Checkbox disabled checked={row.original.active}/>)
-  },
 
+    cell: ({ row }) => <Checkbox disabled checked={row.original.active} />,
+  },
   {
     id: "createdAt",
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Start At",
     enableHiding: true,
-    cell:({row})=>(formatDate(row.original.createdAt))
+    cell: ({ row }) => formatDate(row.original.createdAt),
   },
   {
     id: "endDate",
     accessorKey: "endDate",
-    header: "End Date",
+    header: "End At",
     enableHiding: true,
-    cell:({row})=>(formatDate(row.original.endDate))
+    cell: ({ row }) => formatDate(row.original.endDate),
   },
 
   {
@@ -69,6 +57,6 @@ export const columns: ColumnDef<BluePrint>[] = [
     accessorKey: "updatedAt",
     header: "Updated At",
     enableHiding: true,
-    cell:({row})=>(formatDate(row.original.updatedAt))
+    cell: ({ row }) => formatDate(row.original.updatedAt),
   },
 ];

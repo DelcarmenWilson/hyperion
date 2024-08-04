@@ -1,0 +1,52 @@
+// REACT FLOW TABLES
+
+model Workflow {
+    id          String             @id @default(cuid())
+    title       String
+    description String
+    nodes       WorkflowNode[]
+    edges       WorkflowNodeEdge[]
+    user        User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String?
+    createdAt   DateTime           @default(now())
+    updatedAt   DateTime           @updatedAt
+}
+
+model WorkflowNode {
+    id         String                @id @default(cuid())
+    position   WorkflowNodePosition?
+    data       Json
+    type       String
+    workflow   Workflow?             @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflowId String?
+    createdAt  DateTime              @default(now())
+    updatedAt  DateTime              @updatedAt
+}
+
+model WorkflowNodePosition {
+    nodeId String       @unique
+    node   WorkflowNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+    x      Int          @default(0)
+    y      Int          @default(0)
+}
+
+model WorkflowNodeEdge {
+    id         String    @id @default(cuid())
+    source     String
+    target     String
+    animated   Boolean
+    type       String
+    workflow   Workflow? @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflowId String?
+}
+
+//DEFAULT WORKFLOW NODES
+model WorkflowDefaultNode {
+    id        String   @id @default(cuid())
+    category  String
+    name      String
+    data      Json
+    type      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

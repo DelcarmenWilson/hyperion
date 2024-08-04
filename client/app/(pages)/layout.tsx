@@ -33,6 +33,7 @@ import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
 import ModalProvider from "@/providers/modal";
+import { GroupMessageCard } from "@/components/global/group-message-card";
 export default async function DashBoardLayout({
   children,
 }: {
@@ -86,7 +87,9 @@ export default async function DashBoardLayout({
                   </BlurPage>
                 </AppointmentContextComponent>
               </PhoneContextProvider>
+
               <ChatDrawer />
+              <GroupMessageCard />
               <LoginStatusModal />
             </div>
           </div>

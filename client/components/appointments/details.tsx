@@ -2,7 +2,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppointment } from "@/hooks/use-appointment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+import { CardData } from "@/components/reusable/card-data";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -10,15 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { CardData } from "@/components/reusable/card-data";
+
 import { formatPhoneNumber } from "@/formulas/phones";
 import { formatDate, formatDateTime, formatTime } from "@/formulas/dates";
 import { apppointmentStatus } from "@/constants/texts";
-import { toast } from "sonner";
 import { appointmentUpdateByIdStatus } from "@/actions/appointment";
 
-export const AppointmentDetailsModal = () => {
+export const AppointmentDetails = () => {
   const queryClient = useQueryClient();
   const { isDetailsOpen, onDetailsClose, appointment } = useAppointment();
   const [status, setStatus] = useState(appointment?.status);

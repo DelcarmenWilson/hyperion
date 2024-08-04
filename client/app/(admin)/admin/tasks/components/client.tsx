@@ -10,7 +10,7 @@ import { TaskForm } from "./form";
 import { columns } from "./columns";
 import { TaskList } from "./list";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { TopMenu } from "@/components/reusable/callhistory/top-menu";
+import { TopMenu } from "@/components/callhistory/top-menu";
 
 type TaskClientProps = {
   initTasks: Task[];

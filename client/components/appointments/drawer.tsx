@@ -4,7 +4,7 @@ import { useAppointment } from "@/hooks/use-appointment";
 import { AppointmentForm } from "@/components/custom/appointment-form";
 import { DrawerRight } from "../custom/drawer-right";
 
-export const AppointmentModal = () => {
+export const AppointmentDrawer = () => {
   const { isFormOpen, onFormClose } = useAppointment();
 
   return (

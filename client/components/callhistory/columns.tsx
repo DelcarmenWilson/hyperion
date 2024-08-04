@@ -12,6 +12,7 @@ import { getPhoneStatusText } from "@/formulas/phone";
 import { CallHistoryActions } from "./actions";
 import { formatDateTime } from "@/formulas/dates";
 import Link from "next/link";
+import { AppButton } from "./app-button";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -126,6 +127,12 @@ export const columns: ColumnDef<FullCall>[] = [
     accessorKey: "date",
     header: "Date/Time",
     cell: ({ row }) => <div>{formatDateTime(row.original.createdAt)}</div>,
+  },
+
+  {
+    accessorKey: "appointmentId",
+    header: "Appointment?",
+    cell: ({ row }) => <AppButton appointmentId={row.original.appointmentId} />,
   },
 
   {

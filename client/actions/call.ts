@@ -1,7 +1,8 @@
 "use server";
 import { db } from "@/lib/db";
-import { getEntireDay, getLast24hrs } from "@/formulas/dates";
+import { timeDiff, getEntireDay } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
+import { error } from "console";
 //DATA
 export const callsGetAllByAgentId = async (userId: string) => {
   try {
@@ -119,7 +120,8 @@ export const callsGetAllByLeadId = async (leadId: string) => {
             email: true,
           },
         },
-      },orderBy: { createdAt: "desc" },
+      },
+      orderBy: { createdAt: "desc" },
     });
     return calls;
   } catch {
@@ -196,4 +198,25 @@ export const callUpdateByIdShare = async (id: string, shared: boolean) => {
   } catch (error) {
     return { error: "Internal server Error!" };
   }
+};
+
+export const callUpdateByIdAppointment = async (
+  leadId: string,
+  appointmentId: string
+) => {
+  const call = await db.call.findFirst({
+    where: { leadId },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!call) return { error: "Call not found!" };
+
+  const diff = timeDiff(call.createdAt, new Date());
+
+  if(diff>60)
+    return {error:"Call time is over 1 hour"}
+  
+  await db.call.update({where:{id:call.id},data:{
+    appointmentId
+  }})
+  return { success: "call appointmenthas been updated!" };
 };

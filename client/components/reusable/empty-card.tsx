@@ -3,7 +3,7 @@ import Image from "next/image";
 
 type EmptyCardProps = {
   title: string;
-  subTitle?: string;
+  subTitle?: React.ReactNode;
 };
 export const EmptyCard = ({ title, subTitle }: EmptyCardProps) => {
   return (

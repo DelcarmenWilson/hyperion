@@ -4,7 +4,7 @@ import { FullCall } from "@/types";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { formatDateTime } from "@/formulas/dates";
-import { CallHistoryActions } from "@/components/reusable/callhistory/actions";
+import { CallHistoryActions } from "@/components/callhistory/actions";
 
 export const CallHistoryCard = ({ call }: { call: FullCall }) => {
   return (

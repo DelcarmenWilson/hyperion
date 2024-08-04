@@ -4,9 +4,9 @@ import { DashBoardClient } from "./components/client";
 import { AppointmentClient } from "@/components/lead/appointments/client";
 import { AgentSummaryClient } from "./components/agentsummary/client";
 import { TurnOverRate } from "./components/turnover/turn-over-rate";
-import { CallHistoryClient } from "@/components/reusable/callhistory/client";
+import { CallHistoryClient } from "@/components/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
-import { BluePrintClient } from "./components/blueprint-client";
+import { BluePrintClient } from "./components/blueprint/client";
 import { SharedCallsClient } from "@/components/global/shared-calls";
 
 const DashBoardPage = async () => {
