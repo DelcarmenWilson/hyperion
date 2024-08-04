@@ -22,6 +22,7 @@ export const DetailsCard = ({ info, size = "md" }: Props) => {
       <div className="flex flex-wrap gap-2">
         {daysOfTheWeek.map((day) => (
           <Badge
+            key={day}
             variant={
               info.workingDays.includes(day) ? "default" : "outlineprimary"
             }

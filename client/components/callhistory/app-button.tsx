@@ -8,8 +8,9 @@ export const AppButton = ({
 }: {
   appointmentId: string | null;
 }) => {
-  if (!appointmentId) return null;
   const { onDetailsOpen } = useAppointment();
+  if (!appointmentId) return null;
+
   const onAppDetails = async () => {
     const app = await appointmentsGetById(appointmentId);
     if (!app) return;
