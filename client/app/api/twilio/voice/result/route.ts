@@ -4,6 +4,7 @@ import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 import { TwilioCallResult } from "@/types";
 import { formatObject } from "@/formulas/objects";
+import { sendSocketData } from "@/services/socket-service";
 
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
@@ -33,11 +34,7 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
-      userId: call.userId,
-      type: "calllog:new",
-      dt:call
-    });
+    sendSocketData(call.userId, "calllog:new", call);
   }
 
   return new NextResponse("", { status: 200 });

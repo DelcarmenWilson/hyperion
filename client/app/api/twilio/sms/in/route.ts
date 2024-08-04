@@ -15,6 +15,7 @@ import {
 } from "@/actions/sms";
 import { TwilioSms } from "@/types";
 import { formatDateTime } from "@/formulas/dates";
+import { sendSocketData } from "@/services/socket-service";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -166,16 +167,16 @@ export async function POST(req: Request) {
       },
     });
 
-    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
-      userId: conversation.agentId,
-      type: "conversation:updated",
-      dt: updatedConversation,
-    });
-    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
-      userId: conversation.agentId,
-      type: "conversation-messages:new",
-      dt: [newMessage,newChatMessage],
-    });
+    sendSocketData(
+      conversation.agentId,
+      "conversation:updated",
+      updatedConversation
+    );
+
+    sendSocketData(conversation.agentId, "conversation-messages:new", [
+      newMessage,
+      newChatMessage,
+    ]);
   }
   return new NextResponse(content, { status: 200 });
 }

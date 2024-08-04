@@ -3,13 +3,16 @@ import axios from "axios";
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 import { formatObject } from "@/formulas/objects";
+import { sendSocketData } from "@/services/socket-service";
 
 export async function POST(req: Request) {
   const body = await req.formData();
 
   const j: any = formatObject(body);
 
-  const recording = (await client.recordings.get(j.recordingSid).fetch()).toJSON();
+  const recording = (
+    await client.recordings.get(j.recordingSid).fetch()
+  ).toJSON();
 
   const call = await db.call.update({
     where: { id: j.callSid },
@@ -19,15 +22,12 @@ export async function POST(req: Request) {
       recordStatus: j.recordingStatus,
       recordStartTime: new Date(j.recordingStartTime),
       recordDuration: parseInt(j.recordingDuration),
-      recordPrice: recording.price,    
+      recordPrice: recording.price,
     },
   });
 
   if (call?.leadId) {
-    axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/socket`, {
-      userId: call.userId,
-      type: "calllog:new",
-    });
+    sendSocketData(call.userId, "calllog:new", "");
   }
   return new NextResponse("", { status: 200 });
 }
