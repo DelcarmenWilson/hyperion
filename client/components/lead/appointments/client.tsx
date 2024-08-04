@@ -2,23 +2,22 @@
 import { useState } from "react";
 import { Calendar } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { userEmitter } from "@/lib/event-emmiter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
-import { TopMenu } from "./top-menu";
+import { FullAppointment } from "@/types";
+
 import { DataTable } from "@/components/tables/data-table";
+import { DateRange } from "react-day-picker";
+import { PageLayout } from "@/components/custom/layout/page-layout";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { TopMenu } from "./top-menu";
 import { columns } from "./columns";
 
-import { FullAppointment } from "@/types";
 import { weekStartEnd } from "@/formulas/dates";
 import {
   appointmentsGetAllByUserIdToday,
   appointmentsGetByUserIdFiltered,
 } from "@/actions/appointment";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { DateRange } from "react-day-picker";
-import { AppointmentDetailsModal } from "@/components/modals/appointment-details";
 
 type AppointmentClientProps = {
   showDate?: boolean;
@@ -58,32 +57,29 @@ export const AppointmentClient = ({
   };
 
   return (
-    <>
-      <AppointmentDetailsModal />
-      <PageLayout
-        title="Appointments"
-        icon={Calendar}
-        show={!showDate}
-        topMenu={
-          <TopMenu
-            showLink={showLink}
-            showDate={showDate}
-            onDateSelected={onDateSelected}
-          />
-        }
-      >
-        <SkeletonWrapper isLoading={isFetching}>
-          <DataTable
-            columns={columns}
-            data={appointments || []}
-            headers
-            hidden={{
-              status: false,
-            }}
-            filterType={showDate ? "appointment" : undefined}
-          />
-        </SkeletonWrapper>
-      </PageLayout>
-    </>
+    <PageLayout
+      title="Appointments"
+      icon={Calendar}
+      show={!showDate}
+      topMenu={
+        <TopMenu
+          showLink={showLink}
+          showDate={showDate}
+          onDateSelected={onDateSelected}
+        />
+      }
+    >
+      <SkeletonWrapper isLoading={isFetching}>
+        <DataTable
+          columns={columns}
+          data={appointments || []}
+          headers
+          hidden={{
+            status: false,
+          }}
+          filterType={showDate ? "appointment" : undefined}
+        />
+      </SkeletonWrapper>
+    </PageLayout>
   );
 };

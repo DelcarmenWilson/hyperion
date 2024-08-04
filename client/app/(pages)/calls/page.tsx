@@ -1,4 +1,4 @@
-import { CallHistoryClient } from "@/components/reusable/callhistory/client";
+import { CallHistoryClient } from "@/components/callhistory/client";
 
 const CallPage = async () => {
   return <CallHistoryClient showDate />;

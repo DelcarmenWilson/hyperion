@@ -1,5 +1,5 @@
 import React from "react";
-import { CallHistoryClient } from "@/components/reusable/callhistory/client";
+import { CallHistoryClient } from "@/components/callhistory/client";
 
 import { UserClient } from "./components/client";
 import { SharedCallsClient } from "@/components/global/shared-calls";

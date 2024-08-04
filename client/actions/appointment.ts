@@ -19,6 +19,7 @@ import {
 import { getEntireDay } from "@/formulas/dates";
 import { Lead } from "@prisma/client";
 import { bluePrintUpdateByUserIdData } from "./blueprint";
+import { callUpdateByIdAppointment } from "./call";
 
 //DATA
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
@@ -81,6 +82,20 @@ export const appointmentsGetByUserIdFiltered = async (
     return [];
   }
 };
+export const appointmentsGetById = async (
+  id: string,
+) => {
+  try {
+    
+    const appointment = await db.appointment.findUnique({
+      where: { id },
+      include: { lead: true },
+    });
+    return appointment;
+  } catch {
+    return null;
+  }
+};
 
 //ACTIONS
 export const appointmentInsert = async (values: AppointmentSchemaType) => {
@@ -139,6 +154,8 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     },
     include: { lead: true },
   });
+
+  await callUpdateByIdAppointment(appointment.leadId,appointment.id)
 
   if (!appointment) {
     return { error: "Appointment was not created!" };

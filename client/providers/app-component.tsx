@@ -7,8 +7,10 @@ import {
   AppointmentReducer,
   defaultAppointmentContextState,
 } from "./app";
-import { AppointmentModal } from "@/components/modals/appointment";
+import { AppointmentDrawer } from "@/components/appointments/drawer";
 import { Appointment, AppointmentLabel, Schedule } from "@prisma/client";
+import { AppointmentDetails } from "@/components/appointments/details";
+
 import { CalendarLabel } from "@/types";
 import { appointmentLabelUpdateByChecked } from "@/actions/appointment";
 
@@ -120,7 +122,8 @@ function AppointmentContextComponent({
       }}
     >
       {children}
-      <AppointmentModal />
+      <AppointmentDrawer />
+      <AppointmentDetails />
     </AppointmentContextProvider>
   );
 }
