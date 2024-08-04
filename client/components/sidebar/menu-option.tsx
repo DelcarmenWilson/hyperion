@@ -96,7 +96,7 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
                         className={cn(
                           "md:w-[300px] w-full mb-1",
                           pathname.includes(route.href) &&
-                            "!bg-primary/80 !text-white"
+                            "!bg-primary/80 !text-background"
                         )}
                       >
                         <Link
