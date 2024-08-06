@@ -87,7 +87,14 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
             {routes.map((route) => {
               const Icon = route.icon!;
               return (
-                <Button asChild className="!justify-start mb-1" variant={pathname.includes(route.href)?"sidebaractive":"sidebar" }>
+                <Button
+                  key={route.href}
+                  asChild
+                  className="!justify-start mb-1"
+                  variant={
+                    pathname.includes(route.href) ? "sidebaractive" : "sidebar"
+                  }
+                >
                   <Link
                     href={route.href}
                     className="group flex items-center gap-2 rounded-md transition-all md:w-full w-[300px]"
