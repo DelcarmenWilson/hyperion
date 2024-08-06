@@ -7,7 +7,10 @@ import { create } from "zustand";
 
 import { PhoneNumber } from "@prisma/client";
 
-import { phoneNumberUpdateByIdApp, phoneNumberUpdateByIdAssign } from "@/actions/phonenumber";
+import {
+  phoneNumberUpdateByIdApp,
+  phoneNumberUpdateByIdAssign,
+} from "@/actions/phonenumber";
 
 type usePhoneSetupStore = {
   //UNASSIGNEDFORM
@@ -37,6 +40,9 @@ export const usePhoneSetupActions = (
     phoneNumber?.agentId || undefined
   );
   const [app, setApp] = useState<string | undefined>(phoneNumber?.app);
+  const [registered, setRegistered] = useState<boolean | undefined>(
+    phoneNumber?.registered
+  );
   const [loading, setLoading] = useState(false);
   //SHARING
   const onAssignNumber = async () => {
@@ -61,32 +67,34 @@ export const usePhoneSetupActions = (
       app,
     });
     const data = response.data;
-    console.log(data)
-    
-    if(data){
-    const updatedNumber = await phoneNumberUpdateByIdApp(
-      phoneNumber?.id!,
-      app      
-    );
-    if (updatedNumber.success) {
-      toast.success(updatedNumber.success);
-      onClose();
-      router.refresh();
-    } else toast.error(updatedNumber.error);
-  }
+    console.log(data);
+
+    if (data) {
+      const updatedNumber = await phoneNumberUpdateByIdApp(
+        phoneNumber?.id!,
+        app
+      );
+      if (updatedNumber.success) {
+        toast.success(updatedNumber.success);
+        onClose();
+        router.refresh();
+      } else toast.error(updatedNumber.error);
+    }
     setLoading(false);
   };
-  useEffect(()=>{
-    if(!phoneNumber)return
-    setUserId(phoneNumber.agentId||undefined)
-    setApp(phoneNumber.app)
-
-  },[phoneNumber])
+  useEffect(() => {
+    if (!phoneNumber) return;
+    setUserId(phoneNumber.agentId || undefined);
+    setApp(phoneNumber.app);
+  }, [phoneNumber]);
   return {
     userId,
     setUserId,
     app,
     setApp,
+    registered,
+    setRegistered,
+
     loading,
     onAssignNumber,
     onNumberUpdateApp,
