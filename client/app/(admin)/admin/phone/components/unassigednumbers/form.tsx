@@ -9,6 +9,7 @@ import { TwilioAppSelect } from "@/components/twilio/app-select";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { formatDate } from "@/formulas/dates";
 import { CardData } from "@/components/reusable/card-data";
+import { Switch } from "@/components/ui/switch";
 
 export const AssignNumberForm = () => {
   const { isUnassignedFormOpen, onUnassignedFormClose, phoneNumber } =
@@ -18,6 +19,8 @@ export const AssignNumberForm = () => {
     setUserId,
     app,
     setApp,
+    registered,
+    setRegistered,
     loading,
     onAssignNumber,
     onNumberUpdateApp,
@@ -31,7 +34,13 @@ export const AssignNumberForm = () => {
         <h3 className="font-semibold text-primary text-2xl italic text-center">
           {formatPhoneNumber(phoneNumber.phone)}
         </h3>
-        <CardData label="Sid" value={phoneNumber.sid} />
+        <div className="flex justify-between items-center">
+          <CardData label="Sid" value={phoneNumber.sid} />
+          <div className="flex gap-2">
+            <span>Registered</span>
+            <Switch checked={registered} onCheckedChange={setRegistered} />
+          </div>
+        </div>
 
         <h4 className="font-bold">App</h4>
         <div className="flex gap-2 text-sm my-2">

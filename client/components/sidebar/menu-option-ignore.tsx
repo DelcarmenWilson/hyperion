@@ -26,6 +26,7 @@ import {
 import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
 import { UserButton } from "@/components/auth/user-button";
 import { IconLink } from "@/components/reusable/icon-link";
+import { Button } from "../ui/button";
 
 type Props = {
   defaultOpen?: boolean;
@@ -83,38 +84,20 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
 
           {/* <Separator className="my-2" /> */}
           <nav className="flex-1">
-            <Command className="rounded-lg overflow-visible bg-transparent">
-              {/* <CommandInput placeholder="Search..." /> */}
-              <CommandList className="py-4 overflow-visible">
-                <CommandEmpty>No Results Found</CommandEmpty>
-                <CommandGroup className="overflow-visible">
-                  {routes.map((route) => {
-                    const Icon = route.icon!;
-                    return (
-                      <CommandItem
-                        key={route.href}
-                        className={cn(
-                          "md:w-[300px] w-full mb-1",
-                          pathname.includes(route.href) &&
-                            "!bg-primary/80 !text-background"
-                        )}
-                      >
-                        <Link
-                          href={route.href}
-                          className="group flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full w-[300px]"
-                        >
-                          <Icon
-                            size={16}
-                            className="group-hover:animate-spin"
-                          />
-                          <span>{route.title}</span>
-                        </Link>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              </CommandList>
-            </Command>
+            {routes.map((route) => {
+              const Icon = route.icon!;
+              return (
+                <Button asChild className="!justify-start mb-1" variant={pathname.includes(route.href)?"sidebaractive":"sidebar" }>
+                  <Link
+                    href={route.href}
+                    className="group flex items-center gap-2 rounded-md transition-all md:w-full w-[300px]"
+                  >
+                    <Icon size={16} className="group-hover:animate-spin" />
+                    <span>{route.title}</span>
+                  </Link>
+                </Button>
+              );
+            })}
           </nav>
           <div className="flex flex-col mt-auto items-center space-y-2">
             <IconLink
