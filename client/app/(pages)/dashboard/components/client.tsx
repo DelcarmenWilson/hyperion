@@ -88,7 +88,7 @@ export const DashBoardClient = () => {
     // eslint-disable-next-line
   }, []);
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:grid-cols-2">
       {dataCard.map((data) => (
         <CardBox
           key={data.title}
