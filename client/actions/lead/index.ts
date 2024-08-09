@@ -23,6 +23,7 @@ import { formatTimeZone, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { FullLead } from "@/types";
+import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
 
 //LEAD
 
@@ -706,7 +707,8 @@ export const leadUpdateByIdPolicyInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  if (parseInt(ap) > 0) {
+  let diff = parseInt(ap);
+  if (diff > 0) {
     await db.lead.update({
       where: { id: leadId },
       data: { status: "Sold", assistant: { disconnect: true } },
@@ -739,7 +741,13 @@ export const leadUpdateByIdPolicyInfo = async (
         startDate,
       },
     });
+
+    const exAp = parseInt(existingPolicy.ap);
+
+    diff -= exAp;
   }
+
+  bluePrintWeekUpdateByUserIdData(user.id, "premium", diff);
   activityInsert(leadPolicyInfo.leadId, "sale", "policy info updated", user.id);
   return { success: leadPolicyInfo };
 };

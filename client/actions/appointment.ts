@@ -18,8 +18,9 @@ import {
 } from "./sms";
 import { getEntireDay } from "@/formulas/dates";
 import { Lead } from "@prisma/client";
-import { bluePrintUpdateByUserIdData } from "./blueprint";
+import { bluePrintUpdateByUserIdData } from "./blueprint/blueprint";
 import { callUpdateByIdAppointment } from "./call";
+import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
 
 //DATA
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
@@ -160,8 +161,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-  //Update the blueprint appointments
-  await bluePrintUpdateByUserIdData(user.id, "appointments");
+
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   let message;
@@ -174,9 +174,10 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     }
   }
 
-  // pusher.publish(appointment)
+  bluePrintWeekUpdateByUserIdData(user.id,"appointments")
+ 
   return { success: { appointment, message } };
-  //return { success: { appointment } };
+ 
 };
 
 export const appointmentInsertBook = async (

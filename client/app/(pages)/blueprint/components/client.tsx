@@ -8,7 +8,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { BluePrint } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import { bluePrintsGetAllByUserId } from "@/actions/blueprint";
+import { bluePrintsGetAllByUserId } from "@/actions/blueprint/blueprint";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 const BluePrintClient = () => {

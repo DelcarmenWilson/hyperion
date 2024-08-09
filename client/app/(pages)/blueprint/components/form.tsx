@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { bluePrintInsert } from "@/actions/blueprint";
+import { bluePrintInsert } from "@/actions/blueprint/blueprint";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 

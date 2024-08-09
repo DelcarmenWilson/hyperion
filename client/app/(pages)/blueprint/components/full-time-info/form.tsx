@@ -33,7 +33,7 @@ import { TargetList } from "./list";
 import {
   fullTimeInfoInsert,
   fullTimeInfoUpdateByUserId,
-} from "@/actions/blueprint";
+} from "@/actions/blueprint/full-time-info";
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { daysOfTheWeek } from "@/formulas/schedule";
 

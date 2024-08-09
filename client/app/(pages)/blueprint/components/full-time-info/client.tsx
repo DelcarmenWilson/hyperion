@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { FullTimeInfo } from "@prisma/client";
-import { fullTimeInfoGetByUserId } from "@/actions/blueprint";
+import { fullTimeInfoGetByUserId } from "@/actions/blueprint/full-time-info";
 
 import {
   Card,

@@ -1,10 +1,12 @@
 import React from "react";
-import { BluePrint } from "@prisma/client";
+import { BluePrint, BluePrintWeek } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/formulas/dates";
 import CountUp from "react-countup";
 
-export const BluePrintCard = ({ blueprint }: { blueprint: BluePrint }) => {
+export const BluePrintCard = ({ blueprint }: { blueprint: BluePrintWeek|undefined|null }) => {
+  if (!blueprint)
+    return null
   const {
     calls,
     callsTarget,
