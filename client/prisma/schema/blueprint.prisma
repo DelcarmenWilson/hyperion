@@ -35,6 +35,7 @@ model BluePrintWeek {
     id                 String   @id @default(cuid())
     bluePrintId        String  
     bluePrint          BluePrint @relation(fields: [bluePrintId],references: [id],onDelete: Cascade)
+    weekNumber         Int   @default(1)
     calls              Int      @default(0)
     callsTarget        Int
     appointments       Int      @default(0)
@@ -42,6 +43,7 @@ model BluePrintWeek {
     premium            Int      @default(0)
     premiumTarget      Int
     active             Boolean  @default(true)
+    startDate          DateTime
     endDate            DateTime
     createdAt          DateTime @default(now())
     updatedAt          DateTime @updatedAt

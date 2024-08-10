@@ -20,8 +20,6 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 
 import { FullTimeInfoForm } from "./form";
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
-import { TargetList } from "./list";
-import BluePrintClient from "../client";
 import { DetailsCard } from "./details-card";
 import { TargetCard } from "./target-card";
 
@@ -75,7 +73,7 @@ export const FullTimeInfoClient = () => {
               </CardContent>
             </Card>
 
-            <BluePrintClient />
+            
           </>
         ) : (
           <EmptyCard
