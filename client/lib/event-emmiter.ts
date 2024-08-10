@@ -16,6 +16,7 @@ import {
 import {
   Appointment,
   Feedback,
+  GptMessage,
   HyperionLead,
   LeadStatus,
   Message,
@@ -48,9 +49,9 @@ type UserEvents = {
   generalInfoUpdated: [info: LeadGeneralSchemaType];
   leadStatusChanged: [leadId: string, newStatus: string];
 
-//LEAD SHARING AND TRANSFERING
-leadTransfered:[ids:string[]];
-leadTransferedRecieved:[ids:string[]];
+  //LEAD SHARING AND TRANSFERING
+  leadTransfered: [ids: string[]];
+  leadTransferedRecieved: [ids: string[]];
 
   //LICENSES
   licenseDeleted: [id: string];
@@ -59,6 +60,7 @@ leadTransferedRecieved:[ids:string[]];
 
   mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
+  gptMessageInserted: [info: GptMessage];
   messageInserted: [info: Message];
 
   presetInserted: [Presets];
@@ -75,7 +77,7 @@ leadTransferedRecieved:[ids:string[]];
   joinCall: [callSid: string];
 
   //SCHEDULE BREAKS
-  scheduleBreakUpdated:[info:ScheduleDay]
+  scheduleBreakUpdated: [info: ScheduleDay];
 
   userLeadStatusDeleted: [id: string];
   userLeadStatusInserted: [info: LeadStatus];
@@ -85,7 +87,7 @@ leadTransferedRecieved:[ids:string[]];
   //NEW EVENTS
   newCall: [leadId: string];
   newNote: [leadId: string, note: string];
-  
+
   //VOICEMAIL
   voicemailDeleted: [id: string];
 };

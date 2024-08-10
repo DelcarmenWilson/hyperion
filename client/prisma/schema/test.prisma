@@ -1,0 +1,38 @@
+model GptConversation {
+    id       String       @id @default(cuid())
+    messages GptMessage[]
+
+    lastMessageId String?     @unique
+    lastMessage   GptMessage? @relation("lastMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
+
+    userId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model GptMessage {
+    id String @id @default(cuid())
+
+    conversationId String
+    conversation   GptConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    content        String           @db.LongText
+    role           MessageRole      @default(user)
+    lastMessage    GptConversation? @relation("lastMessage")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model GptSettings {
+    id String @id @default(cuid())
+
+    prompt   String
+    leadInfo String
+    active   Boolean @default(true)
+
+    userId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
