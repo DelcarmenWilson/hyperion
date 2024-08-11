@@ -1,4 +1,4 @@
-model FullTimeInfo {
+model AgentWorkInfo {
     userId       String   @unique
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     workType     String
@@ -10,41 +10,39 @@ model FullTimeInfo {
     updatedAt    DateTime @updatedAt
 }
 
-
 model BluePrint {
-    id                 String   @id @default(cuid())
+    id                 String          @id @default(cuid())
     userId             String
-    user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    calls              Int      @default(0)
+    user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    calls              Int             @default(0)
     callsTarget        Int
-    appointments       Int      @default(0)
+    appointments       Int             @default(0)
     appointmentsTarget Int
-    premium            Int      @default(0)
+    premium            Int             @default(0)
     premiumTarget      Int
-    active             Boolean  @default(true)
-    endDate            DateTime
-    bluePrintWeeks     BluePrintWeek[] 
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @updatedAt
+    active             Boolean         @default(true)
+    startAt            DateTime
+    endAt              DateTime
+    bluePrintWeeks     BluePrintWeek[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
-
-
-
 model BluePrintWeek {
-    id                 String   @id @default(cuid())
-    bluePrintId        String  
-    bluePrint          BluePrint @relation(fields: [bluePrintId],references: [id],onDelete: Cascade)
-    weekNumber         Int   @default(1)
-    calls              Int      @default(0)
+    id                 String    @id @default(cuid())
+    bluePrintId        String
+    bluePrint          BluePrint @relation(fields: [bluePrintId], references: [id], onDelete: Cascade)
+    weekNumber         Int
+    calls              Int       @default(0)
     callsTarget        Int
-    appointments       Int      @default(0)
+    appointments       Int       @default(0)
     appointmentsTarget Int
-    premium            Int      @default(0)
+    premium            Int       @default(0)
     premiumTarget      Int
-    active             Boolean  @default(true)
-    startDate          DateTime
-    endDate            DateTime
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @updatedAt
+    active             Boolean   @default(true)
+    startAt            DateTime
+    endAt              DateTime
+    createdAt          DateTime  @default(now())
+    updatedAt          DateTime  @updatedAt
 }

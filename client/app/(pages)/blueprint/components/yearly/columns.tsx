@@ -8,6 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export const columns: ColumnDef<BluePrint>[] = [
   {
+    id: "calls",
+    accessorKey: "calls",
+    header: "Calls Made",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
     id: "callsTarget",
     accessorKey: "callsTarget",
     header: "Calls Target",
@@ -15,9 +22,23 @@ export const columns: ColumnDef<BluePrint>[] = [
     enableHiding: true,
   },
   {
+    id: "appointments",
+    accessorKey: "appointments",
+    header: "Apps Made",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
     id: "appointmentsTarget",
     accessorKey: "appointmentsTarget",
     header: "Apps Target",
+    enableGlobalFilter: true,
+    enableHiding: true,
+  },
+  {
+    id: "premium",
+    accessorKey: "premium",
+    header: "Premium Earned",
     enableGlobalFilter: true,
     enableHiding: true,
   },
@@ -38,25 +59,17 @@ export const columns: ColumnDef<BluePrint>[] = [
     cell: ({ row }) => <Checkbox disabled checked={row.original.active} />,
   },
   {
-    id: "createdAt",
-    accessorKey: "createdAt",
+    id: "startAt",
+    accessorKey: "startAt",
     header: "Start At",
     enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    cell: ({ row }) => formatDate(row.original.startAt),
   },
   {
-    id: "endDate",
-    accessorKey: "endDate",
+    id: "endAt",
+    accessorKey: "endAt",
     header: "End At",
     enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.endDate),
-  },
-
-  {
-    id: "updatedAt",
-    accessorKey: "updatedAt",
-    header: "Updated At",
-    enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.updatedAt),
+    cell: ({ row }) => formatDate(row.original.endAt),
   },
 ];

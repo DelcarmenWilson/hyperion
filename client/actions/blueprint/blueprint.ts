@@ -1,10 +1,7 @@
 "use server";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import {
-  BluePrintSchema,
-  BluePrintSchemaType,
-} from "@/schemas/blueprint";
+import { BluePrintSchema, BluePrintSchemaType } from "@/schemas/blueprint";
 
 //DATA
 export const bluePrintsGetAllByUserId = async () => {
@@ -21,7 +18,7 @@ export const bluePrintsGetAllByUserId = async () => {
 
 // DATA OF ACTIVE BLUEPRINT
 
-export const bluePrintActive = async () => {
+export const bluePrintGetActive = async () => {
   const user = await currentUser();
   if (!user) return null;
   const blueprint = await db.bluePrint.findFirst({
@@ -31,7 +28,6 @@ export const bluePrintActive = async () => {
   return blueprint;
 };
 
-
 //ACTIONS
 export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const user = await currentUser();
@@ -40,11 +36,11 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-  const { callsTarget, appointmentsTarget, premiumTarget, period } =
+  const { callsTarget, appointmentsTarget, premiumTarget } =
     validatedFields.data;
 
   await db.bluePrint.updateMany({
-    where: { active: true },
+    where: { userId: user.id, active: true },
     data: { active: false },
   });
 
@@ -54,7 +50,9 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
       appointmentsTarget,
       premiumTarget,
       userId: user.id,
-      endDate: new Date(),
+      //TODO - need to pass the yearly date both for start and end
+      startAt: new Date(),
+      endAt: new Date(),
     },
   });
 
@@ -80,9 +78,10 @@ export const bluePrintUpdateByUserIdData = async (
           ? oldBluePrint.appointments + 1
           : oldBluePrint.appointments,
       premium:
-        type == "premium" ? oldBluePrint.premium + value! : oldBluePrint.premium,
+        type == "premium"
+          ? oldBluePrint.premium + value!
+          : oldBluePrint.premium,
     },
   });
-  return {success:"BluPrint Updated!"}
+  return { success: "BluPrint Updated!" };
 };
-

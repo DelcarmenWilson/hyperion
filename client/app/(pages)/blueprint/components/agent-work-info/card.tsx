@@ -1,23 +1,37 @@
 import React from "react";
-import { FullTimeInfo } from "@prisma/client";
+import { cn } from "@/lib/utils";
+import { useBluePrint } from "@/hooks/use-blueprint";
+
+import { AgentWorkInfo } from "@prisma/client";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
+
 import { USDollar } from "@/formulas/numbers";
 import { daysOfTheWeek } from "@/formulas/schedule";
 import { formatDate, formatJustTime } from "@/formulas/dates";
-import { cn } from "@/lib/utils";
 
+//TODO see if we can merge the UI from this and the dahboadc lient and the yearly blueprint
 type Props = {
-  info: FullTimeInfo;
+  info: AgentWorkInfo;
   size?: string;
 };
 
-export const DetailsCard = ({ info, size = "md" }: Props) => {
+export const AgentWorkInfoCard = ({ info, size = "md" }: Props) => {
+  const { onWorkInfoFormOpen } = useBluePrint();
   const hours = info.workingHours.split("-");
+
   return (
     <div
       className={cn("w-full h-full space-y-2", size == "sm" ? "text-sm" : "")}
     >
+      <div className="flex justify-between items-center mb-2">
+        <p className="font-semibold">Work info</p>
+
+        <Button onClick={() => onWorkInfoFormOpen(info)}>Edit Details</Button>
+      </div>
+
       <CardData label="Type" value={info.workType} />
       <div className="flex flex-wrap gap-2">
         {daysOfTheWeek.map((day) => (

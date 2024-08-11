@@ -1,15 +1,17 @@
 import React from "react";
-import { BluePrintWeek } from "@prisma/client";
+import { BluePrint } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/formulas/dates";
 import CountUp from "react-countup";
+//TODO see if we can merge the UI from this and the dahboadc lient and the yearly blueprint
+type Props = {
+  info: BluePrint | null | undefined;
+  size?: string;
+};
 
-export const BluePrintCard = ({
-  blueprint,
-}: {
-  blueprint: BluePrintWeek | undefined | null;
-}) => {
-  if (!blueprint) return null;
+export const BluePrintYearlyCard = ({ info }: Props) => {
+  if (!info) return null;
+  const WEEKS = 52;
   const {
     calls,
     callsTarget,
@@ -19,22 +21,28 @@ export const BluePrintCard = ({
     premiumTarget,
     startAt,
     endAt,
-  } = blueprint;
+  } = info;
   return (
     <div>
-      <div className="text-end">
+      <div className="flex justify-between items-center mb-2">
+        <p className="font-semibold">Yearly Goals</p>
         <Badge>
           {formatDate(startAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
         </Badge>
       </div>
 
-      <CardData2 label="Calls" data={calls} target={callsTarget} />
+      <CardData2 label="Calls" data={calls} target={callsTarget * WEEKS} />
       <CardData2
         label="Appointments"
         data={appointments}
-        target={appointmentsTarget}
+        target={appointmentsTarget * WEEKS}
       />
-      <CardData2 label="Premium" data={premium} target={premiumTarget} dollar />
+      <CardData2
+        label="Premium"
+        data={premium}
+        target={premiumTarget * WEEKS}
+        dollar
+      />
     </div>
   );
 };

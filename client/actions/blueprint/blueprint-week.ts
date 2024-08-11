@@ -1,9 +1,8 @@
 "use server";
+import { weekStartEnd } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { BluePrintSchema, BluePrintSchemaType } from "@/schemas/blueprint";
-import { error } from "console";
-import { date } from "zod";
 
 //DATA
 export const bluePrintWeeksGetAllByUserId = async () => {
@@ -17,8 +16,6 @@ export const bluePrintWeeksGetAllByUserId = async () => {
 
   return bluePrintWeeks;
 };
-
-// DATA OF ACTIVE BLUEPRINT
 
 export const bluePrintWeekGetActive = async () => {
   const user = await currentUser();
@@ -38,21 +35,35 @@ export const bluePrintWeekInsert = async (values: BluePrintSchemaType) => {
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-  const { callsTarget, appointmentsTarget, premiumTarget, period } =
+  const { callsTarget, appointmentsTarget, premiumTarget } =
     validatedFields.data;
 
-  await db.bluePrint.updateMany({
-    where: { active: true },
+  const bluePrintActive = await db.bluePrint.findFirst({
+    where: { userId: user.id, active: true },
+  });
+
+  const bluePrintWeekActive = await db.bluePrintWeek.findFirst({
+    where: { bluePrintId: bluePrintActive?.id, active: true },
+  });
+
+  if (!bluePrintWeekActive) return { error: "No weekly blueprint found!" };
+
+  await db.bluePrintWeek.update({
+    where: { id: bluePrintWeekActive.id },
     data: { active: false },
   });
 
-  const newBluePrint = await db.bluePrint.create({
+  const week = weekStartEnd();
+
+  const newBluePrint = await db.bluePrintWeek.create({
     data: {
+      bluePrintId: bluePrintWeekActive.bluePrintId,
+      weekNumber: bluePrintWeekActive.weekNumber + 1,
       callsTarget,
       appointmentsTarget,
       premiumTarget,
-      userId: user.id,
-      endDate: new Date(),
+      startAt: week.from,
+      endAt: week.to,
     },
   });
 
@@ -131,17 +142,17 @@ export const calculateBlueprintTargets = async () => {
     //create new week
     await db.bluePrintWeek.create({
       data: {
-        bluePrintId:bp.id,
+        bluePrintId: bp.id,
         callsTarget: newWeekCalls,
         appointmentsTarget: newWeekAppointments,
         premiumTarget: newWeekPremium,
-        weekNumber:activeWeek.weekNumber+1,
-        //todo -need to supply actual startdate and enddate
-        startDate:new Date(),
-        endDate:new Date() 
+        weekNumber: activeWeek.weekNumber + 1,
+        //TODO -need to supply actual startdate and enddate
+        startAt: new Date(),
+        endAt: new Date(),
       },
     });
-// this to update actual blue print with current week data
+    // this to update actual blue print with current week data
     await db.bluePrint.update({
       where: { id: bp.id },
       data: {

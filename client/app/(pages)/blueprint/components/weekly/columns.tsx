@@ -8,50 +8,43 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export const columns: ColumnDef<BluePrintWeek>[] = [
   {
+    id: "weekNumber",
+    accessorKey: "weekNumber",
+    header: "weekNumber",
+  },
+  {
     id: "callsTarget",
     accessorKey: "callsTarget",
     header: "Calls Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
   {
     id: "calls",
     accessorKey: "calls",
     header: "Calls Made",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
-  
+
   {
     id: "appointmentsTarget",
     accessorKey: "appointmentsTarget",
     header: "Apps Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
 
   {
     id: "appointments",
     accessorKey: "appointments",
     header: "Apps Made",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
 
   {
     id: "premiumTarget",
     accessorKey: "premiumTarget",
     header: "Premium Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
 
   {
     id: "premium",
     accessorKey: "premium",
     header: "Premium Earned",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
 
   {
@@ -62,19 +55,15 @@ export const columns: ColumnDef<BluePrintWeek>[] = [
     cell: ({ row }) => <Checkbox disabled checked={row.original.active} />,
   },
   {
-    id: "startDate",
-    accessorKey: "startDate",
-    header: "Started At",
-    enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    id: "startAt",
+    accessorKey: "startAt",
+    header: "Start At",
+    cell: ({ row }) => formatDate(row.original.startAt),
   },
   {
-    id: "endDate",
-    accessorKey: "endDate",
+    id: "endAt",
+    accessorKey: "endAt",
     header: "End At",
-    enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.endDate),
+    cell: ({ row }) => formatDate(row.original.endAt),
   },
-
- 
 ];
