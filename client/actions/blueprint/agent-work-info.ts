@@ -8,6 +8,8 @@ import {
 
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { weekStartEnd } from "@/formulas/dates";
+import { getDay, getWeek } from "date-fns";
+import { date } from "zod";
 
 // DATA
 export const agentWorkInfoGetByUserId = async () => {
@@ -19,7 +21,7 @@ export const agentWorkInfoGetByUserId = async () => {
   return fullTimeInfo;
 };
 
-//ACTIONS 
+//ACTIONS
 export const agentWorkInfoInsert = async (values: AgentWorkInfoSchemaType) => {
   const user = await currentUser();
   if (!user) return { error: "Unathenticated" };
@@ -45,35 +47,35 @@ export const agentWorkInfoInsert = async (values: AgentWorkInfoSchemaType) => {
     },
   });
 
-  const target = calculateWeeklyBluePrint(annualTarget).find(
+  const weeklyTarget = calculateWeeklyBluePrint(annualTarget).find(
     (e) => e.type == targetType
   );
 
   const week = weekStartEnd();
+  const currentWeek = 52 - getWeek(new Date());
 
-  const insertedBlueprint=await db.bluePrint.create({
+  const insertedBlueprint = await db.bluePrint.create({
     data: {
-      callsTarget: target?.calls || 0,
-      appointmentsTarget: target?.appointments || 0,
-      premiumTarget: target?.premium || 0,
+      callsTarget: weeklyTarget?.calls || 0,
+      appointmentsTarget: weeklyTarget?.appointments || 0,
+      premiumTarget: weeklyTarget?.premium || 0,
       userId: user.id,
-      //TODO - need to change this to take in the yearly end date and current Month start date
-      startAt: week.from,
-      endAt: week.to,
-    },    
-  });
 
+      weeks: currentWeek,
+      endAt: new Date(new Date().getFullYear(), 11, 31),
+    },
+  });
+  if (!weeklyTarget) return { error: "" };
+  const currDay = 7 - getDay(new Date()) + 1;
   await db.bluePrintWeek.create({
     data: {
-      bluePrintId:insertedBlueprint.id,
-      weekNumber:1,
-      callsTarget: target?.calls || 0,
-      appointmentsTarget: target?.appointments || 0,
-      premiumTarget: target?.premium || 0,
-
-      startAt: week.from,
+      bluePrintId: insertedBlueprint.id,
+      weekNumber: 1,
+      callsTarget: (weeklyTarget.calls / 7) * currDay || 0,
+      appointmentsTarget: (weeklyTarget.appointments / 7) * currDay || 0,
+      premiumTarget: (weeklyTarget.premium / 7) * currDay || 0,
       endAt: week.to,
-    },    
+    },
   });
 
   return { success: insertedAgentWorkInfo };

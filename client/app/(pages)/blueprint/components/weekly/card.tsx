@@ -18,7 +18,7 @@ export const BluePrintWeeklyCard = ({ info }: Props) => {
     appointmentsTarget,
     premium,
     premiumTarget,
-    startAt,
+    createdAt,
     endAt,
   } = info;
   return (
@@ -26,7 +26,7 @@ export const BluePrintWeeklyCard = ({ info }: Props) => {
       <div className="flex justify-between items-center mb-2">
         <p className="font-semibold">Weekly Goals</p>
         <Badge>
-          {formatDate(startAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
+          {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
         </Badge>
       </div>
 

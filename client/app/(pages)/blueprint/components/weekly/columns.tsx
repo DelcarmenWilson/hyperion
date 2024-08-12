@@ -55,10 +55,10 @@ export const columns: ColumnDef<BluePrintWeek>[] = [
     cell: ({ row }) => <Checkbox disabled checked={row.original.active} />,
   },
   {
-    id: "startAt",
-    accessorKey: "startAt",
+    id: "createdAt",
+    accessorKey: "createdAt",
     header: "Start At",
-    cell: ({ row }) => formatDate(row.original.startAt),
+    cell: ({ row }) => formatDate(row.original.createdAt),
   },
   {
     id: "endAt",

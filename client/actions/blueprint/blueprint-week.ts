@@ -62,7 +62,7 @@ export const bluePrintWeekInsert = async (values: BluePrintSchemaType) => {
       callsTarget,
       appointmentsTarget,
       premiumTarget,
-      startAt: week.from,
+    //  todo-- provide actual end date
       endAt: week.to,
     },
   });
@@ -114,24 +114,26 @@ export const calculateBlueprintTargets = async () => {
 
     if (!activeWeek) return { error: "no active week" };
 
+  
     const weeksInYear = 52;
-    // (Activeweektarget-activeweekactual)/(52-activeweeknumber)+Activeweektarget
+    // (Activeweektarget-activeweekactual)/(52-activeweeknumber)+weeklytarget
 
     const newWeekCalls =
-      (activeWeek.callsTarget - activeWeek.calls) /
-        (weeksInYear - activeWeek.weekNumber) +
-      activeWeek.callsTarget;
+      Math.ceil((activeWeek.callsTarget - activeWeek.calls) /
+      (weeksInYear - activeWeek.weekNumber) +
+    bp.callsTarget)
 
-    const newWeekAppointments =
+    const newWeekAppointments = Math.ceil(
       (activeWeek.appointmentsTarget - activeWeek.appointments) /
         (weeksInYear - activeWeek.weekNumber) +
-      activeWeek.appointmentsTarget;
+        bp.appointmentsTarget
+    );
 
-    const newWeekPremium =
+    const newWeekPremium = Math.ceil(
       (activeWeek.premiumTarget - activeWeek.premium) /
         (weeksInYear - activeWeek.weekNumber) +
-      activeWeek.premiumTarget;
-
+        bp.premiumTarget
+    );
     // update current week as inactive
 
     await db.bluePrintWeek.update({
@@ -147,13 +149,12 @@ export const calculateBlueprintTargets = async () => {
         appointmentsTarget: newWeekAppointments,
         premiumTarget: newWeekPremium,
         weekNumber: activeWeek.weekNumber + 1,
-        //TODO -need to supply actual startdate and enddate
-        startAt: new Date(),
+        //todo- end of the week
         endAt: new Date(),
       },
     });
-    // this to update actual blue print with current week data
-    await db.bluePrint.update({
+     // this to update actual blue print with current week data
+     await db.bluePrint.update({
       where: { id: bp.id },
       data: {
         calls: bp.calls + activeWeek.calls,

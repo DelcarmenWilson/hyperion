@@ -20,6 +20,7 @@ export const columns: ColumnDef<BluePrint>[] = [
     header: "Calls Target",
     enableGlobalFilter: true,
     enableHiding: true,
+    cell: ({ row }) => row.original.callsTarget*row.original.weeks,
   },
   {
     id: "appointments",
@@ -34,6 +35,7 @@ export const columns: ColumnDef<BluePrint>[] = [
     header: "Apps Target",
     enableGlobalFilter: true,
     enableHiding: true,
+    cell: ({ row }) => row.original.appointmentsTarget*row.original.weeks,
   },
   {
     id: "premium",
@@ -49,6 +51,7 @@ export const columns: ColumnDef<BluePrint>[] = [
     header: "Premium Target",
     enableGlobalFilter: true,
     enableHiding: true,
+    cell: ({ row }) => row.original.premiumTarget*row.original.weeks,
   },
 
   {
@@ -59,11 +62,11 @@ export const columns: ColumnDef<BluePrint>[] = [
     cell: ({ row }) => <Checkbox disabled checked={row.original.active} />,
   },
   {
-    id: "startAt",
-    accessorKey: "startAt",
+    id: "createdAt",
+    accessorKey: "createdAt",
     header: "Start At",
     enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.startAt),
+    cell: ({ row }) => formatDate(row.original.createdAt),
   },
   {
     id: "endAt",

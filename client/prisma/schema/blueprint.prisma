@@ -20,8 +20,8 @@ model BluePrint {
     appointmentsTarget Int
     premium            Int             @default(0)
     premiumTarget      Int
+    weeks              Int             @default(52)
     active             Boolean         @default(true)
-    startAt            DateTime
     endAt              DateTime
     bluePrintWeeks     BluePrintWeek[]
 
@@ -41,7 +41,7 @@ model BluePrintWeek {
     premium            Int       @default(0)
     premiumTarget      Int
     active             Boolean   @default(true)
-    startAt            DateTime
+    
     endAt              DateTime
     createdAt          DateTime  @default(now())
     updatedAt          DateTime  @updatedAt

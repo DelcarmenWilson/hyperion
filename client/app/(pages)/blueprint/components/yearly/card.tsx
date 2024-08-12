@@ -11,7 +11,7 @@ type Props = {
 
 export const BluePrintYearlyCard = ({ info }: Props) => {
   if (!info) return null;
-  const WEEKS = 52;
+
   const {
     calls,
     callsTarget,
@@ -19,7 +19,8 @@ export const BluePrintYearlyCard = ({ info }: Props) => {
     appointmentsTarget,
     premium,
     premiumTarget,
-    startAt,
+    createdAt,
+    weeks,
     endAt,
   } = info;
   return (
@@ -27,20 +28,20 @@ export const BluePrintYearlyCard = ({ info }: Props) => {
       <div className="flex justify-between items-center mb-2">
         <p className="font-semibold">Yearly Goals</p>
         <Badge>
-          {formatDate(startAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
+          {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
         </Badge>
       </div>
 
-      <CardData2 label="Calls" data={calls} target={callsTarget * WEEKS} />
+      <CardData2 label="Calls" data={calls} target={callsTarget * weeks} />
       <CardData2
         label="Appointments"
         data={appointments}
-        target={appointmentsTarget * WEEKS}
+        target={appointmentsTarget * weeks}
       />
       <CardData2
         label="Premium"
         data={premium}
-        target={premiumTarget * WEEKS}
+        target={premiumTarget * weeks}
         dollar
       />
     </div>
