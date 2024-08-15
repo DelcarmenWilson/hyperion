@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useBluePrint } from "@/hooks/use-blueprint";
+import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
 
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { AgentWorkInfo, BluePrint, BluePrintWeek } from "@prisma/client";
-import { agentWorkInfoGetByUserId } from "@/actions/blueprint/agent-work-info";
 
 import {
   Card,
@@ -21,59 +20,71 @@ import { AgentWorkInfoCard } from "./card";
 import { AgentWorkInfoForm } from "./form";
 import { BluePrintWeeklyCard } from "../weekly/card";
 import { BluePrintYearlyCard } from "../yearly/card";
+import { OverviewChart } from "@/components/reports/chart";
+import { BluePrintWeekForm } from "../weekly/form";
 
-import { bluePrintGetActive } from "@/actions/blueprint/blueprint";
-import { bluePrintWeekGetActive } from "@/actions/blueprint/blueprint-week";
+import { convertBluePringWeekData } from "@/formulas/reports";
+import { USDollar } from "@/formulas/numbers";
 
 export const AgentWorkInfoClient = () => {
   const { onWorkInfoFormOpen } = useBluePrint();
-  const { data: agentWorkInfo, isFetching: isFetchingAgentWorkinfo } =
-    useQuery<AgentWorkInfo | null>({
-      queryFn: () => agentWorkInfoGetByUserId(),
-      queryKey: ["agentWorkInfo"],
-    });
-  const { data: weekData, isFetching: isFetchingWeekData } =
-    useQuery<BluePrintWeek | null>({
-      queryFn: () => bluePrintWeekGetActive(),
-      queryKey: ["agentBluePrintWeekActive"],
-    });
-  const { data: yearData, isFetching: isFetchingYearData } =
-    useQuery<BluePrint | null>({
-      queryFn: () => bluePrintGetActive(),
-      queryKey: ["agentBluePrintActive"],
-    });
+  const {
+    agentWorkInfo,
+    isFetchingAgentWorkInfo,
+    bluePrintWeekReport,
+    isFetchingBluePrintWeeksReport,
+  } = useBluePrintActions();
+
+  const premiumReport = convertBluePringWeekData(bluePrintWeekReport!);
+  const totalPremium = premiumReport.reduce((sum, week) => sum + week.total, 0);
 
   return (
     <>
       <AgentWorkInfoForm />
-      <SkeletonWrapper isLoading={isFetchingAgentWorkinfo}>
-        {agentWorkInfo ? (
-          <Card className="mb-2 border-0">
-            <CardDescription>
-              <CardTitle></CardTitle>
-            </CardDescription>
-            <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
-              <div className="w-full lg:w-[30%] border p-3">
-                <BluePrintWeeklyCard info={weekData} />
-              </div>
+      <BluePrintWeekForm />
+      <div>
+        <SkeletonWrapper isLoading={isFetchingAgentWorkInfo}>
+          {agentWorkInfo ? (
+            <Card className="mb-2 border-0">
+              <CardDescription>
+                <CardTitle></CardTitle>
+              </CardDescription>
+              <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
+                <div className="w-full lg:w-[30%] border p-3">
+                  <BluePrintWeeklyCard />
+                </div>
 
-              <div className="w-full lg:w-[30%] border p-3">
-                <BluePrintYearlyCard info={yearData} />
-              </div>
-              <div className="flex-1 border p-3">
-                <AgentWorkInfoCard info={agentWorkInfo} />
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <EmptyCard
-            title="No details Found"
-            subTitle={
-              <Button onClick={() => onWorkInfoFormOpen()}>Add Details</Button>
-            }
-          />
-        )}
-      </SkeletonWrapper>
+                <div className="w-full lg:w-[30%] border p-3">
+                  <BluePrintYearlyCard />
+                </div>
+                <div className="flex-1 border p-3">
+                  <AgentWorkInfoCard />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <EmptyCard
+              title="No details Found"
+              subTitle={
+                <Button onClick={() => onWorkInfoFormOpen()}>
+                  Add Details
+                </Button>
+              }
+            />
+          )}
+        </SkeletonWrapper>
+
+        <SkeletonWrapper isLoading={isFetchingBluePrintWeeksReport}>
+          <div className="grid grid-cols-2 gap-2">
+            {/* {JSON.stringify(bluePrintWeekReport)} */}
+            <OverviewChart
+              data={premiumReport}
+              title={`Premium - YTD (${USDollar.format(totalPremium)})`}
+              legend={false}
+            />
+          </div>
+        </SkeletonWrapper>
+      </div>
     </>
   );
 };

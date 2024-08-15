@@ -1,24 +1,18 @@
 "use client";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-
-import { BluePrint } from "@prisma/client";
+import { useBluePrintActions } from "@/hooks/use-blueprint";
 import { DataTable } from "@/components/tables/data-table";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { columns } from "./columns";
-import { bluePrintsGetAllByUserId } from "@/actions/blueprint/blueprint";
 
 export const BluePrintYearlyClient = () => {
-  const { data, isFetching } = useQuery<BluePrint[]>({
-    queryFn: () => bluePrintsGetAllByUserId(),
-    queryKey: ["agentBluePrints"],
-  });
+  const { bluePrints, isFetchingBluePrints } = useBluePrintActions();
   return (
-    <SkeletonWrapper isLoading={isFetching}>
+    <SkeletonWrapper isLoading={isFetchingBluePrints}>
       <DataTable
         columns={columns}
-        data={data || []}
+        data={bluePrints || []}
         striped
         headers
         placeHolder="Search"

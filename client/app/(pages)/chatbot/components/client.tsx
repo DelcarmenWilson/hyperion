@@ -1,19 +1,39 @@
 "use client";
 import { useState } from "react";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { GptConversation, GptMessage } from "@prisma/client";
-import { GptConversationCard } from "./card";
-import { EmptyCard } from "@/components/reusable/empty-card";
+import { ShortGptConversation } from "@/types";
 
-export const GptConversationsClient = ({
-  initConversations,
-}: {
-  initConversations: GptConversation[];
-}) => {
-  const [conversations, setConversations] =
-    useState<GptConversation[]>(initConversations);
+import { Button } from "@/components/ui/button";
+import { EmptyCard } from "@/components/reusable/empty-card";
+import { GptConversationCard } from "./card";
+import {
+  gptConversationInsert,
+  gptConversationsGetByUserId,
+} from "@/actions/test";
+
+export const GptConversationsClient = ({}) => {
+  const { data: initConversations, isFetching } = useQuery<
+    ShortGptConversation[] | null
+  >({
+    queryFn: () => gptConversationsGetByUserId(),
+    queryKey: ["gptConversations"],
+  });
+  const [conversations, setConversations] = useState<
+    ShortGptConversation[] | null | undefined
+  >(initConversations);
+  const router = useRouter();
+  const onNewConversation = async () => {
+    const insertedConversation = await gptConversationInsert();
+    if (insertedConversation.success) {
+      router.push(`/chatbot/${insertedConversation.success}`);
+    } else toast.error(insertedConversation.error);
+  };
   // useEffect(() => {
   //   const onMessageInserted = (newMessage: GptMessage) => {
   //     if (!newMessage) return;
@@ -44,11 +64,16 @@ export const GptConversationsClient = ({
   // }, []);
   return (
     <div className="flex flex-col h-full w-[250px] gap-1 p-1">
-      <h4 className="text-lg text-muted-foreground font-semibold">
-        Conversations
-      </h4>
+      <div className="flex justify-between items-center">
+        <h4 className="text-lg text-muted-foreground font-semibold">
+          Conversations
+        </h4>
+        <Button size={"icon"} onClick={onNewConversation}>
+          <Plus size={16} />
+        </Button>
+      </div>
       <div className="flex-1 space-y-2 overflow-y-auto h-full">
-        {conversations.length > 0 ? (
+        {conversations && conversations.length > 0 ? (
           <>
             {conversations.map((conversation) => (
               <GptConversationCard
@@ -58,7 +83,12 @@ export const GptConversationsClient = ({
             ))}
           </>
         ) : (
-          <EmptyCard title="No Conversations" />
+          <EmptyCard
+            title="No Conversations"
+            subTitle={
+              <Button onClick={onNewConversation}>New Conversation</Button>
+            }
+          />
         )}
       </div>
     </div>

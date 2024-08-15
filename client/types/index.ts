@@ -61,6 +61,8 @@ import {
   TwilioConferenceRecording,
 } from "./twilio";
 import { ItemProps, FileRecords, FileRecord } from "./item";
+import { FullGptConversation, ShortGptConversation } from "./test";
+
 
 export type FullCall = Call & {
   lead: {
@@ -183,3 +185,6 @@ export type {
 };
 
 export type { ItemProps, FileRecords, FileRecord };
+
+//CHATBOT
+export type {ShortGptConversation,FullGptConversation}

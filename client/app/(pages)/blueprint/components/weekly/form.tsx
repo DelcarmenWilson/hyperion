@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
 
 import {
-  AgentWorkInfoSchema,
-  AgentWorkInfoSchemaType,
+  BluePrintWeekSchema,
+  BluePrintWeekSchemaType,
 } from "@/schemas/blueprint";
 
 import { Button } from "@/components/ui/button";
@@ -19,152 +19,84 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-import { TargetList } from "./list";
-
-import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { daysOfTheWeek } from "@/formulas/schedule";
 
-export const AgentWorkInfoForm = () => {
-  const { workInfo, isWorkInfoFormOpen, onWorkInfoFormClose } = useBluePrint();
-  const { onAgentWorkInfoInsert, onAgentWorkInfoUpdate } =
-    useBluePrintActions(onWorkInfoFormClose);
+export const BluePrintWeekForm = () => {
+  const { bluePrintWeek, isBluePrintWeekFormOpen, onBluePrintWeekFormClose } =
+    useBluePrint();
+  const { onBluePrintWeekUpdate } = useBluePrintActions(
+    onBluePrintWeekFormClose
+  );
 
-  const form = useForm<AgentWorkInfoSchemaType>({
-    resolver: zodResolver(AgentWorkInfoSchema),
-    defaultValues: workInfo || {
-      workType: "PartTime",
-      workingHours: "09:00-17:00",
-      workingDays: "saturday,sunday",
-      targetType: "regular",
-    },
+  const form = useForm<BluePrintWeekSchemaType>({
+    resolver: zodResolver(BluePrintWeekSchema),
+    defaultValues: bluePrintWeek,
   });
 
-  const agentWorkInfoFormSubmit = async (values: AgentWorkInfoSchemaType) => {
-    if (workInfo) {
-      onAgentWorkInfoUpdate(values);
-    } else onAgentWorkInfoInsert(values);
-  };
+  useEffect(() => {
+    if (!bluePrintWeek) return;
+    const { id, calls, appointments, premium } = bluePrintWeek;
+    form.setValue("id", id);
+    form.setValue("calls", calls);
+    form.setValue("appointments", appointments);
+    form.setValue("premium", premium);
+  }, [bluePrintWeek]);
 
   return (
-    <Dialog open={isWorkInfoFormOpen} onOpenChange={onWorkInfoFormClose}>
+    <Dialog
+      open={isBluePrintWeekFormOpen}
+      onOpenChange={onBluePrintWeekFormClose}
+    >
       <DialogContent>
         <h3 className="text-2xl font-semibold py-2">Work Details</h3>
         <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}>
-              {/* WORK TYPE */}
+            <form onSubmit={form.handleSubmit(onBluePrintWeekUpdate)}>
+              {/* CALLS */}
               <FormField
                 control={form.control}
-                name="workType"
+                name="calls"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Work Type
-                      <FormMessage />
-                    </FormLabel>
-                    <Select
-                      name="ddl-workType"
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      autoComplete="workType"
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Parttime" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="PartTime">Part Time</SelectItem>
-                        <SelectItem value="FullTime">Full Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              {/* WORKING DAYS */}
-              <FormField
-                control={form.control}
-                name="workingDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Working Days
+                      Calls
                       <FormMessage />
                     </FormLabel>
                     <FormControl>
-                      <WorkingDays
-                        defaultValue={field.value}
-                        onChange={field.onChange}
-                      />
+                      <Input {...field} placeholder="Calls Made" />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              {/* WORKING HOURS */}
+              {/* APPOINTMENTS */}
               <FormField
                 control={form.control}
-                name="workingHours"
+                name="appointments"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Working Hours
+                      Appointments
                       <FormMessage />
                     </FormLabel>
                     <FormControl>
-                      {/* <Input {...field} placeholder="Please enter workingHours" /> */}
-                      <WorkingHours
-                        defaultValue={field.value}
-                        onChange={field.onChange}
-                      />
+                      <Input {...field} placeholder="Appointments Made" />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              {/* ANNUAL TARGET */}
+              {/* PREMIUM */}
               <FormField
                 control={form.control}
-                name="annualTarget"
+                name="premium"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Annual Target
+                      Premium
                       <FormMessage />
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Please enter annual target"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* TARGET TYPE */}
-              <FormField
-                control={form.control}
-                name="targetType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Target Type
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <TargetList
-                        targets={calculateWeeklyBluePrint(
-                          form.getValues("annualTarget")
-                        )}
-                        selectedTarget={field.value}
-                        onChange={field.onChange}
-                      />
+                      <Input {...field} placeholder="Premium Earned" />
                     </FormControl>
                   </FormItem>
                 )}
@@ -174,7 +106,7 @@ export const AgentWorkInfoForm = () => {
                 <Button
                   variant="outlineprimary"
                   type="button"
-                  onClick={onWorkInfoFormClose}
+                  onClick={onBluePrintWeekFormClose}
                 >
                   Cancel
                 </Button>

@@ -1,68 +1,94 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import useConversation from "@/hooks/user-conversation";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import axios from "axios";
-
+import * as z from "zod";
+import { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 
-import { MessageInput } from "./message-input";
+import { userEmitter } from "@/lib/event-emmiter";
 
-interface FormProps {
-  disabled: boolean;
-  phone: string;
-  defaultPhone: string;
-}
-export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
-  const { conversationId } = useConversation();
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FieldValues>({
-    defaultValues: { message: "" },
+import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import {
+  Form,
+  FormField,
+  FormControl,
+  FormMessage,
+  FormItem,
+} from "@/components/ui/form";
+
+import { smsCreate } from "@/actions/sms";
+
+export const GptConversationForm = ({
+  conversationId,
+}: {
+  conversationId: string;
+}) => {
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<SmsMessageSchemaType>({
+    resolver: zodResolver(SmsMessageSchema),
+    defaultValues: {
+      conversationId,
+      content: "",
+      type: "sms",
+    },
   });
+  const disabled: boolean = !form.getValues("content");
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setValue("message", "", { shouldValidate: true });
-    axios
-      .post("/api/twilio/sms/out", {
-        ...data,
-        conversationId,
-        phone,
-        from: defaultPhone,
-      })
-      .then((data) => {
-        console.log(data);
-      });
+  const onCancel = () => {
+    form.clearErrors();
+    form.reset();
+  };
+
+  const onSubmit = async (values: SmsMessageSchemaType) => {
+    setLoading(true);
+    const response = await smsCreate(values);
+    if (response.success) userEmitter.emit("messageInserted", response.success);
+    else toast.error(response.error);
+    onCancel();
+
+    setLoading(false);
   };
 
   return (
-    <div className="border-t flex items-center pt-2 gap-2 lg:gap-4 w-full">
+    <Form {...form}>
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex items-center gap-2 lg:gap-4 w-full"
+        className="space-6 px-2 w-full"
+        onSubmit={form.handleSubmit(onSubmit)}
       >
-        <MessageInput
-          disabled={disabled}
-          id="message"
-          type="text"
-          register={register}
-          required
-          errors={errors}
-          placeholder="Write a message..."
-        />
-        <Button
-          disabled={disabled}
-          size="icon"
-          type="submit"
-          className="rounded-full"
-        >
-          <Send size={16} />
-        </Button>
+        <div className="flex items-center p-2 w-full">
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="message"
+                    disabled={loading}
+                    autoComplete="Message"
+                    type="text"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            className="rounded-md"
+            size="icon"
+            disabled={loading || disabled}
+            type="submit"
+          >
+            <Send size={16} />
+          </Button>
+        </div>
       </form>
-    </div>
+    </Form>
   );
 };

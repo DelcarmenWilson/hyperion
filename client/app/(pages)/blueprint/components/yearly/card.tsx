@@ -1,16 +1,19 @@
 import React from "react";
-import { BluePrint } from "@prisma/client";
-import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/formulas/dates";
-import CountUp from "react-countup";
-//TODO see if we can merge the UI from this and the dahboadc lient and the yearly blueprint
-type Props = {
-  info: BluePrint | null | undefined;
-  size?: string;
-};
+import { useBluePrintActions } from "@/hooks/use-blueprint";
 
-export const BluePrintYearlyCard = ({ info }: Props) => {
-  if (!info) return null;
+import { Badge } from "@/components/ui/badge";
+import { EmptyCard } from "@/components/reusable/empty-card";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+
+import { formatDate } from "@/formulas/dates";
+import { CardData } from "../card-data";
+
+//TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
+export const BluePrintYearlyCard = () => {
+  const { bluePrintYearActive, isFetchingBluePrintYearActive } =
+    useBluePrintActions();
+
+  if (!bluePrintYearActive) return <EmptyCard title={"No Details"} />;
 
   const {
     calls,
@@ -22,62 +25,30 @@ export const BluePrintYearlyCard = ({ info }: Props) => {
     createdAt,
     weeks,
     endAt,
-  } = info;
+  } = bluePrintYearActive;
   return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <p className="font-semibold">Yearly Goals</p>
-        <Badge>
-          {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
-        </Badge>
+    <SkeletonWrapper isLoading={isFetchingBluePrintYearActive}>
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <p className="font-semibold">Yearly Goals</p>
+          <Badge>
+            {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
+          </Badge>
+        </div>
+
+        <CardData label="Calls" data={calls} target={callsTarget * weeks} />
+        <CardData
+          label="Appointments"
+          data={appointments}
+          target={appointmentsTarget * weeks}
+        />
+        <CardData
+          label="Premium"
+          data={premium}
+          target={premiumTarget * weeks}
+          dollar
+        />
       </div>
-
-      <CardData2 label="Calls" data={calls} target={callsTarget * weeks} />
-      <CardData2
-        label="Appointments"
-        data={appointments}
-        target={appointmentsTarget * weeks}
-      />
-      <CardData2
-        label="Premium"
-        data={premium}
-        target={premiumTarget * weeks}
-        dollar
-      />
-    </div>
-  );
-};
-
-type CardDataProps = {
-  label: string;
-  data: number;
-  target: number;
-  dollar?: boolean;
-};
-
-export const CardData2 = ({ label, data, target, dollar }: CardDataProps) => {
-  return (
-    <div className="flex gap-2 flex-col">
-      <p className="font-semibold">{label}:</p>
-      <p className="text-center text-2xl font-semibold">
-        <span
-          className={
-            data == 0
-              ? "text-destructive"
-              : data > target
-              ? "text-emerald-500"
-              : "text-foreground"
-          }
-        >
-          {dollar && "$"}
-          <CountUp start={0} end={data} duration={3} />
-        </span>
-        {" / "}
-        <span className="text-primary">
-          {dollar && "$"}
-          {target}
-        </span>
-      </p>
-    </div>
+    </SkeletonWrapper>
   );
 };

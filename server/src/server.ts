@@ -11,7 +11,7 @@ const httpServer = http.createServer(application);
 /** Start Socket */
 new ServerSocket(httpServer);
 
-/** start job scheduler */
+/** Start job scheduler */
 runJobs();
 
 

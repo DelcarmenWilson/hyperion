@@ -21,26 +21,24 @@ export const gptConversationsGetByUserId = async () => {
     return [];
   }
 };
-export const gptMessagesGetByConversationId = async (conversationId:string) => {
+export const gptConversationGetById = async (id:string) => {
   try {
-    if (!conversationId) {
-      return [];
-    }
-    const messages = await db.gptMessage.findMany({
+    const conversation = await db.gptConversation.findUnique({
       where: {
-        conversationId,
+        id,
       },
+      include:{messages:true}
     });
-    return messages;
+    return conversation;
   } catch {
-    return [];
+    return null;
   }
 };
 //ACTIONS
 export const gptConversationInsert = async () => {
   const user = await currentUser();
     if (!user?.email) {
-      return [];
+      return {error:"Unathentiacted"};
     }
 
   const conversation = await db.gptConversation.create({

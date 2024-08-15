@@ -7,6 +7,14 @@ export const BluePrintSchema = z.object({
 });
 export type BluePrintSchemaType = z.infer<typeof BluePrintSchema>;
 
+export const BluePrintWeekSchema = z.object({
+  id: z.optional(z.string()),
+  calls: z.coerce.number().min(1),
+  appointments: z.coerce.number().min(1),
+  premium: z.coerce.number().min(1),
+});
+export type BluePrintWeekSchemaType = z.infer<typeof BluePrintWeekSchema>;
+
 export const AgentWorkInfoSchema = z.object({
   workType: z.string().min(1),
   workingDays: z.string().min(1),

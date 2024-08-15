@@ -2,7 +2,12 @@
 import { weekStartEnd } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { BluePrintSchema, BluePrintSchemaType } from "@/schemas/blueprint";
+import {
+  BluePrintSchema,
+  BluePrintSchemaType,
+  BluePrintWeekSchema,
+  BluePrintWeekSchemaType,
+} from "@/schemas/blueprint";
 
 //DATA
 export const bluePrintWeeksGetAllByUserId = async () => {
@@ -25,6 +30,17 @@ export const bluePrintWeekGetActive = async () => {
   });
 
   return bluePrintWeek;
+};
+
+export const bluePrintWeeksReport = async () => {
+  const user = await currentUser();
+  if (!user) return [];
+
+  const bluePrintWeeks = await db.bluePrintWeek.findMany({
+    where: { bluePrint: { userId: user.id } },
+  });
+
+  return bluePrintWeeks;
 };
 
 //ACTIONS
@@ -62,12 +78,37 @@ export const bluePrintWeekInsert = async (values: BluePrintSchemaType) => {
       callsTarget,
       appointmentsTarget,
       premiumTarget,
-    //  todo-- provide actual end date
+      //  todo-- provide actual end date
       endAt: week.to,
     },
   });
 
   return { success: newBluePrint };
+};
+
+export const bluePrintWeekUpdateById = async (
+  values: BluePrintWeekSchemaType
+) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unathenticated" };
+
+  const validatedFields = BluePrintWeekSchema.safeParse(values);
+  if (!validatedFields.success) return { error: "Invalid Fields" };
+
+  const { id, calls, appointments, premium } = validatedFields.data;
+
+  const bluePrintWeek = await db.bluePrintWeek.findUnique({
+    where: { id },
+  });
+
+  if (!bluePrintWeek) return { error: "No weekly blueprint found!" };
+
+  const updatedBluePrintWeek = await db.bluePrintWeek.update({
+    where: { id },
+    data: { calls, appointments, premium },
+  });
+
+  return { success: updatedBluePrintWeek };
 };
 
 export const bluePrintWeekUpdateByUserIdData = async (
@@ -101,6 +142,7 @@ export const bluePrintWeekUpdateByUserIdData = async (
   return { success: "BluePrint Week Updated!" };
 };
 
+//TODO - need to rename this here and in the server
 export const calculateBlueprintTargets = async () => {
   const activeBluePrints = await db.bluePrint.findMany({
     where: { active: true },
@@ -114,14 +156,14 @@ export const calculateBlueprintTargets = async () => {
 
     if (!activeWeek) return { error: "no active week" };
 
-  
     const weeksInYear = 52;
     // (Activeweektarget-activeweekactual)/(52-activeweeknumber)+weeklytarget
 
-    const newWeekCalls =
-      Math.ceil((activeWeek.callsTarget - activeWeek.calls) /
-      (weeksInYear - activeWeek.weekNumber) +
-    bp.callsTarget)
+    const newWeekCalls = Math.ceil(
+      (activeWeek.callsTarget - activeWeek.calls) /
+        (weeksInYear - activeWeek.weekNumber) +
+        bp.callsTarget
+    );
 
     const newWeekAppointments = Math.ceil(
       (activeWeek.appointmentsTarget - activeWeek.appointments) /
@@ -153,8 +195,8 @@ export const calculateBlueprintTargets = async () => {
         endAt: new Date(),
       },
     });
-     // this to update actual blue print with current week data
-     await db.bluePrint.update({
+    // this to update actual blue print with current week data
+    await db.bluePrint.update({
       where: { id: bp.id },
       data: {
         calls: bp.calls + activeWeek.calls,

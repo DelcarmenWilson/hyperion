@@ -5,7 +5,7 @@ import { Heading } from "@/components/custom/heading";
 import { TeamClient } from "./components/client";
 import { UsersClient } from "./components/users/client";
 import { RecentSales } from "./components/sales/client";
-import { OverviewChart } from "./components/overview/client";
+import { OverviewChart } from "@/components/reports/chart";
 
 import { teamGetByIdStats, teamGetByIdSales } from "@/data/team";
 import { adminUsersGetAll } from "@/actions/admin/user";
@@ -63,7 +63,7 @@ const TeamPage = async ({
       <TeamClient team={teamReport} users={users} />
 
       <div className="grid gap-y-4 lg:gap-4 grid-cols-1 lg:grid-cols-3 mt-4">
-        <OverviewChart data={convertSalesData(sales!)} />
+        <OverviewChart data={convertSalesData(sales!)} title="Overview" />
         <RecentSales sales={sales!} />
       </div>
 
