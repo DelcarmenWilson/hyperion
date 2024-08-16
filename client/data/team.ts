@@ -93,6 +93,9 @@ export const teamGetByIdSales = async (
     const fromDate = new Date(from);
     const toDate = new Date(to);
 
+    // const fromDate = new Date(new Date().getFullYear(), 0, 1)
+    // const toDate = new Date(new Date().getFullYear(), 11, 31) 
+
     const sales = await db.lead.findMany({
       where: {
         user: { teamId: id },

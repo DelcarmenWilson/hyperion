@@ -17,7 +17,6 @@ export const TargetCard = ({ target, size = "md", details = false }: Props) => {
       </h4>
       <div className={cn("space-y-2", size == "sm" ? "text-sm" : "")}>
         <p>
-          {" "}
           <span>Calls: </span> <span>{calls || 0}</span>
         </p>
         <p>
@@ -25,7 +24,6 @@ export const TargetCard = ({ target, size = "md", details = false }: Props) => {
           <span>{appointments || 0}</span>
         </p>
         <p>
-          {" "}
           <span>Premium:</span> <span>{USDollar.format(premium || 0)}</span>
         </p>
       </div>

@@ -2,32 +2,49 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { BluePrint } from "@prisma/client";
+import { BluePrintWeek } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const columns: ColumnDef<BluePrint>[] = [
+export const columns: ColumnDef<BluePrintWeek>[] = [
+  {
+    id: "weekNumber",
+    accessorKey: "weekNumber",
+    header: "weekNumber",
+  },
   {
     id: "callsTarget",
     accessorKey: "callsTarget",
     header: "Calls Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
   },
+  {
+    id: "calls",
+    accessorKey: "calls",
+    header: "Calls Made",
+  },
+
   {
     id: "appointmentsTarget",
     accessorKey: "appointmentsTarget",
     header: "Apps Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
+  },
+
+  {
+    id: "appointments",
+    accessorKey: "appointments",
+    header: "Apps Made",
   },
 
   {
     id: "premiumTarget",
     accessorKey: "premiumTarget",
     header: "Premium Target",
-    enableGlobalFilter: true,
-    enableHiding: true,
+  },
+
+  {
+    id: "premium",
+    accessorKey: "premium",
+    header: "Premium Earned",
   },
 
   {
@@ -41,22 +58,12 @@ export const columns: ColumnDef<BluePrint>[] = [
     id: "createdAt",
     accessorKey: "createdAt",
     header: "Start At",
-    enableHiding: true,
     cell: ({ row }) => formatDate(row.original.createdAt),
   },
   {
-    id: "endDate",
-    accessorKey: "endDate",
+    id: "endAt",
+    accessorKey: "endAt",
     header: "End At",
-    enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.endDate),
-  },
-
-  {
-    id: "updatedAt",
-    accessorKey: "updatedAt",
-    header: "Updated At",
-    enableHiding: true,
-    cell: ({ row }) => formatDate(row.original.updatedAt),
+    cell: ({ row }) => formatDate(row.original.endAt),
   },
 ];

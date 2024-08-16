@@ -1,6 +1,7 @@
 import http from "http";
 import express from "express";
 import { ServerSocket } from "./socket";
+import { runJobs } from "./schedule";
 
 const application = express();
 
@@ -9,6 +10,10 @@ const httpServer = http.createServer(application);
 
 /** Start Socket */
 new ServerSocket(httpServer);
+
+/** Start job scheduler */
+runJobs();
+
 
 /** Log the request */
 application.use((req, res, next) => {

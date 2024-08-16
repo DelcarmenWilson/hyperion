@@ -13,12 +13,20 @@ import {
 } from "recharts";
 type OverviewChartProps = {
   data: any[];
+  title: string;
+  tooltip?: boolean;
+  legend?: boolean;
 };
-export const OverviewChart = ({ data }: OverviewChartProps) => {
+export const OverviewChart = ({
+  data,
+  title,
+  tooltip = true,
+  legend = true,
+}: OverviewChartProps) => {
   return (
     <Card className="col-span-2">
       <CardHeader>
-        <CardTitle>Overview</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardContent className="p-0">
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={data}>
@@ -36,8 +44,8 @@ export const OverviewChart = ({ data }: OverviewChartProps) => {
                 axisLine={false}
                 tickFormatter={(value) => `$${value}`}
               />
-              <Tooltip />
-              <Legend />
+              {tooltip && <Tooltip />}
+              {legend && <Legend />}
               <Bar
                 dataKey="total"
                 fill="currentColor"
