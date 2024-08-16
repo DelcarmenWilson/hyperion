@@ -50,8 +50,7 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
       appointmentsTarget,
       premiumTarget,
       userId: user.id,
-      //TODO - need to pass the yearly date both for start and end
-      startAt: new Date(),
+      //TODO - need to pass the yearly date both for end      
       endAt: new Date(),
     },
   });
