@@ -60,7 +60,7 @@ import {
   TwilioRecording,
   TwilioConferenceRecording,
 } from "./twilio";
-import { ItemProps, FileRecords, FileRecord } from "./item";
+import { ItemProps,MonthProps, FileRecords, FileRecord } from "./item";
 import { FullGptConversation, ShortGptConversation } from "./test";
 
 
@@ -184,7 +184,7 @@ export type {
   TwilioConferenceRecording,
 };
 
-export type { ItemProps, FileRecords, FileRecord };
+export type { ItemProps, FileRecords, FileRecord,MonthProps };
 
 //CHATBOT
 export type {ShortGptConversation,FullGptConversation}

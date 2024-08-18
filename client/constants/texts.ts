@@ -1,10 +1,12 @@
+import { MonthProps } from "@/types";
+
 export type StatusType = {
   name: string;
   value: string;
 };
 
 export const presetKeywords: string =
-"#first_name, #last_name, #full_name, #street_adress, #city, #state, #zip_code, #birthday,#my_first_name, #my_last_name, #my_full_name, #my_company_name, #my_booking_link";
+  "#first_name, #last_name, #full_name, #street_adress, #city, #state, #zip_code, #birthday,#my_first_name, #my_last_name, #my_full_name, #my_company_name, #my_booking_link";
 
 export const DefaultKeyWords: StatusType[] = [
   { name: "first name", value: "#first_name" },
@@ -36,5 +38,28 @@ export const DefaultStatus: StatusType[] = [
   { name: "Resolved", value: "Resolved" },
 ];
 
+export const apppointmentStatus = [
+  "Closed",
+  "No-Show",
+  "Scheduled",
+  "Rescheduled",
+];
 
+<<<<<<< HEAD
 export const apppointmentStatus = ["Closed", "No-Show", "Scheduled", "Rescheduled"];
+=======
+export const allMonths: MonthProps[] = [
+  { name: "January", abv: "Jan", value: 0 },
+  { name: "February", abv: "Feb", value: 1 },
+  { name: "March", abv: "Mar", value: 2 },
+  { name: "April", abv: "Apr", value: 3 },
+  { name: "May", abv: "May", value: 4 },
+  { name: "June", abv: "Jun", value: 5 },
+  { name: "July", abv: "Jul", value: 6 },
+  { name: "August", abv: "Aug", value: 7 },
+  { name: "September", abv: "Sep", value: 8 },
+  { name: "October", abv: "Oct", value: 9 },
+  { name: "November", abv: "Nov", value: 10 },
+  { name: "December", abv: "Dec", value: 11 },
+];
+>>>>>>> 33306d85baf9da311970ee82bd1375347dfb2687

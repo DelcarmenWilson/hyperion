@@ -27,7 +27,8 @@ export const convertSalesData = (sales: Sales[]) => {
 
   for (const sale of sales) {
     const month = sale.updatedAt.getMonth();
-    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + parseFloat(sale.policy?.ap!);
+    monthlyRevenue[month] =
+      (monthlyRevenue[month] || 0) + parseFloat(sale.policy?.ap!);
   }
   for (const month in monthlyRevenue) {
     graphData[parseInt(month)].total = monthlyRevenue[parseInt(month)];
@@ -35,20 +36,43 @@ export const convertSalesData = (sales: Sales[]) => {
   return graphData;
 };
 
-export const convertBluePringWeekData = (weeks: BluePrintWeek[]) => {
-  if(!weeks){
-    return graphData
+export const convertBluePrintMonthData = (
+  weeks: BluePrintWeek[],
+  isWeekly: boolean,
+  currentMonth: string
+) => {
+  if (!weeks) {
+    return graphData;
   }
+  if (isWeekly) {
+    const monthData = weeks.filter(
+      (w) => w.createdAt.getMonth().toString() == currentMonth
+    );
+    return convertBluePrintWeekData(monthData);
+  }
+
   const monthlyPremium: { [key: number]: number } = {};
 
   for (const week of weeks) {
     const month = week.createdAt.getMonth();
-    console.log(month)
+
     monthlyPremium[month] = (monthlyPremium[month] || 0) + week.premium;
   }
   for (const month in monthlyPremium) {
     graphData[parseInt(month)].total = monthlyPremium[parseInt(month)];
   }
+  return graphData;
+};
+
+const convertBluePrintWeekData = (weeks: BluePrintWeek[]) => {
+  let graphData: GraphData[] = [];
+  weeks.forEach((week,i) => {
+    graphData.push({
+      name: `Week ${i+1}`,
+      total: week.premium,
+    });
+  });
+
   return graphData;
 };
 
