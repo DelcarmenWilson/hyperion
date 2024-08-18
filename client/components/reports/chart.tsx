@@ -32,62 +32,36 @@ export const OverviewChart = ({
     <Card className="col-span-2">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-<<<<<<< HEAD
-        <CardContent className="p-0">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data}>
-              <defs>
-                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="name"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `$${value}`}
-              />
-              {tooltip && <Tooltip cursor={{ fill: tooltipFill }} />}
-              {legend && <Legend />}
-              <Bar
-                dataKey="total"
-                radius={[4, 4, 0, 0]}
-                fillOpacity={1}
-                fill={gradient ? "url(#colorUv)" : "fill-primary"}
-                className={gradient ? "" : "fill-primary"}
-=======
       </CardHeader>
       <CardContent className="p-0">
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data}>
+            <defs>
+              <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <XAxis
               dataKey="name"
-              stroke="#888888"
               fontSize={12}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              stroke="#888888"
               fontSize={12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
             />
-            {tooltip && <Tooltip />}
+            {tooltip && <Tooltip cursor={{ fill: tooltipFill }} />}
             {legend && <Legend />}
             <Bar
               dataKey="total"
-              fill="currentColor"
               radius={[4, 4, 0, 0]}
-              className="fill-primary"
+              fillOpacity={1}
+              fill={gradient ? "url(#colorUv)" : "fill-primary"}
+              className={gradient ? "" : "fill-primary"}
             />
             {/* <Bar dataKey="total" fill={cn("bg-background")} radius={[4, 4, 0, 0]} /> */}
           </BarChart>
@@ -148,7 +122,6 @@ export const SriniChart = ({
                 position="top"
                 offset={0}
                 fontSize={12}
->>>>>>> 33306d85baf9da311970ee82bd1375347dfb2687
               />
             </Bar>
           </BarChart>

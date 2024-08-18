@@ -45,9 +45,6 @@ export const apppointmentStatus = [
   "Rescheduled",
 ];
 
-<<<<<<< HEAD
-export const apppointmentStatus = ["Closed", "No-Show", "Scheduled", "Rescheduled"];
-=======
 export const allMonths: MonthProps[] = [
   { name: "January", abv: "Jan", value: 0 },
   { name: "February", abv: "Feb", value: 1 },
@@ -62,4 +59,3 @@ export const allMonths: MonthProps[] = [
   { name: "November", abv: "Nov", value: 10 },
   { name: "December", abv: "Dec", value: 11 },
 ];
->>>>>>> 33306d85baf9da311970ee82bd1375347dfb2687

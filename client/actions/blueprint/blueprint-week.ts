@@ -182,6 +182,9 @@ export const calculateBlueprintTargets = async () => {
       where: { id: activeWeek.id },
       data: { active: false },
     });
+    const endDate=new Date()
+    endDate.setDate(endDate.getDate() + 7);
+    endDate.setSeconds(endDate.getSeconds() - 1);
 
     //create new week
     await db.bluePrintWeek.create({
@@ -192,7 +195,7 @@ export const calculateBlueprintTargets = async () => {
         premiumTarget: newWeekPremium,
         weekNumber: activeWeek.weekNumber + 1,
         //todo- end of the week
-        endAt: new Date(),
+        endAt: endDate,
       },
     });
     // this to update actual blue print with current week data

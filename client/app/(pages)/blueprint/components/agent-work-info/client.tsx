@@ -104,11 +104,6 @@ export const AgentWorkInfoClient = () => {
           <div className="grid gap-2">
             <SriniChart
               data={premiumReport}
-<<<<<<< HEAD
-              title={`Premium - YTD (${USDollar.format(totalPremium)})`}
-              tooltip
-              gradient
-=======
               title={`Premium - ${isWeekly ? "M" : "Y"}TD (${USDollar.format(
                 totalPremium
               )})`}
@@ -139,7 +134,6 @@ export const AgentWorkInfoClient = () => {
                   </Select>
                 </div>
               }
->>>>>>> 33306d85baf9da311970ee82bd1375347dfb2687
             />
           </div>
         </SkeletonWrapper>
