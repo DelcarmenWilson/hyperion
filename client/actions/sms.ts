@@ -360,7 +360,7 @@ export const smsSendNewHyperionLeadNotifications = async (
 ) => {
   const message = `A new lead has been added hyperion:\n ${lead.firstName} ${lead.lastName}\n${lead.city}, ${lead.state},\n DOB: ${lead.dateOfBirth}.`;
 
-  await smsSend("+18623527091", "+19177548025", message);
+  // await smsSend("+18623527091", "+19177548025", message);
   await smsSend("+18624659687", "+13478030962", message);
 
   return { success: "Message sent!" };

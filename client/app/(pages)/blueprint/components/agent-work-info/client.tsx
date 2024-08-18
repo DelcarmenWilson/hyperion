@@ -80,7 +80,8 @@ export const AgentWorkInfoClient = () => {
             <OverviewChart
               data={premiumReport}
               title={`Premium - YTD (${USDollar.format(totalPremium)})`}
-              legend={false}
+              tooltip
+              gradient
             />
           </div>
         </SkeletonWrapper>
