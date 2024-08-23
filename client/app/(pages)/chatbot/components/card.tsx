@@ -25,7 +25,7 @@ export const GptConversationCard = ({
       </div>
       <div className="overflow-ellipsis">
         <span className=" text-muted-foreground text-sm truncate overflow-hidden">
-          {conversation.lastMessage?.content || "NEW CONVERSATION"}
+          {conversation.lastMessage?.content || "Start Conversation"}
         </span>
       </div>
     </Link>

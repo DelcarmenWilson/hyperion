@@ -39,7 +39,7 @@ export const DayHour = ({
             disabled={disabled}
             name="cblAvailable"
             checked={available}
-            onCheckedChange={(e) => onSetAvailable(e)}
+            onCheckedChange={ onSetAvailable}
           />
         </div>
       </div>

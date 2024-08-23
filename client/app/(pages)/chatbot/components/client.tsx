@@ -66,7 +66,7 @@ export const GptConversationsClient = ({}) => {
     <div className="flex flex-col h-full w-[250px] gap-1 p-1">
       <div className="flex justify-between items-center">
         <h4 className="text-lg text-muted-foreground font-semibold">
-          Conversations
+          Chat History 
         </h4>
         <Button size={"icon"} onClick={onNewConversation}>
           <Plus size={16} />
@@ -84,9 +84,9 @@ export const GptConversationsClient = ({}) => {
           </>
         ) : (
           <EmptyCard
-            title="No Conversations"
+            title="No Chat History"
             subTitle={
-              <Button onClick={onNewConversation}>New Conversation</Button>
+              <Button onClick={onNewConversation}>Start Now</Button>
             }
           />
         )}

@@ -57,9 +57,9 @@ export const AgentWorkInfoForm = () => {
     <Dialog open={isWorkInfoFormOpen} onOpenChange={onWorkInfoFormClose}>
       <DialogContent>
         <h3 className="text-2xl font-semibold py-2">Work Details</h3>
-        <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
+        <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}>
+            <form onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)} className="space-y-2">
               {/* WORK TYPE */}
               <FormField
                 control={form.control}

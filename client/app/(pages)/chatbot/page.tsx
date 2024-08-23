@@ -10,7 +10,7 @@ const ConversationsPage = async () => {
     <Card className="flex flex-col h-full overflow-hidden p-0">
       <CardContent className="flex h-full gap-2 overflow-hidden p-0">
         <GptConversationsClient />
-        <EmptyCard title={"Select or Start a new Conversation"} />
+        <EmptyCard title={"It's good to see you!! Speak your mind and Get Answers"} />
       </CardContent>
     </Card>
   );

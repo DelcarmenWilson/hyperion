@@ -40,6 +40,13 @@ export const defaultDay: ScheduleDay = {
   workTo: "18:00",
 };
 
+export const getNewDefaultDay=(index:number)=>{
+  let clone = JSON.parse(JSON.stringify(defaultDay));
+  clone.index=index;
+  clone.day=daysOfTheWeek[index]
+
+return clone;
+}
 type BreakHourType = {
   hour: number;
 };
