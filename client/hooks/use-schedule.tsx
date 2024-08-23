@@ -41,9 +41,9 @@ export const useScheduleActions = (schedule: Schedule) => {
     const newSc = Array.from(brSchedule);
     newSc[i].available = available;
     if (available) {
-      newSc[i].index = i;
-      newSc[i] = defaultDay;
-      newSc[i].day = daysOfTheWeek[i];
+      newSc[i] = { ...defaultDay, index: i, day: daysOfTheWeek[i] };
+      // newSc[i].index = i;
+      // newSc[i].day = daysOfTheWeek[i];
     }
 
     setBrSchedule(newSc);

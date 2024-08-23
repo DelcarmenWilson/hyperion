@@ -60,7 +60,7 @@ type UserEvents = {
 
   mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
-  gptMessageInserted: [info: GptMessage];
+  gptMessageInserted: [info: GptMessage[]];
   messageInserted: [info: Message];
 
   presetInserted: [Presets];

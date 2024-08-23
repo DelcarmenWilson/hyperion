@@ -8,11 +8,11 @@ import { Separator } from "@/components/ui/separator";
 import { GptConversationBody } from "./body";
 import { GptConversationForm } from "./form";
 
-type ConversationClientProps = {
+type Props = {
   conversation: FullGptConversation | null;
 };
 
-const ConversationClient = ({ conversation }: ConversationClientProps) => {
+const ConversationClient = ({ conversation }: Props) => {
   return (
     <Card className="flex flex-col flex-1 relative overflow-hidden">
       <div className="flex items-center mb-2">
@@ -26,10 +26,7 @@ const ConversationClient = ({ conversation }: ConversationClientProps) => {
       <CardContent className="flex flex-col flex-1 p-2 gap-2 overflow-hidden">
         {conversation && (
           <>
-            <GptConversationBody
-              conversationId={conversation.id}
-              initMessages={conversation.messages}
-            />
+            <GptConversationBody initMessages={conversation.messages} />
             <GptConversationForm conversationId={conversation.id} />
           </>
         )}

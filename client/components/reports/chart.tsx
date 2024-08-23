@@ -113,7 +113,10 @@ export const SriniChart = ({
               axisLine={false}
               domain={[0, maxVal]}
             />
-            <Tooltip />
+            <Tooltip
+              cursor={{ fill: "transparent" }}
+              wrapperStyle={{ outline: "none", color: "currentColor" }}
+            />
 
             {legend && <Legend />}
             <Bar dataKey="total" fill="currentColor">

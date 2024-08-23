@@ -114,13 +114,22 @@ export const PhoneLeadInfo = () => {
             />
           </div>
         </TabsContent>
-        <TabsContent value="beneficiaries">
+        <TabsContent
+          value="beneficiaries"
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+        >
           <BeneficiariesClient leadId={lead.id} />
         </TabsContent>
-        <TabsContent value="conditions">
+        <TabsContent
+          value="conditions"
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+        >
           <ConditionsClient leadId={lead.id} />
         </TabsContent>
-        <TabsContent value="expenses">
+        <TabsContent
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+          value="expenses"
+        >
           <ExpensesClient leadId={lead.id} />
         </TabsContent>
       </Tabs>

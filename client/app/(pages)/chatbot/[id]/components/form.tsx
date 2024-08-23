@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
+import { GptMessageSchema, GptMessageSchemaType } from "@/schemas/test";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -19,8 +19,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import { smsCreate } from "@/actions/sms";
+import { gptMessageInsert } from "@/actions/test";
 
 export const GptConversationForm = ({
   conversationId,
@@ -29,12 +28,12 @@ export const GptConversationForm = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<SmsMessageSchemaType>({
-    resolver: zodResolver(SmsMessageSchema),
+  const form = useForm<GptMessageSchemaType>({
+    resolver: zodResolver(GptMessageSchema),
     defaultValues: {
       conversationId,
       content: "",
-      type: "sms",
+      role: "user",
     },
   });
   const disabled: boolean = !form.getValues("content");
@@ -44,10 +43,11 @@ export const GptConversationForm = ({
     form.reset();
   };
 
-  const onSubmit = async (values: SmsMessageSchemaType) => {
+  const onSubmit = async (values: GptMessageSchemaType) => {
     setLoading(true);
-    const response = await smsCreate(values);
-    if (response.success) userEmitter.emit("messageInserted", response.success);
+    const response = await gptMessageInsert(values);
+    if (response.success)
+      userEmitter.emit("gptMessageInserted", response.success);
     else toast.error(response.error);
     onCancel();
 

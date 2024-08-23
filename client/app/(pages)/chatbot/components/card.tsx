@@ -12,7 +12,7 @@ export const GptConversationCard = ({
 }) => {
   return (
     <Link
-      href={`/conversations/${conversation.id}`}
+      href={`/chatbot/${conversation.id}`}
       className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
     >
       <div className="flex justify-end">
