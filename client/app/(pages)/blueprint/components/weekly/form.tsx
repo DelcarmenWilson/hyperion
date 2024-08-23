@@ -49,7 +49,9 @@ export const BluePrintWeekForm = () => {
       onOpenChange={onBluePrintWeekFormClose}
     >
       <DialogContent>
-        <h3 className="text-2xl font-semibold py-2">Work Details</h3>
+        <h3 className="text-2xl font-semibold py-2">
+          Edit current week blueprint (Test)
+        </h3>
         <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onBluePrintWeekUpdate)}>

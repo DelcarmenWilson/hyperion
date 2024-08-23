@@ -5,15 +5,11 @@ import { GptMessage } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCard } from "./message-card";
 
-type GptConversationBodyProps = {
-  conversationId: string;
+type Props = {
   initMessages?: GptMessage[];
 };
 
-export const GptConversationBody = ({
-  conversationId,
-  initMessages,
-}: GptConversationBodyProps) => {
+export const GptConversationBody = ({ initMessages }: Props) => {
   const [messages, setMessages] = useState(initMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -26,28 +22,19 @@ export const GptConversationBody = ({
     }
   };
 
-  // const onSetMessage = (newMessage: Message) => {
-  //   const existing = messages?.find((e) => e.id == newMessage.id);
-  //   if (existing != undefined) return;
-  //   if (!conversationId) {
-  //     setConversationId(newMessage.conversationId);
-  //   }
-  //   setMessages((messages) => [...messages!, newMessage]);
-  //   ScrollDown();
-  // };
+  const onSetMessage = (newMessages: GptMessage[]) => {
+    setMessages((messages) => [...messages!, ...newMessages]);
+    ScrollDown();
+  };
 
-  // useEffect(() => {
-  //   if (conversationId) {
-  //     axios.post(`/api/conversations/${conversationId}/seen`);
-  //     userEmitter.emit("conversationSeen", conversationId as string);
-  //   }
-  //   ScrollDown();
-  //   userEmitter.on("messageInserted", (info) => onSetMessage(info));
-  //   return () => {
-  //     userEmitter.off("messageInserted", (info) => onSetMessage(info));
-  //   };
-  //   // eslint-disable-next-line
-  // }, []);
+  useEffect(() => {
+    ScrollDown();
+    userEmitter.on("gptMessageInserted", (info) => onSetMessage(info));
+    return () => {
+      userEmitter.off("gptMessageInserted", (info) => onSetMessage(info));
+    };
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">
