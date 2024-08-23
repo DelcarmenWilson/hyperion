@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CoachNotification } from "../phone/coach-notification";
 import { useGroupMessage } from "@/hooks/use-group-message";
 import { callUpdateByIdAppointment } from "@/actions/call";
+import { sendAppointmentRemainders } from "@/actions/appointment";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -39,6 +40,9 @@ export const MainNav = () => {
     socket?.emit("coach-reject", conference?.agentId, user?.name, reason);
   };
 
+  const onRemainders = async () => {
+    await sendAppointmentRemainders();
+  };
   useEffect(() => {
     //GROUP MESSAGE
     socket?.on(
@@ -126,6 +130,7 @@ export const MainNav = () => {
       {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
       {/* <Button onClick={() => onOpen("Text", "Text")}>Open Group Message</Button> */}
 
+      <Button onClick={onRemainders}>Remainders</Button>
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

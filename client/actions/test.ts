@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { GptMessageSchema, GptMessageSchemaType } from "@/schemas/test";
 import { chatFetch } from "./gpt";
+import { error } from "console";
 
 //DATA
 export const gptConversationsGetByUserId = async () => {
@@ -16,6 +17,7 @@ export const gptConversationsGetByUserId = async () => {
         userId: user.id,
       },
       include: { lastMessage: true },
+      orderBy: { updatedAt: "desc" },
     });
     return conversations;
   } catch {
@@ -42,6 +44,15 @@ export const gptConversationInsert = async () => {
     return { error: "Unathentiacted" };
   }
 
+  const lastConv =await db.gptConversation.findFirst({
+    where:{userId:user.id},
+    orderBy: { updatedAt: "desc" },
+    
+  });
+
+  if (!lastConv?.lastMessageId) return { error: "Last conversation is empty" };
+
+  console.log(lastConv, lastConv.lastMessageId);
   const conversation = await db.gptConversation.create({
     data: {
       userId: user.id,
@@ -121,7 +132,7 @@ export const gptMessageInsert = async (values: GptMessageSchemaType) => {
     },
   });
 
-  return { success: [newMessage,newChatMessage] };
+  return { success: [newMessage, newChatMessage] };
 };
 
 export const messageInsert = async (values: GptMessageSchemaType) => {

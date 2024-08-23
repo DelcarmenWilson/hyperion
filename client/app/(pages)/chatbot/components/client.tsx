@@ -72,6 +72,7 @@ export const GptConversationsClient = ({}) => {
         <h4 className="text-lg text-muted-foreground font-semibold">
           Chat History 
         </h4>
+       
         <Button size={"icon"} onClick={onNewConversation}>
           <Plus size={16} />
         </Button>

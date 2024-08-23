@@ -83,11 +83,8 @@ export const appointmentsGetByUserIdFiltered = async (
     return [];
   }
 };
-export const appointmentsGetById = async (
-  id: string,
-) => {
+export const appointmentsGetById = async (id: string) => {
   try {
-    
     const appointment = await db.appointment.findUnique({
       where: { id },
       include: { lead: true },
@@ -156,12 +153,11 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     include: { lead: true },
   });
 
-  await callUpdateByIdAppointment(appointment.leadId,appointment.id)
+  await callUpdateByIdAppointment(appointment.leadId, appointment.id);
 
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   let message;
@@ -174,10 +170,9 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     }
   }
 
-  bluePrintWeekUpdateByUserIdData(user.id,"appointments")
- 
+  bluePrintWeekUpdateByUserIdData(user.id, "appointments");
+
   return { success: { appointment, message } };
- 
 };
 
 export const appointmentInsertBook = async (
@@ -420,4 +415,23 @@ export const appointmentLabelUpdateByChecked = async (
   });
 
   return { success: "Label was updated!" };
+};
+
+//create notification alert for appointment
+
+export const sendAppointmentRemainders = async () => {
+  // wee need current datetime and + one hour datetime
+
+  const currentDate = new Date();
+
+  const oneHourPlusDate = new Date(currentDate);
+
+  oneHourPlusDate.setHours(oneHourPlusDate.getHours() + 1);
+
+  const appointments = await db.appointment.findMany({
+where:{startDate:{gt:currentDate,lte:oneHourPlusDate}}
+
+  });
+
+  console.log(appointments);
 };
