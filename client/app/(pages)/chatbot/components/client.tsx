@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ import {
 } from "@/actions/test";
 
 export const GptConversationsClient = ({}) => {
+  const router = useRouter();
   const { data: initConversations, isFetching } = useQuery<
     ShortGptConversation[] | null
   >({
@@ -27,7 +28,7 @@ export const GptConversationsClient = ({}) => {
   const [conversations, setConversations] = useState<
     ShortGptConversation[] | null | undefined
   >(initConversations);
-  const router = useRouter();
+
   const onNewConversation = async () => {
     const insertedConversation = await gptConversationInsert();
     if (insertedConversation.success) {
@@ -62,6 +63,9 @@ export const GptConversationsClient = ({}) => {
   //     userEmitter.off("gptMessageInserted", (info) => onMessageInserted(info));
   //   };
   // }, []);
+  useEffect(() => {
+    setConversations(initConversations);
+  }, [initConversations]);
   return (
     <div className="flex flex-col h-full w-[250px] gap-1 p-1">
       <div className="flex justify-between items-center">

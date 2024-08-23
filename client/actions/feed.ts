@@ -8,7 +8,10 @@ export const feedsGetAllByAgentId = async () => {
     return [];
   }
 
-  const feeds = await db.feed.findMany({ where: { userId: user.id } });
+  const feeds = await db.feed.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+  });
   return feeds;
 };
 

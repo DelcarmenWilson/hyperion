@@ -1,7 +1,8 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { GptMessageSchema,GptMessageSchemaType } from "@/schemas/test";
+import { GptMessageSchema, GptMessageSchemaType } from "@/schemas/test";
+import { chatFetch } from "./gpt";
 
 //DATA
 export const gptConversationsGetByUserId = async () => {
@@ -14,20 +15,20 @@ export const gptConversationsGetByUserId = async () => {
       where: {
         userId: user.id,
       },
-      include: { lastMessage: true},
+      include: { lastMessage: true },
     });
     return conversations;
   } catch {
     return [];
   }
 };
-export const gptConversationGetById = async (id:string) => {
+export const gptConversationGetById = async (id: string) => {
   try {
     const conversation = await db.gptConversation.findUnique({
       where: {
         id,
       },
-      include:{messages:true}
+      include: { messages: true },
     });
     return conversation;
   } catch {
@@ -37,13 +38,13 @@ export const gptConversationGetById = async (id:string) => {
 //ACTIONS
 export const gptConversationInsert = async () => {
   const user = await currentUser();
-    if (!user?.email) {
-      return {error:"Unathentiacted"};
-    }
+  if (!user?.email) {
+    return { error: "Unathentiacted" };
+  }
 
   const conversation = await db.gptConversation.create({
     data: {
-      userId:user.id
+      userId: user.id,
     },
   });
 
@@ -75,7 +76,53 @@ export const gptConversationDeleteById = async (id: string) => {
   return { success: "conversation has been deleted" };
 };
 
+export const gptMessageInsert = async (values: GptMessageSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = GptMessageSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const { conversationId, content, role } = validatedFields.data;
 
+  const existingConversation = await db.gptConversation.findUnique({
+    where: { id: conversationId },
+  });
+
+  if (!existingConversation) {
+    return { error: "Conversation does not exists!!" };
+  }
+
+  let messages = await db.gptMessage.findMany({ where: { conversationId } });
+
+  const newMessage = await db.gptMessage.create({
+    data: { content, conversationId, role },
+  });
+
+  messages.push(newMessage);
+
+  const chatMessage = await chatFetch(messages);
+  const response = chatMessage.choices[0].message;
+
+  const newChatMessage = await db.gptMessage.create({
+    data: {
+      content: response.content as string,
+      conversationId,
+      role: response.role,
+    },
+  });
+
+  await db.gptConversation.update({
+    where: { id: conversationId },
+    data: {
+      lastMessage: { connect: newChatMessage },
+    },
+  });
+
+  return { success: [newMessage,newChatMessage] };
+};
 
 export const messageInsert = async (values: GptMessageSchemaType) => {
   const validatedFields = GptMessageSchema.safeParse(values);
@@ -83,14 +130,13 @@ export const messageInsert = async (values: GptMessageSchemaType) => {
     return { error: "Invalid fields!" };
   }
 
-  const { role, content, conversationId } =
-    validatedFields.data;
+  const { role, content, conversationId } = validatedFields.data;
 
-    const conversation = await db.gptConversation.findUnique({
-      where: { id: conversationId }
-    });
+  const conversation = await db.gptConversation.findUnique({
+    where: { id: conversationId },
+  });
 
-  if(!conversation){  
+  if (!conversation) {
     return { error: "Conversation does not exists!" };
   }
 
@@ -102,7 +148,7 @@ export const messageInsert = async (values: GptMessageSchemaType) => {
     },
   });
 
-   await db.gptConversation.update({
+  await db.gptConversation.update({
     where: { id: conversationId },
     data: { lastMessageId: newMessage.id },
   });
