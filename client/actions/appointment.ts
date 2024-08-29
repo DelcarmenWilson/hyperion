@@ -443,9 +443,10 @@ export const sendAppointmentReminders = async () => {
 
   for (const app of appointments) {
     const { agent, lead, startDate } = app;
-    const minutesRemaining = startDate.getMinutes() - currentDate.getMinutes();
+    const minutesRemaining = Math.floor((startDate.getTime() - currentDate.getTime())/1000/60);
     await smsSendLeadAppointmentReminder(lead,minutesRemaining)
-    console.log(minutesRemaining);
+   
+
   }
 
   return { success: appointments };
