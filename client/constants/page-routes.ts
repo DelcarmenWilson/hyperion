@@ -1,5 +1,6 @@
 
 import {
+  Backpack,
   Bot,
   Calendar,
   GoalIcon,
@@ -66,6 +67,10 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/test",
     icon: TestTube,
     master: true,
+  },{
+    title: "Campaigns",
+    href: "/admin/campaigns",
+    icon: Backpack,
   },
   {
     title: "Hp Leads",

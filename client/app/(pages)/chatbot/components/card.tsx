@@ -4,30 +4,31 @@ import Link from "next/link";
 import { ShortGptConversation } from "@/types";
 import { formatDistance } from "date-fns";
 import { formatDate } from "@/formulas/dates";
+import { cn } from "@/lib/utils";
 
-export const GptConversationCard = ({
-  conversation,
-}: {
+type Props = {
   conversation: ShortGptConversation;
-}) => {
+  active: boolean;
+};
+
+export const GptConversationCard = ({ conversation, active }: Props) => {
   return (
     <Link
       href={`/chatbot/${conversation.id}`}
-      className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
+      className={cn(
+        "flex flex-col border rounded-xl overflow-ellipsis p-2 hover:bg-secondary cursor-pointer",
+        active && "bg-secondary"
+      )}
     >
-      <div className="flex justify-end">
-        <p className="text-xs text-right">
-          {formatDate(conversation.updatedAt)}
-          {/* {formatDistance(conversation.updatedAt, new Date(), {
-              addSuffix: true,
-            })} */}
-        </p>
-      </div>
-      <div className="overflow-ellipsis">
-        <span className=" text-muted-foreground text-sm truncate overflow-hidden">
-          {conversation.lastMessage?.content || "Start Conversation"}
-        </span>
-      </div>
+      <p className="text-xs text-right">
+        {/* {formatDate(conversation.updatedAt)} */}
+        {formatDistance(conversation.updatedAt, new Date(), {
+          addSuffix: true,
+        })}
+      </p>
+      <p className=" text-muted-foreground text-sm truncate">
+        {conversation.lastMessage?.content || "Start Conversation"}
+      </p>
     </Link>
   );
 };

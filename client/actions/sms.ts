@@ -342,10 +342,11 @@ export const smsSendLeadAppointmentNotification = async (
   return { success: newMessage.success };
 };
 
-export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
-  const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
-  `;
+export const smsSendLeadAppointmentReminder = async (lead: Lead, minutes:number) => {
+  // const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
+  // `;
 
+  const message = `Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is in about ${minutes} minutes! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to talking with you,\nStrongside Financial  `;
   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
 
   if (!result) {
@@ -354,6 +355,19 @@ export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
 
   return { success: "Message sent!" };
 };
+
+// export const smsSendAppointmentReminder = async (lead: Lead, date: Date) => {
+//   const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
+//   `;
+
+//   const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
+
+//   if (!result) {
+//     return { error: "Message was not sent!" };
+//   }
+
+//   return { success: "Message sent!" };
+// };
 
 export const smsSendNewHyperionLeadNotifications = async (
   lead: HyperionLead

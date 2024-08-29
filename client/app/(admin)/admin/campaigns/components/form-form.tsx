@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
 
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { CampaignFormSchema, CampaignFormSchemaType } from "@/schemas/campaign";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-import { LeadMainSchema, LeadMainSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -19,59 +19,63 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { leadUpdateByIdMainInfo } from "@/actions/lead";
-
-import { states } from "@/constants/states";
-import { GptSettingsSchema, GptSettingsSchemaType } from "@/schemas/test";
-import {
-  gptMessageInsert,
-  gptSettingsInsert,
-  gptSettingsUpsert,
-} from "@/actions/test";
 import { Textarea } from "@/components/ui/textarea";
-import { useGptChatActions } from "@/hooks/use-gpt-chat";
+import { campaignFormInsert } from "@/actions/admin/campaign";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export const ChatSettingsForm = ({ isOpen, onClose }: Props) => {
-  const { loading, form, onCancel, onGpSettingsFormSubmit } =
-    useGptChatActions(onClose);
+export const FormForm = ({ isOpen, onClose }: Props) => {
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<CampaignFormSchemaType>({
+    resolver: zodResolver(CampaignFormSchema),
+  });
+
+  const onCancel = () => {
+    form.clearErrors();
+    form.reset();
+    onClose();
+  };
+
+  const onFormSubmit = async (values: CampaignFormSchemaType) => {
+    setLoading(true);
+    const response = await campaignFormInsert(values);
+    if (response.success) {
+      toast.success("Campaign Form created !!");
+      onClose();
+    } else {
+      onCancel();
+      toast.error(response.error);
+    }
+    setLoading(false);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-        <h3 className="text-2xl font-semibold py-2">Chat Settings</h3>
+        <h3 className="text-2xl font-semibold py-2">New Campaign</h3>
         <div className="h-full overflow-y-auto">
           <Form {...form}>
             <form
               className="space-y-2 px-2 w-full"
-              onSubmit={form.handleSubmit(onGpSettingsFormSubmit)}
+              onSubmit={form.handleSubmit(onFormSubmit)}
             >
-              {/* PROMPT */}
+              {/* NAME */}
               <FormField
                 control={form.control}
-                name="prompt"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prompt</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <Input
                         {...field}
-                        placeholder="Prompt"
+                        placeholder="Name"
                         disabled={loading}
-                        autoComplete="Prompt"
-                        rows={10}
+                        autoComplete="Name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -79,20 +83,40 @@ export const ChatSettingsForm = ({ isOpen, onClose }: Props) => {
                 )}
               />
 
-              {/* LEAD INFO */}
+              {/* HEADLINE */}
               <FormField
                 control={form.control}
-                name="leadInfo"
+                name="headline"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>Headline</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Headline"
+                        disabled={loading}
+                        autoComplete="Headline"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* BODY */}
+              <FormField
+                control={form.control}
+                name="body"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Body</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
-                        placeholder="Lead Info"
+                        placeholder="Body"
                         disabled={loading}
-                        autoComplete="Lead Info"
-                        rows={10}
+                        autoComplete="Body"
+                        rows={8}
                       />
                     </FormControl>
                     <FormMessage />

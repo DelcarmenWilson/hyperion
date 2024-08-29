@@ -16,3 +16,11 @@ export const GptSettingsSchema = z.object({
 export type GptSettingsSchemaType = z.infer<typeof GptSettingsSchema>;
 
 
+export const GptSettingsSchema = z.object({
+  id:(z.optional(z.string())),
+  prompt: z.string(),
+  leadInfo:  z.string(),
+});
+
+export type GptSettingsSchemaType = z.infer<typeof GptSettingsSchema>;
+

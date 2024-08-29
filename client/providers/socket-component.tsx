@@ -119,7 +119,8 @@ const SocketContextComponent: React.FunctionComponent<
   };
 
   const Log = (message: string) => {
-    console.info(message);
+    //Turn next line on when debuggin
+    // console.info(message);
   };
 
   if (loading)

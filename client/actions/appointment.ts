@@ -15,6 +15,7 @@ import { states } from "@/constants/states";
 import {
   smsSendAgentAppointmentNotification,
   smsSendLeadAppointmentNotification,
+  smsSendLeadAppointmentReminder,
 } from "./sms";
 import { getEntireDay } from "@/formulas/dates";
 import { Lead } from "@prisma/client";
@@ -419,7 +420,7 @@ export const appointmentLabelUpdateByChecked = async (
 
 //create notification alert for appointment
 
-export const sendAppointmentRemainders = async () => {
+export const sendAppointmentReminders = async () => {
   // wee need current datetime and + one hour datetime
 
   const currentDate = new Date();
@@ -429,9 +430,23 @@ export const sendAppointmentRemainders = async () => {
   oneHourPlusDate.setHours(oneHourPlusDate.getHours() + 1);
 
   const appointments = await db.appointment.findMany({
-where:{startDate:{gt:currentDate,lte:oneHourPlusDate}}
-
+    where: {
+      startDate: { gt: currentDate, lte: oneHourPlusDate },
+      status: "Scheduled",
+    },
+    include: { lead: true, agent: { include: { chatSettings: true,notificationSettings:true } } },
   });
 
-  console.log(appointments);
+  if (appointments.length == 0) {
+    return { error: "No reminders available" };
+  }
+
+  for (const app of appointments) {
+    const { agent, lead, startDate } = app;
+    const minutesRemaining = startDate.getMinutes() - currentDate.getMinutes();
+    await smsSendLeadAppointmentReminder(lead,minutesRemaining)
+    console.log(minutesRemaining);
+  }
+
+  return { success: appointments };
 };

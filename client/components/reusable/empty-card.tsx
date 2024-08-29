@@ -15,6 +15,7 @@ export const EmptyCard = ({ title, subTitle }: EmptyCardProps) => {
           className="w-[80px] h-[80px] grayscale"
           src="/logo3.png"
           alt="logo"
+          priority
         />
         <h4 className="text-lg">{title}</h4>
         <h4 className="text-sm">{subTitle}</h4>
