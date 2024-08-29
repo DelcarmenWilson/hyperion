@@ -1,9 +1,15 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { GptMessageSchema, GptMessageSchemaType } from "@/schemas/test";
+import {
+  GptMessageSchema,
+  GptMessageSchemaType,
+  GptSettingsSchema,
+  GptSettingsSchemaType,
+} from "@/schemas/test";
 import { chatFetch } from "./gpt";
 import { error } from "console";
+import { string } from "zod";
 
 //DATA
 export const gptConversationsGetByUserId = async () => {
@@ -44,10 +50,9 @@ export const gptConversationInsert = async () => {
     return { error: "Unathentiacted" };
   }
 
-  const lastConv =await db.gptConversation.findFirst({
-    where:{userId:user.id},
+  const lastConv = await db.gptConversation.findFirst({
+    where: { userId: user.id },
     orderBy: { updatedAt: "desc" },
-    
   });
 
   if (!lastConv?.lastMessageId) return { error: "Last conversation is empty" };
@@ -166,3 +171,26 @@ export const messageInsert = async (values: GptMessageSchemaType) => {
 
   return { success: newMessage };
 };
+
+export const gptSettingsInsert = async (values: GptSettingsSchemaType) => {
+  const user = await currentUser();
+
+  if (!user) return { error: "Unauthenticated" };
+
+  const validated = GptSettingsSchema.safeParse(values);
+
+  if (!validated.success) return { error: "Invalid Fields" };
+
+  const { prompt, leadInfo } = validated.data;
+
+  const newSettings= await db.gptSettings.create({
+    data: {
+      prompt,
+      leadInfo,
+      userId: user.id,
+    },
+  });
+  return {success:newSettings}
+};
+
+

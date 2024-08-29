@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import {
   gptConversationInsert,
   gptConversationsGetByUserId,
 } from "@/actions/test";
+import { ChatbotForm } from "./form";
 
 export const GptConversationsClient = ({}) => {
   const router = useRouter();
@@ -35,6 +36,11 @@ export const GptConversationsClient = ({}) => {
       router.push(`/chatbot/${insertedConversation.success}`);
     } else toast.error(insertedConversation.error);
   };
+
+  const [isOpen,setIsOpen]=useState(false)
+
+
+
   // useEffect(() => {
   //   const onMessageInserted = (newMessage: GptMessage) => {
   //     if (!newMessage) return;
@@ -67,6 +73,8 @@ export const GptConversationsClient = ({}) => {
     setConversations(initConversations);
   }, [initConversations]);
   return (
+    <>
+    <ChatbotForm isOpen={isOpen} onClose={()=>setIsOpen(false)}/>
     <div className="flex flex-col h-full w-[250px] gap-1 p-1">
       <div className="flex justify-between items-center">
         <h4 className="text-lg text-muted-foreground font-semibold">
@@ -94,8 +102,12 @@ export const GptConversationsClient = ({}) => {
               <Button onClick={onNewConversation}>Start Now</Button>
             }
           />
+
         )}
       </div>
+
+      <Button onClick={()=>setIsOpen(true)}  size="icon" ><Settings size={16}/> </Button>
     </div>
+  </>
   );
 };
