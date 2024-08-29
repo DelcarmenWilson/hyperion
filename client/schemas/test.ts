@@ -9,3 +9,11 @@ export const GptMessageSchema = z.object({
 export type GptMessageSchemaType = z.infer<typeof GptMessageSchema>;
 
 
+export const GptSettingsSchema = z.object({
+  id:(z.optional(z.string())),
+  prompt: z.string(),
+  leadInfo:  z.string(),
+});
+
+export type GptSettingsSchemaType = z.infer<typeof GptSettingsSchema>;
+

@@ -66,6 +66,24 @@ export const HyperionLeadSchema = z.object({
 });
 export type HyperionLeadSchemaType = z.infer<typeof HyperionLeadSchema>;
 
+//AMM LEADS
+export const ammLeadSchema = z.object({  
+  id: z.optional(z.string()),
+  leadId:z.optional(z.string()),
+  addId: z.optional(z.string()),
+  
+  coverage:z.optional(z.string()),
+  beneficiary: z.optional(z.string()),
+  firstName: z.string(),
+  lastName: z.string(),  
+  email: z.string(),
+  cellPhone: z.string(),
+  state: z.string(),
+  dateOfBirth: z.string(),
+  recievedAt:z.date()
+});
+export type ammLeadSchemaType = z.infer<typeof ammLeadSchema>;
+
 //CARRIER CONDITIONS
 export const CarrierConditionSchema = z.object({
   id: z.optional(z.string()),

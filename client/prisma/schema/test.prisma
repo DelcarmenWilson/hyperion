@@ -27,11 +27,11 @@ model GptMessage {
 model GptSettings {
     id String @id @default(cuid())
 
-    prompt   String
-    leadInfo String
-    active   Boolean @default(true)
-
     userId String
+
+    prompt   String  @db.LongText
+    leadInfo String  @db.LongText
+    active   Boolean @default(true)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { HyperionLeadSchema,HyperionLeadSchemaType } from "@/schemas/admin";
+import { ammLeadSchema, ammLeadSchemaType, HyperionLeadSchema,HyperionLeadSchemaType } from "@/schemas/admin";
 import { smsSendNewHyperionLeadNotifications } from "./sms";
 
 export const hyperionLeadInsert = async (
@@ -150,4 +150,77 @@ export const hyperionLeadUpdateById = async (
   }
 
   return { success: newLead };
+};
+
+
+export const ammLeadInsert = async (
+  values: ammLeadSchemaType
+) => {
+  const validatedFields = ammLeadSchema.safeParse(values);
+  if (!validatedFields.success) {
+    console.log("AAMM_INSERT_ERROR");
+    return { error: "Invalid fields!" };
+  }
+
+  const {
+  leadId,
+  addId,
+  
+  coverage,
+  beneficiary,
+  firstName,
+  lastName,
+  
+  email,
+  cellPhone,
+  state,
+  dateOfBirth,
+  recievedAt
+  } = validatedFields.data;
+
+  // const existingLead = await db.hyperionLead.findUnique({
+  //   where: {
+  //     id,
+  //   },
+  // });
+
+  // if (existingLead) {
+  //   return { error: "Lead already exist" };
+  // }
+
+  const newLead = await db.lead.create({
+    data: {
+  // addId,
+  
+ defaultNumber:"",
+ userId:"",
+ 
+ 
+     
+     
+      firstName: firstName,
+      lastName: lastName!,
+
+      address: "N/A",
+      city: "N/A",
+      state: state,
+      cellPhone: cellPhone,
+      gender: "NA",
+      maritalStatus:"Single",
+      email: email,
+      dateOfBirth: dateOfBirth,
+      policyAmount: "0",
+      smoker: false,
+      notes: `coverage: ${coverage} beneficiary ${beneficiary}`,
+      recievedAt:recievedAt
+    },
+  });
+
+  if (!newLead) {
+    return { error: "Something Went Wrong" };
+  }
+
+  
+
+  return { success: "Lead created" };
 };

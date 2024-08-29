@@ -23,7 +23,8 @@ export interface ISocketContextActions {
 }
 
 export const SocketReducer = (state: ISocketContextState, action: ISocketContextActions) => {
-    console.log('Message recieved - Action: ' + action.type + ' - Payload: ', action.payload);
+    //Turn the net line on if debuggin
+    // console.log('Message recieved - Action: ' + action.type + ' - Payload: ', action.payload);
 
     switch (action.type) {
         case 'update_socket':

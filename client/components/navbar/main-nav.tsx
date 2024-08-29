@@ -12,8 +12,9 @@ import { TwilioShortConference } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CoachNotification } from "../phone/coach-notification";
 import { useGroupMessage } from "@/hooks/use-group-message";
+//TODO - dont forget to remove these test actions.
 import { callUpdateByIdAppointment } from "@/actions/call";
-import { sendAppointmentRemainders } from "@/actions/appointment";
+import { sendAppointmentReminders } from "@/actions/appointment";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -40,8 +41,10 @@ export const MainNav = () => {
     socket?.emit("coach-reject", conference?.agentId, user?.name, reason);
   };
 
-  const onRemainders = async () => {
-    await sendAppointmentRemainders();
+  const onReminders = async () => {
+    const reminders = await sendAppointmentReminders();
+    if (reminders.success) console.log(reminders);
+    else toast.error(reminders.error);
   };
   useEffect(() => {
     //GROUP MESSAGE
@@ -130,7 +133,7 @@ export const MainNav = () => {
       {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
       {/* <Button onClick={() => onOpen("Text", "Text")}>Open Group Message</Button> */}
 
-      <Button onClick={onRemainders}>Remainders</Button>
+      <Button onClick={onReminders}>Reminders</Button>
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

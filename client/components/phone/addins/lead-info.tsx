@@ -15,9 +15,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import { GeneralInfoClient } from "@/components/lead/info/general-info";
-import { MainInfoClient } from "@/components/lead/info/main-info";
-import { CallInfo } from "@/components/lead/info/call-info";
+import { GeneralInfoClient } from "@/components/lead/info/general";
+import { MainInfoClient } from "@/components/lead/info/main";
+import { CallInfo } from "@/components/lead/info/call";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";

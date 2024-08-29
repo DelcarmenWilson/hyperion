@@ -9,11 +9,11 @@ import {
   LeadPolicySchemaType,
 } from "@/schemas/lead";
 
-import { GeneralInfoClient } from "@/components/lead/info/general-info";
-import { CallInfo } from "@/components/lead/info/call-info";
+import { GeneralInfoClient } from "@/components/lead/info/general";
+import { CallInfo } from "@/components/lead/info/call";
 import { LeadDropDown } from "@/components/lead/dropdown";
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import { MainInfoClient } from "@/components/lead/info/main-info";
+import { MainInfoClient } from "@/components/lead/info/main";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 import { Checkbox } from "@/components/ui/checkbox";
 

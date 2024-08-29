@@ -1,7 +1,12 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { GptMessageSchema, GptMessageSchemaType } from "@/schemas/test";
+import {
+  GptMessageSchema,
+  GptMessageSchemaType,
+  GptSettingsSchema,
+  GptSettingsSchemaType,
+} from "@/schemas/test";
 import { chatFetch } from "./gpt";
 import { error } from "console";
 
@@ -37,22 +42,37 @@ export const gptConversationGetById = async (id: string) => {
     return null;
   }
 };
+
+export const gptGetByUserIdActive = async () => {
+  try {
+    const user = await currentUser();
+    if (!user?.email) {
+      return null;
+    }
+    const settings = await db.gptSettings.findFirst({
+      where: { userId: user.id, active: true },
+    });
+    return settings;
+  } catch {
+    return null;
+  }
+};
 //ACTIONS
+//CONVERSATION
 export const gptConversationInsert = async () => {
   const user = await currentUser();
   if (!user?.email) {
     return { error: "Unathentiacted" };
   }
 
-  const lastConv =await db.gptConversation.findFirst({
-    where:{userId:user.id},
+  const lastConvo = await db.gptConversation.findFirst({
+    where: { userId: user.id },
     orderBy: { updatedAt: "desc" },
-    
   });
+  
+  if (lastConvo && !lastConvo.lastMessageId)
+    return { error: "Last conversation is empty" };
 
-  if (!lastConv?.lastMessageId) return { error: "Last conversation is empty" };
-
-  console.log(lastConv, lastConv.lastMessageId);
   const conversation = await db.gptConversation.create({
     data: {
       userId: user.id,
@@ -61,6 +81,18 @@ export const gptConversationInsert = async () => {
 
   if (!conversation.id) {
     return { error: "Conversation was not created!" };
+  }
+
+  const settings = await gptGetByUserIdActive();
+
+  if (settings) {
+    await db.gptMessage.create({
+      data: {
+        content: settings.prompt,
+        conversationId: conversation.id,
+        role: "system",
+      },
+    });
   }
 
   return { success: conversation.id };
@@ -86,7 +118,7 @@ export const gptConversationDeleteById = async (id: string) => {
 
   return { success: "conversation has been deleted" };
 };
-
+//MESSAGE
 export const gptMessageInsert = async (values: GptMessageSchemaType) => {
   const user = await currentUser();
   if (!user) {
@@ -135,34 +167,72 @@ export const gptMessageInsert = async (values: GptMessageSchemaType) => {
   return { success: [newMessage, newChatMessage] };
 };
 
-export const messageInsert = async (values: GptMessageSchemaType) => {
-  const validatedFields = GptMessageSchema.safeParse(values);
+//SETTINGS
+export const gptSettingsInsert = async (values: GptSettingsSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = GptSettingsSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
+  const { prompt, leadInfo } = validatedFields.data;
 
-  const { role, content, conversationId } = validatedFields.data;
-
-  const conversation = await db.gptConversation.findUnique({
-    where: { id: conversationId },
+  const activeSettings = await db.gptSettings.findFirst({
+    where: { userId: user.id, active: true },
   });
 
-  if (!conversation) {
-    return { error: "Conversation does not exists!" };
+  if (activeSettings) {
+    await db.gptSettings.update({
+      where: { id: activeSettings.id },
+      data: { active: false },
+    });
   }
 
-  const newMessage = await db.gptMessage.create({
-    data: {
-      conversationId,
-      role,
-      content,
-    },
+  const newSettings = await db.gptSettings.create({
+    data: { userId: user.id, prompt, leadInfo },
   });
 
-  await db.gptConversation.update({
-    where: { id: conversationId },
-    data: { lastMessageId: newMessage.id },
+  return { success: newSettings };
+};
+
+export const gptSettingsUpsert = async (values: GptSettingsSchemaType) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+  const validatedFields = GptSettingsSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const { id, prompt, leadInfo } = validatedFields.data;
+
+  const activeSettings = await db.gptSettings.findFirst({
+    where: { userId: user.id, active: true },
   });
 
-  return { success: newMessage };
+  if (activeSettings) {
+    await db.gptSettings.update({
+      where: { id: activeSettings.id },
+      data: { active: false },
+    });
+  }
+
+  // const newSettings = await db.gptSettings.create({
+  //   data: { userId:user.id,prompt,leadInfo },
+  // });
+
+  let newSettings;
+  if (!id)
+    newSettings = await db.gptSettings.create({
+      data: { userId: user.id, prompt, leadInfo },
+    });
+  else
+    newSettings = await db.gptSettings.update({
+      where: { id },
+      data: { prompt, leadInfo },
+    });
+
+  return { success: newSettings };
 };

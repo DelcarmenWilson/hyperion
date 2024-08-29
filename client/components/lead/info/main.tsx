@@ -1,25 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
-
-import { userEmitter } from "@/lib/event-emmiter";
 
 import { FilePenLine, MessageSquare } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button";
 import { MainInfoForm } from "../forms/main-info-form";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { FieldBox } from "../field-box";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
-import { smsCreateInitial } from "@/actions/sms";
-import { leadUpdateByIdQuote } from "@/actions/lead";
 import { LeadMainSchemaType } from "@/schemas/lead";
+import { useLeadMainInfoActions } from "@/hooks/use-lead";
 
 type MainInfoProps = {
   info: LeadMainSchemaType;
@@ -31,41 +26,9 @@ export const MainInfoClient = ({
   noConvo,
   showInfo = false,
 }: MainInfoProps) => {
-  const router = useRouter();
-  const [initConvo, setInitConvo] = useState(noConvo);
-  const [leadInfo, setLeadInfo] = useState<LeadMainSchemaType>(info);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const onSetInfo = (e: LeadMainSchemaType) => {
-    console.log(e);
-    if (e.id == info.id) setLeadInfo(e);
-  };
-
-  const onQuoteUpdated = async (e?: string) => {
-    if (!e) {
-      return;
-    }
-    if (leadInfo.quote != info.quote) {
-      setLeadInfo((info) => ({ ...info, quote: e }));
-      const updatedQuote = await leadUpdateByIdQuote(info.id, e);
-      if (updatedQuote.success) {
-        toast.success(updatedQuote.success);
-      } else toast.error(updatedQuote.error);
-    }
-  };
-  const onSendInitialSms = async () => {
-    if (!info) return;
-    const createdSms = await smsCreateInitial(info.id);
-    router.refresh();
-    if (createdSms.success) {
-      setInitConvo(true);
-      toast.success(createdSms.success);
-    } else toast.error(createdSms.error);
-  };
-
-  useEffect(() => {
-    userEmitter.on("mainInfoUpdated", (info) => onSetInfo(info));
-  }, [info]);
+  const { leadInfo, initConvo, onLeadUpdateByIdQuote, onLeadSendInitialSms } =
+    useLeadMainInfoActions(info, noConvo);
 
   return (
     <>
@@ -119,7 +82,7 @@ export const MainInfoClient = ({
         <FieldBox
           name="Quote"
           field={leadInfo.quote!}
-          onFieldUpdate={onQuoteUpdated}
+          onFieldUpdate={onLeadUpdateByIdQuote}
         />
 
         <div>
@@ -129,7 +92,7 @@ export const MainInfoClient = ({
               disabled={leadInfo.status == "Do_Not_Call"}
               variant="outlineprimary"
               size="xs"
-              onClick={onSendInitialSms}
+              onClick={onLeadSendInitialSms}
             >
               <MessageSquare size={16} />
               SEND SMS

@@ -1,31 +1,76 @@
 // FACEBOOK
 
 model Campaign {
-    id        String    @id @default(cuid())
+    id        String                 @id @default(cuid())
     name      String
     objective String
-    status    String    @default("PAUSED")
-    startTime DateTime?
-    stopTime  DateTime?
+    status    String                 @default("PAUSED")
+    startDate DateTime?
+    endDate   DateTime?
+    targetId  String
+    target    CampaignTargetAudience @relation(fields: [targetId], references: [id], onDelete: Cascade)
+    ads       CampaignAdSet[]
+    userId    String
+    createdAt DateTime               @default(now())
+    updatedAt DateTime               @updatedAt
+}
 
-    ads       AdSet[]
+model CampaignAdSet {
+    id          String    @id @default(cuid())
+    campaignId  String
+    campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+    name        String
+    dailyBudget Float
+    startDate   DateTime?
+    endDate     DateTime?
+    status      String    @default("PAUSED")
+
+    Ads CampaignAd[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-model AdSet {
-    id               String    @id @default(cuid())
-    campaignId       String    @unique
-    campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-    name             String
-    optimizationGoal String
-    bidAmount        Int
-    dailyBudget      Int
-    // targeting - this is an array may need to create another table for this
-    startTime        DateTime?
-    stopTime         DateTime?
-    status           String    @default("PAUSED")
+model CampaignAd {
+    id      String        @id @default(cuid())
+    adSetId String
+    adSet   CampaignAdSet @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+    name    String
+    image   String
 
+    formId String
+    form   CampaignForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+    startDate DateTime?
+    endDate   DateTime?
+    status    String    @default("PAUSED")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CampaignForm {
+    id       String @id @default(cuid())
+    name     String
+    headline String
+    body     String @db.LongText
+
+    ads CampaignAd[]
+
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CampaignTargetAudience {
+    id     String @id @default(cuid())
+    name   String
+    age    String
+    states String
+
+    campaign Campaign[]
+
+    userId    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

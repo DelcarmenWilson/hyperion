@@ -75,8 +75,7 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
               width={30}
               height={30}
               className="w-[30px] aspect-square"
-              priority={false}
-              loading="lazy"
+              priority
             />
             <span className="hidden font-bold sm:inline-block">Hyperion</span>
           </a>

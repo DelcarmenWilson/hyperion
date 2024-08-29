@@ -34,17 +34,13 @@ export const generateTextCode = (
   phoneNumber: string,
   alt: boolean = false
 ): string => {
-  3478039626;
   const fInitial = firstName.substring(0, 1).toLowerCase();
   const lInitial = lastName.substring(0, 1).toLowerCase();
 
   // const pFour = phoneNumber.substring(alt ? 0 : phoneNumber.length - 4, 4);
-  let pFour = "";
-  pFour = alt
+  const pFour = alt
     ? phoneNumber.substring(phoneNumber.length - 10, 4)
     : phoneNumber.substring(phoneNumber.length - 4, phoneNumber.length);
-
-  console.log(phoneNumber.length, pFour);
   const code = `${fInitial}${lInitial}${pFour}`;
 
   return code;
