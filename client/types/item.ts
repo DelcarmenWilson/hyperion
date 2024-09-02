@@ -19,3 +19,9 @@ export type FileRecord = {
   oldFile?:string;
 };
 
+export type MonthProps = {
+  name: string;
+  abv: string;
+  value: number;
+};
+

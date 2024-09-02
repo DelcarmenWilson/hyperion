@@ -1,20 +1,19 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import useConversation from "@/hooks/user-conversation";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import axios from "axios";
-
 import { Send } from "lucide-react";
+import { useConversationId } from "@/hooks/use-conversation";
+import axios from "axios";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import { MessageInput } from "./message-input";
 
-interface FormProps {
+type Props = {
   disabled: boolean;
   phone: string;
   defaultPhone: string;
-}
-export const Form = ({ disabled, phone, defaultPhone }: FormProps) => {
-  const { conversationId } = useConversation();
+};
+export const Form = ({ disabled, phone, defaultPhone }: Props) => {
+  const { conversationId } = useConversationId();
 
   const {
     register,

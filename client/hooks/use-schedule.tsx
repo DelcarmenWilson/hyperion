@@ -4,6 +4,7 @@ import {
   consolitateSchedule,
   daysOfTheWeek,
   defaultDay,
+  getNewDefaultDay,
   ScheduleDay,
 } from "@/formulas/schedule";
 import { ScheduleSchemaType } from "@/schemas/settings";
@@ -41,11 +42,13 @@ export const useScheduleActions = (schedule: Schedule) => {
     const newSc = Array.from(brSchedule);
     newSc[i].available = available;
     if (available) {
-      newSc[i].index = i;
-      newSc[i] = defaultDay;
-      newSc[i].day = daysOfTheWeek[i];
-    }
-
+      // newSc[i] = defaultDay;
+      //   newSc[i].index = i;
+      //   newSc[i].day = daysOfTheWeek[i];
+      newSc[i]=getNewDefaultDay(i)
+      }
+      
+      console.log(newSc)
     setBrSchedule(newSc);
   };
   const onSetWorkHours = (i: number, type: "from" | "to", time: string) => {

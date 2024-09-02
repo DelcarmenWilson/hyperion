@@ -9,10 +9,10 @@ import { FullLead } from "@/types";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { Button } from "@/components/ui/button";
-import { GeneralInfoClient } from "@/components/lead/info/general-info";
+import { GeneralInfoClient } from "@/components/lead/info/general";
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import { CallInfo } from "@/components/lead/info/call-info";
-import { MainInfoClient } from "@/components/lead/info/main-info";
+import { CallInfo } from "@/components/lead/info/call";
+import { MainInfoClient } from "@/components/lead/info/main";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";

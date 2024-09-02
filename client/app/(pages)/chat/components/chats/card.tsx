@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 
 export const ChatCard = ({ chat }: { chat: ShortChat }) => {
   const user = useCurrentUser();
+  const { chatId, setChatId } = useChat();
   const otherUser = chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
   const initials = `${otherUser.firstName.substring(
     0,
     1
   )} ${otherUser.lastName.substring(0, 1)}`;
   const fullName = `${otherUser.firstName} ${otherUser.lastName}`;
-  const { chatId, setChatId } = useChat();
   return (
     // <Link
     //   href={`/chat/${chat.id}`}

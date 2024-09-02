@@ -140,7 +140,7 @@ model LeadMedicalCondition {
     condition   MedicalCondition @relation("LeadToCondition", fields: [conditionId], references: [id])
     diagnosed   String           @default("")
     medications String           @default("")
-    notes       String           @default("")
+    notes       String?          @db.LongText
     createdAt   DateTime         @default(now())
     updatedAt   DateTime         @updatedAt
 }
@@ -153,7 +153,7 @@ model LeadExpense {
     name      String
     value     Int      @default(0)
     isDefault Boolean  @default(false)
-    notes     String   @default("")
+    notes     String?  @db.LongText
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

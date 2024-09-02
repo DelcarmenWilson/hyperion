@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
@@ -11,6 +11,7 @@ import {
   leadUpdateByIdAssistantAdd,
   leadUpdateByIdAssistantRemove,
   leadUpdateByIdPolicyInfo,
+  leadUpdateByIdQuote,
   leadUpdateByIdShare,
   leadUpdateByIdTransfer,
   leadUpdateByIdUnShare,
@@ -23,6 +24,7 @@ import {
   IntakeMedicalInfoSchemaType,
   IntakeOtherInfoSchemaType,
   IntakePersonalInfoSchemaType,
+  LeadMainSchemaType,
   LeadPolicySchemaType,
 } from "@/schemas/lead";
 import {
@@ -41,6 +43,8 @@ import {
 } from "@/actions/lead/intake";
 import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 import { leadUpdateByIdIntakePersonalInfo } from "@/actions/lead/intake";
+import { useRouter } from "next/navigation";
+import { smsCreateInitial } from "@/actions/sms";
 type DialogType =
   | "personal"
   | "doctor"
@@ -135,7 +139,7 @@ export const useLead = create<useLeadStore>((set) => ({
     }),
   onAssistantFormClose: () =>
     set({
-      leadId:undefined,
+      leadId: undefined,
       isAssistantFormOpen: false,
     }),
   //INTAKE
@@ -542,5 +546,51 @@ export const useLeadIntakeActions = (
     onPolicySubmit,
     medicalIsPending,
     onMedicalSubmit,
+  };
+};
+
+export const useLeadMainInfoActions = (
+  info: LeadMainSchemaType,
+  noConvo: boolean
+) => {
+  const router = useRouter();
+  const [leadInfo, setLeadInfo] = useState<LeadMainSchemaType>(info);
+  const [initConvo, setInitConvo] = useState(noConvo);
+
+  const onSetInfo = (e: LeadMainSchemaType) => {
+    if (e.id == info.id) setLeadInfo(e);
+  };
+
+  const onLeadUpdateByIdQuote = async (e?: string) => {
+    if (!e) {
+      return;
+    }
+    if (leadInfo.quote != info.quote) {
+      setLeadInfo((info) => ({ ...info, quote: e }));
+      const updatedQuote = await leadUpdateByIdQuote(info.id, e);
+      if (updatedQuote.success) {
+        toast.success(updatedQuote.success);
+      } else toast.error(updatedQuote.error);
+    }
+  };
+
+  const onLeadSendInitialSms = async () => {
+    if (!info) return;
+    const createdSms = await smsCreateInitial(info.id);
+    router.refresh();
+    if (createdSms.success) {
+      setInitConvo(true);
+      toast.success(createdSms.success);
+    } else toast.error(createdSms.error);
+  };
+
+  useEffect(() => {
+    userEmitter.on("mainInfoUpdated", (info) => onSetInfo(info));
+  }, [info]);
+
+  return {leadInfo,
+    initConvo,
+    onLeadUpdateByIdQuote,
+    onLeadSendInitialSms,
   };
 };

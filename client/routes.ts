@@ -52,7 +52,7 @@ export const authRoutes = [
 export const apiAuthPrefix = "/api/auth";
 
 /**
- * The defsult redirect path after login in
+ * The defualt redirect path after login in
  *
  * @type {string}
  */

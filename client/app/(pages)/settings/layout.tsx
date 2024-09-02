@@ -1,5 +1,5 @@
 import { Cog } from "lucide-react";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { SubNavBar } from "@/components/custom/sub-navbar";
 import { SettingsNavbarRoutes } from "@/constants/page-routes";
 

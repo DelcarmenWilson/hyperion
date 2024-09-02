@@ -24,7 +24,7 @@ export const chatsGetByUserId = async () => {
           },
         ],
       },
-      include: { userOne: true, userTwo: true, lastMessage: true },
+      include: { userOne: true, userTwo: true, lastMessage: true },orderBy:{updatedAt:"desc"}
     });
 
     return chats;
@@ -53,7 +53,7 @@ export const chatGetById = async (id: string) => {
     return null;
   }
 };
-export const chatGetBUserId = async (userId: string) => {
+export const chatGetByUserId = async (userId: string) => {
   try {
     const user = await currentUser();
     if (!user?.email) {

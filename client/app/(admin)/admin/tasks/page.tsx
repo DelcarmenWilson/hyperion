@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { Button } from "@/components/ui/button";
 import { TaskClient } from "./components/client";
 import { tasksGetAll } from "@/data/task";

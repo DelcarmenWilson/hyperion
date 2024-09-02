@@ -143,9 +143,9 @@ export function AvailabilityClient({
               <p className="col-span-2 text-muted-foreground">Working Hours</p>
               <p className="col-span-2 text-muted-foreground">Break</p>
             </div>
-            {brSchedule.map((day) => (
+            {brSchedule.map((day,i) => (
               <DayHour
-                key={day.day}
+                key={i}
                 schedule={day}
                 disabled={loading}
                 onSetAvail={onSetAvailable}

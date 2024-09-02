@@ -35,6 +35,7 @@ import {
   FullChat,
   FullChatMessage,
   UnreadShortChat,
+  FullConversationWithLead,
 } from "./message";
 import { FullPhoneNumber, PhoneType } from "./phone";
 
@@ -60,8 +61,9 @@ import {
   TwilioRecording,
   TwilioConferenceRecording,
 } from "./twilio";
-import { ItemProps, FileRecords, FileRecord } from "./item";
-import { FullGptConversation, ShortGptConversation } from "./test";
+import { ItemProps,MonthProps, FileRecords, FileRecord } from "./item";
+import { FullChatbotConversation, ShortChatbotConversation } from "./chatbot";
+import { FullCampaign,FullAd } from "./facebook";
 
 
 export type FullCall = Call & {
@@ -150,6 +152,7 @@ export type {
   ShortConvo,
   ShortConversation,
   FullConversation,
+  FullConversationWithLead,
   LeadAndConversation,
   ShortChat,
   FullChat,
@@ -184,7 +187,10 @@ export type {
   TwilioConferenceRecording,
 };
 
-export type { ItemProps, FileRecords, FileRecord };
+export type { ItemProps, FileRecords, FileRecord,MonthProps };
 
 //CHATBOT
-export type {ShortGptConversation,FullGptConversation}
+export type {ShortChatbotConversation,FullChatbotConversation}
+
+//FACEBOOK CAMPAIGN
+export type {FullCampaign,FullAd}

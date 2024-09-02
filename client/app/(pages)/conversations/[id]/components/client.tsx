@@ -2,6 +2,10 @@
 
 import { MessageSquare } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useQuery } from "@tanstack/react-query";
+
+import { useConversationId } from "@/hooks/use-conversation";
+
 import { FullConversation } from "@/types";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,13 +13,19 @@ import { Separator } from "@/components/ui/separator";
 import { Header } from "./header";
 import { SmsBody } from "@/components/phone/sms/body";
 import { SmsForm } from "@/components/phone/sms/form";
+import { conversationGetById } from "@/actions/conversation";
 
-type ConversationClientProps = {
-  conversation: FullConversation;
-};
-
-const ConversationClient = ({ conversation }: ConversationClientProps) => {
+const ConversationClient = () => {
   const user = useCurrentUser();
+  const { conversationId } = useConversationId();
+
+  const { data: conversation, isFetching: isFetchingConversation } =
+    useQuery<FullConversation | null>({
+      queryFn: () => conversationGetById(conversationId),
+      queryKey: [`conversation-${conversationId}`],
+    });
+  if (!conversation) return null;
+
   return (
     <Card className="flex flex-col flex-1 relative overflow-hidden">
       <div className="flex items-center mb-2">

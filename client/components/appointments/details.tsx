@@ -1,12 +1,16 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppointment } from "@/hooks/use-appointment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -48,6 +52,7 @@ export const AppointmentDetails = () => {
 
   return (
     <Dialog open={isDetailsOpen} onOpenChange={onDetailsClose}>
+      <DialogDescription>Appointment Details</DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <h4 className="text-2xl font-semibold py-2 text-primary">
           Appointment Details

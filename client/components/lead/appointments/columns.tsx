@@ -95,7 +95,9 @@ export const columns: ColumnDef<FullAppointment>[] = [
         <p>
           D.O.B:{" "}
           <span className="text-primary italic font-bold">
-            {row.original.lead.dateOfBirth}
+            {row.original.lead.dateOfBirth
+              ? new Date(row.original.lead.dateOfBirth!).toLocaleDateString()
+              : ""}
           </span>
         </p>
         <p>

@@ -30,12 +30,12 @@ import { leadUpdateByIdMainInfo } from "@/actions/lead";
 
 import { states } from "@/constants/states";
 
-type MainInfoFormProps = {
+type Props = {
   info: LeadMainSchemaType;
   onClose: () => void;
 };
 
-export const MainInfoForm = ({ info, onClose }: MainInfoFormProps) => {
+export const MainInfoForm = ({ info, onClose }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<LeadMainSchemaType>({

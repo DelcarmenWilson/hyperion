@@ -15,6 +15,7 @@ import { states } from "@/constants/states";
 import {
   smsSendAgentAppointmentNotification,
   smsSendLeadAppointmentNotification,
+  smsSendLeadAppointmentReminder,
 } from "./sms";
 import { getEntireDay } from "@/formulas/dates";
 import { Lead } from "@prisma/client";
@@ -83,11 +84,8 @@ export const appointmentsGetByUserIdFiltered = async (
     return [];
   }
 };
-export const appointmentsGetById = async (
-  id: string,
-) => {
+export const appointmentsGetById = async (id: string) => {
   try {
-    
     const appointment = await db.appointment.findUnique({
       where: { id },
       include: { lead: true },
@@ -156,12 +154,11 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     include: { lead: true },
   });
 
-  await callUpdateByIdAppointment(appointment.leadId,appointment.id)
+  await callUpdateByIdAppointment(appointment.leadId, appointment.id);
 
   if (!appointment) {
     return { error: "Appointment was not created!" };
   }
-
 
   const lead = await db.lead.findUnique({ where: { id: leadId } });
   let message;
@@ -174,10 +171,9 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     }
   }
 
-  bluePrintWeekUpdateByUserIdData(user.id,"appointments")
- 
+  bluePrintWeekUpdateByUserIdData(user.id, "appointments");
+
   return { success: { appointment, message } };
- 
 };
 
 export const appointmentInsertBook = async (
@@ -420,4 +416,38 @@ export const appointmentLabelUpdateByChecked = async (
   });
 
   return { success: "Label was updated!" };
+};
+
+//create notification alert for appointment
+
+export const sendAppointmentReminders = async () => {
+  // wee need current datetime and + one hour datetime
+
+  const currentDate = new Date();
+
+  const oneHourPlusDate = new Date(currentDate);
+
+  oneHourPlusDate.setHours(oneHourPlusDate.getHours() + 1);
+
+  const appointments = await db.appointment.findMany({
+    where: {
+      startDate: { gt: currentDate, lte: oneHourPlusDate },
+      status: "Scheduled",
+    },
+    include: { lead: true, agent: { include: { chatSettings: true,notificationSettings:true } } },
+  });
+
+  if (appointments.length == 0) {
+    return { error: "No reminders available" };
+  }
+
+  for (const app of appointments) {
+    const { agent, lead, startDate } = app;
+    const minutesRemaining = Math.floor((startDate.getTime() - currentDate.getTime())/1000/60);
+    await smsSendLeadAppointmentReminder(lead,minutesRemaining)
+   
+
+  }
+
+  return { success: appointments };
 };

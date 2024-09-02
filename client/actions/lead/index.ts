@@ -134,6 +134,34 @@ export const leadGetById = async (id: string) => {
     return null;
   }
 };
+export const leadGetByConversationId = async (id: string) => {
+  try {
+const conversation=await db.conversation.findUnique({where:{id}})
+if(!conversation)
+  return null
+
+    const lead = await db.lead.findUnique({
+      where: {
+        id:conversation.leadId,
+      },
+      include: {
+
+        calls: true,
+        appointments: true,
+        activities: true,
+        beneficiaries: true,
+        expenses: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
+
+
 export const leadGetByPhone = async (cellPhone: string) => {
   try {
     const lead = await db.lead.findFirst({
@@ -287,6 +315,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
       },
     });
   } else {
+    //TODO need to put this into its own function - the import function is also using this
     ///Gnerate a new Text code
     let code = generateTextCode(firstName, lastName, cellPhone);
 
@@ -408,6 +437,16 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
         },
       });
     } else {
+      ///Gnerate a new Text code
+    let code = generateTextCode(firstName, lastName, cellPhone);
+
+    //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+    const exisitingCode = await db.lead.findFirst({
+      where: { textCode: code },
+    });
+    if (exisitingCode) {
+      code = generateTextCode(firstName, lastName, cellPhone, true);
+    }
       await db.lead.create({
         data: {
           firstName,
@@ -440,6 +479,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           status,
           assistantId,
           notes,
+          textCode:code
         },
       });
     }

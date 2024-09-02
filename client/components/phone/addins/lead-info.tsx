@@ -15,9 +15,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import { GeneralInfoClient } from "@/components/lead/info/general-info";
-import { MainInfoClient } from "@/components/lead/info/main-info";
-import { CallInfo } from "@/components/lead/info/call-info";
+import { GeneralInfoClient } from "@/components/lead/info/general";
+import { MainInfoClient } from "@/components/lead/info/main";
+import { CallInfo } from "@/components/lead/info/call";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
@@ -114,13 +114,22 @@ export const PhoneLeadInfo = () => {
             />
           </div>
         </TabsContent>
-        <TabsContent value="beneficiaries">
+        <TabsContent
+          value="beneficiaries"
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+        >
           <BeneficiariesClient leadId={lead.id} />
         </TabsContent>
-        <TabsContent value="conditions">
+        <TabsContent
+          value="conditions"
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+        >
           <ConditionsClient leadId={lead.id} />
         </TabsContent>
-        <TabsContent value="expenses">
+        <TabsContent
+          className="flex-1 overflow-y-auto data-[state=active]:h-full"
+          value="expenses"
+        >
           <ExpensesClient leadId={lead.id} />
         </TabsContent>
       </Tabs>

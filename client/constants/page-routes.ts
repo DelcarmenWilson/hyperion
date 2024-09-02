@@ -1,5 +1,5 @@
-
 import {
+  Backpack,
   Bot,
   Calendar,
   GoalIcon,
@@ -68,10 +68,16 @@ export const AdminSidebarRoutes: NavType[] = [
     master: true,
   },
   {
+    title: "Campaigns",
+    href: "/admin/campaigns",
+    icon: Backpack,
+  },
+  {
     title: "Hp Leads",
     href: "/admin/hyperion-leads",
     icon: Heading,
-  }, {
+  },
+  {
     title: "Tasks",
     href: "/admin/tasks",
     icon: ListTodo,
@@ -80,6 +86,11 @@ export const AdminSidebarRoutes: NavType[] = [
     title: "WorkFlows",
     href: "/admin/workflows",
     icon: Workflow,
+  },
+  {
+    title: "Chatbot",
+    href: "/admin/chatbot",
+    icon: TestTube,
   },
 ];
 
@@ -177,10 +188,6 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Work Flows",
     href: "/workflows",
     icon: Workflow,
-  },{
-    title: "Chatbot",
-    href: "/chatbot",
-    icon: TestTube,
   },
   // {
   //   title: "Account settings",

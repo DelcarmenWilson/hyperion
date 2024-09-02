@@ -201,7 +201,6 @@ export const dateTimeDiff = function (date1: Date, date2: Date): number {
 
   // Calculate the difference in milliseconds
   const difference_ms = date2_ms - date1_ms;
-  console.log("date1",date1,"date2",date2,"date1_ms",date1_ms,"date2_ms",date2_ms)
 
   // Convert back to days and return
   return Math.round(difference_ms / ONE_DAY_MS) * -1;

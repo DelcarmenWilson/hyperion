@@ -1,33 +1,529 @@
 // FACEBOOK
 
 model Campaign {
-    id        String    @id @default(cuid())
-    name      String
-    objective String
-    status    String    @default("PAUSED")
-    startTime DateTime?
-    stopTime  DateTime?
+    id         String @id @default(cuid())
+    name       String
+    account_id String
 
-    ads       AdSet[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    bid_strategy         String? @default("LOWEST_COST_WITHOUT_CAP")
+    buying_type          String  @default("AUCTION")
+    daily_budget         String?
+    objective            String  @default("OUTCOME_LEADS")
+    smart_promotion_type String  @default("GUIDED_CREATION")
+    source_campaign_id   String  @default("0")
+
+    start_time DateTime?
+
+    status String @default("PAUSED")
+
+    adsets  CampaignAdset[]
+    user_id String
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
-model AdSet {
-    id               String    @id @default(cuid())
-    campaignId       String    @unique
-    campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-    name             String
-    optimizationGoal String
-    bidAmount        Int
-    dailyBudget      Int
-    // targeting - this is an array may need to create another table for this
-    startTime        DateTime?
-    stopTime         DateTime?
-    status           String    @default("PAUSED")
+model CampaignAdset {
+    id          String   @id @default(cuid())
+    campaign_id String
+    campaign    Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+    name        String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    billing_event          String? @default("IMPRESSIONS")
+    optimization_goal      String? @default("LEAD_GENERATION")
+    optimization_sub_event String? @default("IMPRESSIONS")
+
+    start_time DateTime?
+    status     String    @default("PAUSED")
+
+    audience_id String?
+    audience    CampaignAudience? @relation(fields: [audience_id], references: [id], onDelete: Cascade)
+
+    ads CampaignAd[]
+
+    // "attribution_spec": [
+    //     {
+    //         "event_type": "CLICK_THROUGH",
+    //         "window_days": 1
+    //     }
+    // ],
+
+    // targeting: {
+    //     "age_max": 65,
+    //     "age_min": 50,
+    //     "geo_locations": {
+    //         "regions": [
+    //             {
+    //                 "key": "3847",
+    //                 "name": "California",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3849",
+    //                 "name": "Connecticut",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3852",
+    //                 "name": "Florida",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3853",
+    //                 "name": "Georgia",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3865",
+    //                 "name": "Michigan",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3873",
+    //                 "name": "New Jersey",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3876",
+    //                 "name": "North Carolina",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3878",
+    //                 "name": "Ohio",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3886",
+    //                 "name": "Texas",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3889",
+    //                 "name": "Virginia",
+    //                 "country": "US"
+    //             }
+    //         ],
+    //         "location_types": [
+    //             "home",
+    //             "recent"
+    //         ]
+    //     },
+    //     "targeting_optimization": "expansion_all",
+    //     "brand_safety_content_filter_levels": [
+    //         "FACEBOOK_STANDARD",
+    //         "AN_STANDARD"
+    //     ],
+    //     "targeting_automation": {
+    //         "advantage_audience": 0
+    //     }
+    // },
+    // targeting_optimization_types: [
+    //     {
+    //         "key": "detailed_targeting",
+    //         "value": 0
+    //     },
+    //     {
+    //         "key": "lookalike",
+    //         "value": 0
+    //     }
+    // ]
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model CampaignAd {
+    id       String        @id @default(cuid())
+    adset_id String
+    adset    CampaignAdset @relation(fields: [adset_id], references: [id], onDelete: Cascade)
+
+    name          String
+    bid_type      String  @default("ABSOLUTE_OCPM")
+    demolink_hash String?
+
+    preview_shareable_link String?
+
+    creative_id String?
+    creative    CampaignCreative? @relation(fields: [creative_id], references: [id], onDelete: Cascade)
+
+    //Need to add the ad creative here
+
+    status String @default("PAUSED")
+    // "conversion_specs": [
+    //     {
+    //         "action.type": [
+    //             "leadgen"
+    //         ],
+    //         "leadgen": [
+    //             "190493214157280"
+    //         ]
+    //     }
+    // ],
+
+    // "creative": {
+    //     "id": "120211860472330222"
+    // },
+
+    // "targeting": {
+    //     "age_max": 65,
+    //     "age_min": 50,
+    //     "geo_locations": {
+    //         "regions": [
+    //             {
+    //                 "key": "3847",
+    //                 "name": "California",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3849",
+    //                 "name": "Connecticut",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3852",
+    //                 "name": "Florida",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3853",
+    //                 "name": "Georgia",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3865",
+    //                 "name": "Michigan",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3873",
+    //                 "name": "New Jersey",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3876",
+    //                 "name": "North Carolina",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3878",
+    //                 "name": "Ohio",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3886",
+    //                 "name": "Texas",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3889",
+    //                 "name": "Virginia",
+    //                 "country": "US"
+    //             }
+    //         ],
+    //         "location_types": [
+    //             "home",
+    //             "recent"
+    //         ]
+    //     },
+    //     "targeting_optimization": "expansion_all",
+    //     "brand_safety_content_filter_levels": [
+    //         "FACEBOOK_STANDARD",
+    //         "AN_STANDARD"
+    //     ],
+    //     "targeting_automation": {
+    //         "advantage_audience": 0
+    //     }
+    // },
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model CampaignCreative {
+    id         String @id @default(cuid())
+    account_id String
+
+    name                String
+    title               String?
+    body                String? @db.LongText
+    call_to_action_type String? @default("SIGN_UP")
+    image_hash          String?
+    image_url           String? @db.LongText
+    object_type         String  @default("SHARE")
+    thumbnail_url       String? @db.LongText
+    video_id            String?
+    status              String  @default("PAUSED")
+
+    // "degrees_of_freedom_spec": {
+    //     "creative_features_spec": {
+    //         "advantage_plus_creative": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "image_enhancement": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "image_templates": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "image_touchups": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "inline_comment": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "standard_enhancements": {
+    //             "enroll_status": "OPT_IN"
+    //         },
+    //         "text_optimizations": {
+    //             "enroll_status": "OPT_IN"
+    //         }
+    //     }
+    // },
+
+    // "object_story_spec": {
+    //     "page_id": "110064682200134",
+    //     "instagram_actor_id": "24234708516144816",
+    //     "link_data": {
+    //         "link": "http://fb.me/",
+    //         "message": body?????
+    //         "name": " Tomorrow is never guaranteed. TAKE ACTION NOW!",
+    //         "attachment_style": "link",
+    //         "image_hash": "e671fe96724e6be6265be53afa0d06b8",
+    //         // "call_to_action": {
+    //         //     "type": "SIGN_UP",
+    //         //     "value": {
+    //         //         "lead_gen_form_id": "437257342111938"
+    //         //     }
+    //         // }
+    //     }
+    // },
+
+    ads CampaignAd[]
+
+    user_id    String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model CampaignAudience {
+    id         String @id @default(cuid())
+    account_id String
+    name       String
+    run_status String @default("PAUSED")
+
+    // "sentence_lines": [
+    //     {
+    //         "content": "Location:",
+    //         "children": [
+    //             "United States: California; Connecticut; Florida; Georgia; Michigan; New Jersey; North Carolina; Ohio; Oklahoma; Pennsylvania; Texas; Virginia"
+    //         ]
+    //     },
+    //     {
+    //         "content": "Age:",
+    //         "children": [
+    //             "18 - 65+"
+    //         ]
+    //     },
+    //     {
+    //         "content": "Advantage detailed targeting:",
+    //         "children": [
+    //             "On"
+    //         ]
+    //     }
+    // ],
+    // "targeting": {
+    //     "age_max": 65,
+    //     "age_min": 18,
+    //     "geo_locations": {
+    //         "regions": [
+    //             {
+    //                 "key": "3847",
+    //                 "name": "California",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3849",
+    //                 "name": "Connecticut",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3852",
+    //                 "name": "Florida",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3853",
+    //                 "name": "Georgia",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3865",
+    //                 "name": "Michigan",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3873",
+    //                 "name": "New Jersey",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3876",
+    //                 "name": "North Carolina",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3878",
+    //                 "name": "Ohio",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3879",
+    //                 "name": "Oklahoma",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3881",
+    //                 "name": "Pennsylvania",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3886",
+    //                 "name": "Texas",
+    //                 "country": "US"
+    //             },
+    //             {
+    //                 "key": "3889",
+    //                 "name": "Virginia",
+    //                 "country": "US"
+    //             }
+    //         ],
+    //         "location_types": [
+    //             "home",
+    //             "recent"
+    //         ]
+    //     },
+    //     "targeting_optimization": "expansion_all"
+    // },
+
+    adsets CampaignAdset[]
+
+    user_id    String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model CampaignForm {
+    id   String @id @default(cuid())
+    name String
+
+    allow_organic_lead                    Boolean @default(false)
+    block_display_for_non_targeted_viewer Boolean @default(true)
+    expired_leads_count                   Int     @default(0)
+    follow_up_action_url                  String
+    leads_count                           Int     @default(0)
+    privacy_policy_url                    String
+    question_page_custom_headline         String
+
+    status String @default("PAUSED")
+
+    // "context_card": {
+    //     "title": "See if You Qualify For Up to $30,000 In Coverage",
+    //     "content": [
+    //         "Fill out this form to see if you qualify for the final expense forms in your area."
+    //     ],
+    //     "style": "PARAGRAPH_STYLE",
+    //     "id": "454217424042147"
+    // },
+
+    // legal_content: {
+    //     "id": "489474466956774",
+    //     "privacy_policy": {
+    //         "url": "https://strongsidefinancial.com/privacypolicy1",
+    //         "link_text": "Privacy policy"
+    //     },
+    //     "custom_disclaimer": {
+    //         "title": "Terms and Conditions for StrongSide Financial",
+    //         "body": {
+    //             "text": "By clicking 'Submit', I provide my electronic signature and agree that StrongSide Financial and its licensed agent partners may contact me. This contact may involve live agents, artificial or prerecorded voices, automated SMS texts, or emails, and may be initiated manually or by autodialer, to my residential or cellular number. This contact will be for the purpose of discussing my insurance options."
+    //         }
+    //     }
+    // },
+
+    // "questions": [
+    //     {
+    //         "key": "do_you_currently_have_coverage?",
+    //         "label": "Do you currently have coverage?",
+    //         "options": [
+    //             {
+    //                 "key": "yes,_but_looking_for_more_affordable_rates_or_additional_coverage",
+    //                 "value": "Yes, but looking for more affordable rates or additional coverage"
+    //             },
+    //             {
+    //                 "key": "no,_and_i_am_looking_for_coverage",
+    //                 "value": "No, and I am looking for coverage"
+    //             }
+    //         ],
+    //         "type": "CUSTOM",
+    //         "id": "413385777718598"
+    //     },
+    //     {
+    //         "key": "if_you_qualify_who_will_be_your_beneficiary?",
+    //         "label": "If you qualify who will be your beneficiary?",
+    //         "type": "CUSTOM",
+    //         "id": "986501836356726"
+    //     },
+    //     {
+    //         "key": "first_name",
+    //         "label": "First name",
+    //         "type": "FIRST_NAME",
+    //         "id": "384159450952867"
+    //     },
+    //     {
+    //         "key": "last_name",
+    //         "label": "Last name",
+    //         "type": "LAST_NAME",
+    //         "id": "1040224157569141"
+    //     },
+    //     {
+    //         "key": "email",
+    //         "label": "Email",
+    //         "type": "EMAIL",
+    //         "id": "453820697464083"
+    //     },
+    //     {
+    //         "key": "phone_number",
+    //         "label": "Phone number",
+    //         "type": "PHONE",
+    //         "id": "833262938760679"
+    //     },
+    //     {
+    //         "key": "state",
+    //         "label": "State",
+    //         "type": "STATE",
+    //         "id": "509933588374251"
+    //     },
+    //     {
+    //         "key": "date_of_birth",
+    //         "label": "Date of birth",
+    //         "type": "DOB",
+    //         "id": "440062898932032"
+    //     }
+    // ],
+
+    // thank_you_page: {
+    //     "id": "1253928308925405"
+    //     "title": "CONGRATULATIONS YOU'RE PRE-APPROVED!",
+    //     "body": "A member of our team will be in touch shortly to assist you with the Senior Burial Insurance Program.\n\n NEXT STEP: Click below to complete the Pre-Qualification Questionnaire to see what part of the program you qualify for!",
+    //     "button_text": "Activate Coverage For Your Family",
+    //     "enable_messenger": false,
+    //     "button_type": "VIEW_WEBSITE",
+    //     "website_url": "https://strongsidefinancial.com/prequalify-for-coverage",
+    // }
+
+    user_id    String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model HyperionLead {

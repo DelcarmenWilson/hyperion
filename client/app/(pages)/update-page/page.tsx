@@ -1,9 +1,7 @@
 import React from "react";
 import { Sparkle } from "lucide-react";
-import {
-  Accordion
-} from "@/components/ui/accordion";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { Accordion } from "@/components/ui/accordion";
+import { PageLayout } from "@/components/custom/layout/page";
 import { PageUpdateList } from "./components/list";
 import { pageUpdatesGetAll } from "@/actions/admin/page-update";
 import { formatDate } from "@/formulas/dates";
