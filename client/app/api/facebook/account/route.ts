@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const BASE_URL = "https://graph.facebook.com/v20.0/";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     let fields: any, params: any;
     fields = [

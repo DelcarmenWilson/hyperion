@@ -60,7 +60,7 @@ export const MainNav = () => {
       | "forms"
       | "import"
   ) => {
-    const response = await axios.get(`/api/facebook/${type}`);
+    const response = await axios.post(`/api/facebook/${type}`);
     console.log(response.data);
   };
 

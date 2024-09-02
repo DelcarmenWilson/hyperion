@@ -153,7 +153,7 @@ export async function POST(req: Request) {
       content,
       conversationId: conversation.id,
       senderId: conversation.agentId,
-      hasSeen: false,
+      hasSeen: true,
       sid,
     })
   ).success;

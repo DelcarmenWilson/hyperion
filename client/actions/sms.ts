@@ -116,7 +116,7 @@ export const smsCreateInitial = async (leadId: string) => {
     content: prompt,
     conversationId,
     senderId: user.id,
-    hasSeen: false,
+    hasSeen: true,
   });
   //send the message to the lead via sms and await the response
   const result = await client.messages.create({
@@ -131,7 +131,7 @@ export const smsCreateInitial = async (leadId: string) => {
     content: message,
     conversationId,
     senderId: user.id,
-    hasSeen: false,
+    hasSeen: true,
     sid: result.sid,
   });
 

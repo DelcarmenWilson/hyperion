@@ -23,9 +23,8 @@ export const MessageBox = ({ data, username, isLast }: MessageProps) => {
   const body = cn("flex flex-col mb-2", isOwn && "items-end");
 
   const message = cn(
-    "text-sm max-w-[60%]",
-    isOwn ? "bg-primary text-background" : "bg-accent",
-    "rounded-md py-2 px-3 text-wrap  break-words"
+    "relative text-sm max-w-[60%] rounded-md py-2 px-3 text-wrap  break-words",
+    isOwn ? "bg-primary text-background" : "bg-accent"
   );
 
   return (
