@@ -1,6 +1,6 @@
 import React from "react";
 import { GoalIcon } from "lucide-react";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { AgentWorkInfoClient } from "./components/agent-work-info/client";
 import { BluePrintYearlyClient } from "./components/yearly/client";
 import { BluePrintWeeklyClient } from "./components/weekly/client";

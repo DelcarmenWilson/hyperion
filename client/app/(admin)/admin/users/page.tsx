@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
 import { UserTopMenu } from "./components/top-menu";

@@ -17,13 +17,12 @@ export const taskDeleteById = async (id: string) => {
     return { error: "Task does not exists!" };
   }
 
-  if (existingTask.published) {
+  if (existingTask.published) 
     return { error: "Please unpublish the task before deleting!" };
-  }
-
+  
   await db.task.delete({ where: { id } });
 
-  return { success: `Task has been deleted!` };
+  return { success: "Task has been deleted!" };
 };
 export const taskInsert = async (values: TaskSchemaType) => {
   const user = await currentUser();

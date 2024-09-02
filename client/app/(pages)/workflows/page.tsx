@@ -1,4 +1,4 @@
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { Workflow } from "lucide-react";
 import React from "react";
 import { WorkFlowClient } from "./components/client";

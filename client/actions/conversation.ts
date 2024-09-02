@@ -1,7 +1,72 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { ShortConversation } from "@/types";
+import { userGetByAssistant } from "@/data/user";
 //DATA
+export const conversationGetLast = async () => {
+  try {
+    const user = await currentUser();
+    if (!user?.email) {
+      return null;
+    }
+
+    let agentId = user.id;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
+
+    const conversation = await db.conversation.findFirst({
+      where: { agentId },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return conversation;
+  } catch {
+    return null;
+  }
+};
+
+export const conversationsGetByUserId = async () => {
+  try {
+    const user = await currentUser();
+    if (!user?.email) {
+      return [];
+    }
+
+    let agentId = user.id;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
+
+    const conversations = await db.conversation.findMany({
+      where: { agentId },
+      include: {
+        lead: true,
+        lastMessage:true,
+        messages: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    const  formattedConversations: ShortConversation[] = conversations.map(
+      (conversation) => ({
+        ...conversation,
+        firstName: conversation.lead.firstName,
+        lastName: conversation.lead.lastName,
+        disposition: "",
+        cellPhone: conversation.lead.cellPhone,
+        message: conversation.lastMessage?.content!,
+        unread: conversation.messages.filter((message) => !message.hasSeen)
+          .length,
+      })
+    );
+    return formattedConversations;
+  } catch {
+    return [];
+  }
+};
+
 export const conversationsGetByUserIdUnread = async () => {
    try {
   const user = await currentUser();
@@ -21,6 +86,60 @@ export const conversationsGetByUserIdUnread = async () => {
     return [];
   }
 };
+
+export const conversationGetById = async (conversationId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user?.email) {
+      return null;
+    }
+    
+    let agentId = user.id;
+    if (user.role == "ASSISTANT") {
+      agentId = (await userGetByAssistant(user.id)) as string;
+    }
+    const conversation = await db.conversation.findUnique({
+      where: { id: conversationId, agentId },
+      include: {
+        lead: {
+          include: {
+
+            calls: true,
+            appointments: true,
+            activities: true,
+            beneficiaries: true,
+            expenses: true,
+            conditions: { include: { condition: true } },
+            policy: true,
+          },
+        },
+        lastMessage:true,
+        messages: true,
+      },
+    });
+    return conversation;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const conversationGetByLeadId = async (leadId: string) => {
+  try {
+    const conversation = await db.conversation.findFirst({
+      where: { leadId },
+      include: {
+        lead: {
+          include: { calls: true, appointments: true, activities: true },
+        },
+        messages: true,
+      },
+    });
+    return conversation;
+  } catch (error) {
+    return null;
+  }
+};
+
 //ACTIONS
 export const conversationInsert = async (
   agentId: string,

@@ -16,7 +16,7 @@ import {
 import {
   Appointment,
   Feedback,
-  GptMessage,
+  ChatbotMessage,
   HyperionLead,
   LeadStatus,
   Message,
@@ -60,7 +60,7 @@ type UserEvents = {
 
   mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
-  gptMessageInserted: [info: GptMessage[]];
+  chatbotMessageInserted: [info: ChatbotMessage[]];
   messageInserted: [info: Message];
 
   presetInserted: [Presets];

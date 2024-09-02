@@ -8,7 +8,7 @@ import { FullAppointment } from "@/types";
 
 import { DataTable } from "@/components/tables/data-table";
 import { DateRange } from "react-day-picker";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { TopMenu } from "./top-menu";
 import { columns } from "./columns";

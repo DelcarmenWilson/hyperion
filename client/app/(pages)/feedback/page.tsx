@@ -2,7 +2,7 @@ import React from "react";
 import { MessageSquarePlus } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 
 import { FeedbackForm } from "./components/shared/form";
 import { FeedbackList } from "./components/list";
