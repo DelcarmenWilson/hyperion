@@ -235,3 +235,26 @@ export const chatbotSettingsUpsert = async (values: ChatbotSettingsSchemaType) =
 
   return { success: newSettings };
 };
+
+export const gptSettingsInsert = async (values: GptSettingsSchemaType) => {
+  const user = await currentUser();
+
+  if (!user) return { error: "Unauthenticated" };
+
+  const validated = GptSettingsSchema.safeParse(values);
+
+  if (!validated.success) return { error: "Invalid Fields" };
+
+  const { prompt, leadInfo } = validated.data;
+
+  const newSettings= await db.gptSettings.create({
+    data: {
+      prompt,
+      leadInfo,
+      userId: user.id,
+    },
+  });
+  return {success:newSettings}
+};
+
+
