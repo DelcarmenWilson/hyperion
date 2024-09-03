@@ -1,7 +1,7 @@
 import { UserSquare } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { TopMenu } from "./components/top-menu";
 import { SalesClient } from "./components/client";
 import { leadsGetAllByAgentId } from "@/actions/lead";

@@ -66,10 +66,12 @@ model User {
     // ONE TO ONE RELATIONS
     assitantRel User?      @relation("AssitantToUser")
 
-    //link with target table
-    blueprints BluePrint[]
-
+    //LINK WITH TARGET TABLE
+    blueprints    BluePrint[]
     agentWorkInfo AgentWorkInfo?
+
+    //FACEBOOK ADD ACCOUNT
+    adAccount String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

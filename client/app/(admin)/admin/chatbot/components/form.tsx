@@ -30,23 +30,25 @@ import {
 import { leadUpdateByIdMainInfo } from "@/actions/lead";
 
 import { states } from "@/constants/states";
-import { GptSettingsSchema, GptSettingsSchemaType } from "@/schemas/test";
 import {
-  gptMessageInsert,
-  gptSettingsInsert,
-  gptSettingsUpsert,
-} from "@/actions/test";
+  ChatbotSettingsSchema,
+  ChatbotSettingsSchemaType,
+} from "@/schemas/chatbot";
+import {
+  chatbotMessageInsert,
+  chatbotSettingsInsert,
+  chatbotSettingsUpsert,
+} from "@/actions/chatbot";
 import { Textarea } from "@/components/ui/textarea";
-import { useGptChatActions } from "@/hooks/use-gpt-chat";
-
+import { useChatbotActions } from "../hooks/use-chatbot";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
 export const ChatSettingsForm = ({ isOpen, onClose }: Props) => {
-  const { loading, form, onCancel, onGpSettingsFormSubmit } =
-    useGptChatActions(onClose);
+  const { loading, form, onCancel, onChatbotSettingsSubmit } =
+    useChatbotActions(onClose);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -56,7 +58,7 @@ export const ChatSettingsForm = ({ isOpen, onClose }: Props) => {
           <Form {...form}>
             <form
               className="space-y-2 px-2 w-full"
-              onSubmit={form.handleSubmit(onGpSettingsFormSubmit)}
+              onSubmit={form.handleSubmit(onChatbotSettingsSubmit)}
             >
               {/* PROMPT */}
               <FormField

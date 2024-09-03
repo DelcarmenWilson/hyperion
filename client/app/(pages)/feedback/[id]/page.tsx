@@ -1,7 +1,7 @@
 import React from "react";
 import { MessageSquarePlus } from "lucide-react";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { FeedbackForm } from "../components/shared/form";
 import { DevFeedbackForm } from "./components/dev-feedback-form";
 

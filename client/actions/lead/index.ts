@@ -134,6 +134,34 @@ export const leadGetById = async (id: string) => {
     return null;
   }
 };
+export const leadGetByConversationId = async (id: string) => {
+  try {
+const conversation=await db.conversation.findUnique({where:{id}})
+if(!conversation)
+  return null
+
+    const lead = await db.lead.findUnique({
+      where: {
+        id:conversation.leadId,
+      },
+      include: {
+
+        calls: true,
+        appointments: true,
+        activities: true,
+        beneficiaries: true,
+        expenses: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
+
+
 export const leadGetByPhone = async (cellPhone: string) => {
   try {
     const lead = await db.lead.findFirst({

@@ -2,8 +2,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import SocketContext from "@/providers/socket";
 
-import useConversation from "@/hooks/user-conversation";
 import axios from "axios";
+import { useConversationId } from "@/hooks/use-conversation";
 
 import { FullConversation, FullMessage } from "@/types";
 import { MessageBox } from "@/components/reusable/message-box";
@@ -13,7 +13,7 @@ export const Body = ({ initialData }: { initialData: FullConversation }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState(initialData.messages);
-  const { conversationId } = useConversation();
+  const { conversationId } = useConversationId();
 
   const leadName = initialData.lead.lastName as string;
 

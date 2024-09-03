@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { TopMenu } from "./components/top-menu";
 import { CarrierForm } from "./components/form";
 import { CarrierConditionClient } from "./components/carrier-condition/client";

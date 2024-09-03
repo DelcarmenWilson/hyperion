@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 
 import { CampaignSchema, CampaignSchemaType } from "@/schemas/campaign";
-import { campaignInsert } from "@/actions/admin/campaign";
+import { campaignInsert } from "@/actions/facebook/campaign";
 import { TargetSelect } from "./select";
 
 type Props = {
@@ -45,7 +45,7 @@ export const CampaignForm = ({ isOpen, onClose }: Props) => {
 
   const form = useForm<CampaignSchemaType>({
     resolver: zodResolver(CampaignSchema),
-    defaultValues: { status: "paused", startDate: new Date() },
+    defaultValues: { status: "paused", start_time: new Date() },
   });
 
   const onCancel = () => {
@@ -158,25 +158,20 @@ export const CampaignForm = ({ isOpen, onClose }: Props) => {
               />
 
               {/* TARGETID */}
-              <FormField
+              {/* <FormField
                 control={form.control}
-                name="targetId"
+                name="target_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>TargetId</FormLabel>
                     <FormControl>
                       <TargetSelect {...field} />
-                      {/* <Input
-                        {...field}
-                        placeholder="TargetId"
-                        disabled={loading}
-                        autoComplete="TargetId"
-                      /> */}
+                     
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
                 <Button

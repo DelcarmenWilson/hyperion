@@ -1,20 +1,28 @@
 "use client";
 import { useState } from "react";
-import { Notebook, Plus, Settings } from "lucide-react";
-import { useCampaignData } from "@/hooks/use-campaigns";
+import { useCampaign, useCampaignData } from "../hooks/use-campaigns";
 
 import { Button } from "@/components/ui/button";
-import { EmptyCard } from "@/components/reusable/empty-card";
 import { CampaignCard } from "./card";
 import { CampaignForm } from "./form";
-import { FormForm } from "./form-form";
-import { AudienceForm } from "./audience-form";
+import { CampaignSection } from "./section";
+import { EmptyCard } from "@/components/reusable/empty-card";
+import { useFacebookData } from "@/app/(pages)/settings/(routes)/config/hooks/use-config";
 
 export const CampaignsClient = () => {
   const [campaingnOpen, setCampaingnOpen] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
-  const [audienceOpen, setAudienceOpen] = useState(false);
-  const { campaigns } = useCampaignData();
+  const { adAccount } = useFacebookData();
+
+  const {
+    isFormViewOpen,
+    setFormViewOpen,
+    isAudienceViewOpen,
+    setAudienceViewOpen,
+    isCreativeViewOpen,
+    setCreativeViewOpen,
+  } = useCampaign();
+  const { campaignId, adsetId, adId, campaigns, onImportCampaings } =
+    useCampaignData(adAccount as string);
 
   return (
     <>
@@ -22,58 +30,105 @@ export const CampaignsClient = () => {
         isOpen={campaingnOpen}
         onClose={() => setCampaingnOpen(false)}
       />
-      <FormForm isOpen={formOpen} onClose={() => setFormOpen(false)} />
-      <AudienceForm
-        isOpen={audienceOpen}
-        onClose={() => setAudienceOpen(false)}
-      />
-
-      <div className="flex flex-col h-full w-[250px] gap-1 p-1">
-        <div className="flex justify-between items-center">
-          <h4 className="text-lg text-muted-foreground font-semibold">
-            Campaigns
-          </h4>
-
-          <Button size={"icon"} onClick={() => setCampaingnOpen(true)}>
-            <Plus size={16} />
-          </Button>
-        </div>
+      <div className="flex flex-col h-full w-full gap-1 p-1">
         <div className="flex-1 space-y-2 overflow-y-auto h-full">
           {campaigns && campaigns.length > 0 ? (
-            <>
+            <CampaignSection
+              label="Campaigns"
+              hint="new campaign"
+              onNew={() => setCampaingnOpen(true)}
+            >
               {campaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
+                <CampaignCard
+                  key={campaign.id}
+                  name={campaign.name}
+                  updated_at={campaign.updated_at}
+                  link={`/admin/campaigns/${campaign.id}`}
+                  active={campaignId == campaign.id}
+                >
+                  <CampaignSection
+                    label="Adsets"
+                    hint="new adset"
+                    header={false}
+                  >
+                    {campaign.adsets?.map((adset) => (
+                      <CampaignCard
+                        key={adset.id}
+                        name={adset.name}
+                        updated_at={adset.updated_at}
+                        link={`/admin/campaigns/${campaign.id}/${adset.id}`}
+                        active={adsetId == adset.id}
+                      >
+                        <CampaignSection
+                          label="Ads"
+                          hint="new ad"
+                          header={false}
+                        >
+                          {adset.ads?.map((ad) => (
+                            <CampaignCard
+                              key={ad.id}
+                              name={ad.name}
+                              updated_at={ad.updated_at}
+                              link={`/admin/campaigns/${campaign.id}/${adset.id}/${ad.id}`}
+                              active={adId == ad.id}
+                              arrow={false}
+                            />
+                          ))}
+                        </CampaignSection>
+                      </CampaignCard>
+                    ))}
+                  </CampaignSection>
+                </CampaignCard>
               ))}
-            </>
+            </CampaignSection>
           ) : (
             <EmptyCard
               title="No Campaigns"
               subTitle={
-                <Button onClick={() => setCampaingnOpen(true)}>
-                  New Campaign
-                </Button>
+                <div className="flex flex-col gap-2 justify-center items-center">
+                  <Button onClick={() => setCampaingnOpen(true)}>
+                    New Campaign
+                  </Button>
+                  {adAccount && (
+                    <>
+                      <span>OR</span>
+                      <Button onClick={onImportCampaings}>
+                        Import Existing Campaigns
+                      </Button>
+                    </>
+                  )}
+                </div>
               }
             />
           )}
         </div>
-        <div className="flex justify-between border-t pt-2 gap-2">
-          <Button
-            className="gap-2"
-            size="sm"
-            variant="outline"
-            onClick={() => setFormOpen(true)}
-          >
-            <Plus size={16} /> Form
-          </Button>
-          <Button
-            className="gap-2"
-            size="sm"
-            variant="outline"
-            onClick={() => setAudienceOpen(true)}
-          >
-            <Plus size={16} /> Audience
-          </Button>
-        </div>
+        {campaignId && (
+          <div className="flex justify-between py-2 gap-2">
+            <Button
+              className="gap-2"
+              size="sm"
+              variant={isFormViewOpen ? "default" : "outline"}
+              onClick={setFormViewOpen}
+            >
+              Forms
+            </Button>
+            <Button
+              size="sm"
+              variant={isAudienceViewOpen ? "default" : "outline"}
+              onClick={setAudienceViewOpen}
+            >
+              Audiences
+            </Button>
+            <Button
+              className="gap-2"
+              size="sm"
+              variant={isCreativeViewOpen ? "default" : "outline"}
+              onClick={setCreativeViewOpen}
+            >
+              Creatives
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

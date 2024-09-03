@@ -6,7 +6,7 @@ export type FullMessage = Message & {
   sender?: User | null;
 };
 
-// CHAT
+// CONVERSATIONS
 export type ShortConvo = Conversation & {
   lead:Lead,
   lastMessage:Message | null
@@ -24,6 +24,12 @@ export type ShortConversation = {
 
 export type FullConversation = Conversation & {
   lead: FullLeadNoConvo;
+  messages: FullMessage[];
+};
+
+export type FullConversationWithLead = Conversation & {
+  lead: Lead;
+  lastMessage:Message | null
   messages: FullMessage[];
 };
 

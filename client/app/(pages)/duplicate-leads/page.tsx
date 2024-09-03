@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 
 import { LeadClient } from "./components/client";
 import { leadDuplicatesGetAllByUserId } from "@/actions/lead/duplicate";

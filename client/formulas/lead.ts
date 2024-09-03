@@ -139,8 +139,8 @@ const Amm_Leads = (
         d["do_you_currently_have_coverage?"] ==
         "no,_and_i_am_looking_for_coverage"
           ? false
-          : true,notes:`Beneficary:${d["if_you_qualify_who_will_be_your_beneficiary?"]}`
-          
+          : true,
+      notes: `Beneficary:${d["if_you_qualify_who_will_be_your_beneficiary?"]}`,
     };
     mapped.push(newobj);
   });
@@ -398,6 +398,41 @@ const ProspectForLeads = (
       type,
       status,
       assistantId,
+    };
+    mapped.push(newobj);
+  });
+  return mapped;
+};
+
+export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
+  let mapped: LeadSchemaType[] = [];
+  result.map((d: any) => {
+    const newobj: LeadSchemaType = {
+      id: d["id"],
+      firstName: capitalize(d["first_name"]),
+      lastName: capitalize(d["last_name"]),
+      email: d["email"].toLowerCase(),
+      homePhone: reFormatPhoneNumber(d["phone_number"]),
+      cellPhone: reFormatPhoneNumber(d["phone_number"]),
+      dateOfBirth: d["date_of_birth"].trim(),
+      address: "N/A",
+      city: "N/A",
+      state: capitalize(d["state"]),
+      zipCode: "N/A",
+      gender: "NA",
+      maritalStatus: "Single",
+      height: "",
+      recievedAt: d["created_time"],
+      vendor: "Amm_Leads",
+      type: "General",
+      status: "New",
+      currentlyInsured:
+        d["do_you_currently_have_coverage?"] ==
+        "no,_and_i_am_looking_for_coverage"
+          ? false
+          : true,
+      notes: `Beneficary:${d["if_you_qualify_who_will_be_your_beneficiary?"]}`,
+      adId: d["ad_id"],
     };
     mapped.push(newobj);
   });

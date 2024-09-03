@@ -1,6 +1,6 @@
 import { ListTodo } from "lucide-react";
 
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 
 import { taskGetById, taskGetPrevNextById } from "@/data/task";
 import { TaskIdForm } from "./components/form";

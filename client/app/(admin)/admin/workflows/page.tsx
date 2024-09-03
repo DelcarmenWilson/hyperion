@@ -1,6 +1,6 @@
 import React from "react";
 import { Workflow } from "lucide-react";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TriggersClient } from "./components/trigger/client";
 import { ActionsClient } from "./components/action/client";

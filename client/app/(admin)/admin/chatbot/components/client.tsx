@@ -1,31 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Plus, Settings } from "lucide-react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { ShortGptConversation } from "@/types";
+import { ShortChatbotConversation } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { GptConversationCard } from "./card";
-import {
-  gptConversationInsert,
-  gptConversationsGetByUserId,
-} from "@/actions/test";
-import { ChatSettingsForm } from "./form";
-import { useGptChatData } from "@/hooks/use-gpt-chat";
+import { ChatbotConversationCard } from "./card";
 
-export const GptConversationsClient = ({
-  activeConvo,
-}: {
-  activeConvo?: string;
-}) => {
+import { ChatSettingsForm } from "./form";
+import { useChatbotData } from "../hooks/use-chatbot";
+
+export const GptConversationsClient = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { conversations, onGptConversationInsert } = useGptChatData();
+  const { chatId, conversations, onChatbotConversationInsert } =
+    useChatbotData();
 
   // useEffect(() => {
   //   const onMessageInserted = (newMessage: GptMessage) => {
@@ -68,7 +59,7 @@ export const GptConversationsClient = ({
             Chat History
           </h4>
 
-          <Button size={"icon"} onClick={onGptConversationInsert}>
+          <Button size={"icon"} onClick={onChatbotConversationInsert}>
             <Plus size={16} />
           </Button>
         </div>
@@ -76,9 +67,9 @@ export const GptConversationsClient = ({
           {conversations && conversations.length > 0 ? (
             <>
               {conversations.map((conversation) => (
-                <GptConversationCard
+                <ChatbotConversationCard
                   key={conversation.id}
-                  active={activeConvo == conversation.id}
+                  active={chatId == conversation.id}
                   conversation={conversation}
                 />
               ))}
@@ -87,7 +78,7 @@ export const GptConversationsClient = ({
             <EmptyCard
               title="No Chat History"
               subTitle={
-                <Button onClick={onGptConversationInsert}>Start Now</Button>
+                <Button onClick={onChatbotConversationInsert}>Start Now</Button>
               }
             />
           )}

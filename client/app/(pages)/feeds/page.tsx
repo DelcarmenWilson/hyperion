@@ -1,5 +1,5 @@
 import React from "react";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { MessageSquarePlus } from "lucide-react";
 import { FeedsClient } from "./components/client";
 

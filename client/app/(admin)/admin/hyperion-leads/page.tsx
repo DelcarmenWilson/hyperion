@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { HyperionLeadClient } from "./components/client";
 import { hyperionLeadsGetAll } from "@/data/hyperion";
 

@@ -22,8 +22,14 @@ const newQouteJob = cron.schedule("0 0 * * *", () => {
   axiosCall("newQuote")
 });
 
+//Run everyday at 12am - gets a new randowm quote to display on the dashboard
+const leadsRetrievalJob = cron.schedule("30 * * * *", () => {  
+  axiosCall("newLeads")
+});
+
 export const runJobs = () => {
   //  testJob.start();
   bluePrintTargets.start();
   newQouteJob.start()
+  leadsRetrievalJob.start()
 };

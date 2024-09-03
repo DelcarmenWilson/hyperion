@@ -57,7 +57,7 @@ export const ConditionForm = ({
     queryKey: ["adminConditions"],
     queryFn: () => adminMedicalConditionsGetAll(),
   });
-  console.log(conditionsQuery.data);
+
   const { mutate, isPending } = useMutation({
     mutationFn: condition ? leadConditionUpdateById : leadConditionInsert,
     onSuccess: () => {
@@ -82,6 +82,7 @@ export const ConditionForm = ({
 
   const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
+    //@ts-ignore
     defaultValues: condition || {
       leadId: leadId,
       conditionId: "",

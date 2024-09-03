@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useQuery } from "@tanstack/react-query";
+import { useConversationId } from "@/hooks/use-conversation";
 
 import { cn } from "@/lib/utils";
 
@@ -22,16 +24,21 @@ import {
   LeadMainSchemaType,
   LeadPolicySchemaType,
 } from "@/schemas/lead";
+import { leadGetByConversationId } from "@/actions/lead";
 
 type ConversationLeadInfoProps = {
-  lead: FullLeadNoConvo;
   size?: string;
 };
 export const ConversationLeadInfo = ({
-  lead,
   size = "full",
 }: ConversationLeadInfoProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { conversationId } = useConversationId();
+
+  const { data: lead, isFetching } = useQuery<FullLeadNoConvo | null>({
+    queryFn: () => leadGetByConversationId(conversationId),
+    queryKey: [`lead-info-${conversationId}`],
+  });
 
   useEffect(() => {
     userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));

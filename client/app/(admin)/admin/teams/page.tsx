@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { TeamForm } from "./components/form";
 import { teamsGetAll } from "@/data/team";
 import { TeamClient } from "./components/client";

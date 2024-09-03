@@ -67,7 +67,10 @@ export const usersGetAllChat = async () => {
         chatId: "",
         online: false,
         calls: usr.calls.length,
-        duration: usr.loginStatus.reduce((sum, login) => sum + login.duration, 0),
+        duration: usr.loginStatus.reduce(
+          (sum, login) => sum + login.duration,
+          0
+        ),
       };
     });
 
@@ -78,7 +81,7 @@ export const usersGetAllChat = async () => {
 };
 
 const getChatId = async (myUserId: string, otherUserId: string) => {
-  const chat=await db.chat.findFirst({
+  const chat = await db.chat.findFirst({
     where: {
       OR: [
         { userOneId: myUserId, userTwoId: otherUserId },
@@ -122,6 +125,25 @@ export const usersGetSummaryByTeamId = async () => {
     return agents as SummaryUser[];
   } catch {
     return [];
+  }
+};
+
+export const userGetAdAccount = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return null;
+    }
+    const account = await db.user.findUnique({
+      where: { id: user.id },
+      select: { adAccount: true },
+    });
+    if (!account) {
+      return null;
+    }
+    return account.adAccount;
+  } catch {
+    return null;
   }
 };
 
@@ -925,4 +947,21 @@ export const userTemplateUpdateById = async (
   });
 
   return { success: template };
+};
+
+//FACEBOOK
+export const userUpdateAdAccount = async (adAccount: string) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthentiocated" };
+  }
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      adAccount,
+    },
+  });
+
+  return { success: "Ad Account has been udated" };
 };

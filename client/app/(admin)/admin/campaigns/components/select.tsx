@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { CampaignTargetAudience, UserRole } from "@prisma/client";
+import { CampaignAudience } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import Loader from "@/components/reusable/loader";
 import { useQuery } from "@tanstack/react-query";
-import { campaignTargetAudiencesGetAllByUserId } from "@/actions/admin/campaign";
+import { campaignAudiencesGetAll } from "@/actions/facebook/audience";
 
 type Props = {
   value: string | undefined;
@@ -20,10 +20,10 @@ type Props = {
 
 export const TargetSelect = ({ value, onChange }: Props) => {
   const { data: targets, isFetching: isTargetsFetching } = useQuery<
-    CampaignTargetAudience[]
+    CampaignAudience[]
   >({
     queryKey: ["selectAudience"],
-    queryFn: () => campaignTargetAudiencesGetAllByUserId(),
+    queryFn: () => campaignAudiencesGetAll(),
   });
 
   return (

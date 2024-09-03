@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 

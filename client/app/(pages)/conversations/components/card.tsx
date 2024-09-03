@@ -3,12 +3,13 @@ import React from "react";
 import Link from "next/link";
 import { ShortConversation } from "@/types";
 import { formatDistance } from "date-fns";
+import { cn } from "@/lib/utils";
 
-export const ConversationCard = ({
-  conversation,
-}: {
+type Props = {
   conversation: ShortConversation;
-}) => {
+  active: boolean;
+};
+export const ConversationCard = ({ conversation, active }: Props) => {
   const initials = `${conversation.firstName.substring(
     0,
     1
@@ -17,7 +18,10 @@ export const ConversationCard = ({
   return (
     <Link
       href={`/conversations/${conversation.id}`}
-      className="flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer"
+      className={cn(
+        "flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer",
+        active && "bg-secondary"
+      )}
     >
       <div className="flex justify-between items-center">
         <div className="relative">

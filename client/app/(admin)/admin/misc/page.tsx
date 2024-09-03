@@ -1,4 +1,4 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-layout-admin";
+import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NumberChange } from "./components/change-number";
 import { PhoneUpdate } from "./components/phone-update";

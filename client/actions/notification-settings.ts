@@ -8,6 +8,24 @@ import {
 } from "@/schemas/settings";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 
+//DATA
+export const notificationSettingsGet = async () => {
+  try {
+    const user=await currentUser()
+    if(!user){
+      return null
+    }
+    const notificationSettings = await db.notificationSettings.findUnique({
+      where: {
+        userId:user.id,
+      },
+    });
+    return notificationSettings;
+  } catch {
+    return null;
+  }
+};
+//ACTIONS
 export const notificationSettingsInsert = async (userId: string) => {
   const existingSettings = await db.notificationSettings.findUnique({
     where: { userId },
@@ -27,7 +45,7 @@ export const notificationSettingsInsert = async (userId: string) => {
   return { success: notificationSettings };
 };
 
-export const notificationSettingsUpdateByUserId = async (
+export const notificationSettingsUpdate = async (
   values: NotificationSettingsSchemaType
 ) => {
   const validatedFields = NotificationSettingsSchema.safeParse(values);
@@ -70,7 +88,7 @@ export const notificationSettingsUpdateByUserId = async (
   };
 };
 
-//TODO - dont forget to remove this as it should only sun once
+//TODO - dont forget to remove this as it should only use once
 export const notificationSettingsInsertAll = async () => {
   const role = await currentRole();
 

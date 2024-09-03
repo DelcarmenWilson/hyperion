@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { PageLayout } from "@/components/custom/layout/page-layout";
+import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeadTabsClient } from "./components/tabs-client";
 import { LeadClient } from "./components/client";
