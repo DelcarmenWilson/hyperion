@@ -7,8 +7,6 @@ import { FacebookForm } from "./form";
 export const FacebookClient = () => {
   const { adAccount, isFetchingAdAccount, loading, onAdAccountSubmit } =
     useFacebookData();
-  if (adAccount == undefined) return null;
-
   return (
     <SkeletonWrapper isLoading={isFetchingAdAccount}>
       <FacebookForm

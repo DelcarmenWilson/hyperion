@@ -6,7 +6,7 @@ import { Heading } from "@/components/custom/heading";
 import { Input } from "@/components/ui/input";
 
 type Props = {
-  adAccount: string | null;
+  adAccount: string | null | undefined;
   loading: boolean;
   onSubmit: (e: string) => void;
 };
@@ -26,7 +26,7 @@ export const FacebookForm = ({ adAccount, loading, onSubmit }: Props) => {
         <div className="flex justify-end mt-2">
           <Button
             disabled={loading || adAccount == account}
-            onClick={() => onSubmit(account)}
+            onClick={() => onSubmit(account.replaceAll(" ", ""))}
           >
             Save
           </Button>

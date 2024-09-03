@@ -34,6 +34,7 @@ export const convertUsers = (result: any): User[] => {
       isTwoFactorEnabled: d["isTwoFactorEnabled"] == "f" ? false : true,
       teamId: d["teamId"],
       assitantId: d["assitantId"],
+      adAccount:d["adAccount"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };
@@ -109,6 +110,7 @@ export const convertLeads = (result: any): Lead[] => {
   result.data.map((d: any) => {
     const newobj: Lead = {
       id: d["id"],
+      adId:d["adId"],
       firstName: d["firstName"],
       lastName: d["lastName"],
       address: d["address"],

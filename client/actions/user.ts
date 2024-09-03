@@ -963,5 +963,5 @@ export const userUpdateAdAccount = async (adAccount: string) => {
     },
   });
 
-  return { success: "Ad Account has been udated" };
+  return { success: "Ad account has been added!" };
 };
