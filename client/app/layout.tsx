@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { cn } from "@/lib/utils";
 import "./globals.css";
 import "./themes/themes.css";
 import "@stream-io/video-react-sdk/dist/css/styles.css";

@@ -83,10 +83,10 @@ export const CampaignFormSchema = z.object({
   allow_organic_lead: z.boolean(),
   block_display_for_non_targeted_viewer: z.boolean(),
   expired_leads_count: z.number(),
-  follow_up_action_url: z.string(),
+  follow_up_action_url: z.optional(z.string()),
   leads_count: z.number(),
-  privacy_policy_url: z.string(),
-  question_page_custom_headline: z.string(),
+  privacy_policy_url: z.optional(z.string()),
+  question_page_custom_headline: z.optional(z.string()),
 
   status: z.string(),
   user_id: z.string(),

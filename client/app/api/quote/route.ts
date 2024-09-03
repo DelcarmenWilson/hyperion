@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { calculateBlueprintTargets } from "@/actions/blueprint/blueprint-week";
 import { adminQuoteUpdateActive } from "@/actions/admin/quote";
+import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 
 //calculate blueprint targets
 export async function POST(req: Request) {
@@ -14,6 +15,9 @@ export async function POST(req: Request) {
       case "newQuote":
         await adminQuoteUpdateActive();
         break;
+        // case "newLeads":
+        // await scheduleLeadsToImport();
+        // break;
     }
 
     return NextResponse.json({

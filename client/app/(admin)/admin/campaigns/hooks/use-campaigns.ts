@@ -66,10 +66,17 @@ export const useCampaign = create<CampaignStore>((set, get) => ({
     }),
 }));
 
-export const useCampaignData = () => {
+export const useCampaignData = (adAccount?: string) => {
   const user = useCurrentUser();
+  const queryClient = useQueryClient();
   const { campaignId, adsetId, adId } = useCampaignId();
   const router = useRouter();
+
+  const invalidate = (queries: string[]) => {
+    queries.forEach((query) => {
+      queryClient.invalidateQueries({ queryKey: [query] });
+    });
+  };
 
   const { data: campaigns, isFetching: isFetchingCampaigns } = useQuery<
     FullCampaign[] | []
@@ -105,9 +112,17 @@ export const useCampaignData = () => {
   const onImportCampaings = async () => {
     const response = await axios.post(`/api/facebook/import`, {
       userid: user?.id,
+      adAccount: adAccount as string,
     });
     const data = response.data;
     if (data.success) {
+      invalidate([
+        "campaigns",
+        "campaignCreatives",
+        "campaignAudiences",
+        "campaignForms",
+      ]);
+
       router.refresh();
       toast.success("Campaigns Imported Succesfully!");
     } else toast.error("Campaigns could not be imported!");
@@ -131,9 +146,6 @@ export const useCampaignData = () => {
 };
 
 export const useCampaignViewData = () => {
-  const user = useCurrentUser();
-  const router = useRouter();
-
   const { data: creatives, isFetching: isFetchingCreatives } = useQuery<
     CampaignCreative[] | []
   >({

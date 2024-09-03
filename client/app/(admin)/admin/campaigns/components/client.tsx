@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import { useCampaign, useCampaignData } from "../hooks/use-campaigns";
-
-import { CampaignSection } from "./section";
 
 import { Button } from "@/components/ui/button";
 import { CampaignCard } from "./card";
 import { CampaignForm } from "./form";
+import { CampaignSection } from "./section";
 import { EmptyCard } from "@/components/reusable/empty-card";
+import { useFacebookData } from "@/app/(pages)/settings/(routes)/config/hooks/use-config";
 
 export const CampaignsClient = () => {
   const [campaingnOpen, setCampaingnOpen] = useState(false);
+  const { adAccount } = useFacebookData();
 
   const {
     isFormViewOpen,
@@ -22,7 +22,7 @@ export const CampaignsClient = () => {
     setCreativeViewOpen,
   } = useCampaign();
   const { campaignId, adsetId, adId, campaigns, onImportCampaings } =
-    useCampaignData();
+    useCampaignData(adAccount as string);
 
   return (
     <>
@@ -30,7 +30,7 @@ export const CampaignsClient = () => {
         isOpen={campaingnOpen}
         onClose={() => setCampaingnOpen(false)}
       />
-      <div className="flex flex-col h-full w-[250px] gap-1 p-1">
+      <div className="flex flex-col h-full w-full gap-1 p-1">
         <div className="flex-1 space-y-2 overflow-y-auto h-full">
           {campaigns && campaigns.length > 0 ? (
             <CampaignSection
@@ -89,40 +89,46 @@ export const CampaignsClient = () => {
                   <Button onClick={() => setCampaingnOpen(true)}>
                     New Campaign
                   </Button>
-                  <span>OR</span>
-                  <Button onClick={onImportCampaings}>
-                    Import Existing Campaigns
-                  </Button>
+                  {adAccount && (
+                    <>
+                      <span>OR</span>
+                      <Button onClick={onImportCampaings}>
+                        Import Existing Campaigns
+                      </Button>
+                    </>
+                  )}
                 </div>
               }
             />
           )}
         </div>
-        <div className="flex justify-between py-2 gap-2">
-          <Button
-            className="gap-2"
-            size="sm"
-            variant={isFormViewOpen ? "default" : "outline"}
-            onClick={setFormViewOpen}
-          >
-            Forms
-          </Button>
-          <Button
-            size="sm"
-            variant={isAudienceViewOpen ? "default" : "outline"}
-            onClick={setAudienceViewOpen}
-          >
-            Audiences
-          </Button>
-          <Button
-            className="gap-2"
-            size="sm"
-            variant={isCreativeViewOpen ? "default" : "outline"}
-            onClick={setCreativeViewOpen}
-          >
-            Creatives
-          </Button>
-        </div>
+        {campaignId && (
+          <div className="flex justify-between py-2 gap-2">
+            <Button
+              className="gap-2"
+              size="sm"
+              variant={isFormViewOpen ? "default" : "outline"}
+              onClick={setFormViewOpen}
+            >
+              Forms
+            </Button>
+            <Button
+              size="sm"
+              variant={isAudienceViewOpen ? "default" : "outline"}
+              onClick={setAudienceViewOpen}
+            >
+              Audiences
+            </Button>
+            <Button
+              className="gap-2"
+              size="sm"
+              variant={isCreativeViewOpen ? "default" : "outline"}
+              onClick={setCreativeViewOpen}
+            >
+              Creatives
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

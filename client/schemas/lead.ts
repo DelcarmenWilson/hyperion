@@ -34,6 +34,7 @@ export const LeadSchema = z.object({
   status: z.optional(z.string()),
   assistantId: z.optional(z.string()),
   notes: z.optional(z.string()),
+  adId: z.optional(z.string()),
 });
 export type LeadSchemaType = z.infer<typeof LeadSchema>;
 

@@ -190,6 +190,11 @@ export const MainSidebarRoutes: NavType[] = [
     icon: Workflow,
   },
   // {
+  //   title: "Chatbot",
+  //   href: "/chatbot",
+  //   icon: TestTube,
+  // },
+  // {
   //   title: "Account settings",
   //   href: "/settings",
   //   icon: Settings,

@@ -1,20 +1,15 @@
-import { currentUser } from "@/lib/auth";
-
+import { currentRole } from "@/lib/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { LeadStatusClient } from "@/components/lead/status/client";
 import { LicenseClient } from "./components/license/client";
 import { CarrierClient } from "./components/carrier/client";
-
 import { NotificationClient } from "./components/notifications/client";
-import { notificationSettingsGetByUserId } from "@/data/notification-settings";
 import { UserTemplateClient } from "./components/templates/client";
+import { FacebookClient } from "./components/facebook/client";
 
 const ConfigPage = async () => {
-  const user = await currentUser();
-  if (!user) return null;
-
-  const notificationSettings = await notificationSettingsGetByUserId(user.id);
-
+  const role = await currentRole();
   return (
     <Tabs
       className="flex flex-col lg:flex-row gap-2 item-start h-full"
@@ -36,6 +31,11 @@ const ConfigPage = async () => {
         <TabsTrigger className="w-full" value="notifications">
           Notifications
         </TabsTrigger>
+        {["ADMIN", "MASTER"].includes(role as string) && (
+          <TabsTrigger className="w-full" value="facebook">
+            Facebook
+          </TabsTrigger>
+        )}
       </TabsList>
       <div className="flex-1">
         <TabsContent value="licenses">
@@ -51,8 +51,13 @@ const ConfigPage = async () => {
           <UserTemplateClient />
         </TabsContent>
         <TabsContent value="notifications">
-          <NotificationClient notificationSettings={notificationSettings!} />
+          <NotificationClient />
         </TabsContent>
+        {["ADMIN", "MASTER"].includes(role as string) && (
+          <TabsContent value="facebook">
+            <FacebookClient />
+          </TabsContent>
+        )}
       </div>
     </Tabs>
   );
