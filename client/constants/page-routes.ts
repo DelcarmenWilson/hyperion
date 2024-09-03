@@ -86,6 +86,11 @@ export const AdminSidebarRoutes: NavType[] = [
     href: "/admin/workflows",
     icon: Workflow,
   },
+  {
+    title: "Chatbot",
+    href: "/admin/chatbot",
+    icon: TestTube,
+  },
 ];
 
 export const MainSidebarRoutes: NavType[] = [
@@ -182,11 +187,12 @@ export const MainSidebarRoutes: NavType[] = [
     title: "Work Flows",
     href: "/workflows",
     icon: Workflow,
-  },{
-    title: "Chatbot",
-    href: "/chatbot",
-    icon: TestTube,
   },
+  // {
+  //   title: "Chatbot",
+  //   href: "/chatbot",
+  //   icon: TestTube,
+  // },
   // {
   //   title: "Account settings",
   //   href: "/settings",
