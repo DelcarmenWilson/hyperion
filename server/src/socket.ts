@@ -48,6 +48,9 @@ export class ServerSocket {
         case "calllog:new":
           this.SendUserMessage("calllog-new", sid,{dt});
         break;
+        case "leads:new":
+        this.SendUserMessage("leads-new", sid,{dt});
+      break;
     }
   };
   StartListeners = (socket: Socket) => {

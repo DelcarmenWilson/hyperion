@@ -16,6 +16,7 @@ import { useGroupMessage } from "@/hooks/use-group-message";
 import { callUpdateByIdAppointment } from "@/actions/call";
 import { sendAppointmentReminders } from "@/actions/appointment";
 import axios from "axios";
+import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -62,6 +63,15 @@ export const MainNav = () => {
   ) => {
     const response = await axios.post(`/api/facebook/${type}`);
     console.log(response.data);
+  };
+
+  const onSheduledLeads = async () => {
+    const response = await scheduleLeadsToImport();
+    if (response.success) {
+      console.log(response.success);
+    } else {
+      toast.error(response.error);
+    }
   };
 
   useEffect(() => {
@@ -142,6 +152,12 @@ export const MainNav = () => {
         toast.success(message);
       }
     );
+    //NEW LEADS
+    socket?.on("leads-new", (data: { dt: number }) => {
+      console.log("this ran succesfully");
+      toast.success(`${data.dt} leads imported!`);
+    });
+
     // eslint-disable-next-line
   }, []);
 
@@ -160,6 +176,8 @@ export const MainNav = () => {
       <Button onClick={() => onGetFacebookData("creatives")}>Creatives</Button> 
       <Button onClick={() => onGetFacebookData("adImages")}>Ad Images</Button>
       <Button onClick={() => onGetFacebookData("forms")}>Forms</Button>*/}
+
+      <Button onClick={onSheduledLeads}>Schedule Leads</Button>
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

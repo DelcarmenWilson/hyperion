@@ -146,6 +146,7 @@ model CampaignAd {
 
     creative_id String?
     creative    CampaignCreative? @relation(fields: [creative_id], references: [id], onDelete: Cascade)
+    lead_count  Int               @default(0)
 
     //Need to add the ad creative here
 
@@ -160,10 +161,6 @@ model CampaignAd {
     //         ]
     //     }
     // ],
-
-    // "creative": {
-    //     "id": "120211860472330222"
-    // },
 
     // "targeting": {
     //     "age_max": 65,
@@ -420,10 +417,10 @@ model CampaignForm {
     allow_organic_lead                    Boolean @default(false)
     block_display_for_non_targeted_viewer Boolean @default(true)
     expired_leads_count                   Int     @default(0)
-    follow_up_action_url                  String
+    follow_up_action_url                  String?
     leads_count                           Int     @default(0)
-    privacy_policy_url                    String
-    question_page_custom_headline         String
+    privacy_policy_url                    String?
+    question_page_custom_headline         String?
 
     status String @default("PAUSED")
 

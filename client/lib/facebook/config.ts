@@ -28,12 +28,17 @@ export const fbCfg: config = {
 sdk.FacebookAdsApi.init(fbCfg.apiToken);
 //sdk.FacebookAdsApi.init(`${fbCfg.appId}|${fbCfg.appSecret}`);
 
-export const initFbApi=(token:string)=>{
-  sdk.FacebookAdsApi.init(token);
+export const initFbApi=(token?:string)=>{
+  sdk.FacebookAdsApi.init(token||fbCfg.apiToken);
 }
 
 export const AdAccount = sdk.AdAccount;
-export const account = new AdAccount(`act_${fbCfg.accountId}`);
+// export const account = new AdAccount(`act_${fbCfg.accountId}`);
+export const account = new AdAccount();
+
+export const initAccount=(accountId:string)=>{
+  account.id=`act_${accountId}`
+}
 export const Page = sdk.Page;
 export const page = new Page(`${fbCfg.pageId}`);
 

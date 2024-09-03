@@ -1,4 +1,4 @@
-import { account, page } from "@/lib/facebook/config";
+import { account,  initAccount, page } from "@/lib/facebook/config";
 import { campaignAdImport } from "@/actions/facebook/ad";
 import { campaignAdsetImport } from "@/actions/facebook/adSet";
 import { campaignAudienceImport } from "@/actions/facebook/audience";
@@ -14,25 +14,44 @@ import {
 } from "@/schemas/campaign";
 import { NextRequest, NextResponse } from "next/server";
 import { campaignFormImport } from "@/actions/facebook/form";
+import { db } from "@/lib/db";
+import {  getLeadsToImport } from "@/actions/facebook/leads";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userid } = body;
+    const { userid, adAccount } = body;
 
     if (!userid) {
       return new NextResponse("Unauthorized", { status: 500 });
     }
 
+    if (!adAccount) {
+      return new NextResponse("Ad Account was not provided", { status: 500 });
+    }
+    initAccount(adAccount);
     const params: any = {
       limit: 20,
     };
-    await getCreativesToImport(userid, params);
-    await getAudienceToImport(userid, params);
+    const existingForms = await db.campaign.findFirst({
+      where: { account_id: adAccount },
+    });
+    if (!existingForms) {
+      await getCreativesToImport(userid, params);
+      await getAudienceToImport(userid, params);
+      await getFormToImport(userid, params);
+    }
+
     await getCampaingsToImport(userid, params);
     await getAdsetsToImport(params);
-    const imported = await getAdsToImport(params);
-    return NextResponse.json(imported, { status: 200 });
+
+    const adStatus = await getAdsToImport(params);
+    if (adStatus.ids.length > 0) {
+      for (const id of adStatus.ids) {
+        await getLeadsToImport(id, userid, params);
+      }
+    }
+    return NextResponse.json(adStatus.status, { status: 200 });
   } catch (error) {
     console.log("FACEBOOK_IMPORT_ERROR", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -165,6 +184,7 @@ const getAdsToImport = async (params: any) => {
   ];
 
   const adsToImport: CampaignAdSchemaType[] = [];
+  const adIds: string[] = [];
   const formatAd = (c: any) => {
     const {
       id,
@@ -178,6 +198,7 @@ const getAdsToImport = async (params: any) => {
       created_time,
       updated_time,
     } = c._data;
+    adIds.push(id);
     adsToImport.push({
       id,
       adset_id,
@@ -199,7 +220,7 @@ const getAdsToImport = async (params: any) => {
     ads.forEach(formatAd);
   }
   const importedAds = await campaignAdImport(adsToImport);
-  return importedAds;
+  return { status: importedAds, ids: adIds };
 };
 
 const getCreativesToImport = async (userid: string, params: any) => {
@@ -367,3 +388,5 @@ const getFormToImport = async (userid: string, params: any) => {
   const importedForms = await campaignFormImport(formsToImport);
   return importedForms;
 };
+
+
