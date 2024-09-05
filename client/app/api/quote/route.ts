@@ -15,9 +15,9 @@ export async function POST(req: Request) {
       case "newQuote":
         await adminQuoteUpdateActive();
         break;
-        // case "newLeads":
-        // await scheduleLeadsToImport();
-        // break;
+        case "newLeads":
+        await scheduleLeadsToImport();
+        break;
     }
 
     return NextResponse.json({

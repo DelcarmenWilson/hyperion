@@ -66,12 +66,9 @@ export const MainNav = () => {
   };
 
   const onSheduledLeads = async () => {
-    const response = await scheduleLeadsToImport();
-    if (response.success) {
-      console.log(response.success);
-    } else {
-      toast.error(response.error);
-    }
+    const response = await scheduleLeadsToImport(1800);
+    if (response.success) toast.success(response.success);
+    else toast.error(response.error);
   };
 
   useEffect(() => {
@@ -176,8 +173,10 @@ export const MainNav = () => {
       <Button onClick={() => onGetFacebookData("creatives")}>Creatives</Button> 
       <Button onClick={() => onGetFacebookData("adImages")}>Ad Images</Button>
       <Button onClick={() => onGetFacebookData("forms")}>Forms</Button>*/}
+      {user?.role == "MASTER" && (
+        <Button onClick={onSheduledLeads}>Schedule Leads</Button>
+      )}
 
-      <Button onClick={onSheduledLeads}>Schedule Leads</Button>
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

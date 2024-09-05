@@ -12,11 +12,16 @@ import { ChatbotConversationCard } from "./card";
 
 import { ChatSettingsForm } from "./form";
 import { useChatbotData } from "../hooks/use-chatbot";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const GptConversationsClient = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { chatId, conversations, onChatbotConversationInsert } =
-    useChatbotData();
+  const {
+    chatId,
+    conversations,
+    isFetchingConversations,
+    onChatbotConversationInsert,
+  } = useChatbotData();
 
   // useEffect(() => {
   //   const onMessageInserted = (newMessage: GptMessage) => {
@@ -53,45 +58,49 @@ export const GptConversationsClient = () => {
         isOpen={dialogOpen}
         onClose={() => setDialogOpen(false)}
       />
-      <div className="flex flex-col h-full w-[250px] gap-1 p-1">
-        <div className="flex justify-between items-center">
-          <h4 className="text-lg text-muted-foreground font-semibold">
-            Chat History
-          </h4>
+      <div className="flex flex-col h-full gap-1 p-1">
+        <SkeletonWrapper isLoading={isFetchingConversations}>
+          <div className="flex justify-between items-center">
+            <h4 className="text-lg text-muted-foreground font-semibold">
+              Chat History
+            </h4>
 
-          <Button size={"icon"} onClick={onChatbotConversationInsert}>
-            <Plus size={16} />
-          </Button>
-        </div>
-        <div className="flex-1 space-y-2 overflow-y-auto h-full">
-          {conversations && conversations.length > 0 ? (
-            <>
-              {conversations.map((conversation) => (
-                <ChatbotConversationCard
-                  key={conversation.id}
-                  active={chatId == conversation.id}
-                  conversation={conversation}
-                />
-              ))}
-            </>
-          ) : (
-            <EmptyCard
-              title="No Chat History"
-              subTitle={
-                <Button onClick={onChatbotConversationInsert}>Start Now</Button>
-              }
-            />
-          )}
-        </div>
-        <div className="flex justify-end border-t pt-2">
-          <Button
-            size={"icon"}
-            variant="ghost"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Settings size={16} />
-          </Button>
-        </div>
+            <Button size={"icon"} onClick={onChatbotConversationInsert}>
+              <Plus size={16} />
+            </Button>
+          </div>
+          <div className="flex-1 space-y-2 overflow-y-auto h-full">
+            {conversations && conversations.length > 0 ? (
+              <>
+                {conversations.map((conversation) => (
+                  <ChatbotConversationCard
+                    key={conversation.id}
+                    active={chatId == conversation.id}
+                    conversation={conversation}
+                  />
+                ))}
+              </>
+            ) : (
+              <EmptyCard
+                title="No Chat History"
+                subTitle={
+                  <Button onClick={onChatbotConversationInsert}>
+                    Start Now
+                  </Button>
+                }
+              />
+            )}
+          </div>
+          <div className="flex justify-end border-t pt-2">
+            <Button
+              size={"icon"}
+              variant="ghost"
+              onClick={() => setDialogOpen(true)}
+            >
+              <Settings size={16} />
+            </Button>
+          </div>
+        </SkeletonWrapper>
       </div>
     </>
   );
