@@ -1,4 +1,4 @@
-import { account,  initAccount, page } from "@/lib/facebook/config";
+import { account, initAccount, page } from "@/lib/facebook/config";
 import { campaignAdImport } from "@/actions/facebook/ad";
 import { campaignAdsetImport } from "@/actions/facebook/adSet";
 import { campaignAudienceImport } from "@/actions/facebook/audience";
@@ -15,7 +15,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { campaignFormImport } from "@/actions/facebook/form";
 import { db } from "@/lib/db";
-import {  getLeadsToImport } from "@/actions/facebook/leads";
+import { getLeadsToImport } from "@/actions/facebook/leads";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,14 +33,11 @@ export async function POST(req: NextRequest) {
     const params: any = {
       limit: 20,
     };
-    const existingForms = await db.campaign.findFirst({
-      where: { account_id: adAccount },
-    });
-    if (!existingForms) {
-      await getCreativesToImport(userid, params);
-      await getAudienceToImport(userid, params);
-      await getFormToImport(userid, params);
-    }
+
+    await getFormToImport(userid, params);
+
+    await getCreativesToImport(userid, params);
+    await getAudienceToImport(userid, params);
 
     await getCampaingsToImport(userid, params);
     await getAdsetsToImport(params);
@@ -328,6 +325,8 @@ const getAudienceToImport = async (userid: string, params: any) => {
 };
 
 const getFormToImport = async (userid: string, params: any) => {
+  const existingForm = await db.campaign.findFirst({});
+  if (existingForm) return { error: "Forms already exists!" };
   const fields = [
     "id",
     "name",
@@ -388,5 +387,3 @@ const getFormToImport = async (userid: string, params: any) => {
   const importedForms = await campaignFormImport(formsToImport);
   return importedForms;
 };
-
-

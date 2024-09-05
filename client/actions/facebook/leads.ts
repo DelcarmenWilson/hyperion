@@ -159,10 +159,10 @@ export const getLeadsToImport = async (
   return importedLeads;
 };
 //SCHEDULE
-export const scheduleLeadsToImport = async () => {
+export const scheduleLeadsToImport = async (minutes=35) => {
   const currentDate = new Date();
   const filterDate = new Date(currentDate);
-  filterDate.setMinutes(filterDate.getMinutes() - 35);
+  filterDate.setMinutes(filterDate.getMinutes() - minutes);
 
   const params: any = {
     filtering: [
