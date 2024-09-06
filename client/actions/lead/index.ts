@@ -246,6 +246,83 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
     return 0;
   }
 };
+
+export const leadGetOrCreateByPhoneNumber = async (
+  cellPhone: string,
+  state: string,
+  agentId: string
+) => {
+  //Check if lead already exist
+  const exisitingLead = await db.lead.findUnique({ where: { cellPhone } });
+
+  //If there is an exisiting lead just return this lead details.
+  if (exisitingLead) return exisitingLead;
+
+  //Get a list of all the active phonenumbers for this particular agent
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId, status: { not: "Deactive" } },
+  });
+  //Get the default number from the list of active agent numbers
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+
+  //Get the default number to be assinged to this lead
+  const phoneNumber = phoneNumbers.find((e) => e.state == state);
+
+  const st = states.find(
+    (e) =>
+      e.state.toLowerCase() == state.toLowerCase() ||
+      e.abv.toLowerCase() == state.toLowerCase()
+  );
+
+  const firstName = "New";
+  let lastName = "Lead";
+
+  //Generate a code based on lead infomation
+  let code = generateTextCode(firstName, lastName, cellPhone);
+
+  //Check if previously generate code already exist
+  const exisitingCode = await db.lead.findFirst({
+    where: { textCode: code },
+  });
+
+  //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+  if (exisitingCode)
+    code = generateTextCode(firstName, lastName, cellPhone, true);
+
+  //Create a new Lead
+  const newLead = await db.lead.create({
+    data: {
+      firstName,
+      lastName,
+      address: "",
+      city: "",
+      state: st?.abv ? st.abv : state,
+      zipCode: "",
+      homePhone: cellPhone,
+      cellPhone,
+      gender: "NA",
+      maritalStatus: "Single",
+      email: "",
+      dateOfBirth: "",
+      weight: "",
+      height: "",
+      income: "",
+      policyAmount: "",
+      smoker: false,
+      currentlyInsured: false,
+      currentInsuranse: "",
+      type: "General",
+      vendor: "Manually Created",
+      recievedAt: new Date(),
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      userId: agentId,
+      status: "New",
+      textCode: code,
+    },
+  });
+
+  return newLead;
+};
 //ACTIONS
 export const leadInsert = async (values: LeadSchemaType) => {
   const validatedFields = LeadSchema.safeParse(values);

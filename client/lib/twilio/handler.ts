@@ -44,17 +44,18 @@ export const voiceResponse = async (call: TwilioCall) => {
     masterSwitch,
     personalNumber,
   } = call;
+  console.log(call);
 
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-       twiml.play("/sounds/SSF-Greeting-2.mp3");
+      //  twiml.play("/sounds/SSF-Greeting-2.mp3");
       //   twiml.say(
       //   { voice:"Polly.Amy" },
       //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
       // );
 
-      twiml.pause({ length: 1 });
+      // twiml.pause({ length: 1 });
 
       const inDial = twiml.dial({
         record: "record-from-answer-dual",
@@ -65,17 +66,36 @@ export const voiceResponse = async (call: TwilioCall) => {
         // callerId: masterSwitch == "call-forward" ? personalNumber : from,
       });
 
-      if (masterSwitch == "on") {
-        inDial.client(agentId);
-      } else if (masterSwitch == "call-forward") {
-        inDial.number(personalNumber!);
-      } else {
-        twiml.redirect("/api/twilio/voice/action");
+      // if (masterSwitch == "on") {
+      //   inDial.client(`client:${agentId}`);
+      // } else if (masterSwitch == "call-forward") {
+      //   inDial.number(personalNumber!);
+      // } else {
+      //   twiml.redirect("/api/twilio/voice/action");
+      // }
+
+      switch (masterSwitch) {
+        case "on":
+          inDial.client(agentId);
+          break;
+        case "call-forward":
+          inDial.number(personalNumber!);
+          break;
+        default:
+          twiml.redirect("/api/twilio/voice/action");
+          break;
       }
 
       break;
     case "outbound":
-      twiml.dial({callerId:agentNumber,record:"record-from-answer", recordingStatusCallback: "/api/twilio/voice/recording"},to)
+      twiml.dial(
+        {
+          callerId: agentNumber,
+          record: "record-from-answer",
+          recordingStatusCallback: "/api/twilio/voice/recording",
+        },
+        to
+      );
       // twiml.dial().conference(
       //   {
       //     participantLabel: agentId,
@@ -101,13 +121,13 @@ export const voiceResponse = async (call: TwilioCall) => {
         },
         conferenceId as string
       );
-     
+
       break;
     default:
       twiml.say({ voice: "alice" }, "Thanks for calling!");
       break;
   }
-  
+
   return twiml.toString();
 };
 
@@ -175,5 +195,20 @@ export const voicemailResponse = async (requestBody: any) => {
 export const hangupResponse = async () => {
   const twiml = new VoiceResponse();
   twiml.hangup();
+  return twiml.toString();
+};
+
+export const testVoiceResponse = async (call: TwilioCall) => {
+  const twiml = new VoiceResponse();
+
+  twiml.say({ voice: "Polly.Amy" }, "Hello Srini");
+
+  twiml.pause({ length: 1 });
+  twiml.say(
+    { voice: "Polly.Amy" },
+    "This message has been terminated. Good bye"
+  );
+  twiml.hangup();
+
   return twiml.toString();
 };

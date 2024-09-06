@@ -75,15 +75,14 @@ export const PhoneInModal = () => {
       //   return;
       // }
 
+      //On Call disconnect or canecel - call the diconnect function
       ["disconnect", "cancel"].forEach((type) => {
-        incomingCall.on(type, function (error: any) {
+        incomingCall.on(type, (call) => {
           onDisconnect();
+          console.log("call diconnected", call);
         });
       });
-
-      // incomingCall.on("cancel", function (error: any) {
-      //   onCallDisconnect();
-      // });
+      //Get the leads infomation based on the phone number
       const response = await axios.post("/api/leads/details", {
         phone: incomingCall.parameters.From,
       });

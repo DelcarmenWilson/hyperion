@@ -1,36 +1,39 @@
-import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
-import { voiceResponse } from "@/lib/twilio/handler";
-
 import { NextResponse } from "next/server";
 import { TwilioCall } from "@/types";
+
+import { voiceResponse } from "@/lib/twilio/handler";
+import { formatObject } from "@/formulas/objects";
+
 import { bluePrintWeekUpdateByUserIdData } from "@/actions/blueprint/blueprint-week";
+import { leadGetOrCreateByPhoneNumber } from "@/actions/lead";
+
 
 export async function POST(req: Request) {
   const body = await req.formData();
-console.log(body)
+
   //get all the variable from the body into the twlio cal type
   const call: TwilioCall = formatObject(body);
 
-  //check if this number is a lead or a client
-  const lead = await db.lead.findFirst({
-    where: {
-      cellPhone: call.callDirection == "outbound" ? call.to : call.from,
-    },
+  //check information for the agent based on the number called
+  const agentPhoneNumber = await db.phoneNumber.findFirst({
+    where: { phone: call.callDirection == "outbound" ? call.from : call.to },
   });
-  
+
+  //get the lead information based on the phone number and call direction
+  const lead = await leadGetOrCreateByPhoneNumber(
+    call.callDirection == "outbound" ? call.to : call.from,
+    call.callerState,
+    agentPhoneNumber?.agentId as string
+  );
 
   if (call.callDirection == "outbound") {
     call.agentId = call.caller.replace("client:", "");
     call.direction = "outbound";
-    //check information for the agent based on the number called
-  const phonenumber = await db.phoneNumber.findFirst({
-    where: { phone: call.agentNumber },
-  });
-console.log("were are here", phonenumber)
-    if (phonenumber) {
+
+    if (agentPhoneNumber) {
       bluePrintWeekUpdateByUserIdData(
-        phonenumber.agentId as string,
+        agentPhoneNumber.agentId as string,
         "calls"
       );
     }
@@ -39,9 +42,9 @@ console.log("were are here", phonenumber)
       //INCOMING CALL
       case "inbound":
         //check information for the agent based on the number called
-  const phonenumber = await db.phoneNumber.findFirst({
-    where: { phone: call.to },
-  });
+        const phonenumber = await db.phoneNumber.findFirst({
+          where: { phone: call.to },
+        });
         //get chat settings based on the agent ID
         const settings = await db.chatSettings.findFirst({
           where: { userId: phonenumber?.agentId! },
@@ -53,13 +56,12 @@ console.log("were are here", phonenumber)
 
         call.masterSwitch = notificationSettings?.masterSwitch;
         call.personalNumber = notificationSettings?.phoneNumber;
-
         call.voicemailIn = settings?.voicemailIn;
         call.agentId = phonenumber?.agentId!;
         call.currentCall = settings?.currentCall;
 
         //if the lead exists set the caller name with lead information
-        call.callerName = `${lead?.firstName} ${lead?.lastName}`;
+        call.callerName = `${lead?.firstName!} ${lead?.lastName!}`;
         break;
       //CONFERENCE CALL
       case "conference":
@@ -88,3 +90,5 @@ console.log("were are here", phonenumber)
   const reponse = await voiceResponse(call);
   return new NextResponse(reponse, { status: 200 });
 }
+
+

@@ -23,6 +23,7 @@ export type TwilioCall = {
   from: string;
   callerName: string;
   callStatus: string;
+  callerState:string;
 
   agentNumber: string;
   agentId: string;
