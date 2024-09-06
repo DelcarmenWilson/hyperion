@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
-import { Connection, Device } from "twilio-client";
+import { Call, Device } from "@twilio/voice-sdk";
 import { useEffect } from "react";
 import {
   chatSettingsUpdateCurrentCall,
@@ -11,19 +11,19 @@ import {
 
 type PhoneStore = {
   //PHONE SPECIFIC
-  call: Connection | undefined;
+  call: Call | undefined;
   time: number;
   setTime: () => void;
   isRunning: boolean;
   isCallMuted: boolean;
   onCallMutedToggle: () => void;
 
-  onPhoneConnect: (c: Connection) => void;
+  onPhoneConnect: (c: Call) => void;
   onPhoneInConnect: () => void;
   onPhoneDisconnect: () => void;
 
   isPhoneInOpen: boolean;
-  onPhoneInOpen: (c?: Connection) => void;
+  onPhoneInOpen: (c?: Call) => void;
   onPhoneInClose: () => void;
 
   isPhoneDialerOpen: boolean;
@@ -71,7 +71,7 @@ type PhoneStore = {
 export const usePhone = create<PhoneStore>((set, get) => ({
   //PHONE SPECIFIC STUFF
   call: undefined,
-  setCall: (c: Connection) => set({ call: c }),
+  setCall: (c: Call) => set({ call: c }),
   time: 0,
   setTime: () => set({ time: get().time + 1 }),
   isRunning: false,
@@ -143,7 +143,7 @@ export const usePhone = create<PhoneStore>((set, get) => ({
 
 export const usePhoneData = (
   phone: Device | null,
-  call: Connection | undefined,
+  call: Call | undefined,
   isCallMuted: boolean,
   onCallMutedToggle: () => void,
   onPhoneInConnect: () => void,
@@ -156,8 +156,8 @@ export const usePhoneData = (
   const onDisconnect = () => {
     call?.disconnect();
     onPhoneDisconnect();
-    phone?.connections.forEach((connection) => {
-      connection.disconnect();
+    phone?.calls.forEach((call) => {
+      call.disconnect();
     });
     chatSettingsUpdateRemoveCurrentCall();
   };

@@ -35,15 +35,11 @@ export async function POST(req: Request) {
     where: { phoneNumber: sms.from },
   });
 
-  if (agent) {
-    // Check the to number
-
-    // if from number and to number both belong to the agent
-    if (agentNumber?.agentId == agent.userId) {
-      //Start Agent to Lead Message Process
-      await forwardTextToLead(sms, agent.userId);
-      return new NextResponse(null, { status: 200 });
-    }
+  // if from number and to number both belong to the agent
+  if (agent && agentNumber?.agentId == agent.userId) {
+    //Start Agent to Lead Message Process
+    const insertedMessage = await forwardTextToLead(sms, agent.userId);
+    if (insertedMessage) return new NextResponse(null, { status: 200 });
   }
 
   let updatedConversation;

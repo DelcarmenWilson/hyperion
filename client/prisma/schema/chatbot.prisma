@@ -29,9 +29,10 @@ model ChatbotSettings {
 
     userId String
 
-    prompt   String  @db.LongText
-    leadInfo String  @db.LongText
-    active   Boolean @default(true)
+    prompt      String  @db.LongText
+    leadInfo    String  @db.LongText
+    assistantId String?
+    active      Boolean @default(true)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

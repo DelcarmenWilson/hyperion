@@ -17,6 +17,7 @@ import { callUpdateByIdAppointment } from "@/actions/call";
 import { sendAppointmentReminders } from "@/actions/appointment";
 import axios from "axios";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
+import { sendTestEmail } from "@/lib/mail";
 
 export const MainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -69,6 +70,14 @@ export const MainNav = () => {
     const response = await scheduleLeadsToImport(1800);
     if (response.success) toast.success(response.success);
     else toast.error(response.error);
+  };
+  const onSendEmail = async () => {
+    const email = await sendTestEmail(
+      "delcarmenwilson@gmail.com",
+      "wdelcarmen"
+    );
+    console.log(email);
+    toast.success("Emails will be send");
   };
 
   useEffect(() => {
@@ -176,6 +185,8 @@ export const MainNav = () => {
       {user?.role == "MASTER" && (
         <Button onClick={onSheduledLeads}>Schedule Leads</Button>
       )}
+
+      <Button onClick={onSendEmail}>Send Email</Button>
 
       <CoachNotification
         conference={conference}

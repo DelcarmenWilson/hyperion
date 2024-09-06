@@ -30,7 +30,7 @@ export const useChatbot = create<useChatbotStore>((set) => ({
 
 export const useChatbotData = () => {
   const { chatId,setChatId } = useChatbot();
-  const router = useRouter();
+  const queryClient=useQueryClient()
   const [conversations, setConversations] = useState<
     ShortChatbotConversation[] | null | undefined
   >();
@@ -50,7 +50,9 @@ export const useChatbotData = () => {
   const onChatbotConversationInsert = async () => {
     const insertedConversation = await chatbotConversationInsert();
     if (insertedConversation.success) {
-      router.push(`/admin/chatbot/${insertedConversation.success}`);
+      setChatId(insertedConversation.success)
+      queryClient.invalidateQueries({queryKey:["chatbotConversations"]})
+
     } else toast.error(insertedConversation.error);
   };
 

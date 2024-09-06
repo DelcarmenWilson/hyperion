@@ -87,7 +87,7 @@ export const chatbotConversationInsert = async () => {
   if (settings) {
     await db.chatbotMessage.create({
       data: {
-        content: settings.prompt,
+        content: `${settings.prompt} ${settings.leadInfo}`,
         conversationId: conversation.id,
         role: "system",
       },

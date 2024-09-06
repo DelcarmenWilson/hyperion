@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Device } from "twilio-client";
+import { Device } from "@twilio/voice-sdk";
 import { PhoneOutModal } from "@/components/phone/out-modal";
 import { PhoneInModal } from "@/components/phone/in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";

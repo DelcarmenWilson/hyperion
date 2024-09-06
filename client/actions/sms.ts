@@ -468,4 +468,6 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
       sid: sid,
     })
   ).success;
+
+  return insertedMessage
 };

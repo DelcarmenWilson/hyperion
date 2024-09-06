@@ -1,5 +1,8 @@
+"use server"
+import TestEmail from "@/emails/test";
 import { Resend } from "resend";
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+const resend = new Resend(process.env.RESEND_API_KEY||"12125");
 
 const domain=process.env.NEXT_PUBLIC_APP_URL
 export const sendTwoFactorTokenEmail=async(email:string,token:string)=>{
@@ -32,3 +35,15 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Click <a href="${confirmLink}">here</a> to confirm email</p>`,
   });
 };
+
+export const sendTestEmail=async(email:string,username:string)=>{
+  const newEmail=await resend.emails.send({
+    from: "wdelcarmen@hperioncrm.com",
+    to: email,
+    subject: "Test Email",
+    // html: `<p>Just a test</p>`,
+    react:TestEmail({username})
+
+  })
+  return newEmail
+}

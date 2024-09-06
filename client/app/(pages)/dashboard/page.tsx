@@ -8,6 +8,7 @@ import { CallHistoryClient } from "@/components/callhistory/client";
 import { QuoteClient } from "./components/quote-client";
 import { BluePrintClient } from "./components/blueprint/client";
 import { SharedCallsClient } from "@/components/global/shared-calls";
+import TestEmail from "@/emails/test";
 
 const DashBoardPage = async () => {
   const user = await currentUser();

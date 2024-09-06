@@ -105,11 +105,13 @@ export const PhoneOut = () => {
       }
     }
 
-    const call = phone.connect({
-      To: reFormatPhoneNumber(to.number),
-      AgentNumber: myNumber as string,
-      CallDirection: "outbound",
-      AgentName: `${user?.name} (Agent)`,
+    const call = await phone.connect({
+      params: {
+        To: reFormatPhoneNumber(to.number),
+        AgentNumber: myNumber as string,
+        CallDirection: "outbound",
+        AgentName: `${user?.name} (Agent)`,
+      },
     });
 
     chatSettingsUpdateCurrentCall(call.parameters.callSid);
