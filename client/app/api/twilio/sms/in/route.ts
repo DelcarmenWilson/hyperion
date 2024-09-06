@@ -26,8 +26,9 @@ export async function POST(req: Request) {
     where: { phone: sms.to },
   });
 
+  //if agent number doesn't exists return error
   if (!agentNumber) {
-    return new NextResponse(null, { status: 500 });
+    return new NextResponse("Agent number doesn't exists", { status: 500 });
   }
 
   //Find the agent with this personal number - from number
