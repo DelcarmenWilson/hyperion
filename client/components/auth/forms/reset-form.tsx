@@ -56,7 +56,10 @@ export const ResetForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="flex items-center justify-between">
+                    Email
+                    <FormMessage />
+                  </FormLabel>
                   <FormControl>
                     <Input
                       disabled={isPending}
@@ -66,7 +69,6 @@ export const ResetForm = () => {
                       type="email"
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />

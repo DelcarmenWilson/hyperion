@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { scriptGetOne } from "@/data/script";
+import { scriptGetOne } from "@/actions/script";
 
 export async function POST(req: Request) {
   try {

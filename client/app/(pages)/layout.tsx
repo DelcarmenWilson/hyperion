@@ -15,7 +15,7 @@ import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
 
 import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
-import { scriptGetOne } from "@/data/script";
+import { scriptGetOne } from "@/actions/script";
 import {
   userCarriersGetAllByUserId,
   userGetByIdDefault,

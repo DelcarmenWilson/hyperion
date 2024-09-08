@@ -19,7 +19,8 @@ export const reset = async (values: ResetSchemaType) => {
   }
 
   const passwordResetToken = await generatePasswordResetToken(email);
-  await sendPasswordResetEmail(
+  const emailId=await sendPasswordResetEmail(
+    existingUser.userName,
     passwordResetToken.email,
     passwordResetToken.token
   );

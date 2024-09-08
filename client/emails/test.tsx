@@ -10,6 +10,7 @@ import {
   Preview,
   Section,
   Text,
+  Tailwind,
 } from "@react-email/components";
 
 interface Props {
@@ -20,43 +21,88 @@ interface Props {
 const baseUrl = "https://hperioncrm.com";
 
 export const TestEmail = ({ username }: Props) => (
-  <Html>
-    <Head />
+  <Tailwind>
     <Preview>
       A fine-grained personal access token has been added to your account
     </Preview>
-    <Body style={main}>
-      <Container style={container}>
+    <Body className="bg-white text-[#24292e]" style={main}>
+      <Container className="m-w-[480[px] m-0 mx-auto p-2">
         <Img src={`${baseUrl}/logo3.png`} width="32" height="32" alt="Github" />
 
-        <Text style={title}>
+        <Text className="text-[24px] leading-tight">
           <strong>@{username}</strong>, a personal access was created on your
           account.
         </Text>
 
-        <Section style={section}>
-          <Text style={text}>
+        <Section className="border rounded-lg text-center p-2">
+          <Text className="mb-2 text-left pl-2">
             Hey <strong>{username}</strong>!
           </Text>
-          <Text style={text}>
+          <Text className="mb-2 text-left pl-2">
             A fine-grained personal access token (<Link>resend</Link>) was
             recently added to your account.
           </Text>
 
-          <Button style={button}>View your token</Button>
+          <Button className="text-[14px] bg-[#28a745] text-white leading-3 py-2 px-3 rounded-lg mb-2">
+            View your token
+          </Button>
         </Section>
-        <Text style={links}>
-          <Link style={link}>Your security audit log</Link> ・{" "}
-          <Link style={link}>Contact support</Link>
+        <Text className="text-center">
+          <Link className="text-[12px] text-[#0366d6]">
+            Your security audit log
+          </Link>{" "}
+          ・{" "}
+          <Link className="text-[12px] text-color-[#0366d6]">
+            Contact support
+          </Link>
         </Text>
 
-        <Text style={footer}>
+        <Text className=" text-[12px] text-color-[#6a737d] text-center mt-15">
           GitHub, Inc. ・88 Colin P Kelly Jr Street ・San Francisco, CA 94107
         </Text>
       </Container>
     </Body>
-  </Html>
+  </Tailwind>
 );
+
+// export const TestEmail = ({ username }: Props) => (
+//   <Html>
+//     <Head />
+//     <Preview>
+//       A fine-grained personal access token has been added to your account
+//     </Preview>
+//     <Body style={main}>
+//       <Container style={container}>
+//         <Img src={`${baseUrl}/logo3.png`} width="32" height="32" alt="Github" />
+
+//         <Text style={title}>
+//           <strong>@{username}</strong>, a personal access was created on your
+//           account.
+//         </Text>
+
+//         <Section style={section}>
+//           <Text style={text}>
+//             Hey <strong>{username}</strong>!
+//           </Text>
+//           <Text style={text}>
+//             A fine-grained personal access token (<Link>resend</Link>) was
+//             recently added to your account.
+//           </Text>
+
+//           <Button style={button}>View your token</Button>
+//         </Section>
+//         <Text style={links}>
+//           <Link style={link}>Your security audit log</Link> ・{" "}
+//           <Link style={link}>Contact support</Link>
+//         </Text>
+
+//         <Text style={footer}>
+//           GitHub, Inc. ・88 Colin P Kelly Jr Street ・San Francisco, CA 94107
+//         </Text>
+//       </Container>
+//     </Body>
+//   </Html>
+// );
 
 TestEmail.PreviewProps = {
   username: "alanturing",
@@ -69,52 +115,4 @@ const main = {
   color: "#24292e",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"',
-};
-
-const container = {
-  maxWidth: "480px",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-};
-
-const title = {
-  fontSize: "24px",
-  lineHeight: 1.25,
-};
-
-const section = {
-  padding: "24px",
-  border: "solid 1px #dedede",
-  borderRadius: "5px",
-  textAlign: "center" as const,
-};
-
-const text = {
-  margin: "0 0 10px 0",
-  textAlign: "left" as const,
-};
-
-const button = {
-  fontSize: "14px",
-  backgroundColor: "#28a745",
-  color: "#fff",
-  lineHeight: 1.5,
-  borderRadius: "0.5em",
-  padding: "12px 24px",
-};
-
-const links = {
-  textAlign: "center" as const,
-};
-
-const link = {
-  color: "#0366d6",
-  fontSize: "12px",
-};
-
-const footer = {
-  color: "#6a737d",
-  fontSize: "12px",
-  textAlign: "center" as const,
-  marginTop: "60px",
 };

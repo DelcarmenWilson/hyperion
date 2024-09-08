@@ -1,18 +1,11 @@
-import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
-import { ScriptsClient } from "./components/client";
-import { scriptsGetAll } from "@/data/script";
+"use client";
+import { useScriptData } from "./hooks/use-script";
+import { ScriptForm } from "./components/form";
 
-const ScriptsPage = async () => {
-  const scripts = await scriptsGetAll();
-  return (
-    <PageLayoutAdmin
-      title={"Scripts"}
-      description="Manage Scripts"
-      scroll={false}
-    >
-      <ScriptsClient intialScripts={scripts} />
-    </PageLayoutAdmin>
-  );
+const ScriptsPage = () => {
+  const { script } = useScriptData();
+  if (!script) return null;
+
+  return <ScriptForm script={script} />;
 };
-
 export default ScriptsPage;
