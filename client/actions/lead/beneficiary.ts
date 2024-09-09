@@ -8,9 +8,8 @@ import {
   LeadBeneficiarySchemaType,
 } from "@/schemas/lead";
 
-import { activityInsert } from "@/actions/activity";
+import { leadActivityInsert } from "@/actions/lead/activity";
 import { reFormatPhoneNumber } from "@/formulas/phones";
-import { error } from "console";
 
 //LEAD BENFICIARIES
 //DATA
@@ -24,7 +23,7 @@ export const leadBeneficiariesGetAllById = async (leadId: string) => {
       where: { leadId },
     });
     return beneficieries;
-  } catch {
+  } catch (error) {
     console.log("LEAD BENEFICIERY_GET_ALL_ERROR:", error);
     return []
   }
@@ -93,7 +92,7 @@ export const leadBeneficiaryInsert = async (
       notes,
     },
   });
-  await activityInsert(
+  await leadActivityInsert(
     leadId,
     "Beneficiary",
     "Beneficiary Added",
@@ -186,7 +185,7 @@ export const leadBeneficiaryDeleteById = async (id: string) => {
     where: { id },
   });
 
-  await activityInsert(
+  await leadActivityInsert(
     modifiedBeneficiary.leadId,
     "Beneficiary",
     "Beneficiary Removed",

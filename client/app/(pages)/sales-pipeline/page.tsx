@@ -16,9 +16,11 @@ const SalesPage = async () => {
   //TODO - need to add react query to this page
   return (
     <PageLayout
+      contentClass="!p-2"
       title="Sales Pipeline"
       icon={UserSquare}
       topMenu={<TopMenu pipelines={pipelines} />}
+      scroll={false}
     >
       <SalesClient leads={leads} pipelines={pipelines} />
     </PageLayout>

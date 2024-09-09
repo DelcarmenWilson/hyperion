@@ -10,12 +10,12 @@ import GlobalContextProvider from "@/providers/global";
 
 import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
-import { SideBar, SidebarSkeleton } from "@/components/sidebar";
+import SideBar from "@/components/sidebar";
 import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
 
 import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
-import { scriptGetOne } from "@/data/script";
+import { scriptGetOne } from "@/actions/script";
 import {
   userCarriersGetAllByUserId,
   userGetByIdDefault,
@@ -70,21 +70,19 @@ export default async function DashBoardLayout({
       initTemplates={templates}
     >
       <SocketContextComponent>
-        <div className="h-screen overflow-hidden">
+        <div className="flex h-screen w-full overflow-hidden">
           <SideBar main />
 
-          <div className="md:pl-[180px]">
+          <div className="flex flex-col flex-1 w-[calc(100%-101px)] shrink-0">
             <NavBar />
-            <div className="relative ">
+            <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
               <PhoneContextProvider initVoicemails={voicemails} token={token!}>
                 <AppointmentContextComponent
                   initSchedule={schedule!}
                   initAppointments={appointments}
                   initLabels={appointmentLabels}
                 >
-                  <BlurPage>
-                    <ModalProvider>{children}</ModalProvider>
-                  </BlurPage>
+                  <ModalProvider>{children}</ModalProvider>
                 </AppointmentContextComponent>
               </PhoneContextProvider>
 

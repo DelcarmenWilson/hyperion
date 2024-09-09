@@ -1,21 +1,20 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { redirect } from "next/navigation";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 
 import SocketContextComponent from "@/providers/socket-component";
 
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
-
-import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
-import { SideBar, SidebarSkeleton } from "@/components/sidebar";
+
 import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
+import SideBar from "@/components/sidebar";
 
 import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
-import { scriptGetOne } from "@/data/script";
+import { scriptGetOne } from "@/actions/script";
 import {
   userCarriersGetAllByUserId,
   userGetByIdDefault,
@@ -32,6 +31,7 @@ import {
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
@@ -65,23 +65,29 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
       initTemplates={templates}
     >
       <SocketContextComponent>
-        <div className="h-screen overflow-hidden">
+        <div className="flex h-screen overflow-hidden">
           <SideBar />
-
-          <div className="md:pl-[180px]">
+          <div className="flex flex-col flex-1">
             <NavBar />
-            <div className="relative ">
-              <PhoneContextProvider initVoicemails={voicemails} token={token!}>
-                <AppointmentContextComponent
-                  initSchedule={schedule!}
-                  initAppointments={appointments}
-                  initLabels={appointmentLabels}
+            <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
+              <ScrollArea className="pr-2 h-full w-full">
+                {/* <div className="flex flex-col h-full w-full overflow-hidden"> */}
+                <PhoneContextProvider
+                  initVoicemails={voicemails}
+                  token={token!}
                 >
-                  <BlurPage>{children}</BlurPage>
-                </AppointmentContextComponent>
-              </PhoneContextProvider>
-              <ChatDrawer />
-              <LoginStatusModal />
+                  <AppointmentContextComponent
+                    initSchedule={schedule!}
+                    initAppointments={appointments}
+                    initLabels={appointmentLabels}
+                  >
+                    {children}
+                  </AppointmentContextComponent>
+                </PhoneContextProvider>
+                <ChatDrawer />
+                <LoginStatusModal />
+                {/* </div> */}
+              </ScrollArea>
             </div>
           </div>
         </div>

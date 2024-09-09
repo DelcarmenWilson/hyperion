@@ -34,42 +34,26 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
   const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
 
   const leadMainInfo: LeadMainSchemaType = {
-    id: lead.id,
-    firstName: lead.firstName,
-    lastName: lead.lastName,
-    cellPhone: lead.cellPhone,
+    ...lead,
     email: lead.email || undefined,
     address: lead.address || undefined,
     city: lead.city || undefined,
-    state: lead.state,
     zipCode: lead.zipCode || undefined,
-    quote: lead.quote,
-    status: lead.status,
     textCode: lead.textCode!,
   };
 
   const leadInfo: LeadGeneralSchemaType = {
-    id: lead.id,
-    gender: lead.gender,
-    maritalStatus: lead.maritalStatus,
+    ...lead,
     dateOfBirth: lead.dateOfBirth || undefined,
     weight: lead.weight || undefined,
     height: lead.height || undefined,
     income: lead.income || undefined,
-    smoker: lead.smoker,
-    leadName: leadName,
-    lastCall: lead?.calls[0]?.createdAt,
-    nextAppointment: lead?.appointments[0]?.startDate,
   };
 
   const leadPolicy: LeadPolicySchemaType = {
+    ...lead.policy!,
     leadId: lead.id,
-    carrier: lead.policy?.carrier!,
-    policyNumber: lead.policy?.policyNumber!,
-    status: lead.policy?.status!,
-    ap: lead.policy?.ap!,
-    commision: lead.policy?.commision!,
-    coverageAmount: lead.policy?.coverageAmount!,
+
     startDate: lead.policy?.startDate!,
   };
 
@@ -89,32 +73,33 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
   };
 
   return (
-    <>
-      {/*DATA  */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 ">
-        <div className="grid grid-cols-1 lg:grid-cols-3 col-span-3 gap-2">
-          <MainInfoClient
-            info={leadMainInfo}
-            noConvo={lead.conversation ? true : false}
-          />
-          <NotesForm
-            leadId={lead.id}
-            intialNotes={lead.notes!}
-            initSharedUser={lead.sharedUser}
-          />
-          <CallInfo info={lead} />
-        </div>
-        <div className="flex flex-col lg:flex-row justify-around col-span-2 mb-2">
-          <GeneralInfoClient info={leadInfo} showInfo />
-          <PolicyInfoClient
-            leadId={lead.id}
-            leadName={leadName}
-            assistant={lead.assistant}
-            info={leadPolicy}
-          />
-        </div>
-      </div>
-      <div className="text-sm font-light px-4">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+      <MainInfoClient
+        info={leadMainInfo}
+        noConvo={lead.conversation ? true : false}
+      />
+      <GeneralInfoClient
+        info={leadInfo}
+        leadName={`${lead.firstName} ${lead.lastName}`}
+        lastCall={lead.calls[0]?.createdAt}
+        nextAppointment={lead.appointments[0]?.startDate}
+        showInfo
+      />
+      <CallInfo info={lead} />
+      <NotesForm
+        leadId={lead.id}
+        intialNotes={lead.notes!}
+        initSharedUser={lead.sharedUser}
+      />
+
+      <PolicyInfoClient
+        leadId={lead.id}
+        leadName={leadName}
+        assistant={lead.assistant}
+        info={leadPolicy}
+      />
+      <div></div>
+      <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>
         <p>
           -Type: <span className="font-bold">unknown</span>
@@ -125,7 +110,6 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
             <PhoneSwitcher
               number={defaultNumber}
               onSetDefaultNumber={onSetDefaultNumber}
-              controls
             />
           ) : (
             <>
@@ -144,6 +128,6 @@ export const LeadClient = ({ lead }: LeadClientProps) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
+
+import { SaveAll } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useScriptActions, useScriptData } from "../hooks/use-script";
 
-import { Save, SaveAll } from "lucide-react";
-import { toast } from "sonner";
-
-import { Script } from "@prisma/client";
+import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -19,55 +18,26 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Tiptap } from "@/components/reusable/tiptap";
+import { Script } from "@prisma/client";
 
-import { scriptInsert, scriptUpdateById } from "@/actions/script";
-import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
-
-type ScriptFormProps = {
-  script: Script | null;
-  setScripts?: React.Dispatch<React.SetStateAction<Script[] | null>>;
+type Props = {
+  script: Script;
 };
-
-export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
-  const [loading, setLoading] = useState(false);
-
-  const buttonText = script ? "Update" : "Save";
+export const ScriptForm = ({ script }: Props) => {
+  const { loading, onScriptUpdate } = useScriptActions();
 
   const form = useForm<ScriptSchemaType>({
     mode: "onChange",
     resolver: zodResolver(ScriptSchema),
-    defaultValues: script || {
-      title: "",
-      script: "",
-    },
+    defaultValues: script,
   });
 
-  const onSubmit = async (values: ScriptSchemaType) => {
-    setLoading(true);
-    if (!script) {
-      const insertScript = await scriptInsert(values);
-      if (insertScript.success) {
-        if (setScripts) {
-          setScripts((scripts) => {
-            return [...scripts!, insertScript.success];
-          });
-        }
-        toast.success("Script created!");
-      } else toast.error(insertScript.error);
-    } else {
-      const updatedScript = await scriptUpdateById(values);
-      if (updatedScript.success) {
-        toast.success("Script Updated!");
-      } else toast.error(updatedScript.error);
-    }
-    setLoading(false);
-  };
   return (
     <div className="flex flex-col h-full w-full pl-1 overflow-hidden">
       <Form {...form}>
         <form
           className="flex flex-col overflow-hidden space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onScriptUpdate)}
         >
           <div className="flex flex-col-reverse lg:flex-row justify-between items-end mb-2 gap-4">
             {/* TITLE */}
@@ -91,13 +61,8 @@ export const ScriptForm = ({ script, setScripts }: ScriptFormProps) => {
               )}
             />
             <Button disabled={loading} type="submit">
-              {script ? (
-                <SaveAll size={16} className="mr-2" />
-              ) : (
-                <Save size={16} className="mr-2" />
-              )}
-
-              {buttonText}
+              <SaveAll size={16} className="mr-2" />
+              Update
             </Button>
           </div>
 

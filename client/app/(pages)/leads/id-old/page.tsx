@@ -7,10 +7,15 @@ import { LeadTabsClient } from "./components/tabs-client";
 import { LeadClient } from "./components/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
+import { PrevNextMenu } from "@/components/lead/prev-next-menu";
 import { ConditionsClient } from "@/components/lead/conditions/client";
-import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
+
 import { LeadHeader } from "@/components/lead/header";
+import { AssistantForm } from "@/components/lead/forms/assistant-form";
 import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
+import { PolicyInfoForm } from "@/components/lead/forms/policy-info-form";
+import { ShareForm } from "@/components/lead/forms/share-form";
+import { TransferForm } from "@/components/lead/forms/transfer-form";
 import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
@@ -26,11 +31,17 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
     <PageLayout
       icon={User}
       title={`View Lead - ${lead.firstName}`}
-      topMenu={<PrevNextMenu href="leads" btnText="lead" prevNext={prevNext} />}
+      topMenu={
+        <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
+      }
     >
       <Tabs defaultValue="general" className="h-full">
         <LeadHeader lead={lead} />
+        <PolicyInfoForm />
+        <ShareForm />
+        <TransferForm />
         <IntakeForm />
+        <AssistantForm />
         <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>

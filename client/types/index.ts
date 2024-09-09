@@ -22,6 +22,7 @@ import {
   FullLeadMedicalCondition,
   LeadMainInfo,
   LeadPolicyType,
+  LeadPrevNext,
   ExpenseType,
 } from "./lead";
 
@@ -61,10 +62,9 @@ import {
   TwilioRecording,
   TwilioConferenceRecording,
 } from "./twilio";
-import { ItemProps,MonthProps, FileRecords, FileRecord } from "./item";
+import { ItemProps, MonthProps, FileRecords, FileRecord } from "./item";
 import { FullChatbotConversation, ShortChatbotConversation } from "./chatbot";
-import { FullCampaign,FullAd } from "./facebook";
-
+import { FullCampaign, FullAd } from "./facebook";
 
 export type FullCall = Call & {
   lead: {
@@ -143,6 +143,7 @@ export type {
   FullLeadMedicalCondition,
   LeadMainInfo,
   LeadPolicyType,
+  LeadPrevNext,
   ExpenseType,
 };
 
@@ -187,10 +188,10 @@ export type {
   TwilioConferenceRecording,
 };
 
-export type { ItemProps, FileRecords, FileRecord,MonthProps };
+export type { ItemProps, FileRecords, FileRecord, MonthProps };
 
 //CHATBOT
-export type {ShortChatbotConversation,FullChatbotConversation}
+export type { ShortChatbotConversation, FullChatbotConversation };
 
 //FACEBOOK CAMPAIGN
-export type {FullCampaign,FullAd}
+export type { FullCampaign, FullAd };

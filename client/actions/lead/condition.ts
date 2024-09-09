@@ -4,7 +4,7 @@ import { currentUser } from "@/lib/auth";
 
 import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
-import { activityInsert } from "@/actions/activity";
+import { leadActivityInsert } from "@/actions/lead/activity";
 
 //LEAD MEDICAL CONDITIONS
 //DATA
@@ -52,7 +52,7 @@ export const leadConditionInsert = async (values: LeadConditionSchemaType) => {
     data: { leadId, conditionId, diagnosed, medications, notes },
     include: { condition: true },
   });
-  await activityInsert(
+  await leadActivityInsert(
     leadId,
     "Condition",
     "Condition created",
@@ -117,7 +117,7 @@ export const leadConditionDeleteById = async (id: string) => {
   await db.leadMedicalCondition.delete({
     where: { id },
   });
-  await activityInsert(
+  await leadActivityInsert(
     existingCondition.leadId,
     "Condition",
     "Condition deleted",

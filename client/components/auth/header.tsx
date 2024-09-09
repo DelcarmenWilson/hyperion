@@ -26,7 +26,11 @@ export const Header = ({ label }: HeaderProps) => {
           className="w-[60px] h-[60px]"
           alt="logo"
         />
-        <span>Hyperion</span>
+        <svg className={cn("svg-logo", font.className)} viewBox="0 0 500 160">
+          <text x="50%" y="60%" dy=".32rem" text-anchor="middle">
+            Hyperion
+          </text>
+        </svg>
       </h1>
       <p className="text-muted-forground text-sm">{label}</p>
     </div>

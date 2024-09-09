@@ -1,5 +1,6 @@
 import * as z from "zod";
-import { Gender, MaritalStatus } from "@prisma/client";
+import { Gender, MaritalStatus, Prisma } from "@prisma/client";
+import { leadGetByIdGeneral, leadGetByIdMain } from "@/actions/lead";
 
 export const LeadSchema = z.object({
   id: z.optional(z.string()),
@@ -53,6 +54,9 @@ export const LeadMainSchema = z.object({
   textCode:z.optional(z.string()),
 });
 export type LeadMainSchemaType = z.infer<typeof LeadMainSchema>;
+export type LeadMainSchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdMain
+>
 
 export const LeadGeneralSchema = z.object({
   id: z.string(),
@@ -74,12 +78,15 @@ export const LeadGeneralSchema = z.object({
   .nullish()
   .transform((x) => x ?? undefined),
   smoker: z.boolean(),
-  leadName: z.optional(z.string()),
-  lastCall: z.optional(z.date()),
-  nextAppointment: z.optional(z.date()),
-  dob: z.optional(z.date()),
+  // leadName: z.optional(z.string()),
+  // lastCall: z.optional(z.date()),
+  // nextAppointment: z.optional(z.date()),
+  // dob: z.optional(z.date()),
 });
 export type LeadGeneralSchemaType = z.infer<typeof LeadGeneralSchema>;
+export type LeadGeneralSchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdGeneral
+>
 
 export const LeadPolicySchema = z.object({
   leadId: z.string({required_error:"*"}),
