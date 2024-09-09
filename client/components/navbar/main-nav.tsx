@@ -31,10 +31,11 @@ export const MainNav = () => {
       <Button onClick={() => onGetFacebookData("adImages")}>Ad Images</Button>
       <Button onClick={() => onGetFacebookData("forms")}>Forms</Button>*/}
       {user?.role == "MASTER" && (
-        <Button onClick={onSheduledLeads}>Schedule Leads</Button>
+        <>
+          <Button onClick={onSendEmail}>Send Email</Button>
+          <Button onClick={onSheduledLeads}>Schedule Leads</Button>
+        </>
       )}
-
-      <Button onClick={onSendEmail}>Send Email</Button>
 
       <CoachNotification
         conference={conference}
