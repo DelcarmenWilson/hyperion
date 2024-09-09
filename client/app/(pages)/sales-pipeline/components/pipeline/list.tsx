@@ -173,20 +173,21 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
           </Button>
         </DialogContent>
       </Dialog>
-      <Reorder.Group values={pipelines} onReorder={setPipelines}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {pipelines?.map((pipeline, index) => (
-            <PipelineCard
-              key={pipeline.id}
-              idx={index}
-              pipeline={pipeline}
-              sendPipeline={sendPipeline}
-              initLeads={leads.filter(
-                (e) => e.status == pipeline.status.status
-              )}
-            />
-          ))}
-        </div>
+      <Reorder.Group
+        className="flex gap-4 overflow-x-auto w-full h-full"
+        values={pipelines}
+        onReorder={setPipelines}
+      >
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-4"> */}
+        {pipelines?.map((pipeline, index) => (
+          <PipelineCard
+            key={pipeline.id}
+            idx={index}
+            pipeline={pipeline}
+            sendPipeline={sendPipeline}
+            initLeads={leads.filter((e) => e.status == pipeline.status.status)}
+          />
+        ))}
       </Reorder.Group>
     </>
   );

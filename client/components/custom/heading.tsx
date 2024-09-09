@@ -12,7 +12,7 @@ export const Heading = ({
   size = "text-3xl",
 }: HeadingProps) => {
   return (
-    <div className="p-2 mb-2">
+    <div className="p-2">
       <h2 className={cn("font-bold tracking-tight", size)}>{title}</h2>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>

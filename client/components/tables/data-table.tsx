@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
       <div ref={topRef} className="pb-2">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
           <div className="flex items-center gap-2">
-            {title && <h4 className="text-2xl font-semibold">{title}</h4>}
+            {title && <h4 className="text-lg font-semibold">{title}</h4>}
 
             {search && (
               <SimpleFilter

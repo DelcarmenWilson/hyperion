@@ -34,45 +34,25 @@ export const PhoneLeadInfo = () => {
   }
   const leadName = `${lead.firstName} ${lead.lastName}`;
   const leadMainInfo: LeadMainSchemaType = {
-    id: lead.id,
-    firstName: lead.firstName,
-    lastName: lead.lastName,
-    cellPhone: lead.cellPhone,
+    ...lead,
     email: lead.email || undefined,
     address: lead.address || undefined,
     city: lead.city || undefined,
-    state: lead.state,
     zipCode: lead.zipCode || undefined,
-    quote: lead.quote,
-    status: lead.status,
     textCode: lead.textCode as string,
   };
 
   const leadInfo: LeadGeneralSchemaType = {
-    id: lead.id,
-    gender: lead.gender,
-    maritalStatus: lead.maritalStatus,
+    ...lead,
     dateOfBirth: lead.dateOfBirth || undefined,
     weight: lead.weight || undefined,
     height: lead.height || undefined,
     income: lead.income || undefined,
-    smoker: lead.smoker,
-
-    leadName: leadName,
-    lastCall: lead.calls ? lead.calls[0]?.createdAt : undefined,
-    nextAppointment: lead.appointments
-      ? lead.appointments[0]?.startDate
-      : undefined,
   };
 
   const leadPolicy: LeadPolicySchemaType = {
+    ...lead.policy!,
     leadId: lead.id,
-    carrier: lead.policy?.carrier!,
-    policyNumber: lead.policy?.policyNumber!,
-    status: lead.policy?.status!,
-    ap: lead.policy?.ap!,
-    commision: lead.policy?.commision!,
-    coverageAmount: lead.policy?.coverageAmount!,
     startDate: lead.policy?.startDate!,
   };
   return (
@@ -99,7 +79,15 @@ export const PhoneLeadInfo = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
             <MainInfoClient info={leadMainInfo} noConvo={false} />
-            <GeneralInfoClient info={leadInfo} showInfo />
+            <GeneralInfoClient
+              info={leadInfo}
+              leadName={leadName}
+              lastCall={lead.calls ? lead.calls[0]?.createdAt : undefined}
+              nextAppointment={
+                lead.appointments ? lead.appointments[0]?.startDate : undefined
+              }
+              showInfo
+            />
             <CallInfo info={lead!} showBtnCall={false} />
             <PolicyInfoClient
               leadId={lead.id}

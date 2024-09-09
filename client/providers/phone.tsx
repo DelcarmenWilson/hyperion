@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Device } from "twilio-client";
+import { Device } from "@twilio/voice-sdk";
 import { PhoneOutModal } from "@/components/phone/out-modal";
 import { PhoneInModal } from "@/components/phone/in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
@@ -36,13 +36,14 @@ export default function PhoneContextProvider({
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       const phone = new Device(token);
+      phone.register();
 
-      phone.on("ready", function () {
-        console.log("ready");
+      phone.on("registered", () => {
+        console.log("Phone is Ready");
       });
 
-      phone.on("error", function (error: any) {
-        console.log(error);
+      phone.on("error", (error, call) => {
+        console.log("An error has occurred: ", error, call);
       });
 
       setPhone(phone);

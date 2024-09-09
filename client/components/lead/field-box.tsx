@@ -1,11 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import { Check, Pencil, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { USDollar } from "@/formulas/numbers";
 
 type FieldBoxProps = {
   name: string;
@@ -31,11 +29,11 @@ export const FieldBox = ({
     setFieldEnabled(false);
   };
   return (
-    <div className="flex gap-1 items-center group">
+    <div className="flex items-center justify-between group">
       <span>{name}:</span>
       {fieldEnabled ? (
         <Input
-          className="w-[60px] h-5"
+          className="flex-1 h-5"
           maxLength={maxLength}
           value={newField}
           onChange={(e) => setNewField(e.target.value)}

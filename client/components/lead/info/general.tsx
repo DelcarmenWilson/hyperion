@@ -1,32 +1,37 @@
 import { useEffect, useState } from "react";
-import { Cake, CalendarX, FilePenLine, Phone, XCircle } from "lucide-react";
-
+import { CalendarX, FilePenLine, Phone } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useLead } from "@/hooks/use-lead";
+import { cn } from "@/lib/utils";
 
 import { Appointment } from "@prisma/client";
 import { LeadGeneralSchemaType } from "@/schemas/lead";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
-import { GeneralInfoForm } from "../forms/general-info-form";
-
 import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
-import { cn } from "@/lib/utils";
 
-type GeneralInfoClientProps = {
+type Props = {
   info: LeadGeneralSchemaType;
+  leadName: string;
+  lastCall?: Date;
+  nextAppointment?: Date;
   showInfo?: boolean;
+  showEdit?: boolean;
 };
 
 export const GeneralInfoClient = ({
   info,
+  leadName,
+  lastCall,
+  nextAppointment,
   showInfo = false,
-}: GeneralInfoClientProps) => {
+  showEdit = true,
+}: Props) => {
   const [generalInfo, setGeneralInfo] = useState<LeadGeneralSchemaType>(info);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { onGeneralFormOpen } = useLead();
 
   useEffect(() => {
     const onSetInfo = (e: LeadGeneralSchemaType) => {
@@ -54,20 +59,8 @@ export const GeneralInfoClient = ({
 
   return (
     <>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-          <h4 className="text-2xl font-semibold py-2">
-            General Info -{" "}
-            <span className="text-primary">{generalInfo.leadName}</span>
-          </h4>
-          <GeneralInfoForm
-            info={generalInfo}
-            onClose={() => setDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
       <div className="flex flex-col gap-2 text-sm">
-        {generalInfo.lastCall && (
+        {lastCall && (
           <div
             className={cn(
               "flex items-center  gap-1",
@@ -77,11 +70,11 @@ export const GeneralInfoClient = ({
             <Badge className="gap-1 w-fit">
               <Phone size={16} /> Last Call
             </Badge>
-            {formatDateTime(generalInfo.lastCall)}
+            {formatDateTime(lastCall)}
           </div>
         )}
 
-        {generalInfo.nextAppointment && (
+        {nextAppointment && (
           <div
             className={cn(
               "flex items-center  gap-1",
@@ -91,15 +84,7 @@ export const GeneralInfoClient = ({
             <Badge className="gap-1 w-fit">
               <CalendarX size={16} /> Appt Set
             </Badge>
-            {formatDateTime(generalInfo.nextAppointment)}
-          </div>
-        )}
-
-        {generalInfo.dob && (
-          <div className="flex items-center gap-1 w-fit">
-            <Cake size={16} />
-            <XCircle size={16} />
-            Birthday: {formatDob(generalInfo.dob)}
+            {formatDateTime(nextAppointment)}
           </div>
         )}
 
@@ -138,12 +123,14 @@ export const GeneralInfoClient = ({
                 title="Marital Status"
                 value={generalInfo.maritalStatus}
               />
-              <Button
-                className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-                onClick={() => setDialogOpen(true)}
-              >
-                <FilePenLine size={16} />
-              </Button>
+              {showEdit && (
+                <Button
+                  className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
+                  onClick={() => onGeneralFormOpen(generalInfo.id)}
+                >
+                  <FilePenLine size={16} />
+                </Button>
+              )}
             </div>
           </div>
         )}

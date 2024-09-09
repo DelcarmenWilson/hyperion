@@ -5,7 +5,7 @@ import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 
 import { userGetByAssistant } from "@/data/user";
-import { activityInsert } from "@/actions/activity";
+import { leadActivityInsert } from "@/actions/lead/activity";
 
 // LEADSTATUS
 
@@ -68,7 +68,7 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
       status,
     },
   });
-  activityInsert(
+  leadActivityInsert(
     leadId,
     "status",
     "Status updated",

@@ -13,11 +13,11 @@ const ChatbotLayout = async ({ children }: Props) => {
   return (
     <CardLayout>
       <ResizablePanelGroup direction="horizontal" autoSaveId="rpg-chatbot">
-        <ResizablePanel className=" min-w-[250px] max-w-[350px]">
+        <ResizablePanel defaultSize={25} maxSize={30} minSize={20}>
           <GptConversationsClient />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel>
+        <ResizablePanel defaultSize={80} maxSize={80}>
           <div className="relative flex flex-1 h-full overflow-hidden">
             {children}
           </div>

@@ -67,12 +67,12 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
   }, [info]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
 
       {showBtnCall && (
-        <div className="relative w-fit">
+        <div className="relative w-fit ">
           <Button
             className="gap-2"
             disabled={lead.status == "Do_Not_Call"}
@@ -90,13 +90,14 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           )}
         </div>
       )}
-      <div className="text-sm space-y-2">
-        <div className="flex items-center gap-2">
-          <p className="w-[80px]">Type</p>
+      <div className="text-sm">
+        <div className="py-1">
+          <p>Type</p>
           <LeadTypeSelect id={lead.id} type={lead.type} />
         </div>
-        <div className="flex items-center gap-2">
-          <p className="w-[80px]">Status</p>
+
+        <div className="py-1">
+          <p>Status</p>
           <LeadStatusSelect id={lead.id} status={lead.status} />
         </div>
       </div>

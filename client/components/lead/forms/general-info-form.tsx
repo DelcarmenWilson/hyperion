@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-
-import { toast } from "sonner";
+"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLead, useLeadGeneralInfoActions } from "@/hooks/use-lead";
 
-import { LeadGeneralSchema, LeadGeneralSchemaType } from "@/schemas/lead";
+import {
+  LeadGeneralSchema,
+  LeadGeneralSchemaType,
+  LeadGeneralSchemaTypeP,
+} from "@/schemas/lead";
 import { Gender, MaritalStatus } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -26,21 +29,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Switch } from "@/components/ui/switch";
-import { leadUpdateByIdGeneralInfo } from "@/actions/lead";
 
-type GeneralInfoFormProps = {
-  info: LeadGeneralSchemaType;
-  onClose: () => void;
+export const GeneralInfoForm = () => {
+  const { isGeneralFormOpen, onGeneralFormClose } = useLead();
+  const { generalInfo, isFetchingGeneralInfo, loading, onGeneralInfoUpdate } =
+    useLeadGeneralInfoActions();
+  if (!generalInfo) return null;
+  return (
+    <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>
+      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+        <h3 className="text-2xl font-semibold py-2">
+          Demographics -
+          <span className="text-primary">
+            {`${generalInfo.firstName} ${generalInfo.lastName}`}
+          </span>
+        </h3>
+        <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
+          <GeneralForm
+            generalInfo={generalInfo}
+            loading={loading}
+            onSubmit={onGeneralInfoUpdate}
+            onClose={onGeneralFormClose}
+          />
+        </SkeletonWrapper>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
-export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
-  const [loading, setLoading] = useState(false);
-
+type GeneralInfoFormProps = {
+  generalInfo: LeadGeneralSchemaTypeP;
+  loading: boolean;
+  onSubmit: (values: LeadGeneralSchemaType) => void;
+  onClose: () => void;
+};
+export const GeneralForm = ({
+  generalInfo,
+  loading,
+  onSubmit,
+  onClose,
+}: GeneralInfoFormProps) => {
   const form = useForm<LeadGeneralSchemaType>({
     resolver: zodResolver(LeadGeneralSchema),
-    defaultValues: info,
+    //@ts-ignore
+    defaultValues: generalInfo,
   });
   const onCancel = () => {
     form.clearErrors();
@@ -48,19 +82,6 @@ export const GeneralInfoForm = ({ info, onClose }: GeneralInfoFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: LeadGeneralSchemaType) => {
-    setLoading(true);
-    const updatedLead = await leadUpdateByIdGeneralInfo(values);
-
-    if (updatedLead.success) {
-      userEmitter.emit("generalInfoUpdated", updatedLead.success);
-      onClose();
-    } else {
-      form.reset();
-      toast.error(updatedLead.error);
-    }
-    setLoading(false);
-  };
   return (
     <div className="h-full overflow-y-auto">
       <Form {...form}>

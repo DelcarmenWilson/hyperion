@@ -14,23 +14,23 @@ import { formatPhoneNumber } from "@/formulas/phones";
 
 type PhoneSwitcherProps = {
   number: string;
-  controls?: boolean;
   onSetDefaultNumber: (e: string) => void;
+  onClose?: () => void;
 };
 
 export const PhoneSwitcher = ({
   number,
-  controls,
   onSetDefaultNumber,
+  onClose,
 }: PhoneSwitcherProps) => {
   const user = useCurrentUser();
 
   const [selectedNumber, setSelectedNumber] = useState(number);
   const onSelect = (e: string) => {
     setSelectedNumber(e);
-    if (!controls) {
-      onSetDefaultNumber(e);
-    }
+    // if (!onClose) {
+    //   onSetDefaultNumber(e);
+    // }
   };
   return (
     <>
@@ -50,18 +50,20 @@ export const PhoneSwitcher = ({
           ))}
         </SelectContent>
       </Select>
-      {controls && (
+      {onClose && (
         <>
           <Button
-            variant="link"
-            size="sm"
-            onClick={() => onSetDefaultNumber(selectedNumber)}
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (onClose) onClose();
+            }}
           >
             <X size={16} />
           </Button>
           <Button
-            variant="link"
-            size="sm"
+            variant="ghost"
+            size="icon"
             onClick={() => onSetDefaultNumber(selectedNumber)}
           >
             <Check size={16} />

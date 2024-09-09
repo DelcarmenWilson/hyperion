@@ -12,7 +12,7 @@ import { SharedCallsClient } from "@/components/global/shared-calls";
 const DashBoardPage = async () => {
   const user = await currentUser();
   return (
-    <div className="flex flex-col gap-4 pt-4 overflow-y-auto">
+    <div className="flex flex-col gap-4 py-4 overflow-y-auto">
       <DashBoardClient />
       <QuoteClient />
       <AppointmentClient showLink />
@@ -28,6 +28,11 @@ const DashBoardPage = async () => {
         </div>
       </div>
       <SharedCallsClient columns={4} />
+
+      {/* <ResetPasswordEmail
+        username="Wilson"
+        resetLink="https://hperioncrm.com/new-password?token=vh42==10144545648786456"
+      /> */}
     </div>
   );
 };

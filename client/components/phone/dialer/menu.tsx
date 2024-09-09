@@ -62,7 +62,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
   });
   const [stop, setStop] = useState(false);
 
-  const startCall = (keepDialing: boolean = true) => {
+  const startCall = async (keepDialing: boolean = true) => {
     if (!keepDialing) {
       return;
     }
@@ -72,10 +72,12 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     const agentNumber =
       user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
       user?.phoneNumbers[0]?.phone;
-    const call = phone.connect({
-      To: reFormatPhoneNumber(lead.cellPhone),
-      AgentNumber: agentNumber,
-      CallDirection: "outbound",
+    const call = await phone.connect({
+      params: {
+        To: reFormatPhoneNumber(lead.cellPhone),
+        AgentNumber: agentNumber,
+        CallDirection: "outbound",
+      },
     });
 
     call.on("hangup", onCallDisconnect);

@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-
-import { toast } from "sonner";
+"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLead, useLeadMainInfoActions } from "@/hooks/use-lead";
+
+import {
+  LeadMainSchema,
+  LeadMainSchemaType,
+  LeadMainSchemaTypeP,
+} from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
-import { LeadMainSchema, LeadMainSchemaType } from "@/schemas/lead";
 import {
   Form,
   FormField,
@@ -17,7 +20,6 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
 import {
   Select,
   SelectContent,
@@ -25,22 +27,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { leadUpdateByIdMainInfo } from "@/actions/lead";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { states } from "@/constants/states";
 
-type Props = {
-  info: LeadMainSchemaType;
-  onClose: () => void;
+export const MainInfoForm = () => {
+  const { isMainFormOpen, onMainFormClose } = useLead();
+  const { mainInfo, isFetchingMainInfo, loading, onMainInfoUpdate } =
+    useLeadMainInfoActions(onMainFormClose);
+
+  if (!mainInfo) return null;
+  return (
+    <Dialog open={isMainFormOpen} onOpenChange={onMainFormClose}>
+      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+        <h3 className="text-2xl font-semibold py-2">
+          Demographics -
+          <span className="text-primary">
+            {`${mainInfo.firstName} ${mainInfo.lastName}`}
+          </span>
+        </h3>
+        <SkeletonWrapper isLoading={isFetchingMainInfo}>
+          <MainForm
+            mainInfo={mainInfo}
+            loading={loading}
+            onSubmit={onMainInfoUpdate}
+            onClose={onMainFormClose}
+          />
+        </SkeletonWrapper>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
-export const MainInfoForm = ({ info, onClose }: Props) => {
-  const [loading, setLoading] = useState(false);
-
+type MainFormProps = {
+  mainInfo: LeadMainSchemaTypeP;
+  loading: boolean;
+  onSubmit: (values: LeadMainSchemaType) => void;
+  onClose: () => void;
+};
+const MainForm = ({ mainInfo, loading, onSubmit, onClose }: MainFormProps) => {
   const form = useForm<LeadMainSchemaType>({
     resolver: zodResolver(LeadMainSchema),
-    defaultValues: info,
+    //@ts-ignore
+    defaultValues: mainInfo,
   });
 
   const onCancel = () => {
@@ -49,26 +78,14 @@ export const MainInfoForm = ({ info, onClose }: Props) => {
     onClose();
   };
 
-  const onSubmit = async (values: LeadMainSchemaType) => {
-    setLoading(true);
-    const response = await leadUpdateByIdMainInfo(values);
-    if (response.success) {
-      userEmitter.emit("mainInfoUpdated", response.success);
-      toast.success("Lead demographic info updated");
-      onClose();
-    } else {
-      form.reset();
-      toast.error(response.error);
-    }
-    setLoading(false);
-  };
+  if (!mainInfo) return null;
   return (
-    <div className="h-full overflow-y-auto">
-      <Form {...form}>
-        <form
-          className="space-y-2 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
+    <Form {...form}>
+      <form
+        className="flex flex-col overflow-hidden h-fullspace-y-2 px-2 w-full"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <div className="h-full overflow-y-auto">
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             {/* FIRST NAME */}
             <FormField
@@ -241,16 +258,16 @@ export const MainInfoForm = ({ info, onClose }: Props) => {
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outlineprimary">
-              Cancel
-            </Button>
-            <Button disabled={loading} type="submit">
-              Update
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        </div>
+        <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+          <Button onClick={onCancel} type="button" variant="outlineprimary">
+            Cancel
+          </Button>
+          <Button disabled={loading} type="submit">
+            Update
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --font-sora: "Sora", sans-serif;
   --font-code: "Source Code Pro", monospace;
@@ -15,12 +14,16 @@ body,
   height: 100%;
 }
 
-.bg-gradient{
-  background: rgb(9,9,121);
-background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,84,171,1) 56%, rgba(0,212,255,1) 90%);
-
+.bg-gradient {
+  background: rgb(9, 9, 121);
+  background: linear-gradient(
+    90deg,
+    rgba(9, 9, 121, 0.9108018207282913) 9%,
+    rgba(6, 84, 171, 1) 56%,
+    rgba(0, 212, 255, 1) 90%
+  );
 }
-.flex-center{
+.flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,13 +33,13 @@ background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,8
   -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
 }
- 
+
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 * {
-  scroll-behavior: smooth
+  scroll-behavior: smooth;
 }
 
 /* ======== stream css overrides ======== */
@@ -93,76 +96,111 @@ background: linear-gradient(90deg, rgba(9,9,121,0.9108018207282913) 9%, rgba(6,8
 }
 
 .rotate-45 {
-  @apply rotate-[45deg]
+  @apply rotate-[45deg];
 }
 
 .rotate-90 {
-  @apply rotate-[90deg]
+  @apply rotate-[90deg];
 }
 
 .rotate-135 {
-  @apply rotate-[135deg]
+  @apply rotate-[135deg];
 }
 
 .rotate-180 {
-  @apply rotate-[180deg]
+  @apply rotate-[180deg];
 }
 
 .rotate-225 {
-  @apply rotate-[225deg]
+  @apply rotate-[225deg];
 }
 
 .rotate-270 {
-  @apply rotate-[270deg]
+  @apply rotate-[270deg];
 }
 
 .rotate-315 {
-  @apply rotate-[315deg]
+  @apply rotate-[315deg];
 }
 
 .rotate-360 {
-  @apply rotate-[360deg]
+  @apply rotate-[360deg];
 }
 
 .-rotate-45 {
-  @apply rotate-[-45deg]
+  @apply rotate-[-45deg];
 }
 
 .-rotate-90 {
-  @apply rotate-[-90deg]
+  @apply rotate-[-90deg];
 }
 
 .-rotate-135 {
-  @apply rotate-[-135deg]
+  @apply rotate-[-135deg];
 }
 
 .-rotate-180 {
-  @apply rotate-[-180deg]
+  @apply rotate-[-180deg];
 }
 
 .-rotate-225 {
-  @apply rotate-[-225deg]
+  @apply rotate-[-225deg];
 }
 
 .-rotate-270 {
-  @apply rotate-[-270deg]
+  @apply rotate-[-270deg];
 }
 
 .-rotate-315 {
-  @apply rotate-[-315deg]
+  @apply rotate-[-315deg];
 }
 
 .-rotate-360 {
-  @apply rotate-[-360deg]
+  @apply rotate-[-360deg];
 }
-.react-datepicker-wrapper{
+.react-datepicker-wrapper {
   display: block !important;
 }
 
-.react-datepicker-wrapper input{
-  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50
+.react-datepicker-wrapper input {
+  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .use-automation-zoom-in {
   animation: automation-zoom-in 0.5s;
+}
+
+.svg-logo {
+  --loader-text-color:hsl(var(--primary));
+  width: 10rem;
+  font-weight: bolder;
+}
+.svg-logo text {
+  font-size: 6rem;
+  stroke-width: 3;
+  fill: transparent;
+  stroke: var(--loader-text-color);
+  letter-spacing: -6px;
+  animation: 2s infinite alternate linear animate-stroke;
+}
+@keyframes animate-stroke {
+  0% {
+    fill: transparent;
+    stroke: var(--loader-text-color);
+    stroke-width: 3;
+    stroke-dashoffset: 25%;
+    stroke-dasharray: 0 32%;
+  }
+  100% {
+    fill: transparent;
+    stroke:var(--loader-text-color);
+    stroke-width: 3;
+  }
+  80%,100% {
+    fill: var(--loader-text-color);
+     stroke: transparent;
+    stroke-width: 0;
+    stroke-dashoffset: -25%;
+    stroke-dasharray: 32% 0;
+  }
 }

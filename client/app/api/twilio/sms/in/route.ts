@@ -26,8 +26,9 @@ export async function POST(req: Request) {
     where: { phone: sms.to },
   });
 
+  //if agent number doesn't exists return error
   if (!agentNumber) {
-    return new NextResponse(null, { status: 500 });
+    return new NextResponse("Agent number doesn't exists", { status: 500 });
   }
 
   //Find the agent with this personal number - from number
@@ -35,15 +36,11 @@ export async function POST(req: Request) {
     where: { phoneNumber: sms.from },
   });
 
-  if (agent) {
-    // Check the to number
-
-    // if from number and to number both belong to the agent
-    if (agentNumber?.agentId == agent.userId) {
-      //Start Agent to Lead Message Process
-      await forwardTextToLead(sms, agent.userId);
-      return new NextResponse(null, { status: 200 });
-    }
+  // if from number and to number both belong to the agent
+  if (agent && agentNumber?.agentId == agent.userId) {
+    //Start Agent to Lead Message Process
+    const insertedMessage = await forwardTextToLead(sms, agent.userId);
+    if (insertedMessage) return new NextResponse(null, { status: 200 });
   }
 
   let updatedConversation;

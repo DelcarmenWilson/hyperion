@@ -45,9 +45,14 @@ import { exportLeads } from "@/lib/xlsx";
 type DropDownProps = {
   lead: FullLeadNoConvo;
   conversation?: Conversation;
+  action?: boolean;
 };
 
-export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
+export const LeadDropDown = ({
+  lead,
+  conversation,
+  action = false,
+}: DropDownProps) => {
   const role = useCurrentRole();
   const { onFormOpen } = useAppointment();
   const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } = useLead();
@@ -99,9 +104,16 @@ export const LeadDropDown = ({ lead, conversation }: DropDownProps) => {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="rounded-full" size="icon">
-            <ChevronDown size={16} />
-          </Button>
+          {action ? (
+            <Button className="gap-2" size="sm">
+              Actions
+              <ChevronDown size={16} />
+            </Button>
+          ) : (
+            <Button className="rounded-full" size="icon">
+              <ChevronDown size={16} />
+            </Button>
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem

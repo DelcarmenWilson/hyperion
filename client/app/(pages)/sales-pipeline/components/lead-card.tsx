@@ -44,7 +44,7 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
           >
             <Phone size={16} />
           </Button>
-          <p> Recieved {formatDate(lead.createdAt)}</p>
+          <p> Recd {formatDate(lead.createdAt)}</p>
         </div>
       </div>
     </div>

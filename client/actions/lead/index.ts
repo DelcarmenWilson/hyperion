@@ -14,12 +14,12 @@ import {
   LeadSchemaType,
 } from "@/schemas/lead";
 
-import { activityInsert } from "../activity";
+import { leadActivityInsert } from "./activity";
 import { userGetByAssistant } from "@/data/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { formatTimeZone, getEntireDay } from "@/formulas/dates";
+import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { FullLead } from "@/types";
@@ -134,18 +134,67 @@ export const leadGetById = async (id: string) => {
     return null;
   }
 };
+export const leadGetByIdMain = async (id: string) => {
+  try {
+    const lead = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        cellPhone: true,
+        email: true,
+        address: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        status: true,
+        quote: true,
+        textCode: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
+export const leadGetByIdGeneral = async (id: string) => {
+  try {
+    const lead = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        gender: true,
+        maritalStatus: true,
+        dateOfBirth: true,
+        weight: true,
+        height: true,
+        income: true,
+        smoker: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
+
 export const leadGetByConversationId = async (id: string) => {
   try {
-const conversation=await db.conversation.findUnique({where:{id}})
-if(!conversation)
-  return null
+    const conversation = await db.conversation.findUnique({ where: { id } });
+    if (!conversation) return null;
 
     const lead = await db.lead.findUnique({
       where: {
-        id:conversation.leadId,
+        id: conversation.leadId,
       },
       include: {
-
         calls: true,
         appointments: true,
         activities: true,
@@ -160,7 +209,6 @@ if(!conversation)
     return null;
   }
 };
-
 
 export const leadGetByPhone = async (cellPhone: string) => {
   try {
@@ -197,9 +245,15 @@ export const leadGetPrevNextById = async (id: string) => {
     if (user.role == "ASSISTANT") {
       userId = (await userGetByAssistant(userId)) as string;
     }
-    const prev = await db.lead.findMany({
+    const prev = (await db.lead.findMany({
       take: 1,
-      select: { id: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        state: true,
+        dateOfBirth: true,
+      },
       where: {
         userId,
         id: {
@@ -209,11 +263,17 @@ export const leadGetPrevNextById = async (id: string) => {
       orderBy: {
         id: "desc",
       },
-    });
+    }))[0];
 
-    const next = await db.lead.findMany({
+    const next = (await db.lead.findMany({
       take: 1,
-      select: { id: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        state: true,
+        dateOfBirth: true,
+      },
       where: {
         userId,
         id: {
@@ -223,8 +283,23 @@ export const leadGetPrevNextById = async (id: string) => {
       orderBy: {
         id: "asc",
       },
-    });
-    return { prev: prev[0]?.id || null, next: next[0]?.id || null };
+    }))[0];
+
+    return {
+      prev:prev?
+        {
+          id: prev.id,
+          name: `${prev.firstName} ${prev.lastName}`,
+          state: prev.state,
+          age: getAge(prev.dateOfBirth),
+        } : null,
+      next:next?  {
+        id: next.id,
+        name: `${next.firstName} ${next.lastName}`,
+        state: next.state,
+        age: getAge(next.dateOfBirth),
+      }  :null,
+    };
   } catch {
     return null;
   }
@@ -245,6 +320,83 @@ export const leadsGetByAgentIdTodayCount = async (userId: string) => {
   } catch {
     return 0;
   }
+};
+
+export const leadGetOrCreateByPhoneNumber = async (
+  cellPhone: string,
+  state: string,
+  agentId: string
+) => {
+  //Check if lead already exist
+  const exisitingLead = await db.lead.findUnique({ where: { cellPhone } });
+
+  //If there is an exisiting lead just return this lead details.
+  if (exisitingLead) return exisitingLead;
+
+  //Get a list of all the active phonenumbers for this particular agent
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId, status: { not: "Deactive" } },
+  });
+  //Get the default number from the list of active agent numbers
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+
+  //Get the default number to be assinged to this lead
+  const phoneNumber = phoneNumbers.find((e) => e.state == state);
+
+  const st = states.find(
+    (e) =>
+      e.state.toLowerCase() == state.toLowerCase() ||
+      e.abv.toLowerCase() == state.toLowerCase()
+  );
+
+  const firstName = "New";
+  let lastName = "Lead";
+
+  //Generate a code based on lead infomation
+  let code = generateTextCode(firstName, lastName, cellPhone);
+
+  //Check if previously generate code already exist
+  const exisitingCode = await db.lead.findFirst({
+    where: { textCode: code },
+  });
+
+  //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+  if (exisitingCode)
+    code = generateTextCode(firstName, lastName, cellPhone, true);
+
+  //Create a new Lead
+  const newLead = await db.lead.create({
+    data: {
+      firstName,
+      lastName,
+      address: "",
+      city: "",
+      state: st?.abv ? st.abv : state,
+      zipCode: "",
+      homePhone: cellPhone,
+      cellPhone,
+      gender: "NA",
+      maritalStatus: "Single",
+      email: "",
+      dateOfBirth: "",
+      weight: "",
+      height: "",
+      income: "",
+      policyAmount: "",
+      smoker: false,
+      currentlyInsured: false,
+      currentInsuranse: "",
+      type: "General",
+      vendor: "Manually Created",
+      recievedAt: new Date(),
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      userId: agentId,
+      status: "New",
+      textCode: code,
+    },
+  });
+
+  return newLead;
 };
 //ACTIONS
 export const leadInsert = async (values: LeadSchemaType) => {
@@ -438,15 +590,15 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
       });
     } else {
       ///Gnerate a new Text code
-    let code = generateTextCode(firstName, lastName, cellPhone);
+      let code = generateTextCode(firstName, lastName, cellPhone);
 
-    //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
-    const exisitingCode = await db.lead.findFirst({
-      where: { textCode: code },
-    });
-    if (exisitingCode) {
-      code = generateTextCode(firstName, lastName, cellPhone, true);
-    }
+      //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+      const exisitingCode = await db.lead.findFirst({
+        where: { textCode: code },
+      });
+      if (exisitingCode) {
+        code = generateTextCode(firstName, lastName, cellPhone, true);
+      }
       await db.lead.create({
         data: {
           firstName,
@@ -479,7 +631,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           status,
           assistantId,
           notes,
-          textCode:code
+          textCode: code,
         },
       });
     }
@@ -532,7 +684,7 @@ export const leadUpdateByIdDefaultNumber = async (
     },
   });
 
-  activityInsert(
+  leadActivityInsert(
     id,
     "caller id",
     "Caller id updated",
@@ -561,7 +713,7 @@ export const leadUpdateByIdNotes = async (id: string, notes: string) => {
     select: { id: true, notes: true },
   });
 
-  activityInsert(
+  leadActivityInsert(
     id,
     "notes",
     "Notes updated",
@@ -593,7 +745,7 @@ export const leadUpdateByIdQuote = async (id: string, quote: string) => {
       quote,
     },
   });
-  activityInsert(id, "Quote", "Quote updated", user.id, existingLead.quote);
+  leadActivityInsert(id, "Quote", "Quote updated", user.id, existingLead.quote);
   return { success: "Lead quote has been updated" };
 };
 
@@ -616,7 +768,7 @@ export const leadUpdateByIdType = async (leadId: string, type: string) => {
       type,
     },
   });
-  activityInsert(leadId, "Type", "Type updated", user.id, existingLead.type);
+  leadActivityInsert(leadId, "Type", "Type updated", user.id, existingLead.type);
   return { success: "Lead type has been updated" };
 };
 
@@ -664,7 +816,7 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
       zipCode,
     },
   });
-  activityInsert(leadInfo.id!, "main", "Main info updated", user.id);
+  leadActivityInsert(leadInfo.id!, "main", "Main info updated", user.id);
   return { success: leadInfo as LeadMainSchemaType };
 };
 export const leadUpdateByIdGeneralInfo = async (
@@ -713,7 +865,7 @@ export const leadUpdateByIdGeneralInfo = async (
       smoker,
     },
   });
-  activityInsert(leadInfo.id!, "general", "General info updated", user.id);
+  leadActivityInsert(leadInfo.id!, "general", "General info updated", user.id);
   return { success: leadInfo as LeadGeneralSchemaType };
 };
 export const leadUpdateByIdPolicyInfo = async (
@@ -788,7 +940,7 @@ export const leadUpdateByIdPolicyInfo = async (
   }
 
   bluePrintWeekUpdateByUserIdData(user.id, "premium", diff);
-  activityInsert(leadPolicyInfo.leadId, "sale", "policy info updated", user.id);
+  leadActivityInsert(leadPolicyInfo.leadId, "sale", "policy info updated", user.id);
   return { success: leadPolicyInfo };
 };
 

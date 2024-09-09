@@ -1,5 +1,5 @@
 "use client";
-import { Connection } from "twilio-client";
+import { Call } from "@twilio/voice-sdk";
 import { Fragment, useEffect, useState } from "react";
 import {
   Mic,
@@ -69,21 +69,20 @@ export const PhoneInModal = () => {
   const addDeviceListeners = () => {
     if (!phone) return;
 
-    phone.on("incoming", async function (incomingCall: Connection) {
+    phone.on("incoming", async function (incomingCall: Call) {
       // if (phone.status() == "busy") {
       //   incomingCall?.reject();
       //   return;
       // }
 
+      //On Call disconnect or canecel - call the diconnect function
       ["disconnect", "cancel"].forEach((type) => {
-        incomingCall.on(type, function (error: any) {
+        incomingCall.on(type, (call) => {
           onDisconnect();
+          console.log("call diconnected", call);
         });
       });
-
-      // incomingCall.on("cancel", function (error: any) {
-      //   onCallDisconnect();
-      // });
+      //Get the leads infomation based on the phone number
       const response = await axios.post("/api/leads/details", {
         phone: incomingCall.parameters.From,
       });
@@ -104,7 +103,7 @@ export const PhoneInModal = () => {
   };
 
   useEffect(() => {
-    if (phone?.status() == "busy") return;
+    if (phone?.state == "registered") return;
     addDeviceListeners();
   }, [addDeviceListeners]);
 

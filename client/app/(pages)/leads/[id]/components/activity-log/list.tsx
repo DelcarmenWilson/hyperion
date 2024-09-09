@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLeadData } from "@/hooks/use-lead";
 
 import {
   Select,
@@ -8,12 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Activity } from "@prisma/client";
+
 import { ActivityCard } from "./card";
 
-type ActivityLogProps = {
-  initActivities: Activity[];
-};
 const types = [
   "Caller Id",
   "General",
@@ -24,14 +22,19 @@ const types = [
   "Status",
 ];
 
-export const ActivityList = ({ initActivities }: ActivityLogProps) => {
+export const ActivityList = () => {
+  const { initActivities, isFetchingActivities } = useLeadData();
   const [activities, setActivities] = useState(initActivities);
 
   const onSetActivities = (type: string) => {
     setActivities(
-      initActivities.filter((e) => e.type.includes(type == "%" ? "" : type))
+      initActivities?.filter((e) => e.type.includes(type == "%" ? "" : type))
     );
   };
+  useEffect(() => {
+    if (!initActivities) return;
+    setActivities(initActivities);
+  }, [initActivities]);
   return (
     <div className="text-sm">
       <div className="flex items-center gap-2">
@@ -64,7 +67,7 @@ export const ActivityList = ({ initActivities }: ActivityLogProps) => {
       {activities?.map((activity) => (
         <ActivityCard key={activity.id} activity={activity} />
       ))}
-      {!activities.length && (
+      {!activities?.length && (
         <p className="text-muted-foreground text-center mt-2">
           No activities posted
         </p>
