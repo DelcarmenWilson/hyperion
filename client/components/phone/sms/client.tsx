@@ -118,7 +118,6 @@ export const SmsClient = ({
         <PhoneSwitcher
           number={selectedNumber}
           onSetDefaultNumber={setSelectedNumber}
-          controls={false}
         />
       </div>
       {loading ? (

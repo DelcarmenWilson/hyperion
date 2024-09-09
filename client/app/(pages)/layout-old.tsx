@@ -10,6 +10,7 @@ import GlobalContextProvider from "@/providers/global";
 
 import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
+// import { SideBar, SidebarSkeleton } from "@/components/sidebar";
 import SideBar from "@/components/sidebar";
 import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
@@ -70,19 +71,21 @@ export default async function DashBoardLayout({
       initTemplates={templates}
     >
       <SocketContextComponent>
-        <div className="flex h-screen w-full overflow-hidden">
+        <div className="h-screen overflow-hidden">
           <SideBar main />
 
-          <div className="flex flex-col flex-1 w-[calc(100%-101px)] shrink-0">
+          <div className="md:pl-[180px]">
             <NavBar />
-            <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
+            <div className="relative ">
               <PhoneContextProvider initVoicemails={voicemails} token={token!}>
                 <AppointmentContextComponent
                   initSchedule={schedule!}
                   initAppointments={appointments}
                   initLabels={appointmentLabels}
                 >
-                  <ModalProvider>{children}</ModalProvider>
+                  <BlurPage>
+                    <ModalProvider>{children}</ModalProvider>
+                  </BlurPage>
                 </AppointmentContextComponent>
               </PhoneContextProvider>
 

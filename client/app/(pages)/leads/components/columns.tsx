@@ -105,17 +105,11 @@ export const columns: ColumnDef<FullLead>[] = [
     header: "Info",
     cell: ({ row }) => {
       const leadMainInfo: LeadMainSchemaType = {
-        id: row.original.id,
-        firstName: row.original.firstName,
-        lastName: row.original.lastName,
-        cellPhone: row.original.cellPhone,
+        ...row.original,
         email: row.original.email || undefined,
         address: row.original.address || undefined,
         city: row.original.city || undefined,
-        state: row.original.state,
         zipCode: row.original.zipCode || undefined,
-        status: row.original.status,
-        quote: row.original.quote,
         textCode: row.original.textCode!,
       };
       return (
@@ -153,22 +147,20 @@ export const columns: ColumnDef<FullLead>[] = [
     header: "",
     cell: ({ row }) => {
       const leadInfo: LeadGeneralSchemaType = {
-        id: row.original.id,
-        gender: row.original.gender,
-        maritalStatus: row.original.maritalStatus,
+        ...row.original,
         dateOfBirth: row.original.dateOfBirth || undefined,
         weight: row.original.weight || undefined,
         height: row.original.height || undefined,
         income: row.original.income || undefined,
-        smoker: row.original.smoker,
-
-        leadName: `${row.original.firstName} ${row.original.lastName}`,
-        lastCall: row.original.calls[0]?.createdAt,
-        nextAppointment: row.original.appointments[0]?.startDate,
       };
       return (
         <div className="min-w-[180px] max-w-[260px]">
-          <GeneralInfoClient info={leadInfo} />
+          <GeneralInfoClient
+            info={leadInfo}
+            leadName={`${row.original.firstName} ${row.original.lastName}`}
+            lastCall={row.original.calls[0]?.createdAt}
+            nextAppointment={row.original.appointments[0]?.startDate}
+          />
         </div>
       );
     },

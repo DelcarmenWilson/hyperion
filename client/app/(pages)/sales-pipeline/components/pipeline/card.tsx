@@ -53,9 +53,10 @@ export const PipelineCard = ({
       value={pipeline}
       dragListener={false}
       dragControls={controls}
-      drag
+      drag="x"
+      className="h-full w-full lg:w-[350px] shrink-0"
     >
-      <section className="flex flex-col border border-primary/50 shadow-inner h-[400px]">
+      <section className="flex flex-col border border-primary/50 h-full ">
         <div className="flex justify-between items-center bg-primary text-background px-2">
           <div className="flex flex-1 items-center gap-2">
             <Button

@@ -1,15 +1,13 @@
 import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { HyperionLeadClient } from "./components/client";
-import { hyperionLeadsGetAll } from "@/data/hyperion";
 
-const HyperionLeadsPage = async () => {
-  const leads = await hyperionLeadsGetAll();
+const HyperionLeadsPage = () => {
   return (
     <PageLayoutAdmin
       title="Hyperion Leads"
       description="Manage all Hyperion Leads"
     >
-      <HyperionLeadClient initLeads={leads} />
+      <HyperionLeadClient />
     </PageLayoutAdmin>
   );
 };

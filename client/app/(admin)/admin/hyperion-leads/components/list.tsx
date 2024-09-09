@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { HyperionLeadCard } from "./card";
 import { HyperionLead } from "@prisma/client";
+import { HyperionLeadCard } from "./card";
 
 type HyperionLeadListProps = {
   leads: HyperionLead[];
@@ -26,7 +26,7 @@ export const HyperionLeadList = ({
         </div>
       ) : (
         <div>
-          <p className="font-semibold text-center">No HyperionLeads Found</p>
+          <p className="font-semibold text-center">No Hyperion Leads Found</p>
         </div>
       )}
     </>
