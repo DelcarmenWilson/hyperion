@@ -40,7 +40,7 @@ export const ChatsClient = () => {
           <ChatUsersList onSelectUser={onSelectUser} />
         </DialogContent>
       </Dialog>
-      <div className="flex flex-col h-full w-[250px] gap-1 p-1">
+      <div className="flex flex-col h-full gap-1 p-1">
         <div className="flex justify-between items-center">
           <h4 className="text-lg text-muted-foreground font-semibold">Chats</h4>
           <Button

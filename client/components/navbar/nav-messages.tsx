@@ -138,7 +138,7 @@ export const NavMessages = () => {
               <DropdownMenuItem className="flex flex-col">
                 <p className="text-xl text-center w-full">No new Messages</p>
                 <div className="text-end w-full text-sm underline">
-                  <Link href="/chat">View All</Link>
+                  <Link href="/conversations">View All</Link>
                 </div>
               </DropdownMenuItem>
             )}

@@ -85,7 +85,7 @@ export const MainInfoClient = ({
               disabled={info.status == "Do_Not_Call"}
               variant="outlineprimary"
               size="xs"
-              onClick={onLeadSendInitialSms}
+              onClick={()=>onLeadSendInitialSms(info.id)}
             >
               <MessageSquare size={16} />
               SEND SMS

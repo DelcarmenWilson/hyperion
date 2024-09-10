@@ -4,7 +4,7 @@ import { ConversationsClient } from "./components/client";
 type Props = {
   children: React.ReactNode;
 };
-const ConversationsLayout = async ({ children }: Props) => {
+const ConversationsLayout =  ({ children }: Props) => {
   return (
     <CardLayout>
       <ConversationsClient />

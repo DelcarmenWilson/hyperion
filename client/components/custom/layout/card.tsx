@@ -5,7 +5,7 @@ type Props = {
 };
 export const CardLayout = ({ children }: Props) => {
   return (
-    <Card className="flex flex-col h-full overflow-hidden !p-0">
+    <Card className="flex flex-1 flex-col h-full overflow-hidden !p-0">
       <CardContent className="flex h-full gap-2 overflow-hidden !p-0">
         {children}
       </CardContent>

@@ -680,8 +680,8 @@ export const useLeadMainInfoActions = (
     } else toast.error(updatedQuote.error);
   };
 
-  const onLeadSendInitialSms = async () => {
-    const createdSms = await smsCreateInitial(leadId as string);
+  const onLeadSendInitialSms = async (leadId:string) => {
+    const createdSms = await smsCreateInitial(leadId);
     router.refresh();
     if (createdSms.success) {
       setInitConvo(true);
