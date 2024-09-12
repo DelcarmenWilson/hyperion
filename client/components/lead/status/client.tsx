@@ -22,7 +22,7 @@ export const LeadStatusClient = () => {
       text="Add Status"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
 

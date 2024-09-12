@@ -23,7 +23,7 @@ export const ActionsClient = () => {
       text="Add Action"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
       showButton={user?.role != "ASSISTANT"}
     />
   );

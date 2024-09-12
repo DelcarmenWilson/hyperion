@@ -9,13 +9,14 @@ import {
   LeadPolicySchemaType,
 } from "@/schemas/lead";
 
-import { GeneralInfoClient } from "@/components/lead/info/general";
-import { CallInfo } from "@/components/lead/info/call";
-import { LeadDropDown } from "@/components/lead/dropdown";
-import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import { MainInfoClient } from "@/components/lead/info/main";
-import { NotesForm } from "@/components/lead/forms/notes-form";
+import { CallInfo } from "./info/call";
 import { Checkbox } from "@/components/ui/checkbox";
+
+import { LeadDropDown } from "./info/dropdown";
+import { GeneralInfoClient } from "./info/general";
+import { PolicyInfoClient } from ".//info/policy-info";
+import { MainInfoClient } from "./info/main";
+import { NotesForm } from "./info/notes-form";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
@@ -31,9 +32,9 @@ export const columns: ColumnDef<FullLead>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="relative flex-center gap-2 h-full">
+      <div className="flex-center gap-2 h-full">
         <Checkbox
-          className="absolute -top-20 -left-1"
+          className="absolute top-2 left-2"
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
@@ -47,26 +48,12 @@ export const columns: ColumnDef<FullLead>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   id: "select",
-  //   cell: ({ row }) => (
-  //     <div className="flex flex-col justify-center items-center gap-2">
-  //       <LeadDropDown
-  //         lead={row.original}
-  //         conversation={row.original.conversation!}
-  //       />
-  //     </div>
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     id: "firstName",
     accessorKey: "firstName",
     enableGlobalFilter: true,
     enableHiding: true,
   },
-
   {
     id: "lastName",
     accessorKey: "lastName",

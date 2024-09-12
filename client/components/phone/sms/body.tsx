@@ -1,30 +1,30 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
+import { MessageSquare } from "lucide-react";
 import SocketContext from "@/providers/socket";
-import axios from "axios";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { Message } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCard } from "./message-card";
-import { FullMessage } from "@/types";
+import { useLeadMessageActions } from "@/hooks/lead/use-message";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type SmsBodyProps = {
-  initConversationId?: string;
-  initMessages?: Message[];
   leadName: string;
   userName: string;
 };
 
-export const SmsBody = ({
-  initConversationId,
-  initMessages,
-  leadName,
-  userName,
-}: SmsBodyProps) => {
+export const SmsBody = ({ leadName, userName }: SmsBodyProps) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const [conversationId, setConversationId] = useState(initConversationId);
-  const [messages, setMessages] = useState(initMessages);
+  // const [messages, setMessages] = useState(initMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const {
+    messages,
+    isFetchingMessages,
+    onMessageInitialSubmit,
+    IsPendinginitialMessage,
+  } = useLeadMessageActions();
 
   //TODO - messages are not scrolling to the bottom after being inserted
   const ScrollDown = () => {
@@ -35,63 +35,77 @@ export const SmsBody = ({
     }
   };
 
-  const onSetMessage = (newMessage: Message) => {
-    const existing = messages?.find((e) => e.id == newMessage.id);
-    if (existing != undefined) return;
-    if (!conversationId) {
-      setConversationId(newMessage.conversationId);
-    }
-    setMessages((messages) => [...messages!, newMessage]);
-    ScrollDown();
-  };
+  // const onSetMessage = (newMessage: LeadMessage) => {
+  //   const existing = messages?.find((e) => e.id == newMessage.id);
+  //   if (existing != undefined) return;
+  //   if (!conversationId) {
+  //     setConversationId(newMessage.conversationId);
+  //   }
+  //   setMessages((messages) => [...messages!, newMessage]);
+  //   ScrollDown();
+  // };
 
-  useEffect(() => {
-    if (conversationId) {
-      axios.post(`/api/conversations/${conversationId}/seen`);
-      userEmitter.emit("conversationSeen", conversationId as string);
-    }
-    ScrollDown();
-    userEmitter.on("messageInserted", (info) => onSetMessage(info));
-    return () => {
-      userEmitter.off("messageInserted", (info) => onSetMessage(info));
-    };
-    // eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   if (conversationId) {
+  //     axios.post(`/api/conversations/${conversationId}/seen`);
+  //     userEmitter.emit("conversationSeen", conversationId as string);
+  //   }
+  //   ScrollDown();
+  //   userEmitter.on("messageInserted", (info) => onSetMessage(info));
+  //   return () => {
+  //     userEmitter.off("messageInserted", (info) => onSetMessage(info));
+  //   };
+  //   // eslint-disable-next-line
+  // }, []);
 
-  useEffect(() => {
-    const messageHandler = (message: Message) => {
-      axios.post(`/api/conversations/${conversationId}/seen`);
-      onSetMessage(message);
-    };
-    socket?.on("conversation-messages-new", (data: { dt: FullMessage[] }) => {
-      data.dt.forEach((message) => messageHandler(message));
-    });
-    return () => {
-      socket?.off(
-        "conversation-messages-new",
-        (data: { dt: FullMessage[] }) => {
-          data.dt.forEach((message) => messageHandler(message));
-        }
-      );
-    };
-    // eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   const messageHandler = (message: LeadMessage) => {
+  //     axios.post(`/api/conversations/${conversationId}/seen`);
+  //     onSetMessage(message);
+  //   };
+  //   socket?.on("conversation-messages-new", (data: { dt: FullMessage[] }) => {
+  //     data.dt.forEach((message) => messageHandler(message));
+  //   });
+  //   return () => {
+  //     socket?.off(
+  //       "conversation-messages-new",
+  //       (data: { dt: FullMessage[] }) => {
+  //         data.dt.forEach((message) => messageHandler(message));
+  //       }
+  //     );
+  //   };
+  //   // eslint-disable-next-line
+  // }, []);
 
   return (
-    <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">
-      {!messages?.length && (
-        <p className="text-center text-muted-foreground">
-          No sms have been sent
-        </p>
+    <SkeletonWrapper isLoading={isFetchingMessages} fullHeight>
+      {!messages?.length ? (
+        <div className="flex-center flex-col text-muted-foreground h-full gap-2">
+          <p className="font-bold">No sms have been sent</p>
+          <Button
+            className="gap-2"
+            disabled={IsPendinginitialMessage}
+            variant="outlineprimary"
+            onClick={onMessageInitialSubmit}
+          >
+            <MessageSquare size={16} />
+            Send an initial message
+          </Button>
+          <p>- OR -</p>
+          <p className="mt-2"> Type a message below</p>
+        </div>
+      ) : (
+        <ScrollArea className="w-full h-full">
+          {messages?.map((message) => (
+            <MessageCard
+              key={message.id}
+              message={message}
+              username={message.role === "user" ? leadName : userName}
+            />
+          ))}
+          <div ref={bottomRef} className="pt-2" />
+        </ScrollArea>
       )}
-      {messages?.map((message) => (
-        <MessageCard
-          key={message.id}
-          message={message}
-          username={message.role === "user" ? leadName : userName}
-        />
-      ))}
-      <div ref={bottomRef} className="pt-2" />
-    </ScrollArea>
+    </SkeletonWrapper>
   );
 };

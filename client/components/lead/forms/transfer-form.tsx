@@ -1,15 +1,20 @@
 "use client";
 import React from "react";
-import { useLead, useLeadActions } from "@/hooks/use-lead";
+import { useLeadActions } from "@/hooks/lead/use-lead";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { UserSelect } from "@/components/user/select";
 
 export const TransferForm = () => {
-  const { isTransferFormOpen, onTransferFormClose, leadIds, leadFullName } =
-    useLead();
-  const { userId, setUserId, loading, onLeadUpdateByIdTransfer } =
-    useLeadActions(onTransferFormClose, leadIds);
+  const {
+    userId,
+    setUserId,
+    loading,
+    leadFullName,
+    isTransferFormOpen,
+    onTransferFormClose,
+    onLeadUpdateByIdTransfer,
+  } = useLeadActions();
 
   return (
     <Dialog open={isTransferFormOpen} onOpenChange={onTransferFormClose}>

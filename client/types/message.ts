@@ -1,15 +1,22 @@
-import { Conversation, Message, User, Chat, ChatMessage, Lead } from "@prisma/client";
+import {
+  Chat,
+  ChatMessage,
+  Lead,
+  LeadConversation,
+  LeadMessage,
+  User,
+} from "@prisma/client";
 
 import { FullLeadNoConvo } from "./lead";
 
-export type FullMessage = Message & {
+export type FullMessage = LeadMessage & {
   sender?: User | null;
 };
 
 // CONVERSATIONS
-export type ShortConvo = Conversation & {
-  lead:Lead,
-  lastMessage:Message | null
+export type ShortConvo = LeadConversation & {
+  lead: Lead;
+  lastMessage: LeadMessage | null;
 };
 export type ShortConversation = {
   id: string;
@@ -22,26 +29,26 @@ export type ShortConversation = {
   unread: number;
 };
 
-export type FullConversation = Conversation & {
+export type FullConversation = LeadConversation & {
   lead: FullLeadNoConvo;
   messages: FullMessage[];
 };
 
-export type FullConversationWithLead = Conversation & {
+export type FullConversationWithLead = LeadConversation & {
   lead: Lead;
-  lastMessage:Message | null
+  lastMessage: LeadMessage | null;
   messages: FullMessage[];
 };
 
-export type LeadAndConversation =   Conversation & {
-    lead: Lead;
-  };
+export type LeadAndConversation = LeadConversation & {
+  lead: Lead;
+};
 
 // CHAT
 export type ShortChat = Chat & {
   userOne: User;
   userTwo: User;
-  lastMessage:ChatMessage | null
+  lastMessage: ChatMessage | null;
 };
 export type FullChat = ShortChat & {
   messages: FullChatMessage[];
@@ -52,5 +59,5 @@ export type FullChatMessage = ChatMessage & {
 export type UnreadShortChat = Chat & {
   userOne: User;
   userTwo: User;
-  lastMessage:FullChatMessage | null  
+  lastMessage: FullChatMessage | null;
 };

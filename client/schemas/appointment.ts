@@ -2,13 +2,16 @@ import * as z from "zod";
 import { Gender, MaritalStatus } from "@prisma/client";
 
 export const AppointmentSchema = z.object({
-  localDate:z.date(),
-  startDate: z.date(),
+  date:z.date(),
+  localDate:z.optional(z.date()),
+  startDate: z.optional(z.date()),
   agentId: z.string(),
   leadId: z.string(),
   label: z.string(),
   comments: z.string(),
-  reminder:z.boolean()
+  smsReminder:z.boolean(),
+  emailReminder:z.boolean()
+
 });
 export type AppointmentSchemaType = z.infer<typeof AppointmentSchema>;
 

@@ -1,16 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { usePhone } from "@/hooks/use-phone";
-import { userEmitter } from "@/lib/event-emmiter";
-
-import { cn } from "@/lib/utils";
-
-import {
-  LeadGeneralSchemaType,
-  LeadMainSchemaType,
-  LeadPolicySchemaType,
-} from "@/schemas/lead";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -27,42 +16,10 @@ import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 
 export const PhoneLeadInfo = () => {
-  const { lead, isLeadInfoOpen } = usePhone();
+  const { lead } = usePhone();
+  if (!lead) return null;
 
-  if (!lead) {
-    return null;
-  }
-  const leadName = `${lead.firstName} ${lead.lastName}`;
-  const leadMainInfo: LeadMainSchemaType = {
-    ...lead,
-    email: lead.email || undefined,
-    address: lead.address || undefined,
-    city: lead.city || undefined,
-    zipCode: lead.zipCode || undefined,
-    textCode: lead.textCode as string,
-  };
-
-  const leadInfo: LeadGeneralSchemaType = {
-    ...lead,
-    dateOfBirth: lead.dateOfBirth || undefined,
-    weight: lead.weight || undefined,
-    height: lead.height || undefined,
-    income: lead.income || undefined,
-  };
-
-  const leadPolicy: LeadPolicySchemaType = {
-    ...lead.policy!,
-    leadId: lead.id,
-    startDate: lead.policy?.startDate!,
-  };
   return (
-    // <div className="flex flex-1 justify-start relative overflow-hidden ">
-    //   <div
-    //     className={cn(
-    //       "flex  flex-col bg-background relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
-    //       isLeadInfoOpen && "w-full right-0"
-    //     )}
-    //   >
     <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
         <LeadHeader lead={lead} />
@@ -78,52 +35,34 @@ export const PhoneLeadInfo = () => {
           value="general"
         >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
-            <MainInfoClient info={leadMainInfo} noConvo={false} />
-            <GeneralInfoClient
-              info={leadInfo}
-              leadName={leadName}
-              lastCall={lead.calls ? lead.calls[0]?.createdAt : undefined}
-              nextAppointment={
-                lead.appointments ? lead.appointments[0]?.startDate : undefined
-              }
-              showInfo
-            />
-            <CallInfo info={lead!} showBtnCall={false} />
-            <PolicyInfoClient
-              leadId={lead.id}
-              leadName={leadName}
-              info={leadPolicy}
-              assistant={lead.assistant}
-            />
-            <NotesForm
-              leadId={lead?.id as string}
-              intialNotes={lead?.notes as string}
-              initSharedUser={lead.sharedUser}
-            />
+            <MainInfoClient noConvo={false} />
+            <GeneralInfoClient showInfo />
+            <CallInfo showBtnCall={false} />
+            <PolicyInfoClient />
+            <NotesForm />
           </div>
         </TabsContent>
         <TabsContent
           value="beneficiaries"
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
         >
-          <BeneficiariesClient leadId={lead.id} />
+          <BeneficiariesClient />
         </TabsContent>
         <TabsContent
           value="conditions"
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
         >
-          <ConditionsClient leadId={lead.id} />
+          <ConditionsClient />
         </TabsContent>
         <TabsContent
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
           value="expenses"
         >
-          <ExpensesClient leadId={lead.id} />
+          <ExpensesClient />
         </TabsContent>
       </Tabs>
 
       <PhoneScript />
     </div>
-    // </div>
   );
 };

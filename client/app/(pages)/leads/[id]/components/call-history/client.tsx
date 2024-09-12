@@ -1,34 +1,67 @@
 "use client";
-import { CallHistoryCard } from "./card";
+import { PhoneOutgoing } from "lucide-react";
+import { useLeadCallData } from "@/hooks/lead/use-call";
+
+import { CallHistoryActions } from "@/components/callhistory/actions";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { useLeadData } from "@/hooks/use-lead";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import { getPhoneStatusText } from "@/formulas/phone";
+import { formatDateTime } from "@/formulas/dates";
+import { formatSecondsToTime } from "@/formulas/numbers";
 
 export const CallHistoryClient = () => {
-  const { calls, isFetchingCalls } = useLeadData();
-  //TODO find the other component that looks just like this one
+  const { calls, isFetchingCalls } = useLeadCallData();
 
   return (
-    <SkeletonWrapper isLoading={isFetchingCalls}>
-      <div className="text-sm">
-        <div className="grid grid-cols-5 items-center  gap-2 text-md text-muted-foreground">
-          <span>Direction</span>
-          <span>Duration</span>
-          <span className="col-span-2">Date / Time</span>
-          <span>Actions</span>
-        </div>
-
-        {calls?.length ? (
-          <>
+    <div className="text-sm">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Direction</TableHead>
+            <TableHead>Duration</TableHead>
+            <TableHead>Date / Time</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <SkeletonWrapper isLoading={isFetchingCalls} fullWidth>
+          <TableBody>
             {calls?.map((call) => (
-              <CallHistoryCard key={call.id} call={call} />
+              <TableRow key={call.id}>
+                <TableCell>
+                  <div className="flex gap-2 items-center">
+                    {call.direction.toLowerCase() === "inbound" ? (
+                      getPhoneStatusText(call.status as string)
+                    ) : (
+                      <>
+                        <PhoneOutgoing size={16} />
+                        {call.direction}
+                      </>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {call.duration && formatSecondsToTime(call.duration)}
+                </TableCell>
+                <TableCell> {formatDateTime(call.createdAt)}</TableCell>
+                <TableCell>
+                  <CallHistoryActions call={call} />
+                </TableCell>
+              </TableRow>
             ))}
-          </>
-        ) : (
-          <p className="text-muted-foreground text-center mt-2">
-            No calls found
-          </p>
-        )}
-      </div>
-    </SkeletonWrapper>
+          </TableBody>
+        </SkeletonWrapper>
+      </Table>
+      {!calls?.length && (
+        <p className="text-muted-foreground text-center mt-2">No calls found</p>
+      )}
+    </div>
   );
 };

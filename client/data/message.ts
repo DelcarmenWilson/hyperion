@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 
 export const messagesGetByConversationId = async (conversationId: string) => {
   try {
-    const messages = await db.message.findMany({
+    const messages = await db.leadMessage.findMany({
       where: { conversationId },
       orderBy: { createdAt: "desc" },
     });
@@ -15,7 +15,7 @@ export const messagesGetByConversationId = async (conversationId: string) => {
 
 export const messagesGetByAgentIdUnSeen = async (senderId: string) => {
   try {
-    const messages = await db.message.aggregate({
+    const messages = await db.leadMessage.aggregate({
       _count:{id:true},      
       where: {senderId,hasSeen:false },
     });

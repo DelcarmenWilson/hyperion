@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
-import { useLead, useLeadActions } from "@/hooks/use-lead";
+import { useLeadActions } from "@/hooks/lead/use-lead";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -10,21 +10,17 @@ import { UserSelect } from "@/components/user/select";
 
 export const ShareForm = () => {
   const {
-    isShareFormOpen,
-    onShareFormClose,
-    leadIds,
-    leadFullName,
-    initUser: sharedUser,
-    onTableClose,
-  } = useLead();
-
-  const {
     loading,
     userId,
+    leadFullName,
+    initUser,
+    leadIds,
     setUserId,
+    isShareFormOpen,
+    onShareFormClose,
     onLeadUpdateByIdShare,
     onLeadUpdateByIdUnShare,
-  } = useLeadActions(onShareFormClose, leadIds, sharedUser?.id, onTableClose);
+  } = useLeadActions();
 
   return (
     <Dialog open={isShareFormOpen} onOpenChange={onShareFormClose}>
@@ -32,14 +28,14 @@ export const ShareForm = () => {
         <h3 className="text-2xl font-semibold py-2">
           Share Lead - <span className="text-primary">{leadFullName}</span>
         </h3>
-        {sharedUser && (
+        {initUser && (
           <div>
             <h4 className="text-md text-muted-foreground font-bold">
               Currently Sharing Lead with:
             </h4>
             {leadIds?.length && leadIds.length == 1 && (
               <p className="font-bold text-lg  text-center">
-                {sharedUser.firstName} {sharedUser.lastName}
+                {initUser.firstName} {initUser.lastName}
                 <Button
                   className="ms-2"
                   size="sm"
@@ -52,7 +48,7 @@ export const ShareForm = () => {
           </div>
         )}
         <p className="text-md text-muted-foreground font-bold">
-          Select {sharedUser ? "a new" : "an"} agent
+          Select {initUser ? "a new" : "an"} agent
         </p>
 
         <UserSelect userId={userId} setUserId={setUserId} />
@@ -62,7 +58,7 @@ export const ShareForm = () => {
             Cancel
           </Button>
           <Button
-            disabled={loading || sharedUser?.id == userId}
+            disabled={loading || initUser?.id == userId}
             onClick={onLeadUpdateByIdShare}
           >
             Share

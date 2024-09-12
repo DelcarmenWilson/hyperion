@@ -16,7 +16,7 @@ export const conversationGetLast = async () => {
       agentId = (await userGetByAssistant(user.id)) as string;
     }
 
-    const conversation = await db.conversation.findFirst({
+    const conversation = await db.leadConversation.findFirst({
       where: { agentId },
       orderBy: { updatedAt: "desc" },
     });
@@ -39,7 +39,7 @@ export const conversationsGetByUserId = async () => {
       agentId = (await userGetByAssistant(user.id)) as string;
     }
 
-    const conversations = await db.conversation.findMany({
+    const conversations = await db.leadConversation.findMany({
       where: { agentId },
       include: {
         lead: true,
@@ -73,7 +73,7 @@ export const conversationsGetByUserIdUnread = async () => {
   if (!user?.email) {
     return [];
   }
-  const conversations = await db.conversation.findMany({
+  const conversations = await db.leadConversation.findMany({
     where: {
       agentId: user.id,
       lastMessage: { senderId: { not: user.id } },
@@ -98,7 +98,7 @@ export const conversationGetById = async (conversationId: string) => {
     if (user.role == "ASSISTANT") {
       agentId = (await userGetByAssistant(user.id)) as string;
     }
-    const conversation = await db.conversation.findUnique({
+    const conversation = await db.leadConversation.findUnique({
       where: { id: conversationId, agentId },
       include: {
         lead: {
@@ -125,7 +125,7 @@ export const conversationGetById = async (conversationId: string) => {
 
 export const conversationGetByLeadId = async (leadId: string) => {
   try {
-    const conversation = await db.conversation.findFirst({
+    const conversation = await db.leadConversation.findFirst({
       where: { leadId },
       include: {
         lead: {
@@ -144,27 +144,25 @@ export const conversationGetByLeadId = async (leadId: string) => {
 export const conversationInsert = async (
   agentId: string,
   leadId: string,
-  autoChat: boolean = false
 ) => {
-  if (!agentId) {
+  if (!agentId) 
     return { error: "User id is Required!" };
-  }
+  
 
-  if (!leadId) {
+  if (!leadId) 
     return { error: "Lead id is Required!" };
-  }
+  
 
-  const conversation = await db.conversation.create({
+  const conversation = await db.leadConversation.create({
     data: {
       leadId,
       agentId,
-      autoChat,
     },
   });
 
-  if (!conversation.id) {
+  if (!conversation) 
     return { error: "Conversation was not created!" };
-  }
+  
 
   return { success: conversation.id };
 };
@@ -174,7 +172,7 @@ export const conversationDeleteById = async (id: string) => {
   if (!user) {
     return { error: "Unauthenticated!" };
   }
-  const existingConversation = await db.conversation.findUnique({
+  const existingConversation = await db.leadConversation.findUnique({
     where: { id },
   });
   if (!existingConversation) {
@@ -185,35 +183,35 @@ export const conversationDeleteById = async (id: string) => {
     return { error: "Unauthorized!" };
   }
 
-  await db.conversation.delete({ where: { id } });
+  await db.leadConversation.delete({ where: { id } });
 
   return { success: "conversation has been deleted" };
 };
 
-export const conversationUpdateByIdAutoChat = async (
-  id: string,
-  autoChat: boolean
-) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
+// export const conversationUpdateByIdAutoChat = async (
+//   id: string,
+//   autoChat: boolean
+// ) => {
+//   const user = await currentUser();
+//   if (!user) {
+//     return { error: "Unauthenticated!" };
+//   }
 
-  const existingConversation = await db.conversation.findUnique({
-    where: { id },
-  });
-  if (!existingConversation) {
-    return { error: "Conversation does not exist!" };
-  }
+//   const existingConversation = await db.leadConversation.findUnique({
+//     where: { id },
+//   });
+//   if (!existingConversation) {
+//     return { error: "Conversation does not exist!" };
+//   }
 
-  if (existingConversation.agentId !== user.id) {
-    return { error: "Unauthorized!" };
-  }
+//   if (existingConversation.agentId !== user.id) {
+//     return { error: "Unauthorized!" };
+//   }
 
-  await db.conversation.update({ where: { id }, data: { autoChat } });
+//   await db.leadConversation.update({ where: { id }, data: { autoChat } });
 
-  return { success: `Titan chat has been turned ${autoChat ? "on" : "off"} ` };
-};
+//   return { success: `Titan chat has been turned ${autoChat ? "on" : "off"} ` };
+// };
 
 export const conversationUpdateByIdUnread = async (id: string) => {
   const user = await currentUser();
@@ -223,7 +221,7 @@ export const conversationUpdateByIdUnread = async (id: string) => {
 
   if (id == "clear") {
     id = "";
-    await db.conversation.updateMany({
+    await db.leadConversation.updateMany({
       where: {
         agentId: user.id,
            lastMessage: { senderId: { not: user.id  } },
@@ -233,13 +231,13 @@ export const conversationUpdateByIdUnread = async (id: string) => {
       data: { unread: 0 },
     });
   } else {
-    const existingConversation = await db.conversation.findUnique({
+    const existingConversation = await db.leadConversation.findUnique({
       where: { id },
     });
     if (!existingConversation) {
       return { error: "Conversation does not exist!" };
     }
-    await db.conversation.update({ where: { id }, data: { unread: 0 } });
+    await db.leadConversation.update({ where: { id }, data: { unread: 0 } });
   }
 
   return { success: id };

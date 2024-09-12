@@ -124,52 +124,6 @@ model Call {
   updatedAt DateTime @updatedAt
 }
 
-//LEAD CONVERSATIONS
-model Conversation {
-  id String @id @default(cuid())
-
-  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String
-
-  messages Message[]
-
-  lastMessageId String?  @unique
-  lastMessage   Message? @relation("lastConversationMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
-
-  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId String
-
-  autoChat Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  unread    Int      @default(0)
-
-  @@unique([leadId, agentId])
-}
-
-model Message {
-  id             String       @id @default(cuid())
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  conversationId String
-
-  role        MessageRole   @default(user)
-  lastMessage Conversation? @relation("lastConversationMessage")
-
-  content    String  @db.LongText
-  attachment String?
-
-  sid    String?
-  status String  @default("sent")
-  error  String?
-  price  String?
-
-  senderId String?
-
-  hasSeen   Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
 model Appointment {
   id        String   @id @default(cuid())
   localDate DateTime
@@ -199,23 +153,6 @@ model AppointmentLabel {
 
   // appointments Appointment[]
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Activity {
-  id String @id @default(cuid())
-
-  type     String  @default("general")
-  activity String
-  newValue String?
-
-  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String
-
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

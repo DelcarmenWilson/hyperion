@@ -34,8 +34,8 @@ export const useDashboardData = () => {
   };
 
   const { data, isFetching } = useQuery<DashboardDataType | null>({
-    queryKey: ["dashboardData"],
     queryFn: () => dashboardGetAllCards(),
+    queryKey: ["dashboardData"],
   });
 
   const dataCard: DataType[] = [

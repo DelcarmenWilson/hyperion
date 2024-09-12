@@ -1,6 +1,6 @@
 import { appointmentsGetById } from "@/actions/appointment";
 import { Button } from "@/components/ui/button";
-import { useAppointment } from "@/hooks/use-appointment";
+import { useAppointmentStore } from "@/hooks/use-appointment";
 import React from "react";
 
 export const AppButton = ({
@@ -8,7 +8,7 @@ export const AppButton = ({
 }: {
   appointmentId: string | null;
 }) => {
-  const { onDetailsOpen } = useAppointment();
+  const { onDetailsOpen } = useAppointmentStore();
   if (!appointmentId) return null;
 
   const onAppDetails = async () => {

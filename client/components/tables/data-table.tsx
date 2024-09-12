@@ -138,7 +138,10 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className={cn("group", striped ? "even:bg-secondary" : "")}
+                  className={cn(
+                    "relative group",
+                    striped ? "even:bg-secondary" : ""
+                  )}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

@@ -22,6 +22,10 @@ import { Lead } from "@prisma/client";
 import { bluePrintUpdateByUserIdData } from "./blueprint/blueprint";
 import { callUpdateByIdAppointment } from "./call";
 import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
+import { getNewTextCode } from "./lead";
+import { chatSettingGetTitan as chatSettingGetTitanByUserId } from "./chat-settings";
+import { sendAppointmentInitialEmail } from "@/lib/mail";
+import { leadEmailInsert } from "./lead/email";
 
 //DATA
 export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
@@ -109,7 +113,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { localDate, startDate, agentId, leadId, label, comments, reminder } =
+  const { localDate, startDate, agentId, leadId, label, comments, smsReminder,emailReminder } =
     validatedFields.data;
   let userId = agentId;
   if (user.role == "ASSISTANT") {
@@ -133,8 +137,8 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     });
   }
   const config = await db.schedule.findUnique({ where: { userId } });
-  const appointmentDate = startDate;
-  let endDate = new Date(startDate);
+  const appointmentDate = startDate!;
+  let endDate = new Date(startDate!);
 
   if (config?.type == "hourly") {
     endDate.setHours(endDate.getHours() + 1);
@@ -145,8 +149,8 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     data: {
       agentId: userId,
       leadId,
-      localDate,
-      startDate,
+      localDate:localDate!,
+      startDate:startDate!,
       endDate,
       label,
       comments,
@@ -160,14 +164,32 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     return { error: "Appointment was not created!" };
   }
 
-  const lead = await db.lead.findUnique({ where: { id: leadId } });
+  const lead = await db.lead.findUnique({ where: { id: leadId },include:{
+    user:{select:{
+      userName:true,
+      firstName:true,team:{
+        select:{
+          organization:{select:{
+            name:true
+          }}
+        }
+      }
+    }}
+  } });
   let message;
   if (lead) {
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
-    if (reminder) {
+    if (smsReminder) {
       message = (
-        await smsSendLeadAppointmentNotification(userId, lead, localDate)
+        await smsSendLeadAppointmentNotification(userId, lead, localDate!)
       ).success;
+    }
+
+    if(emailReminder && lead.email){
+      const email=await sendAppointmentInitialEmail(lead.email,lead.user.team?.organization.name,lead.user.userName,lead.user.firstName,appointment.id,appointment.startDate,lead.cellPhone)
+      if(email.data){
+        await leadEmailInsert(email.data.id  as string,"react-email","AppInitailEmail","New Appointment",lead.id)
+      }
     }
   }
 
@@ -182,10 +204,6 @@ export const appointmentInsertBook = async (
   startDate: Date,
   localDate: Date
 ) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
   const validatedFields = AppointmentLeadSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -214,6 +232,10 @@ export const appointmentInsertBook = async (
 
     const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
     const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+    //Get new textCode
+    const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+    //Get titan (autoChat) from chat settings
+    const titan = await chatSettingGetTitanByUserId(agentId);
     lead = await db.lead.create({
       data: {
         firstName,
@@ -225,15 +247,15 @@ export const appointmentInsertBook = async (
         email,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         userId: agentId,
+        textCode,
+        titan,
       },
     });
 
     leadId = lead.id;
   } else {
     const dbLead = await db.lead.findUnique({ where: { id: leadId } });
-    if (dbLead) {
-      lead = dbLead;
-    }
+    if (dbLead) lead = dbLead;
   }
 
   const existingAppointments = await db.appointment.findMany({
@@ -434,7 +456,10 @@ export const sendAppointmentReminders = async () => {
       startDate: { gt: currentDate, lte: oneHourPlusDate },
       status: "Scheduled",
     },
-    include: { lead: true, agent: { include: { chatSettings: true,notificationSettings:true } } },
+    include: {
+      lead: true,
+      agent: { include: { chatSettings: true, notificationSettings: true } },
+    },
   });
 
   if (appointments.length == 0) {
@@ -443,10 +468,10 @@ export const sendAppointmentReminders = async () => {
 
   for (const app of appointments) {
     const { agent, lead, startDate } = app;
-    const minutesRemaining = Math.floor((startDate.getTime() - currentDate.getTime())/1000/60);
-    await smsSendLeadAppointmentReminder(lead,minutesRemaining)
-   
-
+    const minutesRemaining = Math.floor(
+      (startDate.getTime() - currentDate.getTime()) / 1000 / 60
+    );
+    await smsSendLeadAppointmentReminder(lead, minutesRemaining);
   }
 
   return { success: appointments };

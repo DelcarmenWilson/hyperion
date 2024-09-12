@@ -29,7 +29,7 @@ export const FormClient = () => {
       text="New Form"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
   const onFormCreated = (e?: CampaignForm) => {

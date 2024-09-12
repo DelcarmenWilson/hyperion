@@ -35,7 +35,7 @@ export const LeadHeader = ({ lead }: LeadHeaderProps) => {
             {lead.gender.substring(0, 1)} {lead.maritalStatus}
           </span>
         </h3>
-        <LeadDropDown lead={lead} />
+        <LeadDropDown />
       </div>
     </>
   );

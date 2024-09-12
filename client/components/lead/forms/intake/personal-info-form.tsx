@@ -36,7 +36,7 @@ import {
 import { MaritalStatus } from "@prisma/client";
 
 import { states } from "@/constants/states";
-import { useLeadIntakeActions } from "@/hooks/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
 
 type PersonalInfoFormProps = {
   info: IntakePersonalInfoSchemaType;

@@ -1,6 +1,6 @@
 "use client";
 import { Phone } from "lucide-react";
-import { userEmitter } from "@/lib/event-emmiter";
+import { useConversationStore } from "../../hooks/use-conversation";
 
 import { usePhone } from "@/hooks/use-phone";
 
@@ -9,14 +9,13 @@ import { Button } from "@/components/ui/button";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 import { LeadDropDown } from "@/components/lead/dropdown";
-import { useState } from "react";
 
 type HeaderProps = {
   lead: FullLeadNoConvo;
 };
 export const Header = ({ lead }: HeaderProps) => {
   const usePm = usePhone();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isLeadInfoOpen, onLeadInfoToggle } = useConversationStore();
 
   const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
     0,
@@ -43,18 +42,13 @@ export const Header = ({ lead }: HeaderProps) => {
           <Phone size={16} />
         </Button>
 
-        <LeadDropDown lead={lead} />
+        <LeadDropDown />
       </div>
       <div className="flex items-center gap-2">
         <Button
-          variant={isOpen ? "default" : "outlineprimary"}
+          variant={isLeadInfoOpen ? "default" : "outlineprimary"}
           size="sm"
-          onClick={() =>
-            setIsOpen((open) => {
-              userEmitter.emit("toggleLeadInfo", !open);
-              return !open;
-            })
-          }
+          onClick={onLeadInfoToggle}
         >
           LEAD INFO
         </Button>

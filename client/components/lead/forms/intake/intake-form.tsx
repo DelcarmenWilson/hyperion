@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
-import { useLead, useLeadIntakeActions } from "@/hooks/use-lead";
+import { useLeadStore, useLeadIntakeActions } from "@/hooks/lead/use-lead";
 
 import {
   IntakeMedicalInfoSchemaType,
@@ -48,7 +48,7 @@ export const IntakeForm = () => {
     onIntakeDialogOpen,
     onIntakeDialogClose,
     onPolicyFormOpen,
-  } = useLead();
+  } = useLeadStore();
   const { getIntakeData } = useLeadIntakeActions(leadId as string);
   const {
     personal,
@@ -523,12 +523,7 @@ export const IntakeForm = () => {
               <SectionWrapper
                 title="For Producers Only"
                 button={
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      onPolicyFormOpen(leadId, leadFullName!, policy!)
-                    }
-                  >
+                  <Button size="sm" onClick={() => onPolicyFormOpen(leadId)}>
                     Edit
                   </Button>
                 }

@@ -1,210 +1,45 @@
 "use server";
-import { currentUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import axios from "axios";
+
+import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 
 import { cfg, client } from "@/lib/twilio/config";
 
 import { LeadAndConversation, TwilioSms } from "@/types";
-import { HyperionLead, Lead, Message } from "@prisma/client";
+import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
 import {
   MessageSchemaType,
   SmsMessageSchema,
   SmsMessageSchemaType,
 } from "@/schemas/message";
 
-import { messageInsert } from "./message";
-import { conversationInsert } from "./conversation";
+import { messageInsert } from "./lead/message";
+import { conversationInsert } from "./lead/conversation";
 import { userGetByAssistant } from "@/data/user";
 
-import { defaultChat, defaultOptOut } from "@/placeholder/chat";
-import { getRandomNumber } from "@/formulas/numbers";
-import { replacePreset } from "@/formulas/text";
 import {
   formatDateTimeZone,
   formatHyperionDate,
   formatTimeZone,
 } from "@/formulas/dates";
 import { sendSocketData } from "@/services/socket-service";
+import { defaultOptOut } from "@/placeholder/chat";
 
-export const smsCreateInitial = async (leadId: string) => {
-  const dbuser = await currentUser();
-  if (!dbuser) {
-    return { error: "Unauthenticated" };
-  }
+export const smsSend = async ({
+  fromPhone,
+  toPhone,
+  message,
+  media,
+  timer = 0,
 
-  //retrieve user data from database and include the team
-  const user = await db.user.findUnique({
-    where: { id: dbuser.id },
-    include: { team: true },
-  });
-
-  //if  user does not exist return unauthorized
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-
-  //retrieve lead info from the database
-  const lead = await db.lead.findUnique({ where: { id: leadId } });
-
-  if (!lead) {
-    return { error: "Lead does not exist" };
-  }
-  //retrieve existing conversation with the lead
-  const existingConversation = await db.conversation.findFirst({
-    where: {
-      lead: { id: lead.id },
-    },
-  });
-
-  //ensure that the conversation dost not exists
-  if (existingConversation) {
-    return { error: "Conversation Already exist" };
-  }
-
-  //get all the preset text from this users account and return a random one
-  const presets = await db.presets.findMany({
-    where: { agentId: user.id, type: "Text" },
-  });
-  const rnd = getRandomNumber(0, presets.length);
-  const preset = presets[rnd];
-
-  //get the chatsettings for the user
-  const chatSettings = await db.chatSettings.findUnique({
-    where: { userId: user.id },
-  });
-
-  //if the user doesnt not have a prompt use the hyperion's default prompt
-  let prompt = chatSettings?.defaultPrompt
-    ? chatSettings?.defaultPrompt
-    : defaultChat.prompt;
-
-  //if the user doesnt not have any presetText use the hyperion's default message
-  let message = preset ? preset.content : defaultChat.message;
-
-  //replace the prompt and message variable content with the lead an user information
-  prompt = replacePreset(prompt, user, lead);
-  message = replacePreset(message, user, lead);
-  //message += ` ${defaultOptOut.request}`;
-
-  //include the lead info and add it to the end of prompt
-  const leadInfo = {
-    "first Name": lead.firstName,
-    "last Name": lead.lastName,
-    "Date Of Birth": lead.dateOfBirth,
-    city: lead.city,
-    state: lead.state,
-  };
-
-  prompt += `Todays Date is ${new Date()}. When you're poised to arrange an appointment, signify with the keword {schedule}, alongside the designated date and time in UTC format. Here is my information: ${JSON.stringify(
-    leadInfo
-  )}  `;
-
-  //create a new conversation between the agent and lead.
-  const conversationId = (
-    await conversationInsert(user.id, lead.id, chatSettings?.autoChat)
-  ).success;
-
-  //ensure that the conversationw as created
-  if (!conversationId) {
-    return { error: "Conversation was not created" };
-  }
-
-  //insert the prompt into the conversation- the first message will have a role of system. this tells chat gpt to use this as a prompt
-  await messageInsert({
-    role: "system",
-    content: prompt,
-    conversationId,
-    senderId: user.id,
-    hasSeen: true,
-  });
-  //send the message to the lead via sms and await the response
-  const result = await client.messages.create({
-    body: message,
-    from: lead.defaultNumber,
-    to: lead.cellPhone || (lead.homePhone as string),
-    applicationSid: cfg.twimlAppSid,
-  });
-  //insert the initial message into the conversation
-  await messageInsert({
-    role: "assistant",
-    content: message,
-    conversationId,
-    senderId: user.id,
-    hasSeen: true,
-    sid: result.sid,
-  });
-
-  if (!result) {
-    return { error: "Message was not sent!" };
-  }
-
-  return { success: "Inital message sent!" };
-};
-
-export const smsCreate = async (values: SmsMessageSchemaType) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-  const validatedFields = SmsMessageSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { conversationId, leadId, content, images, type } =
-    validatedFields.data;
-
-  const lead = await db.lead.findUnique({ where: { id: leadId } });
-
-  if (!lead) {
-    return { error: "Lead does not exist" };
-  }
-
-  let convoid = conversationId;
-  let agentId = user.id;
-
-  if (!convoid) {
-    if (user.role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(user.id)) as string;
-    }
-    const existingConversation = await db.conversation.findUnique({
-      where: { leadId_agentId: { leadId: lead.id, agentId } },
-    });
-    if (existingConversation) {
-      convoid = existingConversation.id;
-    } else convoid = (await conversationInsert(agentId, lead.id)).success;
-  }
-
-  const result = await client.messages.create({
-    from: lead.defaultNumber,
-    to: lead.cellPhone || (lead.homePhone as string),
-    mediaUrl: images ? [images] : undefined,
-    body: content,
-    applicationSid: cfg.twimlAppSid,
-  });
-
-  const newMessage = await messageInsert({
-    role: "assistant",
-    content,
-    conversationId: convoid!,
-    attachment: images,
-    senderId: user.id,
-    hasSeen: true,
-  });
-
-  if (!result) {
-    return { error: "Message was not sent!" };
-  }
-
-  return { success: newMessage.success };
-};
-
-export const smsSend = async (
-  fromPhone: string,
-  toPhone: string,
-  message: string,
-  timer: number = 0
-) => {
+}: {
+  fromPhone: string;
+  toPhone: string;
+  message: string;
+  media?:string |undefined;
+  timer?: number;
+}) => {
   if (!message) {
     return { error: "Message cannot be empty!" };
   }
@@ -218,25 +53,27 @@ export const smsSend = async (
       body: message,
       from: fromPhone,
       to: toPhone,
-      messagingServiceSid: cfg.messageServiceSid,
+      messagingServiceSid: cfg.messageServiceSid,      
+    mediaUrl: media ? [media] : undefined,
       sendAt: date,
       scheduleType: "fixed",
     });
   } else {
-    setTimeout(async () => {
+    //TODO need to implement the timer again
+    // setTimeout(async () => {
       result = await client.messages.create({
         body: message,
         from: fromPhone,
-        to: toPhone,
+        to: toPhone,    
+        mediaUrl: media ? [media] : undefined,
         applicationSid: cfg.twimlAppSid,
       });
-    }, timer * 1000);
+    // }, timer * 1000);
   }
 
-  if (!result) {
+  if (!result) 
     return { error: "Message was not sent!" };
-  }
-
+  
   return { success: result.sid, message: "Message sent!" };
 };
 
@@ -280,13 +117,13 @@ export const smsSendAgentAppointmentNotification = async (
     date
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
-  const result = await smsSend(
-    lead.defaultNumber,
-    user.notificationSettings.phoneNumber,
-    message
-  );
+  const result = await smsSend({
+    fromPhone: lead.defaultNumber,
+    toPhone: user.notificationSettings.phoneNumber,
+    message,
+  });
 
-  if (!result) {
+  if (!result.success) {
     return { error: "Message was not sent!" };
   }
 
@@ -312,9 +149,13 @@ export const smsSendLeadAppointmentNotification = async (
   )}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
-  const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
+  const result = await smsSend({
+    fromPhone: lead.defaultNumber,
+    toPhone: lead.cellPhone,
+    message,
+  });
 
-  const existingConversation = await db.conversation.findFirst({
+  const existingConversation = await db.leadConversation.findFirst({
     where: {
       lead: { id: lead.id },
     },
@@ -342,14 +183,22 @@ export const smsSendLeadAppointmentNotification = async (
   return { success: newMessage.success };
 };
 
-export const smsSendLeadAppointmentReminder = async (lead: Lead, minutes:number) => {
+export const smsSendLeadAppointmentReminder = async (
+  lead: Lead,
+  minutes: number
+) => {
   // const message = `"Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is tomorrow! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to seeing you,\nStrongside Financial"
   // `;
 
   const message = `Hi ${lead.firstName},\n Just a friendly reminder that your appointment with us is in about ${minutes} minutes! Please confirm if you'll still be able to make it. If you need to reschedule or have any questions, feel free to reach out.\nLooking forward to talking with you,\nStrongside Financial  `;
-  const result = await smsSend(lead.defaultNumber, lead.cellPhone, message);
 
-  if (!result) {
+  const result = await smsSend({
+    fromPhone: lead.defaultNumber,
+    toPhone: lead.cellPhone,
+    message,
+  });
+
+  if (!result.success) {
     return { error: "Message was not sent!" };
   }
 
@@ -375,7 +224,11 @@ export const smsSendNewHyperionLeadNotifications = async (
   const message = `A new lead has been added hyperion:\n ${lead.firstName} ${lead.lastName}\n${lead.city}, ${lead.state},\n DOB: ${lead.dateOfBirth}.`;
 
   // await smsSend("+18623527091", "+19177548025", message);
-  await smsSend("+18624659687", "+13478030962", message);
+  await smsSend({
+    fromPhone: "+18624659687",
+    toPhone: "+13478030962",
+    message,
+  });
 
   return { success: "Message sent!" };
 };
@@ -396,11 +249,12 @@ export const getKeywordResponse = async (
         where: { id: leadId },
         data: { status: "Do_Not_Call" },
       });
-      await smsSend(sms.to, sms.from, defaultOptOut.confirm);
+      await smsSend({toPhone:sms.to, fromPhone:sms.from, message:defaultOptOut.confirm});
+
       return defaultOptOut.confirm;
     case "reset":
-      await db.conversation.delete({ where: { id: conversationId } });
-      await smsSend(sms.to, sms.from, "Conversation has been reset");
+      await db.leadConversation.delete({ where: { id: conversationId } });
+      await smsSend({toPhone:sms.to, fromPhone:sms.from, message:"Conversation has been reset"});
       return "Conversation has been reset";
   }
 
@@ -409,9 +263,9 @@ export const getKeywordResponse = async (
 // Reponse when the autoChat is turned off
 export const disabledAutoChatResponse = async (
   conversation: LeadAndConversation,
-  message: Message | undefined
+  message: LeadMessage | undefined
 ) => {
-  const updatedConversation = await db.conversation.update({
+  const updatedConversation = await db.leadConversation.update({
     where: { id: conversation.id },
     include: { lastMessage: true, lead: true },
     data: {
@@ -425,7 +279,7 @@ export const disabledAutoChatResponse = async (
 
   if (settings?.textForward && settings.phoneNumber) {
     const agentMessage = `${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`;
-    await smsSend(lead.defaultNumber, settings.phoneNumber, agentMessage);
+    await smsSend({toPhone:settings.phoneNumber, fromPhone:lead.defaultNumber, message:agentMessage});
   }
   sendSocketData(
     conversation.agentId,
@@ -447,7 +301,7 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
   if (!lead) {
     return { error: "Lead does not exist!" };
   }
-  const conversation = await db.conversation.findFirst({
+  const conversation = await db.leadConversation.findFirst({
     where: { leadId: lead.id, agentId },
   });
   if (!conversation) {
@@ -455,7 +309,7 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
   }
 
   //Send Message to lead
-  const sid = (await smsSend(sms.to, lead.cellPhone, message[1])).success;
+  const sid = (await smsSend({toPhone:sms.to, fromPhone:lead.cellPhone, message:message[1]})).success;
 
   //Update Messages And conversation
   const insertedMessage = (
@@ -469,5 +323,5 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
     })
   ).success;
 
-  return insertedMessage
+  return insertedMessage;
 };

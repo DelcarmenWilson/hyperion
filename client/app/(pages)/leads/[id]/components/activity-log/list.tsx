@@ -1,6 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useLeadData } from "@/hooks/use-lead";
 
 import {
   Select,
@@ -10,7 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ActivityCard } from "./card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import { formatDateTime } from "@/formulas/dates";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { useLeadActivityData } from "@/hooks/lead/use-activity";
 
 const types = [
   "Caller Id",
@@ -23,21 +32,12 @@ const types = [
 ];
 
 export const ActivityList = () => {
-  const { initActivities, isFetchingActivities } = useLeadData();
-  const [activities, setActivities] = useState(initActivities);
+  const { activities, isFetchingActivities, onSetActivities } =
+    useLeadActivityData();
 
-  const onSetActivities = (type: string) => {
-    setActivities(
-      initActivities?.filter((e) => e.type.includes(type == "%" ? "" : type))
-    );
-  };
-  useEffect(() => {
-    if (!initActivities) return;
-    setActivities(initActivities);
-  }, [initActivities]);
   return (
     <div className="text-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 p-2">
         <p className="text-muted-foreground">Type</p>
         <Select
           name="ddlType"
@@ -45,8 +45,8 @@ export const ActivityList = () => {
           defaultValue={"%"}
           autoComplete="address-level1"
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select State" />
+          <SelectTrigger className="max-w-28">
+            <SelectValue placeholder="Select Type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="%">All</SelectItem>
@@ -58,15 +58,27 @@ export const ActivityList = () => {
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-3 items-center gap-2 text-md text-muted-foreground">
-        <span>Activity</span>
-        <span>Old value</span>
-        <span>Date / Time</span>
-      </div>
 
-      {activities?.map((activity) => (
-        <ActivityCard key={activity.id} activity={activity} />
-      ))}
+      <SkeletonWrapper isLoading={isFetchingActivities}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Activity</TableHead>
+              <TableHead>Old value</TableHead>
+              <TableHead>Date / Time</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {activities?.map((activity) => (
+              <TableRow key={activity.id}>
+                <TableCell>{activity.activity}</TableCell>
+                <TableCell>{activity.newValue}</TableCell>
+                <TableCell>{formatDateTime(activity.createdAt)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </SkeletonWrapper>
       {!activities?.length && (
         <p className="text-muted-foreground text-center mt-2">
           No activities posted

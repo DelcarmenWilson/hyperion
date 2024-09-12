@@ -2,7 +2,7 @@
 import { User } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useLeadData } from "@/hooks/use-lead";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,50 +12,58 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { CommunicationClient } from "./components/communication/client";
-
 import { PrevNextMenu } from "@/components/lead/prev-next-menu";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 const LeadsPage = () => {
   const user = useCurrentUser();
-  const { lead, prevNext, isFetchingnextPrev } = useLeadData();
-  if (!lead) return null;
+  const { leadBasic, prevNext, isFetchingnextPrev } = useLeadData();
+  if (!leadBasic) return null;
 
-  if (![lead.userId, lead.sharedUserId].includes(user?.id!)) {
+  if (![leadBasic.userId, leadBasic.sharedUserId].includes(user?.id!)) {
     redirect("/leads");
   }
   return (
     <PageLayout
       icon={User}
-      title={`View Lead - ${lead.firstName}`}
+      title={`View Lead - ${leadBasic.firstName}`}
       topMenu={
-        <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
+        <SkeletonWrapper isLoading={isFetchingnextPrev}>
+          <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
+        </SkeletonWrapper>
       }
       cardClass="h-full"
-      contentClass="!p-1"
+      contentClass="!p-1 flex"
+      scroll={false}
     >
-      <Tabs defaultValue="activity" className="h-full">
-        <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+      <Tabs
+        defaultValue="comunication"
+        className="flex flex-col flex-1 h-full overflow-hidden"
+      >
+        <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none bg-primary/25">
           <TabsTrigger value="comunication">Comunication</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
           <TabsTrigger value="conditions">Conditions</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
         </TabsList>
-        <TabsContent value="activity">
-          <ActivityClient />
-        </TabsContent>
-        <TabsContent value="comunication">
-          <CommunicationClient />
-        </TabsContent>
-        <TabsContent value="beneficiaries">
-          <BeneficiariesClient leadId={lead.id} />
-        </TabsContent>
-        <TabsContent value="conditions">
-          <ConditionsClient leadId={lead.id} />
-        </TabsContent>
-        <TabsContent value="expenses">
-          <ExpensesClient leadId={lead.id} />
-        </TabsContent>
+        <div className="flex-1 h-full overflow-hidden">
+          <TabsContent value="comunication" className="h-full">
+            <CommunicationClient />
+          </TabsContent>
+          <TabsContent value="activity" className="h-full">
+            <ActivityClient />
+          </TabsContent>
+          <TabsContent value="beneficiaries" className="h-full">
+            <BeneficiariesClient />
+          </TabsContent>
+          <TabsContent value="conditions" className="h-full">
+            <ConditionsClient />
+          </TabsContent>
+          <TabsContent value="expenses" className="h-full flex flex-col">
+            <ExpensesClient />
+          </TabsContent>
+        </div>
       </Tabs>
     </PageLayout>
   );

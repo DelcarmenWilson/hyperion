@@ -28,9 +28,10 @@ model User {
     //LEAD COLUMNS
     leads         Lead[]
     calls         Call[]
-    conversations Conversation[]
+    conversations LeadConversation[]
     appointments  Appointment[]
-    activities    Activity[]
+    activities    LeadActivity[]
+    emails        LeadEmail[]
 
     assistants  Lead[] @relation("LeadAssistant")
     sharedUsers Lead[] @relation("LeadSharedUser")

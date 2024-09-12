@@ -65,13 +65,12 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
       initTemplates={templates}
     >
       <SocketContextComponent>
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex h-screen w-full overflow-hidden">
           <SideBar />
           <div className="flex flex-col flex-1">
             <NavBar />
             <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
-              <ScrollArea className="pr-2 h-full w-full">
-                {/* <div className="flex flex-col h-full w-full overflow-hidden"> */}
+              <ScrollArea className="pr-2">
                 <PhoneContextProvider
                   initVoicemails={voicemails}
                   token={token!}

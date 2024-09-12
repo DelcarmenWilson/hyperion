@@ -12,35 +12,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const ActivityClient = () => {
   return (
     <Tabs defaultValue="activity" className="flex gap-2 h-full">
-      <TabsList className="flex flex-col gap-2 h-full w-auto">
+      <TabsList
+        className="flex flex-col justify-start p-1 gap-2 h-full min-w-[125px] "
+        aria-orientation="vertical"
+      >
         <TabsTrigger
-          className="flex flex-col justify-center gap-2"
+          className="flex flex-col justify-center gap-2 w-full"
           value="activity"
         >
           <List size={16} />
-          ACTIVITY LOG
+          Activity log
         </TabsTrigger>
         <TabsTrigger
-          className="flex flex-col justify-center gap-2"
+          className="flex flex-col justify-center gap-2 w-full"
           value="call"
         >
           <PhoneCall size={16} />
-          CALL HISTORY
+          Call History
         </TabsTrigger>
         <TabsTrigger
-          className="flex flex-col justify-center gap-2"
-          value="events"
+          className="flex flex-col justify-center gap-2 w-full"
+          value="appointments"
         >
           <Calendar size={16} />
-          CALENDAR EVENTS
+          Appointments
         </TabsTrigger>
 
         <TabsTrigger
-          className="flex flex-col justify-center gap-2"
+          className="flex flex-col justify-center gap-2 w-full"
           value="meetings"
         >
           <Video size={16} />
-          MEETINGS
+          Meetings
         </TabsTrigger>
       </TabsList>
 
@@ -51,7 +54,7 @@ export const ActivityClient = () => {
         <TabsContent value="call">
           <CallHistoryClient />
         </TabsContent>
-        <TabsContent value="events">
+        <TabsContent value="appointments">
           <AppointmentClient />
         </TabsContent>
         <TabsContent value="meetings">MEETINGS</TabsContent>

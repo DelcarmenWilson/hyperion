@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useLead, useLeadActions } from "@/hooks/use-lead";
+import { useLeadStore, useLeadActions } from "@/hooks/lead/use-lead";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -10,20 +10,17 @@ import { UserSelect } from "@/components/user/select";
 
 export const AssistantForm = () => {
   const {
+    userId,
+    setUserId,
+    loading,
     isAssistantFormOpen,
     onAssistantFormClose,
     leadIds,
     leadFullName,
     initUser: assistant,
-  } = useLead();
-
-  const {
-    userId,
-    setUserId,
-    loading,
     onLeadUpdateByIdAssistantAdd,
     onLeadUpdateByIdAssistantRemove,
-  } = useLeadActions(onAssistantFormClose, leadIds, assistant?.id);
+  } = useLeadActions();
 
   return (
     <Dialog open={isAssistantFormOpen} onOpenChange={onAssistantFormClose}>

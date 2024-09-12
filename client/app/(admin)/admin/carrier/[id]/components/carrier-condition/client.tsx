@@ -43,7 +43,7 @@ export const CarrierConditionClient = ({
       text="Add Carrier Condition"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
       showButton={user?.role != "ASSISTANT"}
     />
   );

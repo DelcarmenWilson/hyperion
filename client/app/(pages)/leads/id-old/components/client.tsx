@@ -1,12 +1,6 @@
 "use client";
-import { useState } from "react";
 import { Pencil } from "lucide-react";
-
-import { toast } from "sonner";
-
-import { FullLead } from "@/types";
-
-import { formatPhoneNumber } from "@/formulas/phones";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";
 import { GeneralInfoClient } from "@/components/lead/info/general";
@@ -17,87 +11,20 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
-import { leadUpdateByIdDefaultNumber } from "@/actions/lead";
-import {
-  LeadGeneralSchemaType,
-  LeadMainSchemaType,
-  LeadPolicySchemaType,
-} from "@/schemas/lead";
+import { formatPhoneNumber } from "@/formulas/phones";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-type LeadClientProps = {
-  lead: FullLead;
-};
-
-export const LeadClient = ({ lead }: LeadClientProps) => {
-  const [edit, setEdit] = useState(false);
-  const leadName = `${lead.firstName} ${lead.lastName}`;
-  const [defaultNumber, setDefaultNumber] = useState(lead.defaultNumber);
-
-  const leadMainInfo: LeadMainSchemaType = {
-    ...lead,
-    email: lead.email || undefined,
-    address: lead.address || undefined,
-    city: lead.city || undefined,
-    zipCode: lead.zipCode || undefined,
-    textCode: lead.textCode!,
-  };
-
-  const leadInfo: LeadGeneralSchemaType = {
-    ...lead,
-    dateOfBirth: lead.dateOfBirth || undefined,
-    weight: lead.weight || undefined,
-    height: lead.height || undefined,
-    income: lead.income || undefined,
-  };
-
-  const leadPolicy: LeadPolicySchemaType = {
-    ...lead.policy!,
-    leadId: lead.id,
-
-    startDate: lead.policy?.startDate!,
-  };
-
-  const onSetDefaultNumber = async (phoneNumber: string) => {
-    if (phoneNumber != defaultNumber) {
-      setDefaultNumber(phoneNumber);
-      const updatedNumber = await leadUpdateByIdDefaultNumber(
-        lead.id,
-        phoneNumber
-      );
-
-      if (updatedNumber.success) {
-        toast.success(updatedNumber.success);
-      } else toast.error(updatedNumber.error);
-    }
-    setEdit(false);
-  };
+export const LeadClient = () => {
+  const { edit, setEdit, defaultNumber, onSetDefaultNumber } = useLeadData();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
-      <MainInfoClient
-        info={leadMainInfo}
-        noConvo={lead.conversation ? true : false}
-      />
-      <GeneralInfoClient
-        info={leadInfo}
-        leadName={`${lead.firstName} ${lead.lastName}`}
-        lastCall={lead.calls[0]?.createdAt}
-        nextAppointment={lead.appointments[0]?.startDate}
-        showInfo
-      />
-      <CallInfo info={lead} />
-      <NotesForm
-        leadId={lead.id}
-        intialNotes={lead.notes!}
-        initSharedUser={lead.sharedUser}
-      />
+      <MainInfoClient noConvo={false} />
+      <GeneralInfoClient showInfo />
+      <CallInfo />
+      <NotesForm />
 
-      <PolicyInfoClient
-        leadId={lead.id}
-        leadName={leadName}
-        assistant={lead.assistant}
-        info={leadPolicy}
-      />
+      <PolicyInfoClient />
       <div></div>
       <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>

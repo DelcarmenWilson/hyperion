@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     }
     const { conversationId } = params;
     // Find the conversation
-    const conversation = await db.conversation.findUnique({
+    const conversation = await db.leadConversation.findUnique({
       where: { id: conversationId },
       include: { 
         messages:true
@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     }
 
     //Update seen of last message
-    await db.message.updateMany({
+    await db.leadMessage.updateMany({
       where: { conversationId: conversation.id },
       data: {
         hasSeen: true

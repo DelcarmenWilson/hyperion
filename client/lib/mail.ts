@@ -1,4 +1,5 @@
 "use server";
+import { AppInitailEmail } from "@/emails/app-remainder-email";
 import ResetPasswordEmail from "@/emails/reset-password-email";
 import TestEmail from "@/emails/test";
 import { Resend } from "resend";
@@ -26,7 +27,7 @@ export const sendPasswordResetEmail = async (
     to: email,
     subject: "Reset your password",
     html: `<p>Click <a href="${resetLink}">here</a> to reset password</p>`,
-    react:ResetPasswordEmail({username,resetLink})
+    react: ResetPasswordEmail({ username, resetLink }),
   });
 };
 
@@ -41,6 +42,25 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   });
 };
 
+export const sendAppointmentInitialEmail = async (
+  email: string,
+  orgName = "Strongside",
+  username: string,
+  firstName: string,
+  appId: string,
+  dateTime: Date,
+  cellPhone: string
+) => {
+  const newEmail = await resend.emails.send({
+    from: `${username}@hperioncrm.com`,
+    to: email,
+    subject: "New Appointment",
+    // html: `<p>Just a test</p>`,
+    react: AppInitailEmail({ orgName, firstName, appId, dateTime, cellPhone }),
+  });
+  return newEmail;
+};
+//TODO - this can be removed one the emails have been implemented
 export const sendTestEmail = async (email: string, username: string) => {
   const newEmail = await resend.emails.send({
     from: "wdelcarmen@hperioncrm.com",

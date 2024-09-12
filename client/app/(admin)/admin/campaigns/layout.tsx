@@ -21,14 +21,15 @@ const CampaignLayout = ({ children }: Props) => {
           <CampaignsClient />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={80} maxSize={80}>
-          <div className="relative flex flex-1 h-full overflow-hidden">
-            {children}
-
-            <CreativeClient />
-            <AudienceClient />
-            <FormClient />
-          </div>
+        <ResizablePanel
+          className="relative flex flex-1 h-full overflow-hidden"
+          defaultSize={80}
+          maxSize={80}
+        >
+          {children}
+          <CreativeClient />
+          <AudienceClient />
+          <FormClient />
         </ResizablePanel>
       </ResizablePanelGroup>
     </CardLayout>

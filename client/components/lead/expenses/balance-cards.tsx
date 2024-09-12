@@ -1,31 +1,24 @@
 "use client";
 import React, { ReactNode } from "react";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useLeadExpenseActions } from "@/hooks/lead/use-expense";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Card } from "@/components/ui/card";
 import CountUp from "react-countup";
 
-import { GetLeadExpenseResponseType } from "@/app/api/leads/expense/balance/route";
 import { USDollar } from "@/formulas/numbers";
 
-const BalanceCards = ({ leadId }: { leadId: string }) => {
-  const statsQuery = useQuery<GetLeadExpenseResponseType>({
-    queryKey: ["leadExpense", `lead-${leadId}`, "balance"],
-    queryFn: () =>
-      fetch(`/api/leads/expense/balance?leadId=${leadId}`).then((res) =>
-        res.json()
-      ),
-  });
+export const BalanceCards = () => {
+  const { leadBalance, isFetchingLeadBalance } = useLeadExpenseActions();
 
-  const income = statsQuery.data?.income || 0;
-  const expense = statsQuery.data?.expense || 0;
+  const income = leadBalance?.income || 0;
+  const expense = leadBalance?.expense || 0;
   const balance = income - expense;
 
   return (
     <div className="relative flex w-full flex-wrap gap-2 md:flex-nowrap">
-      <SkeletonWrapper isLoading={statsQuery.isFetching}>
+      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
         <StatCard
           value={expense}
           title="Expense"
@@ -35,7 +28,7 @@ const BalanceCards = ({ leadId }: { leadId: string }) => {
         />
       </SkeletonWrapper>
 
-      <SkeletonWrapper isLoading={statsQuery.isFetching}>
+      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
         <StatCard
           value={income}
           title="Income"
@@ -45,7 +38,7 @@ const BalanceCards = ({ leadId }: { leadId: string }) => {
         />
       </SkeletonWrapper>
 
-      <SkeletonWrapper isLoading={statsQuery.isFetching}>
+      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
         <StatCard
           value={balance}
           title="Balance"
@@ -57,8 +50,6 @@ const BalanceCards = ({ leadId }: { leadId: string }) => {
     </div>
   );
 };
-
-export default BalanceCards;
 
 const StatCard = ({
   value,

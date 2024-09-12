@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { Message } from "@prisma/client";
+import { LeadMessage } from "@prisma/client";
 import { Switch } from "@/components/ui/switch";
 
 import { PhoneSwitcher } from "../addins/switcher";
@@ -30,7 +30,7 @@ export const SmsClient = ({
   const lid = leadId || lead?.id;
   const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<LeadMessage[]>([]);
   const [disabled, setDisabled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -74,7 +74,7 @@ export const SmsClient = ({
   }, [lid]);
 
   return (
-    <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
+    <div className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden">
       {showHeader && (
         <>
           <div className="flex justify-between items-center">
@@ -124,8 +124,6 @@ export const SmsClient = ({
         <Loader />
       ) : (
         <SmsBody
-          initConversationId={messages[0]?.conversationId}
-          initMessages={messages}
           leadName={lead?.lastName as string}
           userName={user?.name as string}
         />

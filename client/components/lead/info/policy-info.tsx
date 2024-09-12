@@ -1,50 +1,28 @@
 "use client";
-import { useEffect, useState } from "react";
 import { FilePenLine } from "lucide-react";
-import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useLead } from "@/hooks/use-lead";
-
-import { User } from "@prisma/client";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import { useLeadStore, useLeadPolicyActions } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDate } from "@/formulas/dates";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-type PolicyInfoClientProps = {
-  leadId: string;
-  leadName: string;
-  info: LeadPolicySchemaType;
-  assistant: User | null | undefined;
-};
-
-export const PolicyInfoClient = ({
-  leadId,
-  leadName,
-  info,
-  assistant,
-}: PolicyInfoClientProps) => {
+export const PolicyInfoClient = () => {
   const user = useCurrentUser();
-  const [policyInfo, setPolicyInfo] = useState(info);
-  const { onPolicyFormOpen } = useLead();
-  const { onAssistantFormOpen } = useLead();
+  const { policy, isFetchingPolicy } = useLeadPolicyActions();
+  const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
 
-  useEffect(() => {
-    setPolicyInfo(info);
-    const onSetInfo = (e: LeadPolicySchemaType) => {
-      if (e.leadId == info.leadId) setPolicyInfo(e);
-    };
-    userEmitter.on("policyInfoUpdated", (info) => onSetInfo(info));
-    return () => {
-      userEmitter.off("policyInfoUpdated", (info) => onSetInfo(info));
-    };
-  }, [info]);
   if (user?.role == "ASSISTANT") return null;
+  if (!policy) return null;
+  const leadName = `${policy.firstName} ${policy.firstName}`;
+  const policyInfo = policy.policy;
+  const assistant = policy.assistant;
+
   return (
-    <>
-      <div className="flex flex-col gap-1 text-sm">
+    <div className="flex flex-col gap-1 text-sm">
+      <SkeletonWrapper isLoading={isFetchingPolicy}>
         {user?.role == "ADMIN" && (
           <div className="border rounded-sm shadow-md p-2">
             <h4 className="text-muted-foreground">Assistant</h4>
@@ -56,14 +34,16 @@ export const PolicyInfoClient = ({
             <Button
               className="w-full"
               size="sm"
-              onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}
+              onClick={() =>
+                onAssistantFormOpen(policy.id, leadName, assistant!)
+              }
             >
               {assistant ? "Change" : "Add"}
             </Button>
           </div>
         )}
 
-        {policyInfo.carrier ? (
+        {policyInfo ? (
           <div className="relative group">
             {/* <div>
             <p>Vendor:</p>
@@ -96,19 +76,17 @@ export const PolicyInfoClient = ({
             />
             <Button
               className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => onPolicyFormOpen(leadId, leadName, policyInfo)}
+              onClick={() => onPolicyFormOpen(policy.id)}
             >
               <FilePenLine size={16} />
             </Button>
           </div>
         ) : (
-          <Button
-            onClick={() => onPolicyFormOpen(leadId, leadName, policyInfo)}
-          >
+          <Button onClick={() => onPolicyFormOpen(policy.id)}>
             Create Policy
           </Button>
         )}
-      </div>
-    </>
+      </SkeletonWrapper>
+    </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CalendarX, FilePenLine, Phone } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLead } from "@/hooks/use-lead";
+import { useLeadStore, useLeadGeneralInfoActions } from "@/hooks/lead/use-lead";
 import { cn } from "@/lib/utils";
 
 import { Appointment } from "@prisma/client";
@@ -12,54 +12,28 @@ import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type Props = {
-  info: LeadGeneralSchemaType;
-  leadName: string;
-  lastCall?: Date;
-  nextAppointment?: Date;
   showInfo?: boolean;
   showEdit?: boolean;
 };
 
 export const GeneralInfoClient = ({
-  info,
-  leadName,
-  lastCall,
-  nextAppointment,
   showInfo = false,
   showEdit = true,
 }: Props) => {
-  const [generalInfo, setGeneralInfo] = useState<LeadGeneralSchemaType>(info);
-  const { onGeneralFormOpen } = useLead();
+  const { onGeneralFormOpen } = useLeadStore();
+  const { generalInfo, isFetchingGeneralInfo } = useLeadGeneralInfoActions();
 
-  useEffect(() => {
-    const onSetInfo = (e: LeadGeneralSchemaType) => {
-      if (e.id == info.id) setGeneralInfo(e);
-    };
-    const onSetLastCall = (leadId: string) => {
-      if (leadId == info.id)
-        setGeneralInfo((info) => {
-          return { ...info, lastCall: new Date() };
-        });
-    };
-    const onSetNextAppointment = (e: Appointment) => {
-      if (e.leadId == info.id)
-        setGeneralInfo((info) => {
-          return { ...info, nextAppointment: e.startDate };
-        });
-    };
-    setGeneralInfo(info);
-    userEmitter.on("generalInfoUpdated", (info) => onSetInfo(info));
-    userEmitter.on("appointmentScheduled", (newAppointment) =>
-      onSetNextAppointment(newAppointment)
-    );
-    userEmitter.on("newCall", (leadId) => onSetLastCall(leadId));
-  }, [info]);
+  if (!generalInfo) return null;
+
+  const lastCall = generalInfo.calls[0];
+  const nextAppointment = generalInfo.appointments[0];
 
   return (
-    <>
-      <div className="flex flex-col gap-2 text-sm">
+    <div className="flex flex-col gap-2 text-sm">
+      <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
         {lastCall && (
           <div
             className={cn(
@@ -70,7 +44,7 @@ export const GeneralInfoClient = ({
             <Badge className="gap-1 w-fit">
               <Phone size={16} /> Last Call
             </Badge>
-            {formatDateTime(lastCall)}
+            {formatDateTime(lastCall.createdAt)}
           </div>
         )}
 
@@ -84,7 +58,7 @@ export const GeneralInfoClient = ({
             <Badge className="gap-1 w-fit">
               <CalendarX size={16} /> Appt Set
             </Badge>
-            {formatDateTime(nextAppointment)}
+            {formatDateTime(nextAppointment.startDate)}
           </div>
         )}
 
@@ -134,7 +108,7 @@ export const GeneralInfoClient = ({
             </div>
           </div>
         )}
-      </div>
-    </>
+      </SkeletonWrapper>
+    </div>
   );
 };

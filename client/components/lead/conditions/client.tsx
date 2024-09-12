@@ -1,63 +1,49 @@
 "use client";
 import { useState, useEffect } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-
-import { FullLeadMedicalCondition } from "@/types";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
 import { ConditionsList } from "./list";
 import { ConditionForm } from "./form";
 import { columns } from "./columns";
-import { leadConditionsGetAllById } from "@/actions/lead/condition";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type ConditionsClientProp = {
-  leadId: string;
   size?: string;
 };
 
-export const ConditionsClient = ({
-  leadId,
-  size = "full",
-}: ConditionsClientProp) => {
+export const ConditionsClient = ({ size = "full" }: ConditionsClientProp) => {
   const user = useCurrentUser();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
+  const { conditions, onConditionFormOpen, isFetchingConditions } =
+    useLeadConditionActions();
   const topMenu = (
-    <ListGridTopMenu
-      text="Add Condition"
-      setIsDrawerOpen={setIsDrawerOpen}
-      isList={isList}
-      setIsList={setIsList}
-      size={size}
-    />
+    <SkeletonWrapper isLoading={isFetchingConditions}>
+      <ListGridTopMenu
+        text="Add Condition"
+        setIsDrawerOpen={onConditionFormOpen}
+        isList={isList}
+        setIsList={setIsList}
+        size={size}
+      />
+    </SkeletonWrapper>
   );
-
-  const conditionsQuery = useQuery<FullLeadMedicalCondition[]>({
-    queryKey: ["leadConditions", `lead-${leadId}`],
-    queryFn: () => leadConditionsGetAllById(leadId),
-  });
 
   return (
     <>
-      <DrawerRight
-        title="New Condition"
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      >
-        <ConditionForm leadId={leadId} onClose={() => setIsDrawerOpen(false)} />
-      </DrawerRight>
+      <ConditionForm />
       {isList ? (
-        <DataTable
-          columns={columns}
-          data={conditionsQuery.data || []}
-          headers
-          topMenu={topMenu}
-        />
+        <SkeletonWrapper isLoading={isFetchingConditions}>
+          <DataTable
+            columns={columns}
+            data={conditions || []}
+            headers
+            topMenu={topMenu}
+          />
+        </SkeletonWrapper>
       ) : (
         <>
           <div
@@ -69,7 +55,9 @@ export const ConditionsClient = ({
             <h4 className="text-2xl font-semibold">Medical Conditions</h4>
             {topMenu}
           </div>
-          <ConditionsList conditions={conditionsQuery.data || []} size={size} />
+          <SkeletonWrapper isLoading={isFetchingConditions}>
+            <ConditionsList conditions={conditions || []} size={size} />
+          </SkeletonWrapper>
         </>
       )}
     </>

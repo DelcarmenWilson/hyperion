@@ -16,6 +16,7 @@ import { PipeLine } from "@prisma/client";
 import { usePhone } from "@/hooks/use-phone";
 import { pipelineUpdateByIdIndex } from "@/actions/pipeline";
 import { timeZones } from "@/constants/states";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PipelineCardProps = {
   pipeline: PipeLine;
@@ -32,7 +33,7 @@ export const PipelineCard = ({
   const { onPhoneDialerOpen } = usePhone();
   const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
-  const [index, setIndex] = useState(pipeline.index);
+  const [index, setIndex] = useState(idx);
 
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
@@ -98,7 +99,9 @@ export const PipelineCard = ({
           </Button>
           <p>Leads: {leads.length}</p>
         </div>
-        <div className="relative group h-full overflow-y-auto" ref={divRef}>
+
+        <ScrollArea className="relative group h-full" ref={divRef}>
+          {/* <div className="relative group h-full overflow-y-auto" ref={divRef}> */}
           {leads.map((lead, i) => (
             <LeadCard
               key={lead.id}
@@ -106,7 +109,8 @@ export const PipelineCard = ({
               indexRef={i == index ? indexRef : null}
             />
           ))}
-        </div>
+          {/* </div> */}
+        </ScrollArea>
       </section>
     </Reorder.Item>
   );

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+import { LeadActivity } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -8,11 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Activity } from "@prisma/client";
+
 import { ActivityCard } from "./card";
 
 type ActivityLogProps = {
-  initActivities: Activity[];
+  initActivities: LeadActivity[];
 };
 const types = [
   "Caller Id",

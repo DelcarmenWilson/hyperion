@@ -29,7 +29,7 @@ export const CreativeClient = () => {
       text="New Creative"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
   const onCreativeCreated = (e?: CampaignCreative) => {

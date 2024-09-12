@@ -1,28 +1,56 @@
 "use client";
-import { useLeadData } from "@/hooks/use-lead";
-import { CalendarBox } from "./card";
+import { useLeadAppointmentData } from "@/hooks/lead/use-appointment";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
+import { formatDateTime } from "@/formulas/dates";
+
 export const AppointmentClient = () => {
-  const { appointments, isFetchingAppointments } = useLeadData();
+  const { appointments, isFetchingAppointments } = useLeadAppointmentData();
   return (
     <div className="text-sm">
-      <div className="grid grid-cols-4 items-center  gap-2 text-md text-muted-foreground">
-        <span>Date / Time</span>
-        <span>Status</span>
-        <span className="col-span-2">Comments</span>
-      </div>
-
-      <SkeletonWrapper isLoading={isFetchingAppointments}>
-        {appointments?.map((appointment) => (
-          <CalendarBox key={appointment.id} appointment={appointment} />
-        ))}
-        {!appointments?.length && (
-          <p className="text-muted-foreground text-center mt-2">
-            No appointments found
-          </p>
-        )}
-      </SkeletonWrapper>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date / Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Comments</TableHead>
+          </TableRow>
+        </TableHeader>
+        <SkeletonWrapper isLoading={isFetchingAppointments} fullWidth>
+          <TableBody>
+            {appointments?.map((appointment) => (
+              <TableRow key={appointment.id}>
+                <TableCell>{formatDateTime(appointment.startDate)}</TableCell>
+                <TableCell
+                  className={
+                    appointment.status == "Rescheduled"
+                      ? "text-destructive"
+                      : ""
+                  }
+                >
+                  {appointment.status}
+                </TableCell>
+                <TableCell>{appointment.comments}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </SkeletonWrapper>
+      </Table>
+      {!appointments?.length && (
+        <p className="text-muted-foreground text-center mt-2">
+          No appointments found
+        </p>
+      )}
     </div>
   );
 };

@@ -1,12 +1,10 @@
 "use client";
-import React, { useCallback, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ExpenseType } from "@/types";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { useLeadExpenseActions } from "@/hooks/lead/use-expense";
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { AlertModal } from "@/components/modals/alert";
 import { EmptyCard } from "@/components/reusable/empty-card";
@@ -14,41 +12,27 @@ import { USDollar } from "@/formulas/numbers";
 import CreateExpenseForm from "./create-expense-form";
 import { Button } from "@/components/ui/button";
 import { LeadExpense } from "@prisma/client";
-import {
-  leadExpenseDeleteById,
-  leadExpenseInsertSheet,
-} from "@/actions/lead/expense";
-import { leadExpensesGetAllById } from "@/actions/lead/expense";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-const CatergoryCards = ({ leadId }: { leadId: string }) => {
-  const queryClient = useQueryClient();
-  const expenseQuery = useQuery<LeadExpense[]>({
-    queryKey: ["leadExpense", `lead-${leadId}`, "categories"],
-    queryFn: () => leadExpensesGetAllById(leadId),
-  });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadExpenseInsertSheet,
-    onSuccess: () => {
-      toast.success("Expense Sheet Created", {
-        id: "create-expense-sheet",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["leadExpense", `lead-${leadId}`],
-      });
-    },
-  });
+export const CatergoryCards = () => {
+  const {
+    leadId,
+    leadExpense,
+    isFetchingLeadExpense,
+    leadExpenseMutate,
+    isPendingExpense,
+  } = useLeadExpenseActions();
 
   return (
     <>
-      {expenseQuery.data?.length ? (
-        <div className="flex w-full flex-wrap gap-2 md:flex-nowrap">
+      {leadExpense?.length ? (
+        <div className="flex-1 flex w-full h-full flex-wrap gap-2 md:flex-nowrap overflow-hidden">
           {["Expense", "Income"].map((type) => (
-            <SkeletonWrapper key={type} isLoading={expenseQuery.isFetching}>
+            <SkeletonWrapper key={type} isLoading={isFetchingLeadExpense}>
               <CategoriesCard
-                leadId={leadId}
+                leadId={leadId!}
                 type={type as ExpenseType}
-                data={expenseQuery.data || []}
+                data={leadExpense || []}
               />
             </SkeletonWrapper>
           ))}
@@ -56,8 +40,8 @@ const CatergoryCards = ({ leadId }: { leadId: string }) => {
       ) : (
         <div className="flex-center h-full">
           <Button
-            disabled={isPending || expenseQuery.isFetching}
-            onClick={() => mutate(leadId)}
+            disabled={isPendingExpense || isFetchingLeadExpense}
+            onClick={() => leadExpenseMutate(leadId!)}
           >
             Create Expense Sheet
           </Button>
@@ -67,55 +51,35 @@ const CatergoryCards = ({ leadId }: { leadId: string }) => {
   );
 };
 
-export default CatergoryCards;
-
 type CategoriesCardProps = {
   leadId: string;
   type: ExpenseType;
   data: LeadExpense[];
 };
 const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
-  const [alertOpen, setAlertOpen] = useState(false);
-  const queryClient = useQueryClient();
   const filteredData = data.filter((el) => el.type === type);
   const total = filteredData.reduce((acc, el) => acc + (el.value || 0), 0);
-  const [selectedExpense, setSelectedExpense] = useState<string>("");
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadExpenseDeleteById,
-    onSuccess: () => {
-      toast.success("Transaction deleted succesfully", {
-        id: "delete-transaction",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["leadExpense", `lead-${leadId}`],
-      });
-
-      setAlertOpen((prev) => !prev);
-    },
-  });
-
-  const onSelectedExpense = (id: string) => {
-    setSelectedExpense(id);
-    setAlertOpen(true);
-  };
-  const onDelete = useCallback(() => {
-    toast.loading("Deleting transaction...", { id: "delete-transaction" });
-    mutate(selectedExpense);
-  }, [mutate, selectedExpense]);
+  const {
+    alertOpen,
+    setAlertOpen,
+    onSelectedExpense,
+    onExpenseDelete,
+    isPendingLeadExpenseDelete,
+  } = useLeadExpenseActions();
 
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDelete}
-        loading={isPending}
+        onConfirm={onExpenseDelete}
+        loading={isPendingLeadExpenseDelete}
         height="auto"
       />
-      <Card className="min-h-80 w-full col-span-6">
+      <Card className="flex flex-col w-full h-full">
         <CardHeader>
-          <CardTitle className="grid grid-flow-row justify-between items-center gap-2 text-muted-foreground md:grid-flow-col">
+          <CardTitle className="flex flex--col justify-between items-center gap-2 text-muted-foreground md:flex-row">
             {type === "Income" ? "Incomes" : "Expenses"}
 
             <CreateExpenseForm
@@ -138,21 +102,19 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
           </CardTitle>
         </CardHeader>
 
-        <div className="flex items-center justify-between gap-2">
-          {filteredData.length === 0 && (
+        <CardContent className="flex-1 h-full overflow-hidden">
+          {!filteredData.length ? (
             <EmptyCard
               title="No data found"
               subTitle={`Start by adding a new ${
                 type === "Income" ? "incomes" : "expenses"
               }`}
             />
-          )}
-
-          {filteredData.length > 0 && (
-            <div className="flex w-full flex-col gap-4 p-4">
+          ) : (
+            <ScrollArea className="h-full pr-2">
               {filteredData.map((item) => {
                 const amount = item.value || 0;
-                const percentage = (amount * 100) / (total || amount);
+                const percentage = (amount * 100) / (total || amount) || 0;
 
                 return (
                   <div key={item.name} className="flex flex-col gap-2">
@@ -207,9 +169,9 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
                   </div>
                 );
               })}
-            </div>
+            </ScrollArea>
           )}
-        </div>
+        </CardContent>
       </Card>
     </>
   );

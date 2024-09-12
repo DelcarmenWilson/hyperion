@@ -26,7 +26,7 @@ import { ShortConvo } from "@/types";
 import {
   conversationsGetByUserIdUnread,
   conversationUpdateByIdUnread,
-} from "@/actions/conversation";
+} from "@/actions/lead/conversation";
 
 //TODO - see if we can consolidate the UI with nav Chats
 export const NavMessages = () => {

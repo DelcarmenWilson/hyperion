@@ -20,12 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from "react-beautiful-dnd";
+import { DropResult } from "react-beautiful-dnd";
 
 import { PipelineCard } from "./card";
 
@@ -178,7 +173,6 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
         values={pipelines}
         onReorder={setPipelines}
       >
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-4"> */}
         {pipelines?.map((pipeline, index) => (
           <PipelineCard
             key={pipeline.id}

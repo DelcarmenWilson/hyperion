@@ -1,27 +1,18 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useConversationId } from "@/hooks/use-conversation";
+import { useContext } from "react";
+import { useConversationData } from "../hooks/use-conversation";
+
 import SocketContext from "@/providers/socket";
-import { userEmitter } from "@/lib/event-emmiter";
 
-import { ShortConversation, ShortConvo } from "@/types";
-
-import { Message } from "@prisma/client";
 import { ConversationCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { conversationsGetByUserId } from "@/actions/conversation";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const ConversationsClient = () => {
+export const ConversationsSidebar = () => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { conversationId } = useConversationId();
 
-  const { data: conversations, isFetching: isFetchingConversations } = useQuery<
-    ShortConversation[]
-  >({
-    queryFn: () => conversationsGetByUserId(),
-    queryKey: [`conversations`],
-  });
+  const { conversationId, conversations, isFetchingConversations } =
+    useConversationData();
 
   // const [conversations, setConversations] = useState<ShortConversation[]>(
   //   convos || []
@@ -79,24 +70,26 @@ export const ConversationsClient = () => {
   // }, []);
 
   return (
-    <div className="flex flex-col h-full w-[250px] gap-1 p-1">
+    <div className="flex flex-col h-full gap-1 p-1">
       <h4 className="text-lg text-muted-foreground font-semibold">
         Conversations
       </h4>
       <div className="flex-1 space-y-2 overflow-y-auto h-full">
-        {conversations && conversations.length > 0 ? (
-          <>
-            {conversations.map((conversation) => (
-              <ConversationCard
-                key={conversation.id}
-                conversation={conversation}
-                active={conversationId == conversation.id}
-              />
-            ))}
-          </>
-        ) : (
-          <EmptyCard title="No Conversations" />
-        )}
+        <SkeletonWrapper isLoading={isFetchingConversations} fullHeight>
+          {conversations && conversations.length > 0 ? (
+            <>
+              {conversations.map((conversation) => (
+                <ConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  active={conversationId == conversation.id}
+                />
+              ))}
+            </>
+          ) : (
+            <EmptyCard title="No Conversations" />
+          )}
+        </SkeletonWrapper>
       </div>
     </div>
   );

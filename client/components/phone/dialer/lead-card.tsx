@@ -1,10 +1,8 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-import { formatPhoneNumber } from "@/formulas/phones";
-import { getAge } from "@/formulas/dates";
 import { FullLead } from "@/types";
-import { format } from "date-fns";
+import { formatDate, getAge } from "@/formulas/dates";
 
 type LeadDialerCardProps = {
   lead: FullLead;
@@ -14,21 +12,20 @@ type LeadDialerCardProps = {
 export const LeadDialerCard = ({ lead, indexRef }: LeadDialerCardProps) => {
   return (
     <div ref={indexRef} className="border-b">
-      <div className={cn("p-2", indexRef && "bg-secondary")}>
-        <div className="text-center">
+      <div
+        className={cn("p-2 hover:bg-primary/25", indexRef && "bg-primary/30")}
+      >
+        <div className="text-center text-muted-foreground">
           <p className="font-bold">{`${lead.firstName} ${lead.lastName}`}</p>
-          <p className="text-primary italic font-bold">
-            {formatPhoneNumber(lead.cellPhone)}
-          </p>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center text-xs">
           <div>
             <p>State: {lead.state}</p>
             <p>Status: {lead.maritalStatus}</p>
           </div>
           <div>
             <p>Age: {getAge(lead.dateOfBirth)}</p>
-            <p> Recieved: {format(lead.createdAt, "MMM dd")}</p>
+            <p> Recd {formatDate(lead.recievedAt)}</p>
           </div>
         </div>
       </div>

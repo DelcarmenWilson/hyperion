@@ -2,64 +2,51 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useBeneficiaryStore,
+  useLeadBeneficiaryActions,
+} from "@/hooks/lead/use-beneficiary";
 
-import { LeadBeneficiary } from "@prisma/client";
-
-import { DrawerRight } from "@/components/custom/drawer-right";
 import { DataTable } from "@/components/tables/data-table";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { BeneficiaryForm } from "./form";
 import { BeneficiariesList } from "./list";
 import { columns } from "./columns";
-import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 
 type BeneficiariesClientProp = {
-  leadId: string;
   size?: string;
 };
 
 export const BeneficiariesClient = ({
-  leadId,
   size = "full",
 }: BeneficiariesClientProp) => {
   const user = useCurrentUser();
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { beneficiaries, isFetchingBeneficiaries } =
+    useLeadBeneficiaryActions();
+  const { onBeneficiaryFormOpen } = useBeneficiaryStore();
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
-    <ListGridTopMenu
-      text="Add Beneficiary"
-      isList={isList}
-      setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
-      size={size}
-    />
+    <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
+      <ListGridTopMenu
+        text="Add Beneficiary"
+        isList={isList}
+        setIsList={setIsList}
+        setIsDrawerOpen={onBeneficiaryFormOpen}
+        size={size}
+      />
+    </SkeletonWrapper>
   );
-
-  const beneficiariesQuery = useQuery<LeadBeneficiary[]>({
-    queryKey: ["leadBeneficiaries", `lead-${leadId}`],
-    queryFn: () => leadBeneficiariesGetAllById(leadId),
-  });
 
   return (
     <>
-      <DrawerRight
-        title="New Beneficiary"
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      >
-        <BeneficiaryForm
-          leadId={leadId}
-          onClose={() => setIsDrawerOpen(false)}
-        />
-      </DrawerRight>
+      <BeneficiaryForm />
+
       {isList ? (
-        <SkeletonWrapper isLoading={beneficiariesQuery.isFetching}>
+        <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
           <DataTable
             columns={columns}
-            data={beneficiariesQuery.data || []}
+            data={beneficiaries || []}
             headers
             topMenu={topMenu}
           />
@@ -75,9 +62,9 @@ export const BeneficiariesClient = ({
             <h4 className="text-2xl font-semibold">Beneficiaries</h4>
             {topMenu}
           </div>
-          <SkeletonWrapper isLoading={beneficiariesQuery.isFetching}>
+          <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
             <BeneficiariesList
-              beneficiaries={beneficiariesQuery.data || []}
+              beneficiaries={beneficiaries || []}
               size={size}
             />
           </SkeletonWrapper>

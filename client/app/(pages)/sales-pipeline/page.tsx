@@ -1,17 +1,14 @@
 import { UserSquare } from "lucide-react";
-import { currentUser } from "@/lib/auth";
 
 import { PageLayout } from "@/components/custom/layout/page";
 import { TopMenu } from "./components/top-menu";
 import { SalesClient } from "./components/client";
-import { leadsGetAllByAgentId } from "@/actions/lead";
+
+import { leadsGetAll } from "@/actions/lead";
 import { pipelineGetAllByAgentId } from "@/actions/pipeline";
 
 const SalesPage = async () => {
-  const user = await currentUser();
-
-  if (!user) return null;
-  const leads = await leadsGetAllByAgentId(user.id!);
+  const leads = await leadsGetAll();
   const pipelines = await pipelineGetAllByAgentId();
   //TODO - need to add react query to this page
   return (

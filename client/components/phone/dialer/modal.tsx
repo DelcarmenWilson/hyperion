@@ -2,11 +2,17 @@
 import { Fragment, useEffect, useRef } from "react";
 
 import { usePhone } from "@/hooks/use-phone";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { Dialog, Transition } from "@headlessui/react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { LeadDialerCard } from "./lead-card";
 import { DialerMenu } from "./menu";
 
@@ -22,6 +28,7 @@ export const PhoneDialerModal = () => {
     pipeline,
     pipeIndex: pipIndex,
   } = usePhone();
+  const { setLeadId: setLead } = useLeadStore();
 
   const indexRef = useRef<HTMLDivElement>(null);
 
@@ -30,12 +37,14 @@ export const PhoneDialerModal = () => {
     onSetIndex(idx);
     if (!leads) return;
     onSetLead(leads[idx]);
+    setLead(leads[idx].id);
     pipelineUpdateByIdIndex(pipeline?.id!, idx);
   };
 
   useEffect(() => {
     if (!leads) return;
     onSetLead(leads[pipIndex]);
+    setLead(leads[pipIndex].id);
     if (!indexRef.current) return;
     indexRef.current.scrollIntoView({
       behavior: "smooth",
@@ -78,9 +87,20 @@ export const PhoneDialerModal = () => {
                 <div className="flex flex-col justify-between gap-2 overflow-hidden h-full bg-background p-2 shadow-xl rounded-md text-sm">
                   <DialerMenu setIndex={setIndex} />
 
-                  <div className="flex flex-1 gap-2 overflow-hidden h-full">
-                    <div className="border border-secondary w-1/4 overflow-hidden h-full">
-                      <ScrollArea className="h-full">
+                  <ResizablePanelGroup
+                    className="flex flex-1 gap-2 overflow-hidden h-full"
+                    direction="horizontal"
+                    autoSaveId="rpg-dailer"
+                  >
+                    {/* <div className="flex flex-1 gap-2 overflow-hidden h-full"> */}
+                    <ResizablePanel
+                      className="border border-secondary overflow-hidden h-full"
+                      defaultSize={25}
+                      minSize={25}
+                      maxSize={30}
+                    >
+                      {/* <div className="border border-secondary w-1/4 overflow-hidden h-full"> */}
+                      <ScrollArea className="h-full pr-2">
                         {leads.map((lead, i) => (
                           <LeadDialerCard
                             key={lead.id}
@@ -89,11 +109,20 @@ export const PhoneDialerModal = () => {
                           />
                         ))}
                       </ScrollArea>
-                    </div>
-                    <div className="flex flex-col flex-1 border border-secondary h-full overflow-hidden">
+                      {/* </div> */}
+                    </ResizablePanel>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel
+                      className="flex flex-col flex-1 border border-secondary h-full overflow-hidden"
+                      defaultSize={80}
+                      maxSize={80}
+                    >
+                      {/* <div className="flex flex-col flex-1 border border-secondary h-full overflow-hidden"> */}
                       {lead && <PhoneLeadInfo />}
-                    </div>
-                  </div>
+                      {/* </div> */}
+                    </ResizablePanel>
+                    {/* </div> */}
+                  </ResizablePanelGroup>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

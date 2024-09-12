@@ -7,12 +7,13 @@ import {
   AppointmentReducer,
   defaultAppointmentContextState,
 } from "./app";
-import { AppointmentDrawer } from "@/components/appointments/drawer";
+
 import { Appointment, AppointmentLabel, Schedule } from "@prisma/client";
 import { AppointmentDetails } from "@/components/appointments/details";
 
 import { CalendarLabel } from "@/types";
 import { appointmentLabelUpdateByChecked } from "@/actions/appointment";
+import { AppointmentForm } from "@/components/appointments/form";
 
 type AppointmentContextComponentProps = {
   initSchedule: Schedule;
@@ -122,7 +123,7 @@ function AppointmentContextComponent({
       }}
     >
       {children}
-      <AppointmentDrawer />
+      <AppointmentForm />
       <AppointmentDetails />
     </AppointmentContextProvider>
   );

@@ -21,6 +21,19 @@ export const leadConditionsGetAllById = async (leadId: string) => {
     return [];
   }
 };
+export const leadConditionGetById = async (id: string) => {
+  try {
+    const condition = await db.leadMedicalCondition.findUnique({
+      where: {
+        id,
+      },
+      include: { condition: true },
+    });
+    return condition;
+  } catch {
+    return null;
+  }
+};
 //ACTIONS
 export const leadConditionInsert = async (values: LeadConditionSchemaType) => {
   const validatedFields = LeadConditionSchema.safeParse(values);

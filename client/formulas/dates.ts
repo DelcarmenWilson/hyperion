@@ -110,7 +110,7 @@ export const getLast24hrs = (): Date => {
 
 //FORMAT DATE AND TIME
 export const formatDate = (
-  date: Date | string | undefined,
+  date: Date | string | undefined|null,
   retval: string = ""
 ): string => {
   if (!date) return retval;

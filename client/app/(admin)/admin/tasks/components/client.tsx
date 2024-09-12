@@ -26,7 +26,7 @@ export const TaskClient = ({ initTasks }: TaskClientProps) => {
       text="New Task"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
   const onTaskCreated = (e?: Task) => {

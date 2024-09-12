@@ -22,7 +22,7 @@ export const WorkFlowClient = () => {
       text="Add WorkFlow"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
       showButton={user?.role != "ASSISTANT"}
     />
   );

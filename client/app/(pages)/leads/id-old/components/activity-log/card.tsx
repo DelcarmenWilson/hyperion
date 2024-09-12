@@ -1,8 +1,8 @@
 "use client";
+import { LeadActivity } from "@prisma/client";
 import { formatDateTime } from "@/formulas/dates";
-import { Activity } from "@prisma/client";
 
-export const ActivityCard = ({ activity }: { activity: Activity }) => {
+export const ActivityCard = ({ activity }: { activity: LeadActivity }) => {
   return (
     <div className="grid grid-cols-3 items-center gap-2 border-b py-2">
       <div>{activity.activity}</div>

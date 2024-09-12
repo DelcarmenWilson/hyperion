@@ -34,6 +34,7 @@ import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
 import ModalProvider from "@/providers/modal";
 import { GroupMessageCard } from "@/components/global/group-message-card";
+import ModalsContainer from "@/components/global/modals-container";
 export default async function DashBoardLayout({
   children,
 }: {
@@ -83,12 +84,13 @@ export default async function DashBoardLayout({
                   initLabels={appointmentLabels}
                 >
                   <ModalProvider>{children}</ModalProvider>
+                  {/* ///ALL THE PHONE MODALS */}
+                  <ModalsContainer />
+                  <ChatDrawer />
+                  <GroupMessageCard />
+                  <LoginStatusModal />
                 </AppointmentContextComponent>
               </PhoneContextProvider>
-
-              <ChatDrawer />
-              <GroupMessageCard />
-              <LoginStatusModal />
             </div>
           </div>
         </div>

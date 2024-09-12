@@ -1,11 +1,12 @@
 "use server";
 import { db } from "@/lib/db";
 import { LeadSchemaType } from "@/schemas/lead";
-import { generateTextCode } from "@/formulas/phone";
 import { states } from "@/constants/states";
 import { Amm_Leads_Import } from "@/formulas/lead";
 import { Ad } from "@/lib/facebook/config";
 import { sendSocketData } from "@/services/socket-service";
+import { getNewTextCode } from "../lead";
+import { chatSettingGetTitan } from "../chat-settings";
 
 //ACTIONS
 const campaignLeadsImport = async (
@@ -68,16 +69,11 @@ const campaignLeadsImport = async (
         },
       });
     } else {
-      ///Gnerate a new Text code
-      let code = generateTextCode(firstName, lastName, cellPhone);
-
-      //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
-      const exisitingCode = await db.lead.findFirst({
-        where: { textCode: code },
-      });
-      if (exisitingCode)
-        code = generateTextCode(firstName, lastName, cellPhone, true);
-
+      //Get new textCode
+      const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+      //Get titan (autoChat) from chat settings
+      const titan=await chatSettingGetTitan(userId)
+      
       await db.lead.create({
         data: {
           adId,
@@ -110,7 +106,8 @@ const campaignLeadsImport = async (
           userId,
           status,
           notes,
-          textCode: code,
+          textCode,
+          titan
         },
       });
     }

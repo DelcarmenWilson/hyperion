@@ -6,7 +6,7 @@ model ChatSettings {
     defaultPrompt   String @db.LongText
     defaultFunction String @db.LongText
 
-    autoChat                    Boolean @default(false)
+    titan                       Boolean @default(false)
     coach                       Boolean @default(false)
     messageNotification         String  @default("access-allowed")
     messageInternalNotification String  @default("bubble-pop-up")

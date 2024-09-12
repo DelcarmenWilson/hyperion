@@ -16,8 +16,11 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { useLead } from "@/hooks/use-lead";
+import { useLeadStore, useLeadData } from "@/hooks/lead/use-lead";
+import { useAppointmentStore } from "@/hooks/use-appointment";
 
+import { AlertModal } from "@/components/modals/alert";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,49 +32,43 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 
-import { useAppointment } from "@/hooks/use-appointment";
-
-import { AlertModal } from "@/components/modals/alert";
-import { FullLeadNoConvo } from "@/types";
-import {
-  conversationDeleteById,
-  conversationUpdateByIdAutoChat,
-} from "@/actions/conversation";
-import { Conversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 
+import { conversationDeleteById } from "@/actions/lead/conversation";
+
 type DropDownProps = {
-  lead: FullLeadNoConvo;
-  conversation?: Conversation;
   action?: boolean;
 };
 
-export const LeadDropDown = ({
-  lead,
-  conversation,
-  action = false,
-}: DropDownProps) => {
+export const LeadDropDown = ({ action = false }: DropDownProps) => {
   const role = useCurrentRole();
-  const { onFormOpen } = useAppointment();
-  const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } = useLead();
-  const [autoChat, setAutoChat] = useState<boolean>(conversation?.autoChat!);
+  const { onFormOpen } = useAppointmentStore();
+  const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
+    useLeadStore();
+
+  const [titan, setTitan] = useState<boolean>(false);
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const isAssistant = role == "ASSISTANT";
-  const leadFullName = `${lead.firstName} ${lead.lastName}`;
+
+  const { leadBasic, lead } = useLeadData();
+
+  if (!leadBasic) return null;
+  const leadFullName = `${leadBasic.firstName} ${leadBasic.lastName}`;
+  const conversation = leadBasic.conversations[0];
 
   const onTitanToggle = async () => {
-    setAutoChat((state) => !state);
-    const updateAutoChat = await conversationUpdateByIdAutoChat(
-      conversation?.id as string,
-      !autoChat
-    );
+    //TODO - need to come back to this. the autoChat has been changed to titan and it is now in the lead table
+    setTitan((state) => !state);
+    // const updateAutoChat = await conversationUpdateByIdAutoChat(
+    //   conversation?.id as string,
+    //   !autoChat
+    // );
 
-    if (updateAutoChat.success) toast.success(updateAutoChat.success);
-    else toast.error(updateAutoChat.error);
+    // if (updateAutoChat.success) toast.success(updateAutoChat.success);
+    // else toast.error(updateAutoChat.error);
   };
 
   const onDelete = async () => {
@@ -90,6 +87,7 @@ export const LeadDropDown = ({
       toast.error("Not Authorized");
       return;
     }
+    if (!lead) return;
     exportLeads(fileType, [lead], `${lead.firstName} ${lead.lastName}`);
   };
   return (
@@ -117,9 +115,9 @@ export const LeadDropDown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={lead.status == "Do_Not_Call"}
+            disabled={leadBasic.status == "Do_Not_Call"}
             className="cursor-pointer gap-2"
-            onClick={() => onFormOpen(lead)}
+            onClick={() => onFormOpen()}
           >
             <Calendar size={16} />
             New Appointment
@@ -129,7 +127,11 @@ export const LeadDropDown = ({
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() =>
-                  onShareFormOpen([lead.id], leadFullName, lead.sharedUser!)
+                  onShareFormOpen(
+                    [leadBasic.id],
+                    leadFullName,
+                    lead?.sharedUser!
+                  )
                 }
               >
                 <Share size={16} />
@@ -137,14 +139,14 @@ export const LeadDropDown = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => onTransferFormOpen([lead.id], leadFullName)}
+                onClick={() => onTransferFormOpen([leadBasic.id], leadFullName)}
               >
                 <Reply size={16} />
                 Transfer Lead
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => onIntakeFormOpen(lead.id, leadFullName)}
+                onClick={() => onIntakeFormOpen(leadBasic.id, leadFullName)}
               >
                 <BookText size={16} />
                 Intake Form
@@ -156,14 +158,14 @@ export const LeadDropDown = ({
               <DropdownMenuItem
                 className={cn(
                   " text-background cursor-pointer gap-2",
-                  autoChat ? "bg-primary" : "bg-destructive"
+                  titan ? "bg-primary" : "bg-destructive"
                 )}
                 onClick={onTitanToggle}
               >
                 <div className="flex items-center justify-between gap-2">
-                  {autoChat ? <Check size={16} /> : <X size={16} />}
+                  {titan ? <Check size={16} /> : <X size={16} />}
                   <span>Titan</span>
-                  <span>{autoChat ? "ON" : "OFF"}</span>
+                  <span>{titan ? "ON" : "OFF"}</span>
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem

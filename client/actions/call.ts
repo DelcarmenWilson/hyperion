@@ -2,7 +2,6 @@
 import { db } from "@/lib/db";
 import { timeDiff, getEntireDay } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
-import { error } from "console";
 //DATA
 export const callsGetAllByAgentId = async (userId: string) => {
   try {
