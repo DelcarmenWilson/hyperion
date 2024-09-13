@@ -1,10 +1,30 @@
 "use server";
 import { db } from "@/lib/db";
-import { ScheduleSchema,ScheduleSchemaType } from "@/schemas/settings";
+import { UserRole } from "@prisma/client";
+import { ScheduleSchema, ScheduleSchemaType } from "@/schemas/settings";
+import { userGetByAssistant } from "@/data/user";
 
-export const scheduleInsert = async (
-  values: ScheduleSchemaType
+//DATA
+export const scheduleGetByUserId = async (
+  userId: string | null | undefined,
+  role: UserRole = "USER"
 ) => {
+  try {
+    if (!userId) return null;
+
+    if (role == "ASSISTANT") {
+      userId = (await userGetByAssistant(userId)) as string;
+    }
+    const schedule = await db.schedule.findUnique({
+      where: { userId },
+    });
+    return schedule;
+  } catch {
+    return null;
+  }
+};
+
+export const scheduleInsert = async (values: ScheduleSchemaType) => {
   try {
     const validatedFields = ScheduleSchema.safeParse(values);
     if (!validatedFields.success) {
@@ -44,9 +64,7 @@ export const scheduleInsert = async (
     return { error: "internal server error!" };
   }
 };
-export const scheduleUpdateByUserId = async (
-  values: ScheduleSchemaType
-) => {
+export const scheduleUpdateByUserId = async (values: ScheduleSchemaType) => {
   try {
     const validatedFields = ScheduleSchema.safeParse(values);
     if (!validatedFields.success) {
@@ -81,7 +99,6 @@ export const scheduleUpdateByUserId = async (
         friday,
         saturday,
       },
-
     });
 
     return { success: "schedule has been updated!" };

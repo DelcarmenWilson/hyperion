@@ -1,7 +1,10 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useRef } from "react";
 import { MessageSquare } from "lucide-react";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
+
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,14 +12,11 @@ import { MessageCard } from "./message-card";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-type SmsBodyProps = {
-  leadName: string;
-  userName: string;
-};
-
-export const SmsBody = ({ leadName, userName }: SmsBodyProps) => {
+export const SmsBody = () => {
   const { socket } = useContext(SocketContext).SocketState;
-  // const [messages, setMessages] = useState(initMessages);
+  const user = useCurrentUser();
+  const { leadBasic } = useLeadData();
+
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -95,12 +95,14 @@ export const SmsBody = ({ leadName, userName }: SmsBodyProps) => {
           <p className="mt-2"> Type a message below</p>
         </div>
       ) : (
-        <ScrollArea className="w-full h-full">
+        <ScrollArea className="w-full h-full px-5">
           {messages?.map((message) => (
             <MessageCard
               key={message.id}
               message={message}
-              username={message.role === "user" ? leadName : userName}
+              username={
+                message.role === "user" ? leadBasic?.firstName! : user?.name!
+              }
             />
           ))}
           <div ref={bottomRef} className="pt-2" />

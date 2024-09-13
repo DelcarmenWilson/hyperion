@@ -1,7 +1,7 @@
-import ConversationClient from "./components/main/client";
+import ChatbotClient from "./components/main/client";
 
 const ConversationsPage = async () => {
-  return <ConversationClient />;
+  return <ChatbotClient />;
 };
 
 export default ConversationsPage;

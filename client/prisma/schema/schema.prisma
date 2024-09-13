@@ -133,6 +133,7 @@ model Appointment {
   label     String   @default("indigo")
   status    String   @default("Scheduled")
   comments  String?  @db.LongText
+  reason    String?  @db.LongText
 
   agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String

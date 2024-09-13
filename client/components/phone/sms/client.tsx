@@ -120,15 +120,8 @@ export const SmsClient = ({
           onSetDefaultNumber={setSelectedNumber}
         />
       </div>
-      {loading ? (
-        <Loader />
-      ) : (
-        <SmsBody
-          leadName={lead?.lastName as string}
-          userName={user?.name as string}
-        />
-      )}
-      <SmsForm lead={lead} />
+      {loading ? <Loader /> : <SmsBody />}
+      <SmsForm />
     </div>
   );
 };

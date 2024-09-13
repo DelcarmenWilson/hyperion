@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { scheduleTimes } from "@/formulas/schedule";
 
-export const BookClient = () => {
+const BookPage = () => {
   const [times, setTimes] = useState(scheduleTimes);
   const [selectedDate, setselectedDate] = useState(new Date());
   const [selectedTime, setselectedTime] = useState("");
@@ -67,3 +67,5 @@ export const BookClient = () => {
     </div>
   );
 };
+
+export default BookPage;

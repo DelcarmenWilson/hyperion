@@ -40,7 +40,7 @@ export const LeadSection = ({
             />
           </Button>
 
-          <Hint hint={hint}>
+          <Hint label={hint}>
             <Button
               variant="ghost"
               size="sm"

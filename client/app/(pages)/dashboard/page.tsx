@@ -15,7 +15,7 @@ const DashBoardPage = async () => {
   const user = await currentUser();
   return (
     <ScrollArea>
-      <div className="flex flex-col gap-4 py-4">
+      <div className="flex flex-col gap-4">
         <DashBoardClient />
         <QuoteClient />
         <AppointmentClient showLink />

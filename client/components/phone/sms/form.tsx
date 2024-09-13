@@ -4,10 +4,11 @@ import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
 
 import { userEmitter } from "@/lib/event-emmiter";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 import { Button } from "@/components/ui/button";
@@ -34,13 +35,13 @@ import { ImageGrid } from "@/components/reusable/image-grid";
 import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 import { FullLeadNoConvo } from "@/types";
-import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
 type SmsFormProps = {
   lead?: FullLeadNoConvo;
 };
-export const SmsForm = ({ lead }: SmsFormProps) => {
+export const SmsForm = () => {
   const { user, templates } = useGlobalContext();
+  const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [attachment, setAttachment] = useState<string[]>([]);

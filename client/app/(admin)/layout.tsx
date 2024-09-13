@@ -1,6 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
+import { usersGetAllChat } from "@/actions/user";
 
 import SocketContextComponent from "@/providers/socket-component";
 
@@ -22,7 +23,7 @@ import {
   userTemplatesGetAllByUserId,
 } from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/data/schedule";
+import { scheduleGetByUserId } from "@/actions/schedule";
 import {
   appointmentLabelsGetAllByUserId,
   appointmentsGetAllByUserId,
@@ -30,8 +31,6 @@ import {
 
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { getTwilioToken } from "@/actions/twilio";
-import { usersGetAllChat } from "@/actions/user";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
@@ -70,23 +69,17 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
           <div className="flex flex-col flex-1">
             <NavBar />
             <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
-              <ScrollArea className="pr-2">
-                <PhoneContextProvider
-                  initVoicemails={voicemails}
-                  token={token!}
+              <PhoneContextProvider initVoicemails={voicemails} token={token!}>
+                <AppointmentContextComponent
+                  initSchedule={schedule!}
+                  initAppointments={appointments}
+                  initLabels={appointmentLabels}
                 >
-                  <AppointmentContextComponent
-                    initSchedule={schedule!}
-                    initAppointments={appointments}
-                    initLabels={appointmentLabels}
-                  >
-                    {children}
-                  </AppointmentContextComponent>
-                </PhoneContextProvider>
-                <ChatDrawer />
-                <LoginStatusModal />
-                {/* </div> */}
-              </ScrollArea>
+                  {children}
+                </AppointmentContextComponent>
+              </PhoneContextProvider>
+              <ChatDrawer />
+              <LoginStatusModal />
             </div>
           </div>
         </div>

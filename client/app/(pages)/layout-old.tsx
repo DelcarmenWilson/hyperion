@@ -24,7 +24,7 @@ import {
   userTemplatesGetAllByUserId,
 } from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/data/schedule";
+import { scheduleGetByUserId } from "@/actions/schedule";
 import {
   appointmentLabelsGetAllByUserId,
   appointmentsGetAllByUserId,

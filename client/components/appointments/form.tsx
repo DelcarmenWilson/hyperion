@@ -22,17 +22,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import SkeletonWrapper from "../skeleton-wrapper";
 import { Textarea } from "@/components/ui/textarea";
 
-import {
-  formatDate,
-  formatDateTime,
-  formatTimeZone,
-  getYesterday,
-} from "@/formulas/dates";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import SkeletonWrapper from "../skeleton-wrapper";
+import { formatDateTime, formatTimeZone, getYesterday } from "@/formulas/dates";
 
 export const AppointmentForm = () => {
   const {
@@ -91,7 +84,50 @@ export const AppointmentForm = () => {
               </div>
             )}
 
-            {/* SMS REMINDER */}
+            {/* DATE*/}
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="text-center py-2">
+                  <Popover open={calOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[280px] justify-start text-left font-normal gap-2",
+                          !field.value && "text-muted-foreground"
+                        )}
+                        onClick={() => setCalOpen((state) => !state)}
+                      >
+                        <CalendarIcon size={16} />
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <FormControl>
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(e) => onDateSelected(e!)}
+                          disabled={(date) =>
+                            date <= getYesterday() ||
+                            date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </FormControl>
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              )}
+            />
+
+            {/* BOOKING TIME */}
             <FormField
               control={form.control}
               name="localDate"
@@ -133,49 +169,6 @@ export const AppointmentForm = () => {
                       </p>
                     )}
                   </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* DATE*/}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="text-center py-2">
-                  <Popover open={calOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[280px] justify-start text-left font-normal gap-2",
-                          !field.value && "text-muted-foreground"
-                        )}
-                        onClick={() => setCalOpen((state) => !state)}
-                      >
-                        <CalendarIcon size={16} />
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <FormControl>
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(e) => onDateSelected(e!)}
-                          disabled={(date) =>
-                            date <= getYesterday() ||
-                            date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </FormControl>
-                    </PopoverContent>
-                  </Popover>
                 </FormItem>
               )}
             />

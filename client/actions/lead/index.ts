@@ -162,10 +162,10 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         conversations: { where: { agentId: user.id } },
         userId: true,
         sharedUserId: true,
-        state:true,
-        appointments:{where:{status:"Scheduled"}},
-        cellPhone:true,
-        defaultNumber:true
+        state: true,
+        appointments: { where: { status: "Scheduled" } },
+        cellPhone: true,
+        defaultNumber: true,
       },
     });
     return lead;
@@ -451,8 +451,8 @@ export const leadGetOrCreateByPhoneNumber = async (
   let lastName = "Lead";
 
   //Geta new TextCode a code based on lead infomation
-  const textCode = await getNewTextCode(firstName, lastName, cellPhone);//Get titan (autoChat) from chat settings
-  const titan=await chatSettingGetTitan(agentId)
+  const textCode = await getNewTextCode(firstName, lastName, cellPhone); //Get titan (autoChat) from chat settings
+  const titan = await chatSettingGetTitan(agentId);
 
   //Create a new Lead
   const newLead = await db.lead.create({
@@ -483,7 +483,7 @@ export const leadGetOrCreateByPhoneNumber = async (
       userId: agentId,
       status: "New",
       textCode,
-      titan
+      titan,
     },
   });
 
@@ -561,7 +561,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
     //Get a new new Text code
     const textCode = await getNewTextCode(firstName, lastName, cellPhone);
     //Get titan (autoChat) from chat settings
-    const titan=await chatSettingGetTitan(user.id)
+    const titan = await chatSettingGetTitan(user.id);
 
     newLead = await db.lead.create({
       data: {
@@ -582,7 +582,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         height: "",
         weight: "",
         textCode,
-        titan
+        titan,
       },
     });
   }
@@ -712,7 +712,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           assistantId,
           notes,
           textCode,
-          titan
+          titan,
         },
       });
     }
@@ -955,6 +955,7 @@ export const leadUpdateByIdGeneralInfo = async (
   leadActivityInsert(leadInfo.id!, "general", "General info updated", user.id);
   return { success: leadInfo as LeadGeneralSchemaType };
 };
+
 export const leadUpdateByIdPolicyInfo = async (
   values: LeadPolicySchemaType
 ) => {
@@ -1329,6 +1330,83 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
 };
 
 //HELPER FUNCTIONS
+export const leadGetOrInsert = async (
+  values: LeadSchemaType,
+  agentId: string
+) => {
+  //Validate the data passed in
+  const validatedFields = LeadSchema.safeParse(values);
+  //If the validation failed return an error and exit the function
+  if (!validatedFields.success) return { error: "Invalid fields!" };
+
+  //Destucture the data for easy manipulation
+  const {
+    id,
+    firstName,
+    lastName,
+    state,
+    cellPhone,
+    gender,
+    maritalStatus,
+    email,dateOfBirth
+  } = validatedFields.data;
+
+  //Get the leads information if it already exist in the database
+  const oldLead = await db.lead.findFirst({
+    where: { OR: [{ cellPhone: reFormatPhoneNumber(cellPhone) }, { id }] },
+  });
+  //If lead information was found in the database return the leads id and exit the function
+  if (oldLead) return { success: oldLead };
+
+  //Get the state (USA) data based on the leads state
+  const st = states.find((e) => e.state == state || e.abv == state);
+  //Get a list of Phonnumbers associated with the agents account
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId, status: { not: "Deactive" } },
+  });
+  //Get the default number from the list of phonNumbers
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  //Get the number that matches the leads state
+  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+  //Get new textCode
+  const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+  //Get titan (autoChat) from chat settings
+  const titan = await chatSettingGetTitan(agentId);
+  //Try to insert the data in the database to create the lead
+  const lead = await db.lead.create({
+    data: {
+      firstName,
+      lastName,
+      address:"N/A",
+      city:"N/A",
+      zipCode:"N/A",
+      state: st?.abv || state,
+      cellPhone: reFormatPhoneNumber(cellPhone),
+      gender,
+      maritalStatus,
+      email,
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      userId: agentId,
+      dateOfBirth,
+      height: "",
+      weight: "",
+      textCode,
+      titan,
+
+
+
+      
+     
+      
+     
+      
+    },
+  });
+  //if the lead was not generated return an error and exit the function
+  if (!lead) return { error: "Could not create lead!" };
+  //If everything passed return the lead id for the inserted record
+  return { success: lead };
+};
 
 export const getNewTextCode = async (
   firstName: string,
