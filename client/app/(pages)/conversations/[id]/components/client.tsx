@@ -35,8 +35,8 @@ const ConversationClient = () => {
           <SmsBody />
         </SkeletonWrapper>
         <SkeletonWrapper isLoading={isFetchingConversation}>
-          {/* <SmsForm /> */}
-          <FormInput placeholder="Your Message..." />
+          <SmsForm />
+          {/* <FormInput placeholder="Your Message..." /> */}
         </SkeletonWrapper>
       </CardContent>
     </Card>
