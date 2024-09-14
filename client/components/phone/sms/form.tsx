@@ -7,10 +7,12 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
+import { FullLeadNoConvo } from "@/types";
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -34,17 +36,13 @@ import {
 import { ImageGrid } from "@/components/reusable/image-grid";
 import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
-import { FullLeadNoConvo } from "@/types";
 
-type SmsFormProps = {
-  lead?: FullLeadNoConvo;
-};
 export const SmsForm = () => {
   const { user, templates } = useGlobalContext();
   const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
-
   const [attachment, setAttachment] = useState<string[]>([]);
+  const { leadId, conversationId } = useLeadStore();
 
   const form = useForm<SmsMessageSchemaType>({
     resolver: zodResolver(SmsMessageSchema),

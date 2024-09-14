@@ -41,7 +41,6 @@ export async function POST(req: Request) {
     where: { phoneNumber: sms.from },
   });
 
-  // if from number and to number both belong to the agent
   //TODO - neeed to reintergrate this functionality
   // if (agent && agentNumber?.agentId == agent.userId) {
   //   //Start Agent to Lead Message Process
