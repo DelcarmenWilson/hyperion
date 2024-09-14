@@ -32,8 +32,8 @@ export const PhoneDialerModal = () => {
 
   const indexRef = useRef<HTMLDivElement>(null);
 
-  const setIndex = (reset: boolean = false) => {
-    const idx = reset ? 0 : pipIndex + 1;
+  const setIndex = (number: number = 0) => {
+    let idx = number == 0 ? 0 : pipIndex + number;
     onSetIndex(idx);
     if (!leads) return;
     onSetLead(leads[idx]);
@@ -73,7 +73,7 @@ export const PhoneDialerModal = () => {
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden pointer-events-none ">
-          <div className="flex flex-col w-full h-full overflow-hidden pointer-events-none py-5 px-20 items-center">
+          <div className="flex flex-col w-full h-full overflow-hidden pointer-events-none items-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-500"
@@ -83,7 +83,7 @@ export const PhoneDialerModal = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Panel className="pointer-events-auto w-full h-full overflow-hidden  m-4">
+              <Dialog.Panel className="pointer-events-auto w-full h-full overflow-hidden">
                 <div className="flex flex-col justify-between gap-2 overflow-hidden h-full bg-background p-2 shadow-xl rounded-md text-sm">
                   <DialerMenu setIndex={setIndex} />
 

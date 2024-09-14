@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
-import { FullLeadNoConvo } from "@/types";
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 
 import { Button } from "@/components/ui/button";
@@ -42,7 +41,6 @@ export const SmsForm = () => {
   const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [attachment, setAttachment] = useState<string[]>([]);
-  const { leadId, conversationId } = useLeadStore();
 
   const form = useForm<SmsMessageSchemaType>({
     resolver: zodResolver(SmsMessageSchema),
