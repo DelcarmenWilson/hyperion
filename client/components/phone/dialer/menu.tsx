@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
+  ArrowLeftCircle,
   ArrowRightCircle,
   Mic,
   MicOff,
@@ -10,10 +11,9 @@ import {
   X,
 } from "lucide-react";
 import { MdDialpad } from "react-icons/md";
-import { toast } from "sonner";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone, usePhoneData } from "@/hooks/use-phone";
+import { usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import { Button } from "@/components/ui/button";
@@ -22,16 +22,18 @@ import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { DialerSettingsType } from "@/types";
 import { DialerSettings } from "./settings";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useDialerStore } from "../hooks/use-dialer";
+import { SmsDrawer } from "./sms-drawer";
 
 type Props = {
-  setIndex: (e?: boolean) => void;
+  setIndex: (idx: number) => void;
 };
 export const DialerMenu = ({ setIndex }: Props) => {
   const user = useCurrentUser();
 
   const { phone } = usePhoneContext();
   const {
-    call,
     lead,
     leads,
     onPhoneConnect,
@@ -44,6 +46,8 @@ export const DialerMenu = ({ setIndex }: Props) => {
     pipeIndex,
     onPhoneDialerClose,
   } = usePhoneData(phone);
+  const {} = useLeadStore;
+  const { isSmsFormOpen, onSmsFormToggle } = useDialerStore();
 
   const [dialNumber, setDialNumber] = useState(1);
 
@@ -75,10 +79,14 @@ export const DialerMenu = ({ setIndex }: Props) => {
 
   const onNextLead = () => {
     setDialNumber(1);
-    setIndex();
+    setIndex(1);
+  };
+  const onPreviousLead = () => {
+    setDialNumber(1);
+    setIndex(-1);
   };
 
-  const onReset = () => setIndex(true);
+  const onReset = () => setIndex(0);
 
   return (
     <>
@@ -130,12 +138,21 @@ export const DialerMenu = ({ setIndex }: Props) => {
                 <RefreshCcw size={16} /> Reset
               </Button>
               <Button
+                disabled={pipeIndex == 0}
+                className="gap-2"
+                size="sm"
+                onClick={onPreviousLead}
+              >
+                <ArrowLeftCircle size={16} /> Previous Lead
+              </Button>
+              <Button
                 disabled={pipeIndex >= leads?.length! - 1}
                 className="gap-2"
                 size="sm"
-                onClick={() => onNextLead()}
+                onClick={onNextLead}
               >
-                <ArrowRightCircle size={16} /> Next Lead
+                Next Lead
+                <ArrowRightCircle size={16} />
               </Button>
 
               <Button className="gap-2" size="sm" onClick={onStartCall}>
@@ -146,11 +163,11 @@ export const DialerMenu = ({ setIndex }: Props) => {
           )}
         </div>
         <div className="flex gap-2 items-center">
-          <DialerSettings
+          {/* <DialerSettings
             disabled={isRunning}
             settings={settings}
             setSettings={setSettings}
-          />
+          /> */}
           <Button disabled={isRunning} size="sm" onClick={onPhoneDialerClose}>
             <X size={16} />
           </Button>
@@ -161,11 +178,20 @@ export const DialerMenu = ({ setIndex }: Props) => {
           Stage: {pipeline?.name} - {pipeIndex + 1} of {leads?.length} Leads
         </span>
 
-        <span>Call # {dialNumber}</span>
+        <div className="flex gap-2 items-center">
+          <span>Call # {dialNumber}</span>
+          <Button
+            variant={isSmsFormOpen ? "default" : "outlineprimary"}
+            onClick={onSmsFormToggle}
+          >
+            Sms Form
+          </Button>
+        </div>
         <span className="text-primary font-bold">
           {formatSecondsToTime(time)}
         </span>
       </div>
+      <SmsDrawer />
     </>
   );
 };

@@ -68,7 +68,7 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
           <SideBar />
           <div className="flex flex-col flex-1">
             <NavBar />
-            <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
+            <div className="flex flex-col flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
               <PhoneContextProvider initVoicemails={voicemails} token={token!}>
                 <AppointmentContextComponent
                   initSchedule={schedule!}
