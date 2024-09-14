@@ -1,69 +1,70 @@
-"use client";
 import { User } from "lucide-react";
+import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useLeadData } from "@/hooks/lead/use-lead";
-
 import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { ActivityClient } from "./components/activity-log/client";
-import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
-import { ConditionsClient } from "@/components/lead/conditions/client";
+import { LeadTabsClient } from "./components/tabs-client";
+import { LeadClient } from "./components/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
-import { CommunicationClient } from "./components/communication/client";
+import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PrevNextMenu } from "@/components/lead/prev-next-menu";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { ConditionsClient } from "@/components/lead/conditions/client";
 
-const LeadsPage = () => {
-  const user = useCurrentUser();
-  const { leadBasic, prevNext, isFetchingnextPrev } = useLeadData();
-  if (!leadBasic) return null;
+import { LeadHeader } from "@/components/lead/header";
+import { AssistantForm } from "@/components/lead/forms/assistant-form";
+import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
+import { PolicyInfoForm } from "@/components/lead/forms/policy-info-form";
+import { ShareForm } from "@/components/lead/forms/share-form";
+import { TransferForm } from "@/components/lead/forms/transfer-form";
+import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
-  if (![leadBasic.userId, leadBasic.sharedUserId].includes(user?.id!)) {
+const LeadsPage = async ({ params }: { params: { id: string } }) => {
+  const lead = await leadGetById(params.id);
+  const user = await currentUser();
+  if (!lead) return null;
+
+  if (![lead.userId, lead.sharedUserId].includes(user?.id!)) {
     redirect("/leads");
   }
+  const prevNext = await leadGetPrevNextById(params.id);
   return (
     <PageLayout
       icon={User}
-      title={`View Lead - ${leadBasic.firstName}`}
+      title={`View Lead - ${lead.firstName}`}
       topMenu={
-        <SkeletonWrapper isLoading={isFetchingnextPrev}>
-          <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
-        </SkeletonWrapper>
+        <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
       }
-      cardClass="h-full"
-      contentClass="!p-1 flex"
-      scroll={false}
     >
-      <Tabs
-        defaultValue="comunication"
-        className="flex flex-col flex-1 h-full overflow-hidden"
-      >
-        <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none bg-primary/25">
-          <TabsTrigger value="comunication">Comunication</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+      <Tabs defaultValue="general" className="h-full">
+        <LeadHeader lead={lead} />
+        <PolicyInfoForm />
+        <ShareForm />
+        <TransferForm />
+        <IntakeForm />
+        <AssistantForm />
+        <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
+          <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
           <TabsTrigger value="conditions">Conditions</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
-        <div className="flex-1 h-full overflow-hidden">
-          <TabsContent value="comunication" className="h-full">
-            <CommunicationClient />
-          </TabsContent>
-          <TabsContent value="activity" className="h-full">
-            <ActivityClient />
-          </TabsContent>
-          <TabsContent value="beneficiaries" className="h-full">
-            <BeneficiariesClient />
-          </TabsContent>
-          <TabsContent value="conditions" className="h-full">
-            <ConditionsClient />
-          </TabsContent>
-          <TabsContent value="expenses" className="h-full flex flex-col">
-            <ExpensesClient />
-          </TabsContent>
-        </div>
+
+        <TabsContent value="general">
+          <LeadClient />
+        </TabsContent>
+        <TabsContent value="beneficiaries">
+          <BeneficiariesClient />
+        </TabsContent>
+        <TabsContent value="conditions">
+          <ConditionsClient />
+        </TabsContent>
+        <TabsContent value="expenses">
+          <ExpensesClient />
+        </TabsContent>
+        <TabsContent value="activity">
+          <LeadTabsClient lead={lead} />
+        </TabsContent>
       </Tabs>
     </PageLayout>
   );

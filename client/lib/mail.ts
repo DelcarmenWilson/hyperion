@@ -44,19 +44,21 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 
 export const sendAppointmentInitialEmail = async (
   email: string,
-  orgName = "Strongside",
+  teamName = "Strongside",
   username: string,
   firstName: string,
   appId: string,
   dateTime: Date,
   cellPhone: string
 ) => {
+  const rescheduleLink = `${domain}/book/${username}/${appId}`;
+  const cancelLink = `${rescheduleLink}/cancel`;
   const newEmail = await resend.emails.send({
     from: `${username}@hperioncrm.com`,
     to: email,
     subject: "New Appointment",
     // html: `<p>Just a test</p>`,
-    react: AppInitailEmail({ orgName, firstName, appId, dateTime, cellPhone }),
+    react: AppInitailEmail({  teamName, firstName, dateTime, cellPhone,rescheduleLink,cancelLink }),
   });
   return newEmail;
 };

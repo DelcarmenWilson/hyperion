@@ -38,7 +38,7 @@ export const PhoneDialerModal = () => {
     if (!leads) return;
     onSetLead(leads[idx]);
     setLead(leads[idx].id);
-    pipelineUpdateByIdIndex(pipeline?.id!, idx);
+    pipelineUpdateByIdIndex({ id: pipeline?.id!, index: idx });
   };
 
   useEffect(() => {

@@ -232,6 +232,7 @@ export const convertAppointments = (result: any): Appointment[] => {
       leadId: d["leadId"],
       status: d["status"],
       comments: d["comments"],
+      reason: d["reason"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };

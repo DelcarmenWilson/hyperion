@@ -13,7 +13,7 @@ import { FullLead, FullLeadNoConvo } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { LeadStatusSelect } from "@/components/lead/select/status-select";
+import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
 
 type Props = {

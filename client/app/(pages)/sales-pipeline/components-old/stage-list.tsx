@@ -12,23 +12,42 @@ import { Button } from "@/components/ui/button";
 
 import { pipelineUpdateOrder } from "@/actions/pipeline";
 import { formatDate } from "@/formulas/dates";
-import {
-  usePipelineData,
-  usePipelineStageActions,
-} from "../hooks/use-pipelines";
 
-export const StageList = () => {
-  const { pipelines } = usePipelineData();
-  const {
-    buttonEnabled,
-    stages,
-    onStageUpdate,
-    onReorder,
-    onReset,
-    isPendingPipelineUpdateOrder,
-  } = usePipelineStageActions(pipelines!);
+export const StageList = ({ pipelines }: { pipelines: FullPipeline[] }) => {
+  const { setClose } = useModal();
+  const router = useRouter();
+  const [stages, setStages] = useState(pipelines);
+  const [loading, setLoading] = useState(false);
+  const [buttonEnabled, setButtonEnabled] = useState(false);
 
-  if (!stages) return null;
+  const onStageUpdate = async () => {
+    const list: { id: string; order: number }[] = stages.map(
+      (stage, index) => ({
+        id: stage.id,
+        order: index,
+      })
+    );
+    setLoading(true);
+    const updatePipeline = await pipelineUpdateOrder(list);
+    if (updatePipeline.success) {
+      toast.success(updatePipeline.success);
+      setButtonEnabled(false);
+      router.refresh();
+      setClose();
+    } else toast.error(updatePipeline.error);
+
+    setLoading(false);
+  };
+
+  const onReorder = (e: FullPipeline[]) => {
+    setStages(e);
+    setButtonEnabled(true);
+  };
+
+  const onReset = () => {
+    setButtonEnabled(false);
+    setStages(pipelines);
+  };
 
   return (
     <div>
@@ -49,17 +68,14 @@ export const StageList = () => {
         <div className="grid grid-cols-2 gap-2 mt-2">
           <Button
             className="gap-2"
-            disabled={isPendingPipelineUpdateOrder}
+            disabled={loading}
             variant="ghost"
             onClick={onReset}
           >
             <RefreshCcw size={16} />
             Reset
           </Button>
-          <Button
-            disabled={isPendingPipelineUpdateOrder}
-            onClick={onStageUpdate}
-          >
+          <Button disabled={loading} onClick={onStageUpdate}>
             Update
           </Button>
         </div>

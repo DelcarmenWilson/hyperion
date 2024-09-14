@@ -30,11 +30,14 @@ export const messagesGetAllByConversationId = async (
   return messages;
 };
 
-export const messageCreateInitial = async (leadId: string|null|undefined) => {
-  if(!leadId) return{
-    error :"Lead was not supplied!"
-  }
-  
+export const messageCreateInitial = async (
+  leadId: string | null | undefined
+) => {
+  if (!leadId)
+    return {
+      error: "Lead was not supplied!",
+    };
+
   const dbuser = await currentUser();
   //if user is not logged in, then return unathorized
   if (!dbuser) {
@@ -147,9 +150,8 @@ export const messageCreateInitial = async (leadId: string|null|undefined) => {
 
 export const messageCreate = async (values: SmsMessageSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) return { error: "unauthenticated!" };
+
   const validatedFields = SmsMessageSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };
 
@@ -164,9 +166,9 @@ export const messageCreate = async (values: SmsMessageSchemaType) => {
   let agentId = user.id;
 
   if (!convoid) {
-    if (user.role == "ASSISTANT") {
+    if (user.role == "ASSISTANT")
       agentId = (await userGetByAssistant(user.id)) as string;
-    }
+
     const existingConversation = await db.leadConversation.findUnique({
       where: { leadId_agentId: { leadId: lead.id, agentId } },
     });

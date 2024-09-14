@@ -16,7 +16,7 @@ const FormInput = ({ placeholder }: Props) => {
     image,
   }: {
     body: string;
-    image: File[] | null;
+    image: File | null;
   }) => {
     console.log(body, image);
   };

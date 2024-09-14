@@ -47,6 +47,7 @@ export const useLeadsData = () => {
   }, [initLeads]);
   return {
     leads,
+    initLeads,
     isFetchingLeads,
   };
 };

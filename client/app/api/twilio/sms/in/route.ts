@@ -123,19 +123,21 @@ export async function POST(req: Request) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
     await appointmentInsert({
+      date:new Date(),
       localDate: aptDate,
       startDate: aptDate,
       leadId: conversation.leadId,
       agentId: conversation.agentId,
       label: "blue",
       comments: "",
-      reminder: false,
+      smsReminder: false,
+      emailReminder:false
     });
 
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
     )}`;
-    await smsSend(sms.to, sms.from, appointmentMessage);
+    await smsSend({toPhone:sms.to, fromPhone:sms.from, message:appointmentMessage});
     return new NextResponse(
       `Appointment has been schedule for ${formatDateTime(aptDate)}`,
       { status: 200 }
@@ -146,7 +148,7 @@ export async function POST(req: Request) {
   const words = content.split;
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
-  const sid = (await smsSend(sms.to, sms.from, content, delay)).success;
+  const sid = (await smsSend({toPhone:sms.to, fromPhone:sms.from, message:content, timer:delay})).success;
 
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = (

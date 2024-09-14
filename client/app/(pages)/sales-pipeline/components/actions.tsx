@@ -1,6 +1,8 @@
 "use client";
 import { FilePenLine, MoreVertical, RefreshCcw, Trash } from "lucide-react";
+import { usePipelineStore } from "../hooks/use-pipelines";
 
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,46 +10,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { PipeLine } from "@prisma/client";
 
-type ActionProps = {
-  pipeline: PipeLine;
-  sendPipeline: (e: PipeLine, type: string) => void;
+type Props = {
+  pipelineId: string;
   onReset: () => void;
 };
 
-export const Actions = ({ pipeline, sendPipeline, onReset }: ActionProps) => {
+export const Actions = ({ pipelineId, onReset }: Props) => {
+  const { onFormOpen, onAlertOpen } = usePipelineStore();
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="gap-2" variant="ghost" size="icon">
-            <MoreVertical size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-60" align="center">
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer gap-2" onClick={onReset}>
-            <RefreshCcw size={16} />
-            Reset
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer gap-2"
-            onClick={() => sendPipeline(pipeline, "dialog")}
-          >
-            <FilePenLine size={16} />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer gap-2"
-            onClick={() => sendPipeline(pipeline, "alert")}
-          >
-            <Trash size={16} />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="gap-2" variant="ghost" size="icon">
+          <MoreVertical size={16} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-60" align="center">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer gap-2" onClick={onReset}>
+          <RefreshCcw size={16} />
+          Reset
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => onFormOpen("edit", pipelineId)}
+        >
+          <FilePenLine size={16} />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => onAlertOpen(pipelineId)}
+        >
+          <Trash size={16} />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

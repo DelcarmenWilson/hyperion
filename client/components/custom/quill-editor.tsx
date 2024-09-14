@@ -18,13 +18,13 @@ import EmojiPopover from "./emoji-popover";
 import Image from "next/image";
 
 type EditorValue = {
-  images: File[] | null;
+  image: File | null;
   body: string;
 };
 
 type Props = {
   variant?: "create" | "update";
-  onSubmit: ({ images, body }: EditorValue) => void;
+  onSubmit: ({ image, body }: EditorValue) => void;
   onCancel?: () => void;
   placeholder?: string;
   defaultValue?: Delta | Op[];
@@ -42,7 +42,7 @@ const QuillEditor = ({
   innerRef,
 }: Props) => {
   const [text, setText] = useState("");
-  const [images, setImages] = useState<FileList | null>(null);
+  const [image, setImage] = useState<File | null>(null);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -82,15 +82,15 @@ const QuillEditor = ({
               key: "Enter",
               handler: () => {
                 const text = quill.getText();
-                const addedImages = imageElementRef.current?.files || null;
+                const addedImage = imageElementRef.current?.files![0] || null;
                 const isEmpty =
-                  !addedImages &&
+                  !addedImage &&
                   text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
 
                 if (isEmpty) return;
                 const body = JSON.stringify(quill.getContents());
 
-                submitRef.current?.({ body, images: addedImages });
+                submitRef.current?.({ body, image: addedImage });
               },
             },
             shift_enter: {
@@ -142,34 +142,32 @@ const QuillEditor = ({
         accept="image/*"
         ref={imageElementRef}
         className="hidden"
-        onChange={(e) => setImages(e.target.files)}
+        onChange={(e) => setImage(e.target.files![0])}
       />
       <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
         <div ref={containerRef} className="h-full ql-custom" />
-        {!!images && (
+        {!!image && (
           <div className="p-2">
-            {images.map((image, i) => (
-              <div className="relative flex items-center justify-center size-[62px] group/image">
-                <Hint label="Remove image" side="top" align="end">
-                  <Button
-                    className="absolute -top-2.5 -right-2.5 hidden group-hover/image:flex rounded-full z-4"
-                    size="xxs"
-                    onClick={() => {
-                      setImages(null);
-                      imageElementRef.current!.value = "";
-                    }}
-                  >
-                    <X size={15} />
-                  </Button>
-                </Hint>
-                <Image
-                  className="rounded-xl overflow-hidden border object-cover"
-                  src={URL.createObjectURL(image)}
-                  alt="uploaded"
-                  fill
-                />
-              </div>
-            ))}
+            <div className="relative flex items-center justify-center size-[62px] group/image">
+              <Hint label="Remove image" side="top" align="end">
+                <Button
+                  className="absolute -top-2.5 -right-2.5 hidden group-hover/image:flex rounded-full z-4"
+                  size="xxs"
+                  onClick={() => {
+                    setImage(null);
+                    imageElementRef.current!.value = "";
+                  }}
+                >
+                  <X size={15} />
+                </Button>
+              </Hint>
+              <Image
+                className="rounded-xl overflow-hidden border object-cover"
+                src={URL.createObjectURL(image)}
+                alt="uploaded"
+                fill
+              />
+            </div>
           </div>
         )}
         <div className="flex ">
@@ -218,7 +216,7 @@ const QuillEditor = ({
                 onClick={() => {
                   onSubmit({
                     body: JSON.stringify(quillRef.current?.getContents()),
-                    images,
+                    image,
                   });
                 }}
               >
@@ -234,7 +232,7 @@ const QuillEditor = ({
               onClick={() => {
                 onSubmit({
                   body: JSON.stringify(quillRef.current?.getContents()),
-                  images,
+                  image,
                 });
               }}
             >

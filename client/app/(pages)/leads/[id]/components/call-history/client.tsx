@@ -1,67 +1,56 @@
 "use client";
-import { PhoneOutgoing } from "lucide-react";
-import { useLeadCallData } from "@/hooks/lead/use-call";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import { CallHistoryActions } from "@/components/callhistory/actions";
+import { Call } from "@prisma/client";
+import { FullCall } from "@/types";
+
+import { CallHistoryCard } from "./card";
+import { callsGetAllByLeadId } from "@/actions/call";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-import { getPhoneStatusText } from "@/formulas/phone";
-import { formatDateTime } from "@/formulas/dates";
-import { formatSecondsToTime } from "@/formulas/numbers";
+export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
+  const { data: calls, isFetching } = useQuery<FullCall[]>({
+    queryFn: () => callsGetAllByLeadId(leadId),
+    queryKey: ["leadCalls"],
+  });
+  //TODO find the other component that looks just like this one
+  useEffect(() => {
+    const callHandler = (newCall: Call) => {
+      //TODO - need to invalidate the quesry instead
+      // setCalls((current) => {
+      //   const existingCall = current.find((e) => e.id == newCall.id);
+      //   if (existingCall) {
+      //     current.shift();
+      //   }
+      //   return [newCall, ...current];
+      // });
+    };
 
-export const CallHistoryClient = () => {
-  const { calls, isFetchingCalls } = useLeadCallData();
-
+    return () => {};
+  }, []);
   return (
-    <div className="text-sm">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Direction</TableHead>
-            <TableHead>Duration</TableHead>
-            <TableHead>Date / Time</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <SkeletonWrapper isLoading={isFetchingCalls} fullWidth>
-          <TableBody>
+    <SkeletonWrapper isLoading={isFetching}>
+      <div className="text-sm">
+        <div className="grid grid-cols-5 items-center  gap-2 text-md text-muted-foreground">
+          <span>Direction</span>
+          <span>Duration</span>
+          <span className="col-span-2">Date / Time</span>
+          <span>Actions</span>
+        </div>
+
+        {calls?.length ? (
+          <>
             {calls?.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>
-                  <div className="flex gap-2 items-center">
-                    {call.direction.toLowerCase() === "inbound" ? (
-                      getPhoneStatusText(call.status as string)
-                    ) : (
-                      <>
-                        <PhoneOutgoing size={16} />
-                        {call.direction}
-                      </>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {call.duration && formatSecondsToTime(call.duration)}
-                </TableCell>
-                <TableCell> {formatDateTime(call.createdAt)}</TableCell>
-                <TableCell>
-                  <CallHistoryActions call={call} />
-                </TableCell>
-              </TableRow>
+              <CallHistoryCard key={call.id} call={call} />
             ))}
-          </TableBody>
-        </SkeletonWrapper>
-      </Table>
-      {!calls?.length && (
-        <p className="text-muted-foreground text-center mt-2">No calls found</p>
-      )}
-    </div>
+          </>
+        ) : (
+          <p className="text-muted-foreground text-center mt-2">
+            No calls found
+          </p>
+        )}
+      </div>
+    </SkeletonWrapper>
   );
 };

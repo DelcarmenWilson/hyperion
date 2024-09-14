@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Clock, Move } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
-import { usePhone } from "@/hooks/use-phone";
-import { usePipelineActions } from "../../hooks/use-pipelines";
-
-import { PipeLine } from "@prisma/client";
-import { FullLead } from "@/types";
-
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -16,20 +10,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LeadCard } from "../lead-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { FullLead } from "@/types";
 import { Actions } from "../actions";
+import { PipeLine } from "@prisma/client";
+import { usePhone } from "@/hooks/use-phone";
+import { pipelineUpdateByIdIndex } from "@/actions/pipeline";
 import { timeZones } from "@/constants/states";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PipelineCardProps = {
   pipeline: PipeLine;
   idx: number;
   initLeads: FullLead[];
+  sendPipeline: (e: PipeLine, type: string) => void;
 };
 export const PipelineCard = ({
   pipeline,
   idx,
   initLeads,
+  sendPipeline,
 }: PipelineCardProps) => {
   const { onPhoneDialerOpen } = usePhone();
   const [timeZone, setTimeZone] = useState("%");
@@ -39,11 +38,10 @@ export const PipelineCard = ({
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
   const controls = useDragControls();
-  const { onPipelineUpdateIndexSubmit } = usePipelineActions([]);
 
   const onReset = () => {
     setIndex(0);
-    onPipelineUpdateIndexSubmit(pipeline.id, 0);
+    pipelineUpdateByIdIndex({ id: pipeline.id, index: 0 });
   };
 
   useEffect(() => {
@@ -57,8 +55,9 @@ export const PipelineCard = ({
       dragListener={false}
       dragControls={controls}
       drag="x"
+      className="h-full w-full lg:w-[350px] shrink-0"
     >
-      <section className="flex flex-col border border-primary/50 shadow-inner h-[400px]">
+      <section className="flex flex-col border border-primary/50 h-full ">
         <div className="flex justify-between items-center bg-primary text-background px-2">
           <div className="flex flex-1 items-center gap-2">
             <Button
@@ -70,7 +69,11 @@ export const PipelineCard = ({
             </Button>
             <p>{pipeline.name}</p>
           </div>
-          <Actions pipelineId={pipeline.id} onReset={onReset} />
+          <Actions
+            pipeline={pipeline}
+            sendPipeline={sendPipeline}
+            onReset={onReset}
+          />
         </div>
         <Select onValueChange={setTimeZone} defaultValue="%">
           <SelectTrigger>

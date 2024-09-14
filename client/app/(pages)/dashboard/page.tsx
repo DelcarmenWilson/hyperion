@@ -33,9 +33,10 @@ const DashBoardPage = async () => {
         <SharedCallsClient columns={4} />
 
         {/* <AppInitailEmail
-          orgName="Strongside Financial"
+        username="wdelcarmen"
+          teamName="Strongside Financial"
           firstName="Wilson"
-          appId=""
+          appId="sssssssss"
           dateTime={new Date("12/24/23 21:17")}
           cellPhone="347-8030962"
         /> */}

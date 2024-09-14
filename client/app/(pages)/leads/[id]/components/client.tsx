@@ -1,6 +1,6 @@
 "use client";
 import { Pencil } from "lucide-react";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";
 import { GeneralInfoClient } from "@/components/lead/info/general";
@@ -12,19 +12,25 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { useEffect } from "react";
 
 export const LeadClient = () => {
+  const { setLeadId } = useLeadStore();
   const { edit, setEdit, defaultNumber, onSetDefaultNumber } = useLeadData();
+  const { leadId } = useLeadId();
+
+  useEffect(() => {
+    if (!leadId) return;
+    setLeadId(leadId);
+  }, [leadId]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
       <MainInfoClient noConvo={false} />
       <GeneralInfoClient showInfo />
       <CallInfo />
-      <NotesForm />
-
       <PolicyInfoClient />
+      <NotesForm />
       <div></div>
       <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>

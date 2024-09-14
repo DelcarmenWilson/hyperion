@@ -1,8 +1,6 @@
 "use server";
-import axios from "axios";
 
 import { db } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
 
 import { cfg, client } from "@/lib/twilio/config";
 
@@ -10,14 +8,10 @@ import { LeadAndConversation, TwilioSms } from "@/types";
 import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
 import {
   MessageSchemaType,
-  SmsMessageSchema,
-  SmsMessageSchemaType,
 } from "@/schemas/message";
 
 import { messageInsert } from "./lead/message";
 import { conversationInsert } from "./lead/conversation";
-import { userGetByAssistant } from "@/data/user";
-
 import {
   formatDateTimeZone,
   formatHyperionDate,

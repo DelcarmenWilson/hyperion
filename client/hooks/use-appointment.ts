@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
-import { userEmitter } from "@/lib/event-emmiter";
-import { useAppointmentContext } from "@/providers/app";
-import { useLeadData } from "./lead/use-lead";
 import { useCurrentUser } from "./use-current-user";
+import { useAppointmentContext } from "@/providers/app";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { FullAppointment } from "@/types";
+import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
 
 import {
   AppointmentSchema,
@@ -16,8 +16,8 @@ import {
 } from "@/schemas/appointment";
 
 import { timeDifference } from "@/formulas/dates";
-
 import { states } from "@/constants/states";
+
 import {
   breakDownSchedule,
   generateScheduleTimes,
@@ -51,18 +51,18 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
   onDetailsClose: () => set({ isDetailsOpen: false }),
 }));
 
-export const useAppointmentData = () => {
+export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
   const user = useCurrentUser();
-  const { isFormOpen, onFormClose } = useAppointmentStore();
   const { schedule, appointments, setAppointments } = useAppointmentContext();
-  const { leadBasic, isFetchingLeadBasic } = useLeadData();
-  const stateData = states.find((e) => e.abv == leadBasic?.state);
+  const { onFormClose } = useAppointmentStore();
+  const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
 
-  const [loading, setLoading] = useState(false);
   const [calOpen, setCalOpen] = useState(false);
   const [available, setAvailable] = useState(false);
   const [brSchedule] = useState<ScheduleDay[]>(breakDownSchedule(schedule!));
+  const defaultDate = new Date();
+  defaultDate.setMinutes(0);
 
   //APPOINTMENT VARIABLES
   const [times, setTimes] = useState<NewScheduleTimeType[]>();
@@ -75,7 +75,7 @@ export const useAppointmentData = () => {
       localDate: undefined,
       startDate: undefined,
       agentId: user?.id!,
-      leadId: leadBasic?.id!,
+      leadId: lead?.id!,
       label: "blue",
       comments: "",
       smsReminder: true,
@@ -85,7 +85,8 @@ export const useAppointmentData = () => {
 
   const onCancel = () => {
     form.clearErrors();
-    form.reset();
+    form.reset();    
+    onDateSelected(defaultDate);
     onFormClose();
   };
 
@@ -136,34 +137,40 @@ export const useAppointmentData = () => {
     form.setValue("startDate", tm ? tm.agentDate : undefined);
   };
 
-  const onSubmit = async (values: AppointmentSchemaType) => {
-    if (!values) return;
-    setLoading(true);
+   const { mutate: appointmentMutate, isPending: isPendingAppointment } =
+    useMutation({
+      mutationFn: appointmentInsert,
+      onSuccess: (result) => {
+        if (result.success) {
+          toast.success("Appointment scheduled!", {
+            id: "insert-appointent",
+          });
+          onCancel();
+        } else {
+          toast.success(result.error, {
+            id: "insert-appointent",
+          });
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
 
-    const insertedAppointment = await appointmentInsert(values);
-    if (insertedAppointment.success) {
-      userEmitter.emit(
-        "appointmentScheduled",
-        insertedAppointment.success.appointment
-      );
-      userEmitter.emit("messageInserted", insertedAppointment.success.message!);
-      toast.success("Appointment scheduled!");
-      onFormClose();
-    } else toast.error(insertedAppointment.error);
-
-    setLoading(false);
-  };
+  const onAppointmentSubmit = useCallback(
+    (values: AppointmentSchemaType) => {
+      const toastString = "Creating new Appointment...";
+      toast.loading(toastString, { id: "insert-appointent" });
+      appointmentMutate(values);
+    },
+    [appointmentMutate]
+  );
 
   useEffect(() => {
-    const date = new Date();
-    date.setMinutes(0);
-    onDateSelected(date);
+    onDateSelected(defaultDate);
   }, []);
 
   return {
-    leadBasic,
-    isFetchingLeadBasic,
-    loading,
     form,
     onCancel,
     onDateSelected,
@@ -172,9 +179,9 @@ export const useAppointmentData = () => {
     stateData,
     calOpen,
     setCalOpen,
-    isFormOpen,
     onFormClose,
     available,
-    onSubmit,
+    onAppointmentSubmit,
+    isPendingAppointment,
   };
 };

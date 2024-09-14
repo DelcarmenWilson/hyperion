@@ -11,6 +11,9 @@ import {
   Section,
   Text,
   Tailwind,
+  Heading,
+  Column,
+  Row,
 } from "@react-email/components";
 import { formatDate, formatTime } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
@@ -20,8 +23,10 @@ type AppReminderEmailProps = {
   resetLink: string;
 };
 
-// const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-const baseUrl = "https://hperioncrm.com";
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+// const baseUrl = "https://hperioncrm.com";
+//TODO - dont forget to remove this after testing has been completed
+const baseUrl2 = "https://hperioncrm.com";
 const main = {
   backgroundColor: "#ffffff",
   color: "#24292e",
@@ -117,34 +122,35 @@ export const AppReminderEmail = ({
 );
 
 type AppInitailEmailProps = {
-  orgName: string;
+  teamName: string;
   firstName: string;
-  appId: string;
   dateTime: Date;
   cellPhone: string;
+  rescheduleLink: string;
+  cancelLink: string;
 };
 
 export const AppInitailEmail = ({
-  orgName,
+  teamName,
   firstName,
-  appId,
   dateTime,
   cellPhone,
+  rescheduleLink,
+  cancelLink,
 }: AppInitailEmailProps) => {
   const date = formatDate(dateTime);
   const time = formatTime(dateTime);
-
   return (
     <Tailwind>
       <Preview>Appointment Reminder</Preview>
       <Body style={main}>
         <Container className="m-w-[480[px] m-0 mx-auto p-2">
-          <Section className="text-center p-2">
+          <Section className="text-center p-2 text-black">
             <Text className="font-bold text-center m-0 text-lg">
               Welcome to the Strongside
             </Text>
             <Text className="text-left m-0 mb-2">
-              You have an appointment schedule with {firstName} at {orgName}!
+              You have an appointment scheduled with {teamName}!
             </Text>
 
             <Text className="text-left m-0 mb-2">
@@ -157,8 +163,8 @@ export const AppInitailEmail = ({
             <Text className="text-left m-0">
               <b>Time:</b> {time} EDT
             </Text>
-            <Text className="text-left m-b-2">
-              <b>Location:</b> Phone Call: We will call you at your number{" "}
+            <Text className="text-left m-0 mb-2">
+              <b>Location:</b> Phone Call - We will call you at your number{" "}
               {formatPhoneNumber(cellPhone)}
             </Text>
 
@@ -178,7 +184,7 @@ export const AppInitailEmail = ({
 
             <Text>
               <Link
-                href=""
+                href={rescheduleLink}
                 className="text-[14px] bg-[#0f1b8c] text-white p-2 rounded-lg"
               >
                 Reschedule Appointment
@@ -186,7 +192,7 @@ export const AppInitailEmail = ({
             </Text>
             <Text>
               <Link
-                href=""
+                href={cancelLink}
                 className="text-[14px] bg-[#0f1b8c] text-white p-2 rounded-lg"
               >
                 Cancel Appointment
@@ -194,22 +200,84 @@ export const AppInitailEmail = ({
             </Text>
 
             <Text>Talk to you soon!</Text>
-            <Text className="font-bold">- {orgName} Team</Text>
+            <Text className="font-bold italic">- {teamName} Team</Text>
           </Section>
-          <Text className="flex justify-center items-center gap-2">
-            <Link className="text-[12px] text-[#0366d6]">unsubscribe</Link>
-          </Text>
 
-          <Text className="flex justify-center items-center gap-1 text-[12px] text-color-[#6a737d] mt-15">
-            <Img
-              src={`${baseUrl}/logo3.png`}
-              width="20"
-              height="20"
-              alt="Hyperion"
-            />
-            {orgName}, Inc.{"・"}120 Eagle Rock Ave #210{"・"}East Hanover, NJ
-            07936
-          </Text>
+          {/* <Section className="text-center bg-gray-100 "> */}
+          <table className="w-full bg-gray-100 ">
+            <tr className="w-full">
+              <td align="center" className="p-4 pb-0">
+                <Img
+                  alt="Hyperion logo"
+                  height={42}
+                  width={42}
+                  src={`${baseUrl2}/logo3.png`}
+                />
+              </td>
+            </tr>
+            <tr className="w-full">
+              <td align="center" className="text-[16px] leading-3">
+                <Text className="m-0 font-semibold text-gray-900">
+                  Hyperion Inc.
+                </Text>
+                <Text className="m-0 text-gray-500">
+                  Solutions that just work
+                </Text>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                {/* <Row className="table-cell h-[44px] w-[56px] align-bottom">
+                    <Column className="pr-[8px]">
+                      <Link href="#">
+                        <Img
+                          alt="Facebook"
+                          height="36"
+                          src="/static/facebook-logo.png"
+                          width="36"
+                        />
+                      </Link>
+                    </Column>
+                    <Column className="pr-[8px]">
+                      <Link href="#">
+                        <Img
+                          alt="X"
+                          height="36"
+                          src="/static/x-logo.png"
+                          width="36"
+                        />
+                      </Link>
+                    </Column>
+                    <Column>
+                      <Link href="#">
+                        <Img
+                          alt="Instagram"
+                          height="36"
+                          src="/static/instagram-logo.png"
+                          width="36"
+                        />
+                      </Link>
+                    </Column>
+                  </Row> */}
+                <Text className="mt-[8px] text-[16px] leading-[24px] text-gray-500 px-4">
+                  This email was intended for {firstName}.{" "}
+                  <Link className="text-indigo-600 underline">unsubscribe</Link>{" "}
+                  from private messages, or visit your settings to manage what
+                  emails Hyperion sends you.
+                </Text>
+              </td>
+            </tr>
+            <tr>
+              <td
+                align="center"
+                className="text-[16px] font-semibold leading-3 text-gray-500 pb-4"
+              >
+                <Text className="m-0">20 Eagle Rock Ave #210</Text>
+                <Text className="m-0 leading-3">East Hanover, NJ 07936</Text>
+              </td>
+            </tr>
+          </table>
+          {/* </Section> */}
         </Container>
       </Body>
     </Tailwind>

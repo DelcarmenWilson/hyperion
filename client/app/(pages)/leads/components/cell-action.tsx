@@ -6,15 +6,9 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { toast } from "sonner";
 
-import {
-  Calendar,
-  Copy,
-  Eye,
-  MessageCircle,
-  MoreHorizontal,
-  Trash,
-} from "lucide-react";
+import { Calendar, Copy, Eye, MoreHorizontal, Trash } from "lucide-react";
 
+import { FullLead } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +17,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
 
-import { AlertModal } from "@/components/modals/alert";
-import { smsCreateInitial } from "@/actions/sms";
-import { FullLead } from "@/types";
+import { messageCreateInitial } from "@/actions/lead/message";
 
 interface CellActionProps {
   data: FullLead;
@@ -41,7 +34,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onStartConversation = async () => {
     // toast.success(data.id);
     // return;
-    const insertedSms = await smsCreateInitial(data.id);
+    const insertedSms = await messageCreateInitial(data.id);
 
     if (insertedSms?.success) {
       toast.error(insertedSms.success);

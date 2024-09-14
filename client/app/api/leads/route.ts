@@ -74,6 +74,7 @@ export async function POST(req: Request) {
         dateOfBirth,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
         userId: user.id,
+        textCode:""
       },
     });
 
