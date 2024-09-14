@@ -1,9 +1,6 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLeadBeneficiaryActions } from "@/hooks/lead/use-beneficiary";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,52 +24,60 @@ import { states } from "@/constants/states";
 import { Textarea } from "@/components/ui/textarea";
 
 import { Gender } from "@prisma/client";
-
 import {
   LeadBeneficiarySchema,
   LeadBeneficiarySchemaType,
 } from "@/schemas/lead";
 import { LeadBeneficiary } from "@prisma/client";
-import {
-  leadBeneficiaryInsert,
-  leadBeneficiaryUpdateById,
-} from "@/actions/lead/beneficiary";
 
-type BeneficiaryFormProps = {
-  leadId?: string;
-  beneficiary?: LeadBeneficiary;
-  onClose: () => void;
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { DrawerRight } from "@/components/custom/drawer-right";
+
+export const BeneficiaryForm = () => {
+  const {
+    leadId,
+    beneficiary,
+    isFetchingBeneficiary,
+    isBeneficiaryFormOpen,
+    onBeneficiaryFormClose,
+    onBeneficiarySubmit,
+    isBeneficiaryPending,
+  } = useLeadBeneficiaryActions();
+
+  return (
+    <DrawerRight
+      title="New Beneficiary"
+      isOpen={isBeneficiaryFormOpen}
+      onClose={onBeneficiaryFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingBeneficiary}>
+        <BeneForm
+          loading={isBeneficiaryPending}
+          leadId={leadId}
+          beneficiary={beneficiary}
+          onSubmit={onBeneficiarySubmit}
+          onClose={onBeneficiaryFormClose}
+        />
+      </SkeletonWrapper>
+    </DrawerRight>
+  );
 };
 
-export const BeneficiaryForm = ({
+type BeneFormProps = {
+  loading: boolean;
+  leadId?: string;
+  beneficiary?: LeadBeneficiary | null;
+  onSubmit: (values: LeadBeneficiarySchemaType) => void;
+  onClose: () => void;
+};
+const BeneForm = ({
+  loading,
   leadId,
   beneficiary,
+  onSubmit,
   onClose,
-}: BeneficiaryFormProps) => {
-  const queryClient = useQueryClient();
-  const btnTitle = beneficiary ? "Update" : "Add";
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: beneficiary ? leadBeneficiaryUpdateById : leadBeneficiaryInsert,
-    onSuccess: () => {
-      const toastString = beneficiary
-        ? "Beneficiary updated successfully"
-        : "Beneficiary created successfully";
-
-      toast.success(toastString, {
-        id: "insert-update-beneficiary",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadBeneficiaries", `lead-${leadId}`],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+}: BeneFormProps) => {
+  const btnTitle = beneficiary ? "Update" : "Create";
 
   const form = useForm<LeadBeneficiarySchemaType>({
     resolver: zodResolver(LeadBeneficiarySchema),
@@ -87,18 +92,6 @@ export const BeneficiaryForm = ({
     form.reset();
     onClose();
   };
-
-  const onSubmit = useCallback(
-    (values: LeadBeneficiarySchemaType) => {
-      const toastString = beneficiary
-        ? "Updating Beneficiary..."
-        : "Creating Beneficiary...";
-      toast.loading(toastString, { id: "insert-update-beneficiary" });
-
-      mutate(values);
-    },
-    [mutate]
-  );
 
   return (
     <div>
@@ -121,7 +114,7 @@ export const BeneficiaryForm = ({
                     </FormLabel>
                     <Select
                       name="ddlType"
-                      disabled={isPending}
+                      disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -152,7 +145,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="Son"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         type="text"
                       />
@@ -174,7 +167,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="50%"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         type="text"
                       />
@@ -196,7 +189,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="John"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         type="text"
                       />
@@ -219,7 +212,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="Doe"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -239,7 +232,7 @@ export const BeneficiaryForm = ({
                     </FormLabel>
                     <Select
                       name="ddlGender"
-                      disabled={isPending}
+                      disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -271,7 +264,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="Dob"
-                        disabled={isPending}
+                        disabled={loading}
                         type="date"
                         autoComplete="DateOfBirth"
                       />
@@ -294,7 +287,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="555-555-5555"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -316,7 +309,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         type="email"
                       />
@@ -339,7 +332,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="565856985"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         type="text"
                       />
@@ -362,7 +355,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="123 main street"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -384,7 +377,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="Queens"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -404,7 +397,7 @@ export const BeneficiaryForm = ({
                     </FormLabel>
                     <Select
                       name="ddlState"
-                      disabled={isPending}
+                      disabled={loading}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       autoComplete="off"
@@ -440,7 +433,7 @@ export const BeneficiaryForm = ({
                       <Input
                         {...field}
                         placeholder="15468"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="postal-code"
                       />
                     </FormControl>
@@ -462,7 +455,7 @@ export const BeneficiaryForm = ({
                       <Textarea
                         {...field}
                         placeholder="notes"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         rows={10}
                       />
@@ -476,7 +469,7 @@ export const BeneficiaryForm = ({
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={loading} type="submit">
               {btnTitle}
             </Button>
           </div>

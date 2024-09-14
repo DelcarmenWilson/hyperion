@@ -1,7 +1,7 @@
 "use client";
 import { Reply, Share } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { useLead } from "@/hooks/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ type Props = {
 };
 export const LeadFilterDropDown = ({ leadIds, onClose }: Props) => {
   const role = useCurrentRole();
-  const { onShareFormOpen, onTransferFormOpen } = useLead();
+  const { onShareFormOpen, onTransferFormOpen } = useLeadStore();
   const isAssistant = role == "ASSISTANT";
   const leadFullName = `Multiple Leads (${leadIds.length})`;
 

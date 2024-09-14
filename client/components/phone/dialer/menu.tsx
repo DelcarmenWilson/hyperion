@@ -5,6 +5,7 @@ import {
   Mic,
   MicOff,
   Phone,
+  PhoneCall,
   RefreshCcw,
   X,
 } from "lucide-react";
@@ -22,37 +23,28 @@ import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { DialerSettingsType } from "@/types";
 import { DialerSettings } from "./settings";
 
-type DialerMenuProps = {
+type Props = {
   setIndex: (e?: boolean) => void;
 };
-export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
+export const DialerMenu = ({ setIndex }: Props) => {
   const user = useCurrentUser();
+
+  const { phone } = usePhoneContext();
   const {
     call,
-    isRunning,
-    time,
-    setTime,
-    isCallMuted,
-    onCallMutedToggle,
-    onPhoneConnect,
-    onPhoneDisconnect,
-    onPhoneDialerClose,
-    leads,
     lead,
+    leads,
+    onPhoneConnect,
+    onDisconnect,
+    time,
+    isRunning,
+    isCallMuted,
+    onCallMuted,
     pipeline,
     pipeIndex,
-  } = usePhone();
-  const { phone } = usePhoneContext();
-  const data = usePhoneData(
-    phone,
-    call,
-    isCallMuted,
-    onCallMutedToggle,
-    () => {},
-    onPhoneDisconnect,
-    isRunning,
-    setTime
-  );
+    onPhoneDialerClose,
+  } = usePhoneData(phone);
+
   const [dialNumber, setDialNumber] = useState(1);
 
   // PHONE VARIABLES
@@ -60,12 +52,8 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     matrix: 3,
     pause: 5,
   });
-  const [stop, setStop] = useState(false);
 
-  const startCall = async (keepDialing: boolean = true) => {
-    if (!keepDialing) {
-      return;
-    }
+  const onStartCall = async () => {
     if (!phone || !lead || !user) return;
 
     // getting default no. for that lead
@@ -80,55 +68,9 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
       },
     });
 
-    call.on("hangup", onCallDisconnect);
-    call.on("disconnect", onCallDisconnect);
+    call.on("hangup", onDisconnect);
+    call.on("disconnect", onDisconnect);
     onPhoneConnect(call);
-  };
-  const onCallDisconnect = (e: any) => {
-    console.log(e);
-    call?.disconnect();
-    onPhoneDisconnect();
-    // if(stop) return;
-    // onNextCall();
-  };
-
-  const onNextCall = () => {
-    call?.disconnect();
-    let keepDialing = true;
-    setDialNumber((num) => {
-      const newNum = num + 1;
-      if (pipeIndex == leads?.length! - 1 && newNum > settings.matrix) {
-        keepDialing = false;
-        onStopDailing();
-        onReset();
-        toast.success("stage completed!");
-        return 1;
-      }
-      if (newNum > settings.matrix) {
-        setIndex();
-        return 1;
-      }
-      return newNum;
-    });
-
-    startCall(keepDialing);
-  };
-
-  const onCallMuted = () => {
-    if (!call) return;
-    onCallMutedToggle();
-    call.mute(!isCallMuted);
-  };
-
-  const onStartDialing = () => {
-    startCall();
-  };
-
-  const onStopDailing = () => {
-    call?.disconnect();
-    setStop(true);
-    onPhoneDisconnect();
-    startCall(false);
   };
 
   const onNextLead = () => {
@@ -136,9 +78,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
     setIndex();
   };
 
-  const onReset = () => {
-    setIndex(true);
-  };
+  const onReset = () => setIndex(true);
 
   return (
     <>
@@ -151,29 +91,7 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
           </span>
         </div>
         <div className="flex gap-2 items-start">
-          {!isRunning && (
-            <>
-              <Button
-                variant="outlineprimary"
-                size="sm"
-                className="gap-2"
-                onClick={onReset}
-              >
-                <RefreshCcw size={16} /> Reset
-              </Button>
-              <Button
-                disabled={pipeIndex >= leads?.length! - 1}
-                className="gap-2"
-                size="sm"
-                onClick={() => onNextLead()}
-              >
-                <ArrowRightCircle size={16} /> Next Lead
-              </Button>
-            </>
-          )}
-
-          {/* {call && ( */}
-          {isRunning && (
+          {isRunning ? (
             <>
               <Button
                 className="gap-2"
@@ -192,12 +110,37 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
                 )}
               </Button>
               <Button
+                className="gap-2"
                 variant="destructive"
+                size="sm"
+                onClick={onDisconnect}
+              >
+                <PhoneCall size={16} />
+                Hangup
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outlineprimary"
+                size="sm"
+                className="gap-2"
+                onClick={onReset}
+              >
+                <RefreshCcw size={16} /> Reset
+              </Button>
+              <Button
+                disabled={pipeIndex >= leads?.length! - 1}
                 className="gap-2"
                 size="sm"
-                onClick={onNextCall}
+                onClick={() => onNextLead()}
               >
-                <Phone size={16} /> Nex Call
+                <ArrowRightCircle size={16} /> Next Lead
+              </Button>
+
+              <Button className="gap-2" size="sm" onClick={onStartCall}>
+                <Phone size={16} />
+                Call
               </Button>
             </>
           )}
@@ -208,15 +151,6 @@ export const DialerMenu = ({ setIndex }: DialerMenuProps) => {
             settings={settings}
             setSettings={setSettings}
           />
-          {isRunning ? (
-            <Button variant="destructive" size="sm" onClick={onStopDailing}>
-              Stop Dialing
-            </Button>
-          ) : (
-            <Button size="sm" onClick={onStartDialing}>
-              Start Dialing
-            </Button>
-          )}
           <Button disabled={isRunning} size="sm" onClick={onPhoneDialerClose}>
             <X size={16} />
           </Button>

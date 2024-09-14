@@ -1,14 +1,14 @@
 "use server";
 
-import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import { db } from "@/lib/db";
+import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import {
   Appointment,
   Call,
   ChatSettings,
-  Conversation,
   Lead,
-  Message,
+  LeadConversation,
+  LeadMessage,
   PhoneNumber,
   Presets,
   Schedule,
@@ -85,8 +85,8 @@ export const initialAppointments = async (values: Appointment[]) => {
   };
 };
 
-export const initialConversations = async (values: Conversation[]) => {
-  const conversations = await db.conversation.createMany({
+export const initialConversations = async (values: LeadConversation[]) => {
+  const conversations = await db.leadConversation.createMany({
     data: values,
     skipDuplicates: true,
   });
@@ -95,8 +95,8 @@ export const initialConversations = async (values: Conversation[]) => {
   };
 };
 
-export const initialMessages = async (values: Message[]) => {
-  const messages = await db.message.createMany({
+export const initialMessages = async (values: LeadMessage[]) => {
+  const messages = await db.leadMessage.createMany({
     data: values,
     skipDuplicates: true,
   });
@@ -145,10 +145,10 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
       }
       
       const agent = await db.user.findUnique({ where: { id: agentId } });
-      if (!agent) {
+      if (!agent) 
         return message;
-      }
-      let conversation = await db.conversation.findUnique({
+      
+      let conversation = await db.leadConversation.findUnique({
         where: {
           leadId_agentId: {
             leadId:lead.id,
@@ -157,10 +157,9 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
         },
       });
       
-      console.log(conversation);
+     
       if (!conversation) {
-        console.log(lead.id,agent.id);
-        conversation = await db.conversation.create({
+        conversation = await db.leadConversation.create({
           data: {
             leadId:lead.id,
             agentId:agent.id,
@@ -173,7 +172,7 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
       if (!conversation) {
         return message;
       }
-      const newMessage = await db.message.create({
+      const newMessage = await db.leadMessage.create({
         data: {
           conversationId: conversation.id,
           content,
@@ -190,7 +189,7 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
 
       if (newMessage) {
         insertedMessages++;
-        await db.conversation.update({
+        await db.leadConversation.update({
           where: { id: newMessage.conversationId },
           data: {
             lastMessageId: newMessage.id,
@@ -219,11 +218,11 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
   //   } = message;
   //   const lead = await db.lead.findUnique({ where: { id: leadId } });
   //   if (lead) {
-  //     let conversation = await db.conversation.findFirst({
+  //     let conversation = await db.leadConversation.findFirst({
   //       where: { agentId, leadId },
   //     });
   //     if (!conversation) {
-  //       conversation = await db.conversation.create({
+  //       conversation = await db.leadConversation.create({
   //         data: {
   //           leadId,
   //           agentId,
@@ -234,7 +233,7 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
   //       createdConvos++;
   //     }
   //     if (conversation) {
-  //       const newMessage = await db.message.create({
+  //       const newMessage = await db.leadMessage.create({
   //         data: {
   //           //@ts-ignore
   //           conversationId: conversation.id,
@@ -252,7 +251,7 @@ export const initialDisasterMessages = async (values: DisasterType[]) => {
 
   //       if (newMessage) {
   //         insertedMessages++;
-  //         await db.conversation.update({
+  //         await db.leadConversation.update({
   //           where: { id: newMessage.conversationId },
   //           data: {
   //             lastMessageId: newMessage.id,

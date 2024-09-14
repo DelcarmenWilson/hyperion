@@ -1,16 +1,29 @@
 import { CardLayout } from "@/components/custom/layout/card";
-import React from "react";
 import { ChatsClient } from "./components/chats/client";
-
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 type Props = {
   children: React.ReactNode;
 };
-
 const ChatsLayout = ({ children }: Props) => {
   return (
     <CardLayout>
-      <ChatsClient />
-      {children}
+      <ResizablePanelGroup direction="horizontal" autoSaveId="rpg-chats">
+        <ResizablePanel defaultSize={20} minSize={20} maxSize={25}>
+          <ChatsClient />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel
+          className="relative flex flex-1 h-full overflow-hidden"
+          defaultSize={80}
+          maxSize={80}
+        >
+          {children}
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </CardLayout>
   );
 };

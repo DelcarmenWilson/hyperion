@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+
+import { MedicalCondition } from "@prisma/client";
+import { FullLeadMedicalCondition } from "@/types";
+import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,63 +28,99 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { FullLeadMedicalCondition } from "@/types";
-import { MedicalCondition } from "@prisma/client";
+import { DrawerRight } from "@/components/custom/drawer-right";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
+export const ConditionForm = () => {
+  const {
+    leadId,
+    isConditionFormOpen,
+    onConditionFormClose,
+    condition,
+    isFetchingCondition,
+    onConditionSubmit,
+    isConditionPending,
+  } = useLeadConditionActions();
 
-import {
-  leadConditionInsert,
-  leadConditionUpdateById,
-} from "@/actions/lead/condition";
-import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
+  // const onSubmit = async (values: LeadConditionSchemaType) => {
+  //   setLoading(true);
 
-type ConditionFormProps = {
+  //   if (leadId) {
+  //     leadConditionInsert(values).then((data) => {
+  //       if (data.success) {
+  //         userEmitter.emit("conditionInserted", data.success);
+  //         toast.success(" Condition Added!");
+  //         onClose();
+  //       }
+  //       if (data.error) {
+  //         form.reset();
+  //         toast.error(data.error);
+  //       }
+  //     });
+  //   } else {
+  //     leadConditionUpdateById(values).then((data) => {
+  //       if (data.success) {
+  //         userEmitter.emit("conditionUpdated", data.success);
+  //         toast.success(" Condition Updated!");
+  //         onClose();
+  //       }
+  //       if (data.error) {
+  //         toast.error(data.error);
+  //       }
+  //     });
+  //   }
+
+  //   setLoading(false);
+  // };
+
+  // useEffect(() => {
+  //   axios.post("/api/admin/conditions").then((response) => {
+  //     setConditions(response.data);
+  //   });
+  // }, []);
+  return (
+    <DrawerRight
+      title="New Condition"
+      isOpen={isConditionFormOpen}
+      onClose={onConditionFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingCondition}>
+        <CondForm
+          loading={isConditionPending}
+          leadId={leadId}
+          condition={condition}
+          onSubmit={onConditionSubmit}
+          onClose={onConditionFormClose}
+        />
+      </SkeletonWrapper>
+    </DrawerRight>
+  );
+};
+
+type CondFormProps = {
+  loading: boolean;
   leadId?: string;
-  condition?: FullLeadMedicalCondition;
+  condition?: FullLeadMedicalCondition | null;
+  onSubmit: (values: LeadConditionSchemaType) => void;
   onClose: () => void;
 };
 
-export const ConditionForm = ({
+const CondForm = ({
+  loading,
   leadId,
   condition,
+  onSubmit,
   onClose,
-}: ConditionFormProps) => {
-  const queryClient = useQueryClient();
-  const [conditions, setConditions] = useState<MedicalCondition[]>();
+}: CondFormProps) => {
   const btnTitle = condition ? "Update" : "Add";
 
-  const conditionsQuery = useQuery<MedicalCondition[]>({
-    queryKey: ["adminConditions"],
-    queryFn: () => adminMedicalConditionsGetAll(),
-  });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: condition ? leadConditionUpdateById : leadConditionInsert,
-    onSuccess: () => {
-      const toastString = condition
-        ? "Condition updated successfully"
-        : "Condition created successfully";
-
-      toast.success(toastString, {
-        id: "insert-update-condition",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadConditions", `lead-${leadId}`],
-      });
-
-      onCancel();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { adminConditions, isFetchingAdminConditions } =
+    useLeadConditionActions();
 
   const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
     //@ts-ignore
-    defaultValues: condition || {
+    defaultValues: leadCondition || {
       leadId: leadId,
       conditionId: "",
       diagnosed: "",
@@ -96,19 +133,7 @@ export const ConditionForm = ({
     form.reset();
     onClose();
   };
-  const onSubmit = useCallback(
-    (values: LeadConditionSchemaType) => {
-      const toastString = condition
-        ? "Updating Condition..."
-        : "Creating Condition...";
-      toast.loading(toastString, { id: "insert-update-condition" });
 
-      mutate(values);
-    },
-    [mutate]
-  );
-
-  // const onSubmit = async (values: LeadConditionSchemaType) => {
   //   setLoading(true);
 
   //   if (leadId) {
@@ -165,7 +190,7 @@ export const ConditionForm = ({
                     </FormLabel>
                     <Select
                       name="ddlCondition"
-                      disabled={conditionsQuery.isLoading}
+                      disabled={isFetchingAdminConditions}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -175,7 +200,7 @@ export const ConditionForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {conditionsQuery.data?.map((condition) => (
+                        {adminConditions?.map((condition) => (
                           <SelectItem key={condition.id} value={condition.id}>
                             {condition.name}
                           </SelectItem>
@@ -200,7 +225,7 @@ export const ConditionForm = ({
                       <Input
                         {...field}
                         placeholder="Diagnosed"
-                        disabled={isPending}
+                        disabled={loading}
                         type="date"
                         autoComplete="Diagnosed"
                       />
@@ -223,7 +248,7 @@ export const ConditionForm = ({
                       <Textarea
                         {...field}
                         placeholder="medications"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         rows={5}
                       />
@@ -246,7 +271,7 @@ export const ConditionForm = ({
                       <Textarea
                         {...field}
                         placeholder="notes"
-                        disabled={isPending}
+                        disabled={loading}
                         autoComplete="off"
                         rows={5}
                       />
@@ -260,7 +285,7 @@ export const ConditionForm = ({
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={isPending} type="submit">
+            <Button disabled={loading} type="submit">
               {btnTitle}
             </Button>
           </div>

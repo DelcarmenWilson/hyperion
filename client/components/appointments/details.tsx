@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useAppointment } from "@/hooks/use-appointment";
+import { useAppointmentStore } from "@/hooks/use-appointment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -26,7 +26,7 @@ import { appointmentUpdateByIdStatus } from "@/actions/appointment";
 
 export const AppointmentDetails = () => {
   const queryClient = useQueryClient();
-  const { isDetailsOpen, onDetailsClose, appointment } = useAppointment();
+  const { isDetailsOpen, onDetailsClose, appointment } = useAppointmentStore();
   const [status, setStatus] = useState(appointment?.status);
 
   const { mutate, isPending } = useMutation({

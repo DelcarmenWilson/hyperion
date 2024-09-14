@@ -1,3 +1,5 @@
+import { adminCarriersAndConditionsGet } from "@/actions/admin/carrier";
+import { Prisma } from "@prisma/client";
 import * as z from "zod";
 
 export const CarrierSchema = z.object({
@@ -70,7 +72,7 @@ export type HyperionLeadSchemaType = z.infer<typeof HyperionLeadSchema>;
 export const ammLeadSchema = z.object({  
   id: z.optional(z.string()),
   leadId:z.optional(z.string()),
-  addId: z.optional(z.string()),
+  adId: z.optional(z.string()),
   
   coverage:z.optional(z.string()),
   beneficiary: z.optional(z.string()),
@@ -104,3 +106,8 @@ export const PageUpdateSchema = z.object({
   description: z.string(),
 });
 export type PageUpdateSchemaType = z.infer<typeof PageUpdateSchema>;
+
+
+export type AdminCarrierAndConditionSchemaTypeP = Prisma.PromiseReturnType<
+  typeof adminCarriersAndConditionsGet
+>

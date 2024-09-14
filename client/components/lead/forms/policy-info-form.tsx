@@ -1,11 +1,11 @@
 "use client";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGlobalContext } from "@/providers/global";
-import { useLead, useLeadIntakeActions } from "@/hooks/use-lead";
+import { useLeadPolicyActions } from "@/hooks/lead/use-lead";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
+import { LeadPolicy } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -26,25 +26,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const PolicyInfoForm = () => {
-  const { carriers } = useGlobalContext();
   const {
-    leadId,
-    leadFullName,
-    policyInfo,
+    policy,
+    isFetchingPolicy,
+    onPolicySubmit,
     isPolicyFormOpen,
     onPolicyFormClose,
-  } = useLead();
+    policyIsPending,
+  } = useLeadPolicyActions();
+  if (!policy) return null;
 
-  const { policyIsPending, onPolicySubmit } = useLeadIntakeActions(
-    leadId!,
-    onPolicyFormClose
+  const leadName = `${policy.firstName} ${policy.firstName}`;
+  const policyInfo = policy.policy;
+  const assistant = policy.assistant;
+
+  return (
+    <Dialog open={isPolicyFormOpen} onOpenChange={onPolicyFormClose}>
+      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
+        <SkeletonWrapper isLoading={isFetchingPolicy}>
+          <h3 className="text-2xl font-semibold py-2">
+            Policy Info - <span className="text-primary">{leadName}</span>
+          </h3>
+        </SkeletonWrapper>
+        <SkeletonWrapper isLoading={isFetchingPolicy}>
+          <PolicyForm
+            policy={policyInfo}
+            leadId={policy.id}
+            loading={policyIsPending}
+            onSubmit={onPolicySubmit}
+            onClose={onPolicyFormClose}
+          />
+        </SkeletonWrapper>
+      </DialogContent>
+    </Dialog>
   );
+};
+
+type Props = {
+  policy: LeadPolicy | null;
+  leadId: string;
+  loading: boolean;
+  onSubmit: (values: LeadPolicySchemaType) => void;
+  onClose: () => void;
+};
+const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
+  const { carriers } = useGlobalContext();
 
   const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
-    defaultValues: policyInfo || {
+    //@ts-ignore
+    defaultValues: policy || {
       leadId: leadId,
     },
   });
@@ -52,167 +86,150 @@ export const PolicyInfoForm = () => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onPolicyFormClose();
+    onClose();
   };
-  useEffect(() => {
-    if (policyInfo) {
-      form.setValue("leadId", policyInfo.leadId);
-      form.setValue("carrier", policyInfo.carrier);
-      form.setValue("policyNumber", policyInfo.policyNumber);
-      form.setValue("status", policyInfo.status);
-      form.setValue("ap", policyInfo.ap);
-      form.setValue("commision", policyInfo.commision);
-      form.setValue("coverageAmount", policyInfo.coverageAmount);
-      form.setValue("startDate", policyInfo.startDate);
-    } else form.setValue("leadId", leadId!);
-  }, [leadId, policyInfo]);
 
   return (
-    <Dialog open={isPolicyFormOpen} onOpenChange={onPolicyFormClose}>
-      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
-        <h3 className="text-2xl font-semibold py-2">
-          Policy Info - <span className="text-primary">{leadFullName}</span>
-        </h3>
-        <div className="h-full overflow-y-auto">
-          <Form {...form}>
-            <form
-              className="space-y-2 px-2 w-full"
-              onSubmit={form.handleSubmit(onPolicySubmit)}
-            >
-              <div className="grid grid-cols-2 gap-2">
-                {/* CARRIER */}
-                <FormField
-                  control={form.control}
-                  name="carrier"
-                  render={({ field }) => (
-                    <FormItem className=" col-span-2">
-                      <FormLabel className="flex justify-between">
-                        Carrier
-                        <FormMessage />
-                      </FormLabel>
-                      <Select
-                        name="ddlCarrier"
-                        disabled={policyIsPending}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a carrier" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {carriers?.map((carrier) => (
-                            <SelectItem
-                              key={carrier.id}
-                              value={carrier.carrier.name}
-                            >
-                              {carrier.carrier.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+    <div className="h-full overflow-y-auto">
+      <Form {...form}>
+        <form
+          className="space-y-2 px-2 w-full"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="grid grid-cols-2 gap-2">
+            {/* CARRIER */}
+            <FormField
+              control={form.control}
+              name="carrier"
+              render={({ field }) => (
+                <FormItem className=" col-span-2">
+                  <FormLabel className="flex justify-between">
+                    Carrier
+                    <FormMessage />
+                  </FormLabel>
+                  <Select
+                    name="ddlCarrier"
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a carrier" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {carriers?.map((carrier) => (
+                        <SelectItem
+                          key={carrier.id}
+                          value={carrier.carrier.name}
+                        >
+                          {carrier.carrier.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
-                {/* COVERAGE AMOUNT */}
-                <FormField
-                  control={form.control}
-                  name="coverageAmount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Coverage Amount
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="flex-1"
-                          placeholder="7"
-                          disabled={policyIsPending}
-                          autoComplete="coverageAmount"
-                          type="number"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+            {/* COVERAGE AMOUNT */}
+            <FormField
+              control={form.control}
+              name="coverageAmount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Coverage Amount
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="flex-1"
+                      placeholder="7"
+                      disabled={loading}
+                      autoComplete="coverageAmount"
+                      type="number"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-                {/* POLICY NUMBER */}
-                <FormField
-                  control={form.control}
-                  name="policyNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Policy Number
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="EX2548745"
-                          disabled={policyIsPending}
-                          autoComplete="policyNumber"
-                          type="text"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                {/* STATUS */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Status
-                        <FormMessage />
-                      </FormLabel>
-                      <Select
-                        name="ddlStatus"
-                        disabled={policyIsPending}
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Approved">Approved</SelectItem>
-                          <SelectItem value="Declined">Declined</SelectItem>
-                          <SelectItem value="Pending">Pending</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+            {/* POLICY NUMBER */}
+            <FormField
+              control={form.control}
+              name="policyNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Policy Number
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="EX2548745"
+                      disabled={loading}
+                      autoComplete="policyNumber"
+                      type="text"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* STATUS */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Status
+                    <FormMessage />
+                  </FormLabel>
+                  <Select
+                    name="ddlStatus"
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Approved">Approved</SelectItem>
+                      <SelectItem value="Declined">Declined</SelectItem>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
-                {/* START DATE */}
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Start Date
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <ReactDatePicker
-                          selected={field.value}
-                          onChange={field.onChange}
-                          dateFormat="MM-d-yyyy"
-                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholderText="Select a Date"
-                        />
-                      </FormControl>
-                      {/* <Popover>
+            {/* START DATE */}
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Start Date
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <ReactDatePicker
+                      selected={field.value}
+                      onChange={field.onChange}
+                      dateFormat="MM-d-yyyy"
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholderText="Select a Date"
+                    />
+                  </FormControl>
+                  {/* <Popover>
                     <FormControl>
                       <div className="flex-1 relative">
                         <Input
@@ -239,72 +256,66 @@ export const PolicyInfoForm = () => {
                       />
                     </PopoverContent>
                   </Popover> */}
-                    </FormItem>
-                  )}
-                />
+                </FormItem>
+              )}
+            />
 
-                {/* AP */}
-                <FormField
-                  control={form.control}
-                  name="ap"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Ap
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="120"
-                          disabled={policyIsPending}
-                          autoComplete="ap"
-                          type="number"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                {/* COMMISION */}
-                <FormField
-                  control={form.control}
-                  name="commision"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex justify-between">
-                        Commision
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="52"
-                          disabled={policyIsPending}
-                          autoComplete="commision"
-                          type="number"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+            {/* AP */}
+            <FormField
+              control={form.control}
+              name="ap"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Ap
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="120"
+                      disabled={loading}
+                      autoComplete="ap"
+                      type="number"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* COMMISION */}
+            <FormField
+              control={form.control}
+              name="commision"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between">
+                    Commision
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="52"
+                      disabled={loading}
+                      autoComplete="commision"
+                      type="number"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-                <Button
-                  onClick={onCancel}
-                  type="button"
-                  variant="outlineprimary"
-                >
-                  Cancel
-                </Button>
-                <Button disabled={policyIsPending} type="submit">
-                  Update
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+            <Button onClick={onCancel} type="button" variant="outlineprimary">
+              Cancel
+            </Button>
+            <Button disabled={loading} type="submit">
+              Update
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };

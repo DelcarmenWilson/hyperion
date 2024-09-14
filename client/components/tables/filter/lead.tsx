@@ -5,7 +5,7 @@ import { Table } from "@tanstack/react-table";
 import { FullLead } from "@/types";
 import { Button } from "@/components/ui/button";
 import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
-import { LeadStatusSelect } from "@/components/lead/select/status-select";
+import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadVendorSelect } from "@/components/lead/select/vendor-select";
 import { LeadStateSelect } from "@/components/lead/select/state-select";
 

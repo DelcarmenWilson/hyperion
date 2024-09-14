@@ -36,7 +36,6 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en" suppressHydrationWarning>
-        {/* <body className={cn("bg-secondary", poppins.className)}> */}
         <body className={poppins.className}>
           <Toaster richColors position="bottom-right" />
           <RootProviders>{children}</RootProviders>

@@ -2,6 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
+import { FullLead } from "@/types";
 import {
   LeadExportSchemaType,
   LeadGeneralSchema,
@@ -22,30 +23,39 @@ import { states } from "@/constants/states";
 import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
-import { FullLead } from "@/types";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
+import { chatSettingGetTitan } from "../chat-settings";
 
 //LEAD
 
 //DATA
+// export const leadsGetAll = async () => {
+//   try {
+//     const leads = await db.lead.findMany({ include: { conversations: true } });
+
+//     return leads;
+//   } catch {
+//     return [];
+//   }
+// };
+
 export const leadsGetAll = async () => {
   try {
-    const leads = await db.lead.findMany({ include: { conversations: true } });
+    const user = await currentUser();
+    if (!user) {
+      return [];
+    }
 
-    return leads;
-  } catch {
-    return [];
-  }
-};
-
-export const leadsGetAllByAgentId = async (userId: string) => {
-  try {
     const leads = await db.lead.findMany({
       where: {
-        OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
+        OR: [
+          { userId: user.id },
+          { assistantId: user.id },
+          { sharedUserId: user.id },
+        ],
       },
       include: {
-        conversations: { where: { agentId: userId } },
+        conversations: { where: { agentId: user.id } },
         appointments: { where: { status: "scheduled" } },
         calls: true,
         activities: true,
@@ -134,6 +144,35 @@ export const leadGetById = async (id: string) => {
     return null;
   }
 };
+//SPLIT DATA FOR EASIER PROCESSING
+export const leadGetByIdBasicInfo = async (id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return null;
+    const lead = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        status: true,
+        calls: { where: { direction: "outbound" } },
+        conversations: { where: { agentId: user.id } },
+        userId: true,
+        sharedUserId: true,
+        state: true,
+        appointments: { where: { status: "Scheduled" } },
+        cellPhone: true,
+        defaultNumber: true,
+      },
+    });
+    return lead;
+  } catch {
+    return null;
+  }
+};
 export const leadGetByIdMain = async (id: string) => {
   try {
     const lead = await db.lead.findUnique({
@@ -166,17 +205,15 @@ export const leadGetByIdGeneral = async (id: string) => {
       where: {
         id,
       },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        gender: true,
-        maritalStatus: true,
-        dateOfBirth: true,
-        weight: true,
-        height: true,
-        income: true,
-        smoker: true,
+      include: {
+        appointments: {
+          where: { status: "Scheduled" },
+          orderBy: { startDate: "desc" },
+        },
+        calls: {
+          where: { status: "completed" },
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
     return lead;
@@ -184,10 +221,64 @@ export const leadGetByIdGeneral = async (id: string) => {
     return null;
   }
 };
+export const leadGetByIdPolicy = async (id: string) => {
+  try {
+    const leadPolicy = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        assistant: true,
+        policy: true,
+      },
+    });
+    return leadPolicy;
+  } catch {
+    return null;
+  }
+};
+export const leadGetByIdNotes = async (id: string) => {
+  try {
+    const leadNotes = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        sharedUser: true,
+      },
+    });
+    return leadNotes;
+  } catch {
+    return null;
+  }
+};
+export const leadGetByIdCallInfo = async (id: string) => {
+  try {
+    const leadNotes = await db.lead.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        status: true,
+        type: true,
+        calls: { where: { direction: "outbound" } },
+      },
+    });
+    return leadNotes;
+  } catch {
+    return null;
+  }
+};
 
 export const leadGetByConversationId = async (id: string) => {
   try {
-    const conversation = await db.conversation.findUnique({ where: { id } });
+    const conversation = await db.leadConversation.findUnique({
+      where: { id },
+    });
     if (!conversation) return null;
 
     const lead = await db.lead.findUnique({
@@ -245,60 +336,67 @@ export const leadGetPrevNextById = async (id: string) => {
     if (user.role == "ASSISTANT") {
       userId = (await userGetByAssistant(userId)) as string;
     }
-    const prev = (await db.lead.findMany({
-      take: 1,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        state: true,
-        dateOfBirth: true,
-      },
-      where: {
-        userId,
-        id: {
-          lt: id,
+    const prev = (
+      await db.lead.findMany({
+        take: 1,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          state: true,
+          dateOfBirth: true,
         },
-      },
-      orderBy: {
-        id: "desc",
-      },
-    }))[0];
+        where: {
+          userId,
+          id: {
+            lt: id,
+          },
+        },
+        orderBy: {
+          id: "desc",
+        },
+      })
+    )[0];
 
-    const next = (await db.lead.findMany({
-      take: 1,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        state: true,
-        dateOfBirth: true,
-      },
-      where: {
-        userId,
-        id: {
-          gt: id,
+    const next = (
+      await db.lead.findMany({
+        take: 1,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          state: true,
+          dateOfBirth: true,
         },
-      },
-      orderBy: {
-        id: "asc",
-      },
-    }))[0];
+        where: {
+          userId,
+          id: {
+            gt: id,
+          },
+        },
+        orderBy: {
+          id: "asc",
+        },
+      })
+    )[0];
 
     return {
-      prev:prev?
-        {
-          id: prev.id,
-          name: `${prev.firstName} ${prev.lastName}`,
-          state: prev.state,
-          age: getAge(prev.dateOfBirth),
-        } : null,
-      next:next?  {
-        id: next.id,
-        name: `${next.firstName} ${next.lastName}`,
-        state: next.state,
-        age: getAge(next.dateOfBirth),
-      }  :null,
+      prev: prev
+        ? {
+            id: prev.id,
+            name: `${prev.firstName} ${prev.lastName}`,
+            state: prev.state,
+            age: getAge(prev.dateOfBirth),
+          }
+        : null,
+      next: next
+        ? {
+            id: next.id,
+            name: `${next.firstName} ${next.lastName}`,
+            state: next.state,
+            age: getAge(next.dateOfBirth),
+          }
+        : null,
     };
   } catch {
     return null;
@@ -352,17 +450,9 @@ export const leadGetOrCreateByPhoneNumber = async (
   const firstName = "New";
   let lastName = "Lead";
 
-  //Generate a code based on lead infomation
-  let code = generateTextCode(firstName, lastName, cellPhone);
-
-  //Check if previously generate code already exist
-  const exisitingCode = await db.lead.findFirst({
-    where: { textCode: code },
-  });
-
-  //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
-  if (exisitingCode)
-    code = generateTextCode(firstName, lastName, cellPhone, true);
+  //Geta new TextCode a code based on lead infomation
+  const textCode = await getNewTextCode(firstName, lastName, cellPhone); //Get titan (autoChat) from chat settings
+  const titan = await chatSettingGetTitan(agentId);
 
   //Create a new Lead
   const newLead = await db.lead.create({
@@ -392,7 +482,8 @@ export const leadGetOrCreateByPhoneNumber = async (
       defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
       userId: agentId,
       status: "New",
-      textCode: code,
+      textCode,
+      titan,
     },
   });
 
@@ -467,17 +558,10 @@ export const leadInsert = async (values: LeadSchemaType) => {
       },
     });
   } else {
-    //TODO need to put this into its own function - the import function is also using this
-    ///Gnerate a new Text code
-    let code = generateTextCode(firstName, lastName, cellPhone);
-
-    //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
-    const exisitingCode = await db.lead.findFirst({
-      where: { textCode: code },
-    });
-    if (exisitingCode) {
-      code = generateTextCode(firstName, lastName, cellPhone, true);
-    }
+    //Get a new new Text code
+    const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+    //Get titan (autoChat) from chat settings
+    const titan = await chatSettingGetTitan(user.id);
 
     newLead = await db.lead.create({
       data: {
@@ -497,7 +581,8 @@ export const leadInsert = async (values: LeadSchemaType) => {
         userId: user.id,
         height: "",
         weight: "",
-        textCode: code,
+        textCode,
+        titan,
       },
     });
   }
@@ -589,16 +674,11 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
         },
       });
     } else {
-      ///Gnerate a new Text code
-      let code = generateTextCode(firstName, lastName, cellPhone);
+      //Get New Text Code
+      const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+      //Get titan (autoChat) from chat settings
+      const titan = await chatSettingGetTitan(user.id);
 
-      //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
-      const exisitingCode = await db.lead.findFirst({
-        where: { textCode: code },
-      });
-      if (exisitingCode) {
-        code = generateTextCode(firstName, lastName, cellPhone, true);
-      }
       await db.lead.create({
         data: {
           firstName,
@@ -631,7 +711,8 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           status,
           assistantId,
           notes,
-          textCode: code,
+          textCode,
+          titan,
         },
       });
     }
@@ -768,7 +849,13 @@ export const leadUpdateByIdType = async (leadId: string, type: string) => {
       type,
     },
   });
-  leadActivityInsert(leadId, "Type", "Type updated", user.id, existingLead.type);
+  leadActivityInsert(
+    leadId,
+    "Type",
+    "Type updated",
+    user.id,
+    existingLead.type
+  );
   return { success: "Lead type has been updated" };
 };
 
@@ -868,6 +955,7 @@ export const leadUpdateByIdGeneralInfo = async (
   leadActivityInsert(leadInfo.id!, "general", "General info updated", user.id);
   return { success: leadInfo as LeadGeneralSchemaType };
 };
+
 export const leadUpdateByIdPolicyInfo = async (
   values: LeadPolicySchemaType
 ) => {
@@ -940,7 +1028,12 @@ export const leadUpdateByIdPolicyInfo = async (
   }
 
   bluePrintWeekUpdateByUserIdData(user.id, "premium", diff);
-  leadActivityInsert(leadPolicyInfo.leadId, "sale", "policy info updated", user.id);
+  leadActivityInsert(
+    leadPolicyInfo.leadId,
+    "sale",
+    "policy info updated",
+    user.id
+  );
   return { success: leadPolicyInfo };
 };
 
@@ -1234,4 +1327,102 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
       tfUser.firstName
     }!`,
   };
+};
+
+//HELPER FUNCTIONS
+export const leadGetOrInsert = async (
+  values: LeadSchemaType,
+  agentId: string
+) => {
+  //Validate the data passed in
+  const validatedFields = LeadSchema.safeParse(values);
+  //If the validation failed return an error and exit the function
+  if (!validatedFields.success) return { error: "Invalid fields!" };
+
+  //Destucture the data for easy manipulation
+  const {
+    id,
+    firstName,
+    lastName,
+    state,
+    cellPhone,
+    gender,
+    maritalStatus,
+    email,dateOfBirth
+  } = validatedFields.data;
+
+  //Get the leads information if it already exist in the database
+  const oldLead = await db.lead.findFirst({
+    where: { OR: [{ cellPhone: reFormatPhoneNumber(cellPhone) }, { id }] },
+  });
+  //If lead information was found in the database return the leads id and exit the function
+  if (oldLead) return { success: oldLead };
+
+  //Get the state (USA) data based on the leads state
+  const st = states.find((e) => e.state == state || e.abv == state);
+  //Get a list of Phonnumbers associated with the agents account
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId, status: { not: "Deactive" } },
+  });
+  //Get the default number from the list of phonNumbers
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  //Get the number that matches the leads state
+  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+  //Get new textCode
+  const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+  //Get titan (autoChat) from chat settings
+  const titan = await chatSettingGetTitan(agentId);
+  //Try to insert the data in the database to create the lead
+  const lead = await db.lead.create({
+    data: {
+      firstName,
+      lastName,
+      address:"N/A",
+      city:"N/A",
+      zipCode:"N/A",
+      state: st?.abv || state,
+      cellPhone: reFormatPhoneNumber(cellPhone),
+      gender,
+      maritalStatus,
+      email,
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      userId: agentId,
+      dateOfBirth,
+      height: "",
+      weight: "",
+      textCode,
+      titan,
+
+
+
+      
+     
+      
+     
+      
+    },
+  });
+  //if the lead was not generated return an error and exit the function
+  if (!lead) return { error: "Could not create lead!" };
+  //If everything passed return the lead id for the inserted record
+  return { success: lead };
+};
+
+export const getNewTextCode = async (
+  firstName: string,
+  lastName: string,
+  cellPhone: string
+) => {
+  //Generate a code based on lead infomation
+  let code = generateTextCode(firstName, lastName, cellPhone);
+
+  //Check if previously generate code already exist
+  const exisitingCode = await db.lead.findFirst({
+    where: { textCode: code },
+  });
+
+  //If the textcode already exist in the db generate a new text code with the first 4 digitis of the phone number
+  if (exisitingCode)
+    code = generateTextCode(firstName, lastName, cellPhone, true);
+  return code;
 };

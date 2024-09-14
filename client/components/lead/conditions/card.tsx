@@ -14,54 +14,31 @@ import { ConditionForm } from "./form";
 
 import { leadConditionDeleteById } from "@/actions/lead/condition";
 import { formatDate } from "@/formulas/dates";
+import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 
 export const ConditionCard = ({
-  initCondition,
+  condition,
 }: {
-  initCondition: FullLeadMedicalCondition;
+  condition: FullLeadMedicalCondition;
 }) => {
-  const [condition, setCondition] = useState(initCondition);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const {
+    alertOpen,
+    setAlertOpen,
+    onConditionFormOpen,
+    onConditionDelete,
+    isPendingConditionDelete,
+  } = useLeadConditionActions();
 
-  const onDeleteCondition = () => {
-    setLoading(true);
-    leadConditionDeleteById(condition.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        userEmitter.emit("conditionDeleted", condition.id);
-        toast.success(data.success);
-      }
-    });
-    setAlertOpen(false);
-    setLoading(false);
-  };
-  useEffect(() => {
-    setCondition(initCondition);
-    const onConditionUpdated = (e: FullLeadMedicalCondition) => {
-      if (e.id == condition.id) setCondition(e);
-    };
-    userEmitter.on("conditionUpdated", (info) => onConditionUpdated(info));
-  }, [initCondition]);
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteCondition}
-        loading={loading}
+        onConfirm={() => onConditionDelete(condition.id)}
+        loading={isPendingConditionDelete}
         height="auto"
       />
-      <DrawerRight
-        title="Edit Beneficiary"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        <ConditionForm condition={condition} onClose={() => setIsOpen(false)} />
-      </DrawerRight>
+      <ConditionForm />
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">
           {condition.condition.name}
@@ -81,7 +58,9 @@ export const ConditionCard = ({
           >
             Delete
           </Button>
-          <Button onClick={() => setIsOpen(true)}>Edit</Button>
+          <Button onClick={() => onConditionFormOpen(condition.id)}>
+            Edit
+          </Button>
         </div>
       </div>
     </>

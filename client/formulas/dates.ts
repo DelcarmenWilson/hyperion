@@ -14,7 +14,7 @@ const defaultTime: string = "hh:mm aa";
 const defaultDateTime: string = `${defaultDate} ${defaultTime}`;
 //Get 1 day in milliseconds
 const ONE_DAY_MS = 1000 * 60 * 60;
-const ONE_MINUTE =  1000*60;
+const ONE_MINUTE = 1000 * 60;
 
 export const hyperionDate: string = "MMMM do yyyy";
 export const getAge = (dateOfBirth: any): string => {
@@ -75,14 +75,14 @@ export const getLocalTime = (abv: string) => {
 };
 
 export const getTommorrow = (): Date => {
-  let tommorrow = new Date();
+  const tommorrow = new Date();
   tommorrow.setHours(0, 0);
   tommorrow.setDate(tommorrow.getDate() + 1);
   return tommorrow;
 };
 
 export const getToday = (): Date => {
-  let today = new Date();
+  const today = new Date();
   today.setHours(0, 0);
   return today;
 };
@@ -110,7 +110,7 @@ export const getLast24hrs = (): Date => {
 
 //FORMAT DATE AND TIME
 export const formatDate = (
-  date: Date | string | undefined,
+  date: Date | string | undefined | null,
   retval: string = ""
 ): string => {
   if (!date) return retval;
@@ -213,8 +213,17 @@ export const timeDiff = function (date1: Date, date2: Date): number {
 
   // Calculate the difference in milliseconds
   const difference_ms = date2_ms - date1_ms;
-  console.log("date1",date1,"date2",date2,"date1_ms",date1_ms,"date2_ms",date2_ms)
+  console.log(
+    "date1",
+    date1,
+    "date2",
+    date2,
+    "date1_ms",
+    date1_ms,
+    "date2_ms",
+    date2_ms
+  );
 
   // Convert back to days and return
-  return Math.round(difference_ms / ONE_MINUTE) ;
+  return Math.round(difference_ms / ONE_MINUTE);
 };

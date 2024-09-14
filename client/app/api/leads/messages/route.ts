@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (user.role == "ASSISTANT") {
       agentId = (await userGetByAssistant(user.id)) as string;
     }
-    const conversation=await db.conversation.findFirst({where:{leadId,agentId},include:{messages:true}})
+    const conversation=await db.leadConversation.findFirst({where:{leadId,agentId},include:{messages:true}})
     if(!conversation)
     return NextResponse.json([]);
   

@@ -1,11 +1,6 @@
 import { db } from "@/lib/db";
 import { currentRole } from "@/lib/auth";
-
-import { UserRole } from "@prisma/client";
 import { userGetByAssistant } from "@/data/user";
-import { formatTimeZone, getEntireDay, getToday } from "@/formulas/dates";
-import { FullAppointment } from "@/types";
-import { states } from "@/constants/states";
 
 //APPOINTMENTS
 export const appointmentsGetAll = async () => {
@@ -39,25 +34,7 @@ export const appointmentsGetAllByUserId = async (userId: string) => {
 };
 
 
-export const appointmentsGetAllByUserIdUpcoming = async (
-  agentId: string,
-  role: UserRole = "USER"
-) => {
-  try {
-    if (role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(agentId)) as string;
-    }
-    const today = getToday();
 
-    const appointments = await db.appointment.findMany({
-      where: { agentId, status: "Scheduled", startDate: { gte: today } },
-    });
-
-    return appointments;
-  } catch {
-    return [];
-  }
-};
 
 //APPOINTMENT LABELS
 

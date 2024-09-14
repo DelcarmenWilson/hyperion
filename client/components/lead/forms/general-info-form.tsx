@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLead, useLeadGeneralInfoActions } from "@/hooks/use-lead";
+import { useLeadStore, useLeadGeneralInfoActions } from "@/hooks/lead/use-lead";
 
 import {
   LeadGeneralSchema,
@@ -33,9 +33,9 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Switch } from "@/components/ui/switch";
 
 export const GeneralInfoForm = () => {
-  const { isGeneralFormOpen, onGeneralFormClose } = useLead();
+  const { isGeneralFormOpen, onGeneralFormClose } = useLeadStore();
   const { generalInfo, isFetchingGeneralInfo, loading, onGeneralInfoUpdate } =
-    useLeadGeneralInfoActions();
+    useLeadGeneralInfoActions(onGeneralFormClose);
   if (!generalInfo) return null;
   return (
     <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>

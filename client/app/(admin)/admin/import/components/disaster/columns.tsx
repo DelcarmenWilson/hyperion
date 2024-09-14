@@ -3,10 +3,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Message } from "@prisma/client";
+import { LeadMessage } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
 
-export type DisasterType = Message & {
+export type DisasterType = LeadMessage & {
   agentId: string;
   leadId: string;
 };

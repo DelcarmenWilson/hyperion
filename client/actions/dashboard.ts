@@ -1,8 +1,8 @@
 "use server";
 import { db } from "@/lib/db";
-import { getEntireDay, getLast24hrs } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
-import { DashboardDataType } from "@/types/dashboard";
+import { getEntireDay } from "@/formulas/dates";
+
 //DATA
 export const dashboardGetAllCards = async () => {
   try {
@@ -28,7 +28,7 @@ export const dashboardGetAllCards = async () => {
       },
     });
 
-    const messages = await db.message.aggregate({
+    const messages = await db.leadMessage.aggregate({
       _count:{id:true},      
       where: {senderId:user.id,hasSeen:false },
     });

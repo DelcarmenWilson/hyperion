@@ -130,7 +130,7 @@ export const messagesGetByChatId = async (chatId: string) => {
 
 // export const messagesGetByAgentIdUnSeen = async (senderId: string) => {
 //   try {
-//     const messages = await db.message.aggregate({
+//     const messages = await db.leadMessage.aggregate({
 //       _count:{id:true},
 //       where: {senderId,hasSeen:false },
 //     });

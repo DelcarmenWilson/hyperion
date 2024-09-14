@@ -21,7 +21,7 @@ export const ConditionsList = ({
           )}
         >
           {conditions.map((condition) => (
-            <ConditionCard key={condition.id} initCondition={condition} />
+            <ConditionCard key={condition.id} condition={condition} />
           ))}
         </div>
       ) : (

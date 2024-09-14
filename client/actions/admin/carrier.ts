@@ -2,6 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { CarrierSchema, CarrierSchemaType } from "@/schemas/admin";
+import { adminMedicalConditionsGetAll } from "./medical";
 
 //CARRIER
 //DATA
@@ -22,6 +23,16 @@ export const adminCarrierGetById = async (id: string) => {
     return null;
   }
 };
+export const adminCarriersAndConditionsGet= async()=> {
+
+  const carriers=await adminCarriersGetAll()
+  const conditions=  await adminMedicalConditionsGetAll()
+
+  return {
+     carriers,
+     conditions
+  };
+}
 //ACTIONS
 export const adminCarrierInsert = async (values: CarrierSchemaType) => {
   const user = await currentUser();

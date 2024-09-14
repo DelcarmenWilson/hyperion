@@ -1,12 +1,12 @@
 import { cn } from "@/lib/utils";
+import { Ban, Check, CheckCheck, LucideIcon, X } from "lucide-react";
 import Image from "next/image";
+
+import { LeadMessage } from "@prisma/client";
 import { formatDistance } from "date-fns";
 
-import { Message } from "@prisma/client";
-import { Ban, Check, CheckCheck, LucideIcon, X } from "lucide-react";
-
 type MessageCardProps = {
-  message: Message;
+  message: LeadMessage;
   username: string;
 };
 

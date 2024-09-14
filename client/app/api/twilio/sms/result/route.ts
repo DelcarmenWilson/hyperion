@@ -8,12 +8,12 @@ export async function POST(req: Request) {
 
   const j: any = formatObject(body);
 
-  const message = await db.message.findFirst({ where: { sid: j.smsSid } });
+  const message = await db.leadMessage.findFirst({ where: { sid: j.smsSid } });
 
   if (message && j.smsStatus != "sent") {
     const results = (await client.messages.get(j.smsSid).fetch()).toJSON();
 
-    await db.message.update({
+    await db.leadMessage.update({
       where: { id: message.id },
       data: {
         status: j.smsStatus,

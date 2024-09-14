@@ -2,71 +2,72 @@
 import Link from "next/link";
 
 import { FilePenLine, MessageSquare } from "lucide-react";
+import { useLeadStore, useLeadMainInfoActions } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";
-
 import { CopyButton } from "@/components/reusable/copy-button";
 import { FieldBox } from "../field-box";
 
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatPhoneNumber } from "@/formulas/phones";
 
-import { LeadMainSchemaType } from "@/schemas/lead";
-import { useLead, useLeadMainInfoActions } from "@/hooks/use-lead";
-
 type MainInfoProps = {
-  info: LeadMainSchemaType;
   noConvo: boolean;
   showInfo?: boolean;
   showEdit?: boolean;
 };
 export const MainInfoClient = ({
-  info,
   noConvo,
   showInfo = false,
   showEdit = true,
 }: MainInfoProps) => {
-  const { onMainFormOpen } = useLead();
-  const { initConvo, onLeadUpdateByIdQuote, onLeadSendInitialSms } =
+  const { onMainFormOpen } = useLeadStore();
+  const { mainInfo, isFetchingMainInfo, initConvo, onLeadUpdateByIdQuote } =
     useLeadMainInfoActions(() => {}, noConvo);
 
+  if (!mainInfo) return null;
+
   return (
-    <>
-      <div className="space-y-1 text-sm">
+    <div className="space-y-1 text-sm">
+      <SkeletonWrapper isLoading={isFetchingMainInfo}>
         {showInfo && (
-          <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+          <p className="font-semibold text-lg">{`${mainInfo.firstName} ${mainInfo.lastName}`}</p>
         )}
         <p className="flex items-center gap-2 text-primary">
           {showInfo ? (
-            <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
-              {formatPhoneNumber(info.cellPhone)}
+            <Link
+              className="font-extrabold italic"
+              href={`/leads/${mainInfo.id}`}
+            >
+              {formatPhoneNumber(mainInfo.cellPhone)}
             </Link>
           ) : (
             <span className="font-extrabold italic">
-              {formatPhoneNumber(info.cellPhone)}
+              {formatPhoneNumber(mainInfo.cellPhone)}
             </span>
           )}
-          <CopyButton value={info.cellPhone} message="Lead phone#" />
-          <span>{info.textCode}</span>
+          <CopyButton value={mainInfo.cellPhone} message="Lead phone#" />
+          <span>{mainInfo.textCode}</span>
         </p>
         <div className="relative group">
-          <p>{info.email}</p>
+          <p>{mainInfo.email}</p>
 
-          {info.address != "N/A" ? (
+          {mainInfo.address != "N/A" ? (
             <address>
-              <p>{info.address}</p>
-              <p>{`${info.city}, ${info.state} ${info.zipCode}`}</p>
+              <p>{mainInfo.address}</p>
+              <p>{`${mainInfo.city}, ${mainInfo.state} ${mainInfo.zipCode}`}</p>
             </address>
           ) : (
             <address>
               <p>No Address</p>
-              <p>State: {info.state}</p>
+              <p>State: {mainInfo.state}</p>
             </address>
           )}
 
           {showEdit && (
             <Button
               className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => onMainFormOpen(info.id)}
+              onClick={() => onMainFormOpen(mainInfo.id)}
             >
               <FilePenLine size={16} />
             </Button>
@@ -74,25 +75,25 @@ export const MainInfoClient = ({
         </div>
         <FieldBox
           name="Quote"
-          field={info.quote!}
+          field={mainInfo.quote!}
           onFieldUpdate={onLeadUpdateByIdQuote}
         />
-
-        <div>
+        {/* TODO dont forget to remove after moving this button to the send sms box */}
+        {/* <div>
           {!initConvo && (
             <Button
               className="gap-2"
-              disabled={info.status == "Do_Not_Call"}
+              disabled={mainInfo.status == "Do_Not_Call"}
               variant="outlineprimary"
               size="xs"
-              onClick={onLeadSendInitialSms}
+              onClick={() => onLeadSendInitialSms()}
             >
               <MessageSquare size={16} />
               SEND SMS
             </Button>
           )}
-        </div>
-      </div>
-    </>
+        </div> */}
+      </SkeletonWrapper>
+    </div>
   );
 };

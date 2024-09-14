@@ -29,7 +29,7 @@ export const AudienceClient = () => {
       text="New Audience"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
   const onAudienceCreated = (e?: CampaignAudience) => {

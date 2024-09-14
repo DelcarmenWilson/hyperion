@@ -57,7 +57,7 @@ export const PhoneDrawer = ({
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute indent-0 overflow-hidden">
             <div className="fixed inset-y-0 right-[415px] flex max-w-full">
-              <div className="flex flex-1 justify-start relative overflow-hidden ">
+              <div className="flex flex-1 justify-start relative overflow-hidden w-[calc(100vw-500px)] ">
                 <div
                   className={cn(
                     "relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",

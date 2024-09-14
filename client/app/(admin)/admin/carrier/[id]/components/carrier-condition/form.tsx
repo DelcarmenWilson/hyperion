@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 
 import {
+  AdminCarrierAndConditionSchemaTypeP,
   CarrierConditionSchema,
   CarrierConditionSchemaType,
 } from "@/schemas/admin";
@@ -36,7 +37,7 @@ import {
   adminCarrierConditionUpdateById,
 } from "@/actions/admin/carrier-condition";
 import { FullCarrierCondition } from "@/types";
-import { GetCarriersAndConditionsResponseType } from "@/app/api/admin/carrier-conditions/route";
+import { adminCarriersAndConditionsGet } from "@/actions/admin/carrier";
 
 type CarrierConditionFormProps = {
   carrierCondition?: FullCarrierCondition;
@@ -48,10 +49,9 @@ export const CarrierConditionForm = ({
 }: CarrierConditionFormProps) => {
   const [loading, setLoading] = useState(false);
 
-  const ccQuery = useQuery<GetCarriersAndConditionsResponseType>({
+  const ccQuery = useQuery<AdminCarrierAndConditionSchemaTypeP>({
+    queryFn: () => adminCarriersAndConditionsGet(),
     queryKey: ["adminCarriersConditions"],
-    queryFn: () =>
-      fetch("/api/admin/carrier-conditions").then((res) => res.json()),
   });
 
   const form = useForm<CarrierConditionSchemaType>({

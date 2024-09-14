@@ -1,28 +1,35 @@
+"use client";
 import { UserSquare } from "lucide-react";
-import { currentUser } from "@/lib/auth";
+import { usePipelineData } from "./hooks/use-pipelines";
 
 import { PageLayout } from "@/components/custom/layout/page";
 import { TopMenu } from "./components/top-menu";
-import { SalesClient } from "./components/client";
-import { leadsGetAllByAgentId } from "@/actions/lead";
-import { pipelineGetAllByAgentId } from "@/actions/pipeline";
 
-const SalesPage = async () => {
-  const user = await currentUser();
+import { EmptyCard } from "@/components/reusable/empty-card";
+import { PipeLineList } from "./components/pipeline/list";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { PipelineForm } from "./components/pipeline/form";
 
-  if (!user) return null;
-  const leads = await leadsGetAllByAgentId(user.id!);
-  const pipelines = await pipelineGetAllByAgentId();
-  //TODO - need to add react query to this page
+const SalesPage = () => {
+  const { pipelines, isFetchingPipelines, leads } = usePipelineData();
+  if (!pipelines || !leads) return;
   return (
-    <PageLayout
-      contentClass="!p-2"
-      title="Sales Pipeline"
-      icon={UserSquare}
-      topMenu={<TopMenu pipelines={pipelines} />}
-      scroll={false}
-    >
-      <SalesClient leads={leads} pipelines={pipelines} />
+    <PageLayout title="Sales Pipeline" icon={UserSquare} topMenu={<TopMenu />}>
+      {/* <SkeletonWrapper isLoading={isFetchingPipelines} fullHeight fullWidth> */}
+      {pipelines.length > 0 ? (
+        <PipeLineList
+          leads={leads}
+          initPipelines={pipelines}
+          loading={isFetchingPipelines}
+        />
+      ) : (
+        <EmptyCard
+          title="No Stages Available"
+          subTitle="Please add a new stage"
+        />
+      )}
+      {/* </SkeletonWrapper> */}
+      <PipelineForm />
     </PageLayout>
   );
 };

@@ -29,15 +29,7 @@ import { PhoneLeadInfo } from "./addins/lead-info";
 
 export const PhoneInModal = () => {
   const {
-    call,
-    isRunning,
-    isCallMuted,
-    onCallMutedToggle,
-    time,
-    setTime,
     isOnCall,
-    onPhoneInConnect,
-    onPhoneDisconnect,
     isPhoneInOpen,
     onPhoneInOpen,
     onSetLead,
@@ -47,20 +39,13 @@ export const PhoneInModal = () => {
   } = usePhone();
   const { phone } = usePhoneContext();
   const {
+    isCallMuted,
+    time,
     onDisconnect,
     onCallMuted,
     onIncomingCallAccept,
     onIncomingCallReject,
-  } = usePhoneData(
-    phone,
-    call,
-    isCallMuted,
-    onCallMutedToggle,
-    onPhoneInConnect,
-    onPhoneDisconnect,
-    isRunning,
-    setTime
-  );
+  } = usePhoneData(phone);
   const [agent, setAgent] = useState("");
 
   // PHONE VARIABLES

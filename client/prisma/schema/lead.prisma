@@ -63,9 +63,10 @@ model Lead {
 
     defaultNumber String
     notes         String? @db.LongText
+    titan         Boolean @default(false)
 
     //Code for text forwarding
-    textCode String?
+    textCode String
 
     // Facebook AdId 
     adId String?
@@ -73,14 +74,15 @@ model Lead {
     beneficiaries LeadBeneficiary[]
     conditions    LeadMedicalCondition[]
     expenses      LeadExpense[]
-    conversations Conversation[]
+    conversations LeadConversation[]
     appointments  Appointment[]
     calls         Call[]
-    activities    Activity[]
+    activities    LeadActivity[]
     policy        LeadPolicy?
     dotor         LeadDoctor?
     bank          LeadBank?
     medical       LeadMedicalQuestions?
+    emails        LeadEmail[]
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
@@ -251,4 +253,84 @@ model LeadStatus {
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
     PipeLine  PipeLine[]
+}
+
+//LEAD CONVERSATIONS
+model LeadConversation {
+    id String @id @default(cuid())
+
+    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    leadId String
+
+    messages LeadMessage[]
+
+    lastMessageId String?      @unique
+    lastMessage   LeadMessage? @relation("lastConversationMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
+
+    agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+    agentId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    unread    Int      @default(0)
+
+    @@unique([leadId, agentId])
+}
+
+model LeadMessage {
+    id             String           @id @default(cuid())
+    conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId String
+
+    role        MessageRole       @default(user)
+    lastMessage LeadConversation? @relation("lastConversationMessage")
+
+    content    String  @db.LongText
+    attachment String?
+
+    sid    String?
+    status String  @default("sent")
+    error  String?
+    price  String?
+
+    senderId String?
+
+    hasSeen   Boolean  @default(false)
+    createdAt DateTime @default(now())
+}
+
+model LeadActivity {
+    id String @id @default(cuid())
+
+    type     String  @default("general")
+    activity String
+    newValue String?
+
+    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    leadId String
+
+    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model LeadEmail {
+    id String @id @default(cuid())
+
+    type     String  @default("text")
+    subject  String
+    body     String
+    recieved Boolean @default(false)
+    opened   Boolean @default(false)
+
+    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    leadId String
+
+    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

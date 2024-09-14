@@ -2,9 +2,9 @@ import {
   Appointment,
   Call,
   ChatSettings,
-  Conversation,
   Lead,
-  Message,
+  LeadConversation,
+  LeadMessage,
   PhoneNumber,
   Presets,
   Schedule,
@@ -50,7 +50,7 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       userId: d["userId"],
       defaultPrompt: d["defaultPrompt"],
       defaultFunction: d["defaultFunction"],
-      autoChat: d["autoChat"] == "f" ? false : true,
+      titan: d["titan"] == "f" ? false : true,
       messageNotification: d["messageNotification"],
       messageInternalNotification: d["messageInternalNotification"],
       dataStyle: d["dataStyle"],
@@ -174,6 +174,7 @@ export const convertLeads = (result: any): Lead[] => {
 
       foreignVisited: d["foreignVisited"],
       textCode: d["textCode"],
+      titan: d["titan"],
     };
     mapped.push(newobj);
   });
@@ -231,6 +232,7 @@ export const convertAppointments = (result: any): Appointment[] => {
       leadId: d["leadId"],
       status: d["status"],
       comments: d["comments"],
+      reason: d["reason"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };
@@ -239,16 +241,15 @@ export const convertAppointments = (result: any): Appointment[] => {
   return mapped;
 };
 
-export const convertConversations = (result: any): Conversation[] => {
-  let mapped: Conversation[] = [];
+export const convertConversations = (result: any): LeadConversation[] => {
+  let mapped: LeadConversation[] = [];
   result.data.map((d: any) => {
-    const newobj: Conversation = {
+    const newobj: LeadConversation = {
       id: d["id"],
       leadId: d["leadId"],
       agentId: d["agentId"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
-      autoChat: d["autoChat"] == "f" ? false : true,
       lastMessageId: d["lastMessageId"],
       unread: d["lastMessageId"],
     };
@@ -257,10 +258,10 @@ export const convertConversations = (result: any): Conversation[] => {
   return mapped;
 };
 
-export const convertMessages = (result: any): Message[] => {
-  let mapped: Message[] = [];
+export const convertMessages = (result: any): LeadMessage[] => {
+  let mapped: LeadMessage[] = [];
   result.data.map((d: any) => {
-    const newobj: Message = {
+    const newobj: LeadMessage = {
       id: d["id"],
       conversationId: d["conversationId"],
       role: d["role"],

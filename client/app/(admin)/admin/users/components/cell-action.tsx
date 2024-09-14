@@ -24,23 +24,22 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert";
-import { smsCreateInitial } from "@/actions/sms";
-import { useCurrentUser } from "@/hooks/use-current-user";
+
 import { FullLead } from "@/types";
+import { messageCreateInitial } from "@/actions/lead/message";
 
 interface CellActionProps {
   data: FullLead;
 }
 export const CellAction = ({ data }: CellActionProps) => {
   const router = useRouter();
-  const user = useCurrentUser();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
   const onStartConversation = async () => {
     // toast.success(data.id);
     // return;
-    await smsCreateInitial(data.id).then((data) => {
+    await messageCreateInitial(data.id).then((data) => {
       router.refresh();
       if (data?.error) {
         toast.error(data.error);

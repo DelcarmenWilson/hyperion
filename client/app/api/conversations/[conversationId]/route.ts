@@ -14,7 +14,7 @@ export async function DELETE(request: Request, { params }: { params: IParams }) 
     }
     const { conversationId } = params;
     
-  await db.conversation.delete({
+  await db.leadConversation.delete({
       where: { id: conversationId,agentId:user.id },
     });
 

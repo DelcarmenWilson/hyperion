@@ -40,6 +40,17 @@ import { OnlineUser } from "@/types/user";
 import { getEntireDay } from "@/formulas/dates";
 
 //DATA
+export const userGetByUserName = async (userName: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { userName }
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
 export const usersGetAll = async () => {
   try {
     const users = await db.user.findMany({ orderBy: { firstName: "asc" } });

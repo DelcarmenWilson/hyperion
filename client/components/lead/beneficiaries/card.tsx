@@ -1,63 +1,39 @@
 "use client";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLeadBeneficiaryActions } from "@/hooks/lead/use-beneficiary";
 
 import { Button } from "@/components/ui/button";
 import { LeadBeneficiary } from "@prisma/client";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
-
 import { BeneficiaryForm } from "./form";
 
 import { formatDob, getAge } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { leadBeneficiaryDeleteById } from "@/actions/lead/beneficiary";
 
 export const BeneficiaryCard = ({
   beneficiary,
 }: {
   beneficiary: LeadBeneficiary;
 }) => {
-  const queryClient = useQueryClient();
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: leadBeneficiaryDeleteById,
-    onSuccess: () => {
-      toast.success("Beneficiary Deleted", {
-        id: "delete-beneficiary",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["leadBeneficiaries", `lead-${beneficiary.leadId}`],
-      });
-
-      setAlertOpen(false);
-    },
-  });
+  const {
+    alertOpen,
+    setAlertOpen,
+    onBeneficiaryFormOpen,
+    onBeneficiaryDelete,
+    isPendingBeneficiaryDelete,
+  } = useLeadBeneficiaryActions();
 
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={() => mutate(beneficiary.id)}
-        loading={isPending}
+        onConfirm={() => onBeneficiaryDelete(beneficiary.id)}
+        loading={isPendingBeneficiaryDelete}
         height="auto"
       />
-      <DrawerRight
-        title="Edit Beneficiary"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        <BeneficiaryForm
-          beneficiary={beneficiary}
-          onClose={() => setIsOpen(false)}
-        />
-      </DrawerRight>
+      <BeneficiaryForm />
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${beneficiary.firstName} ${beneficiary.lastName}`}</h3>
         <CardData label="Type" value={beneficiary.type} />
@@ -99,7 +75,9 @@ export const BeneficiaryCard = ({
           >
             Delete
           </Button>
-          <Button onClick={() => setIsOpen(true)}>Edit</Button>
+          <Button onClick={() => onBeneficiaryFormOpen(beneficiary.id)}>
+            Edit
+          </Button>
         </div>
       </div>
     </>

@@ -10,32 +10,37 @@ import { leadActivityInsert } from "@/actions/lead/activity";
 // LEADSTATUS
 
 //DATA
-export const leadStatusGetAllByAgentIdDefault = async (userId: string) => {
+export const leadStatusGetAllDefault = async () => {
   try {
-    const temp = (await userGetByAssistant(userId)) as string;
-    if (temp) userId = temp;
+    const user = await currentUser();
+    if (!user) return [];
 
-    const leadStatus = await db.leadStatus.findMany({
+    let userId = user.id;
+    if (user.role == "ASSISTANT")
+      userId = (await userGetByAssistant(user.id)) as string;
+
+    const leadStatuses = await db.leadStatus.findMany({
       where: { OR: [{ userId }, { type: { equals: "default" } }] },
     });
-    return leadStatus;
+    return leadStatuses;
   } catch {
     return [];
   }
 };
 
-export const leadStatusGetAllByAgentId = async (
-  userId: string,
-  role: UserRole = "USER"
-) => {
+export const leadStatusGetAll = async () => {
   try {
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const leadStatus = await db.leadStatus.findMany({
+    const user = await currentUser();
+    if (!user) return [];
+
+    let userId = user.id;
+    if (user.role == "ASSISTANT")
+      userId = (await userGetByAssistant(user.id)) as string;
+
+    const leadStatuses = await db.leadStatus.findMany({
       where: { userId },
     });
-    return leadStatus;
+    return leadStatuses;
   } catch {
     return [];
   }

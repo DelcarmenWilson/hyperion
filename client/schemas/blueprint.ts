@@ -19,7 +19,13 @@ export const AgentWorkInfoSchema = z.object({
   workType: z.string().min(1),
   workingDays: z.string().min(1),
   workingHours: z.string().min(1),
-  annualTarget: z.coerce.number().min(40000).max(300000),
+  // annualTarget: z.coerce.number().min(40000).max(300000),
+  // annualTarget: z.coerce.number().refine(target=>{if (target<400000)return true},"target less than 40000"),
+  annualTarget: z.coerce.number(),
   targetType: z.string().min(1),
-});
+})
+// .refine(schema=>{
+// schema.workType=
+
+// });
 export type AgentWorkInfoSchemaType = z.infer<typeof AgentWorkInfoSchema>;

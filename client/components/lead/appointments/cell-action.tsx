@@ -12,14 +12,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { FullAppointment } from "@/types";
 import { CopyButton } from "@/components/reusable/copy-button";
-import { useAppointment } from "@/hooks/use-appointment";
+import { useAppointmentStore } from "@/hooks/use-appointment";
 
 export const CellAction = ({
   appointment,
 }: {
   appointment: FullAppointment;
 }) => {
-  const { onDetailsOpen } = useAppointment();
+  const { onDetailsOpen } = useAppointmentStore();
   return (
     <>
       <DropdownMenu>

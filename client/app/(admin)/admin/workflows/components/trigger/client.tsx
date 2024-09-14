@@ -24,7 +24,7 @@ export const TriggersClient = () => {
       text="Add Trigger"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
       showButton={user?.role != "ASSISTANT"}
     />
   );

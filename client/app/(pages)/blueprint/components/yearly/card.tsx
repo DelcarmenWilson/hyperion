@@ -6,7 +6,7 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { CardData } from "../card-data";
+import { Bar, CardData } from "../card-data";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 export const BluePrintYearlyCard = () => {
@@ -26,6 +26,9 @@ export const BluePrintYearlyCard = () => {
     weeks,
     endAt,
   } = bluePrintYearActive;
+  const callsPercentage = Math.ceil(calls / (callsTarget * weeks));
+  const appPercentage = Math.ceil(appointments / (appointmentsTarget * weeks));
+  const premiumPercentage = Math.ceil(premium / (premiumTarget * weeks));
   return (
     <SkeletonWrapper isLoading={isFetchingBluePrintYearActive}>
       <div>
@@ -36,16 +39,23 @@ export const BluePrintYearlyCard = () => {
           </Badge>
         </div>
 
-        <CardData label="Calls" data={calls} target={callsTarget * weeks} />
-        <CardData
+        <Bar
+          label="Calls"
+          data={calls}
+          target={callsTarget * weeks}
+          percentage={callsPercentage}
+        />
+        <Bar
           label="Appointments"
           data={appointments}
           target={appointmentsTarget * weeks}
+          percentage={appPercentage}
         />
-        <CardData
+        <Bar
           label="Premium"
           data={premium}
           target={premiumTarget * weeks}
+          percentage={premiumPercentage}
           dollar
         />
       </div>

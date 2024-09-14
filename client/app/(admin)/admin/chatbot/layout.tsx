@@ -17,13 +17,14 @@ const ChatbotLayout = async ({ children }: Props) => {
           <GptConversationsClient />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={80} maxSize={80}>
-          <div className="relative flex flex-1 h-full overflow-hidden">
-            {children}
-          </div>
+        <ResizablePanel
+          defaultSize={80}
+          maxSize={80}
+          className="relative flex flex-1 h-full overflow-hidden"
+        >
+          {children}
         </ResizablePanel>
       </ResizablePanelGroup>
-      {children}
     </CardLayout>
   );
 };

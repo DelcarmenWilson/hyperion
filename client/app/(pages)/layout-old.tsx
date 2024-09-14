@@ -15,7 +15,7 @@ import SideBar from "@/components/sidebar";
 import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
 
-import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
+import { leadStatusGetAllDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/actions/script";
 import {
   userCarriersGetAllByUserId,
@@ -24,7 +24,7 @@ import {
   userTemplatesGetAllByUserId,
 } from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/data/schedule";
+import { scheduleGetByUserId } from "@/actions/schedule";
 import {
   appointmentLabelsGetAllByUserId,
   appointmentsGetAllByUserId,
@@ -47,7 +47,7 @@ export default async function DashBoardLayout({
   }
   const initUser = await userGetByIdDefault(user.id);
   const initUsers = await usersGetAllChat();
-  const status = await leadStatusGetAllByAgentIdDefault(user.id);
+  const status = await leadStatusGetAllDefault();
   const script = await scriptGetOne();
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();

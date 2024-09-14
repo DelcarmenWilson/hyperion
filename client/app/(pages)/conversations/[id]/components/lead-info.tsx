@@ -1,13 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-import { useQuery } from "@tanstack/react-query";
-import { useConversationId } from "@/hooks/use-conversation";
-
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { useConversationStore } from "../../hooks/use-conversation";
 import { cn } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
 import { GeneralInfoClient } from "@/components/lead/info/general";
 import { MainInfoClient } from "@/components/lead/info/main";
@@ -15,81 +11,26 @@ import { CallInfo } from "@/components/lead/info/call";
 import { NotesForm } from "@/components/lead/forms/notes-form";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
-
-import { FullLeadNoConvo } from "@/types";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  LeadGeneralSchemaType,
-  LeadMainSchemaType,
-  LeadPolicySchemaType,
-} from "@/schemas/lead";
-import { leadGetByConversationId } from "@/actions/lead";
 
-type ConversationLeadInfoProps = {
+type Props = {
   size?: string;
 };
-export const ConversationLeadInfo = ({
-  size = "full",
-}: ConversationLeadInfoProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { conversationId } = useConversationId();
+export const ConversationLeadInfo = ({ size = "full" }: Props) => {
+  const { isLeadInfoOpen } = useConversationStore();
+  const { leadBasic } = useLeadData();
 
-  const { data: lead, isFetching } = useQuery<FullLeadNoConvo | null>({
-    queryFn: () => leadGetByConversationId(conversationId),
-    queryKey: [`lead-info-${conversationId}`],
-  });
-
-  useEffect(() => {
-    userEmitter.on("toggleLeadInfo", (open) => setIsOpen(open));
-    return () => {
-      userEmitter.off("toggleLeadInfo", (open) => setIsOpen(open));
-    };
-  }, []);
-
-  if (!lead) {
-    return null;
-  }
-
-  const leadName = `${lead.firstName} ${lead.lastName}`;
-  const leadMainInfo: LeadMainSchemaType = {
-    ...lead,
-    email: lead.email || undefined,
-    address: lead.address || undefined,
-    city: lead.city || undefined,
-    zipCode: lead.zipCode || undefined,
-    textCode: lead.textCode!,
-  };
-
-  const leadInfo: LeadGeneralSchemaType = {
-    ...lead,
-    dateOfBirth: lead.dateOfBirth || undefined,
-    weight: lead.weight || undefined,
-    height: lead.height || undefined,
-    income: lead.income || undefined,
-  };
-
-  const leadPolicy: LeadPolicySchemaType = {
-    ...lead.policy!,
-    leadId: lead.id,
-    // carrier: lead.policy?.carrier!,
-    // policyNumber: lead.policy?.policyNumber!,
-    // status: lead.policy?.status!,
-    // ap: lead.policy?.ap!,
-    // commision: lead.policy?.commision!,
-    // coverageAmount: lead.policy?.coverageAmount!,
-    startDate: lead.policy?.startDate!,
-  };
   return (
     <div
       className={cn(
         "flex flex-col relative transition-[right] -right-full ease-in-out duration-100 w-0 h-full overflow-hidden",
-        isOpen && "w-[250px] right-0"
+        isLeadInfoOpen && "w-[250px] right-0"
       )}
     >
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
         <h4 className="text-center text-2xl text-primary bg-secondary font-bold ">
-          {lead.firstName} {lead.lastName}
+          {leadBasic?.firstName} {leadBasic?.lastName}
         </h4>
 
         <TabsList className="flex flex-wrap w-full h-auto">
@@ -107,30 +48,22 @@ export const ConversationLeadInfo = ({
                 size == "full" ? "grid-cols-3" : "grid-cols-1"
               )}
             >
-              <MainInfoClient info={leadMainInfo} noConvo={false} />
-              <GeneralInfoClient leadName={leadName} info={leadInfo} showInfo />
-              <CallInfo info={lead!} showBtnCall={false} />
-              <PolicyInfoClient
-                leadId={lead.id}
-                leadName={leadName}
-                assistant={lead.assistant}
-                info={leadPolicy}
-              />
-              <NotesForm
-                leadId={lead?.id as string}
-                intialNotes={lead?.notes as string}
-                initSharedUser={lead.sharedUser}
-              />
+              <MainInfoClient noConvo={false} />
+              <GeneralInfoClient showInfo />
+              <CallInfo showBtnCall={false} />
+              <PolicyInfoClient />
+              <NotesForm />
             </div>
           </TabsContent>
           <TabsContent value="beneficiaries">
-            <BeneficiariesClient leadId={lead.id} size="sm" />
+            {/*TODO need to implement the sizes for all 3 clients */}
+            <BeneficiariesClient size={size} />
           </TabsContent>
           <TabsContent value="conditions">
-            <ConditionsClient leadId={lead.id} size="sm" />
+            <ConditionsClient size={size} />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesClient leadId={lead.id} size="sm" />
+            <ExpensesClient size={size} />
           </TabsContent>
         </ScrollArea>
       </Tabs>

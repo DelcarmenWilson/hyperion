@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLead, useLeadMainInfoActions } from "@/hooks/use-lead";
+import { useLeadStore, useLeadMainInfoActions } from "@/hooks/lead/use-lead";
 
 import {
   LeadMainSchema,
@@ -32,7 +32,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { states } from "@/constants/states";
 
 export const MainInfoForm = () => {
-  const { isMainFormOpen, onMainFormClose } = useLead();
+  const { isMainFormOpen, onMainFormClose } = useLeadStore();
   const { mainInfo, isFetchingMainInfo, loading, onMainInfoUpdate } =
     useLeadMainInfoActions(onMainFormClose);
 
@@ -40,12 +40,14 @@ export const MainInfoForm = () => {
   return (
     <Dialog open={isMainFormOpen} onOpenChange={onMainFormClose}>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-        <h3 className="text-2xl font-semibold py-2">
-          Demographics -
-          <span className="text-primary">
-            {`${mainInfo.firstName} ${mainInfo.lastName}`}
-          </span>
-        </h3>
+        <SkeletonWrapper isLoading={isFetchingMainInfo}>
+          <h3 className="text-2xl font-semibold py-2">
+            Demographics -
+            <span className="text-primary">
+              {`${mainInfo.firstName} ${mainInfo.lastName}`}
+            </span>
+          </h3>
+        </SkeletonWrapper>
         <SkeletonWrapper isLoading={isFetchingMainInfo}>
           <MainForm
             mainInfo={mainInfo}

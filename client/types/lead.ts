@@ -1,28 +1,28 @@
 import {
-  Conversation,
   User,
-  Lead,
   Call,
   Appointment,
-  Activity,
+  Lead,
+  LeadActivity,
+  LeadConversation,
   LeadBeneficiary,
   LeadExpense,
   LeadMedicalCondition,
+  LeadMessage,
   MedicalCondition,
   LeadPolicy,
-  Message,
 } from "@prisma/client";
 
 export type HalfLeadNoConvo = Lead & {
   calls: Call[];
   appointments: Appointment[];
-  activities: Activity[];
+  activities: LeadActivity[];
 };
 
 export type FullLeadNoConvo = Lead & {
   calls: Call[];
   appointments: Appointment[];
-  activities?: Activity[];
+  activities?: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
@@ -31,17 +31,17 @@ export type FullLeadNoConvo = Lead & {
   sharedUser?: User | null;
 };
 
-export type LeadConversationType = Conversation & {
+export type LeadConversationType = LeadConversation & {
   lead: Lead;
-  messages: Message[];
+  messages: LeadMessage[];
 };
 
 export type FullLead = Lead & {
-  conversations: Conversation[] | null;
-  conversation?: Conversation | null;
+  conversations: LeadConversation[] | null;
+  conversation?: LeadConversation | null;
   calls: Call[];
   appointments: Appointment[];
-  activities: Activity[];
+  activities: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadIntakeActions } from "@/hooks/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
 
 import {
   IntakeDoctorInfoSchema,

@@ -8,13 +8,12 @@ import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 
-import BlurPage from "@/components/global/blur-page";
 import NavBar from "@/components/navbar/navbar";
 import SideBar from "@/components/sidebar";
 import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
 
-import { leadStatusGetAllByAgentIdDefault } from "@/actions/lead/status";
+import { leadStatusGetAllDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/actions/script";
 import {
   userCarriersGetAllByUserId,
@@ -23,7 +22,7 @@ import {
   userTemplatesGetAllByUserId,
 } from "@/data/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/data/schedule";
+import { scheduleGetByUserId } from "@/actions/schedule";
 import {
   appointmentLabelsGetAllByUserId,
   appointmentsGetAllByUserId,
@@ -34,6 +33,7 @@ import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
 import ModalProvider from "@/providers/modal";
 import { GroupMessageCard } from "@/components/global/group-message-card";
+import ModalsContainer from "@/components/global/modals-container";
 export default async function DashBoardLayout({
   children,
 }: {
@@ -46,7 +46,7 @@ export default async function DashBoardLayout({
   }
   const initUser = await userGetByIdDefault(user.id);
   const initUsers = await usersGetAllChat();
-  const status = await leadStatusGetAllByAgentIdDefault(user.id);
+  const status = await leadStatusGetAllDefault();
   const script = await scriptGetOne();
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
@@ -83,12 +83,13 @@ export default async function DashBoardLayout({
                   initLabels={appointmentLabels}
                 >
                   <ModalProvider>{children}</ModalProvider>
+                  {/* ///ALL THE PHONE MODALS */}
+                  <ModalsContainer />
+                  <ChatDrawer />
+                  <GroupMessageCard />
+                  <LoginStatusModal />
                 </AppointmentContextComponent>
               </PhoneContextProvider>
-
-              <ChatDrawer />
-              <GroupMessageCard />
-              <LoginStatusModal />
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Call, Device } from "@twilio/voice-sdk";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   chatSettingsUpdateCurrentCall,
   chatSettingsUpdateRemoveCurrentCall,
@@ -141,16 +141,24 @@ export const usePhone = create<PhoneStore>((set, get) => ({
   setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));
 
-export const usePhoneData = (
-  phone: Device | null,
-  call: Call | undefined,
-  isCallMuted: boolean,
-  onCallMutedToggle: () => void,
-  onPhoneInConnect: () => void,
-  onPhoneDisconnect: () => void,
-  isRunning: boolean,
-  setTime: () => void
-) => {
+export const usePhoneData = (phone: Device | null) => {
+  const {
+    call,
+    isRunning,
+    time,
+    setTime,
+    isCallMuted,
+    onCallMutedToggle,
+    onPhoneInConnect,
+    onPhoneConnect,
+    onPhoneDisconnect,
+    onPhoneDialerClose,
+    leads,
+    lead,
+    pipeline,
+    pipeIndex,
+  } = usePhone();
+
   //GENERAL FUNCTIIONS
   ///Disconnect an in progress call
   const onDisconnect = () => {
@@ -182,6 +190,7 @@ export const usePhoneData = (
     call?.reject();
     onPhoneDisconnect();
   };
+
   //TIME FUNCTION
   useEffect(() => {
     let interval: any;
@@ -196,9 +205,21 @@ export const usePhoneData = (
   }, [isRunning]);
 
   return {
+    call,
+    lead,
+    leads,
+    onPhoneConnect,
+    onPhoneDisconnect,
     onDisconnect,
+    time,
+    isRunning,
+    isCallMuted,
     onCallMuted,
+    onCallMutedToggle,
     onIncomingCallAccept,
     onIncomingCallReject,
+    pipeline,
+    pipeIndex,
+    onPhoneDialerClose,
   };
 };

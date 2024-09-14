@@ -236,7 +236,7 @@ export const SettingsNavbarRoutes: NavType[] = [
   },
   {
     title: "Chat",
-    href: "/settings/chat",
+    href: "/settings/titan",
   },
   {
     title: "Availability",

@@ -24,7 +24,7 @@ export const UserTemplateClient = () => {
       text="Add Template"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
     />
   );
 

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { conversationGetLast } from "@/actions/conversation";
+import { conversationGetLast } from "@/actions/lead/conversation";
 
 const ConversationsPage = async () => {
   const conversation = await conversationGetLast();

@@ -112,7 +112,7 @@ export const CampaignsClient = () => {
             )}
           </div>
           {campaignId && (
-            <div className="flex justify-between py-2 gap-2">
+            <div className="flex justify-between p-2 gap-2">
               <Button
                 className="gap-2"
                 size="sm"

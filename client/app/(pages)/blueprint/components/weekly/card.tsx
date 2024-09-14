@@ -2,13 +2,13 @@ import React from "react";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
 
+import { Bar } from "../card-data";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { CardData } from "../card-data";
-import { Button } from "@/components/ui/button";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 
@@ -31,6 +31,9 @@ export const BluePrintWeeklyCard = () => {
     createdAt,
     endAt,
   } = bluePrintWeekActive;
+  const callPercentage = Math.ceil(calls / callsTarget);
+  const appPercentage = Math.ceil(appointments / appointmentsTarget);
+  const premiumPercentage = Math.ceil(premium / premiumTarget);
   return (
     <SkeletonWrapper isLoading={isFetchingBluePrintWeekActive}>
       <div>
@@ -40,16 +43,24 @@ export const BluePrintWeeklyCard = () => {
             {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
           </Badge>
         </div>
-        <CardData label="Calls" data={calls} target={callsTarget} />
-        <CardData
+        <Bar
+          label="Calls"
+          data={calls}
+          target={callsTarget}
+          percentage={callPercentage}
+        />
+
+        <Bar
           label="Appointments"
           data={appointments}
           target={appointmentsTarget}
+          percentage={appPercentage}
         />
-        <CardData
+        <Bar
           label="Premium"
           data={premium}
           target={premiumTarget}
+          percentage={premiumPercentage}
           dollar
         />
         {/*TODO - dont forget to remove this grid as its for testing purposes

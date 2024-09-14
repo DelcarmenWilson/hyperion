@@ -7,7 +7,7 @@ type ListGridTopMenuProps = {
   text: string;
   isList: boolean;
   setIsList: (e: boolean) => void;
-  setIsDrawerOpen: (e: boolean) => void;
+  setIsDrawerOpen: () => void;
   size?: string;
   showButton?: boolean;
 };
@@ -40,7 +40,7 @@ export const ListGridTopMenu = ({
         </>
       )}
       {showButton && (
-        <Button className="gap-2" onClick={() => setIsDrawerOpen(true)}>
+        <Button className="gap-2" onClick={setIsDrawerOpen}>
           <Plus size={16} /> {text}
         </Button>
       )}

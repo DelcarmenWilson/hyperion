@@ -9,7 +9,7 @@ import { ChatbotConversationBody } from "./body";
 import { ChatbotConversationForm } from "./form";
 import { Button } from "@/components/ui/button";
 
-const ConversationClient = () => {
+const ChatbotClient = () => {
   const { conversation } = useChatbotData();
 
   return (
@@ -42,4 +42,4 @@ const ConversationClient = () => {
   );
 };
 
-export default ConversationClient;
+export default ChatbotClient;

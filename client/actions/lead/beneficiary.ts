@@ -28,6 +28,21 @@ export const leadBeneficiariesGetAllById = async (leadId: string) => {
     return []
   }
 };
+export const leadBeneficiaryGetById = async (id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) 
+      return null
+    
+    const beneficiery = await db.leadBeneficiary.findUnique({
+      where: { id },
+    });
+    return beneficiery;
+  } catch (error) {
+    console.log("LEAD BENEFICIERY_GET_ERROR:", error);
+    return null
+  }
+};
 
 //ACTIONS
 export const leadBeneficiaryInsert = async (

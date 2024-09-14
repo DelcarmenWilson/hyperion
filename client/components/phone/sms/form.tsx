@@ -4,10 +4,11 @@ import { Plus, Send } from "lucide-react";
 import { useGlobalContext } from "@/providers/global";
 
 import { userEmitter } from "@/lib/event-emmiter";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { smsCreate } from "@/actions/sms";
 import { UserTemplate } from "@prisma/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
@@ -37,22 +37,18 @@ import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/
 import { FullLeadNoConvo } from "@/types";
 
 type SmsFormProps = {
-  conversationId?: string;
   lead?: FullLeadNoConvo;
 };
-export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
+export const SmsForm = () => {
   const { user, templates } = useGlobalContext();
-
+  const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const [attachment, setAttachment] = useState<string[]>([]);
 
   const form = useForm<SmsMessageSchemaType>({
     resolver: zodResolver(SmsMessageSchema),
     defaultValues: {
-      conversationId: conversationId,
-      leadId: lead?.id,
       content: "",
       type: "sms",
     },
@@ -66,23 +62,14 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
     setAttachment([]);
   };
 
+  const { onMessageInsertSubmit, IsPendingInsertMessage } =
+    useLeadMessageActions(onCancel);
+
   const onAttachmentRemove = (e: number) => {
     setAttachment([]);
     form.setValue("images", undefined);
   };
-  const onSubmit = async (values: SmsMessageSchemaType) => {
-    if (!lead?.id) {
-      toast.error("Lead id is not supplied");
-      return;
-    }
-    setLoading(true);
-    const response = await smsCreate(values);
-    if (response.success) userEmitter.emit("messageInserted", response.success);
-    else toast.error(response.error);
-    onCancel();
 
-    setLoading(false);
-  };
   useEffect(() => {
     const onTemplateSelected = (tp: UserTemplate) => {
       if (tp.attachment) {
@@ -114,7 +101,7 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
         <Form {...form}>
           <form
             className="space-6 px-2 w-full"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onMessageInsertSubmit)}
           >
             <ImageGrid
               images={attachment}
@@ -155,7 +142,7 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
                       <Input
                         {...field}
                         placeholder="message"
-                        disabled={loading}
+                        disabled={IsPendingInsertMessage}
                         autoComplete="Message"
                         type="text"
                       />
@@ -167,7 +154,7 @@ export const SmsForm = ({ conversationId, lead }: SmsFormProps) => {
               <Button
                 className="rounded-md"
                 size="icon"
-                disabled={loading || disabled}
+                disabled={IsPendingInsertMessage || disabled}
                 type="submit"
               >
                 <Send size={16} />

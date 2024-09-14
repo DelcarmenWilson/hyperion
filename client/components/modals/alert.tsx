@@ -36,7 +36,7 @@ export const AlertModal = ({
       onClose={onClose}
       height={height}
     >
-      <div className="pt-6 space-x-2 flex items-center justify-end w-full">
+      <div className="pt-6 pb-1 space-x-2 flex items-center justify-end w-full">
         <Button disabled={loading} variant="outline" onClick={onClose}>
           Cancel
         </Button>

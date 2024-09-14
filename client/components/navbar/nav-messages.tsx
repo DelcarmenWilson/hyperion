@@ -26,7 +26,7 @@ import { ShortConvo } from "@/types";
 import {
   conversationsGetByUserIdUnread,
   conversationUpdateByIdUnread,
-} from "@/actions/conversation";
+} from "@/actions/lead/conversation";
 
 //TODO - see if we can consolidate the UI with nav Chats
 export const NavMessages = () => {
@@ -138,7 +138,7 @@ export const NavMessages = () => {
               <DropdownMenuItem className="flex flex-col">
                 <p className="text-xl text-center w-full">No new Messages</p>
                 <div className="text-end w-full text-sm underline">
-                  <Link href="/chat">View All</Link>
+                  <Link href="/conversations">View All</Link>
                 </div>
               </DropdownMenuItem>
             )}

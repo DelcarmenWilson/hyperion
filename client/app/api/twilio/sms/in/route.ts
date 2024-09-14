@@ -1,21 +1,25 @@
 import { db } from "@/lib/db";
-import axios from "axios";
-import { NextResponse } from "next/server";
-import { MessageSchemaType } from "@/schemas/message";
-import { messageInsert } from "@/actions/message";
-import { chatFetch } from "@/actions/gpt";
 
-import { appointmentInsert } from "@/actions/appointment";
-import { formatObject } from "@/formulas/objects";
+import { NextResponse } from "next/server";
+
+import { TwilioSms } from "@/types";
+import { MessageSchemaType } from "@/schemas/message";
+
 import {
   disabledAutoChatResponse,
   getKeywordResponse,
   smsSend,
   forwardTextToLead,
 } from "@/actions/sms";
-import { TwilioSms } from "@/types";
+import { messageInsert } from "@/actions/lead/message";
+import { chatFetch } from "@/actions/gpt";
+
+import { appointmentInsert } from "@/actions/appointment";
+
 import { formatDateTime } from "@/formulas/dates";
+import { formatObject } from "@/formulas/objects";
 import { sendSocketData } from "@/services/socket-service";
+import { chatSettingGetTitan } from "@/actions/chat-settings";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -45,7 +49,7 @@ export async function POST(req: Request) {
 
   let updatedConversation;
   //Pulling the entire conversation based on the phone number
-  const conversation = await db.conversation.findFirst({
+  const conversation = await db.leadConversation.findFirst({
     where: {
       lead: {
         cellPhone: sms.from,
@@ -84,15 +88,16 @@ export async function POST(req: Request) {
   if (keywordResponse)
     return new NextResponse(keywordResponse, { status: 200 });
 
-  //If autochat is disabled
-  if (!conversation.autoChat) {
+  const titan=await chatSettingGetTitan(agent?.userId as string)
+  //If titan is disabled
+  if (titan) {
     await disabledAutoChatResponse(conversation, newMessage);
     //exit the workflow
     return new NextResponse(null, { status: 200 });
   }
 
   //If autochat is enabled - get all the messages in the conversation
-  const messages = await db.message.findMany({
+  const messages = await db.leadMessage.findMany({
     where: { conversationId: conversation.id },
   });
 
@@ -118,19 +123,21 @@ export async function POST(req: Request) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
     await appointmentInsert({
+      date:new Date(),
       localDate: aptDate,
       startDate: aptDate,
       leadId: conversation.leadId,
       agentId: conversation.agentId,
       label: "blue",
       comments: "",
-      reminder: false,
+      smsReminder: false,
+      emailReminder:false
     });
 
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
     )}`;
-    await smsSend(sms.to, sms.from, appointmentMessage);
+    await smsSend({toPhone:sms.to, fromPhone:sms.from, message:appointmentMessage});
     return new NextResponse(
       `Appointment has been schedule for ${formatDateTime(aptDate)}`,
       { status: 200 }
@@ -141,7 +148,7 @@ export async function POST(req: Request) {
   const words = content.split;
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
-  const sid = (await smsSend(sms.to, sms.from, content, delay)).success;
+  const sid = (await smsSend({toPhone:sms.to, fromPhone:sms.from, message:content, timer:delay})).success;
 
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = (
@@ -156,7 +163,7 @@ export async function POST(req: Request) {
   ).success;
 
   if (newChatMessage) {
-    updatedConversation = await db.conversation.update({
+    updatedConversation = await db.leadConversation.update({
       where: { id: conversation.id },
       include: { lastMessage: true, lead: true },
       data: {

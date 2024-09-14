@@ -14,7 +14,7 @@ export const BluePrintClient = () => {
   return (
     <CardLayout icon={GoalIcon} title="Blue Print">
       <Tabs defaultValue="blueprint">
-        <TabsList>
+        <TabsList className="w-full bg-primary/25">
           <TabsTrigger value="blueprint">Blue Print</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="plan">Plan</TabsTrigger>

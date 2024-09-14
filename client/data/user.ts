@@ -87,19 +87,6 @@ export const userGetByIdReport = async (id: string) => {
   }
 };
 
-export const userGetByUserName = async (userName: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { userName },
-      include: { phoneNumbers: true, chatSettings: true, team: true },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-
 
 
 // USER LICENSES

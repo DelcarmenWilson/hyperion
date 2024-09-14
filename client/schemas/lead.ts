@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { Gender, MaritalStatus, Prisma } from "@prisma/client";
-import { leadGetByIdGeneral, leadGetByIdMain } from "@/actions/lead";
+import { leadGetByIdBasicInfo, leadGetByIdCallInfo, leadGetByIdGeneral, leadGetByIdMain, leadGetByIdNotes, leadGetByIdPolicy } from "@/actions/lead";
 
 export const LeadSchema = z.object({
   id: z.optional(z.string()),
@@ -262,3 +262,18 @@ export const IntakeMedicalInfoSchema = z.object({
 export type IntakeMedicalInfoSchemaType = z.infer<
   typeof IntakeMedicalInfoSchema
 >;
+export type LeadBasicInfoSchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdBasicInfo
+>
+
+export type LeadNotesSchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdNotes
+>
+
+export type LeadPolicySchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdPolicy
+>
+
+export type LeadCallInfoSchemaTypeP = Prisma.PromiseReturnType<
+  typeof leadGetByIdCallInfo
+>

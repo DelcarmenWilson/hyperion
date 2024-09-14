@@ -1,13 +1,13 @@
 import {
-  Conversation,
-  User,
-  Lead,
-  Call,
   Appointment,
-  Team,
-  PhoneNumber,
-  UserCarrier,
+  Call,
   ChatSettings,
+  Lead,
+  LeadConversation,
+  PhoneNumber,
+  Team,
+  User,
+  UserCarrier,
 } from "@prisma/client";
 
 import { LeadPolicyType } from "./lead";
@@ -36,7 +36,7 @@ export type FullUser = User & {
   calls: Call[];
   leads: Lead[];
   appointments: Appointment[];
-  conversations: Conversation[];
+  conversations: LeadConversation[];
   team: Team;
 };
 
@@ -44,7 +44,7 @@ export type FullUserReport = User & {
   phoneNumbers: PhoneNumber[];
   calls: Call[];
   leads: LeadPolicyType[];
-  conversations: Conversation[];
+  conversations: LeadConversation[];
   appointments: Appointment[];
   team?: FullTeam | null;
 };

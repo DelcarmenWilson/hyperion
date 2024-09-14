@@ -19,13 +19,7 @@ export const TouchPad = ({ onNumberClick }: TouchPadProps) => {
           showScript && "top-0"
         )}
       >
-        <NotesForm
-          leadId={lead?.id as string}
-          intialNotes={lead?.notes as string}
-          initSharedUser={lead?.sharedUser}
-          showShared={false}
-          rows={9}
-        />
+        <NotesForm showShared={false} rows={9} />
       </div>
       <div className="grid grid-cols-3 gap-1">
         {touchPadNumbers.map((number) => (

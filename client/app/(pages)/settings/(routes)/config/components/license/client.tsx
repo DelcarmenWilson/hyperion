@@ -24,7 +24,7 @@ export const LicenseClient = () => {
       text="Add License"
       isList={isList}
       setIsList={setIsList}
-      setIsDrawerOpen={setIsDrawerOpen}
+      setIsDrawerOpen={() => setIsDrawerOpen(true)}
       showButton={user?.role != "ASSISTANT"}
     />
   );

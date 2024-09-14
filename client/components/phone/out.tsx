@@ -29,6 +29,7 @@ import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
 import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
+import { useLeadData } from "@/hooks/lead/use-lead";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -37,13 +38,8 @@ export const PhoneOut = () => {
   const {
     call,
     time,
-    setTime,
-    isRunning,
     isCallMuted,
-    onCallMutedToggle,
     onPhoneConnect,
-    onPhoneDisconnect,
-    lead,
     isConferenceOpen,
     conference,
     setConference,
@@ -51,31 +47,26 @@ export const PhoneOut = () => {
     onConferenceToggle,
     isOnCall,
     isLeadInfoOpen,
-    onLeadInfoToggle: onToggleLeadInfo,
+    onLeadInfoToggle,
   } = usePhone();
   const { phone } = usePhoneContext();
-  const { onDisconnect, onCallMuted } = usePhoneData(
-    phone,
-    call,
-    isCallMuted,
-    onCallMutedToggle,
-    () => {},
-    onPhoneDisconnect,
-    isRunning,
-    setTime
-  );
-  const leadFullName = `${lead?.firstName} ${lead?.lastName}`;
+  const { onDisconnect, onCallMuted } = usePhoneData(phone);
+  const { leadId, leadBasic } = useLeadData();
+  const leadFullName = leadId
+    ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
+    : "New Call";
   const [disabled, setDisabled] = useState(false);
 
   const [empty, setEmpty] = useState(false);
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
-    name: lead ? leadFullName : "New Call",
-    number: formatPhoneNumber(lead?.cellPhone as string) || "",
+    name: leadFullName,
+    number: formatPhoneNumber(leadBasic?.cellPhone as string) || "",
   });
   const [myNumber, setMyNumber] = useState(
-    user?.phoneNumbers.find((e) => e.phone == lead?.defaultNumber)?.phone ||
+    user?.phoneNumbers.find((e) => e.phone == leadBasic?.defaultNumber)
+      ?.phone ||
       user?.phoneNumbers[0]?.phone ||
       ""
   );
@@ -90,7 +81,7 @@ export const PhoneOut = () => {
 
   const onStarted = async () => {
     if (!phone) return;
-    if (!lead) {
+    if (!leadId) {
       setTo((state) => {
         return { ...state, number: formatPhoneNumber(state.number) };
       });
@@ -146,7 +137,7 @@ export const PhoneOut = () => {
     // }, 2000);
 
     call.on("disconnect", onDisconnect);
-    userEmitter.emit("newCall", lead?.id!);
+    userEmitter.emit("newCall", leadBasic?.id!);
     onPhoneConnect(call);
   };
 
@@ -202,7 +193,7 @@ export const PhoneOut = () => {
   const onAddCoach = async (coachId: string, coachName: string) => {
     const participant = await addParticipant({
       conferenceSid: user?.id as string,
-      from: lead?.cellPhone as string,
+      from: leadBasic?.cellPhone as string,
       to: `client:${coachId}`,
       label: coachId,
       record: true,
@@ -252,11 +243,11 @@ export const PhoneOut = () => {
           <div className="flex justify-between items-center">
             {to.name}
 
-            {lead && (
+            {leadId && (
               <Button
                 variant={isLeadInfoOpen ? "default" : "outlineprimary"}
                 size="sm"
-                onClick={onToggleLeadInfo}
+                onClick={onLeadInfoToggle}
               >
                 LEAD INFO
               </Button>

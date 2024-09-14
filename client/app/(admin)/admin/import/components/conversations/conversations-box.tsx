@@ -2,18 +2,20 @@
 
 import { useState, useTransition } from "react";
 import Papa from "papaparse";
-
-import { Conversation } from "@prisma/client";
-import { DataTableImport } from "@/components/tables/data-table-import";
-import { columns } from "./columns";
 import { toast } from "sonner";
+
+import { LeadConversation } from "@prisma/client";
+
+import { Button } from "@/components/ui/button";
+import { columns } from "./columns";
+import { DataTableImport } from "@/components/tables/data-table-import";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { convertConversations } from "@/formulas/inital-data";
 import { initialConversations } from "@/actions/initial-data";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 
 export const ConversationsBox = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<LeadConversation[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const onFileUploaded = (e: any) => {
@@ -21,7 +23,7 @@ export const ConversationsBox = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (result: any) {
-        const mapped: Conversation[] = convertConversations(result);
+        const mapped: LeadConversation[] = convertConversations(result);
         setConversations(mapped);
       },
     });

@@ -2,6 +2,7 @@ import { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 type Props = {
   icon: LucideIcon;
   title: string;
@@ -30,8 +31,8 @@ export const PageMiniLayout = ({
         <div className="ml-auto px-2">{status}</div>
       </div>
       <Separator />
-      <CardContent className="flex flex-col flex-1 bg-secondary/80 p-2 gap-2 overflow-y-auto">
-        {children}
+      <CardContent className="flex flex-col flex-1 bg-secondary/80 p-2 gap-2 overflow-hidden">
+        <ScrollArea>{children}</ScrollArea>
       </CardContent>
     </Card>
   );

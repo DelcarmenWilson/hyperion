@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       to: phone,
     });
 
-    const newMessage = await db.message.create({
+    const newMessage = await db.leadMessage.create({
       data: {
         role: "assistant",
         content: message,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const updatedConversation = await db.conversation.update({
+    const updatedConversation = await db.leadConversation.update({
       where: { id: conversationId },
       data: {
         updatedAt: new Date(),

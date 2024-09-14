@@ -33,7 +33,10 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
             <p className="font-semibold">Work info</p>
 
             {role == "ADMIN" && (
-              <Button onClick={() => onWorkInfoFormOpen(agentWorkInfo)}>
+              <Button
+                size="sm"
+                onClick={() => onWorkInfoFormOpen(agentWorkInfo)}
+              >
                 Edit Details
               </Button>
             )}
@@ -58,17 +61,6 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
             label="Annual Target"
             value={USDollar.format(agentWorkInfo.annualTarget)}
           />
-          <CardData
-            label="Created At"
-            value={formatDate(agentWorkInfo.createdAt)}
-          />
-
-          {agentWorkInfo.createdAt != agentWorkInfo.updatedAt && (
-            <CardData
-              label="Updated At"
-              value={formatDate(agentWorkInfo.updatedAt)}
-            />
-          )}
         </div>
       ) : (
         <EmptyCard title={"No Details"} />

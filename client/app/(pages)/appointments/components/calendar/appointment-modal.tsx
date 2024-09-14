@@ -40,6 +40,7 @@ export const AppointmentModal = () => {
       agentId: "",
       id: selectedAppointment ? selectedAppointment.id : "",
       leadId: "",
+      reason: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
