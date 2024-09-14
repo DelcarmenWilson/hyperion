@@ -22,7 +22,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
 export const useConversationData = () => {
   const { conversationId } = useConversationId();
-  const { setLeadId } = useLeadStore();
+  const { setLeadId,setConversationId } = useLeadStore();
 
   const { data: conversations, isFetching: isFetchingConversations } = useQuery<
     ShortConversation[]
@@ -40,6 +40,7 @@ export const useConversationData = () => {
   useEffect(() => {
     if (!conversation) return;
     setLeadId(conversation.leadId);
+    setConversationId(conversation.id)
   }, [conversation]);
 
   return {

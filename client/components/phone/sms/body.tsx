@@ -1,15 +1,17 @@
 import { useContext, useRef } from "react";
 import { MessageSquare } from "lucide-react";
 import SocketContext from "@/providers/socket";
-import { userEmitter } from "@/lib/event-emmiter";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useLeadData } from "@/hooks/lead/use-lead";
+import {
+  useLeadMessageActions,
+  useLeadMessageData,
+} from "@/hooks/lead/use-message";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCard } from "./message-card";
-import { useLeadMessageActions } from "@/hooks/lead/use-message";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const SmsBody = () => {
@@ -19,12 +21,9 @@ export const SmsBody = () => {
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const {
-    messages,
-    isFetchingMessages,
-    onMessageInitialSubmit,
-    IsPendinginitialMessage,
-  } = useLeadMessageActions();
+  const { messages, isFetchingMessages } = useLeadMessageData();
+  const { IsPendinginitialMessage, onMessageInitialSubmit } =
+    useLeadMessageActions();
 
   //TODO - messages are not scrolling to the bottom after being inserted
   const ScrollDown = () => {

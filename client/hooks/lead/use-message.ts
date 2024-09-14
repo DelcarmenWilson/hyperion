@@ -12,22 +12,35 @@ import {
   messagesGetAllByConversationId,
 } from "@/actions/lead/message";
 
+export const useLeadMessageData = () => {
+  const { conversationId } = useLeadStore();
+  //ALL MESSAGES
+  
+  const { data: messages, isFetching: isFetchingMessages } = useQuery<
+    LeadMessage[]
+  >({
+    queryFn: () => messagesGetAllByConversationId(conversationId),
+    queryKey: [`leadMessages-${conversationId}`],
+  });  
+
+  return {
+    messages,
+    isFetchingMessages,
+  };
+};
+
+
+
 export const useLeadMessageActions = (onCancel?: () => void) => {
-  const { leadId, conversationId, setConversationId } = useLeadStore();
+  const {leadId,conversationId, setConversationId } = useLeadStore();
   const queryClient = useQueryClient();
   const invalidate = () => {
     queryClient.invalidateQueries({
       queryKey: [`leadMessages-${conversationId}`],
     });
   };
-  //ALL MESSAGES
-  //TODO see if we can some type of pagination
-  const { data: messages, isFetching: isFetchingMessages } = useQuery<
-    LeadMessage[]
-  >({
-    queryFn: () => messagesGetAllByConversationId(conversationId),
-    queryKey: [`leadMessages-${conversationId}`],
-  });
+  
+  
   //INITIAL MESSAGE
   const { mutate: initialMessageMutate, isPending: IsPendinginitialMessage } =
     useMutation({
@@ -104,14 +117,12 @@ export const useLeadMessageActions = (onCancel?: () => void) => {
       toast.loading(toastString, { id: "insert-message" });
       values.leadId = leadId;
       values.conversationId = conversationId;
-      insertMessageMutate(values);
+       insertMessageMutate(values);
     },
-    [initialMessageMutate]
+    [initialMessageMutate,leadId,conversationId]
   );
 
   return {
-    messages,
-    isFetchingMessages,
     onMessageInitialSubmit,
     IsPendinginitialMessage,
     onMessageInsertSubmit,
