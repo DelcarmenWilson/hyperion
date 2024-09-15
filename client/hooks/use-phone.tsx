@@ -1,13 +1,13 @@
+import { useEffect } from "react";
 import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
 import { PipeLine } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Call, Device } from "@twilio/voice-sdk";
-import { useEffect, useState } from "react";
 import {
-  chatSettingsUpdateCurrentCall,
-  chatSettingsUpdateRemoveCurrentCall,
-} from "@/actions/chat-settings";
+  phoneSettingsUpdateCurrentCall,
+  phoneSettingsUpdateRemoveCurrentCall,
+} from "@/actions/settings/phone";
 
 type PhoneStore = {
   //PHONE SPECIFIC
@@ -167,7 +167,7 @@ export const usePhoneData = (phone: Device | null) => {
     phone?.calls.forEach((call) => {
       call.disconnect();
     });
-    chatSettingsUpdateRemoveCurrentCall();
+    phoneSettingsUpdateRemoveCurrentCall();
   };
   const onCallMuted = () => {
     if (call) {
@@ -182,7 +182,7 @@ export const usePhoneData = (phone: Device | null) => {
     if (!call) return;
     call.accept();
     //TODO - this is not working as intended
-    chatSettingsUpdateCurrentCall(call.parameters.CallSid);
+    phoneSettingsUpdateCurrentCall(call.parameters.CallSid);
     onPhoneInConnect();
   };
   //Disconnect an in progress call - Direct the call to voicemail

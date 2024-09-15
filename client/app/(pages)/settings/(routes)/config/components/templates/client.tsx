@@ -80,7 +80,7 @@ export const UserTemplateClient = () => {
             <h4 className="text-2xl font-semibold">Templates</h4>
             {topMenu}
           </div>
-          <TemplateList templates={templates!} />
+          <TemplateList />
         </>
       )}
     </>

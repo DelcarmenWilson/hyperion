@@ -17,12 +17,8 @@ import { LoginStatusModal } from "@/components/login-status/modal";
 
 import { leadStatusGetAllDefault } from "@/actions/lead/status";
 import { scriptGetOne } from "@/actions/script";
-import {
-  userCarriersGetAllByUserId,
-  userGetByIdDefault,
-  userLicensesGetAllByUserId,
-  userTemplatesGetAllByUserId,
-} from "@/data/user";
+import { userGetByIdDefault, userLicensesGetAllByUserId } from "@/data/user";
+import { userCarriersGetAll, userTemplatesGetAll } from "@/actions/user";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGetByUserId } from "@/actions/schedule";
 import {
@@ -35,6 +31,7 @@ import { getTwilioToken } from "@/actions/twilio";
 import { usersGetAllChat } from "@/actions/user";
 import ModalProvider from "@/providers/modal";
 import { GroupMessageCard } from "@/components/global/group-message-card";
+import { phoneSettingsGet } from "@/actions/settings/phone";
 export default async function DashBoardLayout({
   children,
 }: {
@@ -52,12 +49,13 @@ export default async function DashBoardLayout({
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
   const licenses = await userLicensesGetAllByUserId(user.id);
-  const carriers = await userCarriersGetAllByUserId(user.id);
+  const carriers = await userCarriersGetAll();
   const availableCarriers = await adminCarriersGetAll();
   const schedule = await scheduleGetByUserId(user.id, user.role);
   const appointments = await appointmentsGetAllByUserId(user.id);
   const appointmentLabels = await appointmentLabelsGetAllByUserId(user.id);
-  const templates = await userTemplatesGetAllByUserId(user.id);
+  const templates = await userTemplatesGetAll();
+  const phoneSettings = await phoneSettingsGet();
 
   return (
     <GlobalContextProvider
@@ -77,7 +75,11 @@ export default async function DashBoardLayout({
           <div className="md:pl-[180px]">
             <NavBar />
             <div className="relative ">
-              <PhoneContextProvider initVoicemails={voicemails} token={token!}>
+              <PhoneContextProvider
+                initVoicemails={voicemails}
+                token={token!}
+                settings={phoneSettings!}
+              >
                 <AppointmentContextComponent
                   initSchedule={schedule!}
                   initAppointments={appointments}

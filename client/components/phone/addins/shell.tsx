@@ -24,7 +24,7 @@ const PhoneShell = () => {
       {/* //TODO - If every one agree with the changes remove this */}
       {/* <PhoneLeadInfo /> */}
       <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
-        <TabsList className="w-full h-auto">
+        <TabsList className="w-full h-auto bg-primary/25">
           <TabsTrigger
             className="flex-1 flex-col justify-center gap-2"
             value="phone"

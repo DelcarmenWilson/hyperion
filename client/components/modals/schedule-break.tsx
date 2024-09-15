@@ -4,7 +4,11 @@ import { RefreshCcw } from "lucide-react";
 import { useSchedule, useScheduleBreak } from "@/hooks/use-schedule";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 import { Input } from "@/components/ui/input";
 
@@ -32,6 +36,9 @@ export const ScheduleBreakModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogDescription className="hidden">
+        Schedule Break Form
+      </DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[50%] max-h-[75%] w-full">
         <h4 className="text-2xl font-semibold py-2">
           <span className=" text-primary"> Breaks - </span>

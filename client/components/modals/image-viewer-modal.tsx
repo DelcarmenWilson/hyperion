@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { useImageViewer } from "@/hooks/use-image-viewer";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export const ImageViewerModal = () => {
   const { isOpen, onClose, imageUrl, alt } = useImageViewer();
@@ -11,6 +15,9 @@ export const ImageViewerModal = () => {
   if (!imageUrl) return null;
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogDescription className="hidden">
+        Image Viewer Form
+      </DialogDescription>
       <DialogContent className="min-h-[60%] max-h-[75%] w-full bg-transparent p-0 border-0 overflow-hidden ">
         <Image
           width={500}

@@ -1,6 +1,9 @@
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Quill from "quill";
+import { Delta, Op } from "quill/core";
+import { useLeadMessageActions } from "@/hooks/lead/use-message";
+import { SmsMessageSchemaType } from "@/schemas/message";
 
 const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
   ssr: false,
@@ -10,22 +13,35 @@ type Props = {
 };
 const FormInput = ({ placeholder }: Props) => {
   const editorRef = useRef<Quill | null>(null);
+  const { onMessageInsertSubmit, IsPendingInsertMessage } =
+    useLeadMessageActions(() => {});
+  const [key, setKey] = useState(0);
 
   const handleSumbit = ({
     body,
     image,
+    templateImage,
   }: {
-    body: string;
+    body: Delta;
     image: File | null;
+    templateImage: string | null;
   }) => {
-    console.log(body, image);
+    const message: SmsMessageSchemaType = {
+      content: body.ops[0].insert as string,
+      type: "sms",
+      //@ts-ignore
+      images: templateImage,
+    };
+    onMessageInsertSubmit(message);
+    setKey((prev) => prev + 1);
   };
   return (
-    <div className="px-5 w-full">
+    <div className="px-2 w-full">
       <QuillEditor
+        key={key}
         placeholder={placeholder}
         onSubmit={handleSumbit}
-        disabled={false}
+        disabled={IsPendingInsertMessage}
         innerRef={editorRef}
       />
     </div>

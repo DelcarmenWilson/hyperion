@@ -9,7 +9,11 @@ import { FullLead, FullPipeline } from "@/types";
 
 import { PipeLine } from "@prisma/client";
 import { AlertModal } from "@/components/modals/alert";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -130,6 +134,9 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
         height="h-auto"
       />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogDescription className="hidden">
+          Pipeline List Form
+        </DialogDescription>
         <DialogContent className="flex flex-col justify-start h-[60%] w-full">
           <h3 className="text-2xl font-semibold py-2">Edit Stage</h3>
           <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center">

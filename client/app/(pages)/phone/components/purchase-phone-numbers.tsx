@@ -5,11 +5,13 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { ItemProps } from "@/types";
 import {
   UserPhoneNumberSchema,
   UserPhoneNumberSchemaType,
 } from "@/schemas/user";
 
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -18,6 +20,9 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+import { CardLayout } from "@/components/custom/card/layout";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -27,15 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
-import { isAValidPhoneNumber } from "@/formulas/phones";
-import { phoneNumberInsert } from "@/actions/phonenumber";
+import { phoneNumberInsert } from "@/actions/user/phone-number";
+
 import { states } from "@/constants/states";
-import { CardLayout } from "@/components/custom/card/layout";
-import { PhonePurchaseItems as PhonePurchaseItems } from "@/constants/phone";
-import { ItemProps } from "@/types";
+import { PhonePurchaseItems } from "@/constants/phone";
 
 export const PurchasePhoneNumberForm = () => {
   const [loading, setLoading] = useState(false);

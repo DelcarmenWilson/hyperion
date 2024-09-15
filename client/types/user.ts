@@ -5,6 +5,7 @@ import {
   Lead,
   LeadConversation,
   PhoneNumber,
+  PhoneSettings,
   Team,
   User,
   UserCarrier,
@@ -30,6 +31,7 @@ export type OnlineUser = User & {
 export type SummaryUser = User & {
   phoneNumbers: PhoneNumber[];
   chatSettings: ChatSettings;
+  phoneSettings:PhoneSettings
 };
 
 export type FullUser = User & {

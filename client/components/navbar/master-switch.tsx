@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { notificationsUpdateByIdMasterSwitch } from "@/actions/notification-settings";
+import { notificationsUpdateByIdMasterSwitch } from "@/actions/settings/notification";
 
 export const MasterSwitch = () => {
   const user = useCurrentUser();

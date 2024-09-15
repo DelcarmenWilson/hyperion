@@ -46,7 +46,7 @@ export async function POST(req: Request) {
           where: { phone: call.to },
         });
         //get chat settings based on the agent ID
-        const settings = await db.chatSettings.findFirst({
+        const settings = await db.phoneSettings.findFirst({
           where: { userId: phonenumber?.agentId! },
         });
 
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         });
 
         call.masterSwitch = notificationSettings?.masterSwitch;
-        call.personalNumber = notificationSettings?.phoneNumber;
+        call.personalNumber = settings?.personalNumber!;
         call.voicemailIn = settings?.voicemailIn;
         call.agentId = phonenumber?.agentId!;
         call.currentCall = settings?.currentCall;

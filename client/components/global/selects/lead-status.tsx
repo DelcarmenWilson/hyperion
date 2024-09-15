@@ -1,6 +1,9 @@
 "use client";
-import { useLeadStatuses } from "@/hooks/lead/use-statuses";
+import { useLeadStatuses } from "./hooks/use-statuses";
 
+import { SelectType } from "./types/select-types";
+
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 import {
   Select,
   SelectContent,
@@ -8,19 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
-
-type Props = {
-  defaultValue: string;
-  onValueChange: React.Dispatch<React.SetStateAction<string | undefined>>;
-  disabled?: boolean;
-};
 
 export const StatusSelect = ({
   defaultValue,
   onValueChange,
   disabled,
-}: Props) => {
+}: SelectType) => {
   const { statuses, isFetchingStatuses } = useLeadStatuses();
 
   return (

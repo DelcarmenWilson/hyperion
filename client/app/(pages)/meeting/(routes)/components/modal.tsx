@@ -3,7 +3,11 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 interface MeetingModalProps {
@@ -35,6 +39,7 @@ const MeetingModal = ({
 }: MeetingModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogDescription className="hidden">Meeting Form</DialogDescription>
       <DialogContent className="flex  flex-col w-full max-w-[520px] gap-6 border-none p-6 bg-background">
         <div className="flex flex-col gap-6">
           {image && (

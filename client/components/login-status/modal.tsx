@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { DataTable } from "../tables/data-table";
 import { columns } from "./columns";
 import { formatSecondsToTime } from "@/formulas/numbers";
@@ -20,6 +24,9 @@ export const LoginStatusModal = () => {
   if (!user) return null;
   return (
     <Dialog open={isLoginStausOpen} onOpenChange={onLoginStausClose}>
+      <DialogDescription className="hidden">
+        Login Status Form
+      </DialogDescription>
       <DialogContent className="max-h-[96%] max-w-[70%]">
         <h3 className="text-2xl font-semibold py-2">
           Logins -{" "}

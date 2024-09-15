@@ -7,7 +7,12 @@ import { Calendar, DollarSign, MessageCircle, Phone, User } from "lucide-react";
 import { capitalize } from "@/formulas/text";
 import { Team } from "@prisma/client";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import { CardCountUp } from "@/components/custom/card/count-up";
@@ -108,6 +113,9 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
             <span className=" text-2xl text-white">
               {capitalize(user?.userName)} - {user?.team?.name}
               <Dialog>
+                <DialogDescription className="hidden">
+                  Change Team Form
+                </DialogDescription>
                 <DialogTrigger asChild>
                   <Button
                     className="opacity-0 group-hover:opacity-100"
@@ -197,6 +205,9 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
               <p>
                 Role
                 <Dialog>
+                  <DialogDescription className="hidden">
+                    Change Role Form
+                  </DialogDescription>
                   <DialogTrigger asChild>
                     <Button
                       className="opacity-0 group-hover:opacity-100"

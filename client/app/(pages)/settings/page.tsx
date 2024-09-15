@@ -15,7 +15,7 @@ const SettingsPage = async () => {
         className="flex flex-col lg:flex-row gap-2 item-start h-full"
         defaultValue="profile"
       >
-        <TabsList className="flex flex-col w-full lg:w-[120px] gap-2 h-full">
+        <TabsList className="flex flex-col w-full lg:w-[120px] gap-2 justify-start">
           <ProfileImage image={user.image as string} />
           <TabsTrigger className="w-full" value="profile">
             Profile

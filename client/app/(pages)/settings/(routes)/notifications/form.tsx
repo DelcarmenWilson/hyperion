@@ -46,25 +46,6 @@ export const NotificationForm = ({
       />
       <Form {...form}>
         <form className="px-1" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel> Personal Number</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="w-[50%]"
-                    placeholder="3454575869"
-                    disabled={loading}
-                    autoComplete="phoneNumber"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <div>
               <FormField

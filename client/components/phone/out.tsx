@@ -28,8 +28,9 @@ import { TouchPad } from "./addins/touch-pad";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
-import { chatSettingsUpdateCurrentCall } from "@/actions/chat-settings";
 import { useLeadData } from "@/hooks/lead/use-lead";
+import { AudioPlayer } from "../custom/audio-player";
+import { phoneSettingsUpdateCurrentCall } from "@/actions/settings/phone";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -52,11 +53,11 @@ export const PhoneOut = () => {
   const { phone } = usePhoneContext();
   const { onDisconnect, onCallMuted } = usePhoneData(phone);
   const { leadId, leadBasic } = useLeadData();
-  const leadFullName = leadId
+  let leadFullName = leadBasic
     ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
     : "New Call";
+  const [dialToneCliked, setDialToneCliked] = useState("");
   const [disabled, setDisabled] = useState(false);
-
   const [empty, setEmpty] = useState(false);
 
   // PHONE VARIABLES
@@ -105,7 +106,7 @@ export const PhoneOut = () => {
       },
     });
 
-    chatSettingsUpdateCurrentCall(call.parameters.callSid);
+    phoneSettingsUpdateCurrentCall(call.parameters.callSid);
     //TODO - see if we can get this working
     // setTimeout(async () => {
     //   const participant = await addParticipant({
@@ -145,17 +146,21 @@ export const PhoneOut = () => {
     if (call) {
       call.sendDigits(num);
     } else {
+      setDialToneCliked(num);
       setTo((state) => {
         return { ...state, number: (state.number += num) };
       });
+      setDisabled(to.number.length > 9 ? true : false);
       onCheckNumber();
     }
   };
 
   const onNumberTyped = (num: string) => {
+    if (num.slice(-1)) setDialToneCliked(num.slice(-1));
     setTo((state) => {
       return { ...state, number: num };
     });
+
     setDisabled(num.length > 9 ? true : false);
   };
 
@@ -210,7 +215,7 @@ export const PhoneOut = () => {
     };
     setConference(updatedConference);
     onGetParticipants(participant.conferenceSid, participant);
-    chatSettingsUpdateCurrentCall(participant.callSid);
+    phoneSettingsUpdateCurrentCall(participant.callSid);
   };
   useEffect(() => {
     onCheckNumber();
@@ -227,6 +232,17 @@ export const PhoneOut = () => {
       }
     );
   }, [socket, conference]);
+
+  useEffect(() => {
+    if (!leadBasic) return;
+    leadFullName = leadBasic
+      ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
+      : "New Call";
+    setTo({
+      name: leadFullName,
+      number: formatPhoneNumber(leadBasic?.cellPhone as string) || "",
+    });
+  }, [leadBasic]);
 
   //TODO - Test data dont forget to remove
   // useEffect(() => {
@@ -277,6 +293,11 @@ export const PhoneOut = () => {
           </div>
           <div className="relative flex flex-col gap-2 flex-1 overflow-hidden">
             <TouchPad onNumberClick={onNumberClick} />
+            <AudioPlayer
+              className="hidden"
+              autoPlay
+              src={`/sounds/dialtone/dial-${dialToneCliked}.mp3`}
+            />
 
             {!isOnCall ? (
               <Button

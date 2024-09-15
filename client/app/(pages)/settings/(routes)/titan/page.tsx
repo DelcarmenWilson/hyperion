@@ -8,7 +8,7 @@ const ChatPage = async () => {
 
   const chatSettings = await chatSettingsGetById(user?.id as string);
   if (!chatSettings) return null;
-  return <ChatClient data={chatSettings} />;
+  return <ChatClient chatSettings={chatSettings} />;
 };
 
 export default ChatPage;

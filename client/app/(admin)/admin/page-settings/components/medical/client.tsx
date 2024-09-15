@@ -5,7 +5,12 @@ import { Paperclip, Plus } from "lucide-react";
 import { DrawerRight } from "@/components/custom/drawer-right";
 import { DataTable } from "@/components/tables/data-table";
 import { Heading } from "@/components/custom/heading";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -75,6 +80,9 @@ export const MedicalClient = ({ initMedicals }: MedicalClientProps) => {
                     <p>Import Medical conditions</p>
                   </TooltipContent>
                 </Tooltip>
+                <DialogDescription className="hidden">
+                  Admin Medical Conditions Form
+                </DialogDescription>
                 <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
                   <ImportMedicalConditionForm />
                 </DialogContent>

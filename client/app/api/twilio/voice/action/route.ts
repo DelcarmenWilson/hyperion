@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const phonenumber = await db.phoneNumber.findFirst({
       where: { phone: j.to },
     });
-    const settings = await db.chatSettings.findUnique({
+    const settings = await db.phoneSettings.findUnique({
       where: { userId: phonenumber?.agentId! },
     });
     j.voicemailIn = settings?.voicemailIn;

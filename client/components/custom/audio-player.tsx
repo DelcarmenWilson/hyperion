@@ -6,16 +6,20 @@ import { Pause, Play } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
 type AudioPlayerProps = {
+  className?: string;
   src: string | undefined;
   autoPlay?: boolean;
   size?: number;
+  disabled?: boolean;
   onListened?: () => void;
 };
 
 export const AudioPlayer = ({
+  className,
   src,
   autoPlay = false,
   size = 16,
+  disabled = false,
   onListened,
 }: AudioPlayerProps) => {
   const role = useCurrentRole();
@@ -39,16 +43,22 @@ export const AudioPlayer = ({
 
   useEffect(() => {
     if (!autoPlay) return;
+    if (!src || src == "N/A" || disabled) return;
     onPlayPause();
+  }, [src, disabled]);
+
+  useEffect(() => {
+    audioRef?.current?.pause;
+    setPlaying(false);
   }, [src]);
   if (role == "ASSISTANT") return null;
   return (
-    <div>
+    <div className={className}>
       <audio ref={audioRef} src={src} />
       <Button
         size={size > 16 ? "lg" : "default"}
         onClick={onPlayPause}
-        disabled={!src}
+        disabled={!src || disabled}
         type="button"
       >
         {playing ? <Pause size={size} /> : <Play size={size} />}

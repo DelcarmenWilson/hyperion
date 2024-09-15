@@ -83,8 +83,8 @@ export const smsSendAgentAppointmentNotification = async (
     where: { id: userId },
     include: {
       notificationSettings: {
-        select: { appointments: true, phoneNumber: true },
-      },
+        select: { appointments: true},
+      },phoneSettings:{select:{personalNumber:true}}
     },
   });
   if (!user) {
@@ -97,7 +97,7 @@ export const smsSendAgentAppointmentNotification = async (
   if (!user.notificationSettings.appointments) {
     return { error: "Appointment notifications not set!" };
   }
-  if (!user.notificationSettings.phoneNumber) {
+  if (!user.phoneSettings?.personalNumber) {
     return { error: "PhoneNumber not set!" };
   }
   //TODO - dont forget to remap the agents timezone here
@@ -113,7 +113,7 @@ export const smsSendAgentAppointmentNotification = async (
 
   const result = await smsSend({
     fromPhone: lead.defaultNumber,
-    toPhone: user.notificationSettings.phoneNumber,
+    toPhone: user.phoneSettings.personalNumber,
     message,
   });
 
@@ -245,11 +245,13 @@ export const getKeywordResponse = async (
       });
       await smsSend({toPhone:sms.to, fromPhone:sms.from, message:defaultOptOut.confirm});
 
-      return defaultOptOut.confirm;
+      return defaultOptOut.confirm;      
     case "reset":
       await db.leadConversation.delete({ where: { id: conversationId } });
       await smsSend({toPhone:sms.to, fromPhone:sms.from, message:"Conversation has been reset"});
       return "Conversation has been reset";
+      default:
+        return null
   }
 
   return null;
@@ -270,10 +272,11 @@ export const disabledAutoChatResponse = async (
   const settings = await db.notificationSettings.findUnique({
     where: { userId: lead.userId },
   });
+  const phoneSettings=await db.phoneSettings.findUnique({where: { userId: lead.userId },})
 
-  if (settings?.textForward && settings.phoneNumber) {
+  if (settings?.textForward && phoneSettings?.personalNumber) {
     const agentMessage = `${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`;
-    await smsSend({toPhone:settings.phoneNumber, fromPhone:lead.defaultNumber, message:agentMessage});
+    await smsSend({toPhone:phoneSettings.personalNumber, fromPhone:lead.defaultNumber, message:agentMessage});
   }
   sendSocketData(
     conversation.agentId,

@@ -6,15 +6,16 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ThemeClient } from "@/components/custom/theme/client";
-import { userUpdateByIdDataStyle } from "@/actions/user";
+
 import { useSession } from "next-auth/react";
+import { displaySettingsUpdate } from "@/actions/settings/display";
 
 const DisplayPage = () => {
   const user = useCurrentUser();
   const { update } = useSession();
 
   const onSetDataStyle = async (style: string) => {
-    const dataStyleUpdated = await userUpdateByIdDataStyle(style);
+    const dataStyleUpdated = await displaySettingsUpdate(style);
     if (dataStyleUpdated.success) {
       update();
       toast.success(dataStyleUpdated.success);

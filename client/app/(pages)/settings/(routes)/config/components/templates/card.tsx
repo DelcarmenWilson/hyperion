@@ -21,12 +21,9 @@ import { formatDate } from "@/formulas/dates";
 
 type TemplateCardProps = {
   initTemplate: UserTemplate;
-  showSelect?: boolean;
+  onSelect?: (tp: UserTemplate) => void;
 };
-export const TemplateCard = ({
-  initTemplate,
-  showSelect,
-}: TemplateCardProps) => {
+export const TemplateCard = ({ initTemplate, onSelect }: TemplateCardProps) => {
   const { onOpen } = useImageViewer();
   const [template, setTemplate] = useState(initTemplate);
   const [loading, setLoading] = useState(false);
@@ -105,12 +102,12 @@ export const TemplateCard = ({
             </div>
           )}
         </div>
-        {showSelect ? (
+        {onSelect ? (
           <Button
             className="mt-auto"
             variant="outlineprimary"
             size="sm"
-            onClick={() => userEmitter.emit("templateSelected", template)}
+            onClick={() => onSelect(template)}
           >
             Select
           </Button>

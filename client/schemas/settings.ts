@@ -1,7 +1,5 @@
 import * as z from "zod";
 import { Preset, UserRole } from "@prisma/client";
-import { min } from "date-fns";
-import { isAValidPhoneNumber } from "@/formulas/phones";
 
 export const SettingsSchema = z
   .object({
@@ -33,16 +31,7 @@ export const SettingsSchema = z
 export type SettingsSchemaType = z.infer<typeof SettingsSchema>;
 
 export const NotificationSettingsSchema = z.object({
-  userId: z.string(),
-  phoneNumber: z.string().refine(
-    (val) => {
-      if (val.length >= 1) {
-        return isAValidPhoneNumber(val)
-      }
-      return true;
-    },
-    (val) => ({ message: `${val} Please enter a valid phone number ` })
-  ),
+  userId: z.string(),  
   calls: z.boolean(),
   appointments: z.boolean(),
   messages: z.boolean(),

@@ -27,7 +27,7 @@ export const AgentSummaryClient = () => {
       leadsPending: "0",
       carrierViolations: "0",
       coaching: agent.chatSettings?.coach!,
-      currentCall: agent.chatSettings?.currentCall!,
+      currentCall: agent.phoneSettings?.currentCall!,
     })
   );
 

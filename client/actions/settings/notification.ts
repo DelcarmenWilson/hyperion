@@ -11,13 +11,13 @@ import { reFormatPhoneNumber } from "@/formulas/phones";
 //DATA
 export const notificationSettingsGet = async () => {
   try {
-    const user=await currentUser()
-    if(!user){
-      return null
+    const user = await currentUser();
+    if (!user) {
+      return null;
     }
     const notificationSettings = await db.notificationSettings.findUnique({
       where: {
-        userId:user.id,
+        userId: user.id,
       },
     });
     return notificationSettings;
@@ -38,7 +38,6 @@ export const notificationSettingsInsert = async (userId: string) => {
   const notificationSettings = await db.notificationSettings.create({
     data: {
       userId,
-      phoneNumber: "",
     },
   });
 
@@ -54,25 +53,14 @@ export const notificationSettingsUpdate = async (
     return { error: "Invalid fields!" };
   }
 
-  const {
-    userId,
-    phoneNumber,
-    calls,
-    appointments,
-    messages,
-    voicemails,
-    textForward,
-  } = validatedFields.data;
+  const { userId, calls, appointments, messages, voicemails, textForward } =
+    validatedFields.data;
 
-  if (!userId) {
-    return { error: "No User Id!" };
-  }
-  const validPhoneNumber = reFormatPhoneNumber(phoneNumber);
+  if (!userId) return { error: "No User Id!" };
 
   await db.notificationSettings.update({
     where: { userId },
     data: {
-      phoneNumber: validPhoneNumber,
       calls,
       appointments,
       messages,
@@ -82,9 +70,7 @@ export const notificationSettingsUpdate = async (
   });
 
   return {
-    success: `Notifications Settings Updated! ${
-      !validPhoneNumber ? "Phone Number is not valid" : ""
-    }`,
+    success: "Notifications Settings Updated!",
   };
 };
 
@@ -92,9 +78,9 @@ export const notificationSettingsUpdate = async (
 export const notificationSettingsInsertAll = async () => {
   const role = await currentRole();
 
-  if (role != "MASTER") {
+  if (role != "MASTER") 
     return { error: "Unauthorized!" };
-  }
+  
 
   const notifications = await db.notificationSettings.findFirst();
   if (notifications) {

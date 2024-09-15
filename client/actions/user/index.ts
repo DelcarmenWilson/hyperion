@@ -29,12 +29,12 @@ import {
 } from "@/schemas/register";
 import { SettingsSchemaType } from "@/schemas/settings";
 
-import { chatSettingsInsert } from "./chat-settings";
+import { chatSettingsInsert } from "@/actions/settings/chat";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { userGetByAssistant, userGetByEmail, userGetById } from "@/data/user";
-import { notificationSettingsInsert } from "./notification-settings";
-import { scheduleInsert } from "./schedule";
+import { notificationSettingsInsert } from "@/actions/settings/notification";
+import { scheduleInsert } from "@/actions/schedule";
 import { UserRole } from "@prisma/client";
 import { OnlineUser } from "@/types/user";
 import { getEntireDay } from "@/formulas/dates";
@@ -91,17 +91,6 @@ export const usersGetAllChat = async () => {
   }
 };
 
-const getChatId = async (myUserId: string, otherUserId: string) => {
-  const chat = await db.chat.findFirst({
-    where: {
-      OR: [
-        { userOneId: myUserId, userTwoId: otherUserId },
-        { userOneId: otherUserId, userTwoId: myUserId },
-      ],
-    },
-  });
-  return chat?.id;
-};
 
 export const usersGetAllByRole = async (role: UserRole) => {
   try {
@@ -130,6 +119,8 @@ export const usersGetSummaryByTeamId = async () => {
           where: { status: "default" },
         },
         chatSettings: true,
+        phoneSettings:{select:{currentCall:true}}
+
       },
     });
 
@@ -155,6 +146,43 @@ export const userGetAdAccount = async () => {
     return account.adAccount;
   } catch {
     return null;
+  }
+};
+
+// USER CARRIERS
+export const userCarriersGetAll = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return [];
+
+    let userId = user.id;
+    if (user.role == "ASSISTANT")
+      userId = (await userGetByAssistant(user.id)) as string;
+
+    const carriers = await db.userCarrier.findMany({
+      where: { userId },
+      include: { carrier: { select: { name: true } } },
+    });
+
+    return carriers;
+  } catch {
+    return [];
+  }
+};
+
+// USER TEMPLATES
+export const userTemplatesGetAll = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return [];
+
+    const templates = await db.userTemplate.findMany({
+      where: { userId:user.id },
+    });
+
+    return templates;
+  } catch {
+    return [];
   }
 };
 
@@ -473,23 +501,7 @@ export const userUpdateByIdAboutMe = async (values: UserAboutMeSchemaType) => {
   return { success: "About Me section updated!" };
 };
 
-//TODO-THIS SHOULD BE IN ITS OWN TABLE (DISPLAY SETTINGS)
-export const userUpdateByIdDataStyle = async (dataStyle: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
 
-  await db.chatSettings.update({
-    where: {
-      userId: user.id,
-    },
-    data: {
-      dataStyle,
-    },
-  });
-  return { success: `Data style updated to ${dataStyle}!` };
-};
 
 export const userUpdateEmailVerification = async (token: string) => {
   if (!token) {

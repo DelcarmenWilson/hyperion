@@ -52,6 +52,9 @@ export const AppointmentDetails = () => {
 
   return (
     <Dialog open={isDetailsOpen} onOpenChange={onDetailsClose}>
+      <DialogDescription className="hidden">
+        Appointment Details Form
+      </DialogDescription>
       <DialogDescription>Appointment Details</DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <h4 className="text-2xl font-semibold py-2 text-primary">

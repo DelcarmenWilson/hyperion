@@ -1,4 +1,25 @@
 // SETTINGS
+model PhoneSettings {
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    personalNumber String?
+
+    incoming String @default("N/A")
+    outgoing String @default("N/A")
+
+    dtmfPack                    String @default("N/A")
+    messageNotification         String @default("access-allowed")
+    messageInternalNotification String @default("bubble-pop-up")
+
+    voicemailIn  String?
+    voicemailOut String?
+
+    currentCall String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
 model ChatSettings {
     userId String @unique
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -6,17 +27,19 @@ model ChatSettings {
     defaultPrompt   String @db.LongText
     defaultFunction String @db.LongText
 
-    titan                       Boolean @default(false)
-    coach                       Boolean @default(false)
-    messageNotification         String  @default("access-allowed")
-    messageInternalNotification String  @default("bubble-pop-up")
-    dataStyle                   String  @default("list")
+    titan     Boolean  @default(false)
+    coach     Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
 
-    currentCall  String?
-    voicemailIn  String?
-    voicemailOut String?
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+model DisplaySettings {
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    dataStyle String   @default("list")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model NotificationSettings {
@@ -24,7 +47,6 @@ model NotificationSettings {
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     masterSwitch String  @default("on")
-    phoneNumber  String
     calls        Boolean @default(false)
     appointments Boolean @default(false)
     messages     Boolean @default(false)

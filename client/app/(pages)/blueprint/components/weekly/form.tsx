@@ -9,7 +9,11 @@ import {
 } from "@/schemas/blueprint";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -48,6 +52,9 @@ export const BluePrintWeekForm = () => {
       open={isBluePrintWeekFormOpen}
       onOpenChange={onBluePrintWeekFormClose}
     >
+      <DialogDescription className="hidden">
+        Blue Print Week Form
+      </DialogDescription>
       <DialogContent>
         <h3 className="text-2xl font-semibold py-2">
           Edit current week blueprint (Test)

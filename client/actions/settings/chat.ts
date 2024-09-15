@@ -6,6 +6,7 @@ import { User } from "@prisma/client";
 
 import { defaultChat } from "@/placeholder/chat";
 import { replacePresetUser } from "@/formulas/text";
+import { ChatSettingsSchema, ChatSettingsSchemaType } from "@/schemas/chat-settings";
 
 //DATA
 export const chatSettingGetTitan = async (userId: string) => {
@@ -30,22 +31,23 @@ export const chatSettingsInsert = async (user: User) => {
 };
 
 //TODO need to create a type for this instead of any
-export const chatSettingsUpdate = async (values: any) => {
-  const {
-    userId,
+export const chatSettingsUpdate = async (values: ChatSettingsSchemaType) => {
+  const validatedFields = ChatSettingsSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const {  userId,
     defaultPrompt,
     defaultFunction,
-    messageNotification,
     titan,
-    coach,
-  } = values;
+    coach,} = validatedFields.data;
 
   const chatSettings = await db.chatSettings.update({
     where: { userId: userId },
     data: {
       defaultPrompt,
       defaultFunction,
-      messageNotification,
       titan,
       coach,
     },
@@ -58,26 +60,7 @@ export const chatSettingsUpdate = async (values: any) => {
   return { success: "Chat settings have been updated" };
 };
 
-export const chatSettingsUpdateVoicemail = async (voicemailIn: string) => {
-  const user = await currentUser();
 
-  if (!user) {
-    return { error: "Unauthorized!" };
-  }
-
-  const chatSettings = await db.chatSettings.update({
-    where: { userId: user.id },
-    data: {
-      voicemailIn,
-    },
-  });
-
-  if (!chatSettings) {
-    return { error: "Something went wrong!" };
-  }
-
-  return { success: "Recording has been updated" };
-};
 
 export const chatSettingsUpdateCoach = async (coach: boolean) => {
   const user = await currentUser();
@@ -96,36 +79,6 @@ export const chatSettingsUpdateCoach = async (coach: boolean) => {
   return { success: `coaching has been turned ${coach ? "on" : "off"}` };
 };
 
-export const chatSettingsUpdateCurrentCall = async (currentCall: string) => {
-  const user = await currentUser();
 
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
 
-  await db.chatSettings.update({
-    where: { userId: user.id },
-    data: {
-      currentCall,
-    },
-  });
 
-  return { success: "current Call has been updated" };
-};
-
-export const chatSettingsUpdateRemoveCurrentCall = async () => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
-  await db.chatSettings.update({
-    where: { userId: user.id },
-    data: {
-      currentCall: null,
-    },
-  });
-
-  return { success: "current Call has been updated" };
-};

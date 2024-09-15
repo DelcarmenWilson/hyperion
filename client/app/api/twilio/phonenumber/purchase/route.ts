@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { client } from "@/lib/twilio/config";
 import { currentRole } from "@/lib/auth";
-import { phoneNumberInsertTwilio } from "@/actions/phonenumber";
+import { phoneNumberInsertTwilio } from "@/actions/user/phone-number";
 
 export async function POST(req: Request) {
   const role = await currentRole();
   if (!role || role == "USER") {
-    return NextResponse.json("Un authorized", { status: 401 });
+    return NextResponse.json("Unauthorized", { status: 401 });
   }
   const body = await req.json();
   const { phonenumber, state, agentId } = body;

@@ -1,7 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import SocketContext from "@/providers/socket";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -22,6 +26,9 @@ export const GroupDailog = ({ isOpen, onClose }: Props) => {
   };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogDescription className="hidden">
+        Group Message Form
+      </DialogDescription>
       <DialogContent className="flex flex-col justify-start max-h-[75%] w-full ">
         <h3 className="text-2xl font-semibold py-2">Group Message</h3>
         <div className="h-full overflow-y-auto p-2">

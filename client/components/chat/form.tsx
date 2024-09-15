@@ -23,7 +23,11 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,20 +79,14 @@ export const ChatForm = () => {
     form.setValue("attachment", undefined);
   };
 
-  useEffect(() => {
-    const onTemplateSelected = (tp: UserTemplate) => {
-      if (tp.attachment) {
-        setAttachment([tp.attachment]);
-        form.setValue("attachment", tp.attachment);
-      }
-      setDialogOpen(false);
-    };
-    userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
-    return () => {
-      userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
-    };
-    // eslint-disable-next-line
-  }, []);
+  const onTemplateSelected = (tp: UserTemplate) => {
+    if (tp.attachment) {
+      setAttachment([tp.attachment]);
+      form.setValue("attachment", tp.attachment);
+    }
+    setDialogOpen(false);
+  };
+
   useEffect(() => {
     form.setValue("chatId", chatId);
   }, [chatId]);
@@ -109,9 +107,10 @@ export const ChatForm = () => {
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogDescription className="hidden">Chat Form</DialogDescription>
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold text-primary">Templates</h3>
-          <TemplateList templates={templates!} showSelect />
+          <TemplateList onSelect={onTemplateSelected} />
         </DialogContent>
       </Dialog>
       <div>

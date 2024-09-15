@@ -14,15 +14,15 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const PhoneLeadInfo = () => {
-  const { lead } = usePhone();
-  if (!lead) return null;
-
+  const { leadId } = useLeadStore();
+  if (!leadId) return null;
   return (
     <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-        <LeadHeader lead={lead} />
+        <LeadHeader />
         <TabsList className="flex w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>

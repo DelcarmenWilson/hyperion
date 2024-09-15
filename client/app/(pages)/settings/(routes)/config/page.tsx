@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeadStatusClient } from "@/components/lead/status/client";
 import { LicenseClient } from "./components/license/client";
 import { CarrierClient } from "./components/carrier/client";
-import { NotificationClient } from "./components/notifications/client";
 import { UserTemplateClient } from "./components/templates/client";
 import { FacebookClient } from "./components/facebook/client";
 
@@ -28,9 +27,6 @@ const ConfigPage = async () => {
         <TabsTrigger className="w-full" value="templates">
           Templates
         </TabsTrigger>
-        <TabsTrigger className="w-full" value="notifications">
-          Notifications
-        </TabsTrigger>
         {["ADMIN", "MASTER"].includes(role as string) && (
           <TabsTrigger className="w-full" value="facebook">
             Facebook
@@ -49,9 +45,6 @@ const ConfigPage = async () => {
         </TabsContent>
         <TabsContent value="templates">
           <UserTemplateClient />
-        </TabsContent>
-        <TabsContent value="notifications">
-          <NotificationClient />
         </TabsContent>
         {["ADMIN", "MASTER"].includes(role as string) && (
           <TabsContent value="facebook">

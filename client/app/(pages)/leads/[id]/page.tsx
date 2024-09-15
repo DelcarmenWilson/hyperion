@@ -36,7 +36,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
       }
     >
       <Tabs defaultValue="general" className="h-full">
-        <LeadHeader lead={lead} />
+        <LeadHeader />
         <PolicyInfoForm />
         <ShareForm />
         <TransferForm />

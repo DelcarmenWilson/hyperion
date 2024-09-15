@@ -24,7 +24,7 @@ import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
-import { chatSettingGetTitan } from "../chat-settings";
+import { chatSettingGetTitan } from "../settings/chat";
 
 //LEAD
 
@@ -158,6 +158,8 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         firstName: true,
         lastName: true,
         status: true,
+        gender:true,
+        maritalStatus:true,
         calls: { where: { direction: "outbound" } },
         conversations: { where: { agentId: user.id } },
         userId: true,

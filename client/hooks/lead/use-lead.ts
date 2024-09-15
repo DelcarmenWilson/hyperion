@@ -177,7 +177,6 @@ export const useLeadStore = create<useLeadStore>((set) => ({
     }),
   onAssistantFormClose: () =>
     set({
-      leadId: undefined,
       isAssistantFormOpen: false,
     }),
   //INTAKE
@@ -186,7 +185,6 @@ export const useLeadStore = create<useLeadStore>((set) => ({
     set({ leadId: l, leadFullName: n, isIntakeFormOpen: true }),
   onIntakeFormClose: () =>
     set({
-      leadId: undefined,
       isIntakeFormOpen: false,
     }),
 

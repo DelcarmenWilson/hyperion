@@ -8,7 +8,11 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { ChatCard } from "./card";
@@ -35,6 +39,9 @@ export const ChatsClient = () => {
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogDescription className="hidden">
+          Agent Chats Form
+        </DialogDescription>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-[400px]">
           <h3 className="text-2xl font-semibold py-2">New chat</h3>
           <ChatUsersList onSelectUser={onSelectUser} />

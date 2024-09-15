@@ -7,9 +7,10 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadData } from "@/hooks/lead/use-lead";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
+import { UserTemplate } from "@prisma/client";
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,11 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { UserTemplate } from "@prisma/client";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,11 +37,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ImageGrid } from "@/components/reusable/image-grid";
-import { replacePreset } from "@/formulas/text";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
+import { replacePreset } from "@/formulas/text";
 
 export const SmsForm = () => {
-  const { user, templates } = useGlobalContext();
+  const { user } = useGlobalContext();
   const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [attachment, setAttachment] = useState<string[]>([]);
@@ -66,31 +70,25 @@ export const SmsForm = () => {
     form.setValue("images", undefined);
   };
 
-  useEffect(() => {
-    const onTemplateSelected = (tp: UserTemplate) => {
-      if (tp.attachment) {
-        setAttachment([tp.attachment]);
-        form.setValue("images", tp.attachment);
-      }
-      if (tp.message) {
-        const message = replacePreset(tp.message, user!, lead!);
-        form.setValue("content", message);
-      }
-      setDialogOpen(false);
-    };
-    userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
-    return () => {
-      userEmitter.on("templateSelected", (info) => onTemplateSelected(info));
-    };
-    // eslint-disable-next-line
-  }, []);
+  const onTemplateSelected = (tp: UserTemplate) => {
+    if (tp.attachment) {
+      setAttachment([tp.attachment]);
+      form.setValue("images", tp.attachment);
+    }
+    if (tp.message) {
+      const message = replacePreset(tp.message, user!, lead!);
+      form.setValue("content", message);
+    }
+    setDialogOpen(false);
+  };
 
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogDescription className="hidden">Sms Form</DialogDescription>
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold text-primary">Templates</h3>
-          <TemplateList templates={templates!} showSelect />
+          <TemplateList onSelect={onTemplateSelected} />
         </DialogContent>
       </Dialog>
       <div>

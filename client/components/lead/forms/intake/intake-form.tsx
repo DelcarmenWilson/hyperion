@@ -9,7 +9,11 @@ import {
   LeadPolicySchemaType,
 } from "@/schemas/lead";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -71,6 +75,7 @@ export const IntakeForm = () => {
   return (
     <>
       <Dialog open={isIntakeDialogOpen} onOpenChange={onIntakeDialogClose}>
+        <DialogDescription className="hidden">Intake Form</DialogDescription>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
           <h4 className="text-2xl font-semibold py-2 capitalize">
             {dialogType} Info -
@@ -116,6 +121,7 @@ export const IntakeForm = () => {
       </Dialog>
 
       <Dialog open={isIntakeFormOpen} onOpenChange={onIntakeFormClose}>
+        <DialogDescription className="hidden">Intake Form</DialogDescription>
         <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
           <h3 className="text-2xl font-semibold py-2">
             Intake Form - <span className="text-primary">{leadFullName}</span>

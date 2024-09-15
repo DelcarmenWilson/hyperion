@@ -1,7 +1,6 @@
+import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
-
-
 
 export const userGetCurrent = async (id: string) => {
   try {
@@ -21,9 +20,10 @@ export const userGetById = async (id: string) => {
       where: { id },
       include: {
         phoneNumbers: true,
-        chatSettings: true,
         team: true,
         notificationSettings: true,
+        phoneSettings:true,
+        displaySettings:true
       },
     });
 
@@ -87,8 +87,6 @@ export const userGetByIdReport = async (id: string) => {
   }
 };
 
-
-
 // USER LICENSES
 export const userLicensesGetAllByUserId = async (
   userId: string,
@@ -105,35 +103,6 @@ export const userLicensesGetAllByUserId = async (
   }
 };
 
-// USER CARRIERS
-export const userCarriersGetAllByUserId = async (
-  userId: string,
-  role: UserRole = "USER"
-) => {
-  try {
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const carriers = await db.userCarrier.findMany({
-      where: { userId },
-      include: { carrier: { select: { name: true } } },
-    });
 
-    return carriers;
-  } catch {
-    return [];
-  }
-};
 
-// USER TEMPLATES
-export const userTemplatesGetAllByUserId = async (userId: string) => {
-  try {
-    const templates = await db.userTemplate.findMany({
-      where: { userId },
-    });
 
-    return templates;
-  } catch {
-    return [];
-  }
-};
