@@ -7,7 +7,6 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { PhoneNumber } from "@prisma/client";
 import { ItemProps } from "@/types";
 import { PhoneLegendItems } from "@/constants/phone";
-import { useGlobalContext } from "@/providers/global";
 
 type MyPhoneNumbers = {
   phoneNumbers: PhoneNumber[];

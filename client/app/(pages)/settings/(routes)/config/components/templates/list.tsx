@@ -1,21 +1,24 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { TemplateCard } from "./card";
+import { useAgentTemplateData } from "../../hooks/user-template";
 import { UserTemplate } from "@prisma/client";
 
+import { EmptyData } from "@/components/lead/info/empty-data";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { TemplateCard } from "./card";
+
 type TemplateListProps = {
-  templates: UserTemplate[];
   size?: string;
-  showSelect?: boolean;
+  onSelect?: (tp: UserTemplate) => void;
 };
 export const TemplateList = ({
-  templates,
   size = "full",
-  showSelect = false,
+  onSelect,
 }: TemplateListProps) => {
+  const { templates, isFetchingTemplates } = useAgentTemplateData();
   return (
-    <>
-      {templates.length ? (
+    <SkeletonWrapper isLoading={isFetchingTemplates}>
+      {templates?.length ? (
         <div
           className={cn(
             "grid grid-cols-1 gap-2 overflow-y-auto",
@@ -25,16 +28,14 @@ export const TemplateList = ({
           {templates.map((template) => (
             <TemplateCard
               key={template.id}
-              initTemplate={template}
-              showSelect={showSelect}
+              template={template}
+              onSelect={onSelect}
             />
           ))}
         </div>
       ) : (
-        <div>
-          <p className="font-semibold text-center">No Templates Found</p>
-        </div>
+        <EmptyData title="No templates found" />
       )}
-    </>
+    </SkeletonWrapper>
   );
 };

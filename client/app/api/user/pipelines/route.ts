@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { pipelineGetAllByAgentId } from "@/actions/pipeline";
+import { pipelineGetAll} from "@/actions/user/pipeline";
 
 export async function GET(request: Request) {
     const user = await currentUser();
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
       redirect("/login");
     }  
       
-    const pipelines = await pipelineGetAllByAgentId();
+    const pipelines = await pipelineGetAll();
   
     return Response.json(pipelines);
   }

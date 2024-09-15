@@ -16,7 +16,7 @@ import {
 } from "@/schemas/lead";
 
 import { leadActivityInsert } from "./activity";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistant } from "@/actions/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
@@ -24,7 +24,7 @@ import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
-import { chatSettingGetTitan } from "../chat-settings";
+import { chatSettingGetTitan } from "../settings/chat";
 
 //LEAD
 
@@ -158,6 +158,8 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         firstName: true,
         lastName: true,
         status: true,
+        gender:true,
+        maritalStatus:true,
         calls: { where: { direction: "outbound" } },
         conversations: { where: { agentId: user.id } },
         userId: true,
@@ -330,12 +332,8 @@ export const leadGetByPhone = async (cellPhone: string) => {
 
 export const leadGetPrevNextById = async (id: string) => {
   try {
-    const user = await currentUser();
-    if (!user) return null;
-    let userId = user.id;
-    if (user.role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
+    const userId = await userGetByAssistant();
+    if(!userId) return null
     const prev = (
       await db.lead.findMany({
         take: 1,

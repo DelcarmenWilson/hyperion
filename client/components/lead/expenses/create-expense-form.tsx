@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -103,6 +104,7 @@ const CreateExpenseForm = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      <DialogDescription className="hidden">Expense Form</DialogDescription>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>

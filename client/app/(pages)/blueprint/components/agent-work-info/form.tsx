@@ -9,7 +9,11 @@ import {
 } from "@/schemas/blueprint";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -55,11 +59,17 @@ export const AgentWorkInfoForm = () => {
 
   return (
     <Dialog open={isWorkInfoFormOpen} onOpenChange={onWorkInfoFormClose}>
+      <DialogDescription className="hidden">
+        Agent Work Info Form
+      </DialogDescription>
       <DialogContent>
         <h3 className="text-2xl font-semibold py-2">Work Details</h3>
         <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)} className="space-y-2">
+            <form
+              onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}
+              className="space-y-2"
+            >
               {/* WORK TYPE */}
               <FormField
                 control={form.control}

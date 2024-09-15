@@ -29,7 +29,11 @@ import {
 } from "@/schemas/workflow/workflow";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { AlertModal } from "@/components/modals/alert";
 import { WorkFlowDrawer } from "@/components/react-flow/drawer";
 import { NodeSelect } from "@/components/react-flow/node-select";
@@ -117,6 +121,7 @@ export const WorkFlowClient = ({
   return (
     <>
       <Dialog open={workflowDialogOpen} onOpenChange={setWorkflowDialogOpen}>
+        <DialogDescription className="hidden">Work Flow Form</DialogDescription>
         <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
           <h3 className="text-2xl font-semibold py-2">
             WorkFlow Info -{" "}

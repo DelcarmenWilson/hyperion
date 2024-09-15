@@ -4,9 +4,8 @@ import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
 import {
   phoneNumbersGetAssigned,
   phoneNumbersGetUnassigned,
-} from "@/data/phonenumber";
+} from "@/actions/user/phone-number";
 import { AssignNumberForm } from "./components/unassigednumbers/form";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageScrollArea } from "@/components/custom/layout/page-scroll-area";
 
 const PhonePage = async () => {

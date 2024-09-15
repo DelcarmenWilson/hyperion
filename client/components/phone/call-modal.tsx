@@ -6,7 +6,11 @@ import { usePhone } from "@/hooks/use-phone";
 
 import { AudioPlayerHp } from "@/components/custom/audio-player-hp";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { CardData } from "@/components/reusable/card-data";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
@@ -43,6 +47,7 @@ export const CallModal = () => {
   if (!call) return null;
   return (
     <Dialog open={isCallOpen} onOpenChange={onCallClose}>
+      <DialogDescription className="hidden">Call Form</DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <div className="flex justify-between items-center">
           <h4 className="text-2xl font-semibold py-2 capitalize">

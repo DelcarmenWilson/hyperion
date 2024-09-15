@@ -177,7 +177,6 @@ export const useLeadStore = create<useLeadStore>((set) => ({
     }),
   onAssistantFormClose: () =>
     set({
-      leadId: undefined,
       isAssistantFormOpen: false,
     }),
   //INTAKE
@@ -186,7 +185,6 @@ export const useLeadStore = create<useLeadStore>((set) => ({
     set({ leadId: l, leadFullName: n, isIntakeFormOpen: true }),
   onIntakeFormClose: () =>
     set({
-      leadId: undefined,
       isIntakeFormOpen: false,
     }),
 
@@ -770,7 +768,6 @@ export const useLeadPolicyActions = () => {
 
   const onPolicySubmit = useCallback(
     (values: LeadPolicySchemaType) => {
-      console.log(values);
       const toastString = "Updating Policy Information...";
       toast.loading(toastString, { id: "update-policy-info" });
 

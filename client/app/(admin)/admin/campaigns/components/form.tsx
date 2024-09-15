@@ -5,7 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -69,6 +73,7 @@ export const CampaignForm = ({ isOpen, onClose }: Props) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogDescription className="hidden">Campaign Form</DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <h3 className="text-2xl font-semibold py-2">New Campaign</h3>
         <div className="h-full overflow-y-auto">

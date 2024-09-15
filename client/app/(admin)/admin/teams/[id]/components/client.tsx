@@ -14,7 +14,12 @@ import { FullTeamReport, HalfUser } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -130,6 +135,9 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
                   <p>No Manager</p>
                   {(user?.role == "MASTER" || team.userId == user?.id) && (
                     <Dialog>
+                      <DialogDescription className="hidden">
+                        Add Manager Form
+                      </DialogDescription>
                       <DialogTrigger asChild>
                         <Button size="sm">Add</Button>
                       </DialogTrigger>

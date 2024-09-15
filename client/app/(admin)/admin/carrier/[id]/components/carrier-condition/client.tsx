@@ -8,7 +8,12 @@ import { Carrier } from "@prisma/client";
 import { FullCarrierCondition } from "@/types";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -118,6 +123,9 @@ export const CarrierConditionClient = ({
             <p>Import Leads</p>
           </TooltipContent>
         </Tooltip>
+        <DialogDescription className="hidden">
+          Carrier Conditions Form
+        </DialogDescription>
         <DialogContent className="p-0 max-h-[96%] max-w-[98%] bg-transparent">
           <ImportCarrierConditionsForm carrier={carrier} />
         </DialogContent>

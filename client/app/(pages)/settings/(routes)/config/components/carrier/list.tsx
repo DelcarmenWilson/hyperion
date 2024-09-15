@@ -1,16 +1,19 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { useAgentCarrierData } from "../../hooks/use-carrier";
 import { CarrierCard } from "./card";
-import { FullUserCarrier } from "@/types";
+import { EmptyData } from "@/components/lead/info/empty-data";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type CarrierListProps = {
-  carriers: FullUserCarrier[];
   size?: string;
 };
-export const CarrierList = ({ carriers, size = "full" }: CarrierListProps) => {
+
+export const CarrierList = ({ size = "full" }: CarrierListProps) => {
+  const { carriers, isFetchingCarriers } = useAgentCarrierData();
   return (
-    <>
-      {carriers.length ? (
+    <SkeletonWrapper isLoading={isFetchingCarriers}>
+      {carriers?.length ? (
         <div
           className={cn(
             "grid grid-cols-1 gap-2 overflow-y-auto",
@@ -18,14 +21,12 @@ export const CarrierList = ({ carriers, size = "full" }: CarrierListProps) => {
           )}
         >
           {carriers.map((carrier) => (
-            <CarrierCard key={carrier.id} initCarrier={carrier} />
+            <CarrierCard key={carrier.id} carrier={carrier} />
           ))}
         </div>
       ) : (
-        <div>
-          <p className="font-semibold text-center">No Carriers Found</p>
-        </div>
+        <EmptyData title="No Carriers Found" />
       )}
-    </>
+    </SkeletonWrapper>
   );
 };

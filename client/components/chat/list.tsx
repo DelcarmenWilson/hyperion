@@ -1,15 +1,17 @@
 "use client";
-import React from "react";
+import { useOnlineUserData } from "@/hooks/user/use-user";
 import ChatCard from "./card";
-import { useGlobalContext } from "@/providers/global";
+import SkeletonWrapper from "../skeleton-wrapper";
 
 export const ChatList = () => {
-  const { users } = useGlobalContext();
+  const { onlineUsers, isFetchingOnlineUsers } = useOnlineUserData();
   return (
     <div className="h-full overflow-y-auto pe-2">
-      {users?.map((user) => (
-        <ChatCard key={user.id} user={user} />
-      ))}
+      <SkeletonWrapper isLoading={isFetchingOnlineUsers}>
+        {onlineUsers?.map((user) => (
+          <ChatCard key={user.id} user={user} />
+        ))}
+      </SkeletonWrapper>
     </div>
   );
 };

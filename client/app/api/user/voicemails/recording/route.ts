@@ -37,12 +37,12 @@ export const POST = async (req: any, res: any) => {
     //   console.log('Error: '+err)
     //  });
     if (type == "in") {
-      await db.chatSettings.update({
+      await db.phoneSettings.update({
         where: { userId: user.id },
         data: { voicemailIn: filename },
       });
     } else {
-      await db.chatSettings.update({
+      await db.phoneSettings.update({
         where: { userId: user.id },
         data: { voicemailOut: filename },
       });

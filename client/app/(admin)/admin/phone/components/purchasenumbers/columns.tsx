@@ -3,7 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { TwilioNumber } from "@/types";
 import { FileImage, MessageCircle, Phone, X } from "lucide-react";
@@ -91,6 +96,9 @@ export const columns: ColumnDef<TwilioNumber>[] = [
     cell: ({ row }) => (
       <>
         <Dialog>
+          <DialogDescription className="hidden">
+            Purchase Phone Number Form
+          </DialogDescription>
           <DialogTrigger asChild>
             <Button size="sm">Details</Button>
           </DialogTrigger>

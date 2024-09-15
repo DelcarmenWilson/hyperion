@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { userEmitter } from "@/lib/event-emmiter";
-import { toast } from "sonner";
+
 import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useAgentLicenseActions } from "../../hooks/use-license";
 
 import { UserLicense } from "@prisma/client";
 
@@ -14,46 +14,25 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { LicenseForm } from "./form";
 
-import { userLicenseDeleteById } from "@/actions/user";
 import { formatDate } from "@/formulas/dates";
 
 type LicenseCardProps = {
-  initLicense: UserLicense;
+  license: UserLicense;
 };
-export const LicenseCard = ({ initLicense }: LicenseCardProps) => {
+export const LicenseCard = ({ license }: LicenseCardProps) => {
+  const { alertOpen, setAlertOpen, onLicenseDelete, isPendingLicenseDelete } =
+    useAgentLicenseActions();
   const { onOpen } = useImageViewer();
-  const [license, setLicense] = useState(initLicense);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteLicense = async () => {
-    setLoading(true);
-    const deletedLicense = await userLicenseDeleteById(license.id);
-
-    if (deletedLicense.success) {
-      userEmitter.emit("licenseDeleted", license.id);
-      toast.success(deletedLicense.success);
-    } else toast.error(deletedLicense.error);
-
-    setAlertOpen(false);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setLicense(initLicense);
-    const onLicenseUpdated = (e: UserLicense) => {
-      if (e.id == license.id) setLicense(e);
-    };
-    userEmitter.on("licenseUpdated", (info) => onLicenseUpdated(info));
-  }, [initLicense]);
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteLicense}
-        loading={loading}
+        onConfirm={() => onLicenseDelete(license.id)}
+        loading={isPendingLicenseDelete}
         height="auto"
       />
       <DrawerRight

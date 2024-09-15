@@ -11,7 +11,11 @@ import { PipeLine } from "@prisma/client";
 import { PipelineSchema, PipelineSchemaType } from "@/schemas/pipeline";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormField,
@@ -23,8 +27,8 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import { StatusSelect } from "./status-select";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { StatusSelect } from "@/components/global/selects/lead-status";
 
 export const PipelineForm = () => {
   const { isFormOpen, onFormClose, type } = usePipelineStore();
@@ -38,6 +42,7 @@ export const PipelineForm = () => {
 
   return (
     <Dialog open={isFormOpen} onOpenChange={onFormClose}>
+      <DialogDescription className="hidden">Pipeline Form</DialogDescription>
       <DialogContent className="flex flex-col justify-start h-auto w-full">
         <h3 className="text-2xl font-semibold py-2">
           {type == "edit" ? "Edit" : "Add"} Stage

@@ -85,6 +85,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
+      <DialogDescription className="hidden">
+        Team Switcher Form
+      </DialogDescription>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

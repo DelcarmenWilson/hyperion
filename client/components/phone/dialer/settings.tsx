@@ -2,7 +2,12 @@
 import { useState } from "react";
 import { Cog } from "lucide-react";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -22,6 +27,9 @@ export const DialerSettings = ({
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogDescription className="hidden">
+        Dailer Settings Form
+      </DialogDescription>
       <DialogTrigger asChild>
         <Button disabled={disabled} variant="outline" size="icon">
           <Cog size={16} />

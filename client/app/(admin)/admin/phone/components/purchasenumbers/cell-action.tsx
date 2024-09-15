@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, MoreHorizontal, Phone, ShieldMinus } from "lucide-react";
 
+import { PhoneNumber } from "@prisma/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +19,7 @@ import {
   phoneNumberUpdateByIdActivate,
   phoneNumberUpdateByIdDeactivate,
   phoneNumberUpdateByIdDefault,
-} from "@/actions/phonenumber";
-import { PhoneNumber } from "@prisma/client";
+} from "@/actions/user/phone-number";
 
 interface CellActionProps {
   data: PhoneNumber;

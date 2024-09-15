@@ -31,7 +31,10 @@ import { UserLicense } from "@prisma/client";
 import ReactDatePicker from "react-datepicker";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/custom/image-upload";
-import { userLicenseInsert, userLicenseUpdateById } from "@/actions/user";
+import {
+  userLicenseInsert,
+  userLicenseUpdateById,
+} from "@/actions/user/license";
 import { states } from "@/constants/states";
 
 type LicenseFormProps = {

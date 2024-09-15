@@ -34,7 +34,9 @@ export const SmsBody = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   //TODO - messages are not scrolling to the bottom after being inserted
   const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView(true);
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView(true);
+    }, 2000);
   };
   const onSetMessage = (newMessage: LeadMessage) => {
     const existing = messages?.find((e) => e.id == newMessage.id);
@@ -81,13 +83,11 @@ export const SmsBody = () => {
   useEffect(() => {
     if (!initMessages) return;
     setMessages(initMessages);
-    setTimeout(() => {
-      scrollToBottom();
-    }, 2000);
+    scrollToBottom();
   }, [initMessages]);
 
   return (
-    <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4">
+    <ScrollArea className="flex flex-col flex-1 rounded-sm p-4">
       <div
         ref={chatContainerRef}
         className="flex flex-1 flex-col h-full w-full"

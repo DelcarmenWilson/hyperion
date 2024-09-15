@@ -7,13 +7,13 @@ import { toast } from "sonner";
 import { FullPipeline } from "@/types";
 import {
   pipelineDeleteById,
-  pipelineGetAllByAgentId,
+  pipelineGetAll,
   pipelineGetById,
   pipelineInsert,
   pipelineUpdateById,
   pipelineUpdateByIdIndex,
   pipelineUpdateOrder,
-} from "@/actions/pipeline";
+} from "@/actions/user/pipeline";
 import { PipeLine } from "@prisma/client";
 import { PipelineSchemaType } from "@/schemas/pipeline";
 import { useModal } from "@/providers/modal";
@@ -55,7 +55,7 @@ export const usePipelineData = () => {
   const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<
     FullPipeline[]
   >({
-    queryFn: () => pipelineGetAllByAgentId(),
+    queryFn: () => pipelineGetAll(),
     queryKey: ["pipelines"],
   });
 

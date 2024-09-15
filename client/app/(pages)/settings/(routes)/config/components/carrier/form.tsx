@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+import { FullUserCarrier } from "@/types";
+import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,13 +27,13 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
-
-import { userCarrierInsert, userCarrierUpdateById } from "@/actions/user";
 import { Textarea } from "@/components/ui/textarea";
-import { FullUserCarrier } from "@/types";
-import { useGlobalContext } from "@/providers/global";
+
+import {
+  userCarrierInsert,
+  userCarrierUpdateById,
+} from "@/actions/user/carrier";
+import { useAdminCarriers } from "@/hooks/admin/use-carriers";
 
 type CarrierFormProps = {
   carrier?: FullUserCarrier;
@@ -38,7 +41,7 @@ type CarrierFormProps = {
 };
 
 export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
-  const { availableCarriers } = useGlobalContext();
+  const { carriers, isFetchingCarriers } = useAdminCarriers();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<UserCarrierSchemaType>({
@@ -46,7 +49,7 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
     //@ts-ignore
     defaultValues: carrier || {
       agentId: "",
-      carrierId: availableCarriers ? availableCarriers[0].id : "",
+      carrierId: carriers ? carriers[0].id : "",
     },
   });
 
@@ -107,7 +110,7 @@ export const CarrierForm = ({ carrier, onClose }: CarrierFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {availableCarriers?.map((carrier) => (
+                      {carriers?.map((carrier) => (
                         <SelectItem key={carrier.id} value={carrier.id}>
                           {carrier.name}
                         </SelectItem>

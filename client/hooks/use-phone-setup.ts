@@ -10,7 +10,7 @@ import { PhoneNumber } from "@prisma/client";
 import {
   phoneNumberUpdateByIdApp,
   phoneNumberUpdateByIdAssign,
-} from "@/actions/phonenumber";
+} from "@/actions/user/phone-number";
 
 type usePhoneSetupStore = {
   //UNASSIGNEDFORM

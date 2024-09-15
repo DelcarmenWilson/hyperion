@@ -22,7 +22,7 @@ import {
 } from "@/actions/appointment";
 import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { leadGetByIdMain } from "@/actions/lead";
-import { scheduleGetByUserId } from "@/actions/schedule";
+import { scheduleGetByUserId } from "@/actions/user/schedule";
 import { userGetByUserName } from "@/actions/user";
 
 import {

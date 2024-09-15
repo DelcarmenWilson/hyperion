@@ -1,4 +1,4 @@
-import { scheduleUpdateByUserId } from "@/actions/schedule";
+import { scheduleUpdateByUserId } from "@/actions/user/schedule";
 import {
   breakDownSchedule,
   consolitateSchedule,
@@ -45,10 +45,10 @@ export const useScheduleActions = (schedule: Schedule) => {
       // newSc[i] = defaultDay;
       //   newSc[i].index = i;
       //   newSc[i].day = daysOfTheWeek[i];
-      newSc[i]=getNewDefaultDay(i)
-      }
-      
-      console.log(newSc)
+      newSc[i] = getNewDefaultDay(i);
+    }
+
+    console.log(newSc);
     setBrSchedule(newSc);
   };
   const onSetWorkHours = (i: number, type: "from" | "to", time: string) => {

@@ -1,58 +1,68 @@
 "use client";
 import { Phone } from "lucide-react";
-import { useConversationStore } from "../../hooks/use-conversation";
+import {
+  useConversationData,
+  useConversationStore,
+} from "../../hooks/use-conversation";
 
 import { usePhone } from "@/hooks/use-phone";
-
-import { FullLeadNoConvo } from "@/types";
 import { Button } from "@/components/ui/button";
+import { EmptyData } from "@/components/lead/info/empty-data";
+import { LeadDropDown } from "@/components/lead/dropdown";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { LeadDropDown } from "@/components/lead/dropdown";
 
-type HeaderProps = {
-  lead: FullLeadNoConvo;
-};
-export const Header = ({ lead }: HeaderProps) => {
-  const usePm = usePhone();
+export const Header = () => {
+  const { onPhoneOutOpen } = usePhone();
   const { isLeadInfoOpen, onLeadInfoToggle } = useConversationStore();
+  const { conversation, isFetchingConversation } = useConversationData();
+  const lead = conversation?.lead;
 
-  const initials = `${lead.firstName.substring(0, 1)} ${lead.lastName.substring(
+  const initials = `${lead?.firstName.substring(
     0,
     1
-  )}`;
-  const fullName = `${lead.firstName} ${lead.lastName}`;
+  )} ${lead?.lastName.substring(0, 1)}`;
+  const fullName = `${lead?.firstName} ${lead?.lastName}`;
 
   return (
-    <div className="flex flex-1 justify-between items-center h-14 px-2">
-      <div className="flex justify-center items-center bg-primary text-accent rounded-full p-1 mr-2">
-        <span className="text-lg font-semibold">{initials}</span>
-      </div>
-      <div className="flex flex-1 items-center gap-2">
-        <span className="text-lg">
-          {fullName} {formatPhoneNumber(lead.cellPhone)}
-        </span>
-        <Button
-          disabled={lead.status == "Do_Not_Call"}
-          className="rounded-full"
-          variant="outlineprimary"
-          size="icon"
-          onClick={() => usePm.onPhoneOutOpen(lead)}
-        >
-          <Phone size={16} />
-        </Button>
+    <div className="h-14 p-2 flex-1">
+      <SkeletonWrapper isLoading={isFetchingConversation}>
+        {lead ? (
+          <div className="flex flex-1 justify-between items-center">
+            <div className="flex justify-center items-center bg-primary text-accent rounded-full p-1 mr-2">
+              <span className="text-lg font-semibold">{initials}</span>
+            </div>
+            <div className="flex flex-1 items-center gap-2">
+              <span className="text-lg">
+                {fullName} {formatPhoneNumber(lead.cellPhone)}
+              </span>
+              <Button
+                disabled={lead.status == "Do_Not_Call"}
+                className="rounded-full"
+                variant="outlineprimary"
+                size="icon"
+                onClick={() => onPhoneOutOpen()}
+              >
+                <Phone size={16} />
+              </Button>
 
-        <LeadDropDown />
-      </div>
-      <div className="flex items-center gap-2">
-        <Button
-          variant={isLeadInfoOpen ? "default" : "outlineprimary"}
-          size="sm"
-          onClick={onLeadInfoToggle}
-        >
-          LEAD INFO
-        </Button>
-      </div>
+              <LeadDropDown />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={isLeadInfoOpen ? "default" : "outlineprimary"}
+                size="sm"
+                onClick={onLeadInfoToggle}
+              >
+                LEAD INFO
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <EmptyData height="h-full" />
+        )}
+      </SkeletonWrapper>
     </div>
   );
 };

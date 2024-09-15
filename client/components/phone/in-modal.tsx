@@ -63,8 +63,8 @@ export const PhoneInModal = () => {
       //On Call disconnect or canecel - call the diconnect function
       ["disconnect", "cancel"].forEach((type) => {
         incomingCall.on(type, (call) => {
+          console.log("call disconnected", call);
           onDisconnect();
-          console.log("call diconnected", call);
         });
       });
       //Get the leads infomation based on the phone number

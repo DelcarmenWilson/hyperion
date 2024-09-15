@@ -16,7 +16,7 @@ import {
 import { LeadDialerCard } from "./lead-card";
 import { DialerMenu } from "./menu";
 
-import { pipelineUpdateByIdIndex } from "@/actions/pipeline";
+import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
 
 export const PhoneDialerModal = () => {
   const {

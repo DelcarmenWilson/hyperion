@@ -235,6 +235,10 @@ export const SettingsNavbarRoutes: NavType[] = [
     assistant: true,
   },
   {
+    title: "Phone",
+    href: "/settings/phone",
+  },
+  {
     title: "Chat",
     href: "/settings/titan",
   },
@@ -242,10 +246,10 @@ export const SettingsNavbarRoutes: NavType[] = [
     title: "Availability",
     href: "/settings/availability",
   },
-  // {
-  //   title: "Notifications",
-  //   href: "/settings/notifications",
-  // },
+  {
+    title: "Notifications",
+    href: "/settings/notifications",
+  },
   {
     title: "Display",
     href: "/settings/display",

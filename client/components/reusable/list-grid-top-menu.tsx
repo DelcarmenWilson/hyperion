@@ -20,9 +20,9 @@ export const ListGridTopMenu = ({
   showButton = true,
 }: ListGridTopMenuProps) => {
   return (
-    <div className="flex gap-2 justify-end col-span-3 text-end">
+    <div className="flex flex-col lg:flex-row gap-2 justify-end col-span-3 text-end">
       {size == "full" && (
-        <>
+        <div className="flex justify-center items-center gap-2">
           <Button
             variant={isList ? "ghost" : "default"}
             size="icon"
@@ -37,7 +37,7 @@ export const ListGridTopMenu = ({
           >
             <List size={16} />
           </Button>
-        </>
+        </div>
       )}
       {showButton && (
         <Button className="gap-2" onClick={setIsDrawerOpen}>

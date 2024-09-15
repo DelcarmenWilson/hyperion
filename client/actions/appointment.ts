@@ -25,7 +25,7 @@ import { bluePrintUpdateByUserIdData } from "./blueprint/blueprint";
 import { callUpdateByIdAppointment } from "./call";
 import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
 import { getNewTextCode, leadGetOrInsert } from "./lead";
-import { chatSettingGetTitan } from "./chat-settings";
+import { chatSettingGetTitan } from "./settings/chat";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { leadEmailInsert } from "./lead/email";
 

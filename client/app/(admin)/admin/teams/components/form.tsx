@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { teamInsert } from "@/actions/team";
@@ -33,6 +38,7 @@ export const TeamForm = () => {
   };
   return (
     <Dialog>
+      <DialogDescription className="hidden">New Team Form</DialogDescription>
       <DialogTrigger asChild>
         <Button size="sm">New Team</Button>
       </DialogTrigger>

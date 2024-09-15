@@ -51,15 +51,9 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       defaultPrompt: d["defaultPrompt"],
       defaultFunction: d["defaultFunction"],
       titan: d["titan"] == "f" ? false : true,
-      messageNotification: d["messageNotification"],
-      messageInternalNotification: d["messageInternalNotification"],
-      dataStyle: d["dataStyle"],
       coach: d["coach"] == "f" ? false : true,
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
-      currentCall: "",
-      voicemailIn: "",
-      voicemailOut: "",
     };
     mapped.push(newobj);
   });

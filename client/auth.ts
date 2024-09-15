@@ -84,15 +84,15 @@ export const {
       token.name = existingUser.userName;
       token.email = existingUser.email;
       token.role = existingUser.role;
-      token.messageNotification=existingUser.chatSettings?.messageNotification
-      token.messageInternalNotification=existingUser.chatSettings?.messageInternalNotification
-      token.dataStyle=existingUser.chatSettings?.dataStyle
+      token.messageNotification=existingUser.phoneSettings?.messageNotification
+      token.messageInternalNotification=existingUser.phoneSettings?.messageInternalNotification
+      token.dataStyle=existingUser.displaySettings?.dataStyle
       token.team=existingUser.team?.id
       token.phoneNumbers=existingUser.phoneNumbers
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
       token.picture=existingUser.image
       token.masterSwitch=existingUser.notificationSettings?.masterSwitch
-      token.personalNumber=existingUser.notificationSettings?.phoneNumber      
+      token.personalNumber=existingUser.phoneSettings?.personalNumber      
       return token;
     },
   },

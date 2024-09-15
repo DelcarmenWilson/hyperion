@@ -31,34 +31,37 @@ export const LeadClient = () => {
       <CallInfo />
       <PolicyInfoClient />
       <NotesForm />
-      <div></div>
+      <div />
       <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>
-        <p>
+        <p className="pl-4">
           -Type: <span className="font-bold">unknown</span>
         </p>
-        <div className="flex items-center gap-2 group">
+        <div className="group">
           <span>Caller Id for calls /texts</span>
-          {edit ? (
-            <PhoneSwitcher
-              number={defaultNumber}
-              onSetDefaultNumber={onSetDefaultNumber}
-            />
-          ) : (
-            <>
-              <span className="font-bold">
-                {formatPhoneNumber(defaultNumber)}
-              </span>
-              <Button
-                className="opacity-0 group-hover:opacity-100"
-                variant="link"
-                size="sm"
-                onClick={() => setEdit(true)}
-              >
-                <Pencil size={16} />
-              </Button>
-            </>
-          )}
+          <div className="flex items-center gap-2 pl-4">
+            {edit ? (
+              <PhoneSwitcher
+                number={defaultNumber}
+                onSetDefaultNumber={onSetDefaultNumber}
+                onClose={() => setEdit(false)}
+              />
+            ) : (
+              <>
+                <span className="font-bold">
+                  {formatPhoneNumber(defaultNumber)}
+                </span>
+                <Button
+                  className="opacity-0 group-hover:opacity-100"
+                  variant="link"
+                  size="sm"
+                  onClick={() => setEdit(true)}
+                >
+                  <Pencil size={16} />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

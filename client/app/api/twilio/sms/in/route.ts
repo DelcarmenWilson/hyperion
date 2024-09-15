@@ -19,7 +19,7 @@ import { appointmentInsert } from "@/actions/appointment";
 import { formatDateTime } from "@/formulas/dates";
 import { formatObject } from "@/formulas/objects";
 import { sendSocketData } from "@/services/socket-service";
-import { chatSettingGetTitan } from "@/actions/chat-settings";
+import { chatSettingGetTitan } from "@/actions/settings/chat";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
   }
 
   //Find the agent with this personal number - from number
-  const agent = await db.notificationSettings.findFirst({
-    where: { phoneNumber: sms.from },
+  const agent = await db.phoneSettings.findFirst({
+    where: { personalNumber: sms.from },
   });
 
   //TODO - neeed to reintergrate this functionality

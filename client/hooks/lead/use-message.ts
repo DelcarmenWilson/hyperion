@@ -1,9 +1,10 @@
-import { useCallback} from "react";
-import {  useLeadStore } from "./use-lead";
+import { useCallback } from "react";
+import { userEmitter } from "@/lib/event-emmiter";
+import { useLeadStore } from "./use-lead";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import {  LeadMessage } from "@prisma/client";
+import { LeadMessage } from "@prisma/client";
 import { SmsMessageSchemaType } from "@/schemas/message";
 
 import {
@@ -15,13 +16,13 @@ import {
 export const useLeadMessageData = () => {
   const { conversationId } = useLeadStore();
   //ALL MESSAGES
-  
+
   const { data: messages, isFetching: isFetchingMessages } = useQuery<
     LeadMessage[]
   >({
     queryFn: () => messagesGetAllByConversationId(conversationId),
     queryKey: [`leadMessages-${conversationId}`],
-  });  
+  });
 
   return {
     messages,
@@ -29,18 +30,15 @@ export const useLeadMessageData = () => {
   };
 };
 
-
-
 export const useLeadMessageActions = (onCancel?: () => void) => {
-  const {leadId,conversationId, setConversationId } = useLeadStore();
+  const { leadId, conversationId, setConversationId } = useLeadStore();
   const queryClient = useQueryClient();
   const invalidate = () => {
     queryClient.invalidateQueries({
       queryKey: [`leadMessages-${conversationId}`],
     });
   };
-  
-  
+
   //INITIAL MESSAGE
   const { mutate: initialMessageMutate, isPending: IsPendinginitialMessage } =
     useMutation({
@@ -97,9 +95,10 @@ export const useLeadMessageActions = (onCancel?: () => void) => {
           });
           if (onCancel) onCancel();
 
-           const key=`leadMessages-${conversationId}`
+          const key = `leadMessages-${conversationId}`;
+          userEmitter.emit("messageInserted", result.success);
           //@ts-ignore
-          queryClient.setQueryData([key], (old) => [...old, result.success]);
+          // queryClient.setQueryData([key], (old) => [...old, result.success]);
         } else {
           toast.error(result.error, {
             id: "insert-message",
@@ -117,9 +116,9 @@ export const useLeadMessageActions = (onCancel?: () => void) => {
       toast.loading(toastString, { id: "insert-message" });
       values.leadId = leadId;
       values.conversationId = conversationId;
-       insertMessageMutate(values);
+      insertMessageMutate(values);
     },
-    [initialMessageMutate,leadId,conversationId]
+    [initialMessageMutate, leadId, conversationId]
   );
 
   return {

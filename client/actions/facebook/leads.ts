@@ -6,7 +6,7 @@ import { Amm_Leads_Import } from "@/formulas/lead";
 import { Ad } from "@/lib/facebook/config";
 import { sendSocketData } from "@/services/socket-service";
 import { getNewTextCode } from "../lead";
-import { chatSettingGetTitan } from "../chat-settings";
+import { chatSettingGetTitan } from "../settings/chat";
 
 //ACTIONS
 const campaignLeadsImport = async (

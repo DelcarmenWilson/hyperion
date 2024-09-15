@@ -15,7 +15,7 @@ import {
 import { adminConfirmUserEmail } from "@/actions/admin/user";
 import { Heading } from "@/components/custom/heading";
 import { HalfUser } from "@/types";
-import { notificationSettingsInsertAll } from "@/actions/notification-settings";
+import { notificationSettingsInsertAll } from "@/actions/settings/notification";
 
 export const NotificationConfirm = () => {
   const [loading, setLoading] = useState(false);

@@ -11,7 +11,11 @@ import {
 import { Gender, MaritalStatus } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -39,6 +43,9 @@ export const GeneralInfoForm = () => {
   if (!generalInfo) return null;
   return (
     <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>
+      <DialogDescription className="hidden">
+        General Info Form
+      </DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <h3 className="text-2xl font-semibold py-2">
           Demographics -

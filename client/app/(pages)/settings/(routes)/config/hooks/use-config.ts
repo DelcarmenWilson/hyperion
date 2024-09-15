@@ -6,7 +6,7 @@ import { NotificationSettings } from "@prisma/client";
 import {
   notificationSettingsGet,
   notificationSettingsUpdate,
-} from "@/actions/notification-settings";
+} from "@/actions/settings/notification";
 import { toast } from "sonner";
 import { NotificationSettingsSchemaType } from "@/schemas/settings";
 import { userGetAdAccount, userUpdateAdAccount } from "@/actions/user";

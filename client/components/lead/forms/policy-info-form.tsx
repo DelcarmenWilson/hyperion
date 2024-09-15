@@ -1,14 +1,18 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGlobalContext } from "@/providers/global";
 import { useLeadPolicyActions } from "@/hooks/lead/use-lead";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 import { LeadPolicy } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CarrierSelect } from "@/components/global/selects/carriers";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormField,
@@ -41,10 +45,10 @@ export const PolicyInfoForm = () => {
 
   const leadName = `${policy.firstName} ${policy.firstName}`;
   const policyInfo = policy.policy;
-  const assistant = policy.assistant;
 
   return (
     <Dialog open={isPolicyFormOpen} onOpenChange={onPolicyFormClose}>
+      <DialogDescription className="hidden">Policy Info Form</DialogDescription>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
         <SkeletonWrapper isLoading={isFetchingPolicy}>
           <h3 className="text-2xl font-semibold py-2">
@@ -73,8 +77,6 @@ type Props = {
   onClose: () => void;
 };
 const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
-  const { carriers } = useGlobalContext();
-
   const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
     //@ts-ignore
@@ -107,28 +109,11 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                     Carrier
                     <FormMessage />
                   </FormLabel>
-                  <Select
-                    name="ddlCarrier"
-                    disabled={loading}
-                    onValueChange={field.onChange}
+                  <CarrierSelect
                     defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a carrier" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {carriers?.map((carrier) => (
-                        <SelectItem
-                          key={carrier.id}
-                          value={carrier.carrier.name}
-                        >
-                          {carrier.carrier.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onValueChange={field.onChange}
+                    disabled={loading}
+                  />
                 </FormItem>
               )}
             />

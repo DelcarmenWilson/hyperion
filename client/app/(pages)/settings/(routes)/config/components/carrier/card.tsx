@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-import { toast } from "sonner";
+import { useState } from "react";
+
+import { useAgentCarrierActions } from "../../hooks/use-carrier";
 
 import { FullUserCarrier } from "@/types";
 
@@ -12,50 +12,24 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { CarrierForm } from "./form";
 
-import { userCarrierDeleteById } from "@/actions/user";
 import { formatDate } from "@/formulas/dates";
 
-export const CarrierCard = ({
-  initCarrier,
-}: {
-  initCarrier: FullUserCarrier;
-}) => {
-  const [carrier, setCarrier] = useState(initCarrier);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
+export const CarrierCard = ({ carrier }: { carrier: FullUserCarrier }) => {
+  const { alertOpen, setAlertOpen, onCarrierDelete, isPendingCarrierDelete } =
+    useAgentCarrierActions();
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteCarrier = () => {
-    setLoading(true);
-    userCarrierDeleteById(carrier.id).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        userEmitter.emit("carrierDeleted", carrier.id);
-        toast.success(data.success);
-      }
-    });
-    setAlertOpen(false);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setCarrier(initCarrier);
-    const onCarrierUpdated = (e: FullUserCarrier) => {
-      if (e.id == carrier.id) setCarrier(e);
-    };
-    userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
-  }, [initCarrier]);
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteCarrier}
-        loading={loading}
+        onConfirm={() => onCarrierDelete(carrier.id)}
+        loading={isPendingCarrierDelete}
         height="auto"
       />
+      {/* //TODO need to extract the form into its own file and add a store */}
       <DrawerRight
         title="Edit Carrier"
         isOpen={isOpen}

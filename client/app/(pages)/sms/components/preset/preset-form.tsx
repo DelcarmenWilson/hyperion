@@ -22,7 +22,7 @@ import {
 import { Preset } from "@prisma/client";
 import { PresetSchema, PresetSchemaType } from "@/schemas/settings";
 import { presetKeywords } from "@/constants/texts";
-import { presetInsert } from "@/actions/preset";
+import { presetInsert } from "@/actions/user/preset";
 
 type PresetFormProps = {
   type: Preset;

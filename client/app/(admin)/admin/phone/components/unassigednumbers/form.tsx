@@ -2,7 +2,11 @@
 import { usePhoneSetup, usePhoneSetupActions } from "@/hooks/use-phone-setup";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { UserSelect } from "@/components/user/select";
 import { TwilioAppSelect } from "@/components/twilio/app-select";
 
@@ -29,6 +33,9 @@ export const AssignNumberForm = () => {
   if (!phoneNumber) return;
   return (
     <Dialog open={isUnassignedFormOpen} onOpenChange={onUnassignedFormClose}>
+      <DialogDescription className="hidden">
+        Unassigend Numbers Form
+      </DialogDescription>
       <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm gap-2 p-2">
         <h2 className="text-2xl border-b">Phone Number Details</h2>
         <h3 className="font-semibold text-primary text-2xl italic text-center">

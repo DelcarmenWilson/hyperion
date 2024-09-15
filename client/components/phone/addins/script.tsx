@@ -1,7 +1,10 @@
-import React, { useMemo, useState } from "react";
-import { useGlobalContext } from "@/providers/global";
+import React, { useMemo } from "react";
 import { usePhone } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
+
+import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
+import { useScriptData } from "../hooks/use-script";
+import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { Button } from "@/components/ui/button";
 import { Tiptap } from "@/components/reusable/tiptap";
@@ -10,11 +13,18 @@ import { replaceScript } from "@/formulas/script";
 export const PhoneScript = () => {
   const { lead, showScript, onScriptOpen, onScriptClose } = usePhone();
 
-  const { script, user, licenses } = useGlobalContext();
+  const { script } = useScriptData();
+  const { onlineUser } = useOnlineUserData();
+  const { licenses } = useAgentLicenseData();
 
   const formattedScript = useMemo(() => {
-    return replaceScript(script?.script!, user?.firstName!, lead!, licenses!);
-  }, [script, user, lead, licenses]);
+    return replaceScript(
+      script?.script!,
+      onlineUser?.firstName!,
+      lead!,
+      licenses!
+    );
+  }, [script, onlineUser, lead, licenses]);
 
   if (!script) {
     return null;

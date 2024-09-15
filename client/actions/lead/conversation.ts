@@ -2,20 +2,14 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ShortConversation } from "@/types";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistant } from "@/actions/user";
 //DATA
 export const conversationGetLast = async () => {
   try {
-    const user = await currentUser();
-    if (!user?.email) {
-      return null;
-    }
+    const agentId = await userGetByAssistant();
+    if(!agentId) return null
 
-    let agentId = user.id;
-    if (user.role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(user.id)) as string;
-    }
-
+   
     const conversation = await db.leadConversation.findFirst({
       where: { agentId },
       orderBy: { updatedAt: "desc" },
@@ -29,15 +23,8 @@ export const conversationGetLast = async () => {
 
 export const conversationsGetByUserId = async () => {
   try {
-    const user = await currentUser();
-    if (!user?.email) {
-      return [];
-    }
-
-    let agentId = user.id;
-    if (user.role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(user.id)) as string;
-    }
+    const agentId = await userGetByAssistant();
+    if(!agentId) return[]
 
     const conversations = await db.leadConversation.findMany({
       where: { agentId },
@@ -89,15 +76,8 @@ export const conversationsGetByUserIdUnread = async () => {
 
 export const conversationGetById = async (conversationId: string) => {
   try {
-    const user = await currentUser();
-    if (!user?.email) {
-      return null;
-    }
-    
-    let agentId = user.id;
-    if (user.role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(user.id)) as string;
-    }
+    const agentId = await userGetByAssistant();
+    if(!agentId) return null
     const conversation = await db.leadConversation.findUnique({
       where: { id: conversationId, agentId },
       include: {
