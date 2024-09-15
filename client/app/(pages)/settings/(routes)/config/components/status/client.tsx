@@ -1,26 +1,25 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useAgentTemplateData } from "../../hooks/user-template";
+import { useAgentLeadStatusData } from "../../hooks/use-lead-status";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
+import { DrawerRight } from "@/components/custom/drawer-right";
 import { columns } from "./columns";
-
-import { TemplateForm } from "./form";
-import { TemplateList } from "./list";
+import { LeadStatusForm } from "./form";
+import { LeadStatusList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const UserTemplateClient = () => {
+export const LeadStatusClient = () => {
   const user = useCurrentUser();
-  const { templates, isFetchingTemplates } = useAgentTemplateData();
+  const { leadStatuses, isFetchingLeadStatuses } = useAgentLeadStatusData();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
-    <SkeletonWrapper isLoading={isFetchingTemplates}>
+    <SkeletonWrapper isLoading={isFetchingLeadStatuses}>
       <ListGridTopMenu
-        text="Add Template"
+        text="Add Status"
         isList={isList}
         setIsList={setIsList}
         setIsDrawerOpen={() => setIsDrawerOpen(true)}
@@ -31,30 +30,30 @@ export const UserTemplateClient = () => {
   return (
     <>
       <DrawerRight
-        title={"New Template"}
+        title={"New Lead Status"}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <TemplateForm onClose={() => setIsDrawerOpen(false)} />
+        <LeadStatusForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
 
       {isList ? (
-        <SkeletonWrapper isLoading={isFetchingTemplates}>
+        <SkeletonWrapper isLoading={isFetchingLeadStatuses}>
           <DataTable
             columns={columns}
-            data={templates!}
+            data={leadStatuses?.filter((e) => e.type != "default")!}
             headers
-            title="Templates"
+            title="Lead Status"
             topMenu={topMenu}
           />
         </SkeletonWrapper>
       ) : (
         <>
           <div className="flex justify-between items-center p-1">
-            <h4 className="text-2xl font-semibold">Templates</h4>
+            <h4 className="text-2xl font-semibold">Lead Status</h4>
             {topMenu}
           </div>
-          <TemplateList />
+          <LeadStatusList />
         </>
       )}
     </>

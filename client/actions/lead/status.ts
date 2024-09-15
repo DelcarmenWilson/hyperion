@@ -2,22 +2,16 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { UserRole } from "@prisma/client";
-
-import { userGetByAssistant } from "@/data/user";
 import { leadActivityInsert } from "@/actions/lead/activity";
+import { userGetByAssistant } from "@/actions/user";
 
 // LEADSTATUS
 
 //DATA
 export const leadStatusGetAllDefault = async () => {
   try {
-    const user = await currentUser();
-    if (!user) return [];
-
-    let userId = user.id;
-    if (user.role == "ASSISTANT")
-      userId = (await userGetByAssistant(user.id)) as string;
+    const userId = await userGetByAssistant();
+    if(!userId) return[]
 
     const leadStatuses = await db.leadStatus.findMany({
       where: { OR: [{ userId }, { type: { equals: "default" } }] },
@@ -30,12 +24,8 @@ export const leadStatusGetAllDefault = async () => {
 
 export const leadStatusGetAll = async () => {
   try {
-    const user = await currentUser();
-    if (!user) return [];
-
-    let userId = user.id;
-    if (user.role == "ASSISTANT")
-      userId = (await userGetByAssistant(user.id)) as string;
+    const userId = await userGetByAssistant();
+    if(!userId) return[]
 
     const leadStatuses = await db.leadStatus.findMany({
       where: { userId },
@@ -46,17 +36,11 @@ export const leadStatusGetAll = async () => {
   }
 };
 //ACTIONS
-export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
-  const user = await currentUser();
 
-  if (!user?.id || !user?.email) {
-    return { error: "Unauthenticated" };
-  }
-
-  let userId = user.id;
-  if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
-  }
+export const leadUpdateByIdStatus = async ({leadId, status}:{leadId: string, status: string}) => {
+  const userId = await userGetByAssistant();
+  if(!userId) return{ error: "Unauthenticated" }
+   
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -77,7 +61,7 @@ export const leadUpdateByIdStatus = async (leadId: string, status: string) => {
     leadId,
     "status",
     "Status updated",
-    user.id,
+    userId,
     existingLead.status
   );
   return { success: "Lead status has been updated" };

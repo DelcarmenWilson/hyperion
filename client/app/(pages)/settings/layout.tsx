@@ -14,6 +14,7 @@ export default function SettingsLayout({
       title="Settings"
       topMenu={<SubNavBar intialRoutes={SettingsNavbarRoutes} />}
       justify={false}
+      scroll={false}
     >
       {children}
     </PageLayout>

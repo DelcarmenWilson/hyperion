@@ -1,9 +1,8 @@
 import * as z from "zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Send } from "lucide-react";
-import { useGlobalContext } from "@/providers/global";
 
-import { userEmitter } from "@/lib/event-emmiter";
+import { useOnlineUserData } from "@/hooks/user/use-user";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -41,7 +40,7 @@ import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/
 import { replacePreset } from "@/formulas/text";
 
 export const SmsForm = () => {
-  const { user } = useGlobalContext();
+  const { onlineUser } = useOnlineUserData();
   const { lead } = useLeadData();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [attachment, setAttachment] = useState<string[]>([]);
@@ -76,7 +75,7 @@ export const SmsForm = () => {
       form.setValue("images", tp.attachment);
     }
     if (tp.message) {
-      const message = replacePreset(tp.message, user!, lead!);
+      const message = replacePreset(tp.message, onlineUser!, lead!);
       form.setValue("content", message);
     }
     setDialogOpen(false);

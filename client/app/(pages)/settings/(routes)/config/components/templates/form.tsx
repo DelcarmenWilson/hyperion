@@ -25,7 +25,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/custom/image-upload";
 import { KeywordSelect } from "@/components/custom/keyword-select";
 
-import { userTemplateInsert, userTemplateUpdateById } from "@/actions/user";
+import {
+  userTemplateInsert,
+  userTemplateUpdateById,
+} from "@/actions/user/template";
 
 type TemplateFormProps = {
   template?: UserTemplate;

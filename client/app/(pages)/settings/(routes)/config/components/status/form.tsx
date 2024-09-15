@@ -20,7 +20,10 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { LeadStatus } from "@prisma/client";
-import { userLeadStatusInsert, userLeadStatusUpdateById } from "@/actions/user";
+import {
+  userLeadStatusInsert,
+  userLeadStatusUpdateById,
+} from "@/actions/user/lead-status";
 
 type LeadStatusFormProps = {
   leadStatus?: LeadStatus;

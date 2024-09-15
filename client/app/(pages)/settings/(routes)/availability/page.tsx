@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { AvailabilityClient } from "./components/client";
-import { scheduleGetByUserId } from "@/actions/schedule";
+import { scheduleGetByUserId } from "@/actions/user/schedule";
 
 const AvailabilityPage = async () => {
   const user = await currentUser();

@@ -26,7 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FullPipeline } from "@/types";
 import { User } from "@prisma/client";
 import { usersGetAllByRole } from "@/actions/user";
-import { pipelineGetAllByAgentId } from "@/actions/pipeline";
+import { pipelineGetAll } from "@/actions/user/pipeline";
 
 export const ImportLeadsForm = () => {
   const role = useCurrentRole();
@@ -44,7 +44,7 @@ export const ImportLeadsForm = () => {
     FullPipeline[]
   >({
     queryKey: ["userPipelines"],
-    queryFn: () => pipelineGetAllByAgentId(),
+    queryFn: () => pipelineGetAll(),
   });
   const { data: assistants, isFetching: assistantsIsFetching } = useQuery<
     User[]

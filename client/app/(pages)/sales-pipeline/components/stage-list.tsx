@@ -10,7 +10,7 @@ import { Reorder } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 
-import { pipelineUpdateOrder } from "@/actions/pipeline";
+import { pipelineUpdateOrder } from "@/actions/user/pipeline";
 import { formatDate } from "@/formulas/dates";
 import {
   usePipelineData,

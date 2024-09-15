@@ -7,18 +7,8 @@ import bcrypt from "bcryptjs";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 
-import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
 import { SummaryUser } from "@/types";
-import {
-  UserAboutMeSchema,
-  UserAboutMeSchemaType,
-  UserCarrierSchema,
-  UserCarrierSchemaType,
-  UserLicenseSchema,
-  UserLicenseSchemaType,
-  UserTemplateSchema,
-  UserTemplateSchemaType,
-} from "@/schemas/user";
+import { UserAboutMeSchema, UserAboutMeSchemaType } from "@/schemas/user";
 import {
   MasterRegisterSchema,
   MasterRegisterSchemaType,
@@ -32,18 +22,33 @@ import { SettingsSchemaType } from "@/schemas/settings";
 import { chatSettingsInsert } from "@/actions/settings/chat";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
-import { userGetByAssistant, userGetByEmail, userGetById } from "@/data/user";
+import { userGetByEmail, userGetById } from "@/data/user";
 import { notificationSettingsInsert } from "@/actions/settings/notification";
-import { scheduleInsert } from "@/actions/schedule";
+import { scheduleInsert } from "@/actions/user/schedule";
 import { UserRole } from "@prisma/client";
 import { OnlineUser } from "@/types/user";
 import { getEntireDay } from "@/formulas/dates";
+import { phoneSettingsInsert } from "../settings/phone";
+import { displaySettingsInsert } from "../settings/display";
 
 //DATA
+export const userGetByIdOnline = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return null;
+    const onlinUser = await db.user.findUnique({
+      where: { id: user.id },
+    });
+
+    return onlinUser;
+  } catch {
+    return null;
+  }
+};
 export const userGetByUserName = async (userName: string) => {
   try {
     const user = await db.user.findUnique({
-      where: { userName }
+      where: { userName },
     });
 
     return user;
@@ -91,7 +96,6 @@ export const usersGetAllChat = async () => {
   }
 };
 
-
 export const usersGetAllByRole = async (role: UserRole) => {
   try {
     const users = await db.user.findMany({
@@ -119,8 +123,7 @@ export const usersGetSummaryByTeamId = async () => {
           where: { status: "default" },
         },
         chatSettings: true,
-        phoneSettings:{select:{currentCall:true}}
-
+        phoneSettings: { select: { currentCall: true } },
       },
     });
 
@@ -149,43 +152,6 @@ export const userGetAdAccount = async () => {
   }
 };
 
-// USER CARRIERS
-export const userCarriersGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return [];
-
-    let userId = user.id;
-    if (user.role == "ASSISTANT")
-      userId = (await userGetByAssistant(user.id)) as string;
-
-    const carriers = await db.userCarrier.findMany({
-      where: { userId },
-      include: { carrier: { select: { name: true } } },
-    });
-
-    return carriers;
-  } catch {
-    return [];
-  }
-};
-
-// USER TEMPLATES
-export const userTemplatesGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return [];
-
-    const templates = await db.userTemplate.findMany({
-      where: { userId:user.id },
-    });
-
-    return templates;
-  } catch {
-    return [];
-  }
-};
-
 //ACTIONS
 export const userInsert = async (values: RegisterSchemaType) => {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -198,9 +164,7 @@ export const userInsert = async (values: RegisterSchemaType) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const existingUser = await userGetByEmail(email);
 
-  if (existingUser) {
-    return { error: "Email already in use!" };
-  }
+  if (existingUser) return { error: "Email already in use!" };
 
   // return {success:"Register Diasabled!"}
 
@@ -218,31 +182,21 @@ export const userInsert = async (values: RegisterSchemaType) => {
     },
   });
 
-  //CREATE CHAT SETTINGS
+  //create phone settings
+  await phoneSettingsInsert(user.id);
+
+  //create display settings
+  await displaySettingsInsert(user.id);
+
+  //create chat settings
   await chatSettingsInsert(user);
 
-  //NOTIFICATION SETTINGS
+  //create notification settings
   await notificationSettingsInsert(user.id);
 
-  //SCHEDULE
+  //create schedule
   const hours = "09:00-17:00,12:00-13:00";
-  await scheduleInsert({
-    userId: user.id,
-    type: "",
-    title: "Book an Appointment with #first_name".replace(
-      "#first_name",
-      user.firstName
-    ),
-    subTitle:
-      "Pick the time that best works for you. I am looking forward to connecting with you.",
-    monday: hours,
-    tuesday: hours,
-    wednesday: hours,
-    thursday: hours,
-    friday: hours,
-    saturday: "Not Available",
-    sunday: "Not Available",
-  });
+  await scheduleInsert(user.id,user.firstName,hours);
 
   //TODO
   // const verificationToken = await generateVerificationToken(email);
@@ -381,23 +335,8 @@ export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
   //SCHEDULE
   const hours = "Not Available";
 
-  await scheduleInsert({
-    userId: newUser.id,
-    type: "",
-    title: "Book an Appointment with #first_name".replace(
-      "#first_name",
-      newUser.firstName
-    ),
-    subTitle:
-      "Pick the time that best works for you. I am looking forward to connecting with you.",
-    monday: hours,
-    tuesday: hours,
-    wednesday: hours,
-    thursday: hours,
-    friday: hours,
-    saturday: hours,
-    sunday: hours,
-  });
+  await scheduleInsert(newUser.id,
+      newUser.firstName,hours);
 
   return { success: "Master account created" };
 };
@@ -501,8 +440,6 @@ export const userUpdateByIdAboutMe = async (values: UserAboutMeSchemaType) => {
   return { success: "About Me section updated!" };
 };
 
-
-
 export const userUpdateEmailVerification = async (token: string) => {
   if (!token) {
     return { error: "Missing token!" };
@@ -590,388 +527,6 @@ export const userUpdatePassword = async (
   return { success: "Password updated!" };
 };
 
-// LEADSTATUS
-export const userLeadStatusDeleteById = async (id: string) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const existingStatus = await db.leadStatus.findUnique({
-    where: { id },
-  });
-  if (!existingStatus) {
-    return { error: "Status does not exists" };
-  }
-  if (user.id != existingStatus?.userId) {
-    return { error: "Unauthorized" };
-  }
-  const leads = await db.lead.findMany({
-    where: { status: existingStatus.status },
-  });
-
-  if (leads.length > 0) {
-    return {
-      error: `(${leads.length}) lead${
-        leads.length > 1 ? "s are" : " is"
-      } still using this status!`,
-    };
-  }
-
-  await db.leadStatus.delete({
-    where: { id },
-  });
-
-  return { success: "Lead Status deleted!" };
-};
-export const userLeadStatusInsert = async (values: LeadStatusSchemaType) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const validatedFields = LeadStatusSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  let userId = user.id;
-  if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
-  }
-
-  const { status, description } = validatedFields.data;
-
-  const existingStatus = await db.leadStatus.findFirst({
-    where: { status, userId },
-  });
-  if (existingStatus) {
-    return { error: "Status already exists" };
-  }
-
-  const leadStatus = await db.leadStatus.create({
-    data: {
-      status,
-      description,
-      userId,
-    },
-  });
-
-  return { success: leadStatus };
-};
-
-export const userLeadStatusUpdateById = async (
-  values: LeadStatusSchemaType
-) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const validatedFields = LeadStatusSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  //TODO - see if jhoni is ok with this being down by the assistant
-  // let userId = user.id;
-  // if (user.role == "ASSISTANT") {
-  //   userId = (await userGetByAssistant(userId)) as string;
-  // }
-
-  const { id, status, description } = validatedFields.data;
-
-  const existingStatus = await db.leadStatus.findUnique({
-    where: { id },
-  });
-  if (!existingStatus) {
-    return { error: "Status does not exists!" };
-  }
-  if (user.id != existingStatus?.userId) {
-    return { error: "Unauthorized!" };
-  }
-
-  const leadStatus = await db.leadStatus.update({
-    where: { id },
-    data: {
-      status,
-      description,
-    },
-  });
-
-  return { success: leadStatus };
-};
-// USER_LICENSES
-export const userLicenseDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
-  const existingLicense = await db.userLicense.findUnique({
-    where: { id },
-  });
-
-  if (!existingLicense) {
-    return { error: "License does not exist!" };
-  }
-
-  if (user.id != existingLicense?.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  await db.userLicense.delete({ where: { id } });
-
-  return { success: "License Deleted" };
-};
-export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const validatedFields = UserLicenseSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { state, type, licenseNumber, dateExpires, comments } =
-    validatedFields.data;
-
-  const existingLicense = await db.userLicense.findFirst({
-    where: { state, licenseNumber },
-  });
-
-  if (existingLicense) {
-    return { error: "License already exist!" };
-  }
-  const license = await db.userLicense.create({
-    data: {
-      state,
-      type,
-      licenseNumber,
-      dateExpires: new Date(dateExpires),
-      comments,
-      userId: user.id,
-    },
-  });
-
-  return { success: license };
-};
-export const userLicenseUpdateById = async (values: UserLicenseSchemaType) => {
-  const validatedFields = UserLicenseSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const { id, image, state, type, licenseNumber, dateExpires, comments } =
-    validatedFields.data;
-
-  const existingLicense = await db.userLicense.findUnique({
-    where: { id },
-  });
-
-  if (!existingLicense) {
-    return { error: "License does not exist!" };
-  }
-  const license = await db.userLicense.update({
-    where: { id },
-    data: {
-      image,
-      state,
-      type,
-      licenseNumber,
-      dateExpires: new Date(dateExpires),
-      comments,
-      userId: user.id,
-    },
-  });
-
-  return { success: license };
-};
-//USER_CARRIER
-export const userCarrierDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
-  const existingCarrier = await db.userCarrier.findUnique({
-    where: { id },
-  });
-
-  if (!existingCarrier) {
-    return { error: "Carrier does not exist!" };
-  }
-
-  if (user.id != existingCarrier?.userId) {
-    return { error: "Unauthorized" };
-  }
-  await db.userCarrier.delete({
-    where: { id },
-  });
-
-  return { success: "Carrier Deleted" };
-};
-export const userCarrierInsert = async (values: UserCarrierSchemaType) => {
-  const validatedFields = UserCarrierSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const { agentId, carrierId, comments } = validatedFields.data;
-
-  const existingLicense = await db.userCarrier.findFirst({
-    where: { carrierId },
-  });
-
-  if (existingLicense) {
-    return { error: "Carrier relationship already exist!" };
-  }
-  const carrier = await db.userCarrier.create({
-    data: {
-      agentId,
-      carrierId,
-      comments,
-      userId: user.id,
-    },
-    include: { carrier: { select: { name: true } } },
-  });
-
-  return { success: carrier };
-};
-export const userCarrierUpdateById = async (values: UserCarrierSchemaType) => {
-  const validatedFields = UserCarrierSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const { id, agentId, carrierId, comments } = validatedFields.data;
-
-  const existingCarrier = await db.userCarrier.findFirst({
-    where: { carrierId },
-  });
-
-  if (!existingCarrier) {
-    return { error: "Carrier does not exist!" };
-  }
-  const carrier = await db.userCarrier.update({
-    where: { id },
-    data: {
-      agentId,
-      carrierId,
-      comments,
-      userId: user.id,
-    },
-    include: { carrier: { select: { name: true } } },
-  });
-
-  return { success: carrier };
-};
-
-//USER_TEMPLATE
-export const userTemplateDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
-  const exisitingTemplate = await db.userTemplate.findUnique({
-    where: { id },
-  });
-
-  if (!exisitingTemplate) {
-    return { error: "Template does not exist!" };
-  }
-
-  if (user.id != exisitingTemplate.userId) {
-    return { error: "Unauthorized" };
-  }
-  await db.userTemplate.delete({
-    where: {
-      id,
-    },
-  });
-
-  return { success: "Template deleted!" };
-};
-export const userTemplateInsert = async (values: UserTemplateSchemaType) => {
-  const validatedFields = UserTemplateSchema.safeParse(values);
-  if (!validatedFields.success) {
-    console.log("USERTEMPLATE_INSERT_ERROR");
-    return { error: "Invalid fields!" };
-  }
-
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-  const { name, message, description, attachment } = validatedFields.data;
-
-  const exisitingTemplate = await db.userTemplate.findFirst({
-    where: { name, userId: user.id },
-  });
-
-  if (exisitingTemplate) {
-    return { error: "Template with the same name already exist!" };
-  }
-  const template = await db.userTemplate.create({
-    data: {
-      userId: user.id,
-      name,
-      message: message!,
-      description,
-      attachment,
-    },
-  });
-
-  return { success: template };
-};
-export const userTemplateUpdateById = async (
-  values: UserTemplateSchemaType
-) => {
-  const validatedFields = UserTemplateSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-  const { id, name, message, description, attachment } = validatedFields.data;
-
-  const exisitingTemplate = await db.userTemplate.findUnique({
-    where: { id },
-  });
-
-  if (!exisitingTemplate) {
-    return { error: "Template does not exist!" };
-  }
-  const template = await db.userTemplate.update({
-    where: { id },
-    data: {
-      userId: user.id,
-      name,
-      message: message!,
-      description,
-      attachment,
-    },
-  });
-
-  return { success: template };
-};
-
 //FACEBOOK
 export const userUpdateAdAccount = async (adAccount: string) => {
   const user = await currentUser();
@@ -987,4 +542,23 @@ export const userUpdateAdAccount = async (adAccount: string) => {
   });
 
   return { success: "Ad account has been added!" };
+};
+
+//HELPER FUNCTION
+export const userGetByAssistant = async () => {
+  //check if the user is currently logged in
+  const user = await currentUser();
+  //if there is no logged in used return null
+  if (!user) return null;
+  //if the currently logged in user is an assistant
+  //get the account associted with this assitant and return the agent
+  if (user?.role == "ASSISTANT") {
+    const assistant = await db.user.findUnique({
+      where: { assitantId: user.id },
+    });
+    if (!assistant) return user?.id;
+    return assistant.id;
+  }
+  //retun the currently logged in user.id
+  return user?.id;
 };

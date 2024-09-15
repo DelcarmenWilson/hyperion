@@ -5,10 +5,10 @@ import { LeadStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
 import { DataTable } from "@/components/tables/data-table";
-import { columns } from "@/components/lead/status/columns";
+import { columns } from "@/app/(pages)/settings/(routes)/config/components/status/columns";
 
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { LeadStatusForm } from "@/components/lead/status/form";
+import { LeadStatusForm } from "@/app/(pages)/settings/(routes)/config/components/status/form";
 import { Plus } from "lucide-react";
 
 type LeadStatusClientProps = {

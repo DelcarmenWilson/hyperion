@@ -1,7 +1,7 @@
 import { currentUser } from "@/lib/auth";
 import { MyPhoneNumbers } from "./components/my-phone-numbers";
 import { PurchasePhoneNumberForm } from "./components/purchase-phone-numbers";
-import { phoneNumbersGetByAgentId } from "@/data/phonenumber";
+import { phoneNumbersGetByAgentId } from "@/actions/user/phone-number";
 
 const PhonePage = async () => {
   const user = await currentUser();

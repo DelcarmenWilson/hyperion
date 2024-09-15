@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { Plus, Send } from "lucide-react";
-import { useGlobalContext } from "@/providers/global";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { useChat, useChatActions } from "@/hooks/use-chat";
-
-import { userEmitter } from "@/lib/event-emmiter";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +11,6 @@ import { UserTemplate } from "@prisma/client";
 
 import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import {
   Form,
@@ -41,7 +38,7 @@ import { Textarea } from "@/components//ui/textarea";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 
 export const ChatForm = () => {
-  const { user, templates } = useGlobalContext();
+  const user = useCurrentUser();
   const { socket } = useContext(SocketContext).SocketState;
   const { user: agent, chatId } = useChat();
 

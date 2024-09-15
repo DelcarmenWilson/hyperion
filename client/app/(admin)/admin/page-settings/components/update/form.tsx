@@ -25,7 +25,7 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { useAdminData } from "@/hooks/use-admin";
+import { useAdminData } from "@/hooks/admin/use-admin";
 import { ImageUpload } from "@/components/custom/image-upload";
 import { useState } from "react";
 

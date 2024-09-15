@@ -4,6 +4,23 @@ import { currentUser } from "@/lib/auth";
 import { Presets } from "@prisma/client";
 import { PresetSchema,PresetSchemaType } from "@/schemas/settings";
 
+//DATA
+export const presetsGetAll = async () => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return [];
+    const presets = await db.presets.findMany({
+      where: { agentId:user.id },
+    });
+
+    return presets;
+  } catch (error: any) {
+    return [];
+  }
+};
+
+//ACTIONS
 export const presetDeleteById = async (id: string) => {
   try {
     await db.presets.delete({where:{id}})

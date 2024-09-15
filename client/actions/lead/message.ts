@@ -133,7 +133,6 @@ export const messageCreateInitial = async (
 
   //return an error if the sms was not sent
   if (!result.success) return { error: result.error };
-  console.log(result.success);
 
   //insert the initial message into the conversation
   await messageInsert({

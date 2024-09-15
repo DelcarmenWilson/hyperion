@@ -63,7 +63,7 @@ export const phoneSettingsUpdate = async (values: PhoneSettingsSchemaType) => {
 
   if (!phoneSettings) return { error: "Something went wrong!" };
 
-  return { success: "Phone settings have been updated" };
+  return { success: phoneSettings };
 };
 
 export const phoneSettingsUpdateVoicemail = async (voicemailIn: string) => {

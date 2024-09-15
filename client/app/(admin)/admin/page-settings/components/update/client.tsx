@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useAdminData } from "@/hooks/use-admin";
+import { useAdminData } from "@/hooks/admin/use-admin";
 import { Plus } from "lucide-react";
 import { Heading } from "@/components/custom/heading";
 import { DataTable } from "@/components/tables/data-table";

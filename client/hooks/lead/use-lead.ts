@@ -768,7 +768,6 @@ export const useLeadPolicyActions = () => {
 
   const onPolicySubmit = useCallback(
     (values: LeadPolicySchemaType) => {
-      console.log(values);
       const toastString = "Updating Policy Information...";
       toast.loading(toastString, { id: "update-policy-info" });
 

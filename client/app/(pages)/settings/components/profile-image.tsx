@@ -34,11 +34,11 @@ export const ProfileImage = ({ image }: { image: string }) => {
         onImageUpdate={onImageUpdated}
       />
       <div className="flex mb-2 gap-2 items-center justify-center">
-        <div className="relative text-center overflow-hidden rounded-full group">
+        <div className="relative text-center overflow-hidden rounded-full shadow-lg shadow-primary  group">
           <Image
             width={100}
             height={100}
-            className="rounded-full shadow-sm shadow-white w-[100px] aspect-square"
+            className="rounded-full  w-[100px] aspect-square"
             src={image || "/assets/defaults/teamImage.jpg"}
             alt="Profile Image"
             loading="lazy"

@@ -1,6 +1,5 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { UserRole } from "@prisma/client";
 
 export const userGetCurrent = async (id: string) => {
   try {
@@ -22,8 +21,8 @@ export const userGetById = async (id: string) => {
         phoneNumbers: true,
         team: true,
         notificationSettings: true,
-        phoneSettings:true,
-        displaySettings:true
+        phoneSettings: true,
+        displaySettings: true,
       },
     });
 
@@ -36,29 +35,6 @@ export const userGetById = async (id: string) => {
 export const userGetByEmail = async (email: string) => {
   try {
     const user = await db.user.findUnique({ where: { email } });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-export const userGetByAssistant = async (assitantId: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { assitantId },
-    });
-    if (!user) return null;
-    return user.id;
-  } catch {
-    return null;
-  }
-};
-
-export const userGetByIdDefault = async (id: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { id },
-    });
 
     return user;
   } catch {
@@ -86,23 +62,15 @@ export const userGetByIdReport = async (id: string) => {
     return null;
   }
 };
-
-// USER LICENSES
-export const userLicensesGetAllByUserId = async (
-  userId: string,
-  role: UserRole = "USER"
-) => {
+//TODO - see if this can be removed, some files are still using this
+export const userGetByAssistant = async (assitantId: string) => {
   try {
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
-    const licenses = await db.userLicense.findMany({ where: { userId } });
-    return licenses;
+    const user = await db.user.findUnique({
+      where: { assitantId },
+    });
+    if (!user) return null;
+    return user.id;
   } catch {
-    return [];
+    return null;
   }
 };
-
-
-
-

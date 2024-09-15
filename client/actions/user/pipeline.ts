@@ -1,21 +1,15 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistant } from "@/actions/user";
 import { PipelineSchemaType, PipelineSchema } from "@/schemas/pipeline";
 
 //DATA
-export const pipelineGetAllByAgentId = async () => {
+export const pipelineGetAll = async () => {
   try {
-    const user = await currentUser();
-    if (!user) {
-      redirect("/login");
-    }
-    let userId = user.id;
-    if (user?.role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
+    const userId = await userGetByAssistant();
+    if (!userId) return [];
+
     const pipelines = await db.pipeLine.findMany({
       where: { userId },
       include: { status: { select: { status: true } } },
@@ -34,7 +28,7 @@ export const pipelineGetById = async (id: string | undefined) => {
     const pipeline = await db.pipeLine.findUnique({
       where: { id },
     });
-    console.log(pipeline)
+    console.log(pipeline);
     return pipeline;
   } catch {
     return null;
@@ -42,21 +36,14 @@ export const pipelineGetById = async (id: string | undefined) => {
 };
 //ACTIONS
 export const pipelineInsert = async (values: PipelineSchemaType) => {
-  const user = await currentUser();
-
-  if (!user || !user.email) {
-    return { error: "Unathenticated" };
-  }
+  const userId = await userGetByAssistant();
+  if (!userId) return { error: "Unauthenticated" };
 
   const validatedFields = PipelineSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
   const { statusId, name } = validatedFields.data;
 
-  let userId = user.id;
-  if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
-  }
   const pipelines = await db.pipeLine.findMany({
     where: { userId },
   });
@@ -71,7 +58,7 @@ export const pipelineInsert = async (values: PipelineSchemaType) => {
 
   await db.pipeLine.create({
     data: {
-      userId: user.id,
+      userId,
       statusId,
       name,
       order: pipelines.length,
@@ -89,7 +76,7 @@ export const pipelineUpdateOrder = async (
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-
+//TODO see if we can remove the for by just passing the data
   for (const pipeline of pipelines) {
     await db.pipeLine.updateMany({
       where: { id: pipeline.id },
@@ -134,15 +121,14 @@ export const pipelineUpdateById = async (values: PipelineSchemaType) => {
   const validatedFields = PipelineSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
-  const {id, statusId, name } = validatedFields.data;
+  const { id, statusId, name } = validatedFields.data;
 
   const exisitingStatus = await db.pipeLine.findFirst({
-    where: { userId: user.id,name,statusId },
+    where: { userId: user.id, name, statusId },
   });
- 
-  if (exisitingStatus) 
+
+  if (exisitingStatus)
     return { error: "Another  with same status or title already exists" };
-  
 
   await db.pipeLine.update({
     where: { id },
@@ -155,14 +141,14 @@ export const pipelineUpdateById = async (values: PipelineSchemaType) => {
   return { success: "Pipeline updated!" };
 };
 
-type piptype={id: string, index: number}
-export const pipelineUpdateByIdIndex = async (values:piptype) => {
+type piptype = { id: string; index: number };
+export const pipelineUpdateByIdIndex = async (values: piptype) => {
   const user = await currentUser();
 
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-const {id,index}=values
+  const { id, index } = values;
   await db.pipeLine.update({
     where: { id },
     data: {

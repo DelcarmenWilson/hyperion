@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { userEmitter } from "@/lib/event-emmiter";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+
 import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useAgentTemplateActions } from "../../hooks/user-template";
 
 import { UserTemplate } from "@prisma/client";
 
@@ -14,50 +14,25 @@ import { AlertModal } from "@/components/modals/alert";
 
 import { TemplateForm } from "./form";
 
-import { userTemplateDeleteById } from "@/actions/user";
-
-import { deleteImage } from "@/actions/upload";
 import { formatDate } from "@/formulas/dates";
 
 type TemplateCardProps = {
-  initTemplate: UserTemplate;
+  template: UserTemplate;
   onSelect?: (tp: UserTemplate) => void;
 };
-export const TemplateCard = ({ initTemplate, onSelect }: TemplateCardProps) => {
+export const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
+  const { alertOpen, setAlertOpen, onTemplateDelete, isPendingTemplateDelete } =
+    useAgentTemplateActions();
   const { onOpen } = useImageViewer();
-  const [template, setTemplate] = useState(initTemplate);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteTemplate = async () => {
-    setLoading(true);
-    const deletedTemplate = await userTemplateDeleteById(template.id);
-    if (deletedTemplate.success) {
-      if (template.attachment)
-        await deleteImage(template.attachment, "user-templates");
-      userEmitter.emit("templateDeleted", template.id);
-      toast.success(deletedTemplate.success);
-    } else toast.error(deletedTemplate.error);
-
-    setAlertOpen(false);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setTemplate(initTemplate);
-    const onTemplateUpdated = (e: UserTemplate) => {
-      if (e.id == template.id) setTemplate(e);
-    };
-    userEmitter.on("templateUpdated", (info) => onTemplateUpdated(info));
-  }, [initTemplate]);
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteTemplate}
-        loading={loading}
+        onConfirm={() => onTemplateDelete(template.id)}
+        loading={isPendingTemplateDelete}
         height="auto"
       />
       <DrawerRight

@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
-import { useGlobalContext } from "@/providers/global";
-import { userEmitter } from "@/lib/event-emmiter";
+import {
+  useLeadStatusActions,
+  useLeadStatuses,
+} from "@/components/global/selects/hooks/use-statuses";
 import {
   Select,
   SelectContent,
@@ -9,8 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { leadUpdateByIdStatus } from "@/actions/lead/status";
-import { toast } from "sonner";
+
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type Props = {
   id: string;
@@ -19,37 +20,32 @@ type Props = {
 };
 
 export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
-  const { leadStatus } = useGlobalContext();
-
-  const onStatusUpdated = async (newStatus: string) => {
-    if (newStatus == status) return;
-    const reponse = await leadUpdateByIdStatus(id, newStatus);
-    if (reponse.success) {
-      userEmitter.emit("leadStatusChanged", id, newStatus);
-      toast.success(reponse.success);
-    } else toast.error(reponse.error);
-  };
+  const { statuses, isFetchingStatuses } = useLeadStatuses();
+  const { onLeadStatusUpdate, isPendingLeadStatusUpdate } =
+    useLeadStatusActions();
 
   return (
-    <Select
-      name="ddlLeadStatus"
-      disabled={status == "Do_Not_Call"}
-      onValueChange={(e) =>
-        onSetStatus ? onSetStatus("status", e) : onStatusUpdated(e)
-      }
-      defaultValue={status}
-    >
-      <SelectTrigger>
-        <SelectValue placeholder="Lead Status" />
-      </SelectTrigger>
-      <SelectContent className="max-h-80">
-        {onSetStatus && <SelectItem value="%">All</SelectItem>}
-        {leadStatus?.map((status) => (
-          <SelectItem key={status.id} value={status.status}>
-            {status.status}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <SkeletonWrapper isLoading={isFetchingStatuses}>
+      <Select
+        name="ddlLeadStatus"
+        disabled={status == "Do_Not_Call" || isPendingLeadStatusUpdate}
+        onValueChange={(e) =>
+          onSetStatus ? onSetStatus("status", e) : onLeadStatusUpdate(id, e)
+        }
+        defaultValue={status}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Lead Status" />
+        </SelectTrigger>
+        <SelectContent className="max-h-80">
+          {onSetStatus && <SelectItem value="%">All</SelectItem>}
+          {statuses?.map((status) => (
+            <SelectItem key={status.id} value={status.status}>
+              {status.status}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </SkeletonWrapper>
   );
 };

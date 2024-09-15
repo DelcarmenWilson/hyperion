@@ -24,45 +24,29 @@ export const scheduleGetByUserId = async (
   }
 };
 
-export const scheduleInsert = async (values: ScheduleSchemaType) => {
-  try {
-    const validatedFields = ScheduleSchema.safeParse(values);
-    if (!validatedFields.success) {
-      return { error: "Invalid fields!" };
-    }
-
-    const {
+export const scheduleInsert = async (
+  userId: string,
+  firstName: string,
+  hours: string
+) => {
+  await db.schedule.create({
+    data: {
       userId,
-      title,
-      subTitle,
-      sunday,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-    } = validatedFields.data;
+      type: "",
+      title: `Book an Appointment with ${firstName}`,
+      subTitle:
+        "Pick the time that best works for you. I am looking forward to connecting with you.",
+      monday: hours,
+      tuesday: hours,
+      wednesday: hours,
+      thursday: hours,
+      friday: hours,
+      saturday: "Not Available",
+      sunday: "Not Available",
+    },
+  });
 
-    await db.schedule.create({
-      data: {
-        userId,
-        title,
-        subTitle,
-        sunday,
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-      },
-    });
-
-    return { success: "schedule has been updated!" };
-  } catch {
-    return { error: "internal server error!" };
-  }
+  return { success: "schedule has been created!" };
 };
 export const scheduleUpdateByUserId = async (values: ScheduleSchemaType) => {
   try {

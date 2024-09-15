@@ -1,16 +1,18 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { useAgentLicenseData } from "../../hooks/use-license";
 import { LicenseCard } from "./card";
-import { UserLicense } from "@prisma/client";
+import { EmptyData } from "@/components/lead/info/empty-data";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type LicenseListProps = {
-  licenses: UserLicense[];
   size?: string;
 };
-export const LicenseList = ({ licenses, size = "full" }: LicenseListProps) => {
+export const LicenseList = ({ size = "full" }: LicenseListProps) => {
+  const { licenses, isFetchingLicenses } = useAgentLicenseData();
   return (
-    <>
-      {licenses.length ? (
+    <SkeletonWrapper isLoading={isFetchingLicenses}>
+      {licenses?.length ? (
         <div
           className={cn(
             "grid grid-cols-1 gap-2 overflow-y-auto",
@@ -18,14 +20,14 @@ export const LicenseList = ({ licenses, size = "full" }: LicenseListProps) => {
           )}
         >
           {licenses.map((license) => (
-            <LicenseCard key={license.id} initLicense={license} />
+            <LicenseCard key={license.id} license={license} />
           ))}
         </div>
       ) : (
         <div>
-          <p className="font-semibold text-center">No Licenses Found</p>
+          <EmptyData title="No Licenses Found" />
         </div>
       )}
-    </>
+    </SkeletonWrapper>
   );
 };

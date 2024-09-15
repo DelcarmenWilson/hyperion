@@ -5,6 +5,48 @@ import { currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { UserPhoneNumberSchema,UserPhoneNumberSchemaType } from "@/schemas/user";
 
+//DATA
+export const phoneNumbersGetByAgentId = async (agentId: string) => {
+  try {
+    const phones = await db.phoneNumber.findMany({ where: { agentId } });
+
+    return phones;
+  } catch (error: any) {
+    return [];
+  }
+};
+
+export const phoneNumbersGetAssigned = async () => {
+  try {
+    const phones = await db.phoneNumber.findMany({
+      where: {
+        NOT: {
+          agentId: null
+        }
+      },
+      include: { agent: { select: { firstName: true, lastName: true } } },
+    });
+
+    return phones;
+  } catch (error: any) {
+    return [];
+  }
+};
+export const phoneNumbersGetUnassigned = async () => {
+  try {
+    const phones = await db.phoneNumber.findMany({
+      where:  {
+          agentId: null
+        }
+      },
+    );
+
+    return phones;
+  } catch (error: any) {
+    return [];
+  }
+};
+//ACTIONS
 export const phoneNumberInsert = async (values:  UserPhoneNumberSchemaType) => {
   // const user = await currentUser();
   // if (!user) {
@@ -64,9 +106,9 @@ export const phoneNumberInsertTwilio = async (
     where: { phone },
   });
 
-  if (existingPhoneNumber) {
+  if (existingPhoneNumber) 
     return { error: "Phone number already exists" };
-  }
+  
 
   let status = "Unassigned";
   if (agentId == "unassigned") {
@@ -91,12 +133,13 @@ export const phoneNumberInsertTwilio = async (
     },
   });
 
-  if (!newPhoneNumber) {
+  if (!newPhoneNumber) 
     return { error: "Phone number was not purchased!" };
-  }
+  
 
   return { success: newPhoneNumber.id };
 };
+
 export const phoneNumberUpdateByIdActivate = async (id: string) => {
   const user = await currentUser();
   if (!user) {

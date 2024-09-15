@@ -21,7 +21,7 @@ export const SubNavBar = ({ intialRoutes }: SubNavBarProps) => {
     routes = allRoutes.filter((e) => e.assistant);
   }
   return (
-    <div className="flex flex-1 flex-wrap justify-center items-center gap-2">
+    <div className="flex flex-1 flex-col lg:flex-row  justify-center items-end lg:items-center gap-2">
       {routes.map((route) => (
         <Link key={route.href} href={route.href}>
           <Button variant={route.active ? "default" : "ghost"} size="sm">

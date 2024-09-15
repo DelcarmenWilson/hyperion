@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+// import { Lobster_Two } from "next/font/google";
+import { Roboto } from "next/font/google";
+
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 
@@ -11,9 +13,12 @@ import "./themes/themes.css";
 import { Toaster } from "@/components/ui/sonner";
 import RootProviders from "@/providers/root-providers";
 
-const poppins = Poppins({
+const poppins = Roboto({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  // weight: ["400", "700"], --Lobster_Two
+
+  weight: ["100", "300", "400", "500", "700", "900"],
+  //  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {

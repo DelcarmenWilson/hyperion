@@ -12,48 +12,26 @@ import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 
 import { LeadStatusForm } from "./form";
-import { userLeadStatusDeleteById } from "@/actions/user";
+import { userLeadStatusDeleteById } from "@/actions/user/lead-status";
 import { formatDate } from "@/formulas/dates";
+import { useAgentLeadStatusActions } from "../../hooks/use-lead-status";
 
-export const LeadStatusCard = ({
-  initLeadStatus,
-}: {
-  initLeadStatus: LeadStatus;
-}) => {
-  const [leadStatus, setLeadStatus] = useState(initLeadStatus);
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
+export const LeadStatusCard = ({ leadStatus }: { leadStatus: LeadStatus }) => {
+  const {
+    alertOpen,
+    setAlertOpen,
+    onLeadStatusDelete,
+    isPendingLeadStatusDelete,
+  } = useAgentLeadStatusActions();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onDeleteLeadStatus = async () => {
-    setLoading(true);
-
-    const deletedStatus = await userLeadStatusDeleteById(leadStatus.id);
-    if (deletedStatus.success) {
-      userEmitter.emit("userLeadStatusDeleted", leadStatus.id);
-      toast.success(deletedStatus.success);
-    } else toast.error(deletedStatus.error);
-
-    setAlertOpen(false);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setLeadStatus(initLeadStatus);
-    const onLeadStatusUpdated = (e: LeadStatus) => {
-      if (e.id == leadStatus.id) setLeadStatus(e);
-    };
-    userEmitter.on("userLeadStatusUpdated", (info) =>
-      onLeadStatusUpdated(info)
-    );
-  }, [initLeadStatus]);
   return (
     <>
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteLeadStatus}
-        loading={loading}
+        onConfirm={() => onLeadStatusDelete(leadStatus.id)}
+        loading={isPendingLeadStatusDelete}
         height="auto"
       />
       <DrawerRight

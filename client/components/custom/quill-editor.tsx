@@ -1,5 +1,3 @@
-import { useGlobalContext } from "@/providers/global";
-
 import {
   MutableRefObject,
   useEffect,
@@ -20,8 +18,11 @@ import { Delta, Op } from "quill/core";
 import "quill/dist/quill.snow.css";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { UserTemplate } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,10 +31,9 @@ import {
 } from "@/components/ui/dialog";
 import Hint from "@/components/custom/hint";
 import EmojiPopover from "./emoji-popover";
+import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 
 import { replacePreset } from "@/formulas/text";
-import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
-import { useLeadData } from "@/hooks/lead/use-lead";
 
 type EditorValue = {
   image: File | null;
@@ -60,7 +60,7 @@ const QuillEditor = ({
   disabled = false,
   innerRef,
 }: Props) => {
-  const { user } = useGlobalContext();
+  const { onlineUser, isFetchingOnlineUser } = useOnlineUserData();
   const { lead } = useLeadData();
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -192,8 +192,8 @@ const QuillEditor = ({
     if (tp.attachment) setTemplateImage(tp.attachment);
 
     if (tp.message) {
-      if (!user || !lead) return;
-      const message = replacePreset(tp.message, user, lead);
+      if (!onlineUser || !lead) return;
+      const message = replacePreset(tp.message, onlineUser, lead);
       const quill = quillRef.current;
       quill?.insertText(quill?.getSelection()?.index || 0, message);
     }
