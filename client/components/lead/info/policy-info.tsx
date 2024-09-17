@@ -1,9 +1,7 @@
 "use client";
-import { FilePenLine } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useLeadStore, useLeadPolicyActions } from "@/hooks/lead/use-lead";
 
-import { Button } from "@/components/ui/button";
 import { EmptyData } from "./empty-data";
 import { InputGroup } from "@/components/reusable/input-group";
 import { SectionWrapper } from "./section-wrapper";

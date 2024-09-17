@@ -6,6 +6,7 @@ import { LicenseClient } from "./components/license/client";
 import { CarrierClient } from "./components/carrier/client";
 import { UserTemplateClient } from "./components/templates/client";
 import { FacebookClient } from "./components/facebook/client";
+import { ScriptClient } from "./components/script/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ConfigPage = async () => {
@@ -28,6 +29,10 @@ const ConfigPage = async () => {
         <TabsTrigger className="w-full" value="templates">
           Templates
         </TabsTrigger>
+        <TabsTrigger className="w-full" value="scripts">
+          Scripts
+        </TabsTrigger>
+
         {["ADMIN", "MASTER"].includes(role as string) && (
           <TabsTrigger className="w-full" value="facebook">
             Facebook
@@ -54,6 +59,11 @@ const ConfigPage = async () => {
         <TabsContent value="templates" className="h-full">
           <ScrollArea>
             <UserTemplateClient />
+          </ScrollArea>
+        </TabsContent>
+        <TabsContent value="scripts" className="h-full">
+          <ScrollArea>
+            <ScriptClient />
           </ScrollArea>
         </TabsContent>
         {["ADMIN", "MASTER"].includes(role as string) && (

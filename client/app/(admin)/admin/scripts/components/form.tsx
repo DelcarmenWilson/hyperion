@@ -3,7 +3,7 @@
 import { SaveAll } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useScriptActions, useScriptData } from "../hooks/use-script";
+import { useScriptActions } from "@/hooks/admin/use-script";
 
 import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 
@@ -24,7 +24,7 @@ type Props = {
   script: Script;
 };
 export const ScriptForm = ({ script }: Props) => {
-  const { loading, onScriptUpdate } = useScriptActions();
+  const { onScriptUpdate, isPendingScriptUpdate } = useScriptActions();
 
   const form = useForm<ScriptSchemaType>({
     mode: "onChange",
@@ -51,7 +51,7 @@ export const ScriptForm = ({ script }: Props) => {
                     <Input
                       {...field}
                       placeholder="Basic Script"
-                      disabled={loading}
+                      disabled={isPendingScriptUpdate}
                       autoComplete="title"
                       type="text"
                     />
@@ -60,16 +60,16 @@ export const ScriptForm = ({ script }: Props) => {
                 </FormItem>
               )}
             />
-            <Button disabled={loading} type="submit">
+            <Button variant="outlineprimary" disabled={isPendingScriptUpdate}>
               <SaveAll size={16} className="mr-2" />
               Update
             </Button>
           </div>
 
-          {/* TITLE */}
+          {/* CONTENT */}
           <FormField
             control={form.control}
-            name="script"
+            name="content"
             render={({ field }) => (
               <FormItem className="flex flex-col flex-1 w-full overflow-hidden">
                 <FormLabel> Script</FormLabel>

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -7,16 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 
-interface ModalProps {
+type ModalProps = {
   title: string;
   description: string;
   isOpen: boolean;
   onClose: () => void;
   children?: React.ReactNode;
+  width?: string;
   height?: string;
-}
+};
 
 export const Modal = ({
   title,
@@ -24,6 +25,7 @@ export const Modal = ({
   isOpen,
   onClose,
   children,
+  width = "auto",
   height = "h-full",
 }: ModalProps) => {
   const onChange = (open: boolean) => {
@@ -34,12 +36,14 @@ export const Modal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
-      <DialogContent className={cn("flex flex-col", height)}>
+      <DialogContent className={cn("flex flex-col", height, width)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col flex-1 overflow-hidden">{children}</div>
+        <div className="flex flex-col flex-1 overflow-hidden max-w">
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   );

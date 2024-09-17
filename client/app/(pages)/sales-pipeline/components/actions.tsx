@@ -21,7 +21,7 @@ export const Actions = ({ pipelineId, onReset }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="gap-2" variant="ghost" size="icon">
+        <Button className="gap-2" variant="transparent" size="icon">
           <MoreVertical size={16} />
         </Button>
       </DropdownMenuTrigger>

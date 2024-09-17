@@ -19,7 +19,7 @@ export const PhoneScript = () => {
 
   const formattedScript = useMemo(() => {
     return replaceScript(
-      script?.script!,
+      script?.content!,
       onlineUser?.firstName!,
       lead!,
       licenses!

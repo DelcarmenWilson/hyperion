@@ -1,12 +1,13 @@
 "use client";
 import { Plus } from "lucide-react";
-import { useScriptActions, useScriptData } from "../hooks/use-script";
+import { useScriptActions, useScriptData } from "@/hooks/admin/use-script";
+
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const ScriptsClient = () => {
   const { scripts, isFetchingScripts, scriptId, setScriptId } = useScriptData();
-  const { loading, onScriptInsert } = useScriptActions();
+  const { onScriptInsert, isPendingScriptInsert } = useScriptActions();
 
   return (
     <div className="flex flex-col w-full gap-2 border-r px-4">
@@ -15,7 +16,7 @@ export const ScriptsClient = () => {
         <Button
           variant="ghost"
           size="icon"
-          disabled={loading}
+          disabled={isPendingScriptInsert}
           onClick={onScriptInsert}
         >
           <Plus size={16} />

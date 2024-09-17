@@ -9,7 +9,6 @@ import {
   usePipelineActions,
   usePipelineStore,
 } from "../../hooks/use-pipelines";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type PipeLineListProps = {
   leads: FullLead[];
@@ -40,17 +39,17 @@ export const PipeLineList = ({
       />
 
       <Reorder.Group values={pipelines} onReorder={setPipelines}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {pipelines?.map((pipeline, index) => (
-            <SkeletonWrapper key={pipeline.id} isLoading={loading}>
-              <PipelineCard
-                idx={index}
-                pipeline={pipeline}
-                initLeads={leads.filter(
-                  (e) => e.status == pipeline.status.status
-                )}
-              />
-            </SkeletonWrapper>
+            <PipelineCard
+              key={pipeline.id}
+              idx={index}
+              pipeline={pipeline}
+              loading={loading}
+              initLeads={leads.filter(
+                (e) => e.status == pipeline.status.status
+              )}
+            />
           ))}
         </div>
       </Reorder.Group>

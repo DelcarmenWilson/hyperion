@@ -252,7 +252,7 @@ model LeadStatus {
 
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
-    PipeLine  PipeLine[]
+    Pipeline  Pipeline[]
 }
 
 //LEAD CONVERSATIONS

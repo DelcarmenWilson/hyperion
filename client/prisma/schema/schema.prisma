@@ -158,7 +158,7 @@ model AppointmentLabel {
   updatedAt DateTime @updatedAt
 }
 
-model PipeLine {
+model Pipeline {
   id   String @id @default(cuid())
   name String
 

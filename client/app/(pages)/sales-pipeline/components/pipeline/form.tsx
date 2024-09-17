@@ -7,7 +7,7 @@ import {
   usePipelineStore,
 } from "../../hooks/use-pipelines";
 
-import { PipeLine } from "@prisma/client";
+import { Pipeline } from "@prisma/client";
 import { PipelineSchema, PipelineSchemaType } from "@/schemas/pipeline";
 
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,7 @@ export const PipelineForm = () => {
 };
 
 type Props = {
-  pipeline: PipeLine | null;
+  pipeline: Pipeline | null;
   loading: boolean;
   type: "edit" | "insert";
   onSubmit: (values: PipelineSchemaType) => void;

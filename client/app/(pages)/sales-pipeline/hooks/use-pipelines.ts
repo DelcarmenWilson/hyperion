@@ -14,7 +14,7 @@ import {
   pipelineUpdateByIdIndex,
   pipelineUpdateOrder,
 } from "@/actions/user/pipeline";
-import { PipeLine } from "@prisma/client";
+import { Pipeline } from "@prisma/client";
 import { PipelineSchemaType } from "@/schemas/pipeline";
 import { useModal } from "@/providers/modal";
 
@@ -47,7 +47,7 @@ export const usePipelineData = () => {
   const { pipelineId } = usePipelineStore();
 
   const { data: pipeline, isFetching: isFetchingPipeline } =
-    useQuery<PipeLine | null>({
+    useQuery<Pipeline | null>({
       queryFn: () => pipelineGetById(pipelineId),
       queryKey: [`pipeline-${pipelineId}`],
     });

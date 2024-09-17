@@ -10,7 +10,7 @@ export const pipelineGetAll = async () => {
     const userId = await userGetByAssistant();
     if (!userId) return [];
 
-    const pipelines = await db.pipeLine.findMany({
+    const pipelines = await db.pipeline.findMany({
       where: { userId },
       include: { status: { select: { status: true } } },
       orderBy: { order: "asc" },
@@ -25,7 +25,7 @@ export const pipelineGetById = async (id: string | undefined) => {
     if (!id) return null;
     const user = await currentUser();
     if (!user) return null;
-    const pipeline = await db.pipeLine.findUnique({
+    const pipeline = await db.pipeline.findUnique({
       where: { id },
     });
     console.log(pipeline);
@@ -44,7 +44,7 @@ export const pipelineInsert = async (values: PipelineSchemaType) => {
 
   const { statusId, name } = validatedFields.data;
 
-  const pipelines = await db.pipeLine.findMany({
+  const pipelines = await db.pipeline.findMany({
     where: { userId },
   });
 
@@ -56,7 +56,7 @@ export const pipelineInsert = async (values: PipelineSchemaType) => {
     return { error: "Stage with same status or title already exists" };
   }
 
-  await db.pipeLine.create({
+  await db.pipeline.create({
     data: {
       userId,
       statusId,
@@ -78,7 +78,7 @@ export const pipelineUpdateOrder = async (
   }
 //TODO see if we can remove the for by just passing the data
   for (const pipeline of pipelines) {
-    await db.pipeLine.updateMany({
+    await db.pipeline.updateMany({
       where: { id: pipeline.id },
       data: {
         order: pipeline.order,
@@ -95,18 +95,18 @@ export const pipelineDeleteById = async (id: string | undefined) => {
 
   if (!user || !user.email) return { error: "Unathenticated" };
 
-  const exisitingPipeLine = await db.pipeLine.findUnique({
+  const exisitingPipeline = await db.pipeline.findUnique({
     where: { id },
   });
 
-  if (!exisitingPipeLine) {
+  if (!exisitingPipeline) {
     return { error: "stage does not exists!" };
   }
-  if (exisitingPipeLine.userId != user.id) {
+  if (exisitingPipeline.userId != user.id) {
     return { error: "Unauthorized" };
   }
 
-  await db.pipeLine.delete({ where: { id: exisitingPipeLine.id } });
+  await db.pipeline.delete({ where: { id: exisitingPipeline.id } });
 
   return { success: "stage has been deleted!" };
 };
@@ -123,14 +123,14 @@ export const pipelineUpdateById = async (values: PipelineSchemaType) => {
 
   const { id, statusId, name } = validatedFields.data;
 
-  const exisitingStatus = await db.pipeLine.findFirst({
+  const exisitingStatus = await db.pipeline.findFirst({
     where: { userId: user.id, name, statusId },
   });
 
   if (exisitingStatus)
     return { error: "Another  with same status or title already exists" };
 
-  await db.pipeLine.update({
+  await db.pipeline.update({
     where: { id },
     data: {
       statusId,
@@ -149,7 +149,7 @@ export const pipelineUpdateByIdIndex = async (values: piptype) => {
     return { error: "Unathenticated" };
   }
   const { id, index } = values;
-  await db.pipeLine.update({
+  await db.pipeline.update({
     where: { id },
     data: {
       index,

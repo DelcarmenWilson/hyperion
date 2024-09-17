@@ -60,7 +60,7 @@ const QuillEditor = ({
   disabled = false,
   innerRef,
 }: Props) => {
-  const { onlineUser, isFetchingOnlineUser } = useOnlineUserData();
+  const { onlineUser } = useOnlineUserData();
   const { lead } = useLeadData();
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -257,9 +257,10 @@ const QuillEditor = ({
                   <Button
                     className="absolute -top-2.5 -right-2.5 hidden group-hover/image:flex rounded-full z-4"
                     size="xxs"
+                    type="button"
                     onClick={() => {
-                      setImage(null);
-                      imageElementRef.current!.value = "";
+                      setTemplateImage("");
+                      templateImageRef.current!.value = "";
                     }}
                   >
                     <X size={15} />
@@ -283,12 +284,18 @@ const QuillEditor = ({
                 size="icon"
                 variant="ghost"
                 onClick={toggleToolbar}
+                type="button"
               >
                 <ALargeSmall size={16} />
               </Button>
             </Hint>
             <EmojiPopover onEmojiSelect={onEmojiSelect}>
-              <Button disabled={disabled} size="icon" variant="ghost">
+              <Button
+                disabled={disabled}
+                size="icon"
+                variant="ghost"
+                type="button"
+              >
                 <Smile size={16} />
               </Button>
             </EmojiPopover>

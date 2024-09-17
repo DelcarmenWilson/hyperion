@@ -127,9 +127,8 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
   //If there is no user -- Unathenticated
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user) return { error: "Unauthenticated" };
+
   const validatedFields = AppointmentSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -138,14 +137,13 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   const {
     localDate,
     startDate,
-    agentId,
     leadId,
     label,
     comments,
     smsReminder,
     emailReminder,
   } = validatedFields.data;
-  let userId = agentId;
+  let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistant(userId)) as string;
   }
@@ -169,11 +167,9 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   const appointmentDate = startDate!;
   let endDate = new Date(startDate!);
 
-  if (config?.type == "hourly") 
-    endDate.setHours(endDate.getHours() + 1);
-  else 
-    endDate.setMinutes(endDate.getMinutes() + 30);
-  
+  if (config?.type == "hourly") endDate.setHours(endDate.getHours() + 1);
+  else endDate.setMinutes(endDate.getMinutes() + 30);
+
   const appointment = await db.appointment.create({
     data: {
       agentId: userId,
@@ -189,9 +185,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
 
   await callUpdateByIdAppointment(appointment.leadId, appointment.id);
 
-  if (!appointment) 
-    return { error: "Appointment was not created!" };
-  
+  if (!appointment) return { error: "Appointment was not created!" };
 
   const lead = await db.lead.findUnique({
     where: { id: leadId },
@@ -202,14 +196,14 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
           firstName: true,
           team: {
             select: {
-                  name: true,
+              name: true,
             },
           },
         },
       },
     },
   });
-  
+
   let message;
   if (lead) {
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
