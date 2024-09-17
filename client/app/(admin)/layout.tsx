@@ -1,7 +1,6 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
-import { usersGetAllChat } from "@/actions/user";
 
 import SocketContextComponent from "@/providers/socket-component";
 
@@ -14,15 +13,16 @@ import { ChatDrawer } from "@/components/chat/drawer";
 import { LoginStatusModal } from "@/components/login-status/modal";
 import SideBar from "@/components/sidebar";
 
-import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/actions/user/schedule";
 import {
   appointmentLabelsGetAll,
   appointmentsGetAll,
 } from "@/data/appointment";
-
 import { getTwilioToken } from "@/actions/twilio";
+
 import { phoneSettingsGet } from "@/actions/settings/phone";
+import { scheduleGetByUserId } from "@/actions/user/schedule";
+import { voicemailGetUnHeard } from "@/actions/voicemail";
+import { usersGetAllChat } from "@/actions/user";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
@@ -41,10 +41,10 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <GlobalContextProvider initUsers={initUsers}>
       <SocketContextComponent>
-        <div className="flex h-screen w-full overflow-hidden">
-          <SideBar />
-          <div className="flex flex-col flex-1">
-            <NavBar />
+        <div className="flex flex-col h-screen w-full overflow-hidden">
+          <NavBar admin />
+          <div className="flex flex-1 w-full h-full overflow-hidden">
+            <SideBar />
             <div className="flex flex-col flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
               <PhoneContextProvider
                 initVoicemails={voicemails}

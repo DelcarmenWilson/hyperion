@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Sparkle } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -40,17 +39,6 @@ const Sidebar = ({ main = false }: Props) => {
 
   return (
     <aside className="flex-center flex-col h-full bg-background/80 pb-2 overflow-hidden shrink-0">
-      <a className="flex h-14 gap-2 items-center" href="/">
-        <Image
-          src="/logo3.png"
-          alt="hyperion logo"
-          width={30}
-          height={30}
-          className="w-[30px] aspect-square"
-          priority
-        />
-      </a>
-      <Separator />
       <nav className="flex flex-col flex-1  items-center  overflow-hidden ">
         <ScrollArea className="p-2 pr-4">
           {routes.map((route) => {

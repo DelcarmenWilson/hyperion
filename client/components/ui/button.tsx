@@ -23,6 +23,8 @@ const buttonVariants = cva(
           "text-primary border border-primary hover:text-primary-foreground shadow hover:bg-primary/90",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        outlinesecondary:
+          "text-secondary border border-secondary hover:text-secondary-foreground shadow hover:bg-secondary/90",
         success:
           "bg-emerald-500 text-secondary-foreground shadow-sm hover:bg-emerald-500/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -33,6 +35,7 @@ const buttonVariants = cva(
           "bg-primary/80 text-primary-foreground shadow hover:bg-primary/90",
         sidebar:
           "hover:text-primary-foreground hover:bg-primary/90 focus:text-primary-foreground focus:bg-primary/90",
+        transparent: "hover:text-accent-foreground",
       },
       size: {
         default: "h-9 px-4 py-2",

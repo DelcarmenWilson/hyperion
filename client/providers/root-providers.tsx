@@ -37,7 +37,6 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
         disableTransitionOnChange
       >
         {children}
-
         <MasterModalProvider />
         <ThemeSwitcher />
         <ImageViewerModal />

@@ -1,5 +1,5 @@
 "use client";
-import { useScriptData } from "./hooks/use-script";
+import { useScriptData } from "@/hooks/admin/use-script";
 import { ScriptForm } from "./components/form";
 
 const ScriptsPage = () => {

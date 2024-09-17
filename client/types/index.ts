@@ -5,7 +5,7 @@ import {
   Team,
   Organization,
   Feedback,
-  PipeLine,
+  Pipeline,
   MedicalCondition,
   LeadPolicy,
   Carrier,
@@ -103,7 +103,7 @@ export type FullFeedback = Feedback & {
   user: User;
 };
 
-export type FullPipeline = PipeLine & {
+export type FullPipeline = Pipeline & {
   status: { status: string };
 };
 

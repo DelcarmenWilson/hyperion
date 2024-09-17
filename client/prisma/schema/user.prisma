@@ -55,6 +55,7 @@ model User {
     licenses    UserLicense[]
     templates   UserTemplate[]
     loginStatus LoginStatus[]
+    scripts     Script[]
 
     presets              Presets[]
     phoneNumbers         PhoneNumber[]

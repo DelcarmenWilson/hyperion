@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { userEmitter } from "@/lib/event-emmiter";
-import axios from "axios";
-
-import { LeadMessage } from "@prisma/client";
 
 import { PhoneSwitcher } from "../addins/switcher";
 import { Input } from "@/components/ui/input";
@@ -14,7 +10,6 @@ import { formatPhoneNumber } from "@/formulas/phones";
 
 import { SmsBody } from "./body";
 import { SmsForm } from "./form";
-import Loader from "@/components/reusable/loader";
 import { Button } from "@/components/ui/button";
 import { useLeadData } from "@/hooks/lead/use-lead";
 import FormInput from "./form-input";

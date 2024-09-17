@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
-import { PipeLine } from "@prisma/client";
+import { Pipeline } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Call, Device } from "@twilio/voice-sdk";
 import {
@@ -27,7 +27,7 @@ type PhoneStore = {
   onPhoneInClose: () => void;
 
   isPhoneDialerOpen: boolean;
-  onPhoneDialerOpen: (e?: FullLead[], f?: PipeLine) => void;
+  onPhoneDialerOpen: (e?: FullLead[], f?: Pipeline) => void;
   onPhoneDialerClose: () => void;
 
   isPhoneOutOpen: boolean;
@@ -42,7 +42,7 @@ type PhoneStore = {
 
   lead?: FullLeadNoConvo;
   leads?: FullLead[];
-  pipeline?: PipeLine;
+  pipeline?: Pipeline;
   pipeIndex: number;
   onSetLead: (e?: FullLeadNoConvo) => void;
   onSetLeads: (e?: FullLead[]) => void;
