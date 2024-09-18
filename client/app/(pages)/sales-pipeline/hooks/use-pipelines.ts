@@ -7,6 +7,7 @@ import { FullPipeline, PipelineAndLeads } from "@/types";
 import {
   pipelineAndLeadsGetAll,
   pipelineDeleteById,
+  pipelineGetAll,
   pipelineGetById,
   pipelineInsert,
   pipelineUpdateById,
@@ -50,18 +51,26 @@ export const usePipelineData = () => {
       queryKey: [`pipeline-${pipelineId}`],
     });
 
-  const { data: pipelineAndLeads, isFetching: isFetchingPipelines } = useQuery<
-  PipelineAndLeads
+  const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<
+    FullPipeline[]
   >({
-    queryFn: () => pipelineAndLeadsGetAll(),
+    queryFn: () => pipelineGetAll(),
     queryKey: ["pipelines"],
   });
+
+  const { data: pipelineAndLeads, isFetching: isFetchingPipelineAndLeads } =
+    useQuery<PipelineAndLeads>({
+      queryFn: () => pipelineAndLeadsGetAll(),
+      queryKey: ["pipeline-and-leads"],
+    });
 
   return {
     pipeline,
     isFetchingPipeline,
-    pipelineAndLeads,
+    pipelines,
     isFetchingPipelines,
+    pipelineAndLeads,
+    isFetchingPipelineAndLeads,
   };
 };
 
