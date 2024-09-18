@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 import { create } from "zustand";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLeadsData } from "../../leads/hooks/use-leads";
 
 import { toast } from "sonner";
-import { FullPipeline } from "@/types";
+import { FullPipeline, PipelineAndLeads } from "@/types";
 import {
+  pipelineAndLeadsGetAll,
   pipelineDeleteById,
-  pipelineGetAll,
   pipelineGetById,
   pipelineInsert,
   pipelineUpdateById,
@@ -43,7 +42,6 @@ export const usePipelineStore = create<PipelineStore>((set) => ({
 }));
 
 export const usePipelineData = () => {
-  const { initLeads: leads } = useLeadsData();
   const { pipelineId } = usePipelineStore();
 
   const { data: pipeline, isFetching: isFetchingPipeline } =
@@ -52,19 +50,18 @@ export const usePipelineData = () => {
       queryKey: [`pipeline-${pipelineId}`],
     });
 
-  const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<
-    FullPipeline[]
+  const { data: pipelineAndLeads, isFetching: isFetchingPipelines } = useQuery<
+  PipelineAndLeads
   >({
-    queryFn: () => pipelineGetAll(),
+    queryFn: () => pipelineAndLeadsGetAll(),
     queryKey: ["pipelines"],
   });
 
   return {
     pipeline,
     isFetchingPipeline,
-    pipelines,
+    pipelineAndLeads,
     isFetchingPipelines,
-    leads,
   };
 };
 

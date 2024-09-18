@@ -10,20 +10,19 @@ import { PipeLineList } from "./components/pipeline/list";
 import { PipelineForm } from "./components/pipeline/form";
 
 const SalesPage = () => {
-  const { pipelines, isFetchingPipelines, leads } = usePipelineData();
+  const { pipelineAndLeads, isFetchingPipelines } = usePipelineData();
 
   return (
     <PageLayout title="Sales Pipeline" icon={UserSquare} topMenu={<TopMenu />}>
-      {pipelines && pipelines.length > 0 ? (
-        <PipeLineList
-          leads={leads!}
-          initPipelines={pipelines!}
-          loading={isFetchingPipelines}
-        />
-      ) : (
+      {!pipelineAndLeads?.pipelines ? (
         <EmptyCard
           title="No Stages Available"
           subTitle="Please add a new stage"
+        />
+      ) : (
+        <PipeLineList
+          pipelineAndLeads={pipelineAndLeads}
+          loading={isFetchingPipelines}
         />
       )}
       <PipelineForm />

@@ -165,9 +165,7 @@ export const PhoneOut = () => {
   };
 
   const onCheckNumber = () => {
-    if (to.number.length > 9) {
-      setDisabled(true);
-    }
+    if (to.number.length > 9) setDisabled(true);
   };
 
   const onReset = () => {
@@ -242,6 +240,7 @@ export const PhoneOut = () => {
       name: leadFullName,
       number: formatPhoneNumber(leadBasic?.cellPhone as string) || "",
     });
+    setDisabled(true);
   }, [leadBasic]);
 
   //TODO - Test data dont forget to remove

@@ -20,6 +20,61 @@ export const pipelineGetAll = async () => {
     return [];
   }
 };
+
+export const pipelineAndLeadsGetAll = async () => {
+  // Empty variable of no data return
+  const empty={ pipelines: [], leads: [] }
+
+  try {
+    //get the online user and if the user is an assistant get the userid of the agent
+    const userId = await userGetByAssistant();
+    if (!userId) return empty;
+
+    //Get all the pipeline for this agent
+    const pipelines = await db.pipeline.findMany({
+      where: { userId },
+      include: { status: { select: { status: true } } },
+      orderBy: { order: "asc" },
+    });
+
+    //If there are no pipelines then return an empty object
+    if (!pipelines) return empty;
+
+    //Get all the leads for this agent that are assciated with the pipelines
+    // const leads = await db.lead.findMany({
+    //   where: { status: { in: pipelines.map((p) => p.status.status) } },
+    // });
+
+    const leads = await db.lead.findMany({
+      where: {
+        OR: [
+          { userId },
+          { assistantId: userId },
+          { sharedUserId: userId},
+        ],
+        status: { in: pipelines.map((p) => p.status.status) }
+      },
+      include: {
+        conversations: { where: { agentId: userId } },
+        appointments: { where: { status: "scheduled" } },
+        calls: true,
+        activities: true,
+        beneficiaries: true,
+        expenses: true,
+        conditions: { include: { condition: true } },
+        policy: true,
+        assistant: true,
+        sharedUser: true,
+      },
+    });
+    //If there are no leads then return an empty object
+    if (!leads) return empty;
+    //return the list of pipelines and the list of leads
+    return { pipelines, leads };
+  } catch {
+    return empty;
+  }
+};
 export const pipelineGetById = async (id: string | undefined) => {
   try {
     if (!id) return null;
@@ -76,7 +131,7 @@ export const pipelineUpdateOrder = async (
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-//TODO see if we can remove the for by just passing the data
+  //TODO see if we can remove the for by just passing the data
   for (const pipeline of pipelines) {
     await db.pipeline.updateMany({
       where: { id: pipeline.id },
