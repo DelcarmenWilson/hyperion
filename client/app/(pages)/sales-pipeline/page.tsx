@@ -10,7 +10,7 @@ import { PipeLineList } from "./components/pipeline/list";
 import { PipelineForm } from "./components/pipeline/form";
 
 const SalesPage = () => {
-  const { pipelineAndLeads, isFetchingPipelines } = usePipelineData();
+  const { pipelineAndLeads, isFetchingPipelineAndLeads } = usePipelineData();
 
   return (
     <PageLayout title="Sales Pipeline" icon={UserSquare} topMenu={<TopMenu />}>
@@ -22,7 +22,7 @@ const SalesPage = () => {
       ) : (
         <PipeLineList
           pipelineAndLeads={pipelineAndLeads}
-          loading={isFetchingPipelines}
+          loading={isFetchingPipelineAndLeads}
         />
       )}
       <PipelineForm />
