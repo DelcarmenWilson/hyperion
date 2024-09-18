@@ -1,6 +1,6 @@
 import { Reorder } from "framer-motion";
 
-import { FullLead, FullPipeline } from "@/types";
+import { PipelineAndLeads } from "@/types";
 
 import { AlertModal } from "@/components/modals/alert";
 
@@ -11,15 +11,14 @@ import {
 } from "../../hooks/use-pipelines";
 
 type PipeLineListProps = {
-  leads: FullLead[];
-  initPipelines: FullPipeline[];
+  pipelineAndLeads: PipelineAndLeads;
   loading: boolean;
 };
 export const PipeLineList = ({
-  leads,
-  initPipelines,
+  pipelineAndLeads,
   loading,
 }: PipeLineListProps) => {
+  const { pipelines: initPipelines, leads } = pipelineAndLeads;
   const {
     pipelines,
     setPipelines,

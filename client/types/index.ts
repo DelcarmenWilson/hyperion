@@ -107,6 +107,11 @@ export type FullPipeline = Pipeline & {
   status: { status: string };
 };
 
+export type PipelineAndLeads={
+  pipelines:FullPipeline[]
+   leads:FullLead[]
+}
+
 export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
   policy?: LeadPolicy | null;
