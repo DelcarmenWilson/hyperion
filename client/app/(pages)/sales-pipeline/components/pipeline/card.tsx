@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Clock, Move } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
-import { usePhone } from "@/hooks/use-phone";
-import { usePipelineActions } from "../../hooks/use-pipelines";
-
-import { Pipeline } from "@prisma/client";
-import { FullLead } from "@/types";
-
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -16,37 +10,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LeadCard } from "../lead-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { FullLead } from "@/types";
 import { Actions } from "../actions";
+import { Pipeline } from "@prisma/client";
+import { usePhone } from "@/hooks/use-phone";
+import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
 import { timeZones } from "@/constants/states";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type PipelineCardProps = {
   pipeline: Pipeline;
   idx: number;
   initLeads: FullLead[];
-  loading?: boolean;
+  sendPipeline: (e: Pipeline, type: string) => void;
 };
 export const PipelineCard = ({
   pipeline,
   idx,
   initLeads,
-  loading = false,
+  sendPipeline,
 }: PipelineCardProps) => {
   const { onPhoneDialerOpen } = usePhone();
   const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
-  const [index, setIndex] = useState(idx);
+  const [index, setIndex] = useState(pipeline.index);
 
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
   const controls = useDragControls();
-  const { onPipelineUpdateIndexSubmit } = usePipelineActions([]);
 
   const onReset = () => {
     setIndex(0);
-    onPipelineUpdateIndexSubmit(pipeline.id, 0);
+    pipelineUpdateByIdIndex({ id: pipeline.id, index: 0 });
   };
 
   useEffect(() => {
@@ -59,63 +53,59 @@ export const PipelineCard = ({
       value={pipeline}
       dragListener={false}
       dragControls={controls}
-      drag="x"
+      drag
     >
-      <section className="flex flex-col  shadow-xl h-[400px]">
-        <SkeletonWrapper isLoading={loading} fullHeight fullWidth>
-          <div className="flex justify-between items-center bg-primary/25 text-primary px-2">
-            <div className="flex flex-1 items-center gap-2">
-              <Button
-                size="icon"
-                variant="transparent"
-                onPointerDown={(e) => controls.start(e)}
-              >
-                <Move size={15} />
-              </Button>
-              <p className="font-bold">{pipeline.name}</p>
-            </div>
-            <Actions pipelineId={pipeline.id} onReset={onReset} />
-          </div>
-          <div className="p-1">
-            <Select onValueChange={setTimeZone} defaultValue="%">
-              <SelectTrigger>
-                <Clock size={16} />
-                <SelectValue placeholder="Filter Timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="%">Filter Timezone</SelectItem>
-                {timeZones.map((timeZone) => (
-                  <SelectItem key={timeZone.value} value={timeZone.value}>
-                    {timeZone.text}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-between items-center border-b p-2">
+      <section className="flex flex-col border border-primary/50 shadow-inner h-[400px]">
+        <div className="flex justify-between items-center bg-primary text-background px-2">
+          <div className="flex flex-1 items-center gap-2">
             <Button
-              variant="outlineprimary"
-              size="sm"
-              disabled={!leads.length}
-              onClick={() => onPhoneDialerOpen(leads, pipeline)}
+              size="icon"
+              variant="ghost"
+              onPointerDown={(e) => controls.start(e)}
             >
-              START DIALING
+              <Move size={15} />
             </Button>
-            <p>Leads: {leads.length}</p>
+            <p>{pipeline.name}</p>
           </div>
-
-          <ScrollArea className="relative group h-full" ref={divRef}>
-            {/* <div className="relative group h-full overflow-y-auto" ref={divRef}> */}
-            {leads.map((lead, i) => (
-              <LeadCard
-                key={lead.id}
-                lead={lead}
-                indexRef={i == index ? indexRef : null}
-              />
+          <Actions
+            pipeline={pipeline}
+            sendPipeline={sendPipeline}
+            onReset={onReset}
+          />
+        </div>
+        <Select onValueChange={setTimeZone} defaultValue="%">
+          <SelectTrigger>
+            <Clock size={16} />
+            <SelectValue placeholder="Filter Timezone" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="%">Filter Timezone</SelectItem>
+            {timeZones.map((timeZone) => (
+              <SelectItem key={timeZone.value} value={timeZone.value}>
+                {timeZone.text}
+              </SelectItem>
             ))}
-            {/* </div> */}
-          </ScrollArea>
-        </SkeletonWrapper>
+          </SelectContent>
+        </Select>
+        <div className="flex justify-between items-center border-b p-2">
+          <Button
+            size="sm"
+            disabled={!leads.length}
+            onClick={() => onPhoneDialerOpen(leads, pipeline)}
+          >
+            START DIALING
+          </Button>
+          <p>Leads: {leads.length}</p>
+        </div>
+        <div className="relative group h-full overflow-y-auto" ref={divRef}>
+          {leads.map((lead, i) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              indexRef={i == index ? indexRef : null}
+            />
+          ))}
+        </div>
       </section>
     </Reorder.Item>
   );

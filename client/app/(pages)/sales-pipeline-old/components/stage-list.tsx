@@ -17,7 +17,8 @@ import {
   usePipelineStageActions,
 } from "../hooks/use-pipelines";
 
-export const StageList = ({ pipelines }: { pipelines: FullPipeline[] }) => {
+export const StageList = () => {
+  const { pipelines } = usePipelineData();
   const {
     buttonEnabled,
     stages,
