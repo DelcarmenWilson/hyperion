@@ -21,7 +21,7 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
       <div
         className={cn(
           "flex justify-between items-center p-2 text-xs",
-          indexRef && "bg-secondary"
+          indexRef && "bg-primary/10"
         )}
       >
         <div>
@@ -39,12 +39,13 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
         </div>
         <div className="flex flex-col justify-between gap-2 items-end">
           <Button
+            variant="transparent"
             className="rounded-full w-fit"
             onClick={() => onPhoneOutOpen(lead)}
           >
             <Phone size={16} />
           </Button>
-          <p> Recieved {formatDate(lead.createdAt)}</p>
+          <p> Recd:{formatDate(lead.recievedAt)}</p>
         </div>
       </div>
     </div>
