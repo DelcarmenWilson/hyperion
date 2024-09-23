@@ -4,6 +4,7 @@ import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { ActionCard } from "./card";
+import { INodeTypeBaseDescription } from "@/nodes/node_type";
 
 export const ActionList = () => {
   const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();

@@ -1,6 +1,6 @@
 "use client";
 import { MessageSquare } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import { SmsForm } from "@/components/phone/sms/form";
 import FormInput from "@/components/phone/sms/form-input";
 
 const ConversationClient = () => {
-  const user = useCurrentUser();
+
   return (
     <Card className="flex flex-col flex-1 relative overflow-hidden">
       <div className="flex items-center">

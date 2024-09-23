@@ -1,10 +1,20 @@
-import { FullWorkFlowSchemaType } from "@/schemas/workflow/workflow";
-import { WorkFlowClient } from "./components/client";
-import { workFlowGetById } from "@/actions/workflow";
+"use client"
 
-const WorkFlowPage = async ({ params }: { params: { id: string } }) => {
-  const workflow = await workFlowGetById(params.id);
-  return <WorkFlowClient initWorkflow={workflow as FullWorkFlowSchemaType} />;
-};
+import React from 'react'
+import { useWorkflowId } from '../hooks/use-workflow'
+import { WorkflowHeader } from './components/header'
 
-export default WorkFlowPage;
+function workflowPage() {
+
+    // const {workflowId}=useWorkflowId()
+
+    const {workflowId}=useWorkflowId()
+  return (
+    <div className="bg-background w-full">
+      
+      <WorkflowHeader/>
+    </div>
+  )
+}
+
+export default workflowPage

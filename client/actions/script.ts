@@ -60,9 +60,11 @@ export const scriptInsert = async () => {
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
-  if (!previousScript?.content) {
+
+  if(previousScript){
+  if (!previousScript.content) {
     return { error: "Previous script content is empty!" };
-  }
+  }}
   const newScript = await db.script.create({
     data: {
       title: "New Script",

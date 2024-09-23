@@ -18,7 +18,7 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 import { ChatCard } from "./card";
 import { ChatUsersList } from "./list";
 import { chatInsert } from "@/actions/chat";
-import { useChatData } from "@/hooks/use-chat";
+import { useChat, useChatData } from "@/hooks/use-chat";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const ChatsClient = () => {
@@ -26,13 +26,16 @@ export const ChatsClient = () => {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { fullChats, fullChatsIsFetching } = useChatData("empty");
-
+const { setChatId } = useChat();
   const onSelectUser = (e: string) => {
     chatInsert(e).then((data) => {
       if (data.error) {
         toast.error(data.error);
+        return
       }
-      router.push(`/chat/${data.success?.id}`);
+
+      setChatId(data.success?.id)
+      setDialogOpen(false)
     });
   };
 
