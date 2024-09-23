@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Trash } from "lucide-react";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkFlowDefaultData } from "@/hooks/workflow/use-workflow";
 
 import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 

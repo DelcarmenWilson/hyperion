@@ -1,7 +1,7 @@
 import React from "react";
 import { NodeProps, Position } from "reactflow";
 import { X, Zap } from "lucide-react";
-import { useWorkFlowChanges } from "@/hooks/use-workflow";
+import { useEditorChanges } from "@/hooks/workflow/use-editor";
 import { Button } from "@/components/ui/button";
 import { CustomCircle, CustomRectangle } from "../handle/custom";
 
@@ -10,7 +10,7 @@ const ActionComponent = ({
   id,
   type,
 }: NodeProps<{ name: string }>) => {
-  const { onNodeDelete } = useWorkFlowChanges();
+  const { onNodeDelete } = useEditorChanges();
   return (
     <div className="flex items-center gap-2 bg-white border border-gray-400 border-dotted rounded-sm p-2 group">
       <div className="bg-blue-200 p-1 text-blue-600">

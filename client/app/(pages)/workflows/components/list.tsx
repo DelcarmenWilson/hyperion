@@ -25,7 +25,7 @@ export const WorkflowList = ({
         >
           {workflows.map((workflow) => (
             <SkeletonWrapper key={workflow.id} isLoading={isLoading}>
-              <WorkflowCard initWorkFlow={workflow} />
+              <WorkflowCard workflow={workflow} />
             </SkeletonWrapper>
           ))}
         </div>

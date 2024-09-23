@@ -2,13 +2,12 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
-  WorkflowBirthdayTriggerSchema,
-  WorkflowBirthdayTriggerSchemaType,
-} from "@/schemas/workflow/trigger";
-import {
   FullNodeSchemaType,
+  FullWorkFlowSchemaType,
   WorkflowEdgeSchema,
   WorkflowEdgeSchemaType,
+  WorkflowNodeSchema,
+  WorkflowNodeSchemaType,
   WorkFlowSchema,
   WorkFlowSchemaType,
 } from "@/schemas/workflow/workflow";
@@ -16,29 +15,35 @@ import { JsonObject } from "@prisma/client/runtime/library";
 //DATA
 
 export const workFlowGetById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
+  try {
+    const user = await currentUser();
+    if (!user) return null;
+
+    const workFlow = await db.workflow.findUnique({
+      where: { id },
+      include: {
+        nodes: { include: { position: true } },
+        edges: true,
+      },
+    });
+    return workFlow as FullWorkFlowSchemaType;
+  } catch (error) {
     return null;
   }
-
-  const workFlow = await db.workflow.findUnique({
-    where: { id },
-    include: {
-      nodes: { include: { position: true } },
-      edges: true,
-    },
-  });
-  return workFlow;
 };
 
-export const workFlowsGetAllByUserId = async () => {
-  const user = await currentUser();
-  if (!user) {
+export const workFlowsGetAll = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return [];
+
+    const workFlows = await db.workflow.findMany({
+      where: { userId: user.id },
+    });
+    return workFlows;
+  } catch (error) {
     return [];
   }
-
-  const workFlows = await db.workflow.findMany({ where: { userId: user.id } });
-  return workFlows;
 };
 
 //ACTIONS
@@ -102,6 +107,30 @@ export const workFlowUpdateById = async (values: WorkFlowSchemaType) => {
   return { success: updatedWorkFlow };
 };
 
+export const workFlowUpdateByIdPublish = async ({
+  id,
+  published,
+}: {
+  id: string;
+  published: boolean;
+}) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unathenticated" };
+
+  const existingWorkFlow = await db.workflow.findUnique({ where: { id } });
+
+  if (!existingWorkFlow) return { error: "Workflow does not exists!!" };
+
+  const updatedWorkFlow = await db.workflow.update({
+    where: { id },
+    data: { published },
+  });
+  if (!updatedWorkFlow) return { error: "Something went wrong!" };
+  return {
+    success: published ? "Workflow published" : "Workflow unpublished!",
+  };
+};
+
 export const workFlowDeleteById = async (id: string) => {
   const user = await currentUser();
   if (!user) {
@@ -123,11 +152,15 @@ export const workFlowDeleteById = async (id: string) => {
 };
 
 // NODES
-export const nodeInsert = async (
-  workflowId: string,
-  id: string,
-  type: string
-) => {
+export const nodeInsert = async ({
+  workflowId,
+  id,
+  type,
+}: {
+  workflowId: string;
+  id: string;
+  type: string;
+}) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
@@ -149,7 +182,7 @@ export const nodeInsert = async (
     return { error: "Node does not exists!" };
   }
 
-  //Create a new node
+  // Create a new node
   const newNode = await db.workflowNode.create({
     data: {
       workflowId,
@@ -170,9 +203,7 @@ export const nodeInsert = async (
 
 export const nodeDeleteById = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user) return { error: "Unathenticated" };
 
   const existingNode = await db.workflowNode.findUnique({ where: { id } });
 
@@ -184,16 +215,16 @@ export const nodeDeleteById = async (id: string) => {
     where: { OR: [{ source: id }, { target: id }] },
   });
 
-  await db.workflowNode.delete({ where: { id } });
-  return { success: "Node Deleted!!" };
+  const deletedNode = await db.workflowNode.delete({ where: { id } });
+  return { success: "Node Deleted!!", data: deletedNode };
 };
 
-export const nodeUpdateById = async (node: WorkflowBirthdayTriggerSchemaType) => {
+export const nodeUpdateById = async (node: WorkflowNodeSchemaType) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unathenticated" };
   }
-  const validatedFields = WorkflowBirthdayTriggerSchema.safeParse(node);
+  const validatedFields = WorkflowNodeSchema.safeParse(node);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
@@ -206,9 +237,10 @@ export const nodeUpdateById = async (node: WorkflowBirthdayTriggerSchemaType) =>
     data: {
       data,
     },
+    include: { position: true },
   });
 
-  return { success: updatedNode };
+  return { success: updatedNode as FullNodeSchemaType };
 };
 
 export const nodesUpdateAllPosition = async (nodes: FullNodeSchemaType[]) => {
@@ -234,9 +266,8 @@ export const nodesUpdateAllPosition = async (nodes: FullNodeSchemaType[]) => {
 
 export const edgeInsert = async (edge: WorkflowEdgeSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user) return { error: "Unathenticated" };
+
   const validatedFields = WorkflowEdgeSchema.safeParse(edge);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -285,9 +316,7 @@ export const edgeUpdateById = async (edge: WorkflowEdgeSchemaType) => {
 
 export const edgeDeleteById = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user) return { error: "Unathenticated" };
 
   const existingEdge = await db.workflowNodeEdge.findUnique({ where: { id } });
 
@@ -295,6 +324,6 @@ export const edgeDeleteById = async (id: string) => {
     return { error: "Edge does not exists!!" };
   }
 
-  await db.workflowNodeEdge.delete({ where: { id } });
-  return { success: "Edge Deleted!!" };
+  const deletedEdge = await db.workflowNodeEdge.delete({ where: { id } });
+  return { success: deletedEdge.id };
 };

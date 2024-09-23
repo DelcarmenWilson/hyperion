@@ -1,6 +1,7 @@
 import React from "react";
+import { cn } from "@/lib/utils";
+import { useEditorChanges, useEditorStore } from "@/hooks/workflow/use-editor";
 import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
-import { useWorkFlow, useWorkFlowChanges } from "@/hooks/use-workflow";
 //TODO - need to get the action icons
 import { getTriggerIcon } from "@/constants/react-flow/workflow";
 
@@ -9,23 +10,21 @@ export const ActionCard = ({
 }: {
   action: WorkflowActionSchemaType;
 }) => {
-  const { workflowId, onDrawerClose } = useWorkFlow();
-  const { onNodeInsert } = useWorkFlowChanges();
+  const { onNodeInsert } = useEditorChanges();
+  const { selectedNode } = useEditorStore();
 
   const { id, data, type } = action;
   const { icon, name } = data;
 
   const Icon = getTriggerIcon(icon);
 
-  const OnActionClick = async () => {
-    if (!workflowId) return;
-    const insertedNode = await onNodeInsert(workflowId, id as string, type);
-    if (insertedNode) onDrawerClose();
-  };
   return (
     <div
-      className="flex gap-2 items-center border w-full px-2 cursor-pointer hover:border-blue-500 hover:bg-secondary"
-      onClick={OnActionClick}
+      className={cn(
+        "flex gap-2 items-center border w-full px-2 cursor-pointer hover:border-blue-500 hover:bg-secondary",
+        selectedNode?.id == id && "border-red-500"
+      )}
+      onClick={() => onNodeInsert(id as string, type)}
     >
       <div className="bg-blue-500/25 h-full text-sm text-blue-500">
         <Icon />

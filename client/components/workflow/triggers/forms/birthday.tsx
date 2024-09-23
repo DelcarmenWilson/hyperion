@@ -1,18 +1,8 @@
-import { useState } from "react";
-import {
-  useWorkFlowChanges,
-  useWorkFlowDefaultData,
-} from "@/hooks/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import {
-  WorkflowBirthdayTriggerSchema,
-  WorkflowBirthdayTriggerSchemaType,
-} from "@/schemas/workflow/trigger";
+import { useEditorChanges } from "@/hooks/workflow/use-editor";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormField,
@@ -21,32 +11,24 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 import { Textarea } from "@/components/ui/textarea";
 import {
-  TRIGGER_CATEGORIES_SELECT,
-  TRIGGER_ICONS_SELECT,
-} from "@/constants/react-flow/workflow";
+  WorkflowNodeSchema,
+  WorkflowNodeSchemaType,
+} from "@/schemas/workflow/workflow";
 
 type BirthdayFormProps = {
-  node: WorkflowBirthdayTriggerSchemaType;
+  node: WorkflowNodeSchemaType;
   onClose: () => void;
 };
 
 export const BirthdayForm = ({ node, onClose }: BirthdayFormProps) => {
-  const { onNodeUpdate } = useWorkFlowChanges(onClose);
-  const [loading, setLoading] = useState(false);
+  const { onNodeUpdate, nodeUpdateIsPending } = useEditorChanges();
 
-  const form = useForm<WorkflowBirthdayTriggerSchemaType>({
-    resolver: zodResolver(WorkflowBirthdayTriggerSchema),
+  const form = useForm<WorkflowNodeSchemaType>({
+    resolver: zodResolver(WorkflowNodeSchema),
     defaultValues: node,
   });
 
@@ -56,17 +38,12 @@ export const BirthdayForm = ({ node, onClose }: BirthdayFormProps) => {
     onClose();
   };
 
-  const onSubmit = (values: WorkflowBirthdayTriggerSchemaType) => {
-    setLoading(true);
-    onNodeUpdate(values);
-    setLoading(false);
-  };
   return (
     <div className="w-full mt-2">
       <Form {...form}>
         <form
           className="space-y-2 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onNodeUpdate)}
         >
           {/* TEXT */}
           <FormField
@@ -82,7 +59,7 @@ export const BirthdayForm = ({ node, onClose }: BirthdayFormProps) => {
                   <Textarea
                     {...field}
                     placeholder="Trigger Description"
-                    disabled={loading}
+                    disabled={nodeUpdateIsPending}
                     autoComplete="Text"
                     rows={5}
                   />
@@ -105,7 +82,7 @@ export const BirthdayForm = ({ node, onClose }: BirthdayFormProps) => {
                   <Input
                     {...field}
                     placeholder="Default Name"
-                    disabled={loading}
+                    disabled={nodeUpdateIsPending}
                     autoComplete="Trigger Name"
                   />
                 </FormControl>
@@ -116,7 +93,7 @@ export const BirthdayForm = ({ node, onClose }: BirthdayFormProps) => {
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={nodeUpdateIsPending} type="submit">
               Update
             </Button>
           </div>

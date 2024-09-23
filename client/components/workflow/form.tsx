@@ -1,12 +1,18 @@
-import { useState } from "react";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  useWorkflowFormActions,
+  useWorkflowStore,
+  useWorkflowData,
+} from "@/hooks/workflow/use-workflow";
+
+import { Workflow } from "@prisma/client";
+import {
+  WorkFlowSchema,
+  WorkFlowSchemaType,
+} from "@/schemas/workflow/workflow";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormField,
@@ -15,48 +21,48 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  WorkFlowSchema,
-  WorkFlowSchemaType,
-} from "@/schemas/workflow/workflow";
-import { workFlowUpdateById } from "@/actions/workflow";
+import { Input } from "@/components/ui/input";
 
-type WorkflowFormProps = {
-  workflow: WorkFlowSchemaType;
-  setWorkFlow: (e: WorkFlowSchemaType) => void;
-  onClose: () => void;
+import { Textarea } from "@/components/ui/textarea";
+
+import { CustomDialog } from "../global/custom-dialog";
+
+import SkeletonWrapper from "../skeleton-wrapper";
+
+export const WorkflowForm = () => {
+  const { workflow, isFetchingWorkflow } = useWorkflowData();
+  const { isFormOpen, onFormClose } = useWorkflowStore();
+
+  return (
+    <CustomDialog
+      title={`WorkFlow Info - ${workflow?.title}`}
+      description="Workflow Form"
+      open={isFormOpen}
+      onClose={onFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingWorkflow}>
+        <WForm workflow={workflow} />
+      </SkeletonWrapper>
+    </CustomDialog>
+  );
 };
 
-export const WorkflowForm = ({
-  workflow,
-  setWorkFlow,
-  onClose,
-}: WorkflowFormProps) => {
-  const [loading, setLoading] = useState(false);
+type WFormProps = {
+  workflow: Workflow | null | undefined;
+};
+const WForm = ({ workflow }: WFormProps) => {
+  const { onWorkflowUpdate, workflowUpdateIsPending, onFormClose } =
+    useWorkflowFormActions();
 
   const form = useForm<WorkFlowSchemaType>({
     resolver: zodResolver(WorkFlowSchema),
-    defaultValues: workflow,
+    defaultValues: workflow || {},
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onClose();
-  };
-
-  const onSubmit = async (values: WorkFlowSchemaType) => {
-    setLoading(true);
-
-    const updatedWorkFlow = await workFlowUpdateById(values);
-    if (updatedWorkFlow.success) {
-      setWorkFlow(updatedWorkFlow.success);
-      toast.success("WorkFlow Updated!");
-      onCancel();
-    } else toast.error(updatedWorkFlow.error);
-
-    setLoading(false);
+    onFormClose();
   };
 
   return (
@@ -64,7 +70,7 @@ export const WorkflowForm = ({
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onWorkflowUpdate)}
         >
           <div className="flex flex-col gap-2">
             {/* TYPE */}
@@ -81,7 +87,7 @@ export const WorkflowForm = ({
                     <Input
                       {...field}
                       placeholder="New Work Flow"
-                      disabled={loading}
+                      disabled={workflowUpdateIsPending}
                       autoComplete="Title"
                     />
                   </FormControl>
@@ -103,7 +109,7 @@ export const WorkflowForm = ({
                     <Textarea
                       {...field}
                       placeholder="Work Flow Description"
-                      disabled={loading}
+                      disabled={workflowUpdateIsPending}
                       rows={6}
                       autoComplete="description"
                     />
@@ -116,7 +122,7 @@ export const WorkflowForm = ({
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={workflowUpdateIsPending} type="submit">
               Update
             </Button>
           </div>

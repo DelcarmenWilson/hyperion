@@ -1,6 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
-import { useWorkFlowChanges } from "@/hooks/use-workflow";
+import { useEditorChanges } from "@/hooks/workflow/use-editor";
 import { EdgeLabelRenderer } from "reactflow";
 import { Button } from "@/components/ui/button";
 
@@ -10,7 +10,7 @@ type EdgeCloseButtonProps = {
   y: number;
 };
 export const EdgeCloseButton = ({ id, x, y }: EdgeCloseButtonProps) => {
-  const { onDeleteEdge } = useWorkFlowChanges();
+  const { onDeleteEdge } = useEditorChanges();
   return (
     <EdgeLabelRenderer>
       <Button

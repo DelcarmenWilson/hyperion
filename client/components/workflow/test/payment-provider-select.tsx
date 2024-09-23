@@ -1,4 +1,4 @@
-import { useWorkFlow } from "@/hooks/use-workflow";
+import { useWorkFlow } from "@/hooks/workflow/use-workflow";
 import { Plus } from "lucide-react";
 import { Node } from "reactflow";
 import { toast } from "sonner";

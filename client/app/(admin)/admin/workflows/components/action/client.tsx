@@ -9,7 +9,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { columns } from "./columns";
 import { ActionForm } from "./form";
 import { ActionList } from "./list";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkFlowDefaultData } from "@/hooks/workflow/use-workflow";
 
 export const ActionsClient = () => {
   const user = useCurrentUser();

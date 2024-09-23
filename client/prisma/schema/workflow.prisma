@@ -6,8 +6,9 @@ model Workflow {
     description String
     nodes       WorkflowNode[]
     edges       WorkflowNodeEdge[]
-    user        User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String?
+    published   Boolean            @default(false)
+    user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
     createdAt   DateTime           @default(now())
     updatedAt   DateTime           @updatedAt
 }
@@ -17,8 +18,8 @@ model WorkflowNode {
     position   WorkflowNodePosition?
     data       Json
     type       String
-    workflow   Workflow?             @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-    workflowId String?
+    workflowId String
+    workflow   Workflow              @relation(fields: [workflowId], references: [id], onDelete: Cascade)
     createdAt  DateTime              @default(now())
     updatedAt  DateTime              @updatedAt
 }

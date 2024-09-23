@@ -1,14 +1,18 @@
 "use client";
 import React from "react";
+
+import { useEditorStore } from "@/hooks/workflow/use-editor";
+
 import { DrawerRight } from "@/components/custom/drawer-right";
-import { useWorkFlow } from "@/hooks/use-workflow";
 import { ActionList } from "./actions/list";
 import { TriggerList } from "./triggers/list";
-import { capitalize } from "@/formulas/text";
 import { EdgeForm } from "./edge/form";
+import { NodeForm } from "./node/form";
+
+import { capitalize } from "@/formulas/text";
 
 export const WorkFlowDrawer = () => {
-  const { isDrawerOpen, onDrawerClose, type } = useWorkFlow();
+  const { isDrawerOpen, onDrawerClose, type } = useEditorStore();
   const title = type ? capitalize(type).replace("list", "") : "";
   return (
     <DrawerRight
@@ -23,6 +27,7 @@ export const WorkFlowDrawer = () => {
         {type == "actionlist" && <ActionList />}
         {type == "triggerlist" && <TriggerList />}
         {type == "edge" && <EdgeForm />}
+        {type == "node" && <NodeForm />}
       </div>
     </DrawerRight>
   );

@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useWorkFlow } from "@/hooks/use-workflow";
+import { useEditorStore } from "@/hooks/workflow/use-editor";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const NodeSelect = ({
-  workFlowId,
-  nodesCount,
-}: {
-  workFlowId: string;
-  nodesCount: number;
-}) => {
-  const { onDrawerOpen } = useWorkFlow();
+export const NodeSelect = ({ nodesCount }: { nodesCount: number }) => {
+  const { onDrawerOpen } = useEditorStore();
 
   return (
     <DropdownMenu>
@@ -35,14 +29,14 @@ export const NodeSelect = ({
         <DropdownMenuGroup>
           <DropdownMenuItem
             disabled={nodesCount > 0}
-            onClick={() => onDrawerOpen(workFlowId, "triggerlist")}
+            onClick={() => onDrawerOpen("triggerlist")}
           >
             Trigger
             <DropdownMenuShortcut>⇧⌘T</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={nodesCount == 0}
-            onClick={() => onDrawerOpen(workFlowId, "actionlist")}
+            onClick={() => onDrawerOpen("actionlist")}
           >
             Action
             <DropdownMenuShortcut>⇧⌘A</DropdownMenuShortcut>

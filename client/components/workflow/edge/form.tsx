@@ -1,8 +1,13 @@
-import { useState } from "react";
-
 import { useForm } from "react-hook-form";
-import { useWorkFlow, useWorkFlowChanges } from "@/hooks/use-workflow";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useStore } from "reactflow";
+import { useEditorChanges, useEditorStore } from "@/hooks/workflow/use-editor";
+
+import {
+  WorkflowEdgeSchema,
+  WorkflowEdgeSchemaType,
+} from "@/schemas/workflow/workflow";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +21,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -23,22 +29,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Switch } from "@/components/ui/switch";
 
-import {
-  WorkflowEdgeSchema,
-  WorkflowEdgeSchemaType,
-} from "@/schemas/workflow/workflow";
-
 import { edgeTypes } from "@/constants/react-flow/workflow";
-import { useStore } from "reactflow";
-import { Label } from "@/components/ui/label";
 
 export const EdgeForm = () => {
-  const { onUpdateEdge, onDeleteEdge } = useWorkFlowChanges();
-  const { edge, onDrawerClose } = useWorkFlow();
-  const [loading, setLoading] = useState(false);
+  const { selectedNode } = useEditorStore();
+  const { onEdgeDelete } = useEditorChanges();
+  return (
+    <div className="flex flex-col w-full h-full pt-4">
+      <EForm edge={selectedNode as WorkflowEdgeSchemaType} />
+      <Button
+        variant="destructive"
+        className="w-full mt-4"
+        onClick={() => onEdgeDelete(selectedNode?.id!)}
+      >
+        Delete Edge
+      </Button>
+    </div>
+  );
+};
+type EFormProps = { edge: WorkflowEdgeSchemaType };
+const EForm = ({ edge }: EFormProps) => {
+  const { onEdgeUpdate, edgeUpdateIsPending } = useEditorChanges();
+  const { onDrawerClose } = useEditorStore();
+
   const nodes = useStore((s) => {
     const sourceNode = s.nodeInternals.get(edge?.source as string);
     const targetNode = s.nodeInternals.get(edge?.target as string);
@@ -56,16 +71,8 @@ export const EdgeForm = () => {
     onDrawerClose();
   };
 
-  const onSubmit = (values: WorkflowEdgeSchemaType) => {
-    setLoading(true);
-    onUpdateEdge(values).then((success) => {
-      if (success) onCancel();
-    });
-    setLoading(false);
-  };
-
   return (
-    <div className="w-full pt-4">
+    <div className="flex-1">
       {nodes.map((node, i) => (
         <div key={node?.id} className="p-2">
           <div className="flex justify-between items-center">
@@ -84,7 +91,7 @@ export const EdgeForm = () => {
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onEdgeUpdate)}
         >
           <div className="flex flex-col gap-2">
             {/* ANIMATED */}
@@ -100,7 +107,7 @@ export const EdgeForm = () => {
                   <FormControl>
                     <Switch
                       name="cblIsTwoFactor"
-                      disabled={loading}
+                      disabled={edgeUpdateIsPending}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -121,7 +128,7 @@ export const EdgeForm = () => {
                   <FormControl>
                     <Select
                       name="ddlType"
-                      disabled={loading}
+                      disabled={edgeUpdateIsPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -147,22 +154,12 @@ export const EdgeForm = () => {
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={edgeUpdateIsPending} type="submit">
               Save
             </Button>
           </div>
         </form>
       </Form>
-      <Button
-        variant="destructive"
-        className="w-full mt-4"
-        onClick={() => {
-          onDeleteEdge(edge?.id);
-          onDrawerClose();
-        }}
-      >
-        Delete Edge
-      </Button>
     </div>
   );
 };

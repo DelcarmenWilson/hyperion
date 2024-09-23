@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useWorkFlowData } from "@/hooks/use-workflow";
+import { useWorkflowData } from "@/hooks/workflow/use-workflow";
 
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
@@ -13,10 +13,9 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const WorkFlowClient = () => {
   const user = useCurrentUser();
-  const { onGetWorkflowByUserId } = useWorkFlowData();
+  const { workflows, isFetchingWorkflows } = useWorkflowData();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
-  const { data: workflows, isFetching } = onGetWorkflowByUserId();
   const topMenu = (
     <ListGridTopMenu
       text="Add WorkFlow"
@@ -29,15 +28,13 @@ export const WorkFlowClient = () => {
 
   return (
     <>
-      <DrawerRight
-        title={"New WorkFlow"}
-        isOpen={isDrawerOpen}
+      <WorkflowForm
+        open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      >
-        <WorkflowForm onClose={() => setIsDrawerOpen(false)} />
-      </DrawerRight>
+      />
+
       {isList ? (
-        <SkeletonWrapper isLoading={isFetching}>
+        <SkeletonWrapper isLoading={isFetchingWorkflows}>
           <DataTable
             columns={columns}
             data={workflows || []}
@@ -52,7 +49,10 @@ export const WorkFlowClient = () => {
             <h4 className="text-2xl font-semibold">WorkFlows</h4>
             {topMenu}
           </div>
-          <WorkflowList workflows={workflows || []} isLoading={isFetching} />
+          <WorkflowList
+            workflows={workflows || []}
+            isLoading={isFetchingWorkflows}
+          />
         </>
       )}
     </>

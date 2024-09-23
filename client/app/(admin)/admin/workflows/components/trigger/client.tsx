@@ -9,7 +9,7 @@ import { columns } from "./columns";
 import { TriggerForm } from "./form";
 import { TriggerList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkFlowDefaultData } from "@/hooks/workflow/use-workflow";
 
 export const TriggersClient = () => {
   const user = useCurrentUser();

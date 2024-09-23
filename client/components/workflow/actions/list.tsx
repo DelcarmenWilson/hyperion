@@ -1,12 +1,12 @@
 import React from "react";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { ActionCard } from "./card";
 
 export const ActionList = () => {
-  const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();
+  const { onGetWorkflowDefaultNodesByType } = useWorkflowDefaultData();
   const { data, isFetching } = onGetWorkflowDefaultNodesByType("action");
 
   return (

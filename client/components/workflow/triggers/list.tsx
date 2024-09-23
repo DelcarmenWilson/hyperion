@@ -1,12 +1,12 @@
 import React from "react";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { TriggerCard } from "./card";
 
 export const TriggerList = () => {
-  const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();
+  const { onGetWorkflowDefaultNodesByType } = useWorkflowDefaultData();
   const { data, isFetching } = onGetWorkflowDefaultNodesByType("trigger");
 
   return (

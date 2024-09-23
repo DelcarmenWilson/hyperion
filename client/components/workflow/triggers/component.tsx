@@ -1,6 +1,8 @@
 import React from "react";
 import { Clapperboard, X } from "lucide-react";
-import { useWorkFlow, useWorkFlowChanges } from "@/hooks/use-workflow";
+import { useWorkflowStore } from "@/hooks/workflow/use-workflow";
+import { useEditorChanges } from "@/hooks/workflow/use-editor";
+
 import { NodeProps, Position, useStore } from "reactflow";
 import { Button } from "@/components/ui/button";
 import { CustomCircle } from "../handle/custom";
@@ -11,8 +13,8 @@ const TriggerComponent = ({
   id,
   type,
 }: NodeProps<{ name: string }>) => {
-  const { onNodeDelete } = useWorkFlowChanges();
-  const { onNodeDrawerOpen } = useWorkFlow();
+  const { onNodeDelete } = useEditorChanges();
+  const { onNodeDrawerOpen } = useWorkflowStore();
 
   const selected = useStore((s) => {
     const node = s.nodeInternals.get(id);
