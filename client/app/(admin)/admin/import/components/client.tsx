@@ -10,7 +10,7 @@ import { AppointmentsBox } from "./appointments/appointments-box";
 import { ConversationsBox } from "./conversations/conversations-box";
 import { MessagesBox } from "./messages/messages-box";
 import { PhoneNumbersBox } from "./phonenumbers/phonenumbers-box";
-import { DisasterClient } from "./disaster/disaster-box";
+
 export const ImportClient = () => {
   return (
     <div className="min-h-[400px] w-full">
@@ -27,7 +27,7 @@ export const ImportClient = () => {
             <TabsTrigger value="conversations">CONVERSATIONS</TabsTrigger>
             <TabsTrigger value="messages">MESSAGES</TabsTrigger>
             <TabsTrigger value="phoneNumber">PHONENUMBERS</TabsTrigger>
-            <TabsTrigger value="disaster">DISASTER</TabsTrigger>
+            
           </TabsList>
         </div>
 
@@ -62,9 +62,7 @@ export const ImportClient = () => {
           <TabsContent value="phoneNumber">
             <PhoneNumbersBox />
           </TabsContent>
-          <TabsContent value="disaster">
-            <DisasterClient />
-          </TabsContent>
+         
         </div>
       </Tabs>
     </div>

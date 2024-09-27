@@ -142,8 +142,8 @@ export const bluePrintWeekUpdateByUserIdData = async (
   return { success: "BluePrint Week Updated!" };
 };
 
-//TODO - need to rename this here and in the server
-export const calculateBlueprintTargets = async () => {
+
+export const createWeeklyBlueprint = async () => {
   const activeBluePrints = await db.bluePrint.findMany({
     where: { active: true },
   });

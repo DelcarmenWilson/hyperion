@@ -164,9 +164,9 @@ export const pipelineUpdateOrder = async (
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-  //TODO see if we can remove the for by just passing the data
+  
   for (const pipeline of pipelines) {
-    await db.pipeline.updateMany({
+    await db.pipeline.update({
       where: { id: pipeline.id },
       data: {
         order: pipeline.order,

@@ -30,7 +30,6 @@ export const chatSettingsInsert = async (user: User) => {
   });
 };
 
-//TODO need to create a type for this instead of any
 export const chatSettingsUpdate = async (values: ChatSettingsSchemaType) => {
   const validatedFields = ChatSettingsSchema.safeParse(values);
   if (!validatedFields.success) {

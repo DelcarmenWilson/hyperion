@@ -15,7 +15,7 @@ const axiosCall=(type:string)=>{
 
 //Run every monday at 12AM - creates a new weekly blueprint
 const bluePrintTargets = cron.schedule("0 0 * * 1", () => {
-  axiosCall("calculateBlueprintTargets")
+  axiosCall("createWeeklyBlueprint")
 });
 //Run everyday at 12am - gets a new randowm quote to display on the dashboard
 const newQouteJob = cron.schedule("0 0 * * *", () => {  

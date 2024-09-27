@@ -1,4 +1,5 @@
 "use server";
+import { yearStartEnd } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { BluePrintSchema, BluePrintSchemaType } from "@/schemas/blueprint";
@@ -35,7 +36,7 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
 
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
-
+  const year= yearStartEnd();
   const { callsTarget, appointmentsTarget, premiumTarget } =
     validatedFields.data;
 
@@ -49,9 +50,8 @@ export const bluePrintInsert = async (values: BluePrintSchemaType) => {
       callsTarget,
       appointmentsTarget,
       premiumTarget,
-      userId: user.id,
-      //TODO - need to pass the yearly date both for end      
-      endAt: new Date(),
+      userId: user.id,    
+      endAt: year.to,
     },
   });
 
