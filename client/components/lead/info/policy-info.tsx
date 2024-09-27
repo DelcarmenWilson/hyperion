@@ -1,6 +1,7 @@
 "use client";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useLeadStore, useLeadPolicyActions } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadPolicyData } from "@/hooks/lead/use-policy-info";
 
 import { EmptyData } from "./empty-data";
 import { InputGroup } from "@/components/reusable/input-group";
@@ -11,7 +12,7 @@ import { formatDate } from "@/formulas/dates";
 
 export const PolicyInfoClient = () => {
   const user = useCurrentUser();
-  const { policy, isFetchingPolicy } = useLeadPolicyActions();
+  const { policy, isFetchingPolicy } = useLeadPolicyData();
   const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
 
   if (user?.role == "ASSISTANT") return null;

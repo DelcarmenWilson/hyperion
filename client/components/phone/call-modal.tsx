@@ -2,7 +2,7 @@
 import { Phone, PhoneOutgoing } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { AudioPlayerHp } from "@/components/custom/audio-player-hp";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export const CallModal = () => {
     fullCall: call,
     callType,
     onPhoneOutOpen,
-  } = usePhone();
+  } = usePhoneStore();
   const from = call?.lead
     ? `${call?.lead?.firstName} ${call?.lead?.lastName}`
     : formatPhoneNumber(call?.from as string);

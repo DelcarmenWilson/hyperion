@@ -21,7 +21,7 @@ import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityList } from "./activity-log/list";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { useEffect } from "react";
 import { SmsClient } from "@/components/phone/sms/client";
 
@@ -31,7 +31,7 @@ type LeadTabsClientProps = {
 };
 
 export const LeadTabsClient = ({ lead, conversation }: LeadTabsClientProps) => {
-  const phone = usePhone();
+  const phone = usePhoneStore();
   useEffect(() => {
     phone.lead = lead;
     // eslint-disable-next-line

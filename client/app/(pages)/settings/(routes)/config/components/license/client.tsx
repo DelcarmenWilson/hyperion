@@ -5,8 +5,6 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAgentLicenseData } from "../../hooks/use-license";
 
-import { UserLicense } from "@prisma/client";
-
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -45,7 +43,7 @@ export const LicenseClient = () => {
         <SkeletonWrapper isLoading={isFetchingLicenses}>
           <DataTable
             columns={columns}
-            data={licenses!}
+            data={licenses || []}
             headers
             title="Licences"
             topMenu={topMenu}

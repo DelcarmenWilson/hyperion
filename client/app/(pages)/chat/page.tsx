@@ -9,17 +9,16 @@ import { useChat, useChatData } from "@/hooks/use-chat";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { useEffect } from "react";
 import { Header } from "./components/header";
-import FormInput from "./components/form-input";
-
 
 const ChatsPage = () => {
   const { chatId, setChatId } = useChat();
   const { fullChats } = useChatData(chatId!);
+
+  //set the intial full chat
   useEffect(() => {
-    if (fullChats) {
-      setChatId(fullChats[0].id);
-    }
-  }, []);
+    if (!fullChats) return;
+    setChatId(fullChats[0].id);
+  }, [fullChats]);
   return (
     <>
       {chatId ? (
@@ -32,10 +31,9 @@ const ChatsPage = () => {
             </div>
             <Header />
           </div>
-          <CardContent className="flex flex-col flex-1 p-2 gap-2 overflow-hidden">
+          <CardContent className="flex flex-col flex-1 !p-2 gap-2 overflow-hidden">
             <ChatBody />
-            {/* <ChatForm /> */}
-            <FormInput placeholder="Your Message..." />
+            <ChatForm placeholder="Your Message..." />
           </CardContent>
         </Card>
       ) : (

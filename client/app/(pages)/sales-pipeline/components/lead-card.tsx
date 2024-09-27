@@ -1,27 +1,29 @@
 import React from "react";
 import { Clock, Phone } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { usePhoneStore } from "@/hooks/use-phone";
+import Link from "next/link";
+
+import { PipelineLead } from "@/types";
 
 import { Button } from "@/components/ui/button";
-import { formatPhoneNumber } from "@/formulas/phones";
-import { FullLead } from "@/types";
-import { usePhone } from "@/hooks/use-phone";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+
 import { formatDate } from "@/formulas/dates";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 type LeadCardProps = {
-  lead: FullLead;
+  lead: PipelineLead;
   indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 
 export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
   return (
     <div ref={indexRef} className="border-b">
       <div
         className={cn(
           "flex justify-between items-center p-2 text-xs",
-          indexRef && "bg-secondary"
+          indexRef && "bg-primary/10"
         )}
       >
         <div>
@@ -39,12 +41,13 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
         </div>
         <div className="flex flex-col justify-between gap-2 items-end">
           <Button
+            variant="transparent"
             className="rounded-full w-fit"
-            onClick={() => onPhoneOutOpen(lead)}
+            // onClick={() => onPhoneOutOpen(lead)}
           >
             <Phone size={16} />
           </Button>
-          <p> Recieved {formatDate(lead.createdAt)}</p>
+          <p> Recd:{formatDate(lead.recievedAt)}</p>
         </div>
       </div>
     </div>

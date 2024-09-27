@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Button } from "@/components/ui/button";
 import { NotesForm } from "@/components/lead/forms/notes-form";
@@ -20,7 +20,7 @@ export const TouchPad = ({
   displayScript = true,
   disabled = false,
 }: TouchPadProps) => {
-  const { showScript } = usePhone();
+  const { showScript } = usePhoneStore();
   return (
     <div className="relative">
       {displayScript && (

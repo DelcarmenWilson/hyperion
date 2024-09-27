@@ -7,13 +7,13 @@ import { VoicemailList } from "@/components/phone/voicemail/list";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
 import { SmsClient } from "../sms/client";
 import { Badge } from "@/components/ui/badge";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { useEffect } from "react";
 
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
-  const { lead } = usePhone();
+  const { lead } = usePhoneStore();
   const { setLeadId: setLead } = useLeadStore();
   useEffect(() => {
     if (!lead) return;

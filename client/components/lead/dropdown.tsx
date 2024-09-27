@@ -36,6 +36,7 @@ import {
 import { exportLeads } from "@/lib/xlsx";
 
 import { conversationDeleteById } from "@/actions/lead/conversation";
+import { leadUpdateByIdAutoChat } from "@/actions/lead";
 
 type DropDownProps = {
   action?: boolean;
@@ -46,29 +47,24 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
   const { onFormOpen } = useAppointmentStore();
   const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
     useLeadStore();
+  const { leadBasic, lead } = useLeadData();
 
-  const [titan, setTitan] = useState<boolean>(false);
+  const [titan, setTitan] = useState<boolean>(lead?.titan!);
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const isAssistant = role == "ASSISTANT";
-
-  const { leadBasic, lead } = useLeadData();
 
   if (!leadBasic) return null;
   const leadFullName = `${leadBasic.firstName} ${leadBasic.lastName}`;
   const conversation = leadBasic.conversations[0];
 
   const onTitanToggle = async () => {
-    //TODO - need to come back to this. the autoChat has been changed to titan and it is now in the lead table
     setTitan((state) => !state);
-    // const updateAutoChat = await conversationUpdateByIdAutoChat(
-    //   conversation?.id as string,
-    //   !autoChat
-    // );
+    const updateTitan = await leadUpdateByIdAutoChat(lead?.id!, !titan);
 
-    // if (updateAutoChat.success) toast.success(updateAutoChat.success);
-    // else toast.error(updateAutoChat.error);
+    if (updateTitan.success) toast.success(updateTitan.success);
+    else toast.error(updateTitan.error);
   };
 
   const onDelete = async () => {

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import SocketContext from "@/providers/socket";
 import { toast } from "sonner";
 
@@ -14,7 +14,7 @@ type ParticipantListProps = {
 };
 export const ParticipantList = ({ onClose }: ParticipantListProps) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { conference, participants } = usePhone();
+  const { conference, participants } = usePhoneStore();
   const [localConference, setLocalConference] = useState(conference);
   const [localParticipants, setLocalParticipants] = useState(participants);
 

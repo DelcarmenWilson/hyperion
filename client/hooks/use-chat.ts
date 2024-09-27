@@ -1,4 +1,4 @@
-import { useContext, useEffect,useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import SocketContext from "@/providers/socket";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -76,12 +76,11 @@ export const useChatData = (chatId: string) => {
 
 export const useChatActions = (chatId: string, reset?: () => void) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const {setChatId}=useChat()
+  const { setChatId } = useChat();
   const queryClient = useQueryClient();
   const router = useRouter();
 
   const pathname = usePathname();
-  const [loading, setLoading] = useState(false);
 
   const invalidate = () => {
     //TODO - need to find a way to optimistically set the new message
@@ -100,7 +99,7 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     mutationFn: chatUpdateByIdUnread,
     onSuccess: (result) => {
       if (result.success?.length) {
-        setChatId(result.success)
+        setChatId(result.success);
         router.push("/chat");
       }
       invalidateNav();
@@ -110,31 +109,49 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     },
   });
 
-  const onChatMessageInsert = async (values: ChatMessageSchemaType) => {
-    setLoading(true);
-    const message = await chatMessageInsert(values);
-    if (message.success) {
-      invalidate();
-      socket?.emit("chat-message-sent", values.userId, message.success);
-    } else toast.error(message.error);
-    if (reset) reset();
-    setLoading(false);
-  };
+  const { mutate: chatMessageMutate, isPending: chatMessageInsertIsPending } =
+    useMutation({
+      mutationFn: chatMessageInsert,
+      onSuccess: (results) => {
+        if (results.success) {
+          //TODO - need to reinvent the real time functionality
+          // socket?.emit("chat-message-sent", values.userId, results.success);
+          toast.success("Chat message created", { id: "insert-chat-message" });
+          invalidate();
+        } else toast.error(results.error);
+        if (reset) reset();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+
+  const onChatMessageInsert = useCallback(
+    (values: ChatMessageSchemaType) => {
+      toast.loading("Creating new message ...", { id: "insert-chat-message" });
+      chatMessageMutate(values);
+    },
+    [chatMessageMutate]
+  );
+
   useEffect(() => {
     // full message
-    socket?.on("chat-message-received", (data: { message: FullChatMessage }) => {
-      if (data.message.chatId == chatId) invalidate();
-      if (pathname.startsWith("/chat")) return;
-      invalidateNav();
-      if (reset) reset();
-    });
+    socket?.on(
+      "chat-message-received",
+      (data: { message: FullChatMessage }) => {
+        if (data.message.chatId == chatId) invalidate();
+        if (pathname.startsWith("/chat")) return;
+        invalidateNav();
+        if (reset) reset();
+      }
+    );
     // eslint-disable-next-line
   }, []);
   return {
-    loading,
     invalidateNav,
     navMutate,
     navIsPending,
     onChatMessageInsert,
+    chatMessageInsertIsPending,
   };
 };

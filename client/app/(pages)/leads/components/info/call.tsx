@@ -5,7 +5,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { Phone } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Call } from "@prisma/client";
 import { FullLead, FullLeadNoConvo } from "@/types";
@@ -24,7 +24,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { setLeadId, setConversationId } = useLeadStore();
 
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
   const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
 
   const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;

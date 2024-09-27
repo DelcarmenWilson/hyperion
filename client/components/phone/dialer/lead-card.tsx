@@ -1,11 +1,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-import { FullLead } from "@/types";
+import { PipelineLead } from "@/types";
 import { formatDate, getAge } from "@/formulas/dates";
 
 type LeadDialerCardProps = {
-  lead: FullLead;
+  lead: PipelineLead;
   indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 

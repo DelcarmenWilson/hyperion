@@ -23,6 +23,7 @@ import {
   LeadMainInfo,
   LeadPolicyType,
   LeadPrevNext,
+  PipelineLead,
   ExpenseType,
 } from "./lead";
 
@@ -107,10 +108,10 @@ export type FullPipeline = Pipeline & {
   status: { status: string };
 };
 
-export type PipelineAndLeads={
-  pipelines:FullPipeline[]
-   leads:FullLead[]
-}
+export type PipelineAndLeads = {
+  pipelines: FullPipeline[];
+  leads: PipelineLead[];
+};
 
 export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
@@ -149,6 +150,7 @@ export type {
   LeadMainInfo,
   LeadPolicyType,
   LeadPrevNext,
+  PipelineLead,
   ExpenseType,
 };
 

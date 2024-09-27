@@ -1,4 +1,5 @@
 "use client";
+import { userEmitter } from "@/lib/event-emmiter";
 import {
   useLeadStatusActions,
   useLeadStatuses,
@@ -23,15 +24,20 @@ export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
   const { statuses, isFetchingStatuses } = useLeadStatuses();
   const { onLeadStatusUpdate, isPendingLeadStatusUpdate } =
     useLeadStatusActions();
+  const onLeadStatusChanged = (e: string) => {
+    if (onSetStatus) onSetStatus("status", e);
+    else {
+      onLeadStatusUpdate(id, e);
+      userEmitter.emit("leadStatusChanged", id, e);
+    }
+  };
 
   return (
     <SkeletonWrapper isLoading={isFetchingStatuses}>
       <Select
         name="ddlLeadStatus"
         disabled={status == "Do_Not_Call" || isPendingLeadStatusUpdate}
-        onValueChange={(e) =>
-          onSetStatus ? onSetStatus("status", e) : onLeadStatusUpdate(id, e)
-        }
+        onValueChange={onLeadStatusChanged}
         defaultValue={status}
       >
         <SelectTrigger>

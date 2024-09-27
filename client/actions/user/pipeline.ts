@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { userGetByAssistant } from "@/actions/user";
 import { PipelineSchemaType, PipelineSchema } from "@/schemas/pipeline";
+import { states } from "@/constants/states";
+import { FullLead, PipelineLead } from "@/types";
+import { formatTimeZone } from "@/formulas/dates";
 
 //DATA
 export const pipelineGetAll = async () => {
@@ -23,7 +26,7 @@ export const pipelineGetAll = async () => {
 
 export const pipelineAndLeadsGetAll = async () => {
   // Empty variable of no data return
-  const empty={ pipelines: [], leads: [] }
+  const empty = { pipelines: [], leads: [] };
 
   try {
     //get the online user and if the user is an assistant get the userid of the agent
@@ -45,32 +48,62 @@ export const pipelineAndLeadsGetAll = async () => {
     //   where: { status: { in: pipelines.map((p) => p.status.status) } },
     // });
 
+    // const leads = await db.lead.findMany({
+    //   where: {
+    //     OR: [
+    //       { userId },
+    //       { assistantId: userId },
+    //       { sharedUserId: userId},
+    //     ],
+    //     status: { in: pipelines.map((p) => p.status.status) }
+    //   },
+    //   include: {
+    //     conversations: { where: { agentId: userId } },
+    //     appointments: { where: { status: "scheduled" } },
+    //     calls: true,
+    //     activities: true,
+    //     beneficiaries: true,
+    //     expenses: true,
+    //     conditions: { include: { condition: true } },
+    //     policy: true,
+    //     assistant: true,
+    //     sharedUser: true,
+    //   },
+    // });
     const leads = await db.lead.findMany({
       where: {
-        OR: [
-          { userId },
-          { assistantId: userId },
-          { sharedUserId: userId},
-        ],
-        status: { in: pipelines.map((p) => p.status.status) }
+        OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
+        status: { in: pipelines.map((p) => p.status.status) },
       },
-      include: {
-        conversations: { where: { agentId: userId } },
-        appointments: { where: { status: "scheduled" } },
-        calls: true,
-        activities: true,
-        beneficiaries: true,
-        expenses: true,
-        conditions: { include: { condition: true } },
-        policy: true,
-        assistant: true,
-        sharedUser: true,
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        cellPhone: true,
+        maritalStatus:true,
+       dateOfBirth:true,
+        state: true,
+        status:true,
+        recievedAt: true,
       },
     });
+
     //If there are no leads then return an empty object
     if (!leads) return empty;
     //return the list of pipelines and the list of leads
-    return { pipelines, leads };
+    const currentTime = new Date();
+    const fullLeads: PipelineLead[] = leads.map((lead) => {
+      const timeZone =
+        states.find(
+          (e) => e.abv.toLocaleLowerCase() == lead.state.toLocaleLowerCase()
+        )?.zone || "US/Eastern";
+      return {
+        ...lead,
+        zone: timeZone,
+        time: formatTimeZone(currentTime, timeZone),
+      };
+    });
+    return { pipelines, leads: fullLeads };
   } catch {
     return empty;
   }
@@ -83,7 +116,6 @@ export const pipelineGetById = async (id: string | undefined) => {
     const pipeline = await db.pipeline.findUnique({
       where: { id },
     });
-    console.log(pipeline);
     return pipeline;
   } catch {
     return null;
@@ -111,16 +143,17 @@ export const pipelineInsert = async (values: PipelineSchemaType) => {
     return { error: "Stage with same status or title already exists" };
   }
 
-  await db.pipeline.create({
+  const newPipeline = await db.pipeline.create({
     data: {
       userId,
       statusId,
       name,
       order: pipelines.length,
     },
+    include: { status: { select: { status: true } } },
   });
 
-  return { success: "Pipeline stage created!" };
+  return { success: "Pipeline stage created!", data: newPipeline };
 };
 
 export const pipelineUpdateOrder = async (
@@ -154,16 +187,13 @@ export const pipelineDeleteById = async (id: string | undefined) => {
     where: { id },
   });
 
-  if (!exisitingPipeline) {
-    return { error: "stage does not exists!" };
-  }
-  if (exisitingPipeline.userId != user.id) {
-    return { error: "Unauthorized" };
-  }
+  if (!exisitingPipeline) return { error: "stage does not exists!" };
+
+  if (exisitingPipeline.userId != user.id) return { error: "Unauthorized" };
 
   await db.pipeline.delete({ where: { id: exisitingPipeline.id } });
 
-  return { success: "stage has been deleted!" };
+  return { success: "stage has been deleted!", data: id };
 };
 
 export const pipelineUpdateById = async (values: PipelineSchemaType) => {

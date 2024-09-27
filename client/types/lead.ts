@@ -55,6 +55,20 @@ export type FullLeadMedicalCondition = LeadMedicalCondition & {
   condition: MedicalCondition;
 };
 
+export type PipelineLead = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  cellPhone: string;
+  state: string;
+  status: string;
+  maritalStatus: string;
+  dateOfBirth: string | null;
+  recievedAt: Date;
+  zone?: string;
+  time?: string;
+};
+
 export type LeadMainInfo = {
   id: string;
   firstName: string;
@@ -73,8 +87,8 @@ export type LeadPolicyType = Lead & {
   policy?: LeadPolicy | null;
 };
 
-export type LeadPrevNext={
-  prev:{id:string,name:string,state:string,age:string} |null
-  next:{id:string,name:string,state:string,age:string} |null
-}
+export type LeadPrevNext = {
+  prev: { id: string; name: string; state: string; age: string } | null;
+  next: { id: string; name: string; state: string; age: string } | null;
+};
 export type ExpenseType = "Income" | "Expense";

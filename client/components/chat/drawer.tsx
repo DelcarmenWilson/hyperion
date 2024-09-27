@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { ChatList } from "./list";
 import { ChatInfo } from "./info";
-import { GroupDailog } from "./group-dailog";
+import { GroupDialog } from "./group-dialog";
 
 type Props = {
   size?: string;
@@ -27,7 +27,7 @@ export const ChatDrawer = ({
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <GroupDailog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <GroupDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
       <Transition.Root show={isChatOpen} as={Fragment}>
         <Dialog
           as="div"
@@ -87,7 +87,6 @@ export const ChatDrawer = ({
                           <X size={16} />
                         </Button>
                       </div>
-
                       <div className="flex flex-col w-[350px] flex-1 h-full p-2 overflow-hidden">
                         <ChatList />
                       </div>

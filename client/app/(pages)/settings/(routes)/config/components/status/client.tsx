@@ -41,7 +41,7 @@ export const LeadStatusClient = () => {
         <SkeletonWrapper isLoading={isFetchingLeadStatuses}>
           <DataTable
             columns={columns}
-            data={leadStatuses?.filter((e) => e.type != "default")!}
+            data={leadStatuses?.filter((e) => e.type != "default") || []}
             headers
             title="Lead Status"
             topMenu={topMenu}

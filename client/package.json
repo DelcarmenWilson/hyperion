@@ -82,6 +82,7 @@
     "facebook-nodejs-business-sdk": "^20.0.1",
     "ffmpeg": "^0.0.4",
     "framer-motion": "^11.0.5",
+    "immer": "^10.1.1",
     "input-otp": "^1.2.4",
     "jotai": "^2.6.5",
     "json-as-xlsx": "^2.5.6",

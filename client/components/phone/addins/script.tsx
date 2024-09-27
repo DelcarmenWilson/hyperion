@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
 import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
@@ -11,7 +11,7 @@ import { Tiptap } from "@/components/reusable/tiptap";
 import { replaceScript } from "@/formulas/script";
 
 export const PhoneScript = () => {
-  const { lead, showScript, onScriptOpen, onScriptClose } = usePhone();
+  const { lead, showScript, onScriptOpen, onScriptClose } = usePhoneStore();
 
   const { script } = useScriptData();
   const { onlineUser } = useOnlineUserData();

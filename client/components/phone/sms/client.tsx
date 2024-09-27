@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { PhoneSwitcher } from "../addins/switcher";
 import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { SmsBody } from "./body";
@@ -23,7 +23,7 @@ export const SmsClient = ({
 }) => {
   const user = useCurrentUser();
   const { leadBasic } = useLeadData();
-  const { isLeadInfoOpen, onLeadInfoToggle } = usePhone();
+  const { isLeadInfoOpen, onLeadInfoToggle } = usePhoneStore();
 
   let leadFullName = `${leadBasic?.firstName} ${leadBasic?.lastName}`;
   const [loading, setLoading] = useState(false);

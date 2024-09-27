@@ -2,16 +2,17 @@
 import { useOnlineUserData } from "@/hooks/user/use-user";
 import ChatCard from "./card";
 import SkeletonWrapper from "../skeleton-wrapper";
+import { ScrollArea } from "../ui/scroll-area";
 
 export const ChatList = () => {
   const { onlineUsers, isFetchingOnlineUsers } = useOnlineUserData();
   return (
-    <div className="h-full overflow-y-auto pe-2">
+    <ScrollArea>
       <SkeletonWrapper isLoading={isFetchingOnlineUsers}>
         {onlineUsers?.map((user) => (
           <ChatCard key={user.id} user={user} />
         ))}
       </SkeletonWrapper>
-    </div>
+    </ScrollArea>
   );
 };

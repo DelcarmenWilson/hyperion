@@ -9,13 +9,15 @@ import {
 type Props = {
   children: React.ReactNode;
   title: string;
+  subTitle?: string;
   description?: string;
   open: boolean;
   onClose: () => void;
 };
 export const CustomDialog = ({
-  title,
   children,
+  title,
+  subTitle,
   description,
   open,
   onClose,
@@ -24,7 +26,14 @@ export const CustomDialog = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
         <DialogHeader className="pt-8 text-left">
-          <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">
+            {title}
+            {subTitle && (
+              <>
+                - <span className="text-primary">{subTitle}</span>
+              </>
+            )}
+          </DialogTitle>
           <DialogDescription className="hidden">
             {description}
           </DialogDescription>

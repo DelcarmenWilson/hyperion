@@ -1,6 +1,6 @@
 "use client";
 import { Phone } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { useLeadCallInfoActions } from "@/hooks/lead/use-lead";
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const CallInfo = ({ showBtnCall = true }: Props) => {
-  const { onPhoneOutOpen, onLeadInfoToggle } = usePhone();
+  const { onPhoneOutOpen, onLeadInfoToggle } = usePhoneStore();
   const { callInfo, isFetchingCallInfo } = useLeadCallInfoActions();
 
   const callCount = callInfo?.calls?.filter(

@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { Pencil, Phone } from "lucide-react";
 import { useLeadStore, useLeadData, useLeadId } from "@/hooks/lead/use-lead";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Button } from "@/components/ui/button";
 import { LeadSection } from "./section";
@@ -20,7 +20,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const LeadSidebar = () => {
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
   const { setLeadId, onMainFormOpen, onGeneralFormOpen } = useLeadStore();
   const {
     leadBasic,

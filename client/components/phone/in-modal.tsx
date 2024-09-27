@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { usePhone, usePhoneData } from "@/hooks/use-phone";
+import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export const PhoneInModal = () => {
     lead,
     isLeadInfoOpen,
     onLeadInfoToggle: onToggleLeadInfo,
-  } = usePhone();
+  } = usePhoneStore();
   const { phone } = usePhoneContext();
   const {
     isCallMuted,
