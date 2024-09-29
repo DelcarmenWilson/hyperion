@@ -25,7 +25,7 @@ type State = {
   fullCall?: FullCall;
   callType?: string;
 
-  lead?: FullLeadNoConvo;
+  lead?: PipelineLead;
   leads?: PipelineLead[];
   pipeline?: Pipeline;
   pipeIndex: number;
@@ -59,13 +59,13 @@ type Actions = {
   onPhoneDialerOpen: (e?: PipelineLead[], f?: Pipeline) => void;
   onPhoneDialerClose: () => void;
 
-  onPhoneOutOpen: (e?: FullLeadNoConvo, c?: TwilioShortConference) => void;
+  onPhoneOutOpen: (e?: PipelineLead, c?: TwilioShortConference) => void;
   onPhoneOutClose: () => void;
 
   onCallOpen: (e: FullCall, t?: string) => void;
   onCallClose: () => void;
 
-  onSetLead: (e?: FullLeadNoConvo) => void;
+  onSetLead: (e?: PipelineLead) => void;
   onSetLeads: (e?: FullLead[]) => void;
   onSetIndex: (e: number) => void;
 

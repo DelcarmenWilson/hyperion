@@ -38,7 +38,7 @@ export const PipelineForm = () => {
     onPipelineInsertSubmit,
     onPipelineUpdateSubmit,
     isPendingPipelineUpdate,
-  } = usePipelineActions([]);
+  } = usePipelineActions();
 
   return (
     <Dialog open={isFormOpen} onOpenChange={onFormClose}>

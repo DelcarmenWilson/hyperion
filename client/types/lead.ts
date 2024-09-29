@@ -64,6 +64,9 @@ export type PipelineLead = {
   status: string;
   maritalStatus: string;
   dateOfBirth: string | null;
+  defaultNumber: string;
+  address?: string | null;
+  smoker: boolean;
   recievedAt: Date;
   zone?: string;
   time?: string;

@@ -1,8 +1,8 @@
-import { useWorkFlow } from "@/hooks/workflow/use-workflow";
 import { Plus } from "lucide-react";
 import { Node } from "reactflow";
 import { toast } from "sonner";
 
+import { useEditorStore } from "@/hooks/workflow/use-editor";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,7 +30,7 @@ export const PaymentProviderSelect = ({
     React.SetStateAction<Node<{}, string | undefined>[]>
   >;
 }) => {
-  const { onDrawerOpen } = useWorkFlow();
+  const { onDrawerOpen } = useEditorStore();
   // const { setNodes } = useReactFlow();
   const onProviderClick = async ({
     name,
@@ -59,15 +59,11 @@ export const PaymentProviderSelect = ({
         <DropdownMenuLabel>Nodes</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            onClick={() => onDrawerOpen(workFlowId, "triggerlist")}
-          >
+          <DropdownMenuItem onClick={() => onDrawerOpen("triggerlist")}>
             Trigger
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onDrawerOpen(workFlowId, "actionlist")}
-          >
+          <DropdownMenuItem onClick={() => onDrawerOpen("actionlist")}>
             Action
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>

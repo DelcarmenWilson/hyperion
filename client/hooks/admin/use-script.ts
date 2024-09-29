@@ -5,11 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
 
-import { chatbotGetActive, chatbotSettingsUpsert } from "@/actions/chatbot";
+import { chatbotGetActive, chatbotSettingsUpsert } from "@/actions/chat-bot/chatbot";
 import {
   ChatbotSettingsSchema,
   ChatbotSettingsSchemaType,
-} from "@/schemas/chatbot";
+} from "@/schemas/chat-bot/chatbot";
 import { Script } from "@prisma/client";
 import {
   scriptGetById,

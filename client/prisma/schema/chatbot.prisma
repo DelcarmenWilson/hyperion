@@ -1,3 +1,4 @@
+// TESTING CHAT BOT
 model ChatbotConversation {
     id       String           @id @default(cuid())
     messages ChatbotMessage[]

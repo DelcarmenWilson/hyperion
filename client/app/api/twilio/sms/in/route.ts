@@ -146,7 +146,7 @@ export async function POST(req: Request) {
   }
   //Wait 5 seconds before inserting the new message from chatGpt
   // const delay = Math.round(content.length / 35) * 8;
-  const words = content.split;
+  const words = content.split(" ");
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
   const sid = (await smsSend({toPhone:sms.to, fromPhone:sms.from, message:content, timer:delay})).success;

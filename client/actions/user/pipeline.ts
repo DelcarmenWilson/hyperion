@@ -80,10 +80,13 @@ export const pipelineAndLeadsGetAll = async () => {
         firstName: true,
         lastName: true,
         cellPhone: true,
-        maritalStatus:true,
-       dateOfBirth:true,
+        maritalStatus: true,
+        dateOfBirth: true,
         state: true,
-        status:true,
+        status: true,
+        defaultNumber: true,
+        address: true,
+        smoker: true,
         recievedAt: true,
       },
     });
@@ -164,7 +167,7 @@ export const pipelineUpdateOrder = async (
   if (!user || !user.email) {
     return { error: "Unathenticated" };
   }
-  
+
   for (const pipeline of pipelines) {
     await db.pipeline.update({
       where: { id: pipeline.id },

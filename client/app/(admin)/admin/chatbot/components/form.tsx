@@ -37,12 +37,12 @@ import { states } from "@/constants/states";
 import {
   ChatbotSettingsSchema,
   ChatbotSettingsSchemaType,
-} from "@/schemas/chatbot";
+} from "@/schemas/chat-bot/chatbot";
 import {
   chatbotMessageInsert,
   chatbotSettingsInsert,
   chatbotSettingsUpsert,
-} from "@/actions/chatbot";
+} from "@/actions/chat-bot/chatbot";
 import { Textarea } from "@/components/ui/textarea";
 import { useChatbotActions } from "../hooks/use-chatbot";
 type Props = {

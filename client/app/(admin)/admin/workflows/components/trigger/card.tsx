@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Trash } from "lucide-react";
-import { useWorkFlowDefaultData } from "@/hooks/workflow/use-workflow";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 
 import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 
@@ -9,7 +9,6 @@ import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
 import { DrawerRight } from "@/components/custom/drawer-right";
-
 import { TriggerForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";
@@ -19,7 +18,7 @@ export const TriggerCard = ({
 }: {
   trigger: WorkflowTriggerSchemaType;
 }) => {
-  const { onDeleteWorkflowDefaultById } = useWorkFlowDefaultData();
+  const { onDeleteWorkflowDefaultById } = useWorkflowDefaultData();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

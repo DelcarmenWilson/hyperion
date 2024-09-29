@@ -8,6 +8,7 @@ import {
 
 import { Workflow } from "@prisma/client";
 import {
+  FullWorkFlowSchemaType,
   WorkFlowSchema,
   WorkFlowSchemaType,
 } from "@/schemas/workflow/workflow";
@@ -48,7 +49,7 @@ export const WorkflowForm = () => {
 };
 
 type WFormProps = {
-  workflow: Workflow | null | undefined;
+  workflow: FullWorkFlowSchemaType | null | undefined;
 };
 const WForm = ({ workflow }: WFormProps) => {
   const { onWorkflowUpdate, workflowUpdateIsPending, onFormClose } =

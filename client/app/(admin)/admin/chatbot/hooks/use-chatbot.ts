@@ -13,11 +13,11 @@ import {
   chatbotConversationsGet,
   chatbotGetActive,
   chatbotSettingsUpsert,
-} from "@/actions/chatbot";
+} from "@/actions/chat-bot/chatbot";
 import {
   ChatbotSettingsSchema,
   ChatbotSettingsSchemaType,
-} from "@/schemas/chatbot";
+} from "@/schemas/chat-bot/chatbot";
 
 type useChatbotStore = { 
   chatId?: string;

@@ -1,11 +1,11 @@
-import { FullLeadNoConvo } from "@/types";
+import { PipelineLead } from "@/types";
 import { formatPhoneNumber } from "./phones";
 import { UserLicense } from "@prisma/client";
 import { formatDob } from "./dates";
 export const replaceScript = (
     script: string,
     firstName: string,
-    lead: FullLeadNoConvo,
+    lead: PipelineLead,
     licenses?:UserLicense[]
   ): string => {
     if (!firstName || !lead) return script;

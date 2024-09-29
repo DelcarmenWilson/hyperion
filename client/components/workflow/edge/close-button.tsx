@@ -10,7 +10,7 @@ type EdgeCloseButtonProps = {
   y: number;
 };
 export const EdgeCloseButton = ({ id, x, y }: EdgeCloseButtonProps) => {
-  const { onDeleteEdge } = useEditorChanges();
+  const { onEdgeDelete } = useEditorChanges();
   return (
     <EdgeLabelRenderer>
       <Button
@@ -23,7 +23,7 @@ export const EdgeCloseButton = ({ id, x, y }: EdgeCloseButtonProps) => {
         variant="normal"
         size="xxs"
         aria-label="Delete Edge"
-        onClick={() => onDeleteEdge(id)}
+        onClick={() => onEdgeDelete(id)}
       >
         <X size={10} />
       </Button>

@@ -64,7 +64,9 @@ import {
   TwilioConferenceRecording,
 } from "./twilio";
 import { ItemProps, MonthProps, FileRecords, FileRecord } from "./item";
-import { FullChatbotConversation, ShortChatbotConversation } from "./chatbot";
+import { FullChatbotConversation, ShortChatbotConversation } from "./chat-bot/chatbot";
+import { ShortPublicChatbotConversation,FullPublicChatbotConversation } from "./chat-bot/public-chatbot";
+
 import { FullCampaign, FullAd } from "./facebook";
 
 export type FullCall = Call & {
@@ -199,6 +201,9 @@ export type { ItemProps, FileRecords, FileRecord, MonthProps };
 
 //CHATBOT
 export type { ShortChatbotConversation, FullChatbotConversation };
+
+//PUBLIC CHATBOT
+export type {ShortPublicChatbotConversation,FullPublicChatbotConversation};
 
 //FACEBOOK CAMPAIGN
 export type { FullCampaign, FullAd };

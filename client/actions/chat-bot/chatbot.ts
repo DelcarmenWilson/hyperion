@@ -6,8 +6,8 @@ import {
   ChatbotMessageSchemaType,
   ChatbotSettingsSchema,
   ChatbotSettingsSchemaType,
-} from "@/schemas/chatbot";
-import { chatFetch } from "./gpt";
+} from "@/schemas/chat-bot/chatbot";
+import { chatFetch } from "../gpt";
 
 //DATA
 export const chatbotConversationsGet = async () => {

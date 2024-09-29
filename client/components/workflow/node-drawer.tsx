@@ -20,7 +20,7 @@ export const NodeDrawer = () => {
     >
       <div className="flex flex-1 border-t h-full overflow-hidden">
         {/* {type == "birthdayreminder" && ( */}
-        <BirthdayForm node={node} onClose={onNodeDrawerClose} />
+        {/* <BirthdayForm node={node} onClose={onNodeDrawerClose} /> */}
         {/* )} */}
       </div>
     </DrawerRight>

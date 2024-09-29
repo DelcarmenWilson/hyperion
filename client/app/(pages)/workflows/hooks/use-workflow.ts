@@ -1,5 +1,5 @@
 import { workFlowGetById, workFlowUpdateById } from "@/actions/workflow";
-import { WorkFlowSchemaType } from "@/schemas/workflow/workflow";
+import { FullWorkFlowSchemaType, WorkFlowSchemaType } from "@/schemas/workflow/workflow";
 import { Workflow } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -26,7 +26,7 @@ export const useWorkflowData = () => {
   // })
 
   const { workflowId } = useWorkflowId();
-  const { data: workflowData } = useQuery<Workflow | null>({
+  const { data: workflowData } = useQuery<FullWorkFlowSchemaType | null>({
     queryFn: () => workFlowGetById(workflowId),
     queryKey: [`workflow-${workflowId}`],
   });
