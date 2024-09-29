@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Trash } from "lucide-react";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 
 import { WorkflowActionSchemaType } from "@/schemas/workflow/action";
 
@@ -19,7 +19,7 @@ export const ActionCard = ({
 }: {
   action: WorkflowActionSchemaType;
 }) => {
-  const { onDeleteWorkflowDefaultById } = useWorkFlowDefaultData();
+  const { onDeleteWorkflowDefaultById } = useWorkflowDefaultData();
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

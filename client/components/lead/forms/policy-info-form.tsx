@@ -1,18 +1,17 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadPolicyActions } from "@/hooks/lead/use-lead";
+import {
+  useLeadPolicyActions,
+  useLeadPolicyData,
+} from "@/hooks/lead/use-policy-info";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 import { LeadPolicy } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { CarrierSelect } from "@/components/global/selects/carriers";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   Form,
   FormField,
@@ -33,9 +32,8 @@ import {
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const PolicyInfoForm = () => {
+  const { policy, isFetchingPolicy } = useLeadPolicyData();
   const {
-    policy,
-    isFetchingPolicy,
     onPolicySubmit,
     isPolicyFormOpen,
     onPolicyFormClose,
@@ -43,29 +41,26 @@ export const PolicyInfoForm = () => {
   } = useLeadPolicyActions();
   if (!policy) return null;
 
-  const leadName = `${policy.firstName} ${policy.firstName}`;
-  const policyInfo = policy.policy;
+  const leadName = `${policy?.firstName} ${policy?.firstName}`;
+  const policyInfo = policy?.policy;
 
   return (
-    <Dialog open={isPolicyFormOpen} onOpenChange={onPolicyFormClose}>
-      <DialogDescription className="hidden">Policy Info Form</DialogDescription>
-      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full ">
-        <SkeletonWrapper isLoading={isFetchingPolicy}>
-          <h3 className="text-2xl font-semibold py-2">
-            Policy Info - <span className="text-primary">{leadName}</span>
-          </h3>
-        </SkeletonWrapper>
-        <SkeletonWrapper isLoading={isFetchingPolicy}>
-          <PolicyForm
-            policy={policyInfo}
-            leadId={policy.id}
-            loading={policyIsPending}
-            onSubmit={onPolicySubmit}
-            onClose={onPolicyFormClose}
-          />
-        </SkeletonWrapper>
-      </DialogContent>
-    </Dialog>
+    <CustomDialog
+      open={isPolicyFormOpen}
+      onClose={onPolicyFormClose}
+      description="Policy Info Form"
+      title={`Policy Info - ${leadName}`}
+    >
+      <SkeletonWrapper isLoading={isFetchingPolicy}>
+        <PolicyForm
+          policy={policyInfo}
+          leadId={policy.id}
+          loading={policyIsPending}
+          onSubmit={onPolicySubmit}
+          onClose={onPolicyFormClose}
+        />
+      </SkeletonWrapper>
+    </CustomDialog>
   );
 };
 

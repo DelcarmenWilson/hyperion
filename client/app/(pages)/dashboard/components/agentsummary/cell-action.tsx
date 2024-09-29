@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Button } from "@/components/ui/button";
 import { AgentSummaryColumn } from "./columns";
@@ -11,7 +11,7 @@ type CellActionProps = {
   agent: AgentSummaryColumn;
 };
 export const CellAction = ({ agent }: CellActionProps) => {
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
   const [loading, setLoading] = useState(false);
   const onJoinCall = () => {
     setLoading(true);

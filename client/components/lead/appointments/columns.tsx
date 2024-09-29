@@ -61,12 +61,15 @@ export const columns: ColumnDef<FullAppointment>[] = [
           {row.original.status}
         </Badge>
         <p>{formatDateTime(row.original.startDate)}</p>
-        <p>
-          <span className="font-bold">Lead Time:</span>{" "}
-          {/* {formatTime(row.original.localDate)} */}
-          {/* //TODO - */}
-          {formatDateTime(row.original.localDate)}
-        </p>
+        {row.original.startDate.getTime() !=
+          row.original.localDate.getTime() && (
+          <p>
+            <span className="font-bold">Lead Time:</span>{" "}
+            {/* {formatTime(row.original.localDate)} */}
+            {/* //TODO - */}
+            {formatDateTime(row.original.localDate)}
+          </p>
+        )}
       </div>
     ),
   },

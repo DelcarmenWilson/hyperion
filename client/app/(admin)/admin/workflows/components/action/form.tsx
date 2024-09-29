@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -42,7 +42,7 @@ type ActionFormProps = {
 
 export const ActionForm = ({ action, onClose }: ActionFormProps) => {
   const { onInsertWorkflowDefaultNode, onUpdateWorkflowDefaultNode } =
-    useWorkFlowDefaultData(onClose);
+    useWorkflowDefaultData(onClose);
   const [loading, setLoading] = useState(false);
   const btnText = action ? "Update" : "Create";
   const data: WorkflowActionDataSchemaType = {

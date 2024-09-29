@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CoachNotification } from "../phone/coach-notification";
 import { cn } from "@/lib/utils";
 import { TextAnimation } from "../custom/text-animate";
+import { usePathname } from "next/navigation";
 
 type Props = {
   admin?: boolean;
@@ -19,6 +20,14 @@ export const MainNav = ({ admin }: Props) => {
     onJoinCall,
     onRejectCall,
   } = useMainNav();
+
+
+
+  const pathname = usePathname().split("/")[1].replace("-"," ")
+
+
+  
+
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>
@@ -41,7 +50,7 @@ export const MainNav = ({ admin }: Props) => {
           <Button onClick={onSheduledLeads}>Schedule Leads</Button>
         </>
       )} */}
-      {admin && (
+      {admin ? (
         <TextAnimation
           text="Admin Panel"
           textAnchor="left"
@@ -49,7 +58,14 @@ export const MainNav = ({ admin }: Props) => {
           x="0"
           y="70%"
         />
-      )}
+      ):(<TextAnimation
+        text={pathname}
+        textAnchor="left"
+        viewBox="0 0 700 160"
+        x="0"
+        y="70%"
+      />)}
+     
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

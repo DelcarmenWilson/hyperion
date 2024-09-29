@@ -6,9 +6,7 @@ import { cfg, client } from "@/lib/twilio/config";
 
 import { LeadAndConversation, TwilioSms } from "@/types";
 import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
-import {
-  MessageSchemaType,
-} from "@/schemas/message";
+import { MessageSchemaType } from "@/schemas/message";
 
 import { messageInsert } from "./lead/message";
 import { conversationInsert } from "./lead/conversation";
@@ -26,12 +24,11 @@ export const smsSend = async ({
   message,
   media,
   timer = 0,
-
 }: {
   fromPhone: string;
   toPhone: string;
   message: string;
-  media?:string |undefined;
+  media?: string | undefined;
   timer?: number;
 }) => {
   if (!message) {
@@ -47,27 +44,26 @@ export const smsSend = async ({
       body: message,
       from: fromPhone,
       to: toPhone,
-      messagingServiceSid: cfg.messageServiceSid,      
-    mediaUrl: media ? [media] : undefined,
+      messagingServiceSid: cfg.messageServiceSid,
+      mediaUrl: media ? [media] : undefined,
       sendAt: date,
       scheduleType: "fixed",
     });
   } else {
     //TODO need to implement the timer again
     // setTimeout(async () => {
-      result = await client.messages.create({
-        body: message,
-        from: fromPhone,
-        to: toPhone,    
-        mediaUrl: media ? [media] : undefined,
-        applicationSid: cfg.twimlAppSid,
-      });
+    result = await client.messages.create({
+      body: message,
+      from: fromPhone,
+      to: toPhone,
+      mediaUrl: media ? [media] : undefined,
+      applicationSid: cfg.twimlAppSid,
+    });
     // }, timer * 1000);
   }
 
-  if (!result) 
-    return { error: "Message was not sent!" };
-  
+  if (!result) return { error: "Message was not sent!" };
+
   return { success: result.sid, message: "Message sent!" };
 };
 
@@ -83,8 +79,9 @@ export const smsSendAgentAppointmentNotification = async (
     where: { id: userId },
     include: {
       notificationSettings: {
-        select: { appointments: true},
-      },phoneSettings:{select:{personalNumber:true}}
+        select: { appointments: true },
+      },
+      phoneSettings: { select: { personalNumber: true } },
     },
   });
   if (!user) {
@@ -102,7 +99,6 @@ export const smsSendAgentAppointmentNotification = async (
   }
   //TODO - dont forget to remap the agents timezone here
 
-  //TODO - update does not go as planned tommorrow - change this back to use the default time ln.264
   const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
   } has booked an appointment for ${formatDateTimeZone(
@@ -243,15 +239,23 @@ export const getKeywordResponse = async (
         where: { id: leadId },
         data: { status: "Do_Not_Call" },
       });
-      await smsSend({toPhone:sms.to, fromPhone:sms.from, message:defaultOptOut.confirm});
+      await smsSend({
+        toPhone: sms.to,
+        fromPhone: sms.from,
+        message: defaultOptOut.confirm,
+      });
 
-      return defaultOptOut.confirm;      
+      return defaultOptOut.confirm;
     case "reset":
       await db.leadConversation.delete({ where: { id: conversationId } });
-      await smsSend({toPhone:sms.to, fromPhone:sms.from, message:"Conversation has been reset"});
+      await smsSend({
+        toPhone: sms.to,
+        fromPhone: sms.from,
+        message: "Conversation has been reset",
+      });
       return "Conversation has been reset";
-      default:
-        return null
+    default:
+      return null;
   }
 
   return null;
@@ -272,11 +276,17 @@ export const disabledAutoChatResponse = async (
   const settings = await db.notificationSettings.findUnique({
     where: { userId: lead.userId },
   });
-  const phoneSettings=await db.phoneSettings.findUnique({where: { userId: lead.userId },})
+  const phoneSettings = await db.phoneSettings.findUnique({
+    where: { userId: lead.userId },
+  });
 
   if (settings?.textForward && phoneSettings?.personalNumber) {
     const agentMessage = `${lead.firstName} ${lead.lastName} - ${lead.textCode}: \n${message?.content}`;
-    await smsSend({toPhone:phoneSettings.personalNumber, fromPhone:lead.defaultNumber, message:agentMessage});
+    await smsSend({
+      toPhone: phoneSettings.personalNumber,
+      fromPhone: lead.defaultNumber,
+      message: agentMessage,
+    });
   }
   sendSocketData(
     conversation.agentId,
@@ -306,7 +316,13 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
   }
 
   //Send Message to lead
-  const sid = (await smsSend({toPhone:sms.to, fromPhone:lead.cellPhone, message:message[1]})).success;
+  const sid = (
+    await smsSend({
+      toPhone: sms.to,
+      fromPhone: lead.cellPhone,
+      message: message[1],
+    })
+  ).success;
 
   //Update Messages And conversation
   const insertedMessage = (

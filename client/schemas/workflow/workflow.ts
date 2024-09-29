@@ -27,20 +27,32 @@ export const FullWorkFlowSchema = z.object({
     source: z.string(),
     target: z.string(),
     animated: z.boolean(),
-  }))
+  })),
+  published:z.boolean()
 });
 export type FullWorkFlowSchemaType = z.infer<typeof FullWorkFlowSchema>;
 
-export const FullNodeSchema = z.object({
+const WorkflowNodeDataSchema=z.object({
+  icon:z.string(),
+  name:z.string(),
+  text:z.string(),
+})
+
+export const WorkflowNodeSchema = z.object({
   id: z.string(),
+  type: z.optional(z.string()),
   position: z.object({
     x: z.number(),
     y: z.number(),
   }),
-  data: z.object({}),
-  type: z.optional(z.string()),
+  data: WorkflowNodeDataSchema,
+ 
+  workflowId:z.string(),
+  source:z.string(),
+  target:z.string(),
+  animated:z.boolean(),
 });
-export type FullNodeSchemaType = z.infer<typeof FullNodeSchema>;
+export type WorkflowNodeSchemaType = z.infer<typeof WorkflowNodeSchema>;
 
 export const WorkflowEdgeSchema = z.object({
   id: z.optional(z.string()),
@@ -51,4 +63,14 @@ export const WorkflowEdgeSchema = z.object({
   type: z.optional(z.string()),
 });
 export type WorkflowEdgeSchemaType = z.infer<typeof WorkflowEdgeSchema>;
-
+//TODO - need to find a way to get rid of this
+export const FullNodeSchema = z.object({
+  id: z.string(),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  data: z.object({}),
+  type: z.optional(z.string()),
+});
+export type FullNodeSchemaType = z.infer<typeof FullNodeSchema>;

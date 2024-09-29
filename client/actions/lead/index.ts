@@ -973,14 +973,14 @@ export const leadUpdateByIdPolicyInfo = async (
   } = validatedFields.data;
 
   const user = await currentUser();
-  if (!user?.id || !user?.email) {
+  if (!user?.id || !user?.email) 
     return { error: "Unauthenticated" };
-  }
+  
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
-  if (!existingLead) {
+  if (!existingLead) 
     return { error: "Lead does not exist" };
-  }
+  
 
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
@@ -1034,6 +1034,28 @@ export const leadUpdateByIdPolicyInfo = async (
   );
   return { success: leadPolicyInfo };
 };
+
+export const leadUpdateByIdAutoChat = async (
+  id: string,
+  titan: boolean
+) => {
+  const user = await currentUser();
+  if (!user) {
+    return { error: "Unauthenticated!" };
+  }
+  const existingLead = await db.lead.findUnique({ where: { id } });
+ 
+  if (!existingLead) 
+    return { error: "Lead does not exist!" };  
+
+  if (existingLead.userId !== user.id) 
+    return { error: "Unauthorized!" };
+  
+  await db.lead.update({ where: { id }, data: { titan } });
+
+  return { success: `Titan chat has been turned ${titan ? "on" : "off"} ` };
+};
+
 
 //LEAD ASSISTANT SHARE AND TRANSFER
 export const leadUpdateByIdAssistantAdd = async (

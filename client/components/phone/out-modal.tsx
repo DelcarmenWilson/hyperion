@@ -1,12 +1,12 @@
 "use client";
 
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { DrawerRight } from "../custom/drawer-right";
 import PhoneShell from "@/components/phone/addins/shell";
 import { PhoneDrawer } from "./drawer";
 
 export const PhoneOutModal = () => {
-  const { isPhoneOutOpen, onPhoneOutClose } = usePhone();
+  const { isPhoneOutOpen, onPhoneOutClose } = usePhoneStore();
   return (
     // <DrawerRight
     //   title="Phone"

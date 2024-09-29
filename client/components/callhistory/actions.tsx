@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import axios from "axios";
 
 import { FullCall } from "@/types";
@@ -20,7 +20,7 @@ import { callUpdateByIdShare } from "@/actions/call";
 
 export const CallHistoryActions = ({ call }: { call: FullCall }) => {
   const user = useCurrentUser();
-  const { onCallOpen, onPhoneOutOpen } = usePhone();
+  const { onCallOpen, onPhoneOutOpen } = usePhoneStore();
   const [isShared, setIsShared] = useState(call.shared);
   if (!user) return null;
   const show: boolean = user.id == call.userId || user?.role == "MASTER";

@@ -42,7 +42,7 @@ export const UserTemplateClient = () => {
         <SkeletonWrapper isLoading={isFetchingTemplates}>
           <DataTable
             columns={columns}
-            data={templates!}
+            data={templates || []}
             headers
             title="Templates"
             topMenu={topMenu}

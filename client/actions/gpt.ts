@@ -4,8 +4,8 @@ import OpenAI from "openai";
 export const chatFetch = async (messages: any=[]) => {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    organization:"org-TTrcbaMEsZZ1KaQ5DaK9Cx4w",
-    project:"proj_aDnytZJ3qEfGlMPs0S1WdaJJ",
+    // organization:"org-TTrcbaMEsZZ1KaQ5DaK9Cx4w",
+    // project:"proj_aDnytZJ3qEfGlMPs0S1WdaJJ",
   });
   
   // const response = await openai.chat.completions.create({

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { create } from "zustand";
-import { FullCall, FullLead, FullLeadNoConvo } from "@/types";
+import { FullCall, FullLead, FullLeadNoConvo, PipelineLead } from "@/types";
 import { Pipeline } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Call, Device } from "@twilio/voice-sdk";
@@ -9,66 +9,80 @@ import {
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
 
-type PhoneStore = {
+type State = {
   //PHONE SPECIFIC
   call: Call | undefined;
   time: number;
   setTime: () => void;
   isRunning: boolean;
   isCallMuted: boolean;
+
+  isPhoneInOpen: boolean;
+  isPhoneDialerOpen: boolean;
+  isPhoneOutOpen: boolean;
+
+  isCallOpen: boolean;
+  fullCall?: FullCall;
+  callType?: string;
+
+  lead?: PipelineLead;
+  leads?: PipelineLead[];
+  pipeline?: Pipeline;
+  pipeIndex: number;
+
+  // LEADINFO
+  isLeadInfoOpen: boolean;
+
+  //CONFERENCE
+  isConferenceOpen: boolean;
+  conference?: TwilioShortConference;
+  participants?: TwilioParticipant[];
+
+  //SCRIPT
+  showScript: boolean;
+  //CALL
+  isOnCall: boolean;
+};
+
+type Actions = {
+  //PHONE SPECIFIC
+  setTime: () => void;
   onCallMutedToggle: () => void;
 
   onPhoneConnect: (c: Call) => void;
   onPhoneInConnect: () => void;
   onPhoneDisconnect: () => void;
 
-  isPhoneInOpen: boolean;
   onPhoneInOpen: (c?: Call) => void;
   onPhoneInClose: () => void;
 
-  isPhoneDialerOpen: boolean;
-  onPhoneDialerOpen: (e?: FullLead[], f?: Pipeline) => void;
+  onPhoneDialerOpen: (e?: PipelineLead[], f?: Pipeline) => void;
   onPhoneDialerClose: () => void;
 
-  isPhoneOutOpen: boolean;
-  onPhoneOutOpen: (e?: FullLeadNoConvo, c?: TwilioShortConference) => void;
+  onPhoneOutOpen: (e?: PipelineLead, c?: TwilioShortConference) => void;
   onPhoneOutClose: () => void;
 
-  isCallOpen: boolean;
   onCallOpen: (e: FullCall, t?: string) => void;
   onCallClose: () => void;
-  fullCall?: FullCall;
-  callType?: string;
 
-  lead?: FullLeadNoConvo;
-  leads?: FullLead[];
-  pipeline?: Pipeline;
-  pipeIndex: number;
-  onSetLead: (e?: FullLeadNoConvo) => void;
+  onSetLead: (e?: PipelineLead) => void;
   onSetLeads: (e?: FullLead[]) => void;
   onSetIndex: (e: number) => void;
 
   // LEADINFO
-  isLeadInfoOpen: boolean;
   onLeadInfoToggle: () => void;
 
   //CONFERENCE
-  isConferenceOpen: boolean;
-  conference?: TwilioShortConference;
-  participants?: TwilioParticipant[];
   setConference: (e?: TwilioShortConference) => void;
   setParticipants: (e?: TwilioParticipant[]) => void;
   onConferenceToggle: () => void;
 
   //SCRIPT
-  showScript: boolean;
   onScriptOpen: () => void;
   onScriptClose: () => void;
-  //CALL
-  isOnCall: boolean;
 };
 
-export const usePhone = create<PhoneStore>((set, get) => ({
+export const usePhoneStore = create<State & Actions>((set, get) => ({
   //PHONE SPECIFIC STUFF
   call: undefined,
   setCall: (c: Call) => set({ call: c }),
@@ -92,7 +106,6 @@ export const usePhone = create<PhoneStore>((set, get) => ({
       time: 0,
       isPhoneInOpen: false,
     }),
-
   pipeIndex: 0,
   isPhoneInOpen: false,
   isPhoneDialerOpen: false,
@@ -157,7 +170,7 @@ export const usePhoneData = (phone: Device | null) => {
     lead,
     pipeline,
     pipeIndex,
-  } = usePhone();
+  } = usePhoneStore();
 
   //GENERAL FUNCTIIONS
   ///Disconnect an in progress call

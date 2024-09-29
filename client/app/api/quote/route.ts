@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { calculateBlueprintTargets } from "@/actions/blueprint/blueprint-week";
+import { createWeeklyBlueprint } from "@/actions/blueprint/blueprint-week";
 import { adminQuoteUpdateActive } from "@/actions/admin/quote";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 
@@ -9,8 +9,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { type } = body;
     switch (type) {
-      case "calculateBlueprintTargets":
-        await calculateBlueprintTargets();
+      case "createWeeklyBlueprint":
+        await createWeeklyBlueprint();
         break;
       case "newQuote":
         await adminQuoteUpdateActive();

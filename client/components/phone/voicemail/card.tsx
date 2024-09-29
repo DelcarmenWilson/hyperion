@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { Eye, MoreHorizontal, Phone, Trash } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { TableCell, TableRow } from "@/components/ui/table";
 import {
   DropdownMenu,
@@ -23,7 +23,7 @@ export const VoicemailCard = ({
   voicemail: vm,
   onUpdate,
 }: VoicemailCardProps) => {
-  const { onCallOpen, onPhoneOutOpen, onPhoneOutClose } = usePhone();
+  const { onCallOpen, onPhoneOutOpen, onPhoneOutClose } = usePhoneStore();
 
   const onCallBack = async () => {
     //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION

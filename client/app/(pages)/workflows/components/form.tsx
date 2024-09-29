@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useWorkFlowData } from "@/hooks/use-workflow";
+import { useWorkflowActions } from "@/hooks/workflow/use-workflow";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -21,15 +21,45 @@ import {
 } from "@/components/ui/form";
 
 import { Textarea } from "@/components/ui/textarea";
+import { DrawerRight } from "@/components/custom/drawer-right";
 
 type WorkflowFormProps = {
   workflow?: Workflow;
+  open: boolean;
   onClose: () => void;
 };
 
-export const WorkflowForm = ({ workflow, onClose }: WorkflowFormProps) => {
-  const { onInsertWorkflow, onUpdateWorkflow } = useWorkFlowData();
-  const [loading, setLoading] = useState(false);
+export const WorkflowForm = ({
+  workflow,
+  open,
+  onClose,
+}: WorkflowFormProps) => {
+  const {
+    onWorkflowInsert,
+    workflowInsertIsPending,
+    onWorkflowUpdate,
+    workflowUpdateIsPending,
+  } = useWorkflowActions();
+  const title = workflow ? "Update Workflow" : "New Workflow";
+  return (
+    <DrawerRight title={title} isOpen={open} onClose={onClose}>
+      <WForm
+        workflow={workflow}
+        onSubmit={workflow ? onWorkflowUpdate : onWorkflowInsert}
+        loading={workflow ? workflowUpdateIsPending : workflowInsertIsPending}
+        onClose={onClose}
+      />
+    </DrawerRight>
+  );
+};
+
+type WFormProps = {
+  workflow?: Workflow;
+  loading: boolean;
+  onSubmit: (e: WorkFlowSchemaType) => void;
+  onClose: () => void;
+};
+const WForm = ({ workflow, loading, onSubmit, onClose }: WFormProps) => {
   const btnText = workflow ? "Update" : "Create";
 
   const form = useForm<WorkFlowSchemaType>({
@@ -47,17 +77,6 @@ export const WorkflowForm = ({ workflow, onClose }: WorkflowFormProps) => {
     onClose();
   };
 
-  const onSubmit = async (values: WorkFlowSchemaType) => {
-    setLoading(true);
-    if (workflow) {
-      const updatedWorkFlow = await onUpdateWorkflow(values);
-      if (updatedWorkFlow) onCancel();
-    } else {
-      const insertedWorkFlow = await onInsertWorkflow(values);
-      if (insertedWorkFlow) onCancel();
-    }
-    setLoading(false);
-  };
   return (
     <div>
       <Form {...form}>

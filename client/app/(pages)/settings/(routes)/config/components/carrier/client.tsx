@@ -74,7 +74,7 @@ export const CarrierClient = () => {
         <SkeletonWrapper isLoading={isFetchingCarriers}>
           <DataTable
             columns={columns}
-            data={carriers!}
+            data={carriers || []}
             headers
             title="Carrier"
             topMenu={topMenu}

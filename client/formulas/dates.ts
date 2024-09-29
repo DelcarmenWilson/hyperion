@@ -3,9 +3,11 @@ import {
   differenceInYears,
   endOfMonth,
   endOfWeek,
+  endOfYear,
   format,
   startOfMonth,
   startOfWeek,
+  startOfYear,
 } from "date-fns";
 import { format as ftz, formatInTimeZone } from "date-fns-tz";
 
@@ -49,17 +51,24 @@ export const concateDate = (
 
 export const weekStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-  const start = startOfWeek(curr);
-  const end = endOfWeek(curr);
+  const from = startOfWeek(curr);
+  const to = endOfWeek(curr);
 
-  return { from: start, to: end };
+  return { from, to };
 };
 
 export const monthStartEnd = (): { from: Date; to: Date } => {
   const curr = new Date();
-  const start = startOfMonth(curr);
-  const end = endOfMonth(curr);
-  return { from: start, to: end };
+  const from = startOfMonth(curr);
+  const to = endOfMonth(curr);
+  return { from, to };
+};
+
+export const yearStartEnd = (): { from: Date; to: Date } => {
+  const curr = new Date();
+  const from = startOfYear(curr);
+  const to = endOfYear(curr);
+  return { from, to };
 };
 
 export const getLocalTime = (abv: string) => {

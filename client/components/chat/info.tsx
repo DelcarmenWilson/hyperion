@@ -51,7 +51,7 @@ export const ChatInfo = () => {
           {/* BODY */}
           <ChatBody />
           {/* FORM */}
-          <ChatForm />
+          <ChatForm placeholder="Your message...." />
         </div>
       </div>
     </div>

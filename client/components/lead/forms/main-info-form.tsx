@@ -10,11 +10,7 @@ import {
 } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -42,27 +38,22 @@ export const MainInfoForm = () => {
 
   if (!mainInfo) return null;
   return (
-    <Dialog open={isMainFormOpen} onOpenChange={onMainFormClose}>
-      <DialogDescription className="hidden">Main Info Form</DialogDescription>
-      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-        <SkeletonWrapper isLoading={isFetchingMainInfo}>
-          <h3 className="text-2xl font-semibold py-2">
-            Demographics -
-            <span className="text-primary">
-              {`${mainInfo.firstName} ${mainInfo.lastName}`}
-            </span>
-          </h3>
-        </SkeletonWrapper>
-        <SkeletonWrapper isLoading={isFetchingMainInfo}>
-          <MainForm
-            mainInfo={mainInfo}
-            loading={loading}
-            onSubmit={onMainInfoUpdate}
-            onClose={onMainFormClose}
-          />
-        </SkeletonWrapper>
-      </DialogContent>
-    </Dialog>
+    <CustomDialog
+      title="Demographics"
+      subTitle={`${mainInfo.firstName} ${mainInfo.lastName}`}
+      description="Main Info Form"
+      open={isMainFormOpen}
+      onClose={onMainFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingMainInfo}>
+        <MainForm
+          mainInfo={mainInfo}
+          loading={loading}
+          onSubmit={onMainInfoUpdate}
+          onClose={onMainFormClose}
+        />
+      </SkeletonWrapper>
+    </CustomDialog>
   );
 };
 

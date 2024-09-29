@@ -1,23 +1,18 @@
 "use client";
-import { useState } from "react";
 import { FullPipeline } from "@/types";
 import { RefreshCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useModal } from "@/providers/modal";
-
-import { toast } from "sonner";
 import { Reorder } from "framer-motion";
+import {
+  usePipelineStageActions,
+  usePipelineStore,
+} from "../hooks/use-pipelines";
 
 import { Button } from "@/components/ui/button";
 
-import { pipelineUpdateOrder } from "@/actions/user/pipeline";
 import { formatDate } from "@/formulas/dates";
-import {
-  usePipelineData,
-  usePipelineStageActions,
-} from "../hooks/use-pipelines";
 
-export const StageList = ({ pipelines }: { pipelines: FullPipeline[] }) => {
+export const StageList = () => {
+  const { pipelines } = usePipelineStore();
   const {
     buttonEnabled,
     stages,

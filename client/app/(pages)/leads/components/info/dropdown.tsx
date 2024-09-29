@@ -38,6 +38,7 @@ import { LeadConversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { conversationDeleteById } from "@/actions/lead/conversation";
+import { leadUpdateByIdAutoChat } from "@/actions/lead";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -63,15 +64,10 @@ export const LeadDropDown = ({
   const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
   const onTitanToggle = async () => {
-    //TODO - need to come back to this. the autoChat has been changed to titan and it is now in the lead table
     setTitan((state) => !state);
-    // const updateAutoChat = await conversationUpdateByIdAutoChat(
-    //   conversation?.id as string,
-    //   !autoChat
-    // );
-
-    // if (updateAutoChat.success) toast.success(updateAutoChat.success);
-    // else toast.error(updateAutoChat.error);
+    const updateTitan = await leadUpdateByIdAutoChat(lead.id, !titan);
+    if (updateTitan.success) toast.success(updateTitan.success);
+    else toast.error(updateTitan.error);
   };
 
   const onDelete = async () => {

@@ -11,11 +11,7 @@ import {
 import { Gender, MaritalStatus } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -42,27 +38,22 @@ export const GeneralInfoForm = () => {
     useLeadGeneralInfoActions(onGeneralFormClose);
   if (!generalInfo) return null;
   return (
-    <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>
-      <DialogDescription className="hidden">
-        General Info Form
-      </DialogDescription>
-      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-        <h3 className="text-2xl font-semibold py-2">
-          Demographics -
-          <span className="text-primary">
-            {`${generalInfo.firstName} ${generalInfo.lastName}`}
-          </span>
-        </h3>
-        <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
-          <GeneralForm
-            generalInfo={generalInfo}
-            loading={loading}
-            onSubmit={onGeneralInfoUpdate}
-            onClose={onGeneralFormClose}
-          />
-        </SkeletonWrapper>
-      </DialogContent>
-    </Dialog>
+    <CustomDialog
+      title="General"
+      subTitle={`${generalInfo.firstName} ${generalInfo.lastName}`}
+      description="General Info Form"
+      open={isGeneralFormOpen}
+      onClose={onGeneralFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
+        <GeneralForm
+          generalInfo={generalInfo}
+          loading={loading}
+          onSubmit={onGeneralInfoUpdate}
+          onClose={onGeneralFormClose}
+        />
+      </SkeletonWrapper>
+    </CustomDialog>
   );
 };
 

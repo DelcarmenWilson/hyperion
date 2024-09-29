@@ -9,7 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhone, usePhoneData } from "@/hooks/use-phone";
+import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
 import {
@@ -49,7 +49,7 @@ export const PhoneOut = () => {
     isOnCall,
     isLeadInfoOpen,
     onLeadInfoToggle,
-  } = usePhone();
+  } = usePhoneStore();
   const { phone } = usePhoneContext();
   const { onDisconnect, onCallMuted } = usePhoneData(phone);
   const { leadId, leadBasic } = useLeadData();

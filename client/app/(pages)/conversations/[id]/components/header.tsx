@@ -5,7 +5,7 @@ import {
   useConversationStore,
 } from "../../hooks/use-conversation";
 
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { Button } from "@/components/ui/button";
 import { EmptyData } from "@/components/lead/info/empty-data";
 import { LeadDropDown } from "@/components/lead/dropdown";
@@ -14,7 +14,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 export const Header = () => {
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
   const { isLeadInfoOpen, onLeadInfoToggle } = useConversationStore();
   const { conversation, isFetchingConversation } = useConversationData();
   const lead = conversation?.lead;

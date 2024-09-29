@@ -74,31 +74,6 @@ export const notificationSettingsUpdate = async (
   };
 };
 
-//TODO - dont forget to remove this as it should only use once
-export const notificationSettingsInsertAll = async () => {
-  const role = await currentRole();
-
-  if (role != "MASTER") 
-    return { error: "Unauthorized!" };
-  
-
-  const notifications = await db.notificationSettings.findFirst();
-  if (notifications) {
-    return { error: "Notifications Settings already exist!" };
-  }
-  const users = await db.user.findMany({ select: { id: true } });
-
-  if (!users) {
-    return { error: "No Users found!" };
-  }
-  for (let i = 0; i < users.length; i++) {
-    const user = users[i];
-    await notificationSettingsInsert(user.id);
-  }
-
-  return { success: "Notification Settings have been inserted" };
-};
-
 export const notificationsUpdateByIdMasterSwitch = async (value: string) => {
   const user = await currentUser();
 

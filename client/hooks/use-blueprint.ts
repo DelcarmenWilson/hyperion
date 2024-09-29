@@ -18,7 +18,7 @@ import {
   bluePrintWeeksGetAllByUserId,
   bluePrintWeeksReport,
   bluePrintWeekUpdateById,
-  calculateBlueprintTargets,
+  createWeeklyBlueprint,
 } from "@/actions/blueprint/blueprint-week";
 import {
   bluePrintGetActive,
@@ -143,7 +143,7 @@ export const useBluePrintActions = (onClose?: () => void) => {
   };
   //Calculate Next Week BluePrint
   const onCalculateBlueprintTargets = async () => {
-    calculateBlueprintTargets();
+    createWeeklyBlueprint();
     [
       "agentWorkInfo",
       "agentBluePrints",

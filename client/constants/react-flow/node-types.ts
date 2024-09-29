@@ -1,10 +1,10 @@
 
-import { PaymentCountry } from "@/components/react-flow/test/payment-country";
-import { PaymentInit } from "@/components/react-flow/test/payment-init";
-import { PaymentProvider } from "@/components/react-flow/test/payment-provider";
-import TriggerComponent from "@/components/react-flow/triggers/component";
-import ActionComponent from "@/components/react-flow/actions/component";
-import { CustomBezier,CustomSmoothStep,CustomStraight,CustomStep } from "@/components/react-flow/edge/custom";
+import { PaymentCountry } from "@/components/workflow/test/payment-country";
+import { PaymentInit } from "@/components/workflow/test/payment-init";
+import { PaymentProvider } from "@/components/workflow/test/payment-provider";
+import TriggerComponent from "@/components/workflow/triggers/component";
+import ActionComponent from "@/components/workflow/actions/component";
+import { CustomBezier,CustomSmoothStep,CustomStraight,CustomStep } from "@/components/workflow/edge/custom";
 
 export const NODE_TYPES = {
     paymentInit: PaymentInit,

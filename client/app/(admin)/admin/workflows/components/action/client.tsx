@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 
 import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer-right";
@@ -9,11 +10,10 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { columns } from "./columns";
 import { ActionForm } from "./form";
 import { ActionList } from "./list";
-import { useWorkFlowDefaultData } from "@/hooks/use-workflow";
 
 export const ActionsClient = () => {
   const user = useCurrentUser();
-  const { onGetWorkflowDefaultNodesByType } = useWorkFlowDefaultData();
+  const { onGetWorkflowDefaultNodesByType } = useWorkflowDefaultData();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const { data, isFetching } = onGetWorkflowDefaultNodesByType("action");

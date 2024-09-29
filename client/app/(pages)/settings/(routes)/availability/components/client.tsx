@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScheduleBreakModal } from "@/components/modals/schedule-break";
 import { DayHour } from "./day-hours";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CalendarIntegrations } from "./calendar-integrations";
 
 //TODO need to look into refactoring this entire component
 type AvailabilityClientProps = {
@@ -51,93 +52,100 @@ export function AvailabilityClient({
       <ScheduleBreakModal setDay={onSetDay} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mr-2 space-y-2">
-          <div className="lg:w-2/3">
-            {/*TILTE */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel> Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={loading}
-                      placeholder=""
-                      autoComplete="title"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="flex gap-2">
+            <div className="lg:w-2/3">
+              {/*TILTE */}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel> Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={loading}
+                        placeholder=""
+                        autoComplete="title"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/*SUB TILTE */}
-            <FormField
-              control={form.control}
-              name="subTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel> Sub title</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={loading}
-                      placeholder=""
-                      autoComplete="sub-title"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/*SUB TILTE */}
+              <FormField
+                control={form.control}
+                name="subTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel> Sub title</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={loading}
+                        placeholder=""
+                        autoComplete="sub-title"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* TYPE */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Schedule Type</FormLabel>
-                    <FormDescription>
-                      Set prefer scheduling type
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex gap-4 space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="half" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Half Hour</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="hourly" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Hourly</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <p className="text-right w-full text-sm text-primary mt-0">
-              <Link
-                href={`/book/${username}`}
-                className="text-right w-full text-sm text-primary"
-                target="_blank"
-              >
-                Booking page : {`/book/${username}`}
-              </Link>
-            </p>
+              {/* TYPE */}
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Schedule Type</FormLabel>
+                      <FormDescription>
+                        Set prefer scheduling type
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex gap-4 space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="half" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Half Hour
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="hourly" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Hourly</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <p className="text-right w-full text-sm text-primary mt-0">
+                <Link
+                  href={`/book/${username}`}
+                  className="text-right w-full text-sm text-primary"
+                  target="_blank"
+                >
+                  Booking page : {`/book/${username}`}
+                </Link>
+              </p>
+            </div>
+            {/* CALENDAR INTERGATIONS */}
+            <CalendarIntegrations />
           </div>
+
           <FormLabel> Schedule</FormLabel>
           <div className="flex flex-col rounded-lg border p-3 shadow-sm mt-3 me-2 pe-2">
             <div className="grid grid-cols-5 text-center items-center gap-2 text-sm mb-2">

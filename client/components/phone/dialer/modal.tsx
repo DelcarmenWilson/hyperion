@@ -1,7 +1,7 @@
 "use client";
 import { Fragment, useEffect, useRef } from "react";
 
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { Dialog, Transition } from "@headlessui/react";
@@ -27,7 +27,7 @@ export const PhoneDialerModal = () => {
     lead,
     pipeline,
     pipeIndex: pipIndex,
-  } = usePhone();
+  } = usePhoneStore();
   const { setLeadId: setLead } = useLeadStore();
 
   const indexRef = useRef<HTMLDivElement>(null);

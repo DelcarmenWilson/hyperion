@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChatbotMessageSchema,
   ChatbotMessageSchemaType,
-} from "@/schemas/chatbot";
+} from "@/schemas/chat-bot/chatbot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -23,7 +23,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-import { chatbotMessageInsert } from "@/actions/chatbot";
+import { chatbotMessageInsert } from "@/actions/chat-bot/chatbot";
 
 export const ChatbotConversationForm = () => {
   const { chatId } = useChatbot();

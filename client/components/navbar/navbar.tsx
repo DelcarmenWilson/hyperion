@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useChat } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { Button } from "@/components/ui/button";
 
 import { MainNav } from "./main-nav";
@@ -24,7 +24,7 @@ type Props = {
 };
 const NavBar = ({ admin = false }: Props) => {
   const user = useCurrentUser();
-  const { onPhoneOutOpen, isOnCall, lead } = usePhone();
+  const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { isChatOpen, onChatOpen } = useChat();
 
   return (

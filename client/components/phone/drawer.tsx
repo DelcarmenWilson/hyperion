@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import { X } from "lucide-react";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export const PhoneDrawer = ({
   closeButton = "default",
   autoClose = false,
 }: PhoneDrawerProps) => {
-  const { isLeadInfoOpen } = usePhone();
+  const { isLeadInfoOpen } = usePhoneStore();
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog

@@ -6,17 +6,15 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import axios from "axios";
-import { usePhone } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const CellDetails = ({ lead }: { lead: Lead }) => {
-  const { onPhoneOutOpen } = usePhone();
+  const { onPhoneOutOpen } = usePhoneStore();
+  const { setLeadId, setConversationId } = useLeadStore();
   const onCall = async () => {
-    //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
-    const response = await axios.post("/api/leads/details/by-id", {
-      leadId: lead?.id,
-    });
-    const lid = response.data;
-    onPhoneOutOpen(lid);
+    setLeadId(lead.id);
+    onPhoneOutOpen();
   };
   return (
     <div>
