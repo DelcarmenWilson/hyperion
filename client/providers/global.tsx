@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState } from "react";
 import { OnlineUser } from "@/types/user";
+import { useCalendarData } from "@/hooks/calendar/use-calendar";
 
 type GlobalContextProviderProps = {
   initUsers: OnlineUser[];
@@ -20,6 +21,7 @@ export default function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   const [users, setUsers] = useState<OnlineUser[] | null>(initUsers);
+  useCalendarData();
 
   return (
     <GlobalContext.Provider

@@ -3,6 +3,11 @@ import {
     Appointment,
   } from "@prisma/client";
   
+  export type CalendarAppointment = Appointment & {
+    lead: {firstName:string} | null;    
+    label: {color:string} | null;    
+  };
+
   export type FullAppointment = Appointment & {
     lead: Lead;    
   };

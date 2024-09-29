@@ -1,11 +1,12 @@
-import dayjs from "dayjs";
 import React from "react";
-import { useAppointmentContext } from "@/providers/app";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import dayjs from "dayjs";
+
+import { Button } from "@/components/ui/button";
 
 export default function CalendarHeader() {
-  const { monthIndex, setMonthIndex } = useAppointmentContext();
+  const { monthIndex, setMonthIndex } = useCalendarStore();
 
   const handleMonth = (e: number) => {
     setMonthIndex(monthIndex + e);

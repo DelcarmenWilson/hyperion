@@ -38,10 +38,23 @@ export const PublicChatbotConversationBody = () => {
       ))}
       <div ref={bottomRef} className="pt-2" />
       {isTyping && (
-        <p className="absolute bottom-2 text-gray-500 italic">
-          Titan is typing...
-        </p>
+        <div className="absolute bottom-0">
+          <Dots title="Titan is typing" />
+        </div>
       )}
     </ScrollArea>
+  );
+};
+
+import React from "react";
+
+type Props = {
+  title?: string;
+};
+const Dots = ({ title }: Props) => {
+  return (
+    <p className="flex gap-1 text-gray-500 text-sm italic">
+      {title} <span className="loading-dots"></span>
+    </p>
   );
 };

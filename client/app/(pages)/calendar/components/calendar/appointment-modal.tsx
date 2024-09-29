@@ -1,8 +1,10 @@
-import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { useAppointmentContext } from "@/providers/app";
 import { BookMarked, Calendar, Check, Plus, Trash, X } from "lucide-react";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useAppointmentContext } from "@/providers/app";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const labelsClasses = ["indigo", "gray", "green", "blue", "red", "purple"];
 
@@ -10,9 +12,11 @@ export const AppointmentModal = () => {
   const {
     setShowAppointmentModal,
     daySelected,
-    dispatchCalAppointment,
     selectedAppointment,
-  } = useAppointmentContext();
+    addAppointment,
+    updateAppointment,
+  } = useCalendarStore();
+  const { dispatchCalAppointment } = useAppointmentContext();
 
   const [title, setTitle] = useState(
     selectedAppointment ? selectedAppointment.title : ""
@@ -21,9 +25,11 @@ export const AppointmentModal = () => {
     selectedAppointment ? selectedAppointment.comments : ""
   );
   const [selectedLabel, setSelectedLabel] = useState(
-    selectedAppointment
-      ? labelsClasses.find((lbl) => lbl === selectedAppointment.label)
-      : labelsClasses[0]
+    labelsClasses[0]
+    //TODO need to add the app label here
+    // selectedAppointment
+    //   ? labelsClasses.find((lbl) => lbl === selectedAppointment.label)
+    //   : labelsClasses[0]
   );
 
   function handleSubmit(e: any) {
@@ -31,7 +37,7 @@ export const AppointmentModal = () => {
     const calendarEvent = {
       title,
       description,
-      label: selectedLabel as string,
+      calendar: "hyperion",
       localDate: new Date(daySelected?.toDate()!),
       startDate: new Date(daySelected?.toDate()!),
       endDate: new Date(),
@@ -40,21 +46,25 @@ export const AppointmentModal = () => {
       agentId: "",
       id: selectedAppointment ? selectedAppointment.id : "",
       leadId: "",
+      labelId: "",
       reason: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    if (selectedAppointment) {
-      dispatchCalAppointment({
-        type: "update_appointment",
-        payload: calendarEvent,
-      });
-    } else {
-      dispatchCalAppointment({
-        type: "insert_appointment",
-        payload: calendarEvent,
-      });
-    }
+    if (selectedAppointment) updateAppointment(calendarEvent);
+    else addAppointment(calendarEvent);
+
+    // if (selectedAppointment) {
+    //   dispatchCalAppointment({
+    //     type: "update_appointment",
+    //     payload: calendarEvent,
+    //   });
+    // } else {
+    //   dispatchCalAppointment({
+    //     type: "insert_appointment",
+    //     payload: calendarEvent,
+    //   });
+    // }
 
     setShowAppointmentModal(false);
   }
@@ -66,7 +76,9 @@ export const AppointmentModal = () => {
             <Plus size={16} />
             <div className="flex items-center gap-2">
               {selectedAppointment && (
-                <span
+                <Button
+                  size="sm"
+                  variant="ghost"
                   onClick={() => {
                     dispatchCalAppointment({
                       type: "delete_appointment",
@@ -74,12 +86,15 @@ export const AppointmentModal = () => {
                     });
                     setShowAppointmentModal(false);
                   }}
-                  className="material-icons-outlined text-gray-400 cursor-pointer"
                 >
-                  <Trash size={16} />
-                </span>
+                  <Trash className="hover:text-red-500" size={16} />
+                </Button>
               )}
-              <Button onClick={() => setShowAppointmentModal(false)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowAppointmentModal(false)}
+              >
                 <X size={16} />
               </Button>
             </div>

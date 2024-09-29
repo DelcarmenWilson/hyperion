@@ -1,9 +1,10 @@
 import "react";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { Plus } from "lucide-react";
-import { useAppointmentContext } from "@/providers/app";
 import { Button } from "@/components/ui/button";
-export default function CreateEventButton() {
-  const { setShowAppointmentModal } = useAppointmentContext();
+
+const CreateEventButton = () => {
+  const { setShowAppointmentModal } = useCalendarStore();
   return (
     <Button
       className="gap-2 w-full"
@@ -12,4 +13,6 @@ export default function CreateEventButton() {
       <Plus size={16} /> Create
     </Button>
   );
-}
+};
+
+export default CreateEventButton;

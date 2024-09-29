@@ -22,7 +22,7 @@ interface IAppointmentContextState{
   savedAppointments: {};
   selectedAppointment: Appointment | null;
   setSelectedAppointment: (appointment: Appointment | null) => void;
-  showLabelModal: boolean;
+  showLabelModal: boolean;  
   setShowLabelModal: (show: boolean) => void;
   selectedLabel: AppointmentLabel | null;
   setSelectedLabel: (appointment: AppointmentLabel | null) => void;

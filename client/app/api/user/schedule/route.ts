@@ -1,4 +1,4 @@
-import { scheduleGetByUserId } from "@/actions/user/schedule";
+import { scheduleGet } from "@/actions/user/schedule";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const body=await req.json()
     const { user } = body;
 
-    const schedule = await scheduleGetByUserId(user)
+    const schedule = await scheduleGet(user)
 
     return NextResponse.json(schedule);
   } catch (error: any) {

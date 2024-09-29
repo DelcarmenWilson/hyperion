@@ -63,7 +63,7 @@ export const userGetByIdReport = async (id: string) => {
   }
 };
 //TODO - see if this can be removed, some files are still using this
-export const userGetByAssistant = async (assitantId: string) => {
+export const userGetByAssistantOld = async (assitantId: string) => {
   try {
     const user = await db.user.findUnique({
       where: { assitantId },

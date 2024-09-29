@@ -22,7 +22,7 @@ import {
 } from "@/actions/appointment";
 import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { leadGetByIdMain } from "@/actions/lead";
-import { scheduleGetByUserId } from "@/actions/user/schedule";
+import { scheduleGet } from "@/actions/user/schedule";
 import { userGetByUserName } from "@/actions/user";
 
 import {
@@ -86,7 +86,7 @@ export const useAppointmentActions = () => {
 
   const { data: schedule, isFetching: isFetchingSchedule } =
     useQuery<Schedule | null>({
-      queryFn: () => scheduleGetByUserId(userId),
+      queryFn: () => scheduleGet(userId),
       queryKey: [`appSchedule-${userId}`],
     });
 

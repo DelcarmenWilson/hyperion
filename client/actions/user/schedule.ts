@@ -1,20 +1,13 @@
 "use server";
 import { db } from "@/lib/db";
-import { UserRole } from "@prisma/client";
 import { ScheduleSchema, ScheduleSchemaType } from "@/schemas/settings";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistant } from ".";
 
 //DATA
-export const scheduleGetByUserId = async (
-  userId: string | null | undefined,
-  role: UserRole = "USER"
-) => {
+export const scheduleGet = async () => {
   try {
+    const userId = await userGetByAssistant();   
     if (!userId) return null;
-
-    if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
-    }
     const schedule = await db.schedule.findUnique({
       where: { userId },
     });
@@ -23,7 +16,7 @@ export const scheduleGetByUserId = async (
     return null;
   }
 };
-
+//ACTIONS
 export const scheduleInsert = async (
   userId: string,
   firstName: string,

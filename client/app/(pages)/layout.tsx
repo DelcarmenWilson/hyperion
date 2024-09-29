@@ -17,11 +17,11 @@ import ModalProvider from "@/providers/modal";
 import { GroupMessageCard } from "@/components/global/group-message-card";
 
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { scheduleGetByUserId } from "@/actions/user/schedule";
+import { scheduleGet } from "@/actions/user/schedule";
 import {
   appointmentLabelsGetAll,
   appointmentsGetAll,
-} from "@/data/appointment";
+} from "@/actions/appointment";
 
 import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
@@ -40,7 +40,7 @@ export default async function DashBoardLayout({
   const initUsers = await usersGetAllChat();
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
-  const schedule = await scheduleGetByUserId(user.id, user.role);
+  const schedule = await scheduleGet();
   const appointments = await appointmentsGetAll();
   const appointmentLabels = await appointmentLabelsGetAll();
   const phoneSettings = await phoneSettingsGet();

@@ -7,7 +7,7 @@ export const AppointmentSchema = z.object({
   startDate: z.optional(z.date()),
   agentId: z.string(),
   leadId: z.string(),
-  label: z.string(),
+  labelId: z.string(),
   comments: z.string(),
   smsReminder:z.boolean(),
   emailReminder:z.boolean()

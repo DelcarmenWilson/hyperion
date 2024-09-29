@@ -16,11 +16,11 @@ import SideBar from "@/components/sidebar";
 import {
   appointmentLabelsGetAll,
   appointmentsGetAll,
-} from "@/data/appointment";
+} from "@/actions/appointment";
 import { getTwilioToken } from "@/actions/twilio";
 
 import { phoneSettingsGet } from "@/actions/settings/phone";
-import { scheduleGetByUserId } from "@/actions/user/schedule";
+import { scheduleGet } from "@/actions/user/schedule";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { usersGetAllChat } from "@/actions/user";
 
@@ -33,7 +33,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const initUsers = await usersGetAllChat();
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
-  const schedule = await scheduleGetByUserId(user.id, user.role);
+  const schedule = await scheduleGet();
   const appointments = await appointmentsGetAll();
   const appointmentLabels = await appointmentLabelsGetAll();
   const phoneSettings = await phoneSettingsGet();

@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useAppointmentContext } from "@/providers/app";
 import { getMonth } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 
-export default function SmallCalendar() {
+import { Button } from "@/components/ui/button";
+
+const SmallCalendar = () => {
   const [currentMonthIdx, setCurrentMonthIdx] = useState(dayjs().month());
   const [currentMonth, setCurrentMonth] = useState(getMonth());
-  useEffect(() => {
-    setCurrentMonth(getMonth(currentMonthIdx));
-  }, [currentMonthIdx]);
 
   const { monthIndex, setSmallCalendarMonth, setDaySelected, daySelected } =
-    useAppointmentContext();
-
-  useEffect(() => {
-    setCurrentMonthIdx(monthIndex);
-  }, [monthIndex]);
+    useCalendarStore();
 
   const handleMonth = (e: number) => {
     setCurrentMonthIdx(currentMonthIdx + e);
@@ -36,8 +30,16 @@ export default function SmallCalendar() {
       return "";
     }
   }
+
+  useEffect(() => {
+    setCurrentMonthIdx(monthIndex);
+  }, [monthIndex]);
+
+  useEffect(() => {
+    setCurrentMonth(getMonth(currentMonthIdx));
+  }, [currentMonthIdx]);
   return (
-    <div className="mt-9">
+    <div>
       <header className="flex justify-between items-center">
         <p className="text-gray-500 font-bold">
           {dayjs(new Date(dayjs().year(), currentMonthIdx)).format("MMMM YYYY")}
@@ -54,15 +56,18 @@ export default function SmallCalendar() {
       </header>
       <div className="grid grid-cols-7 grid-rows-6">
         {currentMonth[0].map((day, i) => (
-          <span key={i} className="text-sm py-1 text-center">
+          <span
+            key={`${currentMonth[0]}${i}`}
+            className="text-sm py-1 text-center"
+          >
             {day.format("dd").charAt(0)}
           </span>
         ))}
-        {currentMonth.map((row, i) => (
+        {currentMonth.map((row) => (
           <>
             {row.map((day, idx) => (
               <button
-                key={idx}
+                key={`${currentMonth[0]}-row-${idx}`}
                 onClick={() => {
                   setSmallCalendarMonth(currentMonthIdx);
                   setDaySelected(day);
@@ -77,4 +82,5 @@ export default function SmallCalendar() {
       </div>
     </div>
   );
-}
+};
+export default SmallCalendar;

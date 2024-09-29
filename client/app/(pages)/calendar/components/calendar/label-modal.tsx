@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { toast } from "sonner";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookMarked, Calendar, Check, Trash, X } from "lucide-react";
+import { Trash, X } from "lucide-react";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarActions } from "@/hooks/calendar/use-calendar";
+
 import { useAppointmentContext } from "@/providers/app";
+
 import {
   Form,
   FormField,
@@ -25,71 +28,29 @@ import {
   AppointmentLabelSchema,
   AppointmentLabelSchemaType,
 } from "@/schemas/appointment";
-import {
-  appointmentLabelInsert,
-  appointmentLabelUpdateById,
-} from "@/actions/appointment";
 import { getLabelBgColor, labelClasses } from "@/formulas/labels";
+import { EmptyCard } from "@/components/reusable/empty-card";
+import { cn } from "@/lib/utils";
 
 export const LabelModal = () => {
+  const { setShowLabelModal, labels, selectedLabel, addLabel, updateLabel } =
+    useCalendarStore();
   const {
-    userLabels,
-    setShowLabelModal,
-    dispatchCalAppointment,
-    selectedLabel,
-  } = useAppointmentContext();
-
-  const [loading, setLoading] = useState(false);
+    onAppointmentLabelUpsert,
+    appointmentLabelInsertIsPending,
+    appointmentLabelUpdateIsPending,
+  } = useCalendarActions();
+  const { dispatchCalAppointment } = useAppointmentContext();
 
   const form = useForm<AppointmentLabelSchemaType>({
     resolver: zodResolver(AppointmentLabelSchema),
     //@ts-ignore
     defaultValues: selectedLabel || {
       id: "",
-      name: "",
       color: labelClasses[0],
+      checked: true,
     },
   });
-
-  const onSubmit = (values: AppointmentLabelSchemaType) => {
-    setLoading(true);
-
-    if (selectedLabel) {
-      appointmentLabelUpdateById(values).then((data) => {
-        if (data.success) {
-          dispatchCalAppointment({
-            type: "update_appointment",
-            payload: data.success,
-          });
-
-          toast.success("Label Created");
-          setShowLabelModal(false);
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
-    } else {
-      appointmentLabelInsert(values).then((data) => {
-        if (data.success) {
-          dispatchCalAppointment({
-            type: "insert_appointment",
-            payload: data.success,
-          });
-
-          toast.success("Label Created");
-          setShowLabelModal(false);
-        }
-        if (data.error) {
-          form.reset();
-          toast.error(data.error);
-        }
-      });
-    }
-
-    setLoading(false);
-  };
 
   return (
     <div className="flex-center absolute inset-0">
@@ -112,28 +73,40 @@ export const LabelModal = () => {
                   <Trash size={16} />
                 </span>
               )}
-              <Button onClick={() => setShowLabelModal(false)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowLabelModal(false)}
+              >
                 <X size={16} />
               </Button>
             </div>
           </header>
           <div className="flex p-3">
-            <div className="w-[200px] px-2 border-e space-y-2">
+            <div className="flex flex-col w-[200px] px-2 border-e space-y-2">
               <h4>My Labels</h4>
-              {userLabels?.map((lbl) => (
-                <div key={lbl.id} className="flex gap-2">
-                  <span
-                    className={`${getLabelBgColor(
-                      lbl.color
-                    )} w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
-                  ></span>
-                  {lbl.name}
-                </div>
-              ))}
+              {!labels?.length && <EmptyCard title="No Labels Yet" />}
+              {labels?.map((lbl) => {
+                const bg = getLabelBgColor(lbl.color);
+                return (
+                  <div
+                    key={lbl.id}
+                    className="flex items-center capitalize gap-2"
+                  >
+                    <span
+                      className={cn(
+                        "w-6 h-6 rounded-full flex items-center justify-center cursor-pointer",
+                        bg.label
+                      )}
+                    ></span>
+                    {lbl.name}
+                  </div>
+                );
+              })}
             </div>
             <div className="flex-1 space-y-2 ps-2">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={form.handleSubmit(onAppointmentLabelUpsert)}>
                   {/* NAME */}
                   <FormField
                     control={form.control}
@@ -146,7 +119,10 @@ export const LabelModal = () => {
                           <Input
                             {...field}
                             placeholder="Add Name"
-                            disabled={loading}
+                            disabled={
+                              appointmentLabelInsertIsPending ||
+                              appointmentLabelUpdateIsPending
+                            }
                             autoComplete="labelName"
                             type="text"
                           />
@@ -164,7 +140,10 @@ export const LabelModal = () => {
                         <FormLabel>Color</FormLabel>
                         <Select
                           name="ddlCarrier"
-                          disabled={loading}
+                          disabled={
+                            appointmentLabelInsertIsPending ||
+                            appointmentLabelUpdateIsPending
+                          }
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
@@ -178,9 +157,10 @@ export const LabelModal = () => {
                               <SelectItem key={i} value={color}>
                                 <div className="flex gap-2">
                                   <span
-                                    className={`${getLabelBgColor(
-                                      color
-                                    )} w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                                    className={cn(
+                                      "w-6 h-6 rounded-full flex items-center justify-center cursor-pointer",
+                                      getLabelBgColor(color).label
+                                    )}
                                   ></span>
                                   {color}
                                 </div>
@@ -205,7 +185,10 @@ export const LabelModal = () => {
                           <Input
                             {...field}
                             placeholder="description"
-                            disabled={loading}
+                            disabled={
+                              appointmentLabelInsertIsPending ||
+                              appointmentLabelUpdateIsPending
+                            }
                             autoComplete="description"
                             type="text"
                           />

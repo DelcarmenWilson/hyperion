@@ -1,0 +1,39 @@
+model Appointment {
+    id        String   @id @default(cuid())
+    calendar  String   @default("hyperion")
+    localDate DateTime
+    startDate DateTime
+    endDate   DateTime
+    title     String?
+
+    status   String  @default("Scheduled")
+    comments String? @db.LongText
+    reason   String? @db.LongText
+
+    agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+    agentId String
+
+    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    leadId String
+
+    label   AppointmentLabel? @relation(fields: [labelId], references: [id])
+    labelId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model AppointmentLabel {
+    id          String  @id @default(cuid())
+    name        String
+    color       String
+    description String? @db.LongText
+    checked     Boolean @default(true)
+
+    userId  String
+    default Boolean @default(false)
+
+    appointments Appointment[]
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+}

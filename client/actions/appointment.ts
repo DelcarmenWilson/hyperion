@@ -12,24 +12,55 @@ import {
   AppointmentSchema,
   AppointmentSchemaType,
 } from "@/schemas/appointment";
-import { userGetByAssistant } from "@/data/user";
-import { states } from "@/constants/states";
+import { userGetByAssistantOld } from "@/data/user";
 import {
   smsSendAgentAppointmentNotification,
   smsSendLeadAppointmentNotification,
   smsSendLeadAppointmentReminder,
 } from "./sms";
 import { getEntireDay, getToday } from "@/formulas/dates";
-import { Lead, UserRole } from "@prisma/client";
-import { bluePrintUpdateByUserIdData } from "./blueprint/blueprint";
+import {  UserRole } from "@prisma/client";
 import { callUpdateByIdAppointment } from "./call";
 import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
-import { getNewTextCode, leadGetOrInsert } from "./lead";
-import { chatSettingGetTitan } from "./settings/chat";
+import {  leadGetOrInsert } from "./lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { leadEmailInsert } from "./lead/email";
+import { userGetByAssistant } from "@/actions/user";
 
 //DATA
+//TODO - this was created to test the calendar client and the appoint hook inside of it.
+export const appointmentsGet = async () => {
+  try {
+    const userId = await userGetByAssistant();
+    if (!userId) return [];
+
+    const appointments = await db.appointment.findMany({
+      where: { agentId: userId },
+      include:{lead:{select:{firstName:true}},label:{select:{color:true}}},
+      orderBy: { createdAt: "desc" },
+    });
+    return appointments;
+  } catch {
+    return [];
+  }
+};
+
+export const appointmentsGetAll = async () => {
+  try {
+    const userId = await userGetByAssistant();
+    if (!userId) return [];
+
+    const appointments = await db.appointment.findMany({
+      where: { agentId: userId },
+      include: { lead: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return appointments;
+  } catch {
+    return [];
+  }
+};
+
 export const appointmentsGetAllByUserIdUpcoming = async (
   agentId: string | null | undefined,
   role: UserRole = "USER"
@@ -37,7 +68,7 @@ export const appointmentsGetAllByUserIdUpcoming = async (
   try {
     if (!agentId) return [];
     if (role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(agentId)) as string;
+      agentId = (await userGetByAssistantOld(agentId)) as string;
     }
     const today = getToday();
 
@@ -54,7 +85,7 @@ export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
   try {
     const role = await currentRole();
     if (role == "ASSISTANT") {
-      agentId = (await userGetByAssistant(agentId)) as string;
+      agentId = (await userGetByAssistantOld(agentId)) as string;
     }
     const today = getEntireDay();
     const appointments = await db.appointment.findMany({
@@ -79,7 +110,7 @@ export const appointmentsGetByUserIdFiltered = async (
   try {
     const role = await currentRole();
     if (role == "ASSISTANT") {
-      userId = (await userGetByAssistant(userId)) as string;
+      userId = (await userGetByAssistantOld(userId)) as string;
     }
     const fromDate = new Date(from);
     const toDate = new Date(to);
@@ -122,6 +153,20 @@ export const appointmentGetById = async (id: string) => {
   }
 };
 
+//APPOINTMENT LABELS
+export const appointmentLabelsGetAll = async () => {
+  try {
+    const userId = await userGetByAssistant();
+    if(!userId) return[]
+    const labels = await db.appointmentLabel.findMany({      
+      where: { OR: [{ userId }, { default: { equals: true} }] },
+    });
+    return labels;
+  } catch {
+    return [];
+  }
+};
+
 //ACTIONS
 export const appointmentInsert = async (values: AppointmentSchemaType) => {
   //Get current user
@@ -138,14 +183,14 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     localDate,
     startDate,
     leadId,
-    label,
+    labelId,
     comments,
     smsReminder,
     emailReminder,
   } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
+    userId = (await userGetByAssistantOld(userId)) as string;
   }
   const conflctingApp = await db.appointment.findFirst({
     where: { agentId: userId, startDate, status: "Scheduled" },
@@ -177,7 +222,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
       localDate: localDate!,
       startDate: startDate!,
       endDate,
-      label,
+      labelId,
       comments,
     },
     include: { lead: true },
@@ -461,7 +506,7 @@ export const appointmentLabelInsert = async (
   const { name, color, description } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
+    userId = (await userGetByAssistantOld(userId)) as string;
   }
 
   const existingLabel = await db.appointmentLabel.findFirst({
@@ -502,7 +547,7 @@ export const appointmentLabelUpdateById = async (
   const { id, name, color, description } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
+    userId = (await userGetByAssistantOld(userId)) as string;
   }
 
   const existingLabel = await db.appointmentLabel.findUnique({
@@ -543,7 +588,7 @@ export const appointmentLabelUpdateByChecked = async (
   const { id, checked } = validatedFields.data;
   let userId = user.id;
   if (user.role == "ASSISTANT") {
-    userId = (await userGetByAssistant(userId)) as string;
+    userId = (await userGetByAssistantOld(userId)) as string;
   }
   await db.appointmentLabel.update({
     where: { id },

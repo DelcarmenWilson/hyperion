@@ -11,7 +11,7 @@ import {
 
 import { conversationInsert } from "./conversation";
 import { smsSend } from "../sms";
-import { userGetByAssistant } from "@/data/user";
+import { userGetByAssistantOld } from "@/data/user";
 
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
@@ -166,7 +166,7 @@ export const messageCreate = async (values: SmsMessageSchemaType) => {
 
   if (!convoid) {
     if (user.role == "ASSISTANT")
-      agentId = (await userGetByAssistant(user.id)) as string;
+      agentId = (await userGetByAssistantOld(user.id)) as string;
 
     const existingConversation = await db.leadConversation.findUnique({
       where: { leadId_agentId: { leadId: lead.id, agentId } },
