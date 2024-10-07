@@ -8,10 +8,13 @@ export const replaceScript = (
     lead: PipelineLead,
     licenses?:UserLicense[]
   ): string => {
-    if (!firstName || !lead) return script;
+    if (!firstName || !lead || !script) return script;
     const license=licenses?.find(e=>e.state==lead.state)?.licenseNumber||"NOT SET"
     // USER INFO
+    // console.log(script,firstName)
+
     script = script.replaceAll("#my_first_name", firstName)
+     
     .replace("#my_company_name", "Family First Life")
     .replace("#my_office_phone_number", formatPhoneNumber(lead.defaultNumber)).replace("#my_license", license)
     // LEAD INFO
