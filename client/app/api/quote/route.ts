@@ -15,9 +15,10 @@ export async function POST(req: Request) {
       case "newQuote":
         await adminQuoteUpdateActive();
         break;
-        case "newLeads":
-        await scheduleLeadsToImport();
-        break;
+//TODO - this has been turned off becuase there is no data flowing thur anymore and the server kept crashing
+        // case "newLeads":
+        // await scheduleLeadsToImport();
+        //break;
     }
 
     return NextResponse.json({

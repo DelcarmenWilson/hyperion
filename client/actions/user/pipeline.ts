@@ -73,7 +73,7 @@ export const pipelineAndLeadsGetAll = async () => {
     const leads = await db.lead.findMany({
       where: {
         OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
-        status: { in: pipelines.map((p) => p.status.status) },
+        statusId: { in: pipelines.map((p) => p.statusId) },
       },
       select: {
         id: true,
@@ -83,7 +83,7 @@ export const pipelineAndLeadsGetAll = async () => {
         maritalStatus: true,
         dateOfBirth: true,
         state: true,
-        status: true,
+        statusId: true,
         defaultNumber: true,
         address: true,
         smoker: true,

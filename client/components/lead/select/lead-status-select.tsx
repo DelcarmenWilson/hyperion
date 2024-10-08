@@ -40,7 +40,7 @@ export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
         onValueChange={onLeadStatusChanged}
         defaultValue={status}
       >
-        <SelectTrigger>
+        <SelectTrigger className="bg-background">
           <SelectValue placeholder="Lead Status" />
         </SelectTrigger>
         <SelectContent className="max-h-80">

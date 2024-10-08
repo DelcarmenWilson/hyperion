@@ -37,6 +37,7 @@ import { exportLeads } from "@/lib/xlsx";
 
 import { conversationDeleteById } from "@/actions/lead/conversation";
 import { leadUpdateByIdAutoChat } from "@/actions/lead";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type DropDownProps = {
   action?: boolean;
@@ -111,7 +112,7 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={leadBasic.status == "Do_Not_Call"}
+            disabled={leadBasic.statusId == leadDefaultStatus["DoNotCall"]}
             className="cursor-pointer gap-2"
             onClick={() => onFormOpen()}
           >

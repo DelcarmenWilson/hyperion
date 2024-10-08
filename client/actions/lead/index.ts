@@ -25,6 +25,7 @@ import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
 import { chatSettingGetTitan } from "../settings/chat";
+import { leadDefaultStatus } from "@/constants/lead";
 
 //LEAD
 
@@ -157,9 +158,9 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         id: true,
         firstName: true,
         lastName: true,
-        status: true,
-        gender:true,
-        maritalStatus:true,
+        statusId: true,
+        gender: true,
+        maritalStatus: true,
         calls: { where: { direction: "outbound" } },
         conversations: { where: { agentId: user.id } },
         userId: true,
@@ -191,7 +192,7 @@ export const leadGetByIdMain = async (id: string) => {
         city: true,
         state: true,
         zipCode: true,
-        status: true,
+        statusId: true,
         quote: true,
         textCode: true,
       },
@@ -265,7 +266,7 @@ export const leadGetByIdCallInfo = async (id: string) => {
       },
       select: {
         id: true,
-        status: true,
+        statusId: true,
         type: true,
         calls: { where: { direction: "outbound" } },
       },
@@ -333,7 +334,7 @@ export const leadGetByPhone = async (cellPhone: string) => {
 export const leadGetPrevNextById = async (id: string) => {
   try {
     const userId = await userGetByAssistant();
-    if(!userId) return null
+    if (!userId) return null;
     const prev = (
       await db.lead.findMany({
         take: 1,
@@ -479,7 +480,6 @@ export const leadGetOrCreateByPhoneNumber = async (
       recievedAt: new Date(),
       defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
       userId: agentId,
-      status: "New",
       textCode,
       titan,
     },
@@ -628,7 +628,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
       currentInsuranse,
       type,
       vendor,
-      status,
+      statusId,
       assistantId,
       recievedAt,
       notes,
@@ -706,7 +706,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
             ? phoneNumber.phone
             : defaultNumber?.phone!,
           userId: user?.id,
-          status,
+          statusId,
           assistantId,
           notes,
           textCode,
@@ -973,14 +973,11 @@ export const leadUpdateByIdPolicyInfo = async (
   } = validatedFields.data;
 
   const user = await currentUser();
-  if (!user?.id || !user?.email) 
-    return { error: "Unauthenticated" };
-  
+  if (!user?.id || !user?.email) return { error: "Unauthenticated" };
+
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
-  if (!existingLead) 
-    return { error: "Lead does not exist" };
-  
+  if (!existingLead) return { error: "Lead does not exist" };
 
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
@@ -989,7 +986,10 @@ export const leadUpdateByIdPolicyInfo = async (
   if (diff > 0) {
     await db.lead.update({
       where: { id: leadId },
-      data: { status: "Sold", assistant: { disconnect: true } },
+      data: {
+        statusId: leadDefaultStatus["Sold"],
+        assistant: { disconnect: true },
+      },
     });
   }
   const existingPolicy = await db.leadPolicy.findUnique({ where: { leadId } });
@@ -1035,27 +1035,21 @@ export const leadUpdateByIdPolicyInfo = async (
   return { success: leadPolicyInfo };
 };
 
-export const leadUpdateByIdAutoChat = async (
-  id: string,
-  titan: boolean
-) => {
+export const leadUpdateByIdAutoChat = async (id: string, titan: boolean) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated!" };
   }
   const existingLead = await db.lead.findUnique({ where: { id } });
- 
-  if (!existingLead) 
-    return { error: "Lead does not exist!" };  
 
-  if (existingLead.userId !== user.id) 
-    return { error: "Unauthorized!" };
-  
+  if (!existingLead) return { error: "Lead does not exist!" };
+
+  if (existingLead.userId !== user.id) return { error: "Unauthorized!" };
+
   await db.lead.update({ where: { id }, data: { titan } });
 
   return { success: `Titan chat has been turned ${titan ? "on" : "off"} ` };
 };
-
 
 //LEAD ASSISTANT SHARE AND TRANSFER
 export const leadUpdateByIdAssistantAdd = async (
@@ -1368,7 +1362,8 @@ export const leadGetOrInsert = async (
     cellPhone,
     gender,
     maritalStatus,
-    email,dateOfBirth
+    email,
+    dateOfBirth,
   } = validatedFields.data;
 
   //Get the leads information if it already exist in the database
@@ -1397,9 +1392,9 @@ export const leadGetOrInsert = async (
     data: {
       firstName,
       lastName,
-      address:"N/A",
-      city:"N/A",
-      zipCode:"N/A",
+      address: "N/A",
+      city: "N/A",
+      zipCode: "N/A",
       state: st?.abv || state,
       cellPhone: reFormatPhoneNumber(cellPhone),
       gender,
@@ -1412,14 +1407,6 @@ export const leadGetOrInsert = async (
       weight: "",
       textCode,
       titan,
-
-
-
-      
-     
-      
-     
-      
     },
   });
   //if the lead was not generated return an error and exit the function

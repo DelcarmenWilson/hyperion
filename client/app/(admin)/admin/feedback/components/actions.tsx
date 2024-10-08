@@ -8,6 +8,8 @@ import { Copy, Eye, MoreHorizontal, Trash } from "lucide-react";
 
 import { FullFeedback } from "@/types";
 
+import { AlertModal } from "@/components/modals/alert";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +17,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Button } from "@/components/ui/button";
-import { AlertModal } from "@/components/modals/alert";
 import { feedbackDeleteById } from "@/actions/feedback";
 
 interface FeedbackActionsProps {

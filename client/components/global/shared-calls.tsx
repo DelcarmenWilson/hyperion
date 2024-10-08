@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import React from "react";
 import { Share2 } from "lucide-react";
 
@@ -10,7 +11,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FullCall } from "@/types";
 
 import { CardLayout } from "@/components/custom/card/layout";
-import { AudioPlayerHp } from "@/components/custom/audio-player-hp";
+
+const AudioPlayerHp = dynamic(
+  () => import("@/components/custom/audio-player-hp"),
+  {
+    ssr: false,
+  }
+);
+// import { AudioPlayerHp } from "@/components/custom/audio-player-hp";
+
 import { Button } from "../ui/button";
 import SkeletonWrapper from "../skeleton-wrapper";
 

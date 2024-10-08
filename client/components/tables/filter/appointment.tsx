@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apppointmentStatus } from "@/constants/texts";
+import { appointmentStatus } from "@/constants/texts";
 
 type AppointmentFilterProps<TData> = {
   table: Table<TData>;
@@ -42,7 +42,7 @@ export function AppointmentFilter<TData>({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="%">All</SelectItem>
-            {apppointmentStatus.map((status) => (
+            {appointmentStatus.map((status) => (
               <SelectItem key={status} value={status}>
                 {status}
               </SelectItem>

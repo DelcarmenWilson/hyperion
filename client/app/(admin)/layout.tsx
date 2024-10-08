@@ -26,8 +26,10 @@ import { usersGetAllChat } from "@/actions/user";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
+  if (!user) return null;
+  const isAdmin = ["MASTER", "ADMIN", "SUPER_ADMIN"].includes(user.role);
 
-  if (user?.role != "MASTER" && user?.role != "ADMIN") {
+  if (!isAdmin) {
     redirect("/dashboard");
   }
   const initUsers = await usersGetAllChat();

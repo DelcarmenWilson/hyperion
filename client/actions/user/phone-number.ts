@@ -1,9 +1,11 @@
-
-"use server"
+"use server";
 import { db } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
+import { currentRole, currentUser } from "@/lib/auth";
 import { reFormatPhoneNumber } from "@/formulas/phones";
-import { UserPhoneNumberSchema,UserPhoneNumberSchemaType } from "@/schemas/user";
+import {
+  UserPhoneNumberSchema,
+  UserPhoneNumberSchemaType,
+} from "@/schemas/user";
 
 //DATA
 export const phoneNumbersGetByAgentId = async (agentId: string) => {
@@ -18,11 +20,16 @@ export const phoneNumbersGetByAgentId = async (agentId: string) => {
 
 export const phoneNumbersGetAssigned = async () => {
   try {
+    const user = await currentUser();
+    if (!user) return [];
+
+    const filter = user.role == "MASTER" ? undefined : user.organization;
     const phones = await db.phoneNumber.findMany({
       where: {
+        agent: { team: { organizationId: filter } },
         NOT: {
-          agentId: null
-        }
+          agentId: null,
+        },
       },
       include: { agent: { select: { firstName: true, lastName: true } } },
     });
@@ -34,12 +41,13 @@ export const phoneNumbersGetAssigned = async () => {
 };
 export const phoneNumbersGetUnassigned = async () => {
   try {
+    const role = await currentRole();
+    if (role != "MASTER") return [];
     const phones = await db.phoneNumber.findMany({
-      where:  {
-          agentId: null
-        }
+      where: {
+        agentId: null,
       },
-    );
+    });
 
     return phones;
   } catch (error: any) {
@@ -47,7 +55,7 @@ export const phoneNumbersGetUnassigned = async () => {
   }
 };
 //ACTIONS
-export const phoneNumberInsert = async (values:  UserPhoneNumberSchemaType) => {
+export const phoneNumberInsert = async (values: UserPhoneNumberSchemaType) => {
   // const user = await currentUser();
   // if (!user) {
   //   return { error: "Unauthenticated!" };
@@ -94,8 +102,8 @@ export const phoneNumberInsertTwilio = async (
   phone: string,
   state: string,
   agentId: string | null,
-  sid:string,
-  app:string
+  sid: string,
+  app: string
 ) => {
   // const user = await currentUser();
   // if (!user) {
@@ -106,9 +114,7 @@ export const phoneNumberInsertTwilio = async (
     where: { phone },
   });
 
-  if (existingPhoneNumber) 
-    return { error: "Phone number already exists" };
-  
+  if (existingPhoneNumber) return { error: "Phone number already exists" };
 
   let status = "Unassigned";
   if (agentId == "unassigned") {
@@ -129,30 +135,24 @@ export const phoneNumberInsertTwilio = async (
       status,
       renewAt: date,
       sid,
-      app
+      app,
     },
   });
 
-  if (!newPhoneNumber) 
-    return { error: "Phone number was not purchased!" };
-  
+  if (!newPhoneNumber) return { error: "Phone number was not purchased!" };
 
   return { success: newPhoneNumber.id };
 };
 
 export const phoneNumberUpdateByIdActivate = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
+  if (!user) return { error: "Unauthenticated!" };
 
   const existingNumber = await db.phoneNumber.findUnique({
     where: { id, agentId: user.id },
   });
 
-  if (!existingNumber) {
-    return { error: "Unauthorized!" };
-  }
+  if (!existingNumber) return { error: "Unauthorized!" };
 
   await db.phoneNumber.update({
     where: { id: existingNumber.id },
@@ -164,23 +164,22 @@ export const phoneNumberUpdateByIdActivate = async (id: string) => {
 
 export const phoneNumberUpdateByIdDeactivate = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unauthenticated!" };
-  }
+  
 
   const userPhoneNumbers = await db.phoneNumber.findMany({
     where: { agentId: user.id, status: { not: "Inactive" } },
   });
   const thisNumber = userPhoneNumbers.find((e) => e.id == id);
 
-  if (!thisNumber) {
+  if (!thisNumber) 
     return { error: "Unauthorized!" };
-  }
+  
   let status: string = "";
   if (thisNumber.status == "Default") {
-    if (userPhoneNumbers.length == 1) {
-      return { error: "Can not deactive the only phone number you have!" };
-    }
+    if (userPhoneNumbers.length == 1) 
+      return { error: "Can not deactive the only phone number you have!" };    
     status = "Default";
   }
 
@@ -217,12 +216,13 @@ export const phoneNumberUpdateByIdDefault = async (id: string) => {
   const defaultNumber = await db.phoneNumber.findFirst({
     where: { agentId: user.id, status: "Default" },
   });
-  
-if(defaultNumber){
-  await db.phoneNumber.update({
-    where: { id: defaultNumber?.id },
-    data: { status: "Active" },
-  });}
+
+  if (defaultNumber) {
+    await db.phoneNumber.update({
+      where: { id: defaultNumber?.id },
+      data: { status: "Active" },
+    });
+  }
 
   await db.phoneNumber.update({
     where: { id: thisNumber?.id },
@@ -262,11 +262,7 @@ export const phoneNumberUpdateByIdAssign = async (
   return { success: "Phone number is now assigned!" };
 };
 
-
-export const phoneNumberUpdateByIdApp = async (
-  id: string,
-  app: string
-) => {
+export const phoneNumberUpdateByIdApp = async (id: string, app: string) => {
   const user = await currentUser();
   if (!user) {
     return { error: "Unauthenticated!" };
@@ -279,10 +275,10 @@ export const phoneNumberUpdateByIdApp = async (
   if (!thisNumber) {
     return { error: "Number does not exist!" };
   }
-  
+
   await db.phoneNumber.update({
     where: { id: thisNumber?.id },
-    data: { app},
+    data: { app },
   });
 
   return { success: "Phone number app updated!" };

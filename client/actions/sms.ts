@@ -17,6 +17,7 @@ import {
 } from "@/formulas/dates";
 import { sendSocketData } from "@/services/socket-service";
 import { defaultOptOut } from "@/placeholder/chat";
+import { leadDefaultStatus } from "@/constants/lead";
 
 export const smsSend = async ({
   fromPhone,
@@ -237,7 +238,7 @@ export const getKeywordResponse = async (
     case "cancel":
       await db.lead.update({
         where: { id: leadId },
-        data: { status: "Do_Not_Call" },
+        data: { statusId:leadDefaultStatus["DoNotCall"] },
       });
       await smsSend({
         toPhone: sms.to,

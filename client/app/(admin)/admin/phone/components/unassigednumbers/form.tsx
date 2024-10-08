@@ -2,18 +2,16 @@
 import { usePhoneSetup, usePhoneSetupActions } from "@/hooks/use-phone-setup";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+
 import { UserSelect } from "@/components/user/select";
 import { TwilioAppSelect } from "@/components/twilio/app-select";
 
+import { CardData } from "@/components/reusable/card-data";
+import { CustomDialog } from "@/components/global/custom-dialog";
+import { Switch } from "@/components/ui/switch";
+
 import { formatPhoneNumber } from "@/formulas/phones";
 import { formatDate } from "@/formulas/dates";
-import { CardData } from "@/components/reusable/card-data";
-import { Switch } from "@/components/ui/switch";
 
 export const AssignNumberForm = () => {
   const { isUnassignedFormOpen, onUnassignedFormClose, phoneNumber } =
@@ -32,64 +30,63 @@ export const AssignNumberForm = () => {
 
   if (!phoneNumber) return;
   return (
-    <Dialog open={isUnassignedFormOpen} onOpenChange={onUnassignedFormClose}>
-      <DialogDescription className="hidden">
-        Unassigend Numbers Form
-      </DialogDescription>
-      <DialogContent className="flex flex-col justify-start h-auto max-w-screen-sm gap-2 p-2">
-        <h2 className="text-2xl border-b">Phone Number Details</h2>
-        <h3 className="font-semibold text-primary text-2xl italic text-center">
-          {formatPhoneNumber(phoneNumber.phone)}
-        </h3>
-        <div className="flex justify-between items-center">
-          <CardData label="Sid" value={phoneNumber.sid} />
-          <div className="flex gap-2">
-            <span>Registered</span>
-            <Switch checked={registered} onCheckedChange={setRegistered} />
+    <CustomDialog
+      open={isUnassignedFormOpen}
+      onClose={onUnassignedFormClose}
+      title="Phone Number Details"
+      description="Unassigend Numbers Form"
+    >
+      <h3 className="font-semibold text-primary text-2xl italic text-center">
+        {formatPhoneNumber(phoneNumber.phone)}
+      </h3>
+      <div className="flex justify-between items-center">
+        <CardData label="Sid" value={phoneNumber.sid} />
+        <div className="flex gap-2">
+          <span>Registered</span>
+          <Switch checked={registered} onCheckedChange={setRegistered} />
+        </div>
+      </div>
+
+      <h4 className="font-bold">App</h4>
+      <div className="flex gap-2 text-sm my-2">
+        <TwilioAppSelect app={app} setApp={setApp} />
+        {app && app != phoneNumber.app && (
+          <div className="text-end">
+            <Button
+              className="w-fit"
+              disabled={loading}
+              onClick={onNumberUpdateApp}
+            >
+              Update App
+            </Button>
           </div>
-        </div>
+        )}
+      </div>
 
-        <h4 className="font-bold">App</h4>
-        <div className="flex gap-2 text-sm my-2">
-          <TwilioAppSelect app={app} setApp={setApp} />
-          {app && app != phoneNumber.app && (
-            <div className="text-end">
-              <Button
-                className="w-fit"
-                disabled={loading}
-                onClick={onNumberUpdateApp}
-              >
-                Update App
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-3 text-sm">
-          <TextGroup label="State" value={phoneNumber.state} />
-          <TextGroup
-            label="Created At"
-            value={formatDate(phoneNumber.createdAt)}
-          />
-          <TextGroup label="Renew At" value={formatDate(phoneNumber.renewAt)} />
-        </div>
-        <h4 className="font-bold">Assign/Reassign Number</h4>
-        <div className="flex gap-2 text-sm my-2">
-          <UserSelect userId={userId} setUserId={setUserId} />
-          {userId && userId != phoneNumber.agentId && (
-            <div className="text-end">
-              <Button
-                className="w-fit"
-                disabled={loading}
-                onClick={onAssignNumber}
-              >
-                Assign Number
-              </Button>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+      <div className="grid grid-cols-3 text-sm">
+        <TextGroup label="State" value={phoneNumber.state} />
+        <TextGroup
+          label="Created At"
+          value={formatDate(phoneNumber.createdAt)}
+        />
+        <TextGroup label="Renew At" value={formatDate(phoneNumber.renewAt)} />
+      </div>
+      <h4 className="font-bold">Assign/Reassign Number</h4>
+      <div className="flex gap-2 text-sm my-2">
+        <UserSelect userId={userId} setUserId={setUserId} />
+        {userId && userId != phoneNumber.agentId && (
+          <div className="text-end">
+            <Button
+              className="w-fit"
+              disabled={loading}
+              onClick={onAssignNumber}
+            >
+              Assign Number
+            </Button>
+          </div>
+        )}
+      </div>
+    </CustomDialog>
   );
 };
 

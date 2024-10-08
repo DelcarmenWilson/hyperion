@@ -1,16 +1,16 @@
 "use client";
 import { FastForward, Pause, Play, Rewind } from "lucide-react";
+import { useAudio, useAudioPlayer } from "@/hooks/use-audio-player";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { calculateTime } from "@/formulas/dates";
-import { useAudio, useAudioPlayer } from "@/hooks/use-audio-player";
 
 type AudioPlayerHpProps = {
   src: string | undefined;
   onListened?: () => void;
 };
 
-export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
+const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
   const { audio, setAudio } = useAudio();
   const {
     audioPlayer,
@@ -56,9 +56,10 @@ export const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
         />
 
         <div className="text-sm w-[90px] text-end">
-          {duration && !isNaN(duration) && calculateTime(duration)}
+          {isNaN(duration) ? "0:00" : calculateTime(duration)}
         </div>
       </div>
     </div>
   );
 };
+export default AudioPlayerHp;

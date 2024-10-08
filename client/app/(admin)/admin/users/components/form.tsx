@@ -2,11 +2,9 @@
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
-import { toast } from "sonner";
+import { useUserActions, useUserData } from "../hooks/use-user";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,260 +26,458 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Team, User } from "@prisma/client";
-import { userInsertAssistant } from "@/actions/user";
-
-type AssistantFormProps = {
-  admins: User[];
-  teams: Team[];
-  onClose?: (e?: User) => void;
+type Props = {
+  onClose: () => void;
 };
 
-export const AssistantForm = ({
-  admins,
-  teams,
-  onClose,
-}: AssistantFormProps) => {
+export const AssistantForm = ({ onClose }: Props) => {
+  const { admins, teams } = useUserData();
+  const { onAssistantInsert, assistantIsPending } = useUserActions();
   const user = useCurrentUser();
-  const router = useRouter();
+
   const [show, setShow] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      id: user?.id,
+      id: undefined,
       team: user?.team,
       npn: "123456",
-      userName: "",
       password: "user773",
-      email: "",
-      firstName: "",
-      lastName: "",
     },
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
-  const onSubmit = async (values: RegisterSchemaType) => {
-    startTransition(async () => {
-      const insertedAssistant = await userInsertAssistant(values);
-      if (insertedAssistant.success) {
-        form.reset();
-        if (onClose) onClose();
-        router.refresh();
-        toast.success(insertedAssistant.success);
-      } else toast.error(insertedAssistant.error);
-    });
-  };
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col flex-1 overflow-hidden"
+        onSubmit={form.handleSubmit(onAssistantInsert)}
+        className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden"
       >
-        <div className="p-2">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            {/* TEAM */}
-            <FormField
-              control={form.control}
-              name="team"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex justify-between">
-                    Team
-                    <FormMessage />
-                  </FormLabel>
-                  <Select
-                    name="ddlTeam"
-                    disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    autoComplete="team"
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Team" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {teams.map((team) => (
-                        <SelectItem key={team.id} value={team.id}>
-                          {team.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            {/* AGENT */}
-            <FormField
-              control={form.control}
-              name="id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex justify-between">
-                    Agent
-                    <FormMessage />
-                  </FormLabel>
-                  <Select
-                    name="ddlAgent"
-                    disabled={isPending}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    autoComplete="agent"
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Team" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {admins.map((admin) => (
-                        <SelectItem key={admin.id} value={admin.id}>
-                          {admin.userName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="txtFirstName"
-                      disabled={isPending}
-                      {...field}
-                      placeholder="John"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="txtLastName"
-                      disabled={isPending}
-                      {...field}
-                      placeholder="doe"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          {/* USERNAME */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          {/* TEAM */}
           <FormField
             control={form.control}
-            name="userName"
+            name="team"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input
-                    id="txtUsername"
-                    disabled={isPending}
-                    {...field}
-                    placeholder="j.doe"
-                    autoComplete="off"
-                  />
-                </FormControl>
-                <FormMessage />
+                <FormLabel className="flex justify-between items-center">
+                  Team
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlTeam"
+                  disabled={assistantIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  autoComplete="team"
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Team" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {teams?.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
-          {/* EMAIL */}
+          {/* AGENT */}
           <FormField
             control={form.control}
-            name="email"
+            name="id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    id="txtEmail"
-                    disabled={isPending}
-                    {...field}
-                    placeholder="john.doe@example.com"
-                    type="email"
-                    autoComplete="off"
-                  />
-                </FormControl>
-                <FormMessage />
+                <FormLabel className="flex justify-between items-center">
+                  Agent
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlAgent"
+                  disabled={assistantIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  autoComplete="agent"
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Agent" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {admins?.map((admin) => (
+                      <SelectItem key={admin.id} value={admin.id}>
+                        {admin.userName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
+          {/* FIRST NAME */}
           <FormField
             control={form.control}
-            name="password"
+            name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl className="relative">
-                  <div className="w-full flex items-center">
-                    <Input
-                      id="txtPassword"
-                      disabled={isPending}
-                      {...field}
-                      placeholder="******"
-                      type={show ? "text" : "password"}
-                      autoComplete="new-password"
-                    />
-
-                    <Button
-                      onClick={() => setShow(!show)}
-                      size="sm"
-                      variant="ghost"
-                      type="button"
-                      className="absolute right-0"
-                    >
-                      {show ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
-                </FormControl>
-                {/* <FormControl>
+                <FormLabel className="flex justify-between items-center">
+                  First Name
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
                   <Input
-                    disabled={isPending}
+                    id="txtFirstName"
+                    disabled={assistantIsPending}
+                    {...field}
+                    placeholder="John"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* LAST NAME */}
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Last Name
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    id="txtLastName"
+                    disabled={assistantIsPending}
+                    {...field}
+                    placeholder="Doe"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        {/* USERNAME */}
+        <FormField
+          control={form.control}
+          name="userName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Username
+                <FormMessage />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  id="txtUsername"
+                  disabled={assistantIsPending}
+                  {...field}
+                  placeholder="j.doe"
+                  autoComplete="off"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {/* EMAIL */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Email
+                <FormMessage />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  id="txtEmail"
+                  disabled={assistantIsPending}
+                  {...field}
+                  placeholder="john.doe@example.com"
+                  type="email"
+                  autoComplete="off"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {/* PASSWORD */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Password
+                <FormMessage />
+              </FormLabel>
+              <FormControl className="relative">
+                <div className="w-full flex items-center">
+                  <Input
+                    id="txtPassword"
+                    disabled={assistantIsPending}
                     {...field}
                     placeholder="******"
-                    type="password"
+                    type={show ? "text" : "password"}
+                    autoComplete="new-password"
                   />
-                </FormControl> */}
-                <FormMessage />
+
+                  <Button
+                    onClick={() => setShow(!show)}
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    className="absolute right-0"
+                  >
+                    {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </Button>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-x-2 justify-between mt-auto">
+          <Button onClick={onCancel} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button disabled={assistantIsPending} type="submit">
+            Add Assistant
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export const UserForm = ({ onClose }: Props) => {
+  const { teams } = useUserData();
+  const { onUserInsert, userIsPending } = useUserActions();
+  const user = useCurrentUser();
+
+  const [show, setShow] = useState(false);
+
+  const form = useForm<RegisterSchemaType>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      id: undefined,
+      team: user?.team,
+      npn: "123456",
+      password: "user773",
+    },
+  });
+
+  const onCancel = () => {
+    form.clearErrors();
+    form.reset();
+    onClose();
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onUserInsert)}
+        className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          {/* TEAM */}
+          <FormField
+            control={form.control}
+            name="team"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Team
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlTeam"
+                  disabled={userIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  autoComplete="team"
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Team" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {teams?.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
+          {/* NPN */}
+          <FormField
+            control={form.control}
+            name="npn"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Npn#
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    id="txtNpn"
+                    disabled={userIsPending}
+                    {...field}
+                    placeholder="e.g. 525634"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* FIRST NAME */}
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  First Name
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    id="txtFirstName"
+                    disabled={userIsPending}
+                    {...field}
+                    placeholder="John"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* LAST NAME */}
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Last Name
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    id="txtLastName"
+                    disabled={userIsPending}
+                    {...field}
+                    placeholder="Doe"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        {/* USERNAME */}
+        <FormField
+          control={form.control}
+          name="userName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Username
+                <FormMessage />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  id="txtUsername"
+                  disabled={userIsPending}
+                  {...field}
+                  placeholder="j.doe"
+                  autoComplete="off"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {/* EMAIL */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Email
+                <FormMessage />
+              </FormLabel>
+              <FormControl>
+                <Input
+                  id="txtEmail"
+                  disabled={userIsPending}
+                  {...field}
+                  placeholder="john.doe@example.com"
+                  type="email"
+                  autoComplete="off"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {/* PASSWORD */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex justify-between items-center">
+                Password
+                <FormMessage />
+              </FormLabel>
+              <FormControl className="relative">
+                <div className="w-full flex items-center">
+                  <Input
+                    id="txtPassword"
+                    disabled={userIsPending}
+                    {...field}
+                    placeholder="******"
+                    type={show ? "text" : "password"}
+                    autoComplete="new-password"
+                  />
 
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button disabled={isPending} type="submit">
-              Add Asistant
-            </Button>
-          </div>
+                  <Button
+                    onClick={() => setShow(!show)}
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    className="absolute right-0"
+                  >
+                    {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </Button>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-x-2 justify-between mt-auto">
+          <Button onClick={onCancel} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button disabled={userIsPending} type="submit">
+            Add User
+          </Button>
         </div>
       </form>
     </Form>

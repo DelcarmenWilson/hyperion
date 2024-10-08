@@ -140,7 +140,7 @@ export const convertLeads = (result: any): Lead[] => {
       type: d["type"],
       vendor: d["vendor"],
       weight: d["weight"],
-      status: d["status"],
+      statusId: d["statusId"],
       assistantId: d["assistantId"],
       sharedUserId: d["sharedUserId"],
       // intake form stuff
@@ -221,7 +221,8 @@ export const convertAppointments = (result: any): Appointment[] => {
       startDate: new Date(d["startDate"]),
       endDate: new Date(d["startDate"]),
       title: d["title"],
-      label: d["label"],
+      calendar:d["calendar"],
+      labelId: d["labelId"],
       agentId: d["agentId"],
       leadId: d["leadId"],
       status: d["status"],

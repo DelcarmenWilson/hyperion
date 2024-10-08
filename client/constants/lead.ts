@@ -26,6 +26,12 @@ export const allLeadTypes: LeadType[] = [
   },
 ];
 
+export const leadDefaultStatus: { [status: string]: string } = {
+  New: "clssh61710000hgo3esopwumj",
+  DoNotCall: "clsshj6p80007hgo3avc5s7oe",
+  Sold: "clsshj95h0008hgo3d6tbby9y",
+};
+
 //VENDORS
 type VendorType = {
   value: string;

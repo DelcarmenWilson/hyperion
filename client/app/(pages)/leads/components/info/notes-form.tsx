@@ -65,7 +65,7 @@ export const NotesForm = ({
     <div className="flex flex-col">
       <Textarea
         placeholder="Additional notes here"
-        className="rounded-br-none rounded-bl-none"
+        className="rounded-br-none rounded-bl-none  bg-background"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         rows={rows}

@@ -11,7 +11,7 @@ import { userGetByAssistant } from "@/actions/user";
 export const leadStatusGetAllDefault = async () => {
   try {
     const userId = await userGetByAssistant();
-    if(!userId) return[]
+    if (!userId) return [];
 
     const leadStatuses = await db.leadStatus.findMany({
       where: { OR: [{ userId }, { type: { equals: "default" } }] },
@@ -25,7 +25,7 @@ export const leadStatusGetAllDefault = async () => {
 export const leadStatusGetAll = async () => {
   try {
     const userId = await userGetByAssistant();
-    if(!userId) return[]
+    if (!userId) return [];
 
     const leadStatuses = await db.leadStatus.findMany({
       where: { userId },
@@ -37,10 +37,16 @@ export const leadStatusGetAll = async () => {
 };
 //ACTIONS
 
-export const leadUpdateByIdStatus = async ({leadId, status}:{leadId: string, status: string}) => {
+export const leadUpdateByIdStatus = async ({
+  leadId,
+  statusId,
+}: {
+  leadId: string;
+  statusId: string;
+}) => {
   const userId = await userGetByAssistant();
-  if(!userId) return{ error: "Unauthenticated" }
-   
+  if (!userId) return { error: "Unauthenticated" };
+
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });
 
   if (!existingLead) {
@@ -54,15 +60,21 @@ export const leadUpdateByIdStatus = async ({leadId, status}:{leadId: string, sta
   await db.lead.update({
     where: { id: leadId },
     data: {
-      status,
+      statusId,
     },
   });
+
+  const leadStatus = await db.leadStatus.findUnique({
+    where: { id: existingLead.statusId },
+    select: { status: true },
+  });
+
   leadActivityInsert(
     leadId,
     "status",
     "Status updated",
     userId,
-    existingLead.status
+    leadStatus?.status
   );
   return { success: "Lead status has been updated" };
 };

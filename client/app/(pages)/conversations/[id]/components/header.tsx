@@ -12,6 +12,7 @@ import { LeadDropDown } from "@/components/lead/dropdown";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatPhoneNumber } from "@/formulas/phones";
+import { leadDefaultStatus } from "@/constants/lead";
 
 export const Header = () => {
   const { onPhoneOutOpen } = usePhoneStore();
@@ -38,7 +39,7 @@ export const Header = () => {
                 {fullName} {formatPhoneNumber(lead.cellPhone)}
               </span>
               <Button
-                disabled={lead.status == "Do_Not_Call"}
+                disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
                 className="rounded-full"
                 variant="outlineprimary"
                 size="icon"

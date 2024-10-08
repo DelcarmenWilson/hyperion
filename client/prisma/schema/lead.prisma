@@ -25,9 +25,9 @@ model Lead {
     currentlyInsured Boolean       @default(false)
     currentInsuranse String?
 
-    vendor String @default("Manually_Created")
-    type   String @default("General")
-    status String @default("New")
+    vendor   String @default("Manually_Created")
+    type     String @default("General")
+    statusId String @default("clssh61710000hgo3esopwumj")
 
     quote String @default("0.00")
 

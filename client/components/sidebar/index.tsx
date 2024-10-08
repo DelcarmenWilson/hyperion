@@ -7,12 +7,14 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useCurrentRole } from "@/hooks/user-current-role";
 
+import { UserRole } from "@prisma/client";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
 import { IconLink } from "@/components/reusable/icon-link";
 import { UserButton } from "@/components/auth/user-button";
-import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
+import { AdminRoutes, DashboardRoutes } from "@/constants/page-routes";
 
 type Props = {
   main?: boolean;
@@ -22,14 +24,8 @@ const Sidebar = ({ main = false }: Props) => {
   const [isMounted, setIsMounted] = useState(false);
   const role = useCurrentRole();
   const pathname = usePathname();
-  const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
-  let routes = allRoutes;
-  if (main && role == "ASSISTANT") {
-    routes = allRoutes.filter((e) => e.assistant);
-  }
-  if (!main && role != "MASTER") {
-    routes = allRoutes.filter((e) => !e.master);
-  }
+  const allRoutes = main ? DashboardRoutes : AdminRoutes;
+  const routes = allRoutes.filter((e) => e.roles.includes(role as UserRole));
 
   useEffect(() => {
     setIsMounted(true);

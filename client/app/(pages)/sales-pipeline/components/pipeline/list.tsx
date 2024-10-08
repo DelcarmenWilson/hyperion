@@ -1,14 +1,9 @@
 import { Reorder } from "framer-motion";
-
-import { PipelineAndLeads } from "@/types";
-
 import { AlertModal } from "@/components/modals/alert";
 
 import { PipelineCard } from "./card";
-import {
-  usePipelineActions,
-  usePipelineStore,
-} from "../../hooks/use-pipelines";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
 
 type Props = {
   loading: boolean;
@@ -45,7 +40,7 @@ export const PipeLineList = ({ loading }: Props) => {
                 pipeline={pipeline}
                 loading={loading}
                 initLeads={leads!.filter(
-                  (e) => e.status == pipeline.status.status
+                  (e) => e.statusId == pipeline.statusId
                 )}
               />
             ))}

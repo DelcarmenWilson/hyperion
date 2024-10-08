@@ -1,13 +1,12 @@
-import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const userGetCurrent = async (id: string) => {
   try {
-    const ct = await db.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id },
     });
 
-    return ct;
+    return user;
   } catch {
     return null;
   }
@@ -19,7 +18,7 @@ export const userGetById = async (id: string) => {
       where: { id },
       include: {
         phoneNumbers: true,
-        team: true,
+        team: { select: {id:true, organization: { select: { id: true } } } },
         notificationSettings: true,
         phoneSettings: true,
         displaySettings: true,
@@ -35,6 +34,21 @@ export const userGetById = async (id: string) => {
 export const userGetByEmail = async (email: string) => {
   try {
     const user = await db.user.findUnique({ where: { email } });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
+export const userGetByEmailOrUsername = async (
+  email: string,
+  userName: string
+) => {
+  try {
+    const user = await db.user.findFirst({
+      where: { OR: [{ email }, { userName }] },
+    });
 
     return user;
   } catch {

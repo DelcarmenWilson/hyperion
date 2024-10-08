@@ -48,6 +48,8 @@ export const AppointmentModal = () => {
       leadId: "",
       labelId: "",
       reason: "",
+      lead: null,
+      label: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

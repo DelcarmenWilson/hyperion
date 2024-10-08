@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type Props = {
   info: FullLead | FullLeadNoConvo;
@@ -84,7 +85,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
         <div className="relative w-fit ">
           <Button
             className="gap-2"
-            disabled={lead.status == "Do_Not_Call"}
+            disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
             onClick={onCallClick}
             size="sm"
           >
@@ -107,7 +108,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
 
         <div className="py-1">
           <p>Status</p>
-          <LeadStatusSelect id={lead.id} status={lead.status} />
+          <LeadStatusSelect id={lead.id} status={lead.statusId} />
         </div>
       </div>
     </div>

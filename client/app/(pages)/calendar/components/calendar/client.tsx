@@ -8,6 +8,7 @@ import { SidebarClient } from "./sidebar/client";
 import { Month } from "./month";
 import { AppointmentModal } from "./appointment-modal";
 import { LabelModal } from "./label-modal";
+import { RightSidebarClient } from "./right-sidebar/client";
 
 export const CalendarClient = () => {
   const { showAppointmentModal, showLabelModal, monthIndex } =
@@ -28,6 +29,7 @@ export const CalendarClient = () => {
         <div className="flex flex-1 h-full overflow-hidden">
           <SidebarClient />
           <Month month={currenMonth} />
+          <RightSidebarClient />
         </div>
       </div>
     </>

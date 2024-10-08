@@ -7,8 +7,9 @@ import { UsersClient } from "./components/users/client";
 import { RecentSales } from "./components/sales/client";
 import { OverviewChart } from "@/components/reports/chart";
 
-import { teamGetByIdStats, teamGetByIdSales } from "@/data/team";
+import { teamGetByIdStats, teamGetByIdSales } from "@/actions/team";
 import { adminUsersGetAll } from "@/actions/admin/user";
+
 import { weekStartEnd } from "@/formulas/dates";
 import { convertSalesData } from "@/formulas/reports";
 
@@ -17,20 +18,26 @@ const TeamPage = async ({
   searchParams,
 }: {
   params: {
-    id: string;
+    teamid: string;
   };
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const week = weekStartEnd();
   const from = searchParams.from || week.from.toString();
   const to = searchParams.to || week.to.toString();
-  const team = await teamGetByIdStats(params.id, from as string, to as string);
+  const team = await teamGetByIdStats(
+    params.teamid,
+    from as string,
+    to as string
+  );
 
   const users = await adminUsersGetAll();
-  const sales = await teamGetByIdSales(params.id, from as string, to as string);
-  if (!team) {
-    return null;
-  }
+  const sales = await teamGetByIdSales(
+    params.teamid,
+    from as string,
+    to as string
+  );
+  if (!team) return null;
 
   const teamReport: FullTeamReport = {
     ...team,
@@ -74,7 +81,7 @@ const TeamPage = async ({
             description={`${team.name}'s agents`}
           />
           <CardContent className="p-0">
-            <UsersClient users={userReport} teamId={params.id} />
+            <UsersClient users={userReport} teamId={params.teamid} />
           </CardContent>
         </CardHeader>
       </Card>

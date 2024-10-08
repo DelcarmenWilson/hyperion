@@ -32,7 +32,7 @@ export const LeadSchema = z.object({
   vendor: z.optional(z.string()),
   conversationId: z.optional(z.string()),
   recievedAt: z.optional(z.string()),
-  status: z.optional(z.string()),
+  statusId: z.optional(z.string()),
   assistantId: z.optional(z.string()),
   notes: z.optional(z.string()),
   adId: z.optional(z.string()),
@@ -49,7 +49,7 @@ export const LeadMainSchema = z.object({
   city: z.optional(z.string()),
   state: z.string(),
   zipCode: z.optional(z.string()),  
-  status: z.string(),
+  statusId: z.string(),
   quote: z.string(),
   textCode:z.optional(z.string()),
 });

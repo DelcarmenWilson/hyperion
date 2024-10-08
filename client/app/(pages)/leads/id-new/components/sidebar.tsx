@@ -18,6 +18,7 @@ import { PolicyInfoClient } from "@/components/lead/info/policy-info";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { leadDefaultStatus } from "@/constants/lead";
 
 export const LeadSidebar = () => {
   const { onPhoneOutOpen } = usePhoneStore();
@@ -56,7 +57,7 @@ export const LeadSidebar = () => {
             <Button
               variant="outlineprimary"
               className="relative gap-2"
-              disabled={leadBasic.status == "Do_Not_Call"}
+              disabled={leadBasic.statusId == leadDefaultStatus["Do_Not_Call"]}
               //TODO - emeditely need to add a function for this
               onClick={() => onPhoneOutOpen(lead!)}
               size="sm"

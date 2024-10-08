@@ -1,21 +1,17 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 import {
   usePipelineActions,
   usePipelineData,
-  usePipelineStore,
-} from "../../hooks/use-pipelines";
+} from "@/hooks/pipeline/use-pipeline";
 
 import { Pipeline } from "@prisma/client";
 import { PipelineSchema, PipelineSchemaType } from "@/schemas/pipeline";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   Form,
   FormField,
@@ -27,8 +23,8 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { StatusSelect } from "@/components/global/selects/lead-status";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const PipelineForm = () => {
   const { isFormOpen, onFormClose, type } = usePipelineStore();
@@ -41,27 +37,26 @@ export const PipelineForm = () => {
   } = usePipelineActions();
 
   return (
-    <Dialog open={isFormOpen} onOpenChange={onFormClose}>
-      <DialogDescription className="hidden">Pipeline Form</DialogDescription>
-      <DialogContent className="flex flex-col justify-start h-auto w-full">
-        <h3 className="text-2xl font-semibold py-2">
-          {type == "edit" ? "Edit" : "Add"} Stage
-        </h3>
-        <SkeletonWrapper isLoading={isFetchingPipeline}>
-          <PipForm
-            pipeline={pipeline || null}
-            loading={
-              type == "edit" ? isPendingPipelineUpdate : isPendingPipelineInsert
-            }
-            type={type}
-            onSubmit={
-              type == "edit" ? onPipelineUpdateSubmit : onPipelineInsertSubmit
-            }
-            onClose={onFormClose}
-          />
-        </SkeletonWrapper>
-      </DialogContent>
-    </Dialog>
+    <CustomDialog
+      open={isFormOpen}
+      onClose={onFormClose}
+      title={`${type == "edit" ? "Edit" : "Add"} Stage`}
+      description="Pipeline Form"
+    >
+      <SkeletonWrapper isLoading={isFetchingPipeline}>
+        <PipForm
+          pipeline={pipeline || null}
+          loading={
+            type == "edit" ? isPendingPipelineUpdate : isPendingPipelineInsert
+          }
+          type={type}
+          onSubmit={
+            type == "edit" ? onPipelineUpdateSubmit : onPipelineInsertSubmit
+          }
+          onClose={onFormClose}
+        />
+      </SkeletonWrapper>
+    </CustomDialog>
   );
 };
 

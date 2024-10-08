@@ -7,6 +7,7 @@ export const SettingsSchema = z
     isTwoFactorEnabled: z.optional(z.boolean()),
     role: z.enum([
       UserRole.MASTER,
+      UserRole.SUPER_ADMIN,
       UserRole.ADMIN,
       UserRole.USER,
       UserRole.ASSISTANT,

@@ -31,7 +31,7 @@ export const userLeadStatusDeleteById = async (id: string) => {
   if (user.id != existingStatus?.userId) return { error: "Unauthorized" };
 
   const leads = await db.lead.findMany({
-    where: { status: existingStatus.status },
+    where: { statusId: existingStatus.id },
   });
 
   if (leads.length > 0) {

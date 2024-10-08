@@ -12,13 +12,6 @@ import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormField,
   FormControl,
@@ -26,11 +19,10 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
+import FormInput from "./form-input";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/modals/modal";
-import FormInput from "./form-input";
 
 export const ScriptForm = () => {
   const { isScriptFormOpen, onScriptFormClose } = useScriptStore();

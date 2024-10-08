@@ -1,7 +1,8 @@
 "use client";
 import { Cog, RefreshCcw } from "lucide-react";
 import { useModal } from "@/providers/modal";
-import { usePipelineActions, usePipelineStore } from "../hooks/use-pipelines";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
 
 import { Button } from "@/components/ui/button";
 import CustomModal from "@/components/global/custom-modal";

@@ -15,6 +15,8 @@ import { MdDialpad } from "react-icons/md";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
+import { useDialerStore } from "../hooks/use-dialer";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
 import { Button } from "@/components/ui/button";
 
@@ -22,8 +24,6 @@ import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { DialerSettingsType } from "@/types";
 import { DialerSettings } from "./settings";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { useDialerStore } from "../hooks/use-dialer";
 import { SmsDrawer } from "./sms-drawer";
 
 type Props = {
@@ -35,18 +35,16 @@ export const DialerMenu = ({ setIndex }: Props) => {
   const { phone } = usePhoneContext();
   const {
     lead,
-    leads,
     onPhoneConnect,
     onDisconnect,
     time,
     isRunning,
     isCallMuted,
     onCallMuted,
-    pipeline,
-    pipeIndex,
     onPhoneDialerClose,
   } = usePhoneData(phone);
-  const {} = useLeadStore;
+  const { pipeIndex, selectedPipeline, filterLeads, timeZone } =
+    usePipelineStore();
   const { isSmsFormOpen, onSmsFormToggle } = useDialerStore();
 
   const [dialNumber, setDialNumber] = useState(1);
@@ -146,7 +144,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
                 <ArrowLeftCircle size={16} /> Previous Lead
               </Button>
               <Button
-                disabled={pipeIndex >= leads?.length! - 1}
+                disabled={pipeIndex >= filterLeads?.length! - 1}
                 className="gap-2"
                 size="sm"
                 onClick={onNextLead}
@@ -174,9 +172,12 @@ export const DialerMenu = ({ setIndex }: Props) => {
         </div>
       </div>
       <div className="flex items-center justify-between text-muted-foreground">
-        <span>
-          Stage: {pipeline?.name} - {pipeIndex + 1} of {leads?.length} Leads
-        </span>
+        {/* <div className="grid grid-cols-3 text-muted-foreground"> */}
+        <p>
+          Stage: <span className="font-bold"> {selectedPipeline?.name}</span> -{" "}
+          {pipeIndex + 1} of {filterLeads?.length} Leads{" "}
+          <span className="font-bold">{timeZone}</span>
+        </p>
 
         <div className="flex gap-2 items-center">
           <span>Call # {dialNumber}</span>

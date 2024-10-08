@@ -46,7 +46,7 @@ export const PolicyInfoClient = ({
     <>
       <div className="flex flex-col gap-1 text-sm">
         {user?.role == "ADMIN" && (
-          <div className="border rounded-sm shadow-md p-2">
+          <div className="border rounded-sm shadow-md p-2  bg-background">
             <h4 className="text-muted-foreground">Assistant</h4>
             {assistant && (
               <h4 className="text-lg text-center font-bold">

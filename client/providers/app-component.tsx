@@ -53,8 +53,8 @@ function AppointmentContextComponent({
     return context.appointments!.filter((evt) =>
       userLabels
         .filter((lbl) => lbl.checked)
-        .map((lbl) => lbl.color)
-        .includes(evt.label)
+        .map((lbl) => lbl.id)
+        .includes(evt.labelId as string)
     );
   }, [context, userLabels, initAppointments]);
 

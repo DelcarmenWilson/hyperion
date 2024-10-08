@@ -139,7 +139,7 @@ export const LabelModal = () => {
                       <FormItem>
                         <FormLabel>Color</FormLabel>
                         <Select
-                          name="ddlCarrier"
+                          name="ddlColor"
                           disabled={
                             appointmentLabelInsertIsPending ||
                             appointmentLabelUpdateIsPending

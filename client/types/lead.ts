@@ -61,7 +61,7 @@ export type PipelineLead = {
   lastName: string;
   cellPhone: string;
   state: string;
-  status: string;
+  statusId: string;
   maritalStatus: string;
   dateOfBirth: string | null;
   defaultNumber: string;

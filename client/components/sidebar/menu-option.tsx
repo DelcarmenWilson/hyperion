@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useCurrentRole } from "@/hooks/user-current-role";
+import { UserRole } from "@prisma/client";
 
 import {
   Command,
@@ -23,7 +24,7 @@ import {
   SheetHeader,
 } from "@/components/ui/sheet";
 
-import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
+import { AdminRoutes, DashboardRoutes } from "@/constants/page-routes";
 import { UserButton } from "@/components/auth/user-button";
 import { IconLink } from "@/components/reusable/icon-link";
 
@@ -36,14 +37,8 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
   const [isMounted, setIsMounted] = useState(false);
   const role = useCurrentRole();
   const pathname = usePathname();
-  const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
-  let routes = allRoutes;
-  if (main && role == "ASSISTANT") {
-    routes = allRoutes.filter((e) => e.assistant);
-  }
-  if (!main && role != "MASTER") {
-    routes = allRoutes.filter((e) => !e.master);
-  }
+  const allRoutes = main ? DashboardRoutes : AdminRoutes;
+  const routes = allRoutes.filter((e) => e.roles.includes(role as UserRole));
 
   useEffect(() => {
     setIsMounted(true);

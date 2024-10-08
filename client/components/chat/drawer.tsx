@@ -1,13 +1,18 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat } from "@/hooks/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, Transition } from "@headlessui/react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 import { ChatList } from "./list";
 import { ChatInfo } from "./info";
@@ -66,18 +71,26 @@ export const ChatDrawer = ({
                   >
                     <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
                       <div className=" flex items-center justify-between px-2">
-                        <div>
+                        <div className="flex justify-center items-center gap-2">
                           <h2 className="font-semibold text-xl tracking-tight">
                             Agents
                           </h2>
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <ChevronDown size={16} />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                                Group Message
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
-                        <Button
-                          variant="outlineprimary"
-                          size="sm"
-                          onClick={() => setIsOpen(true)}
-                        >
-                          Group Message
-                        </Button>
+
                         <Button
                           variant={closeButton}
                           size="sm"

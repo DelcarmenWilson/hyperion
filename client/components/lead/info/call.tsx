@@ -11,6 +11,7 @@ import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
 import { SectionWrapper } from "./section-wrapper";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type Props = {
   showBtnCall?: boolean;
@@ -35,7 +36,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
               <div className="relative w-fit ">
                 <Button
                   className="gap-2"
-                  disabled={callInfo.status == "Do_Not_Call"}
+                  disabled={callInfo.statusId == leadDefaultStatus["DoNotCall"]}
                   onClick={() => {
                     onLeadInfoToggle();
                     onPhoneOutOpen();
@@ -61,7 +62,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
 
               <div className="py-1">
                 <p>Status</p>
-                <LeadStatusSelect id={callInfo.id} status={callInfo.status} />
+                <LeadStatusSelect id={callInfo.id} status={callInfo.statusId} />
               </div>
             </div>
           </div>
