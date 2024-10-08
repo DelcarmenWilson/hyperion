@@ -1,6 +1,6 @@
 import { Server as HttpServer } from "http";
 import { Socket, Server } from "socket.io";
-import {login,logoff} from "./db"
+// import {login,logoff} from "./db"
 type User = {
   id: string;
   sid: string;
@@ -75,7 +75,7 @@ export class ServerSocket {
           const uid = this.GetUidFromSocketId(socket.id);
           if (uid) {
             console.info("Sending callback for reconnect ...");
-            logoff(uid)
+            // logoff(uid)
             callback(uid, this.users);
             return;
           }
@@ -84,7 +84,7 @@ export class ServerSocket {
 
         console.info("Sending callback ...");
         callback(userId, this.users);
-         login(userId)
+        //  login(userId)
 
         this.SendMessage(
           "user_connected",
@@ -99,7 +99,7 @@ export class ServerSocket {
 
       const uid = this.GetUidFromSocketId(socket.id);
       if (uid) {
-        logoff(uid)
+        // logoff(uid)
         this.SendMessage("user_disconnected", this.users, uid);
       }
       this.users = this.users.filter((e) => e.sid != socket.id);
