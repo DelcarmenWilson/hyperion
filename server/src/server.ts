@@ -1,5 +1,6 @@
 import http from "http";
 import express from "express";
+import cors from "cors"
 import { ServerSocket } from "./socket";
 import { runJobs } from "./schedule";
 
@@ -13,6 +14,17 @@ new ServerSocket(server);
 
 /** Start job scheduler */
 runJobs();
+
+// Enable CORS for all origins
+app.use(cors());
+
+// Or, configure CORS options
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Allow requests from this origin only
+//   methods: ['GET', 'POST'], // Allow only these methods
+//   allowedHeaders: ['Content-Type', 'Authorization'], // Allow only these headers
+//   credentials: true // Allow credentials (cookies, etc.)
+// }));
 
 
 /** Log the request */
@@ -35,19 +47,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 /** Rules of our API */
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
 
-  if (req.method == "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(200).json({});
-  }
-  next();
-});
+//   if (req.method == "OPTIONS") {
+//     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+//     return res.status(200).json({});
+//   }
+//   next();
+// });
 
 app.get("/", (req, res, next) => {
   return res.status(200).json({ hello: "Entry point working fine!" });
