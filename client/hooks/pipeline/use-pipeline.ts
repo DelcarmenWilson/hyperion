@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useModal } from "@/providers/modal";
+import { usePipelineStore } from "./use-pipeline-store";
 import { toast } from "sonner";
-import { FullLead, FullPipeline, PipelineAndLeads, PipelineLead } from "@/types";
+import {  FullPipeline, PipelineAndLeads } from "@/types";
+import { Pipeline } from "@prisma/client";
+import { PipelineSchemaType } from "@/schemas/pipeline";
+
 import {
   pipelineAndLeadsGetAll,
   pipelineDeleteById,
@@ -15,67 +18,10 @@ import {
   pipelineUpdateByIdIndex,
   pipelineUpdateOrder,
 } from "@/actions/user/pipeline";
-import { Pipeline } from "@prisma/client";
-import { PipelineSchemaType } from "@/schemas/pipeline";
-import { useModal } from "@/providers/modal";
 
-type State = {
-  type: "edit" | "insert";
-  pipelines?: FullPipeline[];
-  leads?: PipelineLead[];
-  pipelineId?: string;
-  isFormOpen: boolean;
-  isAlertOpen: boolean;
-};
-
-type Actions = {
-  setPipelines: (e: FullPipeline[]) => void;
-  setLeads: (e: PipelineLead[]) => void;
-  updateLeadStatus: (e: string, s: string) => void;
-  setPipeline: (e: string) => void;
-  deletePipeline: (e: string) => void;
-  addPipeline: (e: FullPipeline) => void;
-  onFormOpen: (t: "edit" | "insert", e?: string) => void;
-  onFormClose: () => void;
-  onAlertOpen: (e: string) => void;
-  onAlertClose: () => void;
-};
-
-export const usePipelineStore = create<State & Actions>()(
-  immer((set) => ({
-    // pipelines:[],
-    // leads:[],
-    type: "insert",
-    setPipeline: (e) => set({ pipelineId: e }),
-    setPipelines: (e) => set({ pipelines: e }),
-    deletePipeline: (e) =>
-      set((state) => {
-        state.pipelines = state.pipelines?.filter((p) => p.id != e);
-      }),
-    addPipeline: (e) =>
-      set((state) => {
-        state.pipelines?.push(e);
-      }),
-
-    setLeads: (e) => set({ leads: e }),
-    updateLeadStatus: (e, s) =>
-      set((state) => {
-        state.leads = state.leads?.map((l) => {
-          if (l.id == e) return { ...l, status: s };
-          return l;
-        });
-      }),
-    isFormOpen: false,
-    onFormOpen: (t, e) => set({ pipelineId: e, type: t, isFormOpen: true }),
-    onFormClose: () => set({ isFormOpen: false, pipelineId: undefined }),
-    isAlertOpen: false,
-    onAlertOpen: (e) => set({ pipelineId: e, isAlertOpen: true }),
-    onAlertClose: () => set({ pipelineId: undefined, isAlertOpen: false }),
-  }))
-);
 
 export const usePipelineData = () => {
-  const { pipelineId } = usePipelineStore();
+  const { pipelineId,initialSetUp,loaded } = usePipelineStore();
 
   const { data: pipeline, isFetching: isFetchingPipeline } =
     useQuery<Pipeline | null>({
@@ -95,6 +41,12 @@ export const usePipelineData = () => {
       queryFn: () => pipelineAndLeadsGetAll(),
       queryKey: ["pipeline-and-leads"],
     });
+
+    useEffect(() => {
+      if (loaded) return;
+      if (!pipelineAndLeads) return;
+      initialSetUp(pipelineAndLeads.pipelines, pipelineAndLeads.leads);
+    }, [loaded, pipelineAndLeads]);
 
   return {
     pipeline,

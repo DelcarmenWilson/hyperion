@@ -86,7 +86,7 @@ export const useAppointmentActions = () => {
 
   const { data: schedule, isFetching: isFetchingSchedule } =
     useQuery<Schedule | null>({
-      queryFn: () => scheduleGet(userId),
+      queryFn: () => scheduleGet(),
       queryKey: [`appSchedule-${userId}`],
     });
 

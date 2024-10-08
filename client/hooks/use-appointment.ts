@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
 import { useCurrentUser } from "./use-current-user";
-import { useAppointmentContext } from "@/providers/app";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -26,20 +25,26 @@ import {
 } from "@/formulas/schedule";
 
 import { appointmentInsert } from "@/actions/appointment";
+import { useCalendarStore } from "./calendar/use-calendar-store";
 
-type AppointmentStore = {
+type State = {
+  appointment?: FullAppointment;
   //APPOINTMENT FORM
   isFormOpen: boolean;
+  //APPOINTMENT DETAILS
+  isDetailsOpen: boolean;
+};
+type Actions = {
+  //APPOINTMENT FORM
   onFormOpen: () => void;
   onFormClose: () => void;
   //APPOINTMENT DETAILS
-  isDetailsOpen: boolean;
   onDetailsOpen: (e: FullAppointment) => void;
   onDetailsClose: () => void;
-  appointment?: FullAppointment;
 };
 
-export const useAppointmentStore = create<AppointmentStore>((set) => ({
+
+export const useAppointmentStore = create<State&Actions>((set) => ({
   //APPOINTMENT FORM
   isFormOpen: false,
   onFormOpen: () => set({ isFormOpen: true }),
@@ -53,7 +58,7 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
 
 export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
   const user = useCurrentUser();
-  const { schedule, appointments, setAppointments } = useAppointmentContext();
+  const {appointments,schedule,labels}=useCalendarStore()
   const { onFormClose } = useAppointmentStore();
   const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
@@ -76,7 +81,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
       startDate: undefined,
       agentId: user?.id!,
       leadId: lead?.id!,
-      label: "blue",
+      labelId: labels![0].id!,
       comments: "",
       smsReminder: true,
       emailReminder: false,
@@ -142,14 +147,10 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
       mutationFn: appointmentInsert,
       onSuccess: (result) => {
         if (result.success) {
-          toast.success("Appointment scheduled!", {
-            id: "insert-appointent",
-          });
+          toast.success("Appointment scheduled!", {id: "insert-appointent",});
           onCancel();
         } else {
-          toast.success(result.error, {
-            id: "insert-appointent",
-          });
+          toast.success(result.error, {id: "insert-appointent", });
         }
       },
       onError: (error) => {
@@ -159,8 +160,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
 
   const onAppointmentSubmit = useCallback(
     (values: AppointmentSchemaType) => {
-      const toastString = "Creating new Appointment...";
-      toast.loading(toastString, { id: "insert-appointent" });
+      toast.loading("Creating new Appointment...", { id: "insert-appointent" });
       appointmentMutate(values);
     },
     [appointmentMutate]

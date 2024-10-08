@@ -8,6 +8,7 @@ export type ExtendedUser = DefaultSession["user"] & {
   messageNotification: string;
   messageInternalNotification: string;
   dataStyle: string;
+  organization: string;
   team: string;
   phoneNumbers: PhoneNumber[];
   image: string;

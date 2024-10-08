@@ -29,7 +29,7 @@ export const LeadTypeSelect = ({ id, type }: Props) => {
       onValueChange={onTypeUpdated}
       defaultValue={type}
     >
-      <SelectTrigger>
+      <SelectTrigger className="bg-background">
         <SelectValue placeholder="Select Lead Type" />
       </SelectTrigger>
       <SelectContent className="max-h-80">

@@ -32,14 +32,15 @@ type Actions = {
   setSelectedLabel: (e: AppointmentLabel) => void;
   addLabel: (e: AppointmentLabel) => void;
   updateLabel: (e: AppointmentLabel) => void;
+  setMonthIndex: (e: number) => void;
+  setSmallCalendarMonth: (e: number) => void;
+  setDaySelected: (e: dayjs.Dayjs) => void;
+  
   initialSetUp: (
     a?: CalendarAppointment[],
     l?: AppointmentLabel[],
     s?: Schedule
   ) => void;
-  setMonthIndex: (e: number) => void;
-  setSmallCalendarMonth: (e: number) => void;
-  setDaySelected: (e: dayjs.Dayjs) => void;
 };
 
 export const useCalendarStore = create<State & Actions>()(
@@ -71,13 +72,6 @@ export const useCalendarStore = create<State & Actions>()(
           return a;
         });
       }),
-    initialSetUp: (a, l, s) =>
-      set({
-        appointments: a,
-        labels: l,
-        schedule: s,
-        loaded: true,
-      }),
     //   MODALS
     showAppointmentModal: false,
     showLabelModal: false,
@@ -90,5 +84,12 @@ export const useCalendarStore = create<State & Actions>()(
     setMonthIndex: (e) => set({ monthIndex: e }),
     setSmallCalendarMonth: (e) => set({ smallCalendarMonth: e }),
     setDaySelected: (e) => set({ daySelected: e }),
+    initialSetUp: (a, l, s) =>
+      set({
+        appointments: a,
+        labels: l,
+        schedule: s,
+        loaded: true,
+      }),
   }))
 );

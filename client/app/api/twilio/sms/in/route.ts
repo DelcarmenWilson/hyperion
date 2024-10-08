@@ -129,7 +129,7 @@ export async function POST(req: Request) {
       startDate: aptDate,
       leadId: conversation.leadId,
       agentId: conversation.agentId,
-      label: "blue",
+      labelId: "cm1nvphdz0000ycm71r4vidu0",
       comments: "",
       smsReminder: false,
       emailReminder:false

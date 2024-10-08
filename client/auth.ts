@@ -26,12 +26,12 @@ export const {
   },
   callbacks: {
     async signIn({ user, account }) {
-      //Allow OAuth without enail verification
+      //Allow OAuth without email verification
       if (account?.provider !== "credentials") return true;
 
       const existingUser = await userGetById(user.id);
 
-      //Prevent sign in witout email verification
+      //Prevent sign in without email verification
       if (!existingUser?.emailVerified) return false;
 
       if (existingUser.isTwoFactorEnabled) {
@@ -57,18 +57,20 @@ export const {
         session.user.role = token.role as UserRole;
       }
       if (session.user) {
-        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;    
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
         session.user.name = token.name;
         session.user.email = token.email;
-        session.user.messageNotification=token.messageNotification as string
-        session.user.messageInternalNotification=token.messageInternalNotification as string
-        session.user.dataStyle=token.dataStyle as string
-        session.user.team=token.team as string
+        session.user.messageNotification = token.messageNotification as string;
+        session.user.messageInternalNotification =
+          token.messageInternalNotification as string;
+        session.user.dataStyle = token.dataStyle as string;
+        session.user.organization = token.organization as string;
+        session.user.team = token.team as string;
         session.user.phoneNumbers = token.phoneNumbers as PhoneNumber[];
-        session.user.isOAuth=token.isOAuth as boolean
-        session.user.image= token.picture as string
-        session.user.masterSwitch= token.masterSwitch as string
-        session.user.personalNumber= token.personalNumber as string
+        session.user.isOAuth = token.isOAuth as boolean;
+        session.user.image = token.picture as string;
+        session.user.masterSwitch = token.masterSwitch as string;
+        session.user.personalNumber = token.personalNumber as string;
       }
       return session;
     },
@@ -84,15 +86,18 @@ export const {
       token.name = existingUser.userName;
       token.email = existingUser.email;
       token.role = existingUser.role;
-      token.messageNotification=existingUser.phoneSettings?.messageNotification
-      token.messageInternalNotification=existingUser.phoneSettings?.messageInternalNotification
-      token.dataStyle=existingUser.displaySettings?.dataStyle
-      token.team=existingUser.team?.id
-      token.phoneNumbers=existingUser.phoneNumbers
+      token.messageNotification =
+        existingUser.phoneSettings?.messageNotification;
+      token.messageInternalNotification =
+        existingUser.phoneSettings?.messageInternalNotification;
+      token.dataStyle = existingUser.displaySettings?.dataStyle;
+      token.organization = existingUser.team?.organization.id;
+      token.team = existingUser.team?.id;
+      token.phoneNumbers = existingUser.phoneNumbers;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
-      token.picture=existingUser.image
-      token.masterSwitch=existingUser.notificationSettings?.masterSwitch
-      token.personalNumber=existingUser.phoneSettings?.personalNumber      
+      token.picture = existingUser.image;
+      token.masterSwitch = existingUser.notificationSettings?.masterSwitch;
+      token.personalNumber = existingUser.phoneSettings?.personalNumber;
       return token;
     },
   },

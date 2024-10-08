@@ -17,42 +17,39 @@ import { LeadDialerCard } from "./lead-card";
 import { DialerMenu } from "./menu";
 
 import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
 export const PhoneDialerModal = () => {
-  const {
-    isPhoneDialerOpen,
-    onSetLead,
-    onSetIndex,
-    leads,
-    lead,
-    pipeline,
-    pipeIndex: pipIndex,
-  } = usePhoneStore();
+  const { isPhoneDialerOpen, onSetLead, lead } = usePhoneStore();
+  const { onSetIndex, pipeIndex, filterLeads, selectedPipeline } =
+    usePipelineStore();
+
   const { setLeadId: setLead } = useLeadStore();
+  console.log(pipeIndex);
 
   const indexRef = useRef<HTMLDivElement>(null);
 
   const setIndex = (number: number = 0) => {
-    let idx = number == 0 ? 0 : pipIndex + number;
+    let idx = number == 0 ? 0 : pipeIndex + number;
     onSetIndex(idx);
-    if (!leads) return;
-    onSetLead(leads[idx]);
-    setLead(leads[idx].id);
-    pipelineUpdateByIdIndex({ id: pipeline?.id!, index: idx });
+    // if (!filterLeads) return;
+    // onSetLead(filterLeads[idx]);
+    // setLead(filterLeads[idx].id);
+    pipelineUpdateByIdIndex({ id: selectedPipeline?.id!, index: idx });
   };
 
   useEffect(() => {
-    if (!leads) return;
-    onSetLead(leads[pipIndex]);
-    setLead(leads[pipIndex].id);
+    if (!filterLeads) return;
+    onSetLead(filterLeads[pipeIndex]);
+    setLead(filterLeads[pipeIndex].id);
     if (!indexRef.current) return;
     indexRef.current.scrollIntoView({
       behavior: "smooth",
       inline: "nearest",
     });
-  }, [pipIndex, leads]);
+  }, [pipeIndex, filterLeads]);
 
-  if (leads == undefined) return null;
+  // if (filterLeads == undefined) return null;
   return (
     <Transition.Root show={isPhoneDialerOpen} as={Fragment}>
       <Dialog
@@ -101,11 +98,11 @@ export const PhoneDialerModal = () => {
                     >
                       {/* <div className="border border-secondary w-1/4 overflow-hidden h-full"> */}
                       <ScrollArea className="h-full pr-2">
-                        {leads.map((lead, i) => (
+                        {filterLeads?.map((lead, i) => (
                           <LeadDialerCard
                             key={lead.id}
                             lead={lead}
-                            indexRef={i == pipIndex ? indexRef : null}
+                            indexRef={i == pipeIndex ? indexRef : null}
                           />
                         ))}
                       </ScrollArea>

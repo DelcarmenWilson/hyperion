@@ -3,20 +3,20 @@ import express from "express";
 import { ServerSocket } from "./socket";
 import { runJobs } from "./schedule";
 
-const application = express();
+const app = express();
 
 /** Server Handling */
-const httpServer = http.createServer(application);
+const server = http.createServer(app);
 
 /** Start Socket */
-new ServerSocket(httpServer);
+new ServerSocket(server);
 
 /** Start job scheduler */
 runJobs();
 
 
 /** Log the request */
-application.use((req, res, next) => {
+app.use((req, res, next) => {
   console.info(
     `METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`
   );
@@ -31,11 +31,11 @@ application.use((req, res, next) => {
 });
 
 /** Parse the body of the request */
-application.use(express.urlencoded({ extended: true }));
-application.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 /** Rules of our API */
-application.use((req, res, next) => {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -49,15 +49,15 @@ application.use((req, res, next) => {
   next();
 });
 
-application.get("/", (req, res, next) => {
+app.get("/", (req, res, next) => {
   return res.status(200).json({ hello: "Entry point working fine!" });
 });
 
-application.get("/socket", (req, res, next) => {
+app.get("/socket", (req, res, next) => {
   return res.status(200).json({ hello: "Socket is working!" });
 });
 
-application.post("/socket", async (req, res, next) => {
+app.post("/socket", async (req, res, next) => {
     const { userId, type, dt, dt1 } = await req.body;
     ServerSocket.instance.Actions(userId, type, dt, dt1);
     return res.status(200).json({ hello: "Socket is working!" });
@@ -65,17 +65,17 @@ application.post("/socket", async (req, res, next) => {
 
 
 /** Healthcheck */
-application.get("/ping", (req, res, next) => {
+app.get("/ping", (req, res, next) => {
   return res.status(200).json({ hello: "world!" });
 });
 
 /** Socket Information */
-application.get("/status", (req, res, next) => {
+app.get("/status", (req, res, next) => {
   return res.status(200).json({ users: ServerSocket.instance.users });
 });
 
 /** Error handling */
-application.use((req, res, next) => {
+app.use((req, res, next) => {
   const error = new Error("Not found");
 
   res.status(404).json({
@@ -84,4 +84,4 @@ application.use((req, res, next) => {
 });
 
 /** Listen */
-httpServer.listen(4000, () => console.info(`Server is running`));
+server.listen(4000, () => console.info(`Server is running`));

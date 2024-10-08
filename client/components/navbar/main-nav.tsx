@@ -21,13 +21,8 @@ export const MainNav = ({ admin }: Props) => {
     onRejectCall,
   } = useMainNav();
 
-
-
-  const pathname = usePathname().split("/")[1].replace("-"," ")
-
-
-  
-
+  const pname = usePathname().split("/")[1].replace("-", " ");
+  const pathname = admin ? "AdminP Panel" : pname;
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>
@@ -50,22 +45,14 @@ export const MainNav = ({ admin }: Props) => {
           <Button onClick={onSheduledLeads}>Schedule Leads</Button>
         </>
       )} */}
-      {admin ? (
-        <TextAnimation
-          text="Admin Panel"
-          textAnchor="left"
-          viewBox="0 0 700 160"
-          x="0"
-          y="70%"
-        />
-      ):(<TextAnimation
+      <TextAnimation
         text={pathname}
         textAnchor="left"
         viewBox="0 0 700 160"
         x="0"
         y="70%"
-      />)}
-     
+      />
+
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

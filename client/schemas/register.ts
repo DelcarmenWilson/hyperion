@@ -18,6 +18,24 @@ import * as z from "zod";
   });
   export type MasterRegisterSchemaType = z.infer<typeof MasterRegisterSchema>;
   
+  export const SuperAdminRegisterSchema = z.object({
+    id: z.string().optional(),
+    organization: z.string().min(5, { message: "must be at least 5 characters" }),
+    team: z.string().min(5, { message: "must be at least 5 characters" }),
+    npn: z.string().min(4, { message: "must be at least 4 characters" }),
+    firstName: z.string().min(3, "must be at least 3 characters"),
+    lastName: z.string().min(2, "must be at least 2 characters"),
+    userName: z.string().min(4, {
+      message: "must be at least 4 characters",
+    }),
+    password: z.string().min(6, {
+      message: "Minimum 6 characters required",
+    }),
+    email: z.string({message:"*"}).email({
+      message: "Email not valid",
+    }),
+  });
+  export type SuperAdminRegisterSchemaType = z.infer<typeof SuperAdminRegisterSchema>;
   export const RegisterSchema = z.object({
     id: z.string().optional(),
     team: z.string().min(5, { message: "*" }),

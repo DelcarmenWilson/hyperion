@@ -1,6 +1,6 @@
 "use client";
 import { FilePenLine, MoreVertical, RefreshCcw, Trash } from "lucide-react";
-import { usePipelineStore } from "../hooks/use-pipelines";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
 import { Button } from "@/components/ui/button";
 import {

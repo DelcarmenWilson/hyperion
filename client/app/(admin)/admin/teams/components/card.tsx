@@ -30,7 +30,7 @@ export const TeamCard = ({ team }: TeamCardProps) => {
         </Avatar>
         <h4 className="font-bold">{team.owner?.firstName!}</h4>
       </div>
-      <CardData label="Image" value={team.image!} />
+      <CardData label="Image" value={team.logo!} />
       <CardData label="Banner" value={team.banner!} />
 
       <CardData label="Organization" value={team.organization.name} />

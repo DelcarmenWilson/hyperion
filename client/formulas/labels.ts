@@ -44,9 +44,9 @@ export const getLabelTextColor = (color: labelColor): string => {
 //       return "bg-primary";
 //   }
 // };
-export function getLabelBgColor(
+export const  getLabelBgColor=(
   color: string
-): { checkbox: string; label: string } {
+): { checkbox: string; label: string }=> {
   switch (color) {
     case "indigo":
       return {

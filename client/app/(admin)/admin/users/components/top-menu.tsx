@@ -1,39 +1,64 @@
 "use client";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
-import { Team, User } from "@prisma/client";
+import { AssistantForm, UserForm } from "./form";
 import { Button } from "@/components/ui/button";
-import { AssistantForm } from "./form";
+import { DrawerRight } from "@/components/custom/drawer-right";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
-type UserTopMenuProps = {
-  teams: Team[];
-  admins: User[];
-};
-export const UserTopMenu = ({ teams, admins }: UserTopMenuProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export const UserTopMenu = () => {
+  const role = useCurrentRole();
+  const [isAssistantDrawerOpen, setAssistantDrawerOpen] = useState(false);
+  const [isUserDrawerOpen, setUserDrawerOpen] = useState(false);
 
-  const onAssitantCreated = (e?: User) => {
-    setIsDrawerOpen(false);
-  };
   return (
     <>
       <DrawerRight
         title={"New Assistant"}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        isOpen={isAssistantDrawerOpen}
+        onClose={() => setAssistantDrawerOpen(false)}
       >
-        <AssistantForm
-          teams={teams}
-          admins={admins}
-          onClose={onAssitantCreated}
-        />
+        <AssistantForm onClose={() => setAssistantDrawerOpen(false)} />
+      </DrawerRight>
+      <DrawerRight
+        title={"New User"}
+        isOpen={isUserDrawerOpen}
+        onClose={() => setUserDrawerOpen(false)}
+      >
+        <UserForm onClose={() => setUserDrawerOpen(false)} />
       </DrawerRight>
       <div className="col-span-3 text-end">
-        <Button onClick={() => setIsDrawerOpen(true)}>
-          <Plus size={16} className="mr-2" /> New Assistant
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            {role == "SUPER_ADMIN" && (
+              <Button size="sm" className="gap-2">
+                <span className="sr-only">Actions menu</span>
+                Actions <ChevronDown size={15} />
+              </Button>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="gap-2"
+              onClick={() => setUserDrawerOpen(true)}
+            >
+              New User
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="gap-2"
+              onClick={() => setAssistantDrawerOpen(true)}
+            >
+              New Assistant
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </>
   );

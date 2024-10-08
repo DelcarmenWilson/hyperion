@@ -9,11 +9,7 @@ import {
 } from "@/schemas/blueprint";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   Form,
   FormControl,
@@ -48,84 +44,78 @@ export const BluePrintWeekForm = () => {
   }, [bluePrintWeek]);
 
   return (
-    <Dialog
+    <CustomDialog
       open={isBluePrintWeekFormOpen}
-      onOpenChange={onBluePrintWeekFormClose}
+      onClose={onBluePrintWeekFormClose}
+      title="Edit current week blueprint (Test)"
+      description="Blue Print Week Form"
     >
-      <DialogDescription className="hidden">
-        Blue Print Week Form
-      </DialogDescription>
-      <DialogContent>
-        <h3 className="text-2xl font-semibold py-2">
-          Edit current week blueprint (Test)
-        </h3>
-        <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onBluePrintWeekUpdate)}>
-              {/* CALLS */}
-              <FormField
-                control={form.control}
-                name="calls"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Calls
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Calls Made" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* APPOINTMENTS */}
-              <FormField
-                control={form.control}
-                name="appointments"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Appointments
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Appointments Made" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* PREMIUM */}
-              <FormField
-                control={form.control}
-                name="premium"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Premium
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Premium Earned" />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+      <div className="col flex-col items-start gap-2 xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onBluePrintWeekUpdate)}>
+            {/* CALLS */}
+            <FormField
+              control={form.control}
+              name="calls"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Calls
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Calls Made" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* APPOINTMENTS */}
+            <FormField
+              control={form.control}
+              name="appointments"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Appointments
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Appointments Made" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* PREMIUM */}
+            <FormField
+              control={form.control}
+              name="premium"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Premium
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Premium Earned" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              <div className="flex mt-2 gap-2 justify-end">
-                <Button
-                  variant="outlineprimary"
-                  type="button"
-                  onClick={onBluePrintWeekFormClose}
-                >
-                  Cancel
-                </Button>
-                <Button>Submit</Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+            <div className="flex mt-2 gap-2 justify-end">
+              <Button
+                variant="outlineprimary"
+                type="button"
+                onClick={onBluePrintWeekFormClose}
+              >
+                Cancel
+              </Button>
+              <Button>Submit</Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </CustomDialog>
   );
 };
 

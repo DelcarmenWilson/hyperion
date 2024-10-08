@@ -1,6 +1,7 @@
 import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
 import { LeadSchemaType } from "@/schemas/lead";
+import { leadDefaultStatus } from "@/constants/lead";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -75,7 +76,7 @@ const Avalanche_Leads = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -98,7 +99,7 @@ const Avalanche_Leads = (
       recievedAt: d["Date_Posted"],
       vendor,
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -110,7 +111,7 @@ const Amm_Leads = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -133,7 +134,7 @@ const Amm_Leads = (
       recievedAt: d["created_time"],
       vendor,
       type,
-      status,
+      statusId,
       assistantId,
       currentlyInsured:
         d["do_you_currently_have_coverage?"] ==
@@ -151,7 +152,7 @@ const Hyperion = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -177,7 +178,7 @@ const Hyperion = (
       smoker: d["are_you_a_smoker?"].toLowerCase() == "no" ? false : true,
       vendor: vendor,
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -189,7 +190,7 @@ const IlcLeads = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -217,7 +218,7 @@ const IlcLeads = (
       policyAmount: a?.DesiredCoverageAmount,
       vendor,
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -228,7 +229,7 @@ const IlcLeads = (
 const Leadrilla = (
   result: any,
   vendor: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -251,7 +252,7 @@ const Leadrilla = (
       type: convertType(d["product"]),
       recievedAt: d["date purchased"],
       vendor: vendor,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -263,7 +264,7 @@ const MediaAlphaLeads = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -289,7 +290,7 @@ const MediaAlphaLeads = (
       vendor: vendor,
       recievedAt: d["received_at"],
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -300,7 +301,7 @@ const MutualOfOmaha = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -324,7 +325,7 @@ const MutualOfOmaha = (
       maritalStatus: "Single",
       vendor: vendor,
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -335,7 +336,7 @@ const PrimeTime = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -359,7 +360,7 @@ const PrimeTime = (
       recievedAt: d["Date Requested"],
       policyAmount: d["Amount Requested"],
       vendor: vendor,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -371,7 +372,7 @@ const ProspectForLeads = (
   result: any,
   vendor: string,
   type: string,
-  status: string,
+  statusId: string,
   assistantId: string | undefined
 ): LeadSchemaType[] => {
   let mapped: LeadSchemaType[] = [];
@@ -396,7 +397,7 @@ const ProspectForLeads = (
       vendor: vendor,
       policyAmount: d["Policy Amount"],
       type,
-      status,
+      statusId,
       assistantId,
     };
     mapped.push(newobj);
@@ -425,7 +426,7 @@ export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
       recievedAt: d["created_time"],
       vendor: "Amm_Leads",
       type: "General",
-      status: "New",
+      statusId: leadDefaultStatus["New"],
       currentlyInsured:
         d["do_you_currently_have_coverage?"] ==
         "no,_and_i_am_looking_for_coverage"

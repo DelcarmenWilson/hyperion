@@ -1,11 +1,10 @@
-import * as z from "zod";
 import { useState } from "react";
 import { Plus, Send } from "lucide-react";
 
-import { useOnlineUserData } from "@/hooks/user/use-user";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useOnlineUserData } from "@/hooks/user/use-user";
 import { useLeadData } from "@/hooks/lead/use-lead";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
@@ -13,21 +12,7 @@ import { UserTemplate } from "@prisma/client";
 import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-import {
-  Form,
-  FormField,
-  FormControl,
-  FormMessage,
-  FormItem,
-} from "@/components/ui/form";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +20,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormField,
+  FormControl,
+  FormMessage,
+  FormItem,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { ImageGrid } from "@/components/reusable/image-grid";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
 import { replacePreset } from "@/formulas/text";
@@ -83,13 +76,15 @@ export const SmsForm = () => {
 
   return (
     <>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogDescription className="hidden">Sms Form</DialogDescription>
-        <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
-          <h3 className="text-2xl font-semibold text-primary">Templates</h3>
-          <TemplateList onSelect={onTemplateSelected} />
-        </DialogContent>
-      </Dialog>
+      <CustomDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title="Templates"
+        description="Sms Form"
+      >
+        <h3 className="text-2xl font-semibold text-primary"></h3>
+        <TemplateList onSelect={onTemplateSelected} />
+      </CustomDialog>
       <div>
         <Form {...form}>
           <form

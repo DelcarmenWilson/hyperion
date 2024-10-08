@@ -1,24 +1,23 @@
+"use client";
+import { useUserData } from "./hooks/use-user";
+
 import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./components/columns";
 import { UserTopMenu } from "./components/top-menu";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-import { usersGetAll } from "@/actions/user";
-import { usersGetAllByRole } from "@/actions/user";
-import { teamsGetAll } from "@/data/team";
-
-const UsersPage = async () => {
-  const users = await usersGetAll();
-  const teams = await teamsGetAll();
-  const admins = await usersGetAllByRole("ADMIN");
-
+const UsersPage = () => {
+  const { users, isFetchingUsers } = useUserData();
   return (
     <PageLayoutAdmin
-      title={`Users (${users.length})`}
+      title={`Users (${users ? users.length : 0})`}
       description="Manage all users"
-      topMenu={<UserTopMenu teams={teams} admins={admins} />}
+      topMenu={<UserTopMenu />}
     >
-      <DataTable columns={columns} data={users} headers />
+      <SkeletonWrapper isLoading={isFetchingUsers}>
+        <DataTable columns={columns} data={users || []} headers />
+      </SkeletonWrapper>
     </PageLayoutAdmin>
   );
 };

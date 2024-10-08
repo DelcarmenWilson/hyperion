@@ -91,7 +91,7 @@ export type FullTeam = Team & {
 export type FullTeamReport = {
   id: string;
   name: string;
-  image: string | null;
+  logo: string | null;
   banner: string | null;
   calls: number;
   appointments: number;
@@ -118,6 +118,10 @@ export type PipelineAndLeads = {
 export type Sales = Lead & {
   user: { firstName: string; lastName: string; image: string | null };
   policy?: LeadPolicy | null;
+};
+
+export type FullOrganization = Organization & {
+  teams?: Team[];
 };
 
 //DAILER SETTINGS

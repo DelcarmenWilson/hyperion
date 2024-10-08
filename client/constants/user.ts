@@ -1,4 +1,3 @@
-
 type UserRole = {
   name: string;
   value: string;
@@ -6,15 +5,23 @@ type UserRole = {
 
 export const UserRoles: UserRole[] = [
   {
-    name: "ADMIN",
+    name: "Student",
+    value: "STUDENT",
+  },
+  {
+    name: "Assistant",
+    value: "ASSISTANT",
+  },
+  {
+    name: "User",
+    value: "USER",
+  },
+  {
+    name: "Admin",
     value: "ADMIN",
   },
   {
-    name: "MASTER",
-    value: "MASTER",
-  },
-  {
-    name: "USER",
-    value: "USER",
+    name: "Super Admin",
+    value: "SUPER_ADMIN",
   },
 ];

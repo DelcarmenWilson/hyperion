@@ -22,13 +22,9 @@ import { useLeadData } from "@/hooks/lead/use-lead";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { UserTemplate } from "@prisma/client";
-
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "../global/custom-dialog";
+
 import Hint from "@/components/custom/hint";
 import EmojiPopover from "./emoji-popover";
 import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
@@ -201,15 +197,14 @@ const QuillEditor = ({
   };
   return (
     <>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogDescription className="hidden">
-          Template Dialog
-        </DialogDescription>
-        <DialogContent className="flex flex-col justify-start max-h-full max-w-screen-lg">
-          <h3 className="text-2xl font-semibold text-primary">Templates</h3>
-          <TemplateList onSelect={onTemplateSelected} />
-        </DialogContent>
-      </Dialog>
+      <CustomDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title="Templates"
+        description="Template Dialog"
+      >
+        <TemplateList onSelect={onTemplateSelected} />
+      </CustomDialog>
       <div className="flex flex-col">
         <input
           type="file"

@@ -6,27 +6,22 @@ import { useSidebar } from "@/store/use-sidebar";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { ArrowRight, Sparkle } from "lucide-react";
 
+import { UserRole } from "@prisma/client";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { UserButton } from "@/components/auth/user-button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { AdminSidebarRoutes, MainSidebarRoutes } from "@/constants/page-routes";
+import { AdminRoutes, DashboardRoutes } from "@/constants/page-routes";
 import { IconLink, IconLinkSkeleton } from "../reusable/icon-link";
 
 export const SideBar = ({ main = false }: { main?: boolean }) => {
   const { isOpen } = useSidebar((state) => state);
   const role = useCurrentRole();
   const pathname = usePathname();
-  const allRoutes = main ? MainSidebarRoutes : AdminSidebarRoutes;
-
-  let routes = allRoutes;
-  if (main && role == "ASSISTANT") {
-    routes = allRoutes.filter((e) => e.assistant);
-  }
-  if (!main && role != "MASTER") {
-    routes = allRoutes.filter((e) => !e.master);
-  }
+  const allRoutes = main ? DashboardRoutes : AdminRoutes;
+  const routes = allRoutes.filter((e) => e.roles.includes(role as UserRole));
   return (
     <aside
       className={cn(

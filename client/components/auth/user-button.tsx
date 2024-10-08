@@ -21,6 +21,7 @@ export const UserButton = () => {
   if (!user) {
     return null;
   }
+  const isAdmin = ["MASTER", "ADMIN", "SUPER_ADMIN"].includes(user.role);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -35,14 +36,15 @@ export const UserButton = () => {
         <DropdownMenuLabel className="flex flex-col">
           <span>
             {user.name}
-            {(user.role == "MASTER" || user.role == "ADMIN") &&
-              ` - [${user.role.toLocaleLowerCase()}]`}
+            {isAdmin &&
+              ` - [${user.role.toLocaleLowerCase().replace("_", " ")}]`}
           </span>
 
           <span className="text-muted-foreground text-xs">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {(user.role == "MASTER" || user.role == "ADMIN") && (
+        {/* {(user.role == "MASTER" || user.role == "ADMIN"||user.role=="SUPER_ADMIN") && ( */}
+        {isAdmin && (
           <DropdownMenuItem
             className="cursor-pointer gap-2"
             onClick={() => router.push("/admin/teams")}

@@ -33,7 +33,7 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
   return (
     <div
       className={cn(
-        "relative border rounded  p-2 cursor-pointer w-full my-1",
+        "group relative border border-[#ccc] rounded  p-2 cursor-pointer w-full my-1",
         agent?.id == user.id ? "bg-primary/25" : "hover:bg-secondary"
       )}
     >
@@ -72,29 +72,29 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
             </Avatar>
           </div>
           <div className="flex-1 px-2 text-center">
-            <p>
-              <span className="text-lg font-bold capitalize">
-                {user.userName}
-              </span>
-              {user.role != "USER" && (
-                <span className=" lowercase"> ({user.role})</span>
-              )}
-            </p>
+            <p className="text-lg font-bold capitalize">{user.userName}</p>
             <p className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName}
             </p>
           </div>
         </div>
-        {/* TODO - dont forget to remove after testing */}
-        <div>{user.chatId}</div>
-        <div className="grid grid-cols-2">
-          <div className="flex justify-center items-center gap-2">
-            <Phone size={16} />
-            {user.calls}
-          </div>
-          <div className="flex justify-center items-center gap-2">
-            <Clock size={16} />
-            {formatSecondsToTime(user.duration)}
+        <div className="flex justify-between items-center gap-2 opacity-0 group-hover:opacity-100">
+          <span className=" lowercase text-sm font-semibold">
+            {user.role.replace("_", " ")}
+          </span>
+          <div className="flex justify-end items-center gap-2">
+            <div className="flex justify-center items-center gap-2">
+              <Phone size={14} />
+              <p className="text-muted-foreground text-xs font-bold">
+                {user.calls}
+              </p>
+            </div>
+            <div className="flex justify-center items-center gap-2">
+              <Clock size={14} />
+              <p className="text-muted-foreground text-xs font-bold">
+                {formatSecondsToTime(user.duration)}
+              </p>
+            </div>
           </div>
         </div>
       </div>

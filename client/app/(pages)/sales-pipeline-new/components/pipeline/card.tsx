@@ -91,7 +91,9 @@ export const PipelineCard = ({
           <Button
             size="sm"
             disabled={!leads.length}
-            onClick={() => onPhoneDialerOpen(leads, pipeline)}
+            //TODO - this does not work anymore see below for new code
+            // onClick={() => onPhoneDialerOpen(leads, pipeline)}
+            onClick={() => onPhoneDialerOpen()}
           >
             START DIALING
           </Button>

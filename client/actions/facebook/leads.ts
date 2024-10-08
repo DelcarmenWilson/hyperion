@@ -48,7 +48,7 @@ const campaignLeadsImport = async (
       currentInsuranse,
       type,
       vendor,
-      status,
+      statusId,
       recievedAt,
       notes,
     } = values[i];
@@ -104,7 +104,7 @@ const campaignLeadsImport = async (
             ? phoneNumber.phone
             : defaultNumber?.phone!,
           userId,
-          status,
+          statusId,
           notes,
           textCode,
           titan

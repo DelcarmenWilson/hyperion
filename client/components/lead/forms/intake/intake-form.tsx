@@ -40,6 +40,7 @@ import { formatPhoneNumber } from "@/formulas/phones";
 import { USDollar } from "@/formulas/numbers";
 
 import { MedicalInfoForm } from "./medical-info-form";
+import { CustomDialog } from "@/components/global/custom-dialog";
 //TODO need to add all the form data and updates into the useLeadIntakeActions
 export const IntakeForm = () => {
   const {
@@ -74,196 +75,190 @@ export const IntakeForm = () => {
   if (!personal || !leadId) return null;
   return (
     <>
-      <Dialog open={isIntakeDialogOpen} onOpenChange={onIntakeDialogClose}>
-        <DialogDescription className="hidden">Intake Form</DialogDescription>
-        <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
-          <h4 className="text-2xl font-semibold py-2 capitalize">
-            {dialogType} Info -
-            <span className="text-primary">{`${personal.firstName} ${personal.lastName}`}</span>
-          </h4>
-          {dialogType == "personal" && (
-            <PersonalInfoForm
-              info={personal as IntakePersonalInfoSchemaType}
-              onClose={onIntakeDialogClose}
-            />
-          )}
+      <CustomDialog
+        open={isIntakeDialogOpen}
+        onClose={onIntakeDialogClose}
+        title={`${dialogType} Info -`}
+        subTitle={`${personal.firstName} ${personal.lastName}`}
+        description="Intake Form"
+      >
+        {dialogType == "personal" && (
+          <PersonalInfoForm
+            info={personal as IntakePersonalInfoSchemaType}
+            onClose={onIntakeDialogClose}
+          />
+        )}
 
-          {dialogType == "doctor" && (
-            <DoctorInfoForm
-              leadId={leadId}
-              info={doctor}
-              onClose={onIntakeDialogClose}
-            />
-          )}
+        {dialogType == "doctor" && (
+          <DoctorInfoForm
+            leadId={leadId}
+            info={doctor}
+            onClose={onIntakeDialogClose}
+          />
+        )}
 
-          {dialogType == "bank" && (
-            <BankInfoForm
-              leadId={leadId}
-              info={bank}
-              onClose={onIntakeDialogClose}
-            />
-          )}
-          {dialogType == "other" && (
-            <OtherInfoForm
-              info={other as IntakeOtherInfoSchemaType}
-              onClose={onIntakeDialogClose}
-            />
-          )}
+        {dialogType == "bank" && (
+          <BankInfoForm
+            leadId={leadId}
+            info={bank}
+            onClose={onIntakeDialogClose}
+          />
+        )}
+        {dialogType == "other" && (
+          <OtherInfoForm
+            info={other as IntakeOtherInfoSchemaType}
+            onClose={onIntakeDialogClose}
+          />
+        )}
 
-          {dialogType == "medical" && (
-            <MedicalInfoForm
-              leadId={leadId}
-              info={medical as IntakeMedicalInfoSchemaType}
-              onClose={onIntakeDialogClose}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        {dialogType == "medical" && (
+          <MedicalInfoForm
+            leadId={leadId}
+            info={medical as IntakeMedicalInfoSchemaType}
+            onClose={onIntakeDialogClose}
+          />
+        )}
+      </CustomDialog>
 
-      <Dialog open={isIntakeFormOpen} onOpenChange={onIntakeFormClose}>
-        <DialogDescription className="hidden">Intake Form</DialogDescription>
-        <DialogContent className="flex flex-col justify-start h-full max-w-screen-lg">
-          <h3 className="text-2xl font-semibold py-2">
-            Intake Form - <span className="text-primary">{leadFullName}</span>
-          </h3>
-          <ScrollArea className="pe-2">
-            {/* PERSONAL INFORMATION */}
-            <SkeletonWrapper isLoading={personalIsFectching}>
-              <SectionWrapper
-                title="Personal Information"
-                button={
-                  <Button
-                    size="sm"
-                    onClick={() => onIntakeDialogOpen("personal")}
-                  >
-                    Edit
-                  </Button>
-                }
-              >
-                <div className="grid grid-cols-2 gap-2 border-b">
-                  <div className="space-y-2">
-                    <TextGroup label="First Name" value={personal.firstName} />
-                    <TextGroup label="Last Name" value={personal.lastName} />
-                    <TextGroup
-                      label="Address"
-                      value={`${personal.address} ${personal.city} ${personal.state} ${personal.zipCode}`}
-                      className="col-span-2"
-                    />
-                    <TextGroup
-                      label="Home Phone"
-                      value={
-                        personal.homePhone
-                          ? formatPhoneNumber(personal.homePhone)
-                          : ""
-                      }
-                    />
-                    <TextGroup
-                      label="Cell Phone"
-                      value={
-                        personal.cellPhone
-                          ? formatPhoneNumber(personal.cellPhone)
-                          : ""
-                      }
-                    />
-
-                    <TextGroup
-                      label="Marital Status"
-                      value={personal.maritalStatus}
-                    />
-                    <TextGroup label="Email" value={personal.email} />
-                    <TextGroup
-                      label="Date of Birth"
-                      value={formatDob(personal.dateOfBirth)}
-                    />
-                    <TextGroup
-                      label="Place of Birth"
-                      value={personal.placeOfBirth}
-                    />
-                    <TextGroup
-                      label="Birth State"
-                      value={personal.stateOfBirth}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <TextGroup label="SSN" value={personal.ssn} />
-                    <TextGroup
-                      label="Driver's Lic"
-                      value={personal.licenseNumber}
-                    />
-                    <TextGroup label="State" value={personal.licenseState} />
-                    <TextGroup
-                      label="Exp"
-                      value={formatDate(personal.licenseExpires!, "MM-dd-yyyy")}
-                    />
-                    <Separator />
-                    <TextGroup label="Employer" value={personal.employer} />
-                    <TextGroup
-                      label="Address"
-                      value={personal.employerAddress}
-                    />
-                    <TextGroup
-                      label="Phone"
-                      value={
-                        personal.employerPhone
-                          ? formatPhoneNumber(personal.employerPhone)
-                          : ""
-                      }
-                    />
-                    <TextGroup label="Occupation" value={personal.occupation} />
-                    <TextGroup label="Experience" value={personal.experience} />
-                    <TextGroup
-                      label="Annual Income"
-                      value={USDollar.format(personal.annualIncome)}
-                    />
-                    <TextGroup
-                      label="Net Worth"
-                      value={USDollar.format(personal.netWorth)}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {personal.citizenShip == "citizen" ? (
-                    <TextGroup
-                      label="Citizenship"
-                      value={personal.citizenShip}
-                    />
-                  ) : (
-                    <>
-                      <TextGroup
-                        label="Green Card#"
-                        value={personal.greenCardNum}
-                      />
-                      <TextGroup
-                        label="# of years in the US"
-                        value={personal.yearsInUs.toString()}
-                      />
-                    </>
-                  )}
-                </div>
-                <div className="grid grid-cols-3 gap-2">
+      <CustomDialog
+        open={isIntakeFormOpen}
+        onClose={onIntakeFormClose}
+        title="Intake Form - "
+        subTitle={leadFullName}
+        description="Intake Form"
+      >
+        <ScrollArea className="pe-2">
+          {/* PERSONAL INFORMATION */}
+          <SkeletonWrapper isLoading={personalIsFectching}>
+            <SectionWrapper
+              title="Personal Information"
+              button={
+                <Button
+                  size="sm"
+                  onClick={() => onIntakeDialogOpen("personal")}
+                >
+                  Edit
+                </Button>
+              }
+            >
+              <div className="grid grid-cols-2 gap-2 border-b">
+                <div className="space-y-2">
+                  <TextGroup label="First Name" value={personal.firstName} />
+                  <TextGroup label="Last Name" value={personal.lastName} />
                   <TextGroup
-                    label="Parents Living"
-                    value={personal.parentLiving}
+                    label="Address"
+                    value={`${personal.address} ${personal.city} ${personal.state} ${personal.zipCode}`}
+                    className="col-span-2"
                   />
-                  {personal.parentLiving == "yes" ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <TextGroup
-                        label="Age: Father"
-                        value={personal.fatherAge.toString()}
-                      />
-                      <TextGroup
-                        label="Mother"
-                        value={personal.motherAge.toString()}
-                      />
-                    </div>
-                  ) : (
-                    <TextGroup
-                      label="If no: Cause of Death"
-                      value={personal.cuaseOfDeath}
-                    />
-                  )}
+                  <TextGroup
+                    label="Home Phone"
+                    value={
+                      personal.homePhone
+                        ? formatPhoneNumber(personal.homePhone)
+                        : ""
+                    }
+                  />
+                  <TextGroup
+                    label="Cell Phone"
+                    value={
+                      personal.cellPhone
+                        ? formatPhoneNumber(personal.cellPhone)
+                        : ""
+                    }
+                  />
+
+                  <TextGroup
+                    label="Marital Status"
+                    value={personal.maritalStatus}
+                  />
+                  <TextGroup label="Email" value={personal.email} />
+                  <TextGroup
+                    label="Date of Birth"
+                    value={formatDob(personal.dateOfBirth)}
+                  />
+                  <TextGroup
+                    label="Place of Birth"
+                    value={personal.placeOfBirth}
+                  />
+                  <TextGroup
+                    label="Birth State"
+                    value={personal.stateOfBirth}
+                  />
                 </div>
-                {/* <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <TextGroup label="SSN" value={personal.ssn} />
+                  <TextGroup
+                    label="Driver's Lic"
+                    value={personal.licenseNumber}
+                  />
+                  <TextGroup label="State" value={personal.licenseState} />
+                  <TextGroup
+                    label="Exp"
+                    value={formatDate(personal.licenseExpires!, "MM-dd-yyyy")}
+                  />
+                  <Separator />
+                  <TextGroup label="Employer" value={personal.employer} />
+                  <TextGroup label="Address" value={personal.employerAddress} />
+                  <TextGroup
+                    label="Phone"
+                    value={
+                      personal.employerPhone
+                        ? formatPhoneNumber(personal.employerPhone)
+                        : ""
+                    }
+                  />
+                  <TextGroup label="Occupation" value={personal.occupation} />
+                  <TextGroup label="Experience" value={personal.experience} />
+                  <TextGroup
+                    label="Annual Income"
+                    value={USDollar.format(personal.annualIncome)}
+                  />
+                  <TextGroup
+                    label="Net Worth"
+                    value={USDollar.format(personal.netWorth)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {personal.citizenShip == "citizen" ? (
+                  <TextGroup label="Citizenship" value={personal.citizenShip} />
+                ) : (
+                  <>
+                    <TextGroup
+                      label="Green Card#"
+                      value={personal.greenCardNum}
+                    />
+                    <TextGroup
+                      label="# of years in the US"
+                      value={personal.yearsInUs.toString()}
+                    />
+                  </>
+                )}
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <TextGroup
+                  label="Parents Living"
+                  value={personal.parentLiving}
+                />
+                {personal.parentLiving == "yes" ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <TextGroup
+                      label="Age: Father"
+                      value={personal.fatherAge.toString()}
+                    />
+                    <TextGroup
+                      label="Mother"
+                      value={personal.motherAge.toString()}
+                    />
+                  </div>
+                ) : (
+                  <TextGroup
+                    label="If no: Cause of Death"
+                    value={personal.cuaseOfDeath}
+                  />
+                )}
+              </div>
+              {/* <div className="grid grid-cols-2 gap-2">
               <TextGroup label="First Name" value={personal.firstName} />
               <TextGroup label="Last Name" value={personal.lastName} />
               <TextGroup
@@ -371,254 +366,240 @@ export const IntakeForm = () => {
                 value={personal.cuaseOfDeath}
               />
             </div> */}
+            </SectionWrapper>
+          </SkeletonWrapper>
+
+          {/* PRIMARY BENEFICIARIES AND  CONTINGENT BENEFICIARIES*/}
+          {["Primary", "Contingent"].map((type, i) => (
+            <SkeletonWrapper key={i} isLoading={beneficiariesIsFectching}>
+              <SectionWrapper title={`${type} Beneficiaries`}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Name</TableHead>
+                      <TableHead>% Share</TableHead>
+                      <TableHead>Relationship</TableHead>
+                      <TableHead>DOB</TableHead>
+                      <TableHead>SSN</TableHead>
+                      <TableHead>Cell</TableHead>
+                      <TableHead>Address</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="font-bold">
+                    {beneficiaries
+                      ?.filter((e) => e.type == type)
+                      ?.map((bene) => (
+                        <TableRow key={bene.id}>
+                          <TableCell>{`${bene.firstName} ${bene.lastName}`}</TableCell>
+                          <TableCell>{bene.share}</TableCell>
+                          <TableCell>{bene.relationship}</TableCell>
+                          <TableCell>{formatDob(bene.dateOfBirth)}</TableCell>
+                          <TableCell>{bene.ssn}</TableCell>
+                          <TableCell>
+                            {bene.cellPhone
+                              ? formatPhoneNumber(bene.cellPhone)
+                              : ""}
+                          </TableCell>
+                          <TableCell>{bene.address}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
               </SectionWrapper>
             </SkeletonWrapper>
+          ))}
 
-            {/* PRIMARY BENEFICIARIES AND  CONTINGENT BENEFICIARIES*/}
-            {["Primary", "Contingent"].map((type, i) => (
-              <SkeletonWrapper key={i} isLoading={beneficiariesIsFectching}>
-                <SectionWrapper title={`${type} Beneficiaries`}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">Name</TableHead>
-                        <TableHead>% Share</TableHead>
-                        <TableHead>Relationship</TableHead>
-                        <TableHead>DOB</TableHead>
-                        <TableHead>SSN</TableHead>
-                        <TableHead>Cell</TableHead>
-                        <TableHead>Address</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody className="font-bold">
-                      {beneficiaries
-                        ?.filter((e) => e.type == type)
-                        ?.map((bene) => (
-                          <TableRow key={bene.id}>
-                            <TableCell>{`${bene.firstName} ${bene.lastName}`}</TableCell>
-                            <TableCell>{bene.share}</TableCell>
-                            <TableCell>{bene.relationship}</TableCell>
-                            <TableCell>{formatDob(bene.dateOfBirth)}</TableCell>
-                            <TableCell>{bene.ssn}</TableCell>
-                            <TableCell>
-                              {bene.cellPhone
-                                ? formatPhoneNumber(bene.cellPhone)
-                                : ""}
-                            </TableCell>
-                            <TableCell>{bene.address}</TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </SectionWrapper>
-              </SkeletonWrapper>
-            ))}
-
-            {/* OTHER INFORMATION*/}
-            <SkeletonWrapper isLoading={otherIsFectching}>
-              <SectionWrapper
-                title="OTHER INFORMATION"
-                button={
-                  <Button size="sm" onClick={() => onIntakeDialogOpen("other")}>
-                    Edit
-                  </Button>
-                }
-              >
-                <div className="grid grid-cols-2 gap-2">
-                  <TextGroup
-                    label="Tobacco"
-                    value={other?.smoker ? "Yes" : "No"}
-                  />
-                  <TextGroup
-                    label="Number Years of Use:"
-                    value={other?.yearsSmoking.toString()}
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <TextGroup label="Height" value={other?.height} />
-                  <TextGroup label="Weight This Year" value={other?.weight} />
-                  <TextGroup
-                    label="Weight Last Year"
-                    value={other?.weightLastYear}
-                  />
-                </div>
+          {/* OTHER INFORMATION*/}
+          <SkeletonWrapper isLoading={otherIsFectching}>
+            <SectionWrapper
+              title="OTHER INFORMATION"
+              button={
+                <Button size="sm" onClick={() => onIntakeDialogOpen("other")}>
+                  Edit
+                </Button>
+              }
+            >
+              <div className="grid grid-cols-2 gap-2">
                 <TextGroup
-                  label="Foreign countries visited in the last 2 years with dates
+                  label="Tobacco"
+                  value={other?.smoker ? "Yes" : "No"}
+                />
+                <TextGroup
+                  label="Number Years of Use:"
+                  value={other?.yearsSmoking.toString()}
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <TextGroup label="Height" value={other?.height} />
+                <TextGroup label="Weight This Year" value={other?.weight} />
+                <TextGroup
+                  label="Weight Last Year"
+                  value={other?.weightLastYear}
+                />
+              </div>
+              <TextGroup
+                label="Foreign countries visited in the last 2 years with dates
 "
-                  value={other?.foreignVisited}
+                value={other?.foreignVisited}
+              />
+            </SectionWrapper>
+          </SkeletonWrapper>
+
+          {/* DOCTOR INFORMATION*/}
+          <SkeletonWrapper isLoading={doctorIsFectching}>
+            <SectionWrapper
+              title="Doctor Information"
+              button={
+                <Button size="sm" onClick={() => onIntakeDialogOpen("doctor")}>
+                  Edit
+                </Button>
+              }
+            >
+              <div className="grid grid-cols-3 gap-2">
+                <TextGroup
+                  className="col-span-2"
+                  label="Doctor's Name"
+                  value={doctor?.name}
                 />
-              </SectionWrapper>
-            </SkeletonWrapper>
+                <TextGroup
+                  label="Phone"
+                  value={doctor?.phone ? formatPhoneNumber(doctor.phone) : ""}
+                />
+                <TextGroup
+                  className="col-span-3"
+                  label="Address"
+                  value={doctor?.address}
+                />
+                <TextGroup
+                  className="col-span-2"
+                  label="Last Date Visited"
+                  value={formatDate(doctor?.lastVisit)}
+                />
+                <TextGroup
+                  label="Reason for Visit"
+                  value={doctor?.reasonForVisit}
+                />
+              </div>
+            </SectionWrapper>
+          </SkeletonWrapper>
 
-            {/* DOCTOR INFORMATION*/}
-            <SkeletonWrapper isLoading={doctorIsFectching}>
-              <SectionWrapper
-                title="Doctor Information"
-                button={
-                  <Button
-                    size="sm"
-                    onClick={() => onIntakeDialogOpen("doctor")}
-                  >
-                    Edit
-                  </Button>
-                }
-              >
-                <div className="grid grid-cols-3 gap-2">
-                  <TextGroup
-                    className="col-span-2"
-                    label="Doctor's Name"
-                    value={doctor?.name}
-                  />
-                  <TextGroup
-                    label="Phone"
-                    value={doctor?.phone ? formatPhoneNumber(doctor.phone) : ""}
-                  />
-                  <TextGroup
-                    className="col-span-3"
-                    label="Address"
-                    value={doctor?.address}
-                  />
-                  <TextGroup
-                    className="col-span-2"
-                    label="Last Date Visited"
-                    value={formatDate(doctor?.lastVisit)}
-                  />
-                  <TextGroup
-                    label="Reason for Visit"
-                    value={doctor?.reasonForVisit}
-                  />
+          {/* BANK INFORMATION*/}
+          <SkeletonWrapper isLoading={bankIsFectching}>
+            <SectionWrapper
+              title="Bank Information"
+              button={
+                <Button size="sm" onClick={() => onIntakeDialogOpen("bank")}>
+                  Edit
+                </Button>
+              }
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <div className="gap-2">
+                  <TextGroup label="Bank Name " value={bank?.name} />
+                  <TextGroup label="Routing #" value={bank?.routing} />
                 </div>
-              </SectionWrapper>
-            </SkeletonWrapper>
-
-            {/* BANK INFORMATION*/}
-            <SkeletonWrapper isLoading={bankIsFectching}>
-              <SectionWrapper
-                title="Bank Information"
-                button={
-                  <Button size="sm" onClick={() => onIntakeDialogOpen("bank")}>
-                    Edit
-                  </Button>
-                }
-              >
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="gap-2">
-                    <TextGroup label="Bank Name " value={bank?.name} />
-                    <TextGroup label="Routing #" value={bank?.routing} />
-                  </div>
-                  <div>
-                    By signing below, client agrees to have $_________________
-                    drafted from their account on the designated draft date.
-                  </div>
-                  <TextGroup label="Account #" value={bank?.account} />
-                  <TextGroup label="Signature" value={bank?.signature} />
-                  <TextGroup
-                    label="Draft Date:"
-                    value={formatDate(bank?.draftDate)}
-                  />
-                  <TextGroup
-                    label="Date"
-                    value={formatDate(bank?.signedDate)}
-                  />
+                <div>
+                  By signing below, client agrees to have $_________________
+                  drafted from their account on the designated draft date.
                 </div>
-              </SectionWrapper>
-            </SkeletonWrapper>
+                <TextGroup label="Account #" value={bank?.account} />
+                <TextGroup label="Signature" value={bank?.signature} />
+                <TextGroup
+                  label="Draft Date:"
+                  value={formatDate(bank?.draftDate)}
+                />
+                <TextGroup label="Date" value={formatDate(bank?.signedDate)} />
+              </div>
+            </SectionWrapper>
+          </SkeletonWrapper>
 
-            {/* FOR PRODUCERS ONLY*/}
-            <SkeletonWrapper isLoading={policyIsFectching}>
-              <SectionWrapper
-                title="For Producers Only"
-                button={
-                  <Button size="sm" onClick={() => onPolicyFormOpen(leadId)}>
-                    Edit
-                  </Button>
-                }
-              >
-                <div className="grid grid-cols-2 gap-2">
-                  <TextGroup label="Carrier" value={policy?.carrier} />
-                  <TextGroup
-                    label="Policy Number"
-                    value={policy?.policyNumber}
-                  />
-                  <TextGroup label="Status" value={policy?.status} />
-                  <TextGroup
-                    label="Ap"
-                    value={USDollar.format(parseInt(policy?.ap as string))}
-                  />
-                  <TextGroup
-                    label="Commision"
-                    value={USDollar.format(
-                      parseInt(policy?.commision as string)
-                    )}
-                  />
-                  <TextGroup
-                    label="Coverage Amount"
-                    value={USDollar.format(
-                      parseInt(policy?.coverageAmount as string)
-                    )}
-                  />
-                  <TextGroup
-                    label="Start Date"
-                    value={formatDate(policy?.startDate)}
-                  />
-                </div>
-              </SectionWrapper>
-            </SkeletonWrapper>
-            {/*MEDICAL QUESTIONS*/}
+          {/* FOR PRODUCERS ONLY*/}
+          <SkeletonWrapper isLoading={policyIsFectching}>
+            <SectionWrapper
+              title="For Producers Only"
+              button={
+                <Button size="sm" onClick={() => onPolicyFormOpen(leadId)}>
+                  Edit
+                </Button>
+              }
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <TextGroup label="Carrier" value={policy?.carrier} />
+                <TextGroup label="Policy Number" value={policy?.policyNumber} />
+                <TextGroup label="Status" value={policy?.status} />
+                <TextGroup
+                  label="Ap"
+                  value={USDollar.format(parseInt(policy?.ap as string))}
+                />
+                <TextGroup
+                  label="Commision"
+                  value={USDollar.format(parseInt(policy?.commision as string))}
+                />
+                <TextGroup
+                  label="Coverage Amount"
+                  value={USDollar.format(
+                    parseInt(policy?.coverageAmount as string)
+                  )}
+                />
+                <TextGroup
+                  label="Start Date"
+                  value={formatDate(policy?.startDate)}
+                />
+              </div>
+            </SectionWrapper>
+          </SkeletonWrapper>
+          {/*MEDICAL QUESTIONS*/}
 
-            <SkeletonWrapper isLoading={medicalIsFectching}>
-              <SectionWrapper
-                title="MEDICAL QUESTIONS"
-                button={
-                  <Button
-                    size="sm"
-                    onClick={() => onIntakeDialogOpen("medical")}
-                  >
-                    Edit
-                  </Button>
-                }
-              >
-                <Question
-                  label="1.Do you have any health issues or concerns you’re going through?
+          <SkeletonWrapper isLoading={medicalIsFectching}>
+            <SectionWrapper
+              title="MEDICAL QUESTIONS"
+              button={
+                <Button size="sm" onClick={() => onIntakeDialogOpen("medical")}>
+                  Edit
+                </Button>
+              }
+            >
+              <Question
+                label="1.Do you have any health issues or concerns you’re going through?
               Any medications, hospitalizations, surgeries, doctors’ visits?"
-                  value={medical?.healthIssues as boolean}
-                />
+                value={medical?.healthIssues as boolean}
+              />
 
-                <Question
-                  label="2. Have you been prescribed any medication in the past year that
+              <Question
+                label="2. Have you been prescribed any medication in the past year that
               you are not taking?"
-                  value={medical?.prescription as boolean}
-                />
-                <Question
-                  label="3. Any heart attacks, heart failures, strokes, TIA, or stints in
+                value={medical?.prescription as boolean}
+              />
+              <Question
+                label="3. Any heart attacks, heart failures, strokes, TIA, or stints in
               the last five years?"
-                  value={medical?.heartAttacks as boolean}
-                />
-                <Question
-                  label=" 4. Are you on blood thinners? (Plavix or Warfarin) or heart
+                value={medical?.heartAttacks as boolean}
+              />
+              <Question
+                label=" 4. Are you on blood thinners? (Plavix or Warfarin) or heart
               medication (Nitrostat, Nitroglycerin, Eliquis)?"
-                  value={medical?.bloodThinners as boolean}
-                />
-                <Question
-                  label="5. Any cancer in the last five years? What kind? How long have you
+                value={medical?.bloodThinners as boolean}
+              />
+              <Question
+                label="5. Any cancer in the last five years? What kind? How long have you
               been in remission?"
-                  value={medical?.cancer as boolean}
-                />
-                <Question
-                  label="6. Any diabetes?"
-                  value={medical?.diabetes as boolean}
-                />
-                <Question
-                  label="7. Are you taking gabapentin?"
-                  value={medical?.gabapentin as boolean}
-                />
-                <Question
-                  label="8. Have you ever experienced any complications related to
+                value={medical?.cancer as boolean}
+              />
+              <Question
+                label="6. Any diabetes?"
+                value={medical?.diabetes as boolean}
+              />
+              <Question
+                label="7. Are you taking gabapentin?"
+                value={medical?.gabapentin as boolean}
+              />
+              <Question
+                label="8. Have you ever experienced any complications related to
               diabetes? (Diabetic Coma, Diabetic Neuropathy, Diabetic
               Retinopathy, Diabetic Nephropathy, Insulin Shock, Amputation)"
-                  value={medical?.complications as boolean}
-                />
-                {/* <Question
+                value={medical?.complications as boolean}
+              />
+              {/* <Question
               label="9. Would you happen to know the date that you were diagnosed with
               diabetes?"
               value={medical?.dateDisgnosed as boolean}/>
@@ -626,41 +607,40 @@ export const IntakeForm = () => {
               label="10. Would you happen to know your last A1C Reading? Is it less
               than 7?"
               value={medical?.a1cReading as boolean}/> */}
-                <Question
-                  label="11. Have you been diagnosed with AIDS, HIV, or ARC?"
-                  value={medical?.aids as boolean}
-                />
-                <Question
-                  label="12. Any high blood pressure? Are you taking lisinopril,
+              <Question
+                label="11. Have you been diagnosed with AIDS, HIV, or ARC?"
+                value={medical?.aids as boolean}
+              />
+              <Question
+                label="12. Any high blood pressure? Are you taking lisinopril,
               metoprolol, or amlodipine?"
-                  value={medical?.highBloodPressure as boolean}
-                />
-                <Question
-                  label="13. Any lupus/RA/Asthma? Are you on any inhalers?"
-                  value={medical?.asthma as boolean}
-                />
-                <Question
-                  label="14. Any breathing complications or COPD? Are you on oxygen?"
-                  value={medical?.copd as boolean}
-                />
-                <Question
-                  label="15. Any anxiety or depression? Are you taking Prozac or Seroquel?"
-                  value={medical?.anxiety as boolean}
-                />
-                <Question
-                  label="16. Are you bipolar or schizophrenic? Are you taking Sertraline,
+                value={medical?.highBloodPressure as boolean}
+              />
+              <Question
+                label="13. Any lupus/RA/Asthma? Are you on any inhalers?"
+                value={medical?.asthma as boolean}
+              />
+              <Question
+                label="14. Any breathing complications or COPD? Are you on oxygen?"
+                value={medical?.copd as boolean}
+              />
+              <Question
+                label="15. Any anxiety or depression? Are you taking Prozac or Seroquel?"
+                value={medical?.anxiety as boolean}
+              />
+              <Question
+                label="16. Are you bipolar or schizophrenic? Are you taking Sertraline,
               Abilify, or dialysis?"
-                  value={medical?.bipolar as boolean}
-                />
-                <Question
-                  label="17. Any hospitalizations in the last year for 48 hours or more?"
-                  value={medical?.hospitalizations as boolean}
-                />
-              </SectionWrapper>
-            </SkeletonWrapper>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
+                value={medical?.bipolar as boolean}
+              />
+              <Question
+                label="17. Any hospitalizations in the last year for 48 hours or more?"
+                value={medical?.hospitalizations as boolean}
+              />
+            </SectionWrapper>
+          </SkeletonWrapper>
+        </ScrollArea>
+      </CustomDialog>
     </>
   );
 };

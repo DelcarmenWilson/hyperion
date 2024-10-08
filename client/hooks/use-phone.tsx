@@ -28,7 +28,6 @@ type State = {
   lead?: PipelineLead;
   leads?: PipelineLead[];
   pipeline?: Pipeline;
-  pipeIndex: number;
 
   // LEADINFO
   isLeadInfoOpen: boolean;
@@ -56,7 +55,7 @@ type Actions = {
   onPhoneInOpen: (c?: Call) => void;
   onPhoneInClose: () => void;
 
-  onPhoneDialerOpen: (e?: PipelineLead[], f?: Pipeline) => void;
+  onPhoneDialerOpen: () => void;
   onPhoneDialerClose: () => void;
 
   onPhoneOutOpen: (e?: PipelineLead, c?: TwilioShortConference) => void;
@@ -67,7 +66,6 @@ type Actions = {
 
   onSetLead: (e?: PipelineLead) => void;
   onSetLeads: (e?: FullLead[]) => void;
-  onSetIndex: (e: number) => void;
 
   // LEADINFO
   onLeadInfoToggle: () => void;
@@ -113,13 +111,7 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   isCallOpen: false,
   onPhoneInOpen: (c) => set({ call: c, isPhoneInOpen: true }),
   onPhoneInClose: () => set({ isPhoneInOpen: false }),
-  onPhoneDialerOpen: (e, f) =>
-    set({
-      isPhoneDialerOpen: true,
-      leads: e,
-      pipeline: f,
-      pipeIndex: f?.index,
-    }),
+  onPhoneDialerOpen: () => set({ isPhoneDialerOpen: true }),
   onPhoneDialerClose: () => set({ isPhoneDialerOpen: false }),
   onPhoneOutOpen: (e, c) =>
     set({
@@ -137,7 +129,6 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
 
   onSetLead: (e) => set({ lead: e }),
   onSetLeads: (e) => set({ leads: e }),
-  onSetIndex: (e) => set({ pipeIndex: e }),
   //CONFERENCE
   isConferenceOpen: false,
   setConference: (e) => set({ conference: e }),
@@ -169,7 +160,6 @@ export const usePhoneData = (phone: Device | null) => {
     leads,
     lead,
     pipeline,
-    pipeIndex,
   } = usePhoneStore();
 
   //GENERAL FUNCTIIONS
@@ -232,7 +222,6 @@ export const usePhoneData = (phone: Device | null) => {
     onIncomingCallAccept,
     onIncomingCallReject,
     pipeline,
-    pipeIndex,
     onPhoneDialerClose,
   };
 };

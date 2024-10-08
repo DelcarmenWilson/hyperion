@@ -16,6 +16,7 @@ datasource db {
 //ENUMS
 enum UserRole {
   MASTER
+  SUPER_ADMIN
   ADMIN
   USER
   ASSISTANT
@@ -65,6 +66,8 @@ model Organization {
   id        String   @id @default(cuid())
   name      String
   userId    String
+  logo      String?
+  banner    String?
   teams     Team[]   @relation("OrganizationToTeam")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,7 +79,7 @@ model Team {
   organization   Organization @relation("OrganizationToTeam", fields: [organizationId], references: [id], onDelete: Cascade)
 
   name   String
-  image  String?
+  logo   String?
   banner String?
 
   users  User[] @relation("UsersToTeam")

@@ -27,7 +27,7 @@ const PageSettings = async () => {
       description=""
       topMenu={
         <Button variant="outlineprimary" asChild>
-          <Link href="/test" target="_blank">
+          <Link href="/landing/xero" target="_blank">
             Landing page sample
           </Link>
         </Button>

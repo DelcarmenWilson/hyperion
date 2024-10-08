@@ -1,11 +1,9 @@
 "use client";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { toast } from "sonner";
+import { useOrganizationData } from "../../hooks/use-organization";
 
 import CountUp from "react-countup";
 
@@ -28,84 +26,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { DateRangePicker } from "@/components/custom/date-range-picker";
 
-import { adminChangeTeamManager } from "@/actions/admin/team";
-import { weekStartEnd } from "@/formulas/dates";
-import { USDollar } from "@/formulas/numbers";
 import { DatesFilter } from "@/components/reusable/dates-filter";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-interface TeamClientProps {
-  team: FullTeamReport;
-  users: HalfUser[];
-}
-
-export const TeamClient = ({ team, users }: TeamClientProps) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export const OrganizationClient = () => {
+  const { organization, isFetchingOrganization } = useOrganizationData();
   const user = useCurrentUser();
-  const [loading, setLoading] = useState(false);
-  const [selecteUser, setSelecteUser] = useState(users[0].id);
-  const data = [
-    {
-      title: "Calls",
-      value: team.calls.toString(),
-      icon: <Phone />,
-    },
-    {
-      title: "Conversations",
-      value: team.conversations.toString(),
-      icon: <MessageCircle />,
-    },
-    {
-      title: "Appointment",
-      value: team.appointments.toString(),
-      icon: <Calendar />,
-    },
-    {
-      title: "Total Revenue",
-      value: USDollar.format(team.revenue),
-      icon: <DollarSign />,
-    },
-  ];
-  const from = searchParams.get("from");
-  const searchDates = {
-    from: new Date(searchParams.get("from") as string),
-    to: new Date(searchParams.get("to") as string),
-  };
 
-  const [dates, setDates] = useState(from ? searchDates : weekStartEnd());
-
-  const onDateSelected = (e: any) => {
-    setDates(e);
-  };
-  const onUpdate = () => {
-    router.push(
-      `/admin/teams/${
-        team.id
-      }?from=${dates.from.toLocaleDateString()}&to=${dates.to.toLocaleDateString()}`
-    );
-  };
-  const onManagerChange = () => {
-    if (!selecteUser) {
-      toast.error("Invalid Data");
-    }
-    setLoading(true);
-    adminChangeTeamManager(team.id, selecteUser).then((data) => {
-      toast.success(data.success);
-      setLoading(false);
-      router.refresh();
-    });
-  };
   return (
-    <>
+    <SkeletonWrapper isLoading={isFetchingOrganization}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="w-full relative h-[100px] text-center">
           <Image
             width={200}
             height={100}
             className="h-full w-full"
-            src={team?.banner || "/assets/defaults/teamBanner.jpg"}
+            src={organization?.banner || "/assets/defaults/teamBanner.jpg"}
             alt="Team Banner"
           />
           <div className="absolute flex items-center gap-4 top-0 left-0 w-full h-full text-white p-4">
@@ -113,11 +50,11 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
               width={60}
               height={60}
               className="rounded-full shadow-sm shadow-white h-auto w-[60px] aspect-square"
-              src={team?.image || "/assets/defaults/teamImage.jpg"}
+              src={organization?.logo || "/assets/defaults/teamImage.jpg"}
               alt="Team Image"
             />
-            <span className=" text-2xl">{team?.name}</span>
-            <div className=" ml-auto">
+            <span className=" text-2xl">{organization?.name}</span>
+            {/* <div className=" ml-auto">
               {team?.owner ? (
                 <div className="flex flex-col items-center">
                   <p className="text-sm">Manager</p>
@@ -133,7 +70,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
               ) : (
                 <div className="flex flex-col items-center">
                   <p>No Manager</p>
-                  {(user?.role == "MASTER" || team.userId == user?.id) && (
+                  {(user?.role == "MASTER" || organization?.userId == user?.id) && (
                     <Dialog>
                       <DialogDescription className="hidden">
                         Add Manager Form
@@ -175,7 +112,7 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
                   )}
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -186,23 +123,15 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             <p>Organization</p>
             <Input
               disabled
-              placeholder="Team name"
-              value={team?.organization.name}
+              placeholder="Organization name"
+              value={organization?.name}
             />
           </div>
         </div>
-        <DatesFilter link={`/admin/teams/${team.id}`} />
-        {/* <div className="flex flex-col lg:flex-row justify-end items-end gap-2">
-          <DateRangePicker
-            setDate={onDateSelected}
-            date={dates}
-            className="flex"
-          />
-          <Button onClick={onUpdate}>Update</Button>
-        </div> */}
+        <DatesFilter link={`/admin/organization/${organization?.id}`} />
       </div>
       <Separator />
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 mt-4">
+      {/* <div className="grid gap-4 grid-cols-1 lg:grid-cols-4 mt-4">
         {data.map((d) => (
           <Overview
             key={d.title}
@@ -211,8 +140,8 @@ export const TeamClient = ({ team, users }: TeamClientProps) => {
             icon={d.icon}
           />
         ))}
-      </div>
-    </>
+      </div> */}
+    </SkeletonWrapper>
   );
 };
 type OverviewProps = {

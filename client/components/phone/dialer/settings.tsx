@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { Cog } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { DialerSettingsType } from "@/types";

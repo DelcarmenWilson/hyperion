@@ -97,7 +97,8 @@ function exportLeadsToPdf(leads: Lead[],fileName?:string) {
           `Current Insuranse: ${lead.currentInsuranse}`,
           `Vendor: ${lead.vendor}`,
           `Type: ${lead.type}`,
-          `Status: ${lead.status}`,
+          //TODO - need to get the actual lead status
+          `Status: ${lead.statusId}`,
           `Quote: ${lead.quote}`,
           //THESE NEXT THREE COLUMNS WILL BE REMOVED
           `Ap: ${lead.apOld}`,

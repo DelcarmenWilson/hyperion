@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, Move } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { usePhoneStore } from "@/hooks/use-phone";
-import { usePipelineActions } from "../../hooks/use-pipelines";
+import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
-import { Pipeline } from "@prisma/client";
-import { FullLead, PipelineLead } from "@/types";
+import { FullPipeline, PipelineLead } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,11 +19,11 @@ import { LeadCard } from "../lead-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { Actions } from "../actions";
-import { timeZones } from "@/constants/states";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { timeZones } from "@/constants/states";
 
 type PipelineCardProps = {
-  pipeline: Pipeline;
+  pipeline: FullPipeline;
   idx: number;
   initLeads: PipelineLead[];
   loading?: boolean;
@@ -34,7 +34,9 @@ export const PipelineCard = ({
   initLeads,
   loading = false,
 }: PipelineCardProps) => {
+  const { setSelectedPipeline } = usePipelineStore();
   const { onPhoneDialerOpen } = usePhoneStore();
+  const { onPipelineUpdateIndexSubmit } = usePipelineActions();
   const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
   const [index, setIndex] = useState(idx);
@@ -42,7 +44,6 @@ export const PipelineCard = ({
   const divRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<HTMLDivElement>(null);
   const controls = useDragControls();
-  const { onPipelineUpdateIndexSubmit } = usePipelineActions();
 
   const onReset = () => {
     setIndex(0);
@@ -97,7 +98,10 @@ export const PipelineCard = ({
               variant="outlineprimary"
               size="sm"
               disabled={!leads.length}
-              onClick={() => onPhoneDialerOpen(leads, pipeline)}
+              onClick={() => {
+                setSelectedPipeline(pipeline, timeZone);
+                onPhoneDialerOpen();
+              }}
             >
               START DIALING
             </Button>
@@ -105,7 +109,6 @@ export const PipelineCard = ({
           </div>
 
           <ScrollArea className="relative group h-full" ref={divRef}>
-            {/* <div className="relative group h-full overflow-y-auto" ref={divRef}> */}
             {leads.map((lead, i) => (
               <LeadCard
                 key={lead.id}
@@ -113,7 +116,6 @@ export const PipelineCard = ({
                 indexRef={i == index ? indexRef : null}
               />
             ))}
-            {/* </div> */}
           </ScrollArea>
         </SkeletonWrapper>
       </section>

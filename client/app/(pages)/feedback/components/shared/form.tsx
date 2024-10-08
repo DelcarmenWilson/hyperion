@@ -28,7 +28,7 @@ import {
 import { FeedbackSchema, FeedbackSchemaType } from "@/schemas/feedback";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MainSidebarRoutes } from "@/constants/page-routes";
+import { DashboardRoutes } from "@/constants/page-routes";
 import { feedbackInsert, feedbackUpdateById } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user-current-role";
@@ -49,7 +49,7 @@ export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
   });
 
   const [modalOpen, setModalOpen] = useState(false);
-  const routes = [...MainSidebarRoutes].sort((a, b) => {
+  const routes = [...DashboardRoutes].sort((a, b) => {
     if (a.title < b.title) {
       return -1;
     }

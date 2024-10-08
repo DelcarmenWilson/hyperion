@@ -13,7 +13,7 @@ const TaskPage = async () => {
       description="Manage Hyperion Tasks"
       topMenu={
         <Button variant="outlineprimary" asChild>
-          <Link href="/test" target="_blank">
+          <Link href="/landing" target="_blank">
             Landing page sample
           </Link>
         </Button>

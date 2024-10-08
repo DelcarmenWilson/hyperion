@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 
+import { User, UserRole } from "@prisma/client";
+import { OnlineUser } from "@/types/user";
 import { SummaryUser } from "@/types";
 import { UserAboutMeSchema, UserAboutMeSchemaType } from "@/schemas/user";
 import {
@@ -22,14 +24,19 @@ import { SettingsSchemaType } from "@/schemas/settings";
 import { chatSettingsInsert } from "@/actions/settings/chat";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
-import { userGetByEmail, userGetById } from "@/data/user";
+import {
+  userGetByEmail,
+  userGetByEmailOrUsername,
+  userGetById,
+} from "@/data/user";
+
 import { notificationSettingsInsert } from "@/actions/settings/notification";
 import { scheduleInsert } from "@/actions/user/schedule";
-import { UserRole } from "@prisma/client";
-import { OnlineUser } from "@/types/user";
-import { getEntireDay } from "@/formulas/dates";
 import { phoneSettingsInsert } from "../settings/phone";
 import { displaySettingsInsert } from "../settings/display";
+
+import { capitalize } from "@/formulas/text";
+import { getEntireDay } from "@/formulas/dates";
 
 //DATA
 export const userGetByIdOnline = async () => {
@@ -58,7 +65,14 @@ export const userGetByUserName = async (userName: string) => {
 };
 export const usersGetAll = async () => {
   try {
-    const users = await db.user.findMany({ orderBy: { firstName: "asc" } });
+    const user = await currentUser();
+    if (!user) return [];
+
+    const filter = user.role == "MASTER" ? undefined : user.organization;
+    const users = await db.user.findMany({
+      where: { team: { organizationId: filter } },
+      orderBy: { firstName: "asc" },
+    });
     return users;
   } catch {
     return [];
@@ -154,190 +168,172 @@ export const userGetAdAccount = async () => {
 
 //ACTIONS
 export const userInsert = async (values: RegisterSchemaType) => {
+  //Validate the data passed in
   const validatedFields = RegisterSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
 
+  //If the data was not succesfully validated return an error
+  if (!validatedFields.success) return { error: "Invalid fields!" };
+
+  //Destructure the fields
   const { team, npn, userName, password, email, firstName, lastName } =
     validatedFields.data;
+
+  //Get matching user based on email or username
+  const existingUser = await userGetByEmailOrUsername(email, userName);
+
+  //If email or username already exist return an error
+  if (existingUser) return { error: "Email or UserName already in use!" };
+
+  //Encrypt the users password
   const hashedPassword = await bcrypt.hash(password, 10);
-  const existingUser = await userGetByEmail(email);
 
-  if (existingUser) return { error: "Email already in use!" };
-
-  // return {success:"Register Diasabled!"}
-
+  //Create the user with the data previously specified
   const user = await db.user.create({
     data: {
       teamId: team,
       npn,
-      userName,
+      userName: userName.toLocaleLowerCase(),
       password: hashedPassword,
-      email,
-      firstName,
-      lastName,
+      email: email.toLocaleLowerCase(),
+      firstName: capitalize(firstName),
+      lastName: capitalize(lastName),
       //TODO dont forget to remove this after fixing token
       emailVerified: new Date(),
     },
   });
 
-  //create phone settings
-  await phoneSettingsInsert(user.id);
+  //If the user was not created return an error
+  if (!user) return { error: "User could not be created at this time!" };
 
-  //create display settings
-  await displaySettingsInsert(user.id);
+  //Insert all the user settings for the newly created user
+  await userInsertAllSettings(user);
 
-  //create chat settings
-  await chatSettingsInsert(user);
-
-  //create notification settings
-  await notificationSettingsInsert(user.id);
-
-  //create schedule
-  const hours = "09:00-17:00,12:00-13:00";
-  await scheduleInsert(user.id,user.firstName,hours);
-
-  //TODO
-  // const verificationToken = await generateVerificationToken(email);
-  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
-  // return { success: "Confirmation Email sent!" };
+  //If everything went well return a success message
   return { success: "Account created continue to login" };
 };
 
 export const userInsertAssistant = async (values: RegisterSchemaType) => {
+  //Validate the data passed in
   const validatedFields = RegisterSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
 
+  //If the data was not succesfully validated return an error
+  if (!validatedFields.success) return { error: "Invalid fields!" };
+
+  //Destructure the fields
   const { id, team, userName, password, email, firstName, lastName } =
     validatedFields.data;
 
-  const existingUser = await db.user.findUnique({ where: { id } });
-  if (!existingUser) {
-    return { error: "Agent does not exists!" };
-  }
+  //Try to get the agent associated with this account
+  const existingAgent = await db.user.findUnique({ where: { id } });
+  //If no agent was found return an error
+  if (!existingAgent) return { error: "Agent does not exists!" };
 
-  if (existingUser.assitantId) {
+  //If the agent already has an assitant return and error
+  if (existingAgent.assitantId)
     return { error: "Agent already has an assitant!" };
-  }
-  const existingAssistant = await userGetByEmail(email);
 
-  if (existingAssistant) {
-    return { error: "Email already in use!" };
-  }
+  //Get matching assistant based on email or username
+  const existingAssistant = await userGetByEmailOrUsername(email, userName);
+  //If email or username already exist return an error
+  if (existingAssistant) return { error: "Email or UserName already in use!" };
 
+  //Encrypt the users password
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  //Create the assistant with the data previously specified
   const assistant = await db.user.create({
     data: {
       teamId: team,
-      userName,
+      userName: userName.toLocaleLowerCase(),
       password: hashedPassword,
-      email,
-      firstName,
-      lastName,
+      email: email.toLocaleLowerCase(),
+      firstName: capitalize(firstName),
+      lastName: capitalize(lastName),
       //TODO dont forget to remove this after fixing token
       emailVerified: new Date(),
       role: "ASSISTANT",
     },
   });
+  //If the assistant was not created return an error
+  if (!assistant)
+    return { error: "Assitant could not be created at this time!" };
 
-  //TODO
-  // const verificationToken = await generateVerificationToken(email);
-  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
-  // return { success: "Confirmation Email sent!" };
-
-  //ASSIGN ASISTANT TO AGENT
+  //Assign asistant to agent
   await db.user.update({ where: { id }, data: { assitantId: assistant.id } });
-  //CREATE CHAT SETTINGS
-  await chatSettingsInsert(assistant);
-  const hours = "09:00-17:00,12:00-13:00";
-  await db.schedule.create({
-    data: {
-      userId: assistant.id,
-      title: "Book an Appointment with #first_name".replace(
-        "#first_name",
-        assistant.firstName
-      ),
-      subTitle:
-        "Pick the time that best works for you. I am looking forward to connecting with you.",
-      monday: hours,
-      tuesday: hours,
-      wednesday: hours,
-      thursday: hours,
-      friday: hours,
-      saturday: "Not Available",
-      sunday: "Not Available",
-    },
-  });
 
-  return { success: "Asistant account created" };
+  //Insert all the user settings for the newly created user
+  await userInsertAllSettings(assistant);
+
+  //If everything went well return a success message
+  return { success: "Assistant account created!" };
 };
 
 export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
+  //Validate the data passed in
   const validatedFields = MasterRegisterSchema.safeParse(values);
+
+  //If the data was not succesfully validated return an error
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
   }
-
+  //Destructure the fields
   const { organization, team, userName, password, email, firstName, lastName } =
     validatedFields.data;
 
+  //Get matching user based on email or username
+  const existingUser = await userGetByEmailOrUsername(email, userName);
+  //If email or username already exist return an error
+  if (existingUser) return { error: "Email or Username already in use!" };
+
+  //Get the master account if it already exist
   const existingMaster = await db.user.findFirst({
     where: {
       role: "MASTER",
     },
   });
 
-  if (existingMaster) {
-    return { error: "Master account already exist" };
-  }
-  //NEW USER
+  //if the master account already exist return an error
+  if (existingMaster) return { error: "Master account already exist" };
+
+  //Encrypt the users password
   const hashedPassword = await bcrypt.hash(password, 10);
+  //Create the user with the data previously specified
   const newUser = await db.user.create({
     data: {
-      userName,
+      userName: userName.toLocaleLowerCase(),
       password: hashedPassword,
-      firstName,
-      lastName,
-      email,
+      email: email.toLocaleLowerCase(),
+      firstName: capitalize(firstName),
+      lastName: capitalize(lastName),
       emailVerified: new Date(),
       role: "MASTER",
     },
   });
-  //NEW ORGANIZATION
+
+  //Create a new organization and team. then assign the new team to the organization and newly created user
   const newOrganization = await db.organization.create({
-    data: { name: organization, userId: newUser.id },
-  });
-  //NEW TEAM
-  const newTeam = await db.team.create({
     data: {
-      name: team,
-      organizationId: newOrganization.id,
+      name: organization,
       userId: newUser.id,
+      teams: {
+        create: {
+          name: team,
+          userId: newUser.id,
+          users: { connect: { id: newUser.id } },
+          ownerId: newUser.id,
+        },
+      },
     },
   });
 
-  //UPDATE USER WITH NEW TEAM INFO
-  await db.user.update({
-    where: { id: newUser.id },
-    data: {
-      teamId: newTeam.id,
-    },
-  });
-  //CHAT SETTINGS
-  await chatSettingsInsert(newUser);
+  //If the organition was not created return an error
+  if (!newOrganization)
+    return { error: "Organization could not be created at this time!" };
 
-  //NOTIFICATION SETTINGS
-  await notificationSettingsInsert(newUser.id);
+  //Insert all the user settings for the newly created user
+  await userInsertAllSettings(newUser);
 
-  //SCHEDULE
-  const hours = "Not Available";
-
-  await scheduleInsert(newUser.id,
-      newUser.firstName,hours);
-
+  //If everything went well return a success message
   return { success: "Master account created" };
 };
 
@@ -561,4 +557,28 @@ export const userGetByAssistant = async () => {
   }
   //retun the currently logged in user.id
   return user?.id;
+};
+
+export const userInsertAllSettings = async (user: User) => {
+  //create phone settings
+  await phoneSettingsInsert(user.id);
+
+  //create display settings
+  await displaySettingsInsert(user.id);
+
+  //create chat settings
+  await chatSettingsInsert(user);
+
+  //create notification settings
+  await notificationSettingsInsert(user.id);
+
+  //create schedule
+  const hours =
+    user.role == "MASTER" ? "Not Available" : "09:00-17:00,12:00-13:00";
+  await scheduleInsert(user.id, user.firstName, hours);
+
+  //TODO
+  // const verificationToken = await generateVerificationToken(email);
+  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  // return { success: "Confirmation Email sent!" };
 };

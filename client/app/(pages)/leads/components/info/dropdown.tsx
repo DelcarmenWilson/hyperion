@@ -39,6 +39,7 @@ import { exportLeads } from "@/lib/xlsx";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { conversationDeleteById } from "@/actions/lead/conversation";
 import { leadUpdateByIdAutoChat } from "@/actions/lead";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -113,7 +114,7 @@ export const LeadDropDown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={lead.status == "Do_Not_Call"}
+            disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
             className="cursor-pointer gap-2"
             onClick={() => {
               setLeadId(lead.id);

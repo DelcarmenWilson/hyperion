@@ -1,59 +1,54 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useTeamActions } from "../hooks/use-team";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import { Input } from "@/components/ui/input";
-import { teamInsert } from "@/actions/team";
 
-export const TeamForm = () => {
-  const router = useRouter();
-  const [teamName, setTeamName] = useState("");
-  const [loading, setLoading] = useState(false);
+type Props = { enabled?: boolean };
+export const TeamForm = ({ enabled = false }: Props) => {
+  const {
+    isFormOpen,
+    setFormOpen,
+    teamName,
+    setTeamName,
+    onTeamInsert,
+    teamIsPending,
+  } = useTeamActions();
 
-  const onTeamInsert = () => {
-    if (!teamName) {
-      toast.error("team name cannot be empty!");
-      return;
-    }
-    setLoading(true);
-    teamInsert(teamName).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-        setTeamName("");
-        router.refresh();
-      }
-    });
-    setLoading(false);
-  };
   return (
-    <Dialog>
-      <DialogDescription className="hidden">New Team Form</DialogDescription>
-      <DialogTrigger asChild>
-        <Button size="sm">New Team</Button>
-      </DialogTrigger>
-      <DialogContent className="p-4 max-h-[96%] max-w-max bg-background">
-        <h3 className="text-2xl font-semibold py-2">Create Team</h3>
-        <Input
-          disabled={loading}
-          placeholder="Team Name"
-          onChange={(e) => setTeamName(e.target.value)}
-          value={teamName}
-        />
-        <Button disabled={loading} onClick={onTeamInsert}>
+    <>
+      {enabled && (
+        <Button size="sm" onClick={() => setFormOpen(true)}>
+          New Team
+        </Button>
+      )}
+
+      <CustomDialog
+        open={isFormOpen}
+        onClose={() => setFormOpen(false)}
+        title="Create Team"
+        description="New Team Form"
+      >
+        <div>
+          <Input
+            disabled={teamIsPending}
+            placeholder="Team Name"
+            onChange={(e) => setTeamName(e.target.value)}
+            value={teamName}
+          />
+          <p className="text-muted-foreground text-xs">
+            * name must be unique within your organization.
+          </p>
+        </div>
+        <Button
+          className="mt-auto"
+          disabled={teamIsPending}
+          onClick={onTeamInsert}
+        >
           Create
         </Button>
-      </DialogContent>
-    </Dialog>
+      </CustomDialog>
+    </>
   );
 };

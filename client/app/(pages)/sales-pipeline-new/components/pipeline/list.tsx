@@ -1,31 +1,14 @@
 import { useState } from "react";
-import { useGlobalContext } from "@/providers/global";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { Reorder, useDragControls } from "framer-motion";
+import { Reorder } from "framer-motion";
 
 import { FullLead, FullPipeline } from "@/types";
 
 import { Pipeline } from "@prisma/client";
 import { AlertModal } from "@/components/modals/alert";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-
-import { Input } from "@/components/ui/input";
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from "react-beautiful-dnd";
+import { DropResult } from "react-beautiful-dnd";
 
 import { PipelineCard } from "./card";
 
@@ -34,7 +17,6 @@ import {
   pipelineUpdateById,
   pipelineUpdateOrder,
 } from "@/actions/user/pipeline";
-import { StatusSelect } from "@/components/global/selects/lead-status";
 
 type PipeLineListProps = {
   leads: FullLead[];
@@ -141,9 +123,7 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
               idx={index}
               pipeline={pipeline}
               sendPipeline={sendPipeline}
-              initLeads={leads.filter(
-                (e) => e.status == pipeline.status.status
-              )}
+              initLeads={leads.filter((e) => e.statusId == pipeline.statusId)}
             />
           ))}
         </div>

@@ -56,12 +56,8 @@ export const Day = ({ day, rowIdx }: DayProps) => {
           return (
             <div
               key={app.id}
-              className={cn("text-sm truncate", bg)}
+              className={cn("text-xs truncate", bg)}
               onClick={() => setSelectedAppointment(app)}
-              //TODO need to gt the label color here
-              // className={`${getAppLabelBgColor(
-              //   app.label
-              // )}  p-1 mr-3 text-gray-600 text-sm rounded mb-1 truncate`}
             >
               {app.lead ? app.lead.firstName : app.title} -{" "}
               {format(app.startDate, "h:mm")}

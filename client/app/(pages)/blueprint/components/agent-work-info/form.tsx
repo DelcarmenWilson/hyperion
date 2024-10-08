@@ -9,11 +9,7 @@ import {
 } from "@/schemas/blueprint";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   Form,
   FormControl,
@@ -30,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { TargetList } from "./list";
 
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
@@ -58,143 +53,142 @@ export const AgentWorkInfoForm = () => {
   };
 
   return (
-    <Dialog open={isWorkInfoFormOpen} onOpenChange={onWorkInfoFormClose}>
-      <DialogDescription className="hidden">
-        Agent Work Info Form
-      </DialogDescription>
-      <DialogContent>
-        <h3 className="text-2xl font-semibold py-2">Work Details</h3>
-        <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}
-              className="space-y-2"
-            >
-              {/* WORK TYPE */}
-              <FormField
-                control={form.control}
-                name="workType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Work Type
-                      <FormMessage />
-                    </FormLabel>
-                    <Select
-                      name="ddl-workType"
+    <CustomDialog
+      open={isWorkInfoFormOpen}
+      onClose={onWorkInfoFormClose}
+      title="Work Details"
+      description="Agent Work Info Form"
+    >
+      <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}
+            className="space-y-2"
+          >
+            {/* WORK TYPE */}
+            <FormField
+              control={form.control}
+              name="workType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Work Type
+                    <FormMessage />
+                  </FormLabel>
+                  <Select
+                    name="ddl-workType"
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                    autoComplete="workType"
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Parttime" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="PartTime">Part Time</SelectItem>
+                      <SelectItem value="FullTime">Full Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            {/* WORKING DAYS */}
+            <FormField
+              control={form.control}
+              name="workingDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Working Days
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <WorkingDays
                       defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      autoComplete="workType"
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Parttime" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="PartTime">Part Time</SelectItem>
-                        <SelectItem value="FullTime">Full Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              {/* WORKING DAYS */}
-              <FormField
-                control={form.control}
-                name="workingDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Working Days
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <WorkingDays
-                        defaultValue={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* WORKING HOURS */}
-              <FormField
-                control={form.control}
-                name="workingHours"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Working Hours
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      {/* <Input {...field} placeholder="Please enter workingHours" /> */}
-                      <WorkingHours
-                        defaultValue={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* ANNUAL TARGET */}
-              <FormField
-                control={form.control}
-                name="annualTarget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Annual Target
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Please enter annual target"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              {/* TARGET TYPE */}
-              <FormField
-                control={form.control}
-                name="targetType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Target Type
-                      <FormMessage />
-                    </FormLabel>
-                    <FormControl>
-                      <TargetList
-                        targets={calculateWeeklyBluePrint(
-                          form.getValues("annualTarget")
-                        )}
-                        selectedTarget={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* WORKING HOURS */}
+            <FormField
+              control={form.control}
+              name="workingHours"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Working Hours
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    {/* <Input {...field} placeholder="Please enter workingHours" /> */}
+                    <WorkingHours
+                      defaultValue={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* ANNUAL TARGET */}
+            <FormField
+              control={form.control}
+              name="annualTarget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Annual Target
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Please enter annual target"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* TARGET TYPE */}
+            <FormField
+              control={form.control}
+              name="targetType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Target Type
+                    <FormMessage />
+                  </FormLabel>
+                  <FormControl>
+                    <TargetList
+                      targets={calculateWeeklyBluePrint(
+                        form.getValues("annualTarget")
+                      )}
+                      selectedTarget={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-              <div className="flex mt-2 gap-2 justify-end">
-                <Button
-                  variant="outlineprimary"
-                  type="button"
-                  onClick={onWorkInfoFormClose}
-                >
-                  Cancel
-                </Button>
-                <Button>Submit</Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+            <div className="flex mt-2 gap-2 justify-end">
+              <Button
+                variant="outlineprimary"
+                type="button"
+                onClick={onWorkInfoFormClose}
+              >
+                Cancel
+              </Button>
+              <Button>Submit</Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </CustomDialog>
   );
 };
 

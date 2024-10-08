@@ -47,7 +47,7 @@ export const ProfileForm = () => {
       email: user?.email || undefined,
       password: undefined,
       newPassword: undefined,
-      role: user?.role,
+      role: user?.role || "USER",
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });
@@ -147,15 +147,6 @@ export const ProfileForm = () => {
                           </Button>
                         </div>
                       </FormControl>
-                      {/* <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="******"
-                        disabled={isPending}
-                        type="password"
-                        autoComplete="new-password"
-                      />
-                    </FormControl> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -193,15 +184,6 @@ export const ProfileForm = () => {
                           </Button>
                         </div>
                       </FormControl>
-                      {/* <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="******"
-                        disabled={isPending}
-                        type="password"
-                        autoComplete="new-password"
-                      />
-                    </FormControl> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -230,8 +212,15 @@ export const ProfileForm = () => {
 
                     <SelectContent>
                       <SelectItem value={UserRole.MASTER}>Master</SelectItem>
+                      <SelectItem value={UserRole.SUPER_ADMIN}>
+                        Super Admin
+                      </SelectItem>
                       <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
                       <SelectItem value={UserRole.USER}>User</SelectItem>
+                      <SelectItem value={UserRole.ASSISTANT}>
+                        Assistant
+                      </SelectItem>
+                      <SelectItem value={UserRole.STUDENT}>Student</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

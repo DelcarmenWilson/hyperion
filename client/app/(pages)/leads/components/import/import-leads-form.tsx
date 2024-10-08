@@ -158,7 +158,7 @@ export const ImportLeadsForm = () => {
               </SelectTrigger>
               <SelectContent>
                 {pipelines?.map((pipeline) => (
-                  <SelectItem key={pipeline.id} value={pipeline.status.status}>
+                  <SelectItem key={pipeline.id} value={pipeline.statusId}>
                     {pipeline.name}
                   </SelectItem>
                 ))}

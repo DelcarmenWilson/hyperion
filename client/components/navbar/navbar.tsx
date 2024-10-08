@@ -54,7 +54,9 @@ const NavBar = ({ admin = false }: Props) => {
           {/*srini- Agent chat */}
           <NavChat />
           {/* srini- online chat button */}
-          {user?.role == "ADMIN" && (
+          {["ADMIN", "SUPER_ADMIN", "MASTER"].includes(
+            user?.role as string
+          ) && (
             <Button
               variant={isChatOpen ? "default" : "outline"}
               size="icon"

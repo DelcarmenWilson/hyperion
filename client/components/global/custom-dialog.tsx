@@ -24,7 +24,7 @@ export const CustomDialog = ({
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col justify-start min-h-[60%] max-h-[75%] w-full">
+      <DialogContent className="flex flex-col justify-start max-w-screen-lg min-h-[60%] max-h-[75%]">
         <DialogHeader className="pt-8 text-left">
           <DialogTitle className="text-2xl font-bold">
             {title}
@@ -38,10 +38,6 @@ export const CustomDialog = ({
             {description}
           </DialogDescription>
         </DialogHeader>
-        {/* <h3 className="text-2xl font-semibold py-2">
-            WorkFlow Info -{" "}
-            <span className="text-primary">{workflow.title}</span>
-          </h3> */}
         {children}
       </DialogContent>
     </Dialog>

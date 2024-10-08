@@ -2,13 +2,10 @@
 import { FullPipeline } from "@/types";
 import { RefreshCcw } from "lucide-react";
 import { Reorder } from "framer-motion";
-import {
-  usePipelineStageActions,
-  usePipelineStore,
-} from "../hooks/use-pipelines";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePipelineStageActions } from "@/hooks/pipeline/use-pipeline";
 
 import { Button } from "@/components/ui/button";
-
 import { formatDate } from "@/formulas/dates";
 
 export const StageList = () => {

@@ -1,5 +1,5 @@
 import { RegisterForm } from "@/components/auth/forms/register-form";
-import { teamsGetAll } from "@/data/team";
+import { teamsGetAll } from "@/actions/team";
 
 const RegisterPage = async () => {
   const teams = await teamsGetAll();

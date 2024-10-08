@@ -111,7 +111,7 @@ const AppForm = ({ lead }: AppFormProps) => {
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-[280px] justify-start text-left font-normal gap-2",
+                      "w-[280px] justify-center text-left font-normal gap-2",
                       !field.value && "text-muted-foreground"
                     )}
                     onClick={() => setCalOpen((state) => !state)}

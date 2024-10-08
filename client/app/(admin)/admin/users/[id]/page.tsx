@@ -5,12 +5,13 @@ import { UserClient } from "./components/client";
 import { SharedCallsClient } from "@/components/global/shared-calls";
 import { ReportCallsClient } from "./components/report-calls/client";
 import { AboutMe } from "./components/about-me";
+import { Credentials } from "./components/credentials";
 
 import { callsGetAllByAgentIdFiltered } from "@/actions/call";
-import { teamsGetAllByOrganization } from "@/data/team";
+import { teamsGetAllByOrganization } from "@/actions/team";
 import { userGetByIdReport } from "@/data/user";
+
 import { weekStartEnd } from "@/formulas/dates";
-import { Credentials } from "./components/credentials";
 
 const UserPage = async ({
   params,

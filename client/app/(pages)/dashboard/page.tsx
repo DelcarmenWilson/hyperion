@@ -19,7 +19,7 @@ const DashBoardPage = async () => {
         <DashBoardClient />
         <QuoteClient />
         <AppointmentClient showLink />
-        {user?.role == "MASTER" && <AgentSummaryClient />}
+        {user?.role == "SUPER_ADMIN" && <AgentSummaryClient />}
 
         <div className="flex flex-col items-center gap-4 lg:flex-row">
           <div className="flex w-full lg:w-[25%] h-full">
