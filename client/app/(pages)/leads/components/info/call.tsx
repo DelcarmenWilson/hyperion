@@ -108,7 +108,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
 
         <div className="py-1">
           <p>Status</p>
-          <LeadStatusSelect id={lead.id} status={lead.statusId} />
+          <LeadStatusSelect id={lead.id} statusId={lead.statusId} />
         </div>
       </div>
     </div>

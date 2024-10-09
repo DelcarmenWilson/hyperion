@@ -29,7 +29,7 @@ export const NotesForm = ({ showShared = true, rows = 3 }: NoteFormProps) => {
   return (
     <SkeletonWrapper isLoading={isFetchingNotes}>
       {initNotes ? (
-        <div className="flex flex-col">
+        <div className="flex flex-col ps-1">
           <Textarea
             placeholder="Additional notes here"
             className="rounded-br-none rounded-bl-none"
@@ -40,7 +40,7 @@ export const NotesForm = ({ showShared = true, rows = 3 }: NoteFormProps) => {
           <Button
             className="rounded-tr-none rounded-tl-none"
             variant="outlineprimary"
-            disabled={loading}
+            disabled={loading || !notes}
             onClick={onNotesUpdated}
           >
             UPDATE NOTES

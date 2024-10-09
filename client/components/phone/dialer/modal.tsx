@@ -25,16 +25,12 @@ export const PhoneDialerModal = () => {
     usePipelineStore();
 
   const { setLeadId: setLead } = useLeadStore();
-  console.log(pipeIndex);
 
   const indexRef = useRef<HTMLDivElement>(null);
 
   const setIndex = (number: number = 0) => {
     let idx = number == 0 ? 0 : pipeIndex + number;
     onSetIndex(idx);
-    // if (!filterLeads) return;
-    // onSetLead(filterLeads[idx]);
-    // setLead(filterLeads[idx].id);
     pipelineUpdateByIdIndex({ id: selectedPipeline?.id!, index: idx });
   };
 

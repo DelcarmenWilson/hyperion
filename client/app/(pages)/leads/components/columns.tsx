@@ -20,7 +20,10 @@ import { NotesForm } from "./info/notes-form";
 
 export const columns: ColumnDef<FullLead>[] = [
   {
-    id: "select",
+    id: "lastName",
+    accessorKey: "lastName",
+    enableSorting: false,
+    enableGlobalFilter: true,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -45,8 +48,6 @@ export const columns: ColumnDef<FullLead>[] = [
         />
       </div>
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     id: "firstName",
@@ -55,41 +56,10 @@ export const columns: ColumnDef<FullLead>[] = [
     enableHiding: true,
   },
   {
-    id: "lastName",
-    accessorKey: "lastName",
-    enableGlobalFilter: true,
-    enableHiding: true,
-  },
-  {
     id: "cellPhone",
     accessorKey: "cellPhone",
     enableGlobalFilter: true,
-    enableHiding: true,
-  },
-  {
-    id: "email",
-    accessorKey: "email",
-    enableGlobalFilter: true,
-    enableHiding: true,
-  },
-  {
-    id: "status",
-    accessorKey: "status",
-    enableHiding: true,
-  },
-  {
-    id: "vendor",
-    accessorKey: "vendor",
-    enableHiding: true,
-  },
-  {
-    id: "state",
-    accessorKey: "state",
-    enableHiding: true,
-  },
-  {
-    accessorKey: "mainInfo",
-    header: "Info",
+    header: "General Info",
     cell: ({ row }) => {
       const leadMainInfo: LeadMainSchemaType = {
         ...row.original,
@@ -111,7 +81,8 @@ export const columns: ColumnDef<FullLead>[] = [
     },
   },
   {
-    accessorKey: "notes",
+    id: "statusId",
+    accessorKey: "statusId",
     header: "Notes",
     cell: ({ row }) => (
       <div className="max-w-[260px]">
@@ -124,14 +95,16 @@ export const columns: ColumnDef<FullLead>[] = [
     ),
   },
   {
-    accessorKey: "call",
-    header: "",
+    id: "vendor",
+    accessorKey: "vendor",
+    header: "Vendor",
     cell: ({ row }) => <CallInfo info={row.original} />,
   },
 
   {
-    accessorKey: "appointment",
-    header: "",
+    id: "state",
+    accessorKey: "state",
+    header: "Last Call",
     cell: ({ row }) => {
       const leadInfo: LeadGeneralSchemaType = {
         ...row.original,
@@ -153,8 +126,10 @@ export const columns: ColumnDef<FullLead>[] = [
     },
   },
   {
-    accessorKey: "extra info",
-    header: "",
+    id: "email",
+    accessorKey: "email",
+    enableGlobalFilter: true,
+    header: "Policy",
     cell: ({ row }) => {
       const leadPolicy: LeadPolicySchemaType = {
         leadId: row.original.id,

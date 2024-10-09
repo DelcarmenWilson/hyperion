@@ -26,12 +26,6 @@ const LeadsPage = () => {
           striped
           hidden={{
             firstName: false,
-            lastName: false,
-            cellPhone: false,
-            email: false,
-            status: false,
-            vendor: false,
-            state: false,
           }}
           headers
           placeHolder="Search First | Last | Phone | Email"

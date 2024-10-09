@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -5,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Props = {
   children: React.ReactNode;
@@ -13,6 +15,8 @@ type Props = {
   description?: string;
   open: boolean;
   onClose: () => void;
+  maxWidth?: boolean;
+  maxHeight?: boolean;
 };
 export const CustomDialog = ({
   children,
@@ -21,15 +25,24 @@ export const CustomDialog = ({
   description,
   open,
   onClose,
+  maxWidth = false,
+  maxHeight = false,
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col justify-start max-w-screen-lg min-h-[60%] max-h-[75%]">
-        <DialogHeader className="pt-8 text-left">
+      <DialogContent
+        className={cn(
+          "flex flex-col justify-start min-w-[50%]  min-h-[60%] h-full overflow-hidden",
+          maxWidth ? "max-w-screen-lg" : "max-w-[60%]",
+          maxHeight ? "max-h-screen" : "max-h-[75%]"
+        )}
+      >
+        <DialogHeader className="text-left">
           <DialogTitle className="text-2xl font-bold">
             {title}
             {subTitle && (
               <>
+                {" "}
                 - <span className="text-primary">{subTitle}</span>
               </>
             )}
@@ -38,7 +51,8 @@ export const CustomDialog = ({
             {description}
           </DialogDescription>
         </DialogHeader>
-        {children}
+
+        <ScrollArea className="pe-2">{children}</ScrollArea>
       </DialogContent>
     </Dialog>
   );

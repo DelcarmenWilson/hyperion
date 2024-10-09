@@ -11,11 +11,6 @@ import { PrevNextMenu } from "@/components/lead/prev-next-menu";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 
 import { LeadHeader } from "@/components/lead/header";
-import { AssistantForm } from "@/components/lead/forms/assistant-form";
-import { IntakeForm } from "@/components/lead/forms/intake/intake-form";
-import { PolicyInfoForm } from "@/components/lead/forms/policy-info-form";
-import { ShareForm } from "@/components/lead/forms/share-form";
-import { TransferForm } from "@/components/lead/forms/transfer-form";
 import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
@@ -37,11 +32,6 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
     >
       <Tabs defaultValue="general" className="h-full">
         <LeadHeader />
-        <PolicyInfoForm />
-        <ShareForm />
-        <TransferForm />
-        <IntakeForm />
-        <AssistantForm />
         <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
