@@ -12,6 +12,7 @@ import { LeadTypeSelect } from "@/components/lead/select/type-select";
 import { SectionWrapper } from "./section-wrapper";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { leadDefaultStatus } from "@/constants/lead";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   showBtnCall?: boolean;
@@ -30,30 +31,33 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
       {callInfo ? (
-        <SectionWrapper title="Call">
-          <div className="flex flex-col">
+        <div className="border rounded-sm shadow-md p-2">
+          <div className="flex justify-between items-center pb-1">
+            <h4 className="text-muted-foreground">Call</h4>
             {showBtnCall && (
               <div className="relative w-fit ">
                 <Button
                   className="gap-2"
+                  size="sm"
                   disabled={callInfo.statusId == leadDefaultStatus["DoNotCall"]}
                   onClick={() => {
                     onLeadInfoToggle();
                     onPhoneOutOpen();
                   }}
-                  size="sm"
                 >
                   <Phone size={16} />
                   CLICK TO CALL
                 </Button>
 
                 {callCount! > 0 && (
-                  <Badge className="absolute -right-6 rounded-full text-xs">
+                  <Badge className="absolute -left-6 rounded-full text-xs">
                     {callCount}
                   </Badge>
                 )}
               </div>
             )}
+          </div>
+          <div className="flex flex-col">
             <div className="text-sm">
               <div className="py-1">
                 <p>Type</p>
@@ -62,11 +66,18 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
 
               <div className="py-1">
                 <p>Status</p>
-                <LeadStatusSelect id={callInfo.id} status={callInfo.statusId} />
+                <LeadStatusSelect
+                  id={callInfo.id}
+                  statusId={callInfo.statusId}
+                />
+              </div>
+              <div className="py-1">
+                <p>Vendor</p>
+                <Input value={callInfo.vendor.replace("_", " ")} disabled />
               </div>
             </div>
           </div>
-        </SectionWrapper>
+        </div>
       ) : (
         <EmptyData />
       )}

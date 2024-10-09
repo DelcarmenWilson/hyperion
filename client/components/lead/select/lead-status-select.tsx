@@ -13,19 +13,20 @@ import {
 } from "@/components/ui/select";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type Props = {
   id: string;
-  status: string;
-  onSetStatus?: (c: "status", e: string) => void;
+  statusId: string;
+  onSetStatus?: (c: "statusId", e: string) => void;
 };
 
-export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
+export const LeadStatusSelect = ({ id, statusId, onSetStatus }: Props) => {
   const { statuses, isFetchingStatuses } = useLeadStatuses();
   const { onLeadStatusUpdate, isPendingLeadStatusUpdate } =
     useLeadStatusActions();
   const onLeadStatusChanged = (e: string) => {
-    if (onSetStatus) onSetStatus("status", e);
+    if (onSetStatus) onSetStatus("statusId", e);
     else {
       onLeadStatusUpdate(id, e);
       userEmitter.emit("leadStatusChanged", id, e);
@@ -36,9 +37,12 @@ export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
     <SkeletonWrapper isLoading={isFetchingStatuses}>
       <Select
         name="ddlLeadStatus"
-        disabled={status == "Do_Not_Call" || isPendingLeadStatusUpdate}
+        disabled={
+          statusId == leadDefaultStatus["DoNotCall"] ||
+          isPendingLeadStatusUpdate
+        }
         onValueChange={onLeadStatusChanged}
-        defaultValue={status}
+        defaultValue={statusId}
       >
         <SelectTrigger className="bg-background">
           <SelectValue placeholder="Lead Status" />
@@ -46,7 +50,7 @@ export const LeadStatusSelect = ({ id, status, onSetStatus }: Props) => {
         <SelectContent className="max-h-80">
           {onSetStatus && <SelectItem value="%">All</SelectItem>}
           {statuses?.map((status) => (
-            <SelectItem key={status.id} value={status.status}>
+            <SelectItem key={status.id} value={status.id}>
               {status.status}
             </SelectItem>
           ))}

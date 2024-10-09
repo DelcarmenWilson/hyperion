@@ -24,7 +24,7 @@ export const LoginStatusModal = () => {
     <CustomDialog
       open={isLoginStausOpen}
       onClose={onLoginStausClose}
-      title="Logins "
+      title="Logins"
       subTitle={`${user.firstName} ${user.lastName}`}
       description="Login Status Form"
     >

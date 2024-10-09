@@ -24,7 +24,8 @@ export class ServerSocket {
       pingTimeout: 5000,
       cookie: false,
       cors: {
-          origin: "https://hperioncrm.com", // Replace with your frontend's origin
+          //origin: "https://hperioncrm.com", // Replace with your frontend's origin
+          origin: "*", 
           methods: ["GET", "POST"],
           credentials: false // If you're using cookies or authentication        
       },

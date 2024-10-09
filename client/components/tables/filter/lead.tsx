@@ -8,13 +8,17 @@ import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadVendorSelect } from "@/components/lead/select/vendor-select";
 import { LeadStateSelect } from "@/components/lead/select/state-select";
+import { leadDefaultStatus } from "@/constants/lead";
 
 type LeadFilterProps<TData> = {
   table: Table<TData>;
 };
 
 export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
-  const OnFilter = (column: "status" | "vendor" | "state", filter: string) => {
+  const OnFilter = (
+    column: "statusId" | "vendor" | "state",
+    filter: string
+  ) => {
     if (filter == "%") {
       filter = "";
     }
@@ -34,7 +38,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
   };
 
   useEffect(() => {
-    OnFilter("status", "New");
+    OnFilter("statusId", leadDefaultStatus["New"]);
     // eslint-disable-next-line
   }, []);
   return (
@@ -51,7 +55,11 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
         <>
           <div className="flex items-center gap-2">
             <p className="text-muted-foreground">Status</p>
-            <LeadStatusSelect id="a" status="New" onSetStatus={OnFilter} />
+            <LeadStatusSelect
+              id="leafFilter"
+              statusId={leadDefaultStatus["New"]}
+              onSetStatus={OnFilter}
+            />
           </div>
 
           <div className="flex items-center gap-2">

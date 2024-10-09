@@ -59,7 +59,7 @@ export const AdminRoutes: NavType[] = [
     title: "Feedback",
     href: "/admin/feedback",
     icon: MessageSquarePlus,
-    roles: ["MASTER"],
+    roles: ["MASTER","SUPER_ADMIN"],
   },
   {
     title: "Misc",

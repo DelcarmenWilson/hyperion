@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { usePhoneContext } from "@/providers/phone";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -31,7 +33,7 @@ export const VoicemailList = () => {
   }, []);
 
   return (
-    <div className="text-sm">
+    <ScrollArea>
       {!voicemails?.length ? (
         <p className="text-muted-foreground text-center p-4">
           No Pending Voicemails
@@ -57,6 +59,6 @@ export const VoicemailList = () => {
           </TableBody>
         </Table>
       )}
-    </div>
+    </ScrollArea>
   );
 };

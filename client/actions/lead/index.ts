@@ -268,6 +268,7 @@ export const leadGetByIdCallInfo = async (id: string) => {
         id: true,
         statusId: true,
         type: true,
+        vendor:true,
         calls: { where: { direction: "outbound" } },
       },
     });
