@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { MessageSquareDot, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useChat } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { usePhoneStore } from "@/hooks/use-phone";
@@ -25,7 +25,7 @@ type Props = {
 const NavBar = ({ admin = false }: Props) => {
   const user = useCurrentUser();
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
-  const { isChatOpen, onChatOpen } = useChat();
+  const { isChatOpen, onChatOpen } = useChatStore();
 
   return (
     <div

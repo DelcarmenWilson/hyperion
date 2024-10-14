@@ -1,7 +1,7 @@
 import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
 import { LeadSchemaType } from "@/schemas/lead";
-import { leadDefaultStatus } from "@/constants/lead";
+import { leadDefaultStatus, leadRelationShips } from "@/constants/lead";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -438,4 +438,16 @@ export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
     mapped.push(newobj);
   });
   return mapped;
+};
+//TODO - need to work on this mother - this is the relationship bewteen leads but we need to get the opposite ex: Brother => Sister
+export const GetLeadOppositeRelationship = (
+  relationship: string,
+  gender: string
+): string => {
+  if(gender=='N/A') return 'N/A'
+  const index=gender=="Male"?0:1
+const currentRel=leadRelationShips.find(e=>e.relationship==relationship)
+if(!currentRel)return "N/A" 
+
+  return currentRel.opposite[index];
 };

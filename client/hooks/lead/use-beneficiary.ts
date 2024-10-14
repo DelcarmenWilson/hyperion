@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LeadBeneficiary } from "@prisma/client";
 import {
   leadBeneficiariesGetAllById,
+  leadBeneficiaryConvertById,
   leadBeneficiaryDeleteById,
   leadBeneficiaryGetById,
   leadBeneficiaryInsert,
@@ -14,15 +15,18 @@ import {
 } from "@/actions/lead/beneficiary";
 import { LeadBeneficiarySchemaType } from "@/schemas/lead";
 
-type BeneficiaryStore = {
+type State = {
   beneficiaryId?: string;
-  setBeneficiaryId: (b: string) => void;
   isBeneficiaryFormOpen: boolean;
+};
+
+type Actions = {
+  setBeneficiaryId: (b: string) => void;
   onBeneficiaryFormOpen: (b?: string) => void;
   onBeneficiaryFormClose: () => void;
 };
 
-export const useBeneficiaryStore = create<BeneficiaryStore>((set) => ({
+export const useBeneficiaryStore = create<State&Actions>((set) => ({
   setBeneficiaryId: (b) => set({ beneficiaryId: b }),
   isBeneficiaryFormOpen: false,
   onBeneficiaryFormOpen: (b) =>
@@ -30,29 +34,48 @@ export const useBeneficiaryStore = create<BeneficiaryStore>((set) => ({
   onBeneficiaryFormClose: () => set({ isBeneficiaryFormOpen: false }),
 }));
 
-export const useLeadBeneficiaryActions = () => {
+export const useLeadBeneficiaryData = () => {
   const { leadId } = useLeadStore();
   const {
     beneficiaryId,
-    isBeneficiaryFormOpen,
-    onBeneficiaryFormOpen,
-    onBeneficiaryFormClose,
   } = useBeneficiaryStore();
-  const queryClient = useQueryClient();
-  const [alertOpen, setAlertOpen] = useState(false);
 
   const { data: beneficiaries, isFetching: isFetchingBeneficiaries } = useQuery<
     LeadBeneficiary[]
   >({
     queryFn: () => leadBeneficiariesGetAllById(leadId as string),
-    queryKey: [`leadBeneficiaries-${leadId}`],
+    queryKey: [`lead-beneficiaries-${leadId}`],
   });
 
   const { data: beneficiary, isFetching: isFetchingBeneficiary } =
     useQuery<LeadBeneficiary | null>({
       queryFn: () => leadBeneficiaryGetById(beneficiaryId as string),
-      queryKey: [`leadBeneficiary-${beneficiaryId}`],
+      queryKey: [`lead-beneficiary-${beneficiaryId}`],
     });
+
+  return {
+    leadId,
+    beneficiaries,
+    isFetchingBeneficiaries,
+    beneficiary,
+    isFetchingBeneficiary,
+  };
+};
+
+export const useLeadBeneficiaryActions = () => {
+  const { leadId } = useLeadStore();
+  const {
+    beneficiaryId,
+    onBeneficiaryFormClose,
+  } = useBeneficiaryStore();
+  const queryClient = useQueryClient();
+  const [alertOpen, setAlertOpen] = useState(false);
+  
+  const invalidate = (key: string) => {
+    queryClient.invalidateQueries({
+      queryKey: [key],
+    });
+  };
 
   const { mutate, isPending: isBeneficiaryPending } = useMutation({
     mutationFn: beneficiaryId
@@ -63,14 +86,8 @@ export const useLeadBeneficiaryActions = () => {
         ? "Beneficiary updated successfully"
         : "Beneficiary created successfully";
 
-      toast.success(toastString, {
-        id: "insert-update-beneficiary",
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["leadBeneficiaries", `lead-${leadId}`],
-      });
-
+      toast.success(toastString, { id: "insert-update-beneficiary" });
+      invalidate(`lead-beneficiaries-${leadId}`);
       onBeneficiaryFormClose();
     },
     onError: (error) => {
@@ -84,7 +101,6 @@ export const useLeadBeneficiaryActions = () => {
         ? "Updating Beneficiary..."
         : "Creating Beneficiary...";
       toast.loading(toastString, { id: "insert-update-beneficiary" });
-
       mutate(values);
     },
     [mutate]
@@ -94,30 +110,48 @@ export const useLeadBeneficiaryActions = () => {
     useMutation({
       mutationFn: leadBeneficiaryDeleteById,
       onSuccess: () => {
-        toast.success("Beneficiary Deleted", {
-          id: "delete-beneficiary",
-        });
-        queryClient.invalidateQueries({
-          queryKey: [`leadBeneficiary-${beneficiaryId}`],
-        });
+        toast.success("Beneficiary Deleted", { id: "delete-beneficiary" });
+        invalidate(`lead-beneficiary-${beneficiaryId}`);
 
         setAlertOpen(false);
       },
     });
+
+  const {
+    mutate: beneficiaryConvertMutate,
+    isPending: isPendingBeneficiaryConvert,
+  } = useMutation({
+    mutationFn: leadBeneficiaryConvertById,
+    onSuccess: (results) => {
+      if (results.success) {
+        toast.success("Beneficiary converted!!!", {
+          id: "convert-beneficiary",
+        });
+        invalidate(`lead-beneficiaries-${leadId}`);
+        invalidate(`lead-associated-${leadId}`);
+      } else toast.error(results.error, { id: "convert-beneficiary" });
+    },
+  });
+
+  const onBeneficiaryConvert = useCallback(
+    (beneficiaryId: string) => {
+      toast.loading("Converting beneficiary to lead...", {
+        id: "convert-beneficiary",
+      });
+      beneficiaryConvertMutate({ leadId: leadId as string, beneficiaryId });
+    },
+    [beneficiaryConvertMutate,leadId]
+  );
+
   return {
-    leadId,
     alertOpen,
     setAlertOpen,
-    isBeneficiaryFormOpen,
-    onBeneficiaryFormOpen,
-    onBeneficiaryFormClose,
-    beneficiaries,
-    isFetchingBeneficiaries,
-    beneficiary,
-    isFetchingBeneficiary,
     onBeneficiarySubmit,
     isBeneficiaryPending,
     onBeneficiaryDelete,
     isPendingBeneficiaryDelete,
+    onBeneficiaryConvert,
+    isPendingBeneficiaryConvert,
   };
 };
+

@@ -2,9 +2,13 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { Appointment, AppointmentLabel, Schedule } from "@prisma/client";
 
-
 import dayjs from "dayjs";
 import { CalendarAppointment } from "@/types/appointment";
+import { scheduleGet } from "@/actions/user/schedule";
+import {
+  appointmentLabelsGetAll,
+  appointmentsGet,
+} from "@/actions/appointment";
 
 type State = {
   appointments?: CalendarAppointment[];
@@ -12,7 +16,6 @@ type State = {
   labels?: AppointmentLabel[];
   selectedLabel?: AppointmentLabel;
   schedule?: Schedule;
-  loaded: boolean;
   //MODALS
   showAppointmentModal: boolean;
   showLabelModal: boolean;
@@ -35,17 +38,11 @@ type Actions = {
   setMonthIndex: (e: number) => void;
   setSmallCalendarMonth: (e: number) => void;
   setDaySelected: (e: dayjs.Dayjs) => void;
-  
-  initialSetUp: (
-    a?: CalendarAppointment[],
-    l?: AppointmentLabel[],
-    s?: Schedule
-  ) => void;
+  fetchData: () => void;
 };
 
 export const useCalendarStore = create<State & Actions>()(
   immer((set) => ({
-    loaded: false,
     //APPOINTMENTS
     setSelectedAppointment: (e) => set({ selectedAppointment: e }),
     addAppointment: (e) =>
@@ -84,12 +81,15 @@ export const useCalendarStore = create<State & Actions>()(
     setMonthIndex: (e) => set({ monthIndex: e }),
     setSmallCalendarMonth: (e) => set({ smallCalendarMonth: e }),
     setDaySelected: (e) => set({ daySelected: e }),
-    initialSetUp: (a, l, s) =>
+    fetchData: async () => {
+      const schedule = await scheduleGet();
+      const appointments = await appointmentsGet();
+      const labels = await appointmentLabelsGetAll();
       set({
-        appointments: a,
-        labels: l,
-        schedule: s,
-        loaded: true,
-      }),
+        appointments: appointments,
+        labels: labels,
+        schedule: schedule!,
+      });
+    },
   }))
 );

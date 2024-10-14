@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { useChat, useChatData } from "@/hooks/use-chat";
+import { useChatStore, useChatData } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
 import { MessageCard } from "./message";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export const ChatBody = () => {
   const currentUser = useCurrentUser();
-  const { user, chatId } = useChat();
+  const { user, chatId } = useChatStore();
   const bottomRef = useRef<HTMLDivElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);

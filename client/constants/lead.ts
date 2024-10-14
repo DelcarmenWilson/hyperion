@@ -142,3 +142,14 @@ export const defaultLeadExpenses: LeadExpenseType[] = [
     isDefault: true,
   },
 ];
+type LeadRealtionShipType={
+  relationship:string,
+  opposite:string[]
+}
+export const leadRelationShips:LeadRealtionShipType[]=[
+  {relationship:"N/A",opposite:["N/A","N/A"]}, 
+  {relationship:"Spouse",opposite:["Spouse","Spouse"]}, 
+  {relationship:"Daughter",opposite:["Father","Mother"]}, 
+  {relationship:"Son",opposite:["Father","Mother"]},
+   {relationship:"Other",opposite:["N/A","N/A"]}
+]

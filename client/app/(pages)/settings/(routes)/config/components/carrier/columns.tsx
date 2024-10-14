@@ -38,6 +38,11 @@ export const columns: ColumnDef<FullUserCarrier>[] = [
     header: "Agent Id",
   },
   {
+    accessorKey: "rate",
+    header: "Commision Rate",
+    cell: ({ row }) => <span>{row.original.rate}%</span>,
+  },
+  {
     accessorKey: "dateExpires",
     header: "Date Expires",
     cell: ({ row }) => (

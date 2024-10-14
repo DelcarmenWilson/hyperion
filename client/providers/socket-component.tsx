@@ -5,17 +5,18 @@ import React, {
   useReducer,
   useState,
 } from "react";
-
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useChatStore } from "@/hooks/use-chat";
 import { useSocket } from "@/hooks/use-socket";
+
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
 } from "./socket";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { EmptyCard } from "@/components/reusable/empty-card";
+
 import { UserSocket } from "@/types";
-import { useGlobalContext } from "./global";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -24,7 +25,7 @@ const SocketContextComponent: React.FunctionComponent<
 > = (props) => {
   const { children } = props;
   const user = useCurrentUser();
-  const { setUsers } = useGlobalContext();
+  const { updateUser, updateUsers } = useChatStore();
 
   const socket = useSocket(process.env.NEXT_PUBLIC_WS_URL!, {
     reconnectionAttempts: 5,
@@ -49,12 +50,7 @@ const SocketContextComponent: React.FunctionComponent<
   const StartListeners = () => {
     /** Messages */
     socket.on("user_connected", (users: UserSocket[]) => {
-      setUsers((lgs) => {
-        if (!lgs) return lgs;
-        return lgs.map((lg) => {
-          return { ...lg, online: !!users.find((e) => e.id == lg.id) };
-        });
-      });
+      updateUsers(users);
       Log("User connected message received");
       SocketDispatch({ type: "update_users", payload: users });
     });
@@ -62,13 +58,7 @@ const SocketContextComponent: React.FunctionComponent<
     /** Messages */
     socket.on("user_disconnected", (uid: string) => {
       Log("User disconnected message received");
-
-      setUsers((lgs) => {
-        if (!lgs) return lgs;
-        return lgs.map((lg) => {
-          return { ...lg, online: uid == lg.id ? false : lg.online };
-        });
-      });
+      updateUser(uid);
       SocketDispatch({ type: "remove_user", payload: uid });
     });
 
@@ -103,12 +93,7 @@ const SocketContextComponent: React.FunctionComponent<
       user?.role.toLocaleLowerCase(),
       user?.name,
       async (uid: string, users: UserSocket[]) => {
-        setUsers((lgs) => {
-          if (!lgs) return lgs;
-          return lgs.map((lg) => {
-            return { ...lg, online: !!users.find((e) => e.id == lg.id) };
-          });
-        });
+        updateUsers(users);
         Log("User handshake callback message received");
         SocketDispatch({ type: "update_users", payload: users });
         SocketDispatch({ type: "update_uid", payload: uid });

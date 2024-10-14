@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import Quill from "quill";
 import { Delta, Op } from "quill/core";
-import { useChat, useChatActions } from "@/hooks/use-chat";
+import { useChatStore, useChatActions } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { ChatMessageSchemaType } from "@/schemas/chat";
@@ -17,7 +17,7 @@ export const ChatForm = ({ placeholder }: Props) => {
   const editorRef = useRef<Quill | null>(null);
 
   const [key, setKey] = useState(0);
-  const { chatId } = useChat();
+  const { chatId } = useChatStore();
   const user = useCurrentUser();
   const { onChatMessageInsert, chatMessageInsertIsPending } = useChatActions(
     chatId!

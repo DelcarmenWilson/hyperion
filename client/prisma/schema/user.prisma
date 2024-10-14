@@ -46,8 +46,9 @@ model User {
     medias Media[]
 
     //CHAT MESSAGES
-    userOne      Chat[]        @relation("userOneChat")
-    userTwo      Chat[]        @relation("userTwoChat")
+    userOne Chat[] @relation("userOneChat")
+    userTwo Chat[] @relation("userTwoChat")
+
     chatMessages ChatMessage[]
 
     //USER COLUMNS
@@ -86,11 +87,13 @@ model UserCarrier {
 
     agentId String
 
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
     carrierId String
+    carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+
+    rate Int @default(70)
 
     comments  String?
     createdAt DateTime @default(now())

@@ -3,11 +3,14 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+
+import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DrawerRight } from "@/components/custom/drawer-right";
 import {
   Form,
   FormField,
@@ -17,6 +20,7 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -31,8 +35,6 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-
-import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
 import { formatDate, monthStartEnd } from "@/formulas/dates";
 
 import { states } from "@/constants/states";
@@ -41,6 +43,7 @@ import { exportLeads } from "@/lib/xlsx";
 
 export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
   const user = useCurrentUser();
+  const { isExportFormOpen, onExportFormClose } = useLeadStore();
   const [loading, setLoading] = useState(false);
   const month = monthStartEnd();
 
@@ -88,7 +91,11 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
     if (onClose) onClose();
   };
   return (
-    <div>
+    <DrawerRight
+      title="Export Leads"
+      isOpen={isExportFormOpen}
+      onClose={onExportFormClose}
+    >
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
@@ -278,6 +285,6 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
           </div>
         </form>
       </Form>
-    </div>
+    </DrawerRight>
   );
 };

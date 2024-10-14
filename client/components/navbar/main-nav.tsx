@@ -1,11 +1,10 @@
 "use client";
 import { useMainNav } from "./hooks/use-main-nav";
+import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { CoachNotification } from "../phone/coach-notification";
 import { cn } from "@/lib/utils";
 import { TextAnimation } from "../custom/text-animate";
-import { usePathname } from "next/navigation";
 
 type Props = {
   admin?: boolean;
@@ -21,8 +20,10 @@ export const MainNav = ({ admin }: Props) => {
     onRejectCall,
   } = useMainNav();
 
-  const pname = usePathname().split("/")[1].replace("-", " ");
-  const pathname = admin ? "AdminP Panel" : pname;
+  const pname = usePathname().split("/");
+  const pathname = admin
+    ? pname[2].replace("-", " ")
+    : pname[1].replace("-", " ");
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>

@@ -10,6 +10,9 @@ import {
 
 import { leadActivityInsert } from "@/actions/lead/activity";
 import { reFormatPhoneNumber } from "@/formulas/phones";
+import { getNewTextCode, leadsOnLeadsInsert } from ".";
+import { chatSettingGetTitan } from "../settings/chat";
+import { states } from "@/constants/states";
 
 //LEAD BENFICIARIES
 //DATA
@@ -25,22 +28,21 @@ export const leadBeneficiariesGetAllById = async (leadId: string) => {
     return beneficieries;
   } catch (error) {
     console.log("LEAD BENEFICIERY_GET_ALL_ERROR:", error);
-    return []
+    return [];
   }
 };
 export const leadBeneficiaryGetById = async (id: string) => {
   try {
     const user = await currentUser();
-    if (!user) 
-      return null
-    
+    if (!user) return null;
+
     const beneficiery = await db.leadBeneficiary.findUnique({
       where: { id },
     });
     return beneficiery;
   } catch (error) {
     console.log("LEAD BENEFICIERY_GET_ERROR:", error);
-    return null
+    return null;
   }
 };
 
@@ -119,14 +121,11 @@ export const leadBeneficiaryInsert = async (
 export const leadBeneficiaryUpdateById = async (
   values: LeadBeneficiarySchemaType
 ) => {
-  const validatedFields = LeadBeneficiarySchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) return { error: "Unauthorized" };
+
+  const validatedFields = LeadBeneficiarySchema.safeParse(values);
+  if (!validatedFields.success) return { error: "Invalid fields!" };
 
   const {
     id,
@@ -182,9 +181,7 @@ export const leadBeneficiaryUpdateById = async (
 
 export const leadBeneficiaryDeleteById = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) return { error: "Unauthorized" };
 
   const existingBeneficiery = await db.leadBeneficiary.findUnique({
     where: {
@@ -209,4 +206,90 @@ export const leadBeneficiaryDeleteById = async (id: string) => {
   );
 
   return { success: "Beneficiary Deleted" };
+};
+
+export const leadBeneficiaryConvertById = async (
+  {leadId,
+    beneficiaryId}:
+  {leadId: string,
+  beneficiaryId: string}
+) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const existingBeneficiery = await db.leadBeneficiary.findUnique({
+    where: {
+      id: beneficiaryId,
+    },
+  });
+
+  if (!existingBeneficiery) return { error: "Benficiary does not exists!" };
+
+  const existingLead = await db.lead.findUnique({
+    where: {
+      cellPhone: reFormatPhoneNumber(existingBeneficiery.cellPhone),
+    },
+  });
+
+  if (existingLead) return { error: "Lead already exist!" };
+
+  const {
+    relationship,
+    firstName,
+    lastName,
+    address,
+    city,
+    state,
+    zipCode,
+    cellPhone,
+    gender,
+    email,
+    dateOfBirth,
+  } = existingBeneficiery;
+
+ 
+  const st = states.find((e) => e.state.toLowerCase() == state.toLowerCase());
+
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId: user.id, status: { not: "Deactive" } },
+  });
+
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
+
+  //Get a new new Text code
+  const textCode = await getNewTextCode(firstName, lastName, cellPhone);
+  //Get titan (autoChat) from chat settings
+  const titan = await chatSettingGetTitan(user.id);
+
+  const newLead = await db.lead.create({
+    data: {
+      firstName,
+      lastName,
+      address,
+      city,
+      state,
+      zipCode,
+      homePhone: cellPhone ? reFormatPhoneNumber(cellPhone) : "",
+      cellPhone: reFormatPhoneNumber(cellPhone),
+      gender,
+      maritalStatus: "Single",
+      email,
+      dateOfBirth,
+      defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+      userId: user.id,
+      height: "",
+      weight: "",
+      textCode,
+      titan,
+    },
+  });
+
+  await db.leadBeneficiary.update({where:{id:beneficiaryId},data:{
+    convertedLeadId:newLead.id
+  }})
+
+  await leadsOnLeadsInsert(leadId, newLead.id, relationship);
+
+  return { success: newLead };
 };

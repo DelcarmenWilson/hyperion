@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect } from "react";
 import {
   Calendar,
   Folder,
@@ -9,21 +9,17 @@ import {
   PhoneCall,
   Video,
 } from "lucide-react";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 import { FullConversation } from "@/types";
 import { FullLead } from "@/types";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { CallHistoryClient } from "./call-history/client";
-
-import { CalendarEvents } from "./calendar-events/calendar-events";
 import { ActivityList } from "./activity-log/list";
-
+import { CalendarEvents } from "./calendar-events/calendar-events";
+import { CallHistoryClient } from "./call-history/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { useEffect } from "react";
 import { SmsClient } from "@/components/phone/sms/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type LeadTabsClientProps = {
   lead: FullLead;

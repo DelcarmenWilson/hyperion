@@ -1,6 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadBeneficiaryActions } from "@/hooks/lead/use-beneficiary";
+import {
+  useBeneficiaryStore,
+  useLeadBeneficiaryActions,
+  useLeadBeneficiaryData,
+} from "@/hooks/lead/use-beneficiary";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,17 +36,13 @@ import { LeadBeneficiary } from "@prisma/client";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { DrawerRight } from "@/components/custom/drawer-right";
+import { leadRelationShips } from "@/constants/lead";
 
 export const BeneficiaryForm = () => {
-  const {
-    leadId,
-    beneficiary,
-    isFetchingBeneficiary,
-    isBeneficiaryFormOpen,
-    onBeneficiaryFormClose,
-    onBeneficiarySubmit,
-    isBeneficiaryPending,
-  } = useLeadBeneficiaryActions();
+  const { leadId, beneficiary, isFetchingBeneficiary } =
+    useLeadBeneficiaryData();
+  const { isBeneficiaryFormOpen, onBeneficiaryFormClose } =
+    useBeneficiaryStore();
 
   return (
     <DrawerRight
@@ -52,10 +52,8 @@ export const BeneficiaryForm = () => {
     >
       <SkeletonWrapper isLoading={isFetchingBeneficiary}>
         <BeneForm
-          loading={isBeneficiaryPending}
           leadId={leadId}
           beneficiary={beneficiary}
-          onSubmit={onBeneficiarySubmit}
           onClose={onBeneficiaryFormClose}
         />
       </SkeletonWrapper>
@@ -64,19 +62,14 @@ export const BeneficiaryForm = () => {
 };
 
 type BeneFormProps = {
-  loading: boolean;
   leadId?: string;
   beneficiary?: LeadBeneficiary | null;
-  onSubmit: (values: LeadBeneficiarySchemaType) => void;
   onClose: () => void;
 };
-const BeneForm = ({
-  loading,
-  leadId,
-  beneficiary,
-  onSubmit,
-  onClose,
-}: BeneFormProps) => {
+const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
+  const { onBeneficiarySubmit, isBeneficiaryPending } =
+    useLeadBeneficiaryActions();
+
   const btnTitle = beneficiary ? "Update" : "Create";
 
   const form = useForm<LeadBeneficiarySchemaType>({
@@ -98,7 +91,7 @@ const BeneForm = ({
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onBeneficiarySubmit)}
         >
           <div>
             <div className="flex flex-col gap-2">
@@ -114,7 +107,7 @@ const BeneForm = ({
                     </FormLabel>
                     <Select
                       name="ddlType"
-                      disabled={loading}
+                      disabled={isBeneficiaryPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -137,19 +130,32 @@ const BeneForm = ({
                 name="relationship"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center justify-between">
+                    <FormLabel className="flex justify-between items-center">
                       Relationship
                       <FormMessage />
                     </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Son"
-                        disabled={loading}
-                        autoComplete="off"
-                        type="text"
-                      />
-                    </FormControl>
+                    <Select
+                      name="ddlRelationship"
+                      disabled={isBeneficiaryPending}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a RelationShip" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {leadRelationShips.map((rel) => (
+                          <SelectItem
+                            key={rel.relationship}
+                            value={rel.relationship}
+                          >
+                            {rel.relationship}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormItem>
                 )}
               />
@@ -167,7 +173,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="50%"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                         type="text"
                       />
@@ -189,7 +195,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="John"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                         type="text"
                       />
@@ -212,7 +218,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="Doe"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -232,7 +238,7 @@ const BeneForm = ({
                     </FormLabel>
                     <Select
                       name="ddlGender"
-                      disabled={loading}
+                      disabled={isBeneficiaryPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -264,7 +270,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="Dob"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         type="date"
                         autoComplete="DateOfBirth"
                       />
@@ -287,7 +293,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="555-555-5555"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -309,7 +315,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                         type="email"
                       />
@@ -332,7 +338,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="565856985"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                         type="text"
                       />
@@ -355,7 +361,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="123 main street"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -377,7 +383,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="Queens"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -397,7 +403,7 @@ const BeneForm = ({
                     </FormLabel>
                     <Select
                       name="ddlState"
-                      disabled={loading}
+                      disabled={isBeneficiaryPending}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       autoComplete="off"
@@ -433,7 +439,7 @@ const BeneForm = ({
                       <Input
                         {...field}
                         placeholder="15468"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="postal-code"
                       />
                     </FormControl>
@@ -455,7 +461,7 @@ const BeneForm = ({
                       <Textarea
                         {...field}
                         placeholder="notes"
-                        disabled={loading}
+                        disabled={isBeneficiaryPending}
                         autoComplete="off"
                         rows={10}
                       />
@@ -469,7 +475,7 @@ const BeneForm = ({
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={isBeneficiaryPending} type="submit">
               {btnTitle}
             </Button>
           </div>

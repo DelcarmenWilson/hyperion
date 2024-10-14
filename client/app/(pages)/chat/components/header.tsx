@@ -1,11 +1,11 @@
 "use client";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useChat, useChatData } from "@/hooks/use-chat";
+import { useChatStore, useChatData } from "@/hooks/use-chat";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const Header = () => {
   const currentUser = useCurrentUser();
-  const { chatId } = useChat();
+  const { chatId } = useChatStore();
   const { chat, chatIsFetching } = useChatData(chatId!);
   if (!chat) return;
   const user =

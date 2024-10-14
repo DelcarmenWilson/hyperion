@@ -14,7 +14,7 @@ export const TeamList = ({ teams, size = "full" }: TeamListProps) => {
         <div
           className={cn(
             "grid grid-cols-1 gap-2 overflow-y-auto",
-            size == "full" && "lg:grid-cols-4"
+            size == "full" && "lg:grid-cols-2"
           )}
         >
           {teams.map((team) => (

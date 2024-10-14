@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState, useMemo } from "react";
+import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
@@ -36,19 +36,20 @@ export const useLeadPolicyData = () => {
     //POLICY
     const { mutate: policyMutate, isPending: policyIsPending } = useMutation({
       mutationFn: leadUpdateByIdPolicyInfo,
-      onSuccess: (result) => {
-        if (result.success) {
+      onSuccess: (results) => {
+        if (results.success) {
           userEmitter.emit("policyInfoUpdated", {
-            ...result.success,
-            startDate: result.success?.startDate || undefined,
+            ...results.success,
+            startDate: results.success?.startDate || undefined,
           });
-          userEmitter.emit("leadStatusChanged", result.success.leadId, "Sold");
+          userEmitter.emit("leadStatusChanged", results.success.leadId, "Sold");
   
-          toast.success("Lead Policy Info Updated", {
-            id: "update-policy-info",
-          });
+          toast.success("Lead Policy Info Updated", {id: "update-policy-info",});
           onPolicyFormClose();
           invalidate();
+        }
+        else{
+          toast.error(results.error, {id: "insert-new-lead" });
         }
       },
       onError: (error) => {

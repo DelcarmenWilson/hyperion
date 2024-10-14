@@ -1,12 +1,17 @@
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { toast } from "sonner";
+"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  useLeadStore,
+  useLeadData,
+  useLeadInsertActions,
+} from "@/hooks/lead/use-lead";
+
+import { Gender, MaritalStatus } from "@prisma/client";
+import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DrawerRight } from "@/components/custom/drawer-right";
 import {
   Form,
   FormField,
@@ -15,7 +20,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,361 +28,417 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Gender, MaritalStatus } from "@prisma/client";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { states } from "@/constants/states";
-import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
-import { leadInsert } from "@/actions/lead";
+import { leadRelationShips } from "@/constants/lead";
 
-export const NewLeadForm = ({ onClose }: { onClose?: () => void }) => {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+export const NewLeadForm = () => {
+  const { isNewLeadFormOpen, onNewLeadFormClose, associatedLead } =
+    useLeadStore();
+  const { leadBasic, isFetchingLeadBasic } = useLeadData();
 
+  return (
+    <DrawerRight
+      title="New Lead"
+      isOpen={isNewLeadFormOpen}
+      onClose={onNewLeadFormClose}
+    >
+      <SkeletonWrapper isLoading={isFetchingLeadBasic}>
+        {leadBasic && (
+          <div className="bg-gradient-to-tr from-foreground to-primary text-background p-2 mb-2">
+            <p className="text-center">Associated Lead</p>
+            <p className="font-bold">
+              {leadBasic.firstName} {leadBasic.lastName}
+            </p>
+          </div>
+        )}
+      </SkeletonWrapper>
+      <NewLForm leadId={leadBasic?.id} onClose={onNewLeadFormClose} />
+    </DrawerRight>
+  );
+};
+
+type NewLFormProps = {
+  leadId: string | undefined;
+  onClose: () => void;
+};
+const NewLForm = ({ leadId, onClose }: NewLFormProps) => {
+  const { onLeadInsertMutate, leadInsertIsPending } = useLeadInsertActions();
   const form = useForm<LeadSchemaType>({
     resolver: zodResolver(LeadSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
       homePhone: "",
-      cellPhone: "",
       gender: Gender.Male,
       maritalStatus: MaritalStatus.Single,
-      email: "",
+      associatedLead: leadId,
+      relationship: "N/A",
     },
   });
 
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    if (onClose) {
-      onClose();
-    }
+    onClose();
   };
 
-  const onSubmit = async (values: LeadSchemaType) => {
-    setLoading(true);
-    await leadInsert(values).then((data) => {
-      if (data.success) {
-        const newLead = data.success;
-        router.refresh();
-        router.push(`/leads/${newLead.id}`);
-        toast.success("Lead created!");
-      }
-      if (data.error) {
-        form.reset();
-        toast.error(data.error);
-      }
-    });
-
-    setLoading(false);
-  };
   return (
-    <div>
-      <Form {...form}>
-        <form
-          className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div>
-            <div className="flex flex-col gap-2">
-              {/* FIRSTNAME */}
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="John"
-                        disabled={loading}
-                        autoComplete="First Name"
-                        type="text"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <Form {...form}>
+      <form
+        className="space-6 px-2 w-full"
+        onSubmit={form.handleSubmit(onLeadInsertMutate)}
+      >
+        <div className="flex flex-col gap-2">
+          {/* RELATIONSHIP */}
+          <FormField
+            control={form.control}
+            name="relationship"
+            render={({ field }) => (
+              <FormItem className={leadId ? "" : "opacity-0"}>
+                <FormLabel className="flex justify-between items-center">
+                  Relationship
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlRelationship"
+                  disabled={leadInsertIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a RelationShip" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {leadRelationShips.map((rel) => (
+                      <SelectItem
+                        key={rel.relationship}
+                        value={rel.relationship}
+                      >
+                        {rel.relationship}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
 
-              {/* LASTNAME */}
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Doe"
-                        disabled={loading}
-                        autoComplete="Last Name"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* FIRSTNAME */}
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  {" "}
+                  First Name
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="John"
+                    disabled={leadInsertIsPending}
+                    autoComplete="First Name"
+                    type="text"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* GENDER */}
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Gender</FormLabel>
-                    <Select
-                      name="ddlGender"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a Gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={Gender.Male}>Male</SelectItem>
-                        <SelectItem value={Gender.Female}>Female</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* LASTNAME */}
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  {" "}
+                  Last Name <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Doe"
+                    disabled={leadInsertIsPending}
+                    autoComplete="Last Name"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* DATE OF BIRTH */}
-              <FormField
-                control={form.control}
-                name="dateOfBirth"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
-                    <FormLabel>Date of birth</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Dob"
-                        disabled={loading}
-                        type="date"
-                        autoComplete="DateOfBirth"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col">
-              {/* HOMEPHONE */}
-              <FormField
-                control={form.control}
-                name="homePhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Home Phone</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="457-458-9695"
-                        disabled={loading}
-                        autoComplete="phone"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* GENDER */}
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Gender
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlGender"
+                  disabled={leadInsertIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={Gender.Male}>Male</SelectItem>
+                    <SelectItem value={Gender.Female}>Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
 
-              {/* CELLPHONE */}
-              <FormField
-                control={form.control}
-                name="cellPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Cell Phone</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="555-555-5555"
-                        disabled={loading}
-                        autoComplete="phone"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* DATE OF BIRTH */}
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem className="flex flex-col pt-2">
+                <FormLabel className="flex justify-between items-center">
+                  Date of birth
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Dob"
+                    disabled={leadInsertIsPending}
+                    type="date"
+                    autoComplete="DateOfBirth"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* MARITAL STATUS */}
-              <FormField
-                control={form.control}
-                name="maritalStatus"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Marital Status</FormLabel>
-                    <Select
-                      name="ddlMaritalStatus"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a Marital status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={MaritalStatus.Single}>
-                          Single
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Married}>
-                          Married
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Divorced}>
-                          Divorced
-                        </SelectItem>
-                        <SelectItem value={MaritalStatus.Widowed}>
-                          Widowed
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* HOMEPHONE */}
+          <FormField
+            control={form.control}
+            name="homePhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  {" "}
+                  Home Phone
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="457-458-9695"
+                    disabled={leadInsertIsPending}
+                    autoComplete="phone"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* EMAIL */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="jon.doe@example.com"
-                        disabled={loading}
-                        autoComplete="email"
-                        type="email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col">
-              {/* ADDRESS */}
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="123 main street"
-                        disabled={loading}
-                        autoComplete="address"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* CELLPHONE */}
+          <FormField
+            control={form.control}
+            name="cellPhone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Cell Phone
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="555-555-5555"
+                    disabled={leadInsertIsPending}
+                    autoComplete="phone"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* CITY */}
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> City</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Queens"
-                        disabled={loading}
-                        autoComplete="address-level2"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* MARITAL STATUS */}
+          <FormField
+            control={form.control}
+            name="maritalStatus"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Marital Status
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlMaritalStatus"
+                  disabled={leadInsertIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a Marital status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={MaritalStatus.Single}>Single</SelectItem>
+                    <SelectItem value={MaritalStatus.Married}>
+                      Married
+                    </SelectItem>
+                    <SelectItem value={MaritalStatus.Divorced}>
+                      Divorced
+                    </SelectItem>
+                    <SelectItem value={MaritalStatus.Widowed}>
+                      Widowed
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
 
-              {/* STATE */}
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> State</FormLabel>
-                    <Select
-                      name="ddlState"
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      autoComplete="address-level1"
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select State" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {states.map((state) => (
-                          <SelectItem key={state.abv} value={state.abv}>
-                            {state.state}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* EMAIL */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Email
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="jon.doe@example.com"
+                    disabled={leadInsertIsPending}
+                    autoComplete="email"
+                    type="email"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-              {/* ZIP */}
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Zip Code</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="15468"
-                        disabled={loading}
-                        autoComplete="postal-code"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button disabled={loading} type="submit">
-              Create
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          {/* ADDRESS */}
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Address
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="123 main street"
+                    disabled={leadInsertIsPending}
+                    autoComplete="address"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* CITY */}
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  City
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Queens"
+                    disabled={leadInsertIsPending}
+                    autoComplete="address-level2"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {/* STATE */}
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  State
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddlState"
+                  disabled={leadInsertIsPending}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  autoComplete="address-level1"
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {states.map((state) => (
+                      <SelectItem key={state.abv} value={state.abv}>
+                        {state.state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+
+          {/* ZIP */}
+          <FormField
+            control={form.control}
+            name="zipCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center">
+                  Zip Code
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="15468"
+                    disabled={leadInsertIsPending}
+                    autoComplete="postal-code"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+          <Button onClick={onCancel} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button disabled={leadInsertIsPending} type="submit">
+            Create
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

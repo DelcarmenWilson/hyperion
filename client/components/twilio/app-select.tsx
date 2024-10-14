@@ -12,11 +12,17 @@ import { TwilioApps } from "@/constants/twilio";
 type Props = {
   app: string | undefined;
   setApp: React.Dispatch<React.SetStateAction<string | undefined>>;
+  disabled?: boolean;
 };
 
-export const TwilioAppSelect = ({ app, setApp }: Props) => {
+export const TwilioAppSelect = ({ app, setApp, disabled = false }: Props) => {
   return (
-    <Select name="ddlApps" defaultValue={app} onValueChange={setApp}>
+    <Select
+      name="ddlApps"
+      disabled={disabled}
+      defaultValue={app}
+      onValueChange={setApp}
+    >
       <SelectTrigger>
         <SelectValue placeholder="Select an app" />
       </SelectTrigger>

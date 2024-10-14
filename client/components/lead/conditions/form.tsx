@@ -42,42 +42,6 @@ export const ConditionForm = () => {
     isConditionPending,
   } = useLeadConditionActions();
 
-  // const onSubmit = async (values: LeadConditionSchemaType) => {
-  //   setLoading(true);
-
-  //   if (leadId) {
-  //     leadConditionInsert(values).then((data) => {
-  //       if (data.success) {
-  //         userEmitter.emit("conditionInserted", data.success);
-  //         toast.success(" Condition Added!");
-  //         onClose();
-  //       }
-  //       if (data.error) {
-  //         form.reset();
-  //         toast.error(data.error);
-  //       }
-  //     });
-  //   } else {
-  //     leadConditionUpdateById(values).then((data) => {
-  //       if (data.success) {
-  //         userEmitter.emit("conditionUpdated", data.success);
-  //         toast.success(" Condition Updated!");
-  //         onClose();
-  //       }
-  //       if (data.error) {
-  //         toast.error(data.error);
-  //       }
-  //     });
-  //   }
-
-  //   setLoading(false);
-  // };
-
-  // useEffect(() => {
-  //   axios.post("/api/admin/conditions").then((response) => {
-  //     setConditions(response.data);
-  //   });
-  // }, []);
   return (
     <DrawerRight
       title="New Condition"
@@ -120,8 +84,8 @@ const CondForm = ({
   const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
     //@ts-ignore
-    defaultValues: leadCondition || {
-      leadId: leadId,
+    defaultValues: condition || {
+      leadId,
       conditionId: "",
       diagnosed: "",
       medications: "",
@@ -134,41 +98,6 @@ const CondForm = ({
     onClose();
   };
 
-  //   setLoading(true);
-
-  //   if (leadId) {
-  //     leadConditionInsert(values).then((data) => {
-  //       if (data.success) {
-  //         userEmitter.emit("conditionInserted", data.success);
-  //         toast.success(" Condition Added!");
-  //         onClose();
-  //       }
-  //       if (data.error) {
-  //         form.reset();
-  //         toast.error(data.error);
-  //       }
-  //     });
-  //   } else {
-  //     leadConditionUpdateById(values).then((data) => {
-  //       if (data.success) {
-  //         userEmitter.emit("conditionUpdated", data.success);
-  //         toast.success(" Condition Updated!");
-  //         onClose();
-  //       }
-  //       if (data.error) {
-  //         toast.error(data.error);
-  //       }
-  //     });
-  //   }
-
-  //   setLoading(false);
-  // };
-
-  // useEffect(() => {
-  //   axios.post("/api/admin/conditions").then((response) => {
-  //     setConditions(response.data);
-  //   });
-  // }, []);
   return (
     <div>
       <Form {...form}>

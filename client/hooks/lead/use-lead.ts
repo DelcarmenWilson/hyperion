@@ -1,17 +1,13 @@
 import { useCallback, useContext, useEffect, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SocketContext from "@/providers/socket";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { create } from "zustand";
 
-import {
-  Call,
-  LeadBeneficiary,
-  User,
-} from "@prisma/client";
-import {  FullLead, LeadPrevNext } from "@/types";
+import { Call, LeadBeneficiary, User } from "@prisma/client";
+import { AssociatedLead, FullLead, FullLeadPolicy, LeadPrevNext } from "@/types";
 
 import {
   leadGetByIdBasicInfo,
@@ -19,6 +15,8 @@ import {
   leadGetByIdGeneral,
   leadGetByIdMain,
   leadGetByIdNotes,
+  leadInsert,
+  leadsGetAssociated,
   leadUpdateByIdAssistantAdd,
   leadUpdateByIdAssistantRemove,
   leadUpdateByIdDefaultNumber,
@@ -46,6 +44,7 @@ import {
   LeadMainSchemaTypeP,
   LeadNotesSchemaTypeP,
   LeadPolicySchemaType,
+  LeadSchemaType,
 } from "@/schemas/lead";
 import {
   leadGetByIdIntakeBankInfo,
@@ -63,7 +62,6 @@ import {
 } from "@/actions/lead/intake";
 import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 import { leadUpdateByIdIntakePersonalInfo } from "@/actions/lead/intake";
-
 import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
 type DialogType =
@@ -73,55 +71,82 @@ type DialogType =
   | "other"
   | "policy"
   | "medical";
-type useLeadStore = {
-  onTableClose?: () => void;
+type State = {
   leadId?: string;
   leadIds?: string[];
   leadFullName?: string;
-  setLeadId: (l: string) => void;
+  associatedLead: boolean;
   //ConversationId
-  conversationId?:string;
-  setConversationId:(c?:string)=>void
+  conversationId?: string;
   //MAIN INFO
   isMainFormOpen: boolean;
-  onMainFormOpen: (l: string) => void;
-  onMainFormClose: () => void;
   //GENERAL INFO
   isGeneralFormOpen: boolean;
-  onGeneralFormOpen: (l: string) => void;
-  onGeneralFormClose: () => void;
   //POLICY
   policyInfo?: LeadPolicySchemaType;
   isPolicyFormOpen: boolean;
-  onPolicyFormOpen: (l: string) => void;
-  onPolicyFormClose: () => void;
   // SHARE
   initUser?: User | null;
   isShareFormOpen: boolean;
+  //TRANSFER
+  isTransferFormOpen: boolean;
+  //ASSISTANT
+  isAssistantFormOpen: boolean;
+  //INTAKE FORM
+  isIntakeFormOpen: boolean;
+  dialogType: DialogType;
+  isIntakeDialogOpen: boolean;
+  //NEW LEAD FORM
+  isNewLeadFormOpen: boolean;
+  //EXPORT LEAD FORM
+  isExportFormOpen: boolean;
+  //IMPORT LEAD FORM
+  isImportFormOpen: boolean;
+};
+type Actions = {
+  onTableClose?: () => void;
+  setLeadId: (l: string) => void;
+  //ConversationId
+  setConversationId: (c?: string) => void;
+  //MAIN INFO
+  onMainFormOpen: (l: string) => void;
+  onMainFormClose: () => void;
+  //GENERAL INFO
+  onGeneralFormOpen: (l: string) => void;
+  onGeneralFormClose: () => void;
+  //POLICY
+  onPolicyFormOpen: (l: string) => void;
+  onPolicyFormClose: () => void;
+  // SHARE
   onShareFormOpen: (l: string[], n: string, u?: User, f?: () => void) => void;
   onShareFormClose: () => void;
   //TRANSFER
-  isTransferFormOpen: boolean;
   onTransferFormOpen: (l: string[], n: string, f?: () => void) => void;
   onTransferFormClose: () => void;
   //ASSISTANT
-  isAssistantFormOpen: boolean;
   //TODO - this should be multiple leads
   onAssistantFormOpen: (l: string, n: string, u?: User) => void;
   onAssistantFormClose: () => void;
   //INTAKE FORM
-  isIntakeFormOpen: boolean;
   onIntakeFormOpen: (l: string, n: string) => void;
   onIntakeFormClose: () => void;
-  dialogType: DialogType;
-  isIntakeDialogOpen: boolean;
   onIntakeDialogOpen: (d: DialogType) => void;
   onIntakeDialogClose: () => void;
+  //NEW LEAD FORM
+  onNewLeadFormOpen: (a?: boolean) => void;
+  onNewLeadFormClose: () => void;
+  //EXPORT LEAD FORM
+  onExportFormOpen: () => void;
+  onExportFormClose: () => void;
+  //IMPORT LEAD FORM
+  onImportFormOpen: () => void;
+  onImportFormClose: () => void;
 };
 
-export const useLeadStore = create<useLeadStore>((set) => ({
+export const useLeadStore = create<State & Actions>((set) => ({
+  associatedLead: false,
   setLeadId: (l) => set({ leadId: l }),
-  setConversationId:(c)=> set({ conversationId: c }),
+  setConversationId: (c) => set({ conversationId: c }),
   isMainFormOpen: false,
   onMainFormOpen: (l) => set({ leadId: l, isMainFormOpen: true }),
   onMainFormClose: () => set({ isMainFormOpen: false }),
@@ -157,49 +182,41 @@ export const useLeadStore = create<useLeadStore>((set) => ({
       isTransferFormOpen: true,
       onTableClose: f,
     }),
-  onTransferFormClose: () =>
-    set({
-      leadIds: [],
-      isTransferFormOpen: false,
-    }),
-
+  onTransferFormClose: () => set({ leadIds: [], isTransferFormOpen: false }),
   //ASSISTANT
   isAssistantFormOpen: false,
   onAssistantFormOpen: (l, n, u?) =>
-    set({
-      leadId: l,
-      leadFullName: n,
-      initUser: u,
-      isAssistantFormOpen: true,
-    }),
-  onAssistantFormClose: () =>
-    set({
-      isAssistantFormOpen: false,
-    }),
+    set({ leadId: l, leadFullName: n, initUser: u, isAssistantFormOpen: true }),
+  onAssistantFormClose: () => set({ isAssistantFormOpen: false }),
   //INTAKE
   isIntakeFormOpen: false,
   onIntakeFormOpen: (l, n) =>
     set({ leadId: l, leadFullName: n, isIntakeFormOpen: true }),
-  onIntakeFormClose: () =>
-    set({
-      isIntakeFormOpen: false,
-    }),
+  onIntakeFormClose: () => set({ isIntakeFormOpen: false }),
 
   dialogType: "personal",
   isIntakeDialogOpen: false,
   onIntakeDialogOpen: (d: DialogType) =>
-    set({
-      dialogType: d,
-      isIntakeDialogOpen: true,
-    }),
-  onIntakeDialogClose: () =>
-    set({
-      isIntakeDialogOpen: false,
-    }),
+    set({ dialogType: d, isIntakeDialogOpen: true }),
+  onIntakeDialogClose: () => set({ isIntakeDialogOpen: false }),
+  //NEW LEAD FORM
+  isNewLeadFormOpen: false,
+  onNewLeadFormOpen: (a: boolean = false) =>
+    set({ isNewLeadFormOpen: true, associatedLead: a }),
+  onNewLeadFormClose: () =>
+    set({ isNewLeadFormOpen: false, associatedLead: false }),
+  //EDXPORT LEAD FORM
+  isExportFormOpen: false,
+  onExportFormOpen: () => set({ isExportFormOpen: true }),
+  onExportFormClose: () => set({ isExportFormOpen: false }),
+  //IMPORT LEAD FORM
+  isImportFormOpen: false,
+  onImportFormOpen: () => set({ isImportFormOpen: true }),
+  onImportFormClose: () => set({ isImportFormOpen: false }),
 }));
 
 export const useLeadData = () => {
-  const { leadId,setConversationId: setConverationId } = useLeadStore();
+  const { leadId, setConversationId: setConverationId } = useLeadStore();
   const [edit, setEdit] = useState(false);
   const [defaultNumber, setDefaultNumber] = useState("");
 
@@ -224,8 +241,7 @@ export const useLeadData = () => {
     useQuery<LeadPrevNext | null>({
       queryFn: () => leadGetPrevNextById(leadId as string),
       queryKey: [`leadNextPrev-${leadId}`],
-    });  
- 
+    });
 
   const onSetDefaultNumber = async (phoneNumber: string) => {
     if (phoneNumber != defaultNumber) {
@@ -246,7 +262,7 @@ export const useLeadData = () => {
     setDefaultNumber(lead.defaultNumber);
   }, [lead]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!leadBasic) return;
     setConverationId(leadBasic.conversations[0]?.id);
   }, [leadBasic]);
@@ -263,6 +279,21 @@ export const useLeadData = () => {
     onSetDefaultNumber,
     prevNext,
     isFetchingnextPrev,
+  };
+};
+
+export const useLeadAssociatedData = () => {
+  const { leadId } = useLeadStore();
+
+  const { data: leadsAssociated, isFetching: isFetchingLeadsAssociated } =
+    useQuery<AssociatedLead[] | []>({
+      queryFn: () => leadsGetAssociated(leadId as string),
+      queryKey: [`lead-associated-${leadId}`],
+    });
+
+  return {
+    leadsAssociated,
+    isFetchingLeadsAssociated,
   };
 };
 
@@ -407,6 +438,49 @@ export const useLeadActions = (uId?: string) => {
   };
 };
 
+export const useLeadInsertActions = () => {
+  const { leadId, onNewLeadFormClose } = useLeadStore();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: [`lead-associated-${leadId}`] });
+  };
+
+  //NEW LEAD
+  const { mutate: leadInsertMutate, isPending: leadInsertIsPending } =
+    useMutation({
+      mutationFn: leadInsert,
+      onSuccess: (results) => {
+        if (results.success) {
+          toast.success("New lead created", { id: "insert-new-lead" });
+          onNewLeadFormClose();
+          if(!results.associated)
+           router.push(`/leads/${results.success.id}`);
+        } else {
+          toast.error(results.error, { id: "insert-new-lead" });
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+      onSettled:()=>invalidate()
+    });
+
+  const onLeadInsertMutate = useCallback(
+    (values: LeadSchemaType) => {
+      toast.loading("Creating new lead...", { id: "insert-new-lead" });
+      leadInsertMutate(values);
+    },
+    [leadInsertMutate]
+  );
+
+  return {
+    onLeadInsertMutate,
+    leadInsertIsPending,
+  };
+};
+
 export const useLeadIntakeActions = (
   leadId: string,
   onClose?: () => void,
@@ -418,44 +492,44 @@ export const useLeadIntakeActions = (
   //GET INTAKE DATA
   const getIntakeData = () => {
     const { data: personal, isFetching: personalIsFectching } =
-      useQuery<IntakePersonalInfoSchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakePersonalInfo"],
+      useQuery<IntakePersonalInfoSchemaType | null>({        
+        queryKey: [`lead-intake-personal-info-${leadId}`],
         queryFn: () => leadGetByIdIntakePersonalInfo(leadId),
       });
 
     const { data: beneficiaries, isFetching: beneficiariesIsFectching } =
-      useQuery<LeadBeneficiary[]>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeBeneficiariesInfo"],
+      useQuery<LeadBeneficiary[]>({        
+        queryKey: [`lead-intake-beneficiaries-info-${leadId}`],
         queryFn: () => leadBeneficiariesGetAllById(leadId),
       });
 
     const { data: doctor, isFetching: doctorIsFectching } =
-      useQuery<IntakeDoctorInfoSchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeDoctorInfo"],
+      useQuery<IntakeDoctorInfoSchemaType | null>({        
+        queryKey: [`lead-intake-doctor-info-${leadId}`],
         queryFn: () => leadGetByIdIntakeDoctorInfo(leadId),
       });
 
     const { data: bank, isFetching: bankIsFectching } =
       useQuery<IntakeBankInfoSchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeBankInfo"],
+        queryKey: [`lead-intake-bank-info-${leadId}`],
         queryFn: () => leadGetByIdIntakeBankInfo(leadId!),
       });
 
     const { data: other, isFetching: otherIsFectching } =
       useQuery<IntakeOtherInfoSchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeOtherInfo"],
+        queryKey: [`lead-intake-other-info-${leadId}`],
         queryFn: () => leadGetByIdIntakeOtherInfo(leadId),
       });
 
     const { data: policy, isFetching: policyIsFectching } =
-      useQuery<LeadPolicySchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakePolicy"],
+      useQuery<FullLeadPolicy | null>({
+        queryKey: [`lead-intake-policy-${leadId}`],
         queryFn: () => leadGetByIdIntakePolicyInfo(leadId),
       });
 
     const { data: medical, isFetching: medicalIsFectching } =
       useQuery<IntakeMedicalInfoSchemaType | null>({
-        queryKey: ["leadInfo", `lead-${leadId}`, "leadIntakeMedicalInfo"],
+        queryKey: [`lead-intake-medical-info-${leadId}`],
         queryFn: () => leadGetByIdIntakeMedicalInfo(leadId),
       });
 
@@ -478,7 +552,7 @@ export const useLeadIntakeActions = (
   };
   const invalidate = (key: string) => {
     queryClient.invalidateQueries({
-      queryKey: ["leadInfo", `lead-${leadId}`, key],
+      queryKey: [`${key}-${leadId}`],
     });
   };
   //PERSONAL INFO
@@ -489,7 +563,7 @@ export const useLeadIntakeActions = (
         id: "update-personal-info",
       });
 
-      invalidate("leadIntakePersonalInfo");
+      invalidate("lead-intake-personal-info");
 
       if (onClose) onClose();
     },
@@ -515,7 +589,7 @@ export const useLeadIntakeActions = (
       toast.success(result.success, {
         id: "insert-update-doctor-info",
       });
-      invalidate("leadIntakeDoctorInfo");
+      invalidate("lead-intake-doctor-info");
 
       if (onClose) onClose();
     },
@@ -543,7 +617,7 @@ export const useLeadIntakeActions = (
         id: "insert-update-bank-info",
       });
 
-      invalidate("leadIntakeBankInfo");
+      invalidate("lead-intake-bank-info");
 
       if (onClose) onClose();
     },
@@ -569,7 +643,7 @@ export const useLeadIntakeActions = (
       toast.success(result.success, {
         id: "update-other-info",
       });
-      invalidate("leadIntakeOtherInfo");
+      invalidate("lead-intake-other-info");
 
       if (onClose) onClose();
     },
@@ -595,7 +669,7 @@ export const useLeadIntakeActions = (
         id: "update-medical-info",
       });
 
-      invalidate("leadIntakeMedicalInfo");
+      invalidate("lead-intake-medical-info");
 
       if (onClose) onClose();
     },
@@ -639,12 +713,13 @@ export const useLeadMainInfoActions = (
   const [loading, setLoading] = useState(false);
 
   const invalidate = (key: string) => {
-    queryClient.invalidateQueries({ queryKey: [key] });
+    queryClient.invalidateQueries({ queryKey: [`${key}-${leadId}`] });
+    
   };
   const { data: mainInfo, isFetching: isFetchingMainInfo } =
     useQuery<LeadMainSchemaTypeP | null>({
       queryFn: () => leadGetByIdMain(leadId as string),
-      queryKey: [`leadMainInfo-${leadId}`],
+      queryKey: [`lead-main-info-${leadId}`],
     });
 
   const onLeadUpdateByIdQuote = async (e?: string) => {
@@ -655,7 +730,7 @@ export const useLeadMainInfoActions = (
     if (updatedQuote.success) {
       toast.success(updatedQuote.success);
     } else toast.error(updatedQuote.error);
-  }; 
+  };
 
   //MAIN INFO
   const onMainInfoUpdate = async (values: LeadMainSchemaType) => {
@@ -664,7 +739,7 @@ export const useLeadMainInfoActions = (
     if (response.success) {
       userEmitter.emit("mainInfoUpdated", response.success);
       toast.success("Lead demographic info updated");
-      [`leadMainInfo-${leadId}`, `lead-${leadId}`].forEach((key) =>
+      ['lead-main-info', 'lead'].forEach((key) =>
         invalidate(key)
       );
       if (onClose) onClose();
@@ -694,13 +769,13 @@ export const useLeadGeneralInfoActions = (onClose?: () => void) => {
   const [loading, setLoading] = useState(false);
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`leadGeneralInfo-${leadId}`] });
+    queryClient.invalidateQueries({ queryKey: [`lead-general-info-${leadId}`] });
   };
 
   const { data: generalInfo, isFetching: isFetchingGeneralInfo } =
     useQuery<LeadGeneralSchemaTypeP | null>({
       queryFn: () => leadGetByIdGeneral(leadId as string),
-      queryKey: [`leadGeneralInfo-${leadId}`],
+      queryKey: [`lead-general-info-${leadId}`],
     });
 
   //GENERAL INFO
@@ -725,8 +800,6 @@ export const useLeadGeneralInfoActions = (onClose?: () => void) => {
   };
 };
 
-
-
 export const useLeadNotesActions = () => {
   const { leadId } = useLeadStore();
   const queryClient = useQueryClient();
@@ -735,13 +808,13 @@ export const useLeadNotesActions = () => {
   const [notes, setNotes] = useState<string | null>("");
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`leadNotes-${leadId}`] });
+    queryClient.invalidateQueries({ queryKey: [`lead-notes-${leadId}`] });
   };
 
   const { data: initNotes, isFetching: isFetchingNotes } =
     useQuery<LeadNotesSchemaTypeP | null>({
       queryFn: () => leadGetByIdNotes(leadId as string),
-      queryKey: [`leadNotes-${leadId}`],
+      queryKey: [`lead-notes-${leadId}`],
     });
 
   //NOTES
@@ -788,11 +861,11 @@ export const useLeadCallInfoActions = () => {
   const { data: callInfo, isFetching: isFetchingCallInfo } =
     useQuery<LeadCallInfoSchemaTypeP | null>({
       queryFn: () => leadGetByIdCallInfo(leadId as string),
-      queryKey: [`leadCallInfo-${leadId}`],
+      queryKey: [`lead-call-info-${leadId}`],
     });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`leadPolicy-${leadId}`] });
+    queryClient.invalidateQueries({ queryKey: [`lead-call-info-${leadId}`] });
   };
 
   useEffect(() => {

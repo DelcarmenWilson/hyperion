@@ -1,18 +1,16 @@
 "use client";
-import { useOnlineUserData } from "@/hooks/user/use-user";
+import { useChatStore } from "@/hooks/use-chat";
+
 import ChatCard from "./card";
-import SkeletonWrapper from "../skeleton-wrapper";
 import { ScrollArea } from "../ui/scroll-area";
 
 export const ChatList = () => {
-  const { onlineUsers, isFetchingOnlineUsers } = useOnlineUserData();
+  const { onlineUsers } = useChatStore();
   return (
     <ScrollArea>
-      <SkeletonWrapper isLoading={isFetchingOnlineUsers}>
-        {onlineUsers?.map((user) => (
-          <ChatCard key={user.id} user={user} />
-        ))}
-      </SkeletonWrapper>
+      {onlineUsers?.map((user) => (
+        <ChatCard key={user.id} user={user} />
+      ))}
     </ScrollArea>
   );
 };

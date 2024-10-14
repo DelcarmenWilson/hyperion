@@ -15,11 +15,13 @@ import {
 import { FullAppointment, CalendarEvent, CalendarLabel } from "./appointment";
 
 import {
+  AssociatedLead,
   HalfLeadNoConvo,
   FullLeadNoConvo,
   LeadConversationType,
   FullLead,
   FullLeadMedicalCondition,
+  FullLeadPolicy,
   LeadMainInfo,
   LeadPolicyType,
   LeadPrevNext,
@@ -64,8 +66,14 @@ import {
   TwilioConferenceRecording,
 } from "./twilio";
 import { ItemProps, MonthProps, FileRecords, FileRecord } from "./item";
-import { FullChatbotConversation, ShortChatbotConversation } from "./chat-bot/chatbot";
-import { ShortPublicChatbotConversation,FullPublicChatbotConversation } from "./chat-bot/public-chatbot";
+import {
+  FullChatbotConversation,
+  ShortChatbotConversation,
+} from "./chat-bot/chatbot";
+import {
+  ShortPublicChatbotConversation,
+  FullPublicChatbotConversation,
+} from "./chat-bot/public-chatbot";
 
 import { FullCampaign, FullAd } from "./facebook";
 
@@ -148,11 +156,13 @@ export type { FullAppointment, CalendarEvent, CalendarLabel };
 
 //LEAD
 export type {
+  AssociatedLead,
   HalfLeadNoConvo,
   FullLeadNoConvo,
   LeadConversationType,
   FullLead,
   FullLeadMedicalCondition,
+  FullLeadPolicy,
   LeadMainInfo,
   LeadPolicyType,
   LeadPrevNext,
@@ -207,7 +217,7 @@ export type { ItemProps, FileRecords, FileRecord, MonthProps };
 export type { ShortChatbotConversation, FullChatbotConversation };
 
 //PUBLIC CHATBOT
-export type {ShortPublicChatbotConversation,FullPublicChatbotConversation};
+export type { ShortPublicChatbotConversation, FullPublicChatbotConversation };
 
 //FACEBOOK CAMPAIGN
 export type { FullCampaign, FullAd };

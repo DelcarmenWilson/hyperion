@@ -31,7 +31,7 @@ export const CarrierSelect = ({
         </SelectTrigger>
         <SelectContent className="max-h-80">
           {carriers?.map((carrier) => (
-            <SelectItem key={carrier.id} value={carrier.carrier.name}>
+            <SelectItem key={carrier.id} value={carrier.carrierId}>
               {carrier.carrier.name}
             </SelectItem>
           ))}

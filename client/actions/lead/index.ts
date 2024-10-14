@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { FullLead } from "@/types";
+import { AssociatedLead, FullLead } from "@/types";
 import {
   LeadExportSchemaType,
   LeadGeneralSchema,
@@ -26,6 +26,7 @@ import { feedInsert } from "../feed";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
 import { chatSettingGetTitan } from "../settings/chat";
 import { leadDefaultStatus } from "@/constants/lead";
+import { GetLeadOppositeRelationship } from "@/formulas/lead";
 
 //LEAD
 
@@ -63,7 +64,7 @@ export const leadsGetAll = async () => {
         beneficiaries: true,
         expenses: true,
         conditions: { include: { condition: true } },
-        policy: true,
+        policy: {include:{carrier:true}},
         assistant: true,
         sharedUser: true,
       },
@@ -76,6 +77,7 @@ export const leadsGetAll = async () => {
         )?.zone || "US/Eastern";
       return {
         ...lead,
+        policy:{...lead.policy},
         conversation: lead.conversations[0],
         zone: timeZone,
         time: formatTimeZone(currentTime, timeZone),
@@ -235,7 +237,8 @@ export const leadGetByIdPolicy = async (id: string) => {
         firstName: true,
         lastName: true,
         assistant: true,
-        policy: true,
+        policy: {include:{carrier:{select:{name:true}}}},
+        
       },
     });
     return leadPolicy;
@@ -268,7 +271,7 @@ export const leadGetByIdCallInfo = async (id: string) => {
         id: true,
         statusId: true,
         type: true,
-        vendor:true,
+        vendor: true,
         calls: { where: { direction: "outbound" } },
       },
     });
@@ -488,16 +491,63 @@ export const leadGetOrCreateByPhoneNumber = async (
 
   return newLead;
 };
+
+export const leadsGetAssociated = async (id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return [];
+    const leads = await db.leadsOnLeads.findMany({
+      where: {
+        OR: [{ leadOneId: id }, { leadTwoId: id }],
+      },
+      select: {
+        leadOne: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            dateOfBirth: true,
+            gender: true,
+          },
+        },
+        leadTwo: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            dateOfBirth: true,
+            gender: true,
+          },
+        },
+        relationship: true,
+      },
+    });
+    const endLeads: AssociatedLead[] = leads.map((l) =>
+      l.leadOne.id == id
+        ? {
+            ...l.leadTwo,
+            relationship: l.relationship,
+          }
+        : {
+            ...l.leadOne,
+            relationship: GetLeadOppositeRelationship(
+              l.relationship,
+              l.leadOne.gender
+            ),
+          }
+    );
+    return endLeads;
+  } catch {
+    return [];
+  }
+};
 //ACTIONS
 export const leadInsert = async (values: LeadSchemaType) => {
-  const validatedFields = LeadSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) return { error: "Unauthorized" };
+
+  const validatedFields = LeadSchema.safeParse(values);
+  if (!validatedFields.success) return { error: "Invalid fields!" };
 
   const {
     firstName,
@@ -512,6 +562,8 @@ export const leadInsert = async (values: LeadSchemaType) => {
     maritalStatus,
     email,
     dateOfBirth,
+    associatedLead,
+    relationship,
   } = validatedFields.data;
 
   const existingLead = await db.lead.findUnique({
@@ -520,9 +572,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
     },
   });
 
-  if (!homePhone) {
-    homePhone == cellPhone;
-  }
+  if (!homePhone) homePhone == cellPhone;
 
   const st = states.find(
     (e) =>
@@ -584,8 +634,12 @@ export const leadInsert = async (values: LeadSchemaType) => {
         titan,
       },
     });
+
+    if (associatedLead) 
+      await leadsOnLeadsInsert(associatedLead,newLead.id,relationship as string)      
+    
   }
-  return { success: newLead };
+  return { success: newLead, associated: !!associatedLead };
 };
 
 export const leadsImport = async (values: LeadSchemaType[]) => {
@@ -964,7 +1018,7 @@ export const leadUpdateByIdPolicyInfo = async (
   }
   const {
     leadId,
-    carrier,
+    carrierId,
     policyNumber,
     status,
     ap,
@@ -983,7 +1037,7 @@ export const leadUpdateByIdPolicyInfo = async (
   if (user.id != existingLead.userId) {
     return { error: "Unauthorized" };
   }
-  let diff = parseInt(ap);
+  let diff=parseInt(ap)
   if (diff > 0) {
     await db.lead.update({
       where: { id: leadId },
@@ -999,7 +1053,7 @@ export const leadUpdateByIdPolicyInfo = async (
     leadPolicyInfo = await db.leadPolicy.create({
       data: {
         leadId,
-        carrier,
+        carrierId,
         policyNumber,
         status,
         ap,
@@ -1012,7 +1066,7 @@ export const leadUpdateByIdPolicyInfo = async (
     leadPolicyInfo = await db.leadPolicy.update({
       where: { leadId },
       data: {
-        carrier,
+        carrierId,
         policyNumber,
         ap,
         commision,
@@ -1415,7 +1469,23 @@ export const leadGetOrInsert = async (
   //If everything passed return the lead id for the inserted record
   return { success: lead };
 };
+//GENERIC ACTIONS
 
+export const leadsOnLeadsInsert = async (
+  leadOneId: string,
+  leadTwoId: string,
+  relationship: string
+) => {
+  await db.leadsOnLeads.create({
+    data: {
+      leadOneId,
+      leadTwoId,
+      relationship,
+    },
+  });
+};
+
+//HELPER FUNCTIONS
 export const getNewTextCode = async (
   firstName: string,
   lastName: string,

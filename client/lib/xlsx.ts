@@ -100,10 +100,10 @@ function exportLeadsToPdf(leads: Lead[],fileName?:string) {
           //TODO - need to get the actual lead status
           `Status: ${lead.statusId}`,
           `Quote: ${lead.quote}`,
-          //THESE NEXT THREE COLUMNS WILL BE REMOVED
-          `Ap: ${lead.apOld}`,
-          `Commision: ${lead.commisionOld}`,
-          `CoverageAmount: ${lead.coverageAmountOld}`,
+          //TODO - replace the next three lines with policy information
+          // `Ap: ${lead.apOld}`,
+          // `Commision: ${lead.commisionOld}`,
+          // `CoverageAmount: ${lead.coverageAmountOld}`,
           //   `DefaultNumber: ${lead.defaultNumber}`,
           `Notes: ${lead.notes}`,
           `Recieved Date: ${formatDate(lead.recievedAt)}`,

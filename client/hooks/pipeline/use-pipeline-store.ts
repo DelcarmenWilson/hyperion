@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { FullPipeline, PipelineLead } from "@/types";
+import { pipelineAndLeadsGetAll } from "@/actions/user/pipeline";
 
 type State = {
   type: "edit" | "insert";
@@ -31,7 +32,7 @@ type Actions = {
 };
 
 export const usePipelineStore = create<State & Actions>()(
-  immer((set) => ({
+  immer((set, get) => ({
     pipeIndex: 0,
     timeZone: "",
     loaded: false,
@@ -78,6 +79,16 @@ export const usePipelineStore = create<State & Actions>()(
     isAlertOpen: false,
     onAlertOpen: (e) => set({ pipelineId: e, isAlertOpen: true }),
     onAlertClose: () => set({ pipelineId: undefined, isAlertOpen: false }),
+    fetchData: async () => {
+      if (!get().loaded) return;
+      const pipeLinesAndLeads = await pipelineAndLeadsGetAll();
+      if (!pipeLinesAndLeads) return;
+      set({
+        pipelines: pipeLinesAndLeads.pipelines,
+        leads: pipeLinesAndLeads.leads,
+        loaded: true,
+      });
+    },
 
     initialSetUp: (p, l) =>
       set({

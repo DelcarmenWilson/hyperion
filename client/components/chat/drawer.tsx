@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useChat } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, Transition } from "@headlessui/react";
@@ -28,7 +28,7 @@ export const ChatDrawer = ({
   closeButton = "default",
   autoClose = false,
 }: Props) => {
-  const { isChatOpen, onChatClose } = useChat();
+  const { isChatOpen, onChatClose } = useChatStore();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
