@@ -22,17 +22,14 @@ import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import { scheduleGet } from "@/actions/user/schedule";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { usersGetAllChat } from "@/actions/user";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
   if (!user) return null;
   const isAdmin = ["MASTER", "ADMIN", "SUPER_ADMIN"].includes(user.role);
 
-  if (!isAdmin) {
-    redirect("/dashboard");
-  }
-  const initUsers = await usersGetAllChat();
+  if (!isAdmin) redirect("/dashboard");
+
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
   const schedule = await scheduleGet();
@@ -41,7 +38,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const phoneSettings = await phoneSettingsGet();
 
   return (
-    <GlobalContextProvider initUsers={initUsers}>
+    <GlobalContextProvider>
       <SocketContextComponent>
         <div className="flex flex-col h-screen w-full overflow-hidden">
           <NavBar admin />

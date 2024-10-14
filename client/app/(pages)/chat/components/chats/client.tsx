@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { useChat, useChatData } from "@/hooks/use-chat";
+import { useChatStore, useChatData } from "@/hooks/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
@@ -16,7 +16,7 @@ import { chatInsert } from "@/actions/chat";
 export const ChatsClient = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { fullChats, fullChatsIsFetching } = useChatData("empty");
-  const { setChatId } = useChat();
+  const { setChatId } = useChatStore();
   const onSelectUser = (e: string) => {
     chatInsert(e).then((data) => {
       if (data.error) {

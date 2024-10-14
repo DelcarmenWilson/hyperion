@@ -134,8 +134,9 @@ export const leadGetByIdIntakePolicyInfo = async (leadId: string) => {
       where: {
         leadId,
       },
+      include:{carrier:true}
     });
-    return leadPolicy as LeadPolicySchemaType;
+    return leadPolicy;
   } catch {
     return null;
   }

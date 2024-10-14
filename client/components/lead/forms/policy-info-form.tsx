@@ -7,7 +7,7 @@ import {
 } from "@/hooks/lead/use-policy-info";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
-import { LeadPolicy } from "@prisma/client";
+import { Carrier, LeadPolicy } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { CarrierSelect } from "@/components/global/selects/carriers";
@@ -30,18 +30,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { useCarriers } from "@/components/global/selects/hooks/use-carriers";
+import { useEffect, useState } from "react";
+import { FullUserCarrier } from "@/types";
 
 export const PolicyInfoForm = () => {
   const { policy, isFetchingPolicy } = useLeadPolicyData();
-  const {
-    onPolicySubmit,
-    isPolicyFormOpen,
-    onPolicyFormClose,
-    policyIsPending,
-  } = useLeadPolicyActions();
+  const { isPolicyFormOpen, onPolicyFormClose } = useLeadPolicyActions();
   if (!policy) return null;
 
-  const leadName = `${policy?.firstName} ${policy?.firstName}`;
+  const leadName = `${policy?.firstName} ${policy?.lastName}`;
   const policyInfo = policy?.policy;
 
   return (
@@ -55,8 +53,6 @@ export const PolicyInfoForm = () => {
         <PolicyForm
           policy={policyInfo}
           leadId={policy.id}
-          loading={policyIsPending}
-          onSubmit={onPolicySubmit}
           onClose={onPolicyFormClose}
         />
       </SkeletonWrapper>
@@ -67,16 +63,23 @@ export const PolicyInfoForm = () => {
 type Props = {
   policy: LeadPolicy | null;
   leadId: string;
-  loading: boolean;
-  onSubmit: (values: LeadPolicySchemaType) => void;
   onClose: () => void;
 };
-const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
+const PolicyForm = ({ policy, leadId, onClose }: Props) => {
+  const { carriers } = useCarriers();
+  const [carrier, setCarrier] = useState<FullUserCarrier | undefined>(
+    undefined
+  );
+  const { onPolicySubmit, policyIsPending } = useLeadPolicyActions();
+
   const form = useForm<LeadPolicySchemaType>({
     resolver: zodResolver(LeadPolicySchema),
     //@ts-ignore
     defaultValues: policy || {
       leadId: leadId,
+      coverageAmount: 0,
+      ap: "0",
+      commision: "0",
     },
   });
 
@@ -86,6 +89,21 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
     onClose();
   };
 
+  const calcAp = parseInt(form.watch("coverageAmount"), 0) * 12;
+  const ap = calcAp.toString();
+  const commision = carrier
+    ? Math.floor(calcAp * (carrier.rate / 100)).toString()
+    : "0";
+
+  const onSubmit = (values: LeadPolicySchemaType) => {
+    values.ap = ap;
+    values.commision = commision;
+    onPolicySubmit(values);
+  };
+  useEffect(() => {
+    if (!policy) return;
+    setCarrier(carriers?.find((c) => c.carrierId == policy.carrierId));
+  }, [policy]);
   return (
     <div className="h-full overflow-y-auto">
       <Form {...form}>
@@ -97,7 +115,7 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
             {/* CARRIER */}
             <FormField
               control={form.control}
-              name="carrier"
+              name="carrierId"
               render={({ field }) => (
                 <FormItem className=" col-span-2">
                   <FormLabel className="flex justify-between">
@@ -106,8 +124,11 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                   </FormLabel>
                   <CarrierSelect
                     defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    disabled={loading}
+                    onValueChange={(e) => {
+                      setCarrier(carriers?.find((c) => c.carrierId == e));
+                      field.onChange(e);
+                    }}
+                    disabled={policyIsPending}
                   />
                 </FormItem>
               )}
@@ -128,7 +149,7 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                       {...field}
                       className="flex-1"
                       placeholder="7"
-                      disabled={loading}
+                      disabled={policyIsPending}
                       autoComplete="coverageAmount"
                       type="number"
                     />
@@ -151,7 +172,7 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                     <Input
                       {...field}
                       placeholder="EX2548745"
-                      disabled={loading}
+                      disabled={policyIsPending}
                       autoComplete="policyNumber"
                       type="text"
                     />
@@ -171,7 +192,7 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                   </FormLabel>
                   <Select
                     name="ddlStatus"
-                    disabled={loading}
+                    disabled={policyIsPending}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -251,12 +272,19 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
                     <FormMessage />
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       {...field}
                       placeholder="120"
                       disabled={loading}
                       autoComplete="ap"
                       type="number"
+                    /> */}
+                    <Input
+                      onChange={field.onChange}
+                      value={ap.toString()}
+                      placeholder="120"
+                      disabled
+                      autoComplete="ap"
                     />
                   </FormControl>
                 </FormItem>
@@ -269,16 +297,23 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between">
-                    Commision
+                    Commision {carrier && <>({carrier.rate}%)</>}
                     <FormMessage />
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       {...field}
                       placeholder="52"
                       disabled={loading}
                       autoComplete="commision"
                       type="number"
+                    /> */}
+                    <Input
+                      onChange={field.onChange}
+                      value={commision}
+                      placeholder="120"
+                      disabled
+                      autoComplete="commision"
                     />
                   </FormControl>
                 </FormItem>
@@ -290,8 +325,8 @@ const PolicyForm = ({ policy, leadId, loading, onSubmit, onClose }: Props) => {
             <Button onClick={onCancel} type="button" variant="outlineprimary">
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
-              Update
+            <Button disabled={policyIsPending} type="submit">
+              {policy ? "Update" : "Create"} Policy
             </Button>
           </div>
         </form>

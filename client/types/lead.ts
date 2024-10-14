@@ -11,7 +11,16 @@ import {
   LeadMessage,
   MedicalCondition,
   LeadPolicy,
+  Carrier,
 } from "@prisma/client";
+
+export type AssociatedLead = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string | null;
+  relationship: string;
+};
 
 export type HalfLeadNoConvo = Lead & {
   calls: Call[];
@@ -26,7 +35,7 @@ export type FullLeadNoConvo = Lead & {
   beneficiaries?: LeadBeneficiary[];
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
-  policy: LeadPolicy | null;
+  policy?: FullLeadPolicy | null;
   assistant?: User | null;
   sharedUser?: User | null;
 };
@@ -45,12 +54,24 @@ export type FullLead = Lead & {
   beneficiaries?: LeadBeneficiary[];
   expenses?: LeadExpense[];
   conditions?: FullLeadMedicalCondition[];
-  policy: LeadPolicy | null;
+  policy?: FullLeadPolicy | null;
   assistant?: User | null;
   sharedUser?: User | null;
   zone?: string;
   time?: string;
 };
+
+export type FullLeadPolicy =  {
+  leadId?: string;
+  coverageAmount?: string ;
+  policyNumber?: string;
+  status?: string;
+  ap?: string;
+  commision?: string;
+  carrierId?:string
+  carrier?: Carrier | null;
+  startDate?:Date| null;
+}
 export type FullLeadMedicalCondition = LeadMedicalCondition & {
   condition: MedicalCondition;
 };

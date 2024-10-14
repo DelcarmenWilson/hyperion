@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { FullLead } from "@/types";
+import { FullLead, FullLeadPolicy } from "@/types";
 import {
   LeadGeneralSchemaType,
   LeadMainSchemaType,
@@ -131,14 +131,16 @@ export const columns: ColumnDef<FullLead>[] = [
     enableGlobalFilter: true,
     header: "Policy",
     cell: ({ row }) => {
-      const leadPolicy: LeadPolicySchemaType = {
+      const leadPolicy: FullLeadPolicy = {
+        ...row.original?.policy,
         leadId: row.original.id,
-        ap: row.original.policy?.ap!,
-        carrier: row.original.policy?.carrier!,
-        policyNumber: row.original.policy?.policyNumber!,
-        status: row.original.policy?.status!,
-        commision: row.original.policy?.commision!,
-        coverageAmount: row.original.policy?.coverageAmount!,
+        // leadId: row.original.id,
+        // ap: row.original.policy?.ap!,
+        // carrier: row.original.policy?.carrier!,
+        // policyNumber: row.original.policy?.policyNumber!,
+        // status: row.original.policy?.status!,
+        // commision: row.original.policy?.commision!,
+        // coverageAmount: row.original.policy?.coverageAmount!,
       };
       const leadName = `${row.original.firstName} ${row.original.lastName}`;
       return (

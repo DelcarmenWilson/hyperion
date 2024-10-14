@@ -25,8 +25,8 @@ import {
 
 import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
-import { usersGetAllChat } from "@/actions/user";
 import ChatBot from "@/components/global/chat-bot/chat-bot";
+import { NewLeadForm } from "./leads/components/new-lead-form";
 
 export default async function DashBoardLayout({
   children,
@@ -37,7 +37,6 @@ export default async function DashBoardLayout({
 
   if (!user) redirect("/login");
 
-  const initUsers = await usersGetAllChat();
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
   const schedule = await scheduleGet();
@@ -46,7 +45,7 @@ export default async function DashBoardLayout({
   const phoneSettings = await phoneSettingsGet();
 
   return (
-    <GlobalContextProvider initUsers={initUsers}>
+    <GlobalContextProvider>
       <SocketContextComponent>
         <div className="flex flex-col h-screen w-full overflow-hidden">
           <NavBar />
@@ -70,10 +69,12 @@ export default async function DashBoardLayout({
                   <ChatDrawer />
                   <GroupMessageCard />
                   <LoginStatusModal />
+                  {/* //LEAD MODALS */}
+                  <NewLeadForm />
                 </AppointmentContextComponent>
               </PhoneContextProvider>
               {/*  THE GLOBAL CHAT BOT ASSISTANT */}
-              {user.role == "ADMIN" && <ChatBot />}
+              {["ADMIN", "SUPER_ADMIN"].includes(user.role) && <ChatBot />}
             </div>
           </div>
         </div>

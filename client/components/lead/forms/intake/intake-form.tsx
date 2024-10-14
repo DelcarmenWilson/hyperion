@@ -24,10 +24,8 @@ import { PersonalInfoForm } from "./personal-info-form";
 import { DoctorInfoForm } from "./doctor-info-form";
 import { BankInfoForm } from "./bank-info-form";
 import { OtherInfoForm } from "./other-info-form";
-import { PolicyInfoForm } from "../policy-info-form";
 
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TextGroup } from "@/components/reusable/text-group";
 
 import { formatDate, formatDob } from "@/formulas/dates";
@@ -36,6 +34,7 @@ import { USDollar } from "@/formulas/numbers";
 
 import { MedicalInfoForm } from "./medical-info-form";
 import { CustomDialog } from "@/components/global/custom-dialog";
+import { capitalize } from "@/formulas/text";
 //TODO need to add all the form data and updates into the useLeadIntakeActions
 export const IntakeForm = () => {
   const {
@@ -73,7 +72,7 @@ export const IntakeForm = () => {
       <CustomDialog
         open={isIntakeDialogOpen}
         onClose={onIntakeDialogClose}
-        title={`${dialogType} Info`}
+        title={`${capitalize(dialogType)} Info`}
         subTitle={`${personal.firstName} ${personal.lastName}`}
         description="Intake Form"
       >
@@ -508,7 +507,7 @@ export const IntakeForm = () => {
             }
           >
             <div className="grid grid-cols-2 gap-2">
-              <TextGroup label="Carrier" value={policy?.carrier} />
+              <TextGroup label="Carrier" value={policy?.carrier?.name} />
               <TextGroup label="Policy Number" value={policy?.policyNumber} />
               <TextGroup label="Status" value={policy?.status} />
               <TextGroup

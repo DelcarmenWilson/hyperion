@@ -31,12 +31,6 @@ model Lead {
 
     quote String @default("0.00")
 
-    //TODO -  ALL OF THE OLD FIELDS NEED TO BE REMOVED
-    apOld             String @default("0.00")
-    commisionOld      String @default("0.00")
-    coverageAmountOld String @default("0.00")
-    carrierOld        String @default("NA")
-
     // INFO NEED FOR THE INTAKE FORM
     //TODO - dont forget to organize these
     placeOfBirth String?
@@ -83,6 +77,8 @@ model Lead {
     bank          LeadBank?
     medical       LeadMedicalQuestions?
     emails        LeadEmail[]
+    leadOne       LeadsOnLeads[]         @relation("leadOne")
+    leadTwo       LeadsOnLeads[]         @relation("leadTwo")
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
@@ -99,10 +95,26 @@ model Lead {
     updatedAt  DateTime @updatedAt
 }
 
+model LeadsOnLeads {
+    leadOneId    String
+    leadOne      Lead   @relation("leadOne", fields: [leadOneId], references: [id])
+    leadTwoId    String
+    leadTwo      Lead   @relation("leadTwo", fields: [leadTwoId], references: [id])
+    relationship String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@id([leadOneId, leadTwoId])
+}
+
 model LeadPolicy {
-    leadId         String    @unique
-    lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
-    carrier        String
+    leadId String @unique
+    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+    carrierId String
+    carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+
     policyNumber   String    @default("NA")
     ap             String    @default("0.00")
     commision      String    @default("0.00")
@@ -114,26 +126,27 @@ model LeadPolicy {
 }
 
 model LeadBeneficiary {
-    id           String   @id @default(cuid())
-    leadId       String
-    lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-    type         String   @default("Primary")
-    relationship String   @default("")
-    firstName    String
-    lastName     String
-    address      String   @default("")
-    city         String   @default("")
-    state        String
-    zipCode      String   @default("")
-    cellPhone    String   @default("")
-    gender       Gender   @default(NA)
-    email        String   @default("noemail@email.com")
-    dateOfBirth  String   @default("")
-    share        String   @default("")
-    ssn          String   @default("")
-    notes        String   @default("")
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id              String   @id @default(cuid())
+    leadId          String
+    lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    type            String   @default("Primary")
+    relationship    String   @default("")
+    firstName       String
+    lastName        String
+    address         String   @default("")
+    city            String   @default("")
+    state           String
+    zipCode         String   @default("")
+    cellPhone       String   @default("")
+    gender          Gender   @default(NA)
+    email           String   @default("noemail@email.com")
+    dateOfBirth     String   @default("")
+    share           String   @default("")
+    ssn             String   @default("")
+    notes           String   @default("")
+    convertedLeadId String?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 }
 
 model LeadMedicalCondition {

@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { ShortChat } from "@/types";
 import { formatDistance } from "date-fns";
-import { useChat } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 
 export const ChatCard = ({ chat }: { chat: ShortChat }) => {
   const user = useCurrentUser();
-  const { chatId, setChatId } = useChat();
+  const { chatId, setChatId } = useChatStore();
   const otherUser = chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
   const initials = `${otherUser.firstName.substring(
     0,

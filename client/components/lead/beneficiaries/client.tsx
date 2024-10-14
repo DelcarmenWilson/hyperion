@@ -5,6 +5,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import {
   useBeneficiaryStore,
   useLeadBeneficiaryActions,
+  useLeadBeneficiaryData,
 } from "@/hooks/lead/use-beneficiary";
 
 import { DataTable } from "@/components/tables/data-table";
@@ -22,9 +23,8 @@ export const BeneficiariesClient = ({
   size = "full",
 }: BeneficiariesClientProp) => {
   const user = useCurrentUser();
-  const { beneficiaries, isFetchingBeneficiaries } =
-    useLeadBeneficiaryActions();
   const { onBeneficiaryFormOpen } = useBeneficiaryStore();
+  const { beneficiaries, isFetchingBeneficiaries } = useLeadBeneficiaryData();
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
     <SkeletonWrapper isLoading={isFetchingBeneficiaries}>

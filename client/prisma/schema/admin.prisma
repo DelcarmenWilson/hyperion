@@ -19,6 +19,7 @@ model Carrier {
     portal      String @default("")
 
     userCarriers      UserCarrier[]
+    policyCarriers    LeadPolicy[]
     carrierConditions CarrierCondition[]
 
     createdAt DateTime @default(now())

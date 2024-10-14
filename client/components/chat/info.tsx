@@ -1,6 +1,6 @@
 "use client";
 import { ArrowRight, UserIcon } from "lucide-react";
-import { useChat } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { ChatBody } from "./body";
 import { ChatForm } from "./form";
 
 export const ChatInfo = () => {
-  const { isChatInfoOpen, onChatInfoClose, user } = useChat();
+  const { isChatInfoOpen, onChatInfoClose, user } = useChatStore();
 
   if (!user) return null;
   return (

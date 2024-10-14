@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
@@ -16,25 +16,26 @@ export const PhoneScript = () => {
   const { script } = useScriptData();
   const { onlineUser } = useOnlineUserData();
   const { licenses } = useAgentLicenseData();
+  const [formattedScript, setFormattedScript] = useState<string>(
+    script?.content as string
+  );
 
-  const formattedScript = useMemo(() => {
-    return replaceScript(
-      script?.content!,
-      onlineUser?.firstName!,
+  useEffect(() => {
+    if (!script || !onlineUser || !lead || !licenses) return;
+    const newScript = replaceScript(
+      script.content,
+      onlineUser.firstName,
       lead!,
-      licenses!
+      licenses
     );
+    setFormattedScript(newScript);
   }, [script, onlineUser, lead, licenses]);
-
-  if (!script) {
-    return null;
-  }
-
+  if (!formattedScript) return null;
   return (
     <>
       <div
         className={cn(
-          "flex flex-col absolute justify-between items-center -bottom-full transition-[bottom] ease-in-out duration-100 left:0 w-full h-full overflow-hidden",
+          "flex flex-col absolute justify-between items-center -bottom-full transition-[bottom] ease-in-out duration-100 left:0 w-full h-full overflow-hidden bg-background",
           showScript && "bottom-0"
         )}
       >

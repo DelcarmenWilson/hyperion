@@ -12,11 +12,12 @@ import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDate } from "@/formulas/dates";
+import { FullLeadPolicy } from "@/types";
 
 type PolicyInfoClientProps = {
   leadId: string;
   leadName: string;
-  info: LeadPolicySchemaType;
+  info: FullLeadPolicy;
   assistant: User | null | undefined;
 };
 
@@ -33,15 +34,15 @@ export const PolicyInfoClient = ({
 
   useEffect(() => {
     setPolicyInfo(info);
-    const onSetInfo = (e: LeadPolicySchemaType) => {
-      if (e.leadId == info.leadId) setPolicyInfo(e);
+    const onSetInfo = (e: FullLeadPolicy) => {
+      if (e?.leadId == info?.leadId) setPolicyInfo(e);
     };
     userEmitter.on("policyInfoUpdated", (info) => onSetInfo(info));
     return () => {
       userEmitter.off("policyInfoUpdated", (info) => onSetInfo(info));
     };
   }, [info]);
-  if (user?.role == "ASSISTANT") return null;
+  if (user?.role == "ASSISTANT" || !policyInfo) return null;
   return (
     <>
       <div className="flex flex-col gap-1 text-sm">
@@ -65,25 +66,10 @@ export const PolicyInfoClient = ({
 
         {policyInfo.carrier ? (
           <div className="relative group">
-            {/* <div>
-            <p>Vendor:</p>
-            <p className="text-primary ml-4">
-              {policyInfo.vendor.replace("_", " ")}
-            </p>
-          </div> */}
-            <InputGroup
-              title="Carrier"
-              value={policyInfo.carrier ? policyInfo.carrier : ""}
-            />
+            <InputGroup title="Carrier" value={policyInfo.carrier.name} />
 
-            <InputGroup
-              title="Policy #"
-              value={policyInfo.policyNumber ? policyInfo.policyNumber : ""}
-            />
-            <InputGroup
-              title="Status"
-              value={policyInfo.status ? policyInfo.status : ""}
-            />
+            <InputGroup title="Policy #" value={policyInfo.policyNumber} />
+            <InputGroup title="Status" value={policyInfo.status} />
             <InputGroup
               title="Start Date"
               value={formatDate(policyInfo.startDate)}

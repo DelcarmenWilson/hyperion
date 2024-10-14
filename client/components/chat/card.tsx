@@ -1,6 +1,9 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 import { Clock, MoreVertical, Phone, UserIcon } from "lucide-react";
-import { useChat } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/use-chat";
+import { useLoginStatus } from "@/hooks/use-login-status";
+
 import { OnlineUser } from "@/types/user";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,21 +13,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { chatInsert } from "@/actions/chat";
-import { useLoginStatus } from "@/hooks/use-login-status";
-import { cn } from "@/lib/utils";
 
 const ChatCard = ({ user }: { user: OnlineUser }) => {
-  const { onChatInfoOpen, user: agent } = useChat();
+  const { onChatInfoOpen, user: agent } = useChatStore();
   const { onLoginStatusOpen } = useLoginStatus();
   const onChatClick = async () => {
     const chat = await chatInsert(user.id);

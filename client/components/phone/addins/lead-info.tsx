@@ -1,6 +1,4 @@
 "use client";
-import { usePhoneStore } from "@/hooks/use-phone";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
@@ -14,11 +12,8 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
-import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const PhoneLeadInfo = () => {
-  const { leadId } = useLeadStore();
-  if (!leadId) return null;
   return (
     <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">

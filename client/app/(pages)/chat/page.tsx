@@ -5,13 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { ChatBody } from "@/components/chat/body";
 import { ChatForm } from "@/components/chat/form";
-import { useChat, useChatData } from "@/hooks/use-chat";
+import { useChatStore, useChatData } from "@/hooks/use-chat";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { useEffect } from "react";
 import { Header } from "./components/header";
 
 const ChatsPage = () => {
-  const { chatId, setChatId } = useChat();
+  const { chatId, setChatId } = useChatStore();
   const { fullChats } = useChatData(chatId!);
 
   //set the intial full chat

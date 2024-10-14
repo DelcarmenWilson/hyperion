@@ -1,24 +1,19 @@
-import { AgentNumbersClient } from "./components/agentnumbers/client";
-import { PurchaseNumbers } from "./components/purchasenumbers/client";
-import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
-import {
-  phoneNumbersGetAssigned,
-  phoneNumbersGetUnassigned,
-} from "@/actions/user/phone-number";
-import { AssignNumberForm } from "./components/unassigednumbers/form";
 import { PageScrollArea } from "@/components/custom/layout/page-scroll-area";
 
-const PhonePage = async () => {
-  const phoneNumbers = await phoneNumbersGetAssigned();
-  const unasignedNumbers = await phoneNumbersGetUnassigned();
+import { AgentNumbersClient } from "./components/agentnumbers/client";
+import { AssignNumberForm } from "./components/unassigednumbers/form";
+import { PurchaseNumbers } from "./components/purchasenumbers/client";
+import { UnassignedNumbersClient } from "./components/unassigednumbers/client";
+
+const PhoneSetupPage = () => {
   return (
     <PageScrollArea>
       <AssignNumberForm />
       <PurchaseNumbers />
-      <UnassignedNumbersClient phoneNumbers={unasignedNumbers} />
-      <AgentNumbersClient phoneNumbers={phoneNumbers} />
+      <UnassignedNumbersClient />
+      <AgentNumbersClient />
     </PageScrollArea>
   );
 };
 
-export default PhonePage;
+export default PhoneSetupPage;

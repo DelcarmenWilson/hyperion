@@ -11,6 +11,7 @@ import {
   FullTeam,
   FullCarrierCondition,
   FullUserCarrier,
+  FullLeadPolicy,
 } from "@/types";
 
 import {
@@ -64,7 +65,7 @@ type UserEvents = {
   messageInserted: [info: LeadMessage];
 
   presetInserted: [Presets];
-  policyInfoUpdated: [info: LeadPolicySchemaType];
+  policyInfoUpdated: [info: FullLeadPolicy];
 
   //TEMPLATES
   templateDeleted: [id: string];

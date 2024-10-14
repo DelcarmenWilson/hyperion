@@ -12,7 +12,7 @@ export const UserCard = ({ user }: UserCardProps) => {
   return (
     <Link
       href={`/admin/users/${user.id}`}
-      className="flex flex-col justify-center items-center p-2 gap-2 hover:bg-primary hover:text-background"
+      className="flex-center flex-col p-2 gap-2 hover:bg-primary hover:text-background"
     >
       <Avatar>
         <AvatarImage src={user.image || ""} />
@@ -20,7 +20,7 @@ export const UserCard = ({ user }: UserCardProps) => {
           <UserIcon className="text-accent" />
         </AvatarFallback>
       </Avatar>
-      <p className="text-sm  font-bold">{user.userName}</p>
+      <p className="text-sm font-bold leading-tight">{user.userName}</p>
     </Link>
   );
 };

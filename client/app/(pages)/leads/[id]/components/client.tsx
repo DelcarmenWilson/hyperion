@@ -13,6 +13,7 @@ import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 import { useEffect } from "react";
+import { AssociatedClient } from "@/components/lead/info/associated";
 
 export const LeadClient = () => {
   const { setLeadId } = useLeadStore();
@@ -31,7 +32,7 @@ export const LeadClient = () => {
       <CallInfo />
       <PolicyInfoClient />
       <NotesForm />
-      <div />
+      <AssociatedClient />
       <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>
         <p className="pl-4">

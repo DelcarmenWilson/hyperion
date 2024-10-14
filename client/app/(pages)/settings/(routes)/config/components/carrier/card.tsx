@@ -40,7 +40,8 @@ export const CarrierCard = ({ carrier }: { carrier: FullUserCarrier }) => {
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">{`${carrier.carrier.name}`}</h3>
 
-        <CardData label="agent Id" value={carrier.agentId} />
+        <CardData label="Agent Id" value={carrier.agentId} />
+        <CardData label="Commision Rate" value={`${carrier.rate}%`} />
         <CardData label="Date Created" value={formatDate(carrier.createdAt)} />
         <CardData label="Date Updated" value={formatDate(carrier.updatedAt)} />
 

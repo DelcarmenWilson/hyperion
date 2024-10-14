@@ -1,38 +1,27 @@
 "use client";
-import { createContext, useContext, useState } from "react";
-import { OnlineUser } from "@/types/user";
-import { useCalendarData } from "@/hooks/calendar/use-calendar";
+import { createContext, useContext, useEffect } from "react";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useChatStore } from "@/hooks/use-chat";
 
 type GlobalContextProviderProps = {
-  initUsers: OnlineUser[];
-
   children: React.ReactNode;
 };
 
-type GlobalContext = {
-  users: OnlineUser[] | null;
-  setUsers: React.Dispatch<React.SetStateAction<OnlineUser[] | null>>;
-};
+type GlobalContext = {};
 
 export const GlobalContext = createContext<GlobalContext | null>(null);
-
+//TODO - see if this can be removed by making the other context components a priority
 export default function GlobalContextProvider({
-  initUsers,
   children,
 }: GlobalContextProviderProps) {
-  const [users, setUsers] = useState<OnlineUser[] | null>(initUsers);
-  useCalendarData();
+  const { fetchData: fetchOnlineUsers } = useChatStore();
+  const { fetchData: fetchCalenarData } = useCalendarStore();
 
-  return (
-    <GlobalContext.Provider
-      value={{
-        users,
-        setUsers,
-      }}
-    >
-      {children}
-    </GlobalContext.Provider>
-  );
+  useEffect(() => {
+    fetchOnlineUsers();
+    fetchCalenarData();
+  }, []);
+  return <GlobalContext.Provider value={{}}>{children}</GlobalContext.Provider>;
 }
 
 export function useGlobalContext() {

@@ -23,7 +23,7 @@ export const PrevNextMenu = ({
     : `PREV ${btnText.toUpperCase()}`;
   const nextName = next
     ? `${next?.name} ${next?.state} - ${next?.age}`
-    : `NEXT ${btnText.toUpperCase()}</>`;
+    : `NEXT ${btnText.toUpperCase()}`;
   return (
     <div className="flex justify-end gap-2 w-full">
       <Button

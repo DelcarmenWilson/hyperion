@@ -25,7 +25,7 @@ export const Modal = ({
   isOpen,
   onClose,
   children,
-  width = "auto",
+  width = "w-auto",
   height = "h-full",
 }: ModalProps) => {
   const onChange = (open: boolean) => {

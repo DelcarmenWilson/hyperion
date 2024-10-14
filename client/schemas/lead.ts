@@ -36,6 +36,8 @@ export const LeadSchema = z.object({
   assistantId: z.optional(z.string()),
   notes: z.optional(z.string()),
   adId: z.optional(z.string()),
+  associatedLead: z.optional(z.string()),
+  relationship: z.optional(z.string()),
 });
 export type LeadSchemaType = z.infer<typeof LeadSchema>;
 
@@ -90,11 +92,14 @@ export type LeadGeneralSchemaTypeP = Prisma.PromiseReturnType<
 
 export const LeadPolicySchema = z.object({
   leadId: z.string({required_error:"*"}),
-  carrier: z.string({required_error:"*"}),
+  carrierId: z.string({required_error:"*"}),
   policyNumber: z.string({required_error:"*"}),
   status: z.string({required_error:"*"}),
   ap: z.string({required_error:"*"}),
   commision: z.string({required_error:"*"}),
+
+  // ap: z.coerce.number().min(1),
+  // commision:z.coerce.number().min(1),
   coverageAmount: z.string({required_error:"*"}),
   startDate:  z.optional(z.date())
   // createdAt: z.date(),

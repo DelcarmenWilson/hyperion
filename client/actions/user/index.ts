@@ -43,11 +43,10 @@ export const userGetByIdOnline = async () => {
   try {
     const user = await currentUser();
     if (!user) return null;
-    const onlinUser = await db.user.findUnique({
+    const onlineUser = await db.user.findUnique({
       where: { id: user.id },
     });
-
-    return onlinUser;
+    return onlineUser;
   } catch {
     return null;
   }

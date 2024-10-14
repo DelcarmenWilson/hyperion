@@ -15,10 +15,16 @@ import { useUserData } from "@/hooks/use-user";
 type UserSelectProps = {
   userId: string | undefined;
   setUserId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  disabled?: boolean;
   role?: UserRole;
 };
 
-export const UserSelect = ({ userId, setUserId, role }: UserSelectProps) => {
+export const UserSelect = ({
+  userId,
+  setUserId,
+  disabled = false,
+  role,
+}: UserSelectProps) => {
   const { users, isUserFetching } = useUserData(role);
 
   return (
@@ -28,7 +34,7 @@ export const UserSelect = ({ userId, setUserId, role }: UserSelectProps) => {
       ) : (
         <Select
           name="ddlUsers"
-          disabled={isUserFetching}
+          disabled={isUserFetching || disabled}
           onValueChange={setUserId}
           defaultValue={userId}
         >
