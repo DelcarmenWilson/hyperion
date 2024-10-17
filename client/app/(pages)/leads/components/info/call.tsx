@@ -12,6 +12,7 @@ import { FullLead, FullLeadNoConvo } from "@/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
@@ -82,9 +83,10 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
 
       {showBtnCall && (
-        <div className="relative w-fit ">
+        <div className="relative w-fit">
           <Button
-            className="gap-2"
+            className="gap-2 w-full"
+            variant="gradient"
             disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
             onClick={onCallClick}
             size="sm"
@@ -94,7 +96,10 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           </Button>
 
           {callCount > 0 && (
-            <Badge className="absolute -right-6 rounded-full text-xs">
+            <Badge
+              variant="gradient"
+              className="absolute -right-6 rounded-full text-xs"
+            >
               {callCount}
             </Badge>
           )}
@@ -102,13 +107,17 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
       )}
       <div className="text-sm">
         <div className="py-1">
-          <p>Type</p>
+          <p className="text-sm">Type</p>
           <LeadTypeSelect id={lead.id} type={lead.type} />
         </div>
 
         <div className="py-1">
-          <p>Status</p>
+          <p className="text-sm">Status</p>
           <LeadStatusSelect id={lead.id} statusId={lead.statusId} />
+        </div>
+        <div className="py-1">
+          <p className="text-sm">Vendor</p>
+          <Input value={lead.vendor.replace("_", " ")} disabled />
         </div>
       </div>
     </div>

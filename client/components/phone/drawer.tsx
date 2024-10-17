@@ -6,10 +6,9 @@ import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, Transition } from "@headlessui/react";
-
 import { PhoneLeadInfo } from "./addins/lead-info";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PhoneDrawerProps = {
   title: string;
@@ -22,6 +21,7 @@ type PhoneDrawerProps = {
   closeButton?: "simple" | "default";
   autoClose?: boolean;
 };
+
 export const PhoneDrawer = ({
   title,
   description,
@@ -68,7 +68,7 @@ export const PhoneDrawer = ({
                 </div>
               </div>
             </div>
-            <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full pl-10">
+            <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full lg:pl-10">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-500"

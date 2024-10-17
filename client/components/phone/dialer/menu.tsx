@@ -13,7 +13,7 @@ import {
 import { MdDialpad } from "react-icons/md";
 
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePhoneData } from "@/hooks/use-phone";
+import { usePhoneData, usePhoneStore } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 import { useDialerStore } from "../hooks/use-dialer";
 import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
@@ -153,7 +153,12 @@ export const DialerMenu = ({ setIndex }: Props) => {
                 <ArrowRightCircle size={16} />
               </Button>
 
-              <Button className="gap-2" size="sm" onClick={onStartCall}>
+              <Button
+                variant="gradient"
+                className="gap-2"
+                size="sm"
+                onClick={onStartCall}
+              >
                 <Phone size={16} />
                 Call
               </Button>

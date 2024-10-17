@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-intake";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import {
   IntakeDoctorInfoSchema,
@@ -20,26 +21,19 @@ import {
 import { Input } from "@/components/ui/input";
 
 type DoctorInfoFormProps = {
-  leadId: string;
   info: IntakeDoctorInfoSchemaType | null | undefined;
-  onClose: () => void;
 };
 
-export const DoctorInfoForm = ({
-  leadId,
-  info,
-  onClose,
-}: DoctorInfoFormProps) => {
+export const DoctorInfoForm = ({ info }: DoctorInfoFormProps) => {
+  const { leadId, onIntakeDialogClose } = useLeadStore();
   const { doctorIsPending, onDoctorSubmit } = useLeadIntakeActions(
-    leadId,
-    onClose,
     info ? true : false
   );
 
   const form = useForm<IntakeDoctorInfoSchemaType>({
     resolver: zodResolver(IntakeDoctorInfoSchema),
     defaultValues: info || {
-      leadId,
+      leadId: leadId as string,
       address: "",
       lastVisit: new Date(),
       phone: "",
@@ -50,7 +44,7 @@ export const DoctorInfoForm = ({
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onClose();
+    onIntakeDialogClose();
   };
 
   return (

@@ -37,7 +37,7 @@ const buttonVariants = cva(
           "hover:text-primary-foreground hover:bg-primary/90 focus:text-primary-foreground focus:bg-primary/90",
         transparent: "hover:text-accent-foreground",
         gradient:
-          "bg-gradient-to-tr from-foreground to-primary text-background",
+          "border bg-gradient-to-tr from-foreground to-primary text-background hover:border-primary",
       },
       size: {
         default: "h-9 px-4 py-2",
