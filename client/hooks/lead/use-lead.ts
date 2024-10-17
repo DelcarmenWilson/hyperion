@@ -6,8 +6,8 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { create } from "zustand";
 
-import { Call, LeadBeneficiary, User } from "@prisma/client";
-import { AssociatedLead, FullLead, FullLeadPolicy, LeadPrevNext } from "@/types";
+import { Call, User } from "@prisma/client";
+import { AssociatedLead, FullLead, LeadPrevNext } from "@/types";
 
 import {
   leadGetByIdBasicInfo,
@@ -25,17 +25,13 @@ import {
   leadUpdateByIdNotes,
   leadUpdateByIdQuote,
   leadUpdateByIdShare,
+  leadUpdateByIdTitan,
   leadUpdateByIdTransfer,
   leadUpdateByIdUnShare,
 } from "@/actions/lead";
 import { useCurrentUser } from "../use-current-user";
 import { useQuery } from "@tanstack/react-query";
 import {
-  IntakeBankInfoSchemaType,
-  IntakeDoctorInfoSchemaType,
-  IntakeMedicalInfoSchemaType,
-  IntakeOtherInfoSchemaType,
-  IntakePersonalInfoSchemaType,
   LeadBasicInfoSchemaTypeP,
   LeadCallInfoSchemaTypeP,
   LeadGeneralSchemaType,
@@ -46,22 +42,6 @@ import {
   LeadPolicySchemaType,
   LeadSchemaType,
 } from "@/schemas/lead";
-import {
-  leadGetByIdIntakeBankInfo,
-  leadGetByIdIntakeDoctorInfo,
-  leadGetByIdIntakeMedicalInfo,
-  leadGetByIdIntakeOtherInfo,
-  leadGetByIdIntakePersonalInfo,
-  leadGetByIdIntakePolicyInfo,
-  leadInsertIntakeBankInfo,
-  leadInsertIntakeDoctorInfo,
-  leadUpdateByIdIntakeBankInfo,
-  leadUpdateByIdIntakeDoctorInfo,
-  leadUpdateByIdIntakeMedicalInfo,
-  leadUpdateByIdIntakeOtherInfo,
-} from "@/actions/lead/intake";
-import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
-import { leadUpdateByIdIntakePersonalInfo } from "@/actions/lead/intake";
 import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
 
 type DialogType =
@@ -229,7 +209,7 @@ export const useLeadData = () => {
   const { data: leadBasic, isFetching: isFetchingLeadBasic } =
     useQuery<LeadBasicInfoSchemaTypeP | null>({
       queryFn: () => leadGetByIdBasicInfo(leadId as string),
-      queryKey: [`leadBasic-${leadId}`],
+      queryKey: [`lead-basic-${leadId}`],
     });
 
   const { data: lead, isFetching: isFetchingLead } = useQuery<FullLead | null>({
@@ -455,8 +435,7 @@ export const useLeadInsertActions = () => {
         if (results.success) {
           toast.success("New lead created", { id: "insert-new-lead" });
           onNewLeadFormClose();
-          if(!results.associated)
-           router.push(`/leads/${results.success.id}`);
+          if (!results.associated) router.push(`/leads/${results.success.id}`);
         } else {
           toast.error(results.error, { id: "insert-new-lead" });
         }
@@ -464,7 +443,7 @@ export const useLeadInsertActions = () => {
       onError: (error) => {
         toast.error(error.message);
       },
-      onSettled:()=>invalidate()
+      onSettled: () => invalidate(),
     });
 
   const onLeadInsertMutate = useCallback(
@@ -492,7 +471,6 @@ export const useLeadMainInfoActions = (
 
   const invalidate = (key: string) => {
     queryClient.invalidateQueries({ queryKey: [`${key}-${leadId}`] });
-    
   };
   const { data: mainInfo, isFetching: isFetchingMainInfo } =
     useQuery<LeadMainSchemaTypeP | null>({
@@ -517,9 +495,7 @@ export const useLeadMainInfoActions = (
     if (response.success) {
       userEmitter.emit("mainInfoUpdated", response.success);
       toast.success("Lead demographic info updated");
-      ['lead-main-info', 'lead'].forEach((key) =>
-        invalidate(key)
-      );
+      ["lead-main-info", "lead"].forEach((key) => invalidate(key));
       if (onClose) onClose();
     } else {
       toast.error(response.error);
@@ -547,7 +523,9 @@ export const useLeadGeneralInfoActions = (onClose?: () => void) => {
   const [loading, setLoading] = useState(false);
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`lead-general-info-${leadId}`] });
+    queryClient.invalidateQueries({
+      queryKey: [`lead-general-info-${leadId}`],
+    });
   };
 
   const { data: generalInfo, isFetching: isFetchingGeneralInfo } =
@@ -660,6 +638,47 @@ export const useLeadCallInfoActions = () => {
   return {
     callInfo,
     isFetchingCallInfo,
+  };
+};
+
+export const useLeadTitanActions = () => {
+  const queryClient = useQueryClient();
+  //TITAN
+  const { mutate: titanMutate, isPending: titanIsPending } = useMutation({
+    mutationFn: leadUpdateByIdTitan,
+    onSuccess: (results) => {
+      if (results.success) {
+        toast.success(results.success, {
+          id: "update-titan-info",
+        });
+        queryClient.invalidateQueries({
+          queryKey: [`lead-basic-${results.data}`,`lead-${results.data}`],
+        });
+      } else
+        toast.error(results.error, {
+          id: "update-titan-info",
+        });
+    },
+    onError: (error) => {
+      toast.error(error.message, {
+        id: "update-titan-info",
+      });
+    },
+  });
+
+  const onTitanUpdated = useCallback(
+    (values: { id: string; titan: boolean }) => {
+      toast.loading("Updating Titan...", {
+        id: "update-titan-info",
+      });
+      titanMutate(values);
+    },
+    [titanMutate]
+  );
+
+  return {
+    onTitanUpdated,
+    titanIsPending,
   };
 };
 

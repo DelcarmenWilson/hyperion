@@ -36,9 +36,11 @@ const buttonVariants = cva(
         sidebar:
           "hover:text-primary-foreground hover:bg-primary/90 focus:text-primary-foreground focus:bg-primary/90",
         transparent: "hover:text-accent-foreground",
-        gradient:
-          "border bg-gradient-to-tr from-foreground to-primary text-background hover:border-primary",
+        gradient: "gradient-theme border hover:border-primary",
+        gradientDark: "gradient-dark border hover:border-primary",
+        gradientLight: "gradient-light border hover:border-primary",
       },
+
       size: {
         default: "h-9 px-4 py-2",
         xxs: "h-5 rounded-md p-1 text-xs",

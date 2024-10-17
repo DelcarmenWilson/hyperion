@@ -39,7 +39,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
                 <Button
                   className="gap-2"
                   size="sm"
-                  variant="gradient"
+                  variant="gradientDark"
                   disabled={callInfo.statusId == leadDefaultStatus["DoNotCall"]}
                   onClick={() => {
                     onLeadInfoToggle();
@@ -51,7 +51,10 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
                 </Button>
 
                 {callCount! > 0 && (
-                  <Badge className="absolute -left-6 rounded-full text-xs">
+                  <Badge
+                    variant="gradientDark"
+                    className="absolute -left-6 rounded-full text-xs"
+                  >
                     {callCount}
                   </Badge>
                 )}

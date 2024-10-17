@@ -95,7 +95,7 @@ export const PipelineCard = ({
           </div>
           <div className="flex justify-between items-center border-b p-2">
             <Button
-              variant="gradient"
+              variant="gradientDark"
               size="sm"
               disabled={!leads.length}
               onClick={() => {

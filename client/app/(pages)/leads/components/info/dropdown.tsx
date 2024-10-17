@@ -36,9 +36,8 @@ import { AlertModal } from "@/components/modals/alert";
 import { FullLeadNoConvo } from "@/types";
 import { LeadConversation } from "@prisma/client";
 import { exportLeads } from "@/lib/xlsx";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore, useLeadTitanActions } from "@/hooks/lead/use-lead";
 import { conversationDeleteById } from "@/actions/lead/conversation";
-import { leadUpdateByIdAutoChat } from "@/actions/lead";
 import { leadDefaultStatus } from "@/constants/lead";
 
 type DropDownProps = {
@@ -57,6 +56,7 @@ export const LeadDropDown = ({
   const { onFormOpen } = useAppointmentStore();
   const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
     useLeadStore();
+  const { onTitanUpdated } = useLeadTitanActions();
   const [titan, setTitan] = useState<boolean>(lead.titan);
 
   const [loading, setLoading] = useState(false);
@@ -64,11 +64,9 @@ export const LeadDropDown = ({
   const isAssistant = role == "ASSISTANT";
   const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
-  const onTitanToggle = async () => {
+  const onTitanToggle = () => {
     setTitan((state) => !state);
-    const updateTitan = await leadUpdateByIdAutoChat(lead.id, !titan);
-    if (updateTitan.success) toast.success(updateTitan.success);
-    else toast.error(updateTitan.error);
+    onTitanUpdated({ id: lead?.id!, titan: !titan });
   };
 
   const onDelete = async () => {
@@ -151,21 +149,22 @@ export const LeadDropDown = ({
               </DropdownMenuItem>
             </>
           )}
+
+          <DropdownMenuItem
+            className={cn(
+              " text-background cursor-pointer gap-2",
+              titan ? "bg-primary" : "bg-destructive"
+            )}
+            onClick={onTitanToggle}
+          >
+            <div className="flex items-center justify-between gap-2">
+              {titan ? <Check size={16} /> : <X size={16} />}
+              <span>Titan</span>
+              <span>{titan ? "ON" : "OFF"}</span>
+            </div>
+          </DropdownMenuItem>
           {conversation?.id && (
             <>
-              <DropdownMenuItem
-                className={cn(
-                  " text-background cursor-pointer gap-2",
-                  titan ? "bg-primary" : "bg-destructive"
-                )}
-                onClick={onTitanToggle}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  {titan ? <Check size={16} /> : <X size={16} />}
-                  <span>Titan</span>
-                  <span>{titan ? "ON" : "OFF"}</span>
-                </div>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() => setAlertOpen(true)}

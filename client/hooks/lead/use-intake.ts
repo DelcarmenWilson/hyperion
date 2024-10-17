@@ -42,31 +42,31 @@ export const useLeadIntakeData = () => {
   const { leadId } = useLeadStore();
   const { data: personal, isFetching: personalIsFectching } =
     useQuery<IntakePersonalMainSchemaType | null>({
-      queryKey: [`lead-intake-personal-info-${leadId}`],
+      queryKey: [`lead-intake-personal-${leadId}`],
       queryFn: () => leadGetByIdIntakePersonalInfo(leadId as string),
     });
 
   const { data: beneficiaries, isFetching: beneficiariesIsFectching } =
     useQuery<LeadBeneficiary[]>({
-      queryKey: [`lead-intake-beneficiaries-info-${leadId}`],
+      queryKey: [`lead-intake-beneficiaries-${leadId}`],
       queryFn: () => leadBeneficiariesGetAllById(leadId as string),
     });
 
   const { data: doctor, isFetching: doctorIsFectching } =
     useQuery<IntakeDoctorInfoSchemaType | null>({
-      queryKey: [`lead-intake-doctor-info-${leadId}`],
+      queryKey: [`lead-intake-doctor-${leadId}`],
       queryFn: () => leadGetByIdIntakeDoctorInfo(leadId as string),
     });
 
   const { data: bank, isFetching: bankIsFectching } =
     useQuery<IntakeBankInfoSchemaType | null>({
-      queryKey: [`lead-intake-bank-info-${leadId}`],
+      queryKey: [`lead-intake-bank-${leadId}`],
       queryFn: () => leadGetByIdIntakeBankInfo(leadId!),
     });
 
   const { data: other, isFetching: otherIsFectching } =
     useQuery<IntakeOtherInfoSchemaType | null>({
-      queryKey: [`lead-intake-other-info-${leadId}`],
+      queryKey: [`lead-intake-other-${leadId}`],
       queryFn: () => leadGetByIdIntakeOtherInfo(leadId as string),
     });
 
@@ -78,7 +78,7 @@ export const useLeadIntakeData = () => {
 
   const { data: medical, isFetching: medicalIsFectching } =
     useQuery<IntakeMedicalInfoSchemaType | null>({
-      queryKey: [`lead-intake-medical-info-${leadId}`],
+      queryKey: [`lead-intake-medical-${leadId}`],
       queryFn: () => leadGetByIdIntakeMedicalInfo(leadId as string),
     });
 
@@ -114,8 +114,8 @@ export const useLeadIntakeActions = (info?: boolean) => {
       ? leadUpdateByIdIntakeDoctorInfo
       : leadInsertIntakeDoctorInfo,
     onSuccess: (result) => {
-      toast.success(result.success, { id: "insert-update-doctor-info" });
-      invalidate("lead-intake-doctor-info");
+      toast.success(result.success, { id: "insert-update-doctor" });
+      invalidate("lead-intake-doctor");
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -128,7 +128,7 @@ export const useLeadIntakeActions = (info?: boolean) => {
       const toastString = info
         ? "Updating Doctor Information..."
         : "Creating Doctor Information...";
-      toast.loading(toastString, { id: "insert-update-doctor-info" });
+      toast.loading(toastString, { id: "insert-update-doctor" });
       doctorMutate(values);
     },
     [doctorMutate, info]
@@ -137,8 +137,8 @@ export const useLeadIntakeActions = (info?: boolean) => {
   const { mutate: bankMutate, isPending: bankIsPending } = useMutation({
     mutationFn: info ? leadUpdateByIdIntakeBankInfo : leadInsertIntakeBankInfo,
     onSuccess: (result) => {
-      toast.success(result.success, { id: "insert-update-bank-info" });
-      invalidate("lead-intake-bank-info");
+      toast.success(result.success, { id: "insert-update-bank" });
+      invalidate("lead-intake-bank");
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -150,7 +150,7 @@ export const useLeadIntakeActions = (info?: boolean) => {
       const toastString = info
         ? "Updating Bank Information..."
         : "Creating Bank Information...";
-      toast.loading(toastString, { id: "insert-update-bank-info" });
+      toast.loading(toastString, { id: "insert-update-bank" });
       bankMutate(values);
     },
     [bankMutate, info]
@@ -159,8 +159,8 @@ export const useLeadIntakeActions = (info?: boolean) => {
   const { mutate: otherMutate, isPending: otherIsPending } = useMutation({
     mutationFn: leadUpdateByIdIntakeOtherInfo,
     onSuccess: (result) => {
-      toast.success(result.success, { id: "update-other-info" });
-      invalidate("lead-intake-other-info");
+      toast.success(result.success, { id: "update-other" });
+      invalidate("lead-intake-other");
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -171,7 +171,7 @@ export const useLeadIntakeActions = (info?: boolean) => {
   const onOtherSubmit = useCallback(
     (values: IntakeOtherInfoSchemaType) => {
       const toastString = "Updating Other Information...";
-      toast.loading(toastString, { id: "update-other-info" });
+      toast.loading(toastString, { id: "update-other" });
       otherMutate(values);
     },
     [otherMutate]
@@ -180,8 +180,8 @@ export const useLeadIntakeActions = (info?: boolean) => {
   const { mutate: medicalMutate, isPending: medicalIsPending } = useMutation({
     mutationFn: leadUpdateByIdIntakeMedicalInfo,
     onSuccess: (result) => {
-      toast.success(result.success, { id: "update-medical-info" });
-      invalidate("lead-intake-medical-info");
+      toast.success(result.success, { id: "update-medical" });
+      invalidate("lead-intake-medical");
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -192,7 +192,7 @@ export const useLeadIntakeActions = (info?: boolean) => {
   const onMedicalSubmit = useCallback(
     (values: IntakeMedicalInfoSchemaType) => {
       const toastString = "Updating Medical Information...";
-      toast.loading(toastString, { id: "update-medical-info" });
+      toast.loading(toastString, { id: "update-medical" });
       medicalMutate(values);
     },
     [medicalMutate]
@@ -214,9 +214,15 @@ export const useLeadIntakePersonalActions = () => {
   const { leadId, onIntakeDialogClose } = useLeadStore();
   const queryClient = useQueryClient();
 
-  const invalidate = (key: string) => {
+  // const invalidate = (key: string) => {
+  //   queryClient.invalidateQueries({
+  //     queryKey: [`${key}-${leadId}`],
+  //   });
+  // };
+
+  const invalidate = () => {
     queryClient.invalidateQueries({
-      queryKey: [`${key}-${leadId}`],
+      queryKey: [`lead-intake-personal-${leadId}`],
     });
   };
 
@@ -224,8 +230,9 @@ export const useLeadIntakePersonalActions = () => {
   const { mutate: generalMutate, isPending: generalIsPending } = useMutation({
     mutationFn: leadUpdateByIdIntakeGeneral,
     onSuccess: (results) => {
-      toast.success(results.success, { id: "update-general-info" });
-      invalidate("lead-intake-general-info");
+      toast.success(results.success, { id: "update-general" });
+      // invalidate("lead-intake-general");
+      invalidate();
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -234,8 +241,8 @@ export const useLeadIntakePersonalActions = () => {
   });
   const onGeneralSubmit = useCallback(
     (values: IntakeGeneralSchemaType) => {
-      toast.loading("Updating Personal Information...", {
-        id: "update-personal-info",
+      toast.loading("Updating General Information...", {
+        id: "update-general",
       });
       generalMutate(values);
     },
@@ -246,8 +253,9 @@ export const useLeadIntakePersonalActions = () => {
   const { mutate: personalMutate, isPending: personalIsPending } = useMutation({
     mutationFn: leadUpdateByIdIntakePersonal,
     onSuccess: (result) => {
-      toast.success(result.success, { id: "update-personal-info" });
-      invalidate("lead-intake-personal-info");
+      toast.success(result.success, { id: "update-personal" });
+      // invalidate("lead-intake-personal");
+      invalidate();
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -257,7 +265,7 @@ export const useLeadIntakePersonalActions = () => {
   const onPersonalSubmit = useCallback(
     (values: IntakePersonalSchemaType) => {
       toast.loading("Updating Personal Information...", {
-        id: "update-personal-info",
+        id: "update-personal",
       });
       personalMutate(values);
     },
@@ -269,8 +277,9 @@ export const useLeadIntakePersonalActions = () => {
     useMutation({
       mutationFn: leadUpdateByIdIntakeEmployment,
       onSuccess: (results) => {
-        toast.success(results.success, { id: "update-employment-info" });
-        invalidate("lead-intake-employment-info");
+        toast.success(results.success, { id: "update-employment" });
+        // invalidate("lead-intake-employment");
+        invalidate();
         onIntakeDialogClose();
       },
       onError: (error) => {
@@ -281,7 +290,7 @@ export const useLeadIntakePersonalActions = () => {
   const onEmploymentSubmit = useCallback(
     (values: IntakeEmploymentSchemaType) => {
       toast.loading("Updating Employment Information...", {
-        id: "update-employment-info",
+        id: "update-employment",
       });
       employmentMutate(values);
     },
@@ -292,8 +301,9 @@ export const useLeadIntakePersonalActions = () => {
   const { mutate: miscMutate, isPending: miscIsPending } = useMutation({
     mutationFn: leadUpdateByIdIntakeMisc,
     onSuccess: (results) => {
-      toast.success(results.success, { id: "update-misc-info" });
-      invalidate("lead-intake-misc-info");
+      toast.success(results.success, { id: "update-misc" });
+      // invalidate("lead-intake-misc");
+      invalidate();
       onIntakeDialogClose();
     },
     onError: (error) => {
@@ -304,7 +314,7 @@ export const useLeadIntakePersonalActions = () => {
   const onMiscSubmit = useCallback(
     (values: IntakeMiscSchemaType) => {
       toast.loading("Updating Misc Information...", {
-        id: "update-misc-info",
+        id: "update-misc",
       });
       miscMutate(values);
     },

@@ -86,7 +86,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
         <div className="relative w-fit">
           <Button
             className="gap-2 w-full"
-            variant="gradient"
+            variant="gradientDark"
             disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
             onClick={onCallClick}
             size="sm"
@@ -97,7 +97,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
 
           {callCount > 0 && (
             <Badge
-              variant="gradient"
+              variant="gradientDark"
               className="absolute -right-6 rounded-full text-xs"
             >
               {callCount}

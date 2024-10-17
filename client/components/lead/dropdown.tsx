@@ -16,7 +16,11 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { useLeadStore, useLeadData } from "@/hooks/lead/use-lead";
+import {
+  useLeadStore,
+  useLeadData,
+  useLeadTitanActions,
+} from "@/hooks/lead/use-lead";
 import { useAppointmentStore } from "@/hooks/use-appointment";
 
 import { AlertModal } from "@/components/modals/alert";
@@ -36,7 +40,6 @@ import {
 import { exportLeads } from "@/lib/xlsx";
 
 import { conversationDeleteById } from "@/actions/lead/conversation";
-import { leadUpdateByIdAutoChat } from "@/actions/lead";
 import { leadDefaultStatus } from "@/constants/lead";
 
 type DropDownProps = {
@@ -49,6 +52,7 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
   const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
     useLeadStore();
   const { leadBasic, lead } = useLeadData();
+  const { onTitanUpdated } = useLeadTitanActions();
 
   const [titan, setTitan] = useState<boolean>(lead?.titan!);
 
@@ -60,12 +64,9 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
   const leadFullName = `${leadBasic.firstName} ${leadBasic.lastName}`;
   const conversation = leadBasic.conversations[0];
 
-  const onTitanToggle = async () => {
+  const onTitanToggle = () => {
     setTitan((state) => !state);
-    const updateTitan = await leadUpdateByIdAutoChat(lead?.id!, !titan);
-
-    if (updateTitan.success) toast.success(updateTitan.success);
-    else toast.error(updateTitan.error);
+    onTitanUpdated({ id: lead?.id!, titan: !titan });
   };
 
   const onDelete = async () => {
@@ -150,21 +151,21 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               </DropdownMenuItem>
             </>
           )}
+          <DropdownMenuItem
+            className={cn(
+              " text-background cursor-pointer gap-2",
+              titan ? "bg-primary" : "bg-destructive"
+            )}
+            onClick={onTitanToggle}
+          >
+            <div className="flex items-center justify-between gap-2">
+              {titan ? <Check size={16} /> : <X size={16} />}
+              <span>Titan</span>
+              <span>{titan ? "ON" : "OFF"}</span>
+            </div>
+          </DropdownMenuItem>
           {conversation?.id && (
             <>
-              <DropdownMenuItem
-                className={cn(
-                  " text-background cursor-pointer gap-2",
-                  titan ? "bg-primary" : "bg-destructive"
-                )}
-                onClick={onTitanToggle}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  {titan ? <Check size={16} /> : <X size={16} />}
-                  <span>Titan</span>
-                  <span>{titan ? "ON" : "OFF"}</span>
-                </div>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() => setAlertOpen(true)}

@@ -989,11 +989,11 @@ export const leadUpdateByIdGeneralInfo = async (
   return { success: leadInfo as LeadGeneralSchemaType };
 };
 
-export const leadUpdateByIdAutoChat = async (id: string, titan: boolean) => {
+export const leadUpdateByIdTitan = async ({id,titan}:{id: string, titan: boolean}) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unauthenticated!" };
-  }
+  
   const existingLead = await db.lead.findUnique({ where: { id } });
 
   if (!existingLead) return { error: "Lead does not exist!" };
@@ -1002,7 +1002,7 @@ export const leadUpdateByIdAutoChat = async (id: string, titan: boolean) => {
 
   await db.lead.update({ where: { id }, data: { titan } });
 
-  return { success: `Titan chat has been turned ${titan ? "on" : "off"} ` };
+  return { success: `Titan chat has been turned ${titan ? "on" : "off"} `,data:id };
 };
 
 //LEAD ASSISTANT SHARE AND TRANSFER

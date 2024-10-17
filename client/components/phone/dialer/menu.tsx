@@ -154,7 +154,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
               </Button>
 
               <Button
-                variant="gradient"
+                variant="gradientDark"
                 className="gap-2"
                 size="sm"
                 onClick={onStartCall}

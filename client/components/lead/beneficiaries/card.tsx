@@ -110,7 +110,7 @@ export const BeneficiaryCard = ({
             <Hint label="Convert to lead" side="top">
               <Button
                 size="icon"
-                variant="gradient"
+                variant="gradientDark"
                 disabled={isPendingBeneficiaryConvert}
                 onClick={() => onBeneficiaryConvert(beneficiary.id)}
               >
