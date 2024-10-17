@@ -1,6 +1,13 @@
 import * as z from "zod";
 import { Gender, MaritalStatus, Prisma } from "@prisma/client";
-import { leadGetByIdBasicInfo, leadGetByIdCallInfo, leadGetByIdGeneral, leadGetByIdMain, leadGetByIdNotes, leadGetByIdPolicy } from "@/actions/lead";
+import {
+  leadGetByIdBasicInfo,
+  leadGetByIdCallInfo,
+  leadGetByIdGeneral,
+  leadGetByIdMain,
+  leadGetByIdNotes,
+} from "@/actions/lead";
+import { leadPolicyGet } from "@/actions/lead/policy";
 
 export const LeadSchema = z.object({
   id: z.optional(z.string()),
@@ -50,15 +57,15 @@ export const LeadMainSchema = z.object({
   address: z.optional(z.string()),
   city: z.optional(z.string()),
   state: z.string(),
-  zipCode: z.optional(z.string()),  
+  zipCode: z.optional(z.string()),
   statusId: z.string(),
   quote: z.string(),
-  textCode:z.optional(z.string()),
+  textCode: z.optional(z.string()),
 });
 export type LeadMainSchemaType = z.infer<typeof LeadMainSchema>;
 export type LeadMainSchemaTypeP = Prisma.PromiseReturnType<
   typeof leadGetByIdMain
->
+>;
 
 export const LeadGeneralSchema = z.object({
   id: z.string(),
@@ -70,15 +77,15 @@ export const LeadGeneralSchema = z.object({
     MaritalStatus.Divorced,
   ]),
   dateOfBirth: z
-  .string()
-  .nullish()
-  .transform((x) => x ?? undefined),
+    .string()
+    .nullish()
+    .transform((x) => x ?? undefined),
   weight: z.optional(z.string()),
   height: z.optional(z.string()),
   income: z
-  .string()
-  .nullish()
-  .transform((x) => x ?? undefined),
+    .string()
+    .nullish()
+    .transform((x) => x ?? undefined),
   smoker: z.boolean(),
   // leadName: z.optional(z.string()),
   // lastCall: z.optional(z.date()),
@@ -88,20 +95,20 @@ export const LeadGeneralSchema = z.object({
 export type LeadGeneralSchemaType = z.infer<typeof LeadGeneralSchema>;
 export type LeadGeneralSchemaTypeP = Prisma.PromiseReturnType<
   typeof leadGetByIdGeneral
->
+>;
 
 export const LeadPolicySchema = z.object({
-  leadId: z.string({required_error:"*"}),
-  carrierId: z.string({required_error:"*"}),
-  policyNumber: z.string({required_error:"*"}),
-  status: z.string({required_error:"*"}),
-  ap: z.string({required_error:"*"}),
-  commision: z.string({required_error:"*"}),
+  leadId: z.string({ required_error: "*" }),
+  carrierId: z.string({ required_error: "*" }),
+  policyNumber: z.string({ required_error: "*" }),
+  status: z.string({ required_error: "*" }),
+  ap: z.string({ required_error: "*" }),
+  commision: z.string({ required_error: "*" }),
 
   // ap: z.coerce.number().min(1),
   // commision:z.coerce.number().min(1),
-  coverageAmount: z.string({required_error:"*"}),
-  startDate:  z.optional(z.date())
+  coverageAmount: z.string({ required_error: "*" }),
+  startDate: z.optional(z.date()),
   // createdAt: z.date(),
   // updatedAt: z.date(),
 });
@@ -165,8 +172,10 @@ export const LeadStatusSchema = z.object({
   description: z.optional(z.string()),
 });
 export type LeadStatusSchemaType = z.infer<typeof LeadStatusSchema>;
+
 //INTAKE FORM SCHEMA
-export const IntakePersonalInfoSchema = z.object({
+
+export const IntakePersonalMainSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
@@ -192,7 +201,7 @@ export const IntakePersonalInfoSchema = z.object({
   licenseExpires: z.date(),
   annualIncome: z.coerce.number(),
   experience: z.string(),
-  netWorth:z.coerce.number(),
+  netWorth: z.coerce.number(),
   employer: z.optional(z.string()),
   employerAddress: z.optional(z.string()),
   employerPhone: z.optional(z.string()),
@@ -205,9 +214,71 @@ export const IntakePersonalInfoSchema = z.object({
   motherAge: z.coerce.number(),
   cuaseOfDeath: z.string(),
 });
-export type IntakePersonalInfoSchemaType = z.infer<
-  typeof IntakePersonalInfoSchema
+export type IntakePersonalMainSchemaType = z.infer<
+  typeof IntakePersonalMainSchema
 >;
+export const IntakeGeneralSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  homePhone: z.string(),
+  cellPhone: z.string(),
+  email: z.optional(z.string()),
+  maritalStatus: z.enum([
+    MaritalStatus.Single,
+    MaritalStatus.Married,
+    MaritalStatus.Widowed,
+    MaritalStatus.Divorced,
+  ]),
+  address: z.string(),
+  city: z.optional(z.string()),
+  state: z.string(),
+  zipCode: z.optional(z.string()),
+  dateOfBirth: z.optional(z.string()),
+  placeOfBirth: z.optional(z.string()),
+  stateOfBirth: z.optional(z.string()),
+});
+export type IntakeGeneralSchemaType = z.infer<
+  typeof IntakeGeneralSchema
+>;
+export const IntakePersonalSchema = z.object({
+  id: z.string(),
+  ssn: z.optional(z.string()),
+  licenseNumber: z.optional(z.string()),
+  licenseState: z.optional(z.string()),
+  licenseExpires: z.date(),
+ 
+});
+export type IntakePersonalSchemaType = z.infer<
+  typeof IntakePersonalSchema
+>;
+export const IntakeEmploymentSchema = z.object({
+  id: z.string(),  
+  annualIncome: z.coerce.number(),
+  experience: z.string(),
+  netWorth: z.coerce.number(),
+  employer: z.optional(z.string()),
+  employerAddress: z.optional(z.string()),
+  employerPhone: z.optional(z.string()),
+  occupation: z.optional(z.string()),
+});
+export type IntakeEmploymentSchemaType = z.infer<
+  typeof IntakeEmploymentSchema
+>;
+export const IntakeMiscSchema = z.object({
+  id: z.string(),
+  greenCardNum: z.string(),
+  citizenShip: z.string(),
+  yearsInUs: z.coerce.number(),
+  parentLiving: z.string(),
+  fatherAge: z.coerce.number(),
+  motherAge: z.coerce.number(),
+  cuaseOfDeath: z.string(),
+});
+export type IntakeMiscSchemaType = z.infer<
+  typeof IntakeMiscSchema
+>;
+
 export const IntakeDoctorInfoSchema = z.object({
   leadId: z.string(),
   name: z.string(),
@@ -269,16 +340,16 @@ export type IntakeMedicalInfoSchemaType = z.infer<
 >;
 export type LeadBasicInfoSchemaTypeP = Prisma.PromiseReturnType<
   typeof leadGetByIdBasicInfo
->
+>;
 
 export type LeadNotesSchemaTypeP = Prisma.PromiseReturnType<
   typeof leadGetByIdNotes
->
+>;
 
 export type LeadPolicySchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdPolicy
->
+  typeof leadPolicyGet
+>;
 
 export type LeadCallInfoSchemaTypeP = Prisma.PromiseReturnType<
   typeof leadGetByIdCallInfo
->
+>;

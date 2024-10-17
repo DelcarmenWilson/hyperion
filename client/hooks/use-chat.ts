@@ -60,7 +60,6 @@ export const useChatStore = create<State & Actions>()(
     const users = await usersGetAllChat();
     set({ onlineUsers: users });
   },
-
   }))
 );
 

@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-intake";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 import {
   IntakeMedicalInfoSchema,
   IntakeMedicalInfoSchemaType,
@@ -19,19 +20,12 @@ import {
 import ReactDatePicker from "react-datepicker";
 
 type MedicalInfoFormProps = {
-  leadId: string;
   info: IntakeMedicalInfoSchemaType;
-  onClose: () => void;
 };
 
-export const MedicalInfoForm = ({
-  info,
-  leadId,
-  onClose,
-}: MedicalInfoFormProps) => {
+export const MedicalInfoForm = ({ info }: MedicalInfoFormProps) => {
+  const { onIntakeDialogClose } = useLeadStore();
   const { medicalIsPending, onMedicalSubmit } = useLeadIntakeActions(
-    leadId,
-    onClose,
     info ? true : false
   );
 
@@ -43,7 +37,7 @@ export const MedicalInfoForm = ({
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onClose();
+    onIntakeDialogClose();
   };
 
   return (

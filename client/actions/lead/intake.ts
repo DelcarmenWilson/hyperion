@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import {
-  IntakePersonalInfoSchemaType,
-  IntakePersonalInfoSchema,
+  IntakePersonalSchemaType,
+  IntakePersonalSchema,
   IntakeDoctorInfoSchemaType,
   IntakeDoctorInfoSchema,
   IntakeBankInfoSchemaType,
@@ -13,7 +13,13 @@ import {
   IntakeOtherInfoSchemaType,
   IntakeMedicalInfoSchemaType,
   IntakeMedicalInfoSchema,
-  LeadPolicySchemaType,
+  IntakePersonalMainSchemaType,
+  IntakeGeneralSchemaType,
+  IntakeGeneralSchema,
+  IntakeEmploymentSchema,
+  IntakeMiscSchemaType,
+  IntakeMiscSchema,
+  IntakeEmploymentSchemaType,
 } from "@/schemas/lead";
 
 //LEAD
@@ -65,7 +71,7 @@ export const leadGetByIdIntakePersonalInfo = async (id: string) => {
     //     id,
     //   },
     // });
-    return lead as IntakePersonalInfoSchemaType;
+    return lead as IntakePersonalMainSchemaType;
   } catch {
     return null;
   }
@@ -142,13 +148,17 @@ export const leadGetByIdIntakePolicyInfo = async (leadId: string) => {
   }
 };
 //ACTIONS
-export const leadUpdateByIdIntakePersonalInfo = async (
-  values: IntakePersonalInfoSchemaType
-) => {
-  const validatedFields = IntakePersonalInfoSchema.safeParse(values);
-  if (!validatedFields.success) {
+export const leadUpdateByIdIntakeGeneral = async (
+  values: IntakeGeneralSchemaType
+) => {  
+  const user = await currentUser();
+  if (!user?.id || !user?.email) 
+    return { error: "Unauthenticated" };  
+
+  const validatedFields = IntakeGeneralSchema.safeParse(values);
+  if (!validatedFields.success) 
     return { error: "Invalid fields!" };
-  }
+  
   const {
     id,
     firstName,
@@ -164,39 +174,15 @@ export const leadUpdateByIdIntakePersonalInfo = async (
     dateOfBirth,
     placeOfBirth,
     stateOfBirth,
-    ssn,
-    licenseNumber,
-    licenseState,
-    licenseExpires,
-    annualIncome,
-    experience,
-    netWorth,
-    employer,
-    employerAddress,
-    employerPhone,
-    occupation,
-    greenCardNum,
-    citizenShip,
-    yearsInUs,
-    parentLiving,
-    fatherAge,
-    motherAge,
-    cuaseOfDeath,
   } = validatedFields.data;
 
-  const user = await currentUser();
-  if (!user?.id || !user?.email) {
-    return { error: "Unauthenticated" };
-  }
   const existingLead = await db.lead.findUnique({ where: { id } });
 
-  if (!existingLead) {
+  if (!existingLead) 
     return { error: "Lead does not exist" };
-  }
-
-  if (user.id != existingLead.userId) {
+  
+  if (user.id != existingLead.userId) 
     return { error: "Unauthorized" };
-  }
 
   await db.lead.update({
     where: { id },
@@ -214,10 +200,84 @@ export const leadUpdateByIdIntakePersonalInfo = async (
       dateOfBirth,
       placeOfBirth,
       stateOfBirth,
+    },
+  });
+
+  return { success: "lead general information updated" };
+};
+export const leadUpdateByIdIntakePersonal = async (
+  values: IntakePersonalSchemaType
+) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) 
+    return { error: "Unauthenticated" };
+  
+  const validatedFields = IntakePersonalSchema.safeParse(values);
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+  const {
+    id,
+    ssn,
+    licenseNumber,
+    licenseState,
+    licenseExpires,
+  } = validatedFields.data;
+  
+  const existingLead = await db.lead.findUnique({ where: { id } });
+
+  if (!existingLead) 
+    return { error: "Lead does not exist" };  
+
+  if (user.id != existingLead.userId) 
+    return { error: "Unauthorized" };  
+
+  await db.lead.update({
+    where: { id },
+    data: {
       ssn,
       licenseNumber,
       licenseState,
       licenseExpires,
+    },
+  });
+
+  return { success: "lead personal information updated" };
+};
+export const leadUpdateByIdIntakeEmployment = async (
+  values: IntakeEmploymentSchemaType
+) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) 
+    return { error: "Unauthenticated" };
+  
+  const validatedFields = IntakeEmploymentSchema.safeParse(values);
+  if (!validatedFields.success) 
+    return { error: "Invalid fields!" };
+  
+  const {
+    id,
+    annualIncome,
+    experience,
+    netWorth,
+    employer,
+    employerAddress,
+    employerPhone,
+    occupation,
+  } = validatedFields.data;
+
+  
+  const existingLead = await db.lead.findUnique({ where: { id } });
+
+  if (!existingLead) 
+    return { error: "Lead does not exist" };  
+
+  if (user.id != existingLead.userId) 
+    return { error: "Unauthorized" };
+  
+  await db.lead.update({
+    where: { id },
+    data: {
       annualIncome,
       experience,
       netWorth,
@@ -225,6 +285,45 @@ export const leadUpdateByIdIntakePersonalInfo = async (
       employerAddress,
       employerPhone,
       occupation,
+    },
+  });
+
+  return { success: "lead personal information updated" };
+};
+export const leadUpdateByIdIntakeMisc = async (
+  values: IntakeMiscSchemaType
+) => {
+  const user = await currentUser();
+  if (!user?.id || !user?.email) 
+    return { error: "Unauthenticated" };
+  
+  const validatedFields = IntakeMiscSchema.safeParse(values);
+  if (!validatedFields.success) 
+    return { error: "Invalid fields!" };
+  
+  const {
+    id,
+    greenCardNum,
+    citizenShip,
+    yearsInUs,
+    parentLiving,
+    fatherAge,
+    motherAge,
+    cuaseOfDeath,
+  } = validatedFields.data;
+
+  
+  const existingLead = await db.lead.findUnique({ where: { id } });
+
+  if (!existingLead) 
+    return { error: "Lead does not exist" };  
+
+  if (user.id != existingLead.userId) 
+    return { error: "Unauthorized" };
+  
+  await db.lead.update({
+    where: { id },
+    data: {
       greenCardNum,
       citizenShip,
       yearsInUs,

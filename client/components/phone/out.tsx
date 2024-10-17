@@ -300,6 +300,7 @@ export const PhoneOut = () => {
 
             {!isOnCall ? (
               <Button
+                variant="gradientDark"
                 className="gap-2"
                 disabled={!disabled}
                 onClick={onStarted}

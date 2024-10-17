@@ -9,8 +9,6 @@ import {
   LeadGeneralSchemaType,
   LeadMainSchema,
   LeadMainSchemaType,
-  LeadPolicySchema,
-  LeadPolicySchemaType,
   LeadSchema,
   LeadSchemaType,
 } from "@/schemas/lead";
@@ -23,9 +21,7 @@ import { states } from "@/constants/states";
 import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
-import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
 import { chatSettingGetTitan } from "../settings/chat";
-import { leadDefaultStatus } from "@/constants/lead";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
 
 //LEAD
@@ -64,7 +60,7 @@ export const leadsGetAll = async () => {
         beneficiaries: true,
         expenses: true,
         conditions: { include: { condition: true } },
-        policy: {include:{carrier:true}},
+        policy: { include: { carrier: true } },
         assistant: true,
         sharedUser: true,
       },
@@ -77,7 +73,7 @@ export const leadsGetAll = async () => {
         )?.zone || "US/Eastern";
       return {
         ...lead,
-        policy:{...lead.policy},
+        policy: { ...lead.policy },
         conversation: lead.conversations[0],
         zone: timeZone,
         time: formatTimeZone(currentTime, timeZone),
@@ -226,26 +222,7 @@ export const leadGetByIdGeneral = async (id: string) => {
     return null;
   }
 };
-export const leadGetByIdPolicy = async (id: string) => {
-  try {
-    const leadPolicy = await db.lead.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        assistant: true,
-        policy: {include:{carrier:{select:{name:true}}}},
-        
-      },
-    });
-    return leadPolicy;
-  } catch {
-    return null;
-  }
-};
+
 export const leadGetByIdNotes = async (id: string) => {
   try {
     const leadNotes = await db.lead.findUnique({
@@ -584,7 +561,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
-  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default")?.phone||"999-999-9999";
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
   let newLead;
@@ -626,7 +603,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         maritalStatus: maritalStatus,
         email,
         dateOfBirth,
-        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber,
         userId: user.id,
         height: "",
         weight: "",
@@ -635,9 +612,12 @@ export const leadInsert = async (values: LeadSchemaType) => {
       },
     });
 
-    if (associatedLead) 
-      await leadsOnLeadsInsert(associatedLead,newLead.id,relationship as string)      
-    
+    if (associatedLead)
+      await leadsOnLeadsInsert(
+        associatedLead,
+        newLead.id,
+        relationship as string
+      );
   }
   return { success: newLead, associated: !!associatedLead };
 };
@@ -1009,92 +989,11 @@ export const leadUpdateByIdGeneralInfo = async (
   return { success: leadInfo as LeadGeneralSchemaType };
 };
 
-export const leadUpdateByIdPolicyInfo = async (
-  values: LeadPolicySchemaType
-) => {
-  const validatedFields = LeadPolicySchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const {
-    leadId,
-    carrierId,
-    policyNumber,
-    status,
-    ap,
-    commision,
-    coverageAmount,
-    startDate,
-  } = validatedFields.data;
-
+export const leadUpdateByIdTitan = async ({id,titan}:{id: string, titan: boolean}) => {
   const user = await currentUser();
-  if (!user?.id || !user?.email) return { error: "Unauthenticated" };
-
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-
-  if (!existingLead) return { error: "Lead does not exist" };
-
-  if (user.id != existingLead.userId) {
-    return { error: "Unauthorized" };
-  }
-  let diff=parseInt(ap)
-  if (diff > 0) {
-    await db.lead.update({
-      where: { id: leadId },
-      data: {
-        statusId: leadDefaultStatus["Sold"],
-        assistant: { disconnect: true },
-      },
-    });
-  }
-  const existingPolicy = await db.leadPolicy.findUnique({ where: { leadId } });
-  let leadPolicyInfo;
-  if (!existingPolicy) {
-    leadPolicyInfo = await db.leadPolicy.create({
-      data: {
-        leadId,
-        carrierId,
-        policyNumber,
-        status,
-        ap,
-        commision,
-        coverageAmount,
-        startDate,
-      },
-    });
-  } else {
-    leadPolicyInfo = await db.leadPolicy.update({
-      where: { leadId },
-      data: {
-        carrierId,
-        policyNumber,
-        ap,
-        commision,
-        coverageAmount,
-        startDate,
-      },
-    });
-
-    const exAp = parseInt(existingPolicy.ap);
-
-    diff -= exAp;
-  }
-
-  bluePrintWeekUpdateByUserIdData(user.id, "premium", diff);
-  leadActivityInsert(
-    leadPolicyInfo.leadId,
-    "sale",
-    "policy info updated",
-    user.id
-  );
-  return { success: leadPolicyInfo };
-};
-
-export const leadUpdateByIdAutoChat = async (id: string, titan: boolean) => {
-  const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unauthenticated!" };
-  }
+  
   const existingLead = await db.lead.findUnique({ where: { id } });
 
   if (!existingLead) return { error: "Lead does not exist!" };
@@ -1103,7 +1002,7 @@ export const leadUpdateByIdAutoChat = async (id: string, titan: boolean) => {
 
   await db.lead.update({ where: { id }, data: { titan } });
 
-  return { success: `Titan chat has been turned ${titan ? "on" : "off"} ` };
+  return { success: `Titan chat has been turned ${titan ? "on" : "off"} `,data:id };
 };
 
 //LEAD ASSISTANT SHARE AND TRANSFER

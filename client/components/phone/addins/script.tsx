@@ -1,36 +1,31 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-
+import { usePhoneStore } from "@/hooks/use-phone";
 import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
-import { useScriptData } from "../hooks/use-script";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { Button } from "@/components/ui/button";
 import { Tiptap } from "@/components/reusable/tiptap";
+
 import { replaceScript } from "@/formulas/script";
 
 export const PhoneScript = () => {
-  const { lead, showScript, onScriptOpen, onScriptClose } = usePhoneStore();
+  const { lead, script, showScript, onScriptOpen, onScriptClose } =
+    usePhoneStore();
 
-  const { script } = useScriptData();
   const { onlineUser } = useOnlineUserData();
   const { licenses } = useAgentLicenseData();
-  const [formattedScript, setFormattedScript] = useState<string>(
-    script?.content as string
-  );
 
-  useEffect(() => {
-    if (!script || !onlineUser || !lead || !licenses) return;
-    const newScript = replaceScript(
-      script.content,
-      onlineUser.firstName,
+  const formattedScript = useMemo(() => {
+    return replaceScript(
+      script?.content!,
+      onlineUser?.firstName!,
       lead!,
-      licenses
+      licenses!
     );
-    setFormattedScript(newScript);
   }, [script, onlineUser, lead, licenses]);
-  if (!formattedScript) return null;
+
+  if (!script) return null;
   return (
     <>
       <div
@@ -39,7 +34,11 @@ export const PhoneScript = () => {
           showScript && "bottom-0"
         )}
       >
-        <Tiptap description={formattedScript} onChange={() => {}} />
+        <Tiptap
+          key={lead?.id}
+          description={formattedScript}
+          onChange={() => {}}
+        />
       </div>
       <Button
         className="absolute bottom-0 left-1/2 -translate-x-1/2"
@@ -48,7 +47,7 @@ export const PhoneScript = () => {
           showScript ? onScriptClose() : onScriptOpen();
         }}
       >
-        Basic Script
+        {script.title}
       </Button>
     </>
   );

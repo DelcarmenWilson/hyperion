@@ -24,7 +24,6 @@ export const PhoneLeadInfo = () => {
           <TabsTrigger value="conditions">Conditions</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
         </TabsList>
-
         <TabsContent
           className="flex-1 overflow-hidden overflow-y-auto"
           value="general"
@@ -56,7 +55,6 @@ export const PhoneLeadInfo = () => {
           <ExpensesClient />
         </TabsContent>
       </Tabs>
-
       <PhoneScript />
     </div>
   );

@@ -18,6 +18,9 @@ const badgeVariants = cva(
         outlineprimary: "text-primary border-primary",
         outlinedestructive: "text-destructive border-destructive",
         success: "border-transparent bg-emerald-500 text-primary-foreground",
+        gradient: "gradient-theme",
+        gradientDark: "gradient-dark",
+        gradientLight: "gradient-light",
       },
     },
     defaultVariants: {

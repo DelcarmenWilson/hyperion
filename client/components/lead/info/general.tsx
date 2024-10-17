@@ -43,7 +43,9 @@ export const GeneralInfoClient = ({
                 <Badge className="gap-1 w-fit">
                   <Phone size={16} /> Last Call
                 </Badge>
-                {formatDateTime(lastCall.createdAt)}
+                <span className="text-xs">
+                  {formatDateTime(lastCall.createdAt)}
+                </span>
               </div>
             )}
 

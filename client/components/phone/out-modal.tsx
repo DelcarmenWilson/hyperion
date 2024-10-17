@@ -1,7 +1,5 @@
 "use client";
-
 import { usePhoneStore } from "@/hooks/use-phone";
-import { DrawerRight } from "../custom/drawer-right";
 import PhoneShell from "@/components/phone/addins/shell";
 import { PhoneDrawer } from "./drawer";
 
