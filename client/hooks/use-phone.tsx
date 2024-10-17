@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo, PipelineLead } from "@/types";
-import { Pipeline } from "@prisma/client";
+import { Pipeline, Script } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
 import { Call, Device } from "@twilio/voice-sdk";
 import {
   phoneSettingsUpdateCurrentCall,
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
+import { scriptGetOne } from "@/actions/script";
 
 type State = {
   //PHONE SPECIFIC
@@ -38,6 +39,7 @@ type State = {
   participants?: TwilioParticipant[];
 
   //SCRIPT
+  script?: Script;
   showScript: boolean;
   //CALL
   isOnCall: boolean;
@@ -78,6 +80,7 @@ type Actions = {
   //SCRIPT
   onScriptOpen: () => void;
   onScriptClose: () => void;
+  fetchData: () => void;
 };
 
 export const usePhoneStore = create<State & Actions>((set, get) => ({
@@ -112,7 +115,8 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   onPhoneInOpen: (c) => set({ call: c, isPhoneInOpen: true }),
   onPhoneInClose: () => set({ isPhoneInOpen: false }),
   onPhoneDialerOpen: () => set({ isPhoneDialerOpen: true }),
-  onPhoneDialerClose: () => set({ isPhoneDialerOpen: false }),
+  onPhoneDialerClose: () =>
+    set({ isPhoneDialerOpen: false, showScript: false }),
   onPhoneOutOpen: (e, c) =>
     set({
       isPhoneOutOpen: true,
@@ -121,7 +125,8 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
       isLeadInfoOpen: e ? true : false,
     }),
 
-  onPhoneOutClose: () => set({ isLeadInfoOpen: false, isPhoneOutOpen: false }),
+  onPhoneOutClose: () =>
+    set({ isLeadInfoOpen: false, isPhoneOutOpen: false, showScript: false }),
 
   onCallOpen: (e, t = "call") =>
     set({ isCallOpen: true, fullCall: e, callType: t }),
@@ -141,6 +146,10 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   showScript: false,
   onScriptOpen: () => set({ showScript: true }),
   onScriptClose: () => set({ showScript: false }),
+  fetchData: async () => {
+    const script = await scriptGetOne();
+    set({ script: script as Script });
+  },
   isOnCall: false,
   setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));

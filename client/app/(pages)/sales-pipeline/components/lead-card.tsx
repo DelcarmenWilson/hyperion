@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { formatDate } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 type LeadCardProps = {
   lead: PipelineLead;
@@ -18,6 +19,13 @@ type LeadCardProps = {
 
 export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
   const { onPhoneOutOpen } = usePhoneStore();
+  const { setLeadId, setConversationId } = useLeadStore();
+
+  const onCallClick = () => {
+    setLeadId(lead.id);
+    setConversationId();
+    onPhoneOutOpen(lead);
+  };
   return (
     <div ref={indexRef} className="border-b">
       <div
@@ -43,7 +51,7 @@ export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
           <Button
             variant="transparent"
             className="rounded-full w-fit"
-            // onClick={() => onPhoneOutOpen(lead)}
+            onClick={onCallClick}
           >
             <Phone size={16} />
           </Button>

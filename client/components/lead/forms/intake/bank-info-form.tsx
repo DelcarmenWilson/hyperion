@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-intake";
 
 import { IntakeBankInfoSchema, IntakeBankInfoSchemaType } from "@/schemas/lead";
 import { Button } from "@/components/ui/button";
@@ -16,15 +17,12 @@ import { Input } from "@/components/ui/input";
 import ReactDatePicker from "react-datepicker";
 
 type BankInfoFormProps = {
-  leadId: string;
   info: IntakeBankInfoSchemaType | null | undefined;
-  onClose: () => void;
 };
 
-export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
+export const BankInfoForm = ({ info }: BankInfoFormProps) => {
+  const { leadId, onIntakeDialogClose } = useLeadStore();
   const { bankIsPending, onBankSubmit } = useLeadIntakeActions(
-    leadId,
-    onClose,
     info ? true : false
   );
 
@@ -40,7 +38,7 @@ export const BankInfoForm = ({ leadId, info, onClose }: BankInfoFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onClose();
+    onIntakeDialogClose();
   };
 
   return (

@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect } from "react";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { useChatStore } from "@/hooks/use-chat";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 type GlobalContextProviderProps = {
   children: React.ReactNode;
@@ -15,11 +16,13 @@ export default function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   const { fetchData: fetchOnlineUsers } = useChatStore();
-  const { fetchData: fetchCalenarData } = useCalendarStore();
+  const { fetchData: fetchCalendarData } = useCalendarStore();
+  const { fetchData: fetchScriptData } = usePhoneStore();
 
   useEffect(() => {
     fetchOnlineUsers();
-    fetchCalenarData();
+    fetchCalendarData();
+    fetchScriptData();
   }, []);
   return <GlobalContext.Provider value={{}}>{children}</GlobalContext.Provider>;
 }

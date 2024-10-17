@@ -1,12 +1,12 @@
 "use client";
 import React, { ReactNode } from "react";
-import { useLeadStore, useLeadIntakeActions } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadIntakeData } from "@/hooks/lead/use-intake";
 
 import {
   IntakeMedicalInfoSchemaType,
   IntakeOtherInfoSchemaType,
-  IntakePersonalInfoSchemaType,
-  LeadPolicySchemaType,
+  IntakePersonalMainSchemaType,
 } from "@/schemas/lead";
 
 import {
@@ -20,7 +20,7 @@ import {
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Button } from "@/components/ui/button";
 
-import { PersonalInfoForm } from "./personal-info-form";
+import { PersonalMainInfoForm } from "./personal-info-form";
 import { DoctorInfoForm } from "./doctor-info-form";
 import { BankInfoForm } from "./bank-info-form";
 import { OtherInfoForm } from "./other-info-form";
@@ -48,7 +48,7 @@ export const IntakeForm = () => {
     onIntakeDialogClose,
     onPolicyFormOpen,
   } = useLeadStore();
-  const { getIntakeData } = useLeadIntakeActions(leadId as string);
+
   const {
     personal,
     personalIsFectching,
@@ -64,7 +64,7 @@ export const IntakeForm = () => {
     policyIsFectching,
     medical,
     medicalIsFectching,
-  } = getIntakeData();
+  } = useLeadIntakeData();
 
   if (!personal || !leadId) return null;
   return (
@@ -73,44 +73,25 @@ export const IntakeForm = () => {
         open={isIntakeDialogOpen}
         onClose={onIntakeDialogClose}
         title={`${capitalize(dialogType)} Info`}
-        subTitle={`${personal.firstName} ${personal.lastName}`}
+        subTitle={leadFullName}
+        // subTitle={`${personal.firstName} ${personal.lastName}`}
         description="Intake Form"
       >
         {dialogType == "personal" && (
-          <PersonalInfoForm
-            info={personal as IntakePersonalInfoSchemaType}
-            onClose={onIntakeDialogClose}
+          <PersonalMainInfoForm
+            info={personal as IntakePersonalMainSchemaType}
           />
         )}
 
-        {dialogType == "doctor" && (
-          <DoctorInfoForm
-            leadId={leadId}
-            info={doctor}
-            onClose={onIntakeDialogClose}
-          />
-        )}
+        {dialogType == "doctor" && <DoctorInfoForm info={doctor} />}
 
-        {dialogType == "bank" && (
-          <BankInfoForm
-            leadId={leadId}
-            info={bank}
-            onClose={onIntakeDialogClose}
-          />
-        )}
+        {dialogType == "bank" && <BankInfoForm info={bank} />}
         {dialogType == "other" && (
-          <OtherInfoForm
-            info={other as IntakeOtherInfoSchemaType}
-            onClose={onIntakeDialogClose}
-          />
+          <OtherInfoForm info={other as IntakeOtherInfoSchemaType} />
         )}
 
         {dialogType == "medical" && (
-          <MedicalInfoForm
-            leadId={leadId}
-            info={medical as IntakeMedicalInfoSchemaType}
-            onClose={onIntakeDialogClose}
-          />
+          <MedicalInfoForm info={medical as IntakeMedicalInfoSchemaType} />
         )}
       </CustomDialog>
 

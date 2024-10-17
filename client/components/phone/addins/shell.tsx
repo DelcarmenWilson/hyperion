@@ -1,15 +1,15 @@
 "use client";
-import { MessageSquare, Phone, Voicemail } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PhoneOut } from "@/components/phone/out";
-import { usePhoneContext } from "@/providers/phone";
-import { VoicemailList } from "@/components/phone/voicemail/list";
-import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
-import { SmsClient } from "../sms/client";
-import { Badge } from "@/components/ui/badge";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { useLeadStore } from "@/hooks/lead/use-lead";
 import { useEffect } from "react";
+import { MessageSquare, Phone, Voicemail } from "lucide-react";
+import { usePhoneContext } from "@/providers/phone";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/hooks/use-phone";
+
+import { Badge } from "@/components/ui/badge";
+import { PhoneOut } from "@/components/phone/out";
+import { SmsClient } from "../sms/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VoicemailList } from "@/components/phone/voicemail/list";
 
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
@@ -21,8 +21,6 @@ const PhoneShell = () => {
   }, []);
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
-      {/* //TODO - If every one agree with the changes remove this */}
-      {/* <PhoneLeadInfo /> */}
       <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
         <TabsList className="w-full h-auto bg-primary/25">
           <TabsTrigger

@@ -61,19 +61,19 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
           <div className="flex flex-col">
             <div className="text-sm">
               <div className="py-1">
-                <p>Type</p>
+                <p className="text-sm">Type</p>
                 <LeadTypeSelect id={callInfo.id} type={callInfo.type} />
               </div>
 
               <div className="py-1">
-                <p>Status</p>
+                <p className="text-sm">Status</p>
                 <LeadStatusSelect
                   id={callInfo.id}
                   statusId={callInfo.statusId}
                 />
               </div>
               <div className="py-1">
-                <p>Vendor</p>
+                <p className="text-sm">Vendor</p>
                 <Input value={callInfo.vendor.replace("_", " ")} disabled />
               </div>
             </div>

@@ -18,9 +18,8 @@ export const PolicyInfoClient = () => {
 
   if (user?.role == "ASSISTANT") return null;
 
-  const leadName = `${policy?.firstName} ${policy?.firstName}`;
-  const policyInfo = policy?.policy;
-  const assistant = policy?.assistant;
+  const leadName = `${policy?.lead.firstName} ${policy?.lead.firstName}`;
+  const assistant = policy?.lead.assistant;
 
   return (
     <SkeletonWrapper isLoading={isFetchingPolicy}>
@@ -44,22 +43,22 @@ export const PolicyInfoClient = () => {
         <SectionWrapper
           title="Policy"
           onClick={() => onPolicyFormOpen(leadId)}
-          showAdd={!policyInfo}
+          showAdd={!policy}
         >
-          {policyInfo ? (
+          {policy ? (
             <>
-              <InputGroup title="Carrier" value={policyInfo.carrier.name} />
-              <InputGroup title="Policy #" value={policyInfo.policyNumber} />
-              <InputGroup title="Status" value={policyInfo.status} />
+              <InputGroup title="Carrier" value={policy.carrier.name} />
+              <InputGroup title="Policy #" value={policy.policyNumber} />
+              <InputGroup title="Status" value={policy.status} />
               <InputGroup
                 title="Start Date"
-                value={formatDate(policyInfo.startDate)}
+                value={formatDate(policy.startDate)}
               />
-              <InputGroup title="Ap" value={policyInfo.ap} />
-              <InputGroup title="Commision" value={policyInfo.commision} />
+              <InputGroup title="Ap" value={policy.ap} />
+              <InputGroup title="Commision" value={policy.commision} />
               <InputGroup
                 title="Coverage Amount"
-                value={policyInfo.coverageAmount}
+                value={policy.coverageAmount}
               />
             </>
           ) : (

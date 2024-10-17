@@ -7,7 +7,7 @@ import {
 } from "@/hooks/lead/use-policy-info";
 
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
-import { Carrier, LeadPolicy } from "@prisma/client";
+import { LeadPolicy } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { CarrierSelect } from "@/components/global/selects/carriers";
@@ -39,8 +39,7 @@ export const PolicyInfoForm = () => {
   const { isPolicyFormOpen, onPolicyFormClose } = useLeadPolicyActions();
   if (!policy) return null;
 
-  const leadName = `${policy?.firstName} ${policy?.lastName}`;
-  const policyInfo = policy?.policy;
+  const leadName = `${policy?.lead.firstName} ${policy?.lead.lastName}`;
 
   return (
     <CustomDialog
@@ -51,8 +50,8 @@ export const PolicyInfoForm = () => {
     >
       <SkeletonWrapper isLoading={isFetchingPolicy}>
         <PolicyForm
-          policy={policyInfo}
-          leadId={policy.id}
+          policy={policy}
+          leadId={policy.lead.id}
           onClose={onPolicyFormClose}
         />
       </SkeletonWrapper>

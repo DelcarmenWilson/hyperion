@@ -14,6 +14,7 @@ import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ type Props = {
 const NavBar = ({ admin = false }: Props) => {
   const user = useCurrentUser();
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
+  const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen } = useChatStore();
 
   return (
@@ -82,7 +84,10 @@ const NavBar = ({ admin = false }: Props) => {
             variant={isOnCall ? "blue" : "default"}
             className={cn("rounded-full", isOnCall && "animate-ping")}
             size="icon"
-            onClick={() => onPhoneOutOpen(isOnCall ? lead : undefined)}
+            onClick={() => {
+              setLeadId(undefined);
+              onPhoneOutOpen(isOnCall ? lead : undefined);
+            }}
           >
             <Smartphone size={16} />
           </Button>

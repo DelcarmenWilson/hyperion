@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLeadIntakeActions } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadIntakeActions } from "@/hooks/lead/use-intake";
 
 import {
   IntakeOtherInfoSchema,
@@ -21,14 +22,11 @@ import { Switch } from "@/components/ui/switch";
 
 type OtherInfoFormProps = {
   info: IntakeOtherInfoSchemaType;
-  onClose: () => void;
 };
 
-export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
-  const { otherIsPending, onOtherSubmit } = useLeadIntakeActions(
-    info.id,
-    onClose
-  );
+export const OtherInfoForm = ({ info }: OtherInfoFormProps) => {
+  const { onIntakeDialogClose } = useLeadStore();
+  const { otherIsPending, onOtherSubmit } = useLeadIntakeActions();
 
   const form = useForm<IntakeOtherInfoSchemaType>({
     resolver: zodResolver(IntakeOtherInfoSchema),
@@ -38,7 +36,7 @@ export const OtherInfoForm = ({ info, onClose }: OtherInfoFormProps) => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
-    onClose();
+    onIntakeDialogClose();
   };
 
   return (
