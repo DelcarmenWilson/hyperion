@@ -52,7 +52,7 @@ export const useScriptData = () => {
     });
 
   useEffect(() => {
-    if (!scripts) return;
+    if (!scripts || scripts.length==0) return;
     setScriptId(scripts[0].id);
   }, [scripts]);
 

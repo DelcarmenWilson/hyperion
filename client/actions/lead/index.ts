@@ -561,7 +561,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
-  const defaultNumber = phoneNumbers.find((e) => e.status == "Default");
+  const defaultNumber = phoneNumbers.find((e) => e.status == "Default")?.phone||"999-999-9999";
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
   let newLead;
@@ -603,7 +603,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         maritalStatus: maritalStatus,
         email,
         dateOfBirth,
-        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone!,
+        defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber,
         userId: user.id,
         height: "",
         weight: "",
