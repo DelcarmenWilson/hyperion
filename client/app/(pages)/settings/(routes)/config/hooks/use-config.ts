@@ -1,73 +1,113 @@
-import { useState, useTransition } from "react";
+import {  useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { NotificationSettings } from "@prisma/client";
+import { NotificationSettingsSchemaType } from "@/schemas/settings";
 import {
   notificationSettingsGet,
   notificationSettingsUpdate,
 } from "@/actions/settings/notification";
-import { toast } from "sonner";
-import { NotificationSettingsSchemaType } from "@/schemas/settings";
+
 import { userGetAdAccount, userUpdateAdAccount } from "@/actions/user";
 
 export const useNotificationData = () => {
-  const { update } = useSession();
-  const [loading, setLoading] = useState(false);
-
   const { data: settings, isFetching: isFetchingSettings } =
     useQuery<NotificationSettings | null>({
       queryFn: () => notificationSettingsGet(),
       queryKey: ["notificationSettings"],
     });
 
-  const onNotificationSettingsSubmit = async (
-    values: NotificationSettingsSchemaType
-  ) => {
-    setLoading(true);
-    const updatedSettings = await notificationSettingsUpdate(values);
-    if (updatedSettings.success) {
-      toast.success(updatedSettings.success);
-      update();
-    } else toast.error(updatedSettings.error);
-    setLoading(false);
-  };
-
   return {
     settings,
     isFetchingSettings,
-    loading,
-    onNotificationSettingsSubmit,
   };
 };
 
-export const useFacebookData = () => {    
-  const [loading, setLoading] = useState(false);
-  const queryClient=useQueryClient()
+export const useNotificationActions = () => {
+  const { update } = useSession();
+  const queryClient = useQueryClient();
 
+  //NOTIFICAITION SETTINGS
+  const {
+    mutate: notificationSettingsMutate,
+    isPending: notificationSettingsIsPending,
+  } = useMutation({
+    mutationFn: notificationSettingsUpdate,
+    onSuccess: (results) => {
+      if (results.success) {
+        toast.success("Notification Settings Updated", {
+          id: "update-notification-settings",
+        });
+        update();
+      } else toast.error(results.error, { id: "update-notification-settings" });
+    },
+    onError: (error) =>
+      toast.error(error.message, { id: "update-notification-settings" }),
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["ad-account"] }),
+  });
+
+  const onNotificationSettingsSubmit = useCallback(
+    (values: NotificationSettingsSchemaType) => {
+      toast.loading("Updating Notification Settings...", {
+        id: "update-notification-settings",
+      });
+      notificationSettingsMutate(values);
+    },
+    [notificationSettingsMutate]
+  );
+
+  return {
+    onNotificationSettingsSubmit,
+    notificationSettingsIsPending,
+  };
+};
+
+export const useFacebookData = () => {
   const { data: adAccount, isFetching: isFetchingAdAccount } = useQuery<
     string | null
   >({
     queryFn: () => userGetAdAccount(),
-    queryKey: ["adAccount"], 
-  },);
-
-  const onAdAccountSubmit = async (values: string) => {
-    setLoading(true);
-    const updatedAdAccount = await userUpdateAdAccount(values);
-    if (updatedAdAccount.success) {
-      toast.success(updatedAdAccount.success);
-      queryClient.invalidateQueries({queryKey:["adAccount"]})
-    }
-
-     else toast.error(updatedAdAccount.error);
-    setLoading(false);
-  };
+    queryKey: ["ad-account"],
+  });
 
   return {
     adAccount,
     isFetchingAdAccount,
-    loading,
+  };
+};
+
+export const useFacebookActions = () => {
+  const queryClient = useQueryClient();
+  //AD ACCOUNT
+  const { mutate: adAccountMutate, isPending: adAccountIsPending } =
+    useMutation({
+      mutationFn: userUpdateAdAccount,
+      onSuccess: (results) => {
+        if (results.success) {
+          toast.success("Ad Account Updated", {
+            id: "update-ad-account",
+          });
+        } else toast.error(results.error, { id: "update-ad-account" });
+      },
+      onError: (error) =>
+        toast.error(error.message, { id: "update-ad-account" }),
+      onSettled: () =>
+        queryClient.invalidateQueries({ queryKey: ["ad-account"] }),
+    });
+
+  const onAdAccountSubmit = useCallback(
+    (values: string) => {
+      toast.loading("Updating Ad Account...", { id: "update-ad-account" });
+      adAccountMutate(values);
+    },
+    [adAccountMutate]
+  );
+
+  return {
+    adAccountIsPending,
     onAdAccountSubmit,
   };
 };

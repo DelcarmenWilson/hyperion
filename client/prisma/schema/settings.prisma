@@ -52,6 +52,8 @@ model NotificationSettings {
     messages     Boolean @default(false)
     voicemails   Boolean @default(false)
     textForward  Boolean @default(false)
+    blueprint    Boolean @default(false)
+    updates      Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

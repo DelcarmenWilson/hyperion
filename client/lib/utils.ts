@@ -44,9 +44,9 @@ export const handleFileUpload = async ({newFile, filePath = "temp",oldFile}:File
     filePath:filePath,
     checksum: await computeSHA256(newFile),
   });
-  if (signedURLResult.error !== undefined) {
+  if (signedURLResult.error !== undefined) 
     throw new Error(signedURLResult.error);
-  }
+  
   const url = signedURLResult.success;
   await axios.put(url, newFile, { headers: { "Content-Type": newFile.type } });
   const fileUrl = url.split("?")[0];

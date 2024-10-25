@@ -34,7 +34,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
         <div className="border rounded-sm shadow-md p-2">
           <div className="flex justify-between items-center pb-1">
             <h4 className="text-muted-foreground">Call</h4>
-            {showBtnCall && (
+            {showBtnCall ? (
               <div className="relative w-fit ">
                 <Button
                   className="gap-2"
@@ -59,6 +59,10 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
                   </Badge>
                 )}
               </div>
+            ) : (
+              <Badge variant="gradientDark" className="rounded-full text-xs">
+                {callCount}
+              </Badge>
             )}
           </div>
           <div className="flex flex-col">

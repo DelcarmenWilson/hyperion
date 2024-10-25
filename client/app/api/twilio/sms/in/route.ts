@@ -22,19 +22,20 @@ import { sendSocketData } from "@/services/socket-service";
 import { chatSettingGetTitan } from "@/actions/settings/chat";
 
 export async function POST(req: Request) {
+  //The paramters passed in from twilio
   const body = await req.formData();
 
+  //Convert the body to Json paramaters
   const sms: TwilioSms = formatObject(body);
-  console.log(sms)
+
   //Find the agent number where this message is going to
   const agentNumber = await db.phoneNumber.findFirst({
     where: { phone: sms.to },
   });
 
   //if agent number doesn't exists return error
-  if (!agentNumber) {
+  if (!agentNumber)
     return new NextResponse("Agent number doesn't exists", { status: 500 });
-  }
 
   //Find the agent with this personal number - from number
   const agent = await db.phoneSettings.findFirst({
@@ -60,11 +61,10 @@ export async function POST(req: Request) {
   });
 
   //If the conversation does not exist - exit the work flow
-  if (!conversation) {
+  if (!conversation) 
     //TODO - create a new lead into a temp lead table
     return new NextResponse(null, { status: 200 });
-  }
-
+  
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     role: "user",
@@ -89,7 +89,8 @@ export async function POST(req: Request) {
   if (keywordResponse)
     return new NextResponse(keywordResponse, { status: 200 });
 
-  const titan=await chatSettingGetTitan(agent?.userId as string)
+  //Check weather titan is enabled globally for this agent
+  const titan = await chatSettingGetTitan(agent?.userId as string);
   //If titan is disabled
   if (titan) {
     await disabledAutoChatResponse(conversation, newMessage);
@@ -115,16 +116,15 @@ export async function POST(req: Request) {
   const { role, content } = chatResponse.choices[0].message;
 
   //If there is no response from chatGpt - exit the workflow
-  if (!content) {
+  if (!content)
     return new NextResponse("Thank you for your message", { status: 200 });
-  }
 
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
     await appointmentInsert({
-      date:new Date(),
+      date: new Date(),
       localDate: aptDate,
       startDate: aptDate,
       leadId: conversation.leadId,
@@ -132,13 +132,17 @@ export async function POST(req: Request) {
       labelId: "cm1nvphdz0000ycm71r4vidu0",
       comments: "",
       smsReminder: false,
-      emailReminder:false
+      emailReminder: false,
     });
 
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
     )}`;
-    await smsSend({toPhone:sms.to, fromPhone:sms.from, message:appointmentMessage});
+    await smsSend({
+      toPhone: sms.to,
+      fromPhone: sms.from,
+      message: appointmentMessage,
+    });
     return new NextResponse(
       `Appointment has been schedule for ${formatDateTime(aptDate)}`,
       { status: 200 }
@@ -149,7 +153,14 @@ export async function POST(req: Request) {
   const words = content.split(" ");
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
-  const sid = (await smsSend({toPhone:sms.to, fromPhone:sms.from, message:content, timer:delay})).success;
+  const sid = (
+    await smsSend({
+      toPhone: sms.to,
+      fromPhone: sms.from,
+      message: content,
+      timer: delay,
+    })
+  ).success;
 
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = (

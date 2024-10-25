@@ -41,26 +41,28 @@ export const voiceResponse = async (call: TwilioCall) => {
     conferenceId,
     callSidToCoach,
     voicemailIn,
+    voicemailOut,
     masterSwitch,
     personalNumber,
   } = call;
-  console.log(call);
 
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-        twiml.play("/sounds/SSF-Greeting-2.mp3");
+      twiml.play("/sounds/SSF-Greeting-2.mp3");
       //   twiml.say(
-      //   { voice:"Polly.Amy" },
-      //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
-      // );
-
-      // twiml.pause({ length: 1 });
-
+        //   { voice:"Polly.Amy" },
+        //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."
+        // );
+        
+        // twiml.pause({ length: 1 });
+        
+        const action=`/api/twilio/voice/action?voicemailin=${voicemailIn}`
+        voicemailOut
       const inDial = twiml.dial({
         record: "record-from-answer-dual",
         recordingStatusCallback: "/api/twilio/voice/recording",
-        action: "/api/twilio/voice/action",
+        action: action,
         timeout: 10,
         //TODO remove this if it doesn work
         // callerId: masterSwitch == "call-forward" ? personalNumber : from,
@@ -74,17 +76,21 @@ export const voiceResponse = async (call: TwilioCall) => {
           inDial.number(personalNumber!);
           break;
         default:
-          twiml.redirect("/api/twilio/voice/action");
+          twiml.redirect(action);
           break;
       }
 
       break;
     case "outbound":
-      twiml.dial(
+      twiml.dial({
+        callerId: agentNumber,
+        // record: "record-from-answer",
+        // recordingStatusCallback: "/api/twilio/voice/recording",
+      },to).number(
         {
-          callerId: agentNumber,
-          record: "record-from-answer",
-          recordingStatusCallback: "/api/twilio/voice/recording",
+          // machineDetection: "DetectMessageEnd",
+          machineDetection: "detect-message-end",
+          amdStatusCallback: `/api/twilio/result/voice/amd?voicemailout=${voicemailOut}`
         },
         to
       );
@@ -123,6 +129,19 @@ export const voiceResponse = async (call: TwilioCall) => {
   return twiml.toString();
 };
 
+export const amdResponse = async ( answeredBy: string,voicemailOut: string|null) => {
+  const twiml = new VoiceResponse();
+  twiml.pause({ length: 1 });
+
+  if (answeredBy == "machine_end_beep" && voicemailOut) {
+    twiml.play(voicemailOut);
+    //twiml.play({},'/sounds/message.mp3');
+  }
+  twiml.hangup();
+
+  return twiml.toString();
+};
+
 export const actionResponse = async () => {
   const twiml = new VoiceResponse();
 
@@ -157,8 +176,7 @@ export const actionResponse = async () => {
   return twiml.toString();
 };
 
-export const voicemailResponse = async (requestBody: any) => {
-  const { voicemailIn } = requestBody;
+export const voicemailResponse = async (voicemailIn: string | null) => {
 
   const twiml = new VoiceResponse();
   twiml.pause({ length: 1 });
@@ -171,7 +189,7 @@ export const voicemailResponse = async (requestBody: any) => {
       "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
     );
   }
-
+  
   twiml.pause({ length: 1 });
   twiml.record({
     action: "/api/twilio/voice/voicemail",

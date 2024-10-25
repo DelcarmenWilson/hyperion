@@ -1,19 +1,14 @@
 "use client";
 import { useFacebookData } from "../../hooks/use-config";
 
-import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { FacebookForm } from "./form";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const FacebookClient = () => {
-  const { adAccount, isFetchingAdAccount, loading, onAdAccountSubmit } =
-    useFacebookData();
+  const { adAccount, isFetchingAdAccount } = useFacebookData();
   return (
     <SkeletonWrapper isLoading={isFetchingAdAccount}>
-      <FacebookForm
-        adAccount={adAccount}
-        loading={loading}
-        onSubmit={onAdAccountSubmit}
-      />
+      <FacebookForm adAccount={adAccount} />
     </SkeletonWrapper>
   );
 };

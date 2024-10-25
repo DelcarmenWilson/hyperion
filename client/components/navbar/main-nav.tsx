@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { CoachNotification } from "../phone/coach-notification";
 import { cn } from "@/lib/utils";
 import { TextAnimation } from "../custom/text-animate";
+import { PageNotification } from "./page-notification";
+import { useEffect, useState } from "react";
 
 type Props = {
   admin?: boolean;
@@ -19,11 +21,19 @@ export const MainNav = ({ admin }: Props) => {
     onJoinCall,
     onRejectCall,
   } = useMainNav();
+  const [initialLoad, setInitialLoad] = useState(false);
+  const [isPageNotificationOpen, setIsPageNotificationOpen] = useState(false);
 
   const pname = usePathname().split("/");
   const pathname = admin
     ? pname[2].replace("-", " ")
     : pname[1].replace("-", " ");
+
+  useEffect(() => {
+    if (initialLoad) return;
+    setIsPageNotificationOpen(true);
+    setInitialLoad(true);
+  }, []);
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>
@@ -59,6 +69,10 @@ export const MainNav = ({ admin }: Props) => {
         isOpen={isNotificationOpen}
         onJoinCall={onJoinCall}
         onRejectCall={onRejectCall}
+      />
+      <PageNotification
+        isOpen={isPageNotificationOpen}
+        onClose={() => setIsPageNotificationOpen(false)}
       />
     </div>
   );

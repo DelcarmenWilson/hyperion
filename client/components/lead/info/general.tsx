@@ -59,7 +59,9 @@ export const GeneralInfoClient = ({
                 <Badge className="gap-1 w-fit">
                   <CalendarX size={16} /> Appt Set
                 </Badge>
-                {formatDateTime(nextAppointment.startDate)}
+                <span className="text-xs">
+                  {formatDateTime(nextAppointment.startDate)}
+                </span>
               </div>
             )}
 
