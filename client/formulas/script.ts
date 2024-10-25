@@ -10,7 +10,7 @@ export const replaceScript = (
     lead: PipelineLead,
     licenses?:UserLicense[]
   ): string => {
-    if (!agentFirstName || !lead || !script || !licenses) return script;
+    if (!agentFirstName || !lead || !script) return script;
     const license=licenses?.find(e=>e.state==lead.state)?.licenseNumber||NS
     const {defaultNumber,firstName,dateOfBirth,address,state,smoker}=lead
     // USER INFO
