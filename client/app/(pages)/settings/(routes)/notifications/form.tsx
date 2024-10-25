@@ -1,10 +1,18 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  useNotificationActions,
+  useNotificationData,
+} from "../config/hooks/use-config";
+
+import { NotificationSettings } from "@prisma/client";
+import {
+  NotificationSettingsSchema,
+  NotificationSettingsSchemaType,
+} from "@/schemas/settings";
 
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-
 import {
   Form,
   FormField,
@@ -15,24 +23,17 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { NotificationSettings } from "@prisma/client";
 
-import {
-  NotificationSettingsSchema,
-  NotificationSettingsSchemaType,
-} from "@/schemas/settings";
+import { Switch } from "@/components/ui/switch";
 import { Heading } from "@/components/custom/heading";
 
 type Props = {
   notificationSettings: NotificationSettings;
-  loading: boolean;
-  onSubmit: (e: NotificationSettingsSchemaType) => void;
 };
-export const NotificationForm = ({
-  notificationSettings,
-  loading,
-  onSubmit,
-}: Props) => {
+export const NotificationForm = ({ notificationSettings }: Props) => {
+  const { notificationSettingsIsPending, onNotificationSettingsSubmit } =
+    useNotificationActions();
+
   const form = useForm<NotificationSettingsSchemaType>({
     resolver: zodResolver(NotificationSettingsSchema),
     defaultValues: notificationSettings,
@@ -45,9 +46,13 @@ export const NotificationForm = ({
         description="Manage all your Notifications"
       />
       <Form {...form}>
-        <form className="px-1" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className="px-1"
+          onSubmit={form.handleSubmit(onNotificationSettingsSubmit)}
+        >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <div>
+              {/* CALLS */}
               <FormField
                 control={form.control}
                 name="calls"
@@ -62,7 +67,7 @@ export const NotificationForm = ({
                     <FormControl>
                       <Switch
                         name="cbCalls"
-                        disabled={loading}
+                        disabled={notificationSettingsIsPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -84,8 +89,31 @@ export const NotificationForm = ({
                     </div>
                     <FormControl>
                       <Switch
-                        name="cblAppointments"
-                        disabled={loading}
+                        name="cbAppointments"
+                        disabled={notificationSettingsIsPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* BLUEPRINT */}
+              <FormField
+                control={form.control}
+                name="blueprint"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Blueprint</FormLabel>
+                      <FormDescription>
+                        Enable notifications for blueprint (Daily)
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cblBluePrint"
+                        disabled={notificationSettingsIsPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -108,7 +136,7 @@ export const NotificationForm = ({
                     <FormControl>
                       <Switch
                         name="cbTextFoward"
-                        disabled={loading}
+                        disabled={notificationSettingsIsPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -118,6 +146,7 @@ export const NotificationForm = ({
               />
             </div>
             <div>
+              {/* MESSAGES */}
               <FormField
                 control={form.control}
                 name="messages"
@@ -132,7 +161,7 @@ export const NotificationForm = ({
                     <FormControl>
                       <Switch
                         name="cbMessages"
-                        disabled={loading}
+                        disabled={notificationSettingsIsPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -140,6 +169,7 @@ export const NotificationForm = ({
                   </FormItem>
                 )}
               />
+              {/* VOICEMAILS */}
               <FormField
                 control={form.control}
                 name="voicemails"
@@ -154,7 +184,30 @@ export const NotificationForm = ({
                     <FormControl>
                       <Switch
                         name="cbVoicemails"
-                        disabled={loading}
+                        disabled={notificationSettingsIsPending}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* UPDATES */}
+              <FormField
+                control={form.control}
+                name="updates"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Updates</FormLabel>
+                      <FormDescription>
+                        Enable notifications for updates
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        name="cbUpdated"
+                        disabled={notificationSettingsIsPending}
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -163,7 +216,7 @@ export const NotificationForm = ({
                 )}
               />
               <div className="space-y-1 flex flex-row items-end justify-end  pt-9 mt-3">
-                <Button disabled={loading} type="submit">
+                <Button disabled={notificationSettingsIsPending} type="submit">
                   Save
                 </Button>
               </div>

@@ -123,6 +123,10 @@ model Call {
   shared            Boolean @default(false)
   appointmentId     String?
 
+  // Answering maching detation (AMD) PARAMS
+  answeredBy               String @default("unknown")
+  machineDetectionDuration String @default("unknown")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

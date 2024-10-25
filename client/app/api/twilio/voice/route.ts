@@ -57,6 +57,7 @@ export async function POST(req: Request) {
         call.masterSwitch = notificationSettings?.masterSwitch;
         call.personalNumber = settings?.personalNumber!;
         call.voicemailIn = settings?.voicemailIn;
+        call.voicemailOut = settings?.voicemailOut;
         call.agentId = phonenumber?.agentId!;
         call.currentCall = settings?.currentCall;
 

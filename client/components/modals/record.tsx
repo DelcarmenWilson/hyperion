@@ -5,9 +5,9 @@ import { AudioLinesIcon, Mic, Pause } from "lucide-react";
 // import { MediaRecorder, register } from "extendable-media-recorder";
 // import { connect } from "extendable-media-recorder-wav-encoder";
 
-import { Modal } from "@/components/modals/modal";
-import { Button } from "@/components/ui/button";
 import { AudioPlayer } from "@/components/custom/audio-player";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/modals/modal";
 import { handleFileUpload } from "@/lib/utils";
 
 type RecordModalProps = {
@@ -44,14 +44,13 @@ export const RecordModal = ({
   const onUpload = async () => {
     if (!file) return;
     setUploading(true);
-    console.log(file.type);
-    const voicemail = await handleFileUpload({
-      newFile: file,
-      filePath: "voicemail",
-      oldFile: oldFile,
-    });
-    console.log(voicemail);
-    onRecordingUpdate(voicemail);
+    console.log(file);
+    // const voicemail = await handleFileUpload({
+    //   newFile: file,
+    //   filePath: "voicemail",
+    //   oldFile: oldFile,
+    // });
+    // onRecordingUpdate(voicemail);
     setAudio("");
     setFile(undefined);
     setUploading(false);
@@ -89,12 +88,14 @@ export const RecordModal = ({
     });
     mediaRef.current.stop();
     mediaRef.current.onstop = async () => {
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: "audio/mp3",
-      });
+      // const audioBlob = new Blob(audioChunksRef.current, {
+      //   type: "audio/mp3",
+      // });
+      const audioBlob = new Blob(audioChunksRef.current);
       const audioUrl = URL.createObjectURL(audioBlob);
       setAudio(audioUrl);
-      setFile(new File([audioBlob], "newrecording.mp3"));
+      // setFile(new File([audioBlob], "newrecording.mp3"));
+      setFile(new File([audioBlob], "newrecording"));
     };
 
     setIsRecording(false);
@@ -173,11 +174,16 @@ export const RecordModal = ({
         </div>
       </div>
       <div className="pt-6 flex gap-2 items-center justify-center">
-        <Button disabled={uploading} variant="outline" onClick={onCancel}>
+        <Button
+          disabled={uploading}
+          variant="outline"
+          onClick={onCancel}
+          type="button"
+        >
           Cancel
         </Button>
         {file && (
-          <Button disabled={uploading} onClick={onUpload}>
+          <Button disabled={uploading} onClick={onUpload} type="button">
             {uploading ? "Uploading..." : "Upload"}
           </Button>
         )}

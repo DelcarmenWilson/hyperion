@@ -40,9 +40,8 @@ export const messageCreateInitial = async (
 
   const dbuser = await currentUser();
   //if user is not logged in, then return unathorized
-  if (!dbuser) {
-    return { error: "Unauthenticated" };
-  }
+  if (!dbuser) 
+    return { error: "Unauthenticated" };  
 
   //retrieve user data from database and include the team
   const user = await db.user.findUnique({
@@ -51,16 +50,15 @@ export const messageCreateInitial = async (
   });
 
   //if  user does not exist return unauthorized
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) 
+    return { error: "Unauthorized" };  
 
   //retrieve lead info from the database
   const lead = await db.lead.findUnique({ where: { id: leadId } });
 
-  if (!lead) {
+  if (!lead) 
     return { error: "Lead does not exist" };
-  }
+  
   //retrieve existing conversation with the lead
   const existingConversation = await db.leadConversation.findFirst({
     where: {
