@@ -32,6 +32,7 @@ export const generateTwoFactorToken = async (email: string) => {
   return twoFactorToken;
 };
 
+
 export const generatePasswordResetToken = async (email: string) => {
   const token = uuidv4();
   const expires = new Date(new Date().getTime() + 3600 * 1000);

@@ -25,7 +25,6 @@ export async function POST(req: Request) {
   const body = await req.formData();
 
   const sms: TwilioSms = formatObject(body);
-  console.log(sms)
   //Find the agent number where this message is going to
   const agentNumber = await db.phoneNumber.findFirst({
     where: { phone: sms.to },
@@ -41,6 +40,7 @@ export async function POST(req: Request) {
     where: { personalNumber: sms.from },
   });
 
+ 
   //TODO - neeed to reintergrate this functionality
   // if (agent && agentNumber?.agentId == agent.userId) {
   //   //Start Agent to Lead Message Process
@@ -64,7 +64,8 @@ export async function POST(req: Request) {
     //TODO - create a new lead into a temp lead table
     return new NextResponse(null, { status: 200 });
   }
-
+  
+  
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     role: "user",
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
     hasSeen: false,
     sid: sms.smsSid,
   };
-
+  
   //Create a new message from the leads response
   const newMessage = (await messageInsert(smsFromLead)).success;
 
@@ -89,36 +90,37 @@ export async function POST(req: Request) {
   if (keywordResponse)
     return new NextResponse(keywordResponse, { status: 200 });
 
-  const titan=await chatSettingGetTitan(agent?.userId as string)
+  const titan=await chatSettingGetTitan(agentNumber?.agentId as string)
   //If titan is disabled
-  if (titan) {
+  if (!titan) {
     await disabledAutoChatResponse(conversation, newMessage);
     //exit the workflow
-    return new NextResponse(null, { status: 200 });
+    return new NextResponse("Titan is turned off", { status: 200 });
   }
-
+  
   //If autochat is enabled - get all the messages in the conversation
   const messages = await db.leadMessage.findMany({
     where: { conversationId: conversation.id },
   });
-
+  
   //Convert all the messags into a list that chatGpt can read
   let chatMessages = messages.map((message) => {
     return { role: message.role, content: message.content };
   });
-
+  
   //Add the current message from the lead
   chatMessages.push({ ...smsFromLead });
-
+  
   //Send the conversation from chatGpt and return a response
   const chatResponse = await chatFetch(chatMessages);
   const { role, content } = chatResponse.choices[0].message;
-
+  
+  
   //If there is no response from chatGpt - exit the workflow
   if (!content) {
     return new NextResponse("Thank you for your message", { status: 200 });
   }
-
+  
   //If the message from chatGpt includes the key word {schedule} - lets schedule an appointment
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
@@ -134,7 +136,8 @@ export async function POST(req: Request) {
       smsReminder: false,
       emailReminder:false
     });
-
+    
+    
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
     )}`;
@@ -149,8 +152,7 @@ export async function POST(req: Request) {
   const words = content.split(" ");
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
-  const sid = (await smsSend({toPhone:sms.to, fromPhone:sms.from, message:content, timer:delay})).success;
-
+  const sid = (await smsSend({toPhone:sms.from, fromPhone:sms.to, message:content, timer:delay})).success;
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = (
     await messageInsert({
