@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogoutButton } from "./logout-button";
 import { useRouter } from "next/navigation";
+import { allAdmins } from "@/constants/page-routes";
 
 export const UserButton = () => {
   const user = useCurrentUser();
@@ -21,7 +22,7 @@ export const UserButton = () => {
   if (!user) {
     return null;
   }
-  const isAdmin = ["MASTER", "ADMIN", "SUPER_ADMIN"].includes(user.role);
+  const isAdmin = allAdmins.includes(user.role);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>

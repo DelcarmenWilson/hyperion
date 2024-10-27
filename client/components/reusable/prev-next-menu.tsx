@@ -1,12 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { PrevNext } from "@/types/general";
 
 import { Button } from "@/components/ui/button";
 
 type PrevNextMenuProps = {
   href: string; //exclude the slash
-  prevNext: { prev: string | null; next: string | null } | null;
+  prevNext: PrevNext;
   btnText: string;
 };
 export const PrevNextMenu = ({

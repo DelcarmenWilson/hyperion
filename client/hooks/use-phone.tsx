@@ -41,6 +41,8 @@ type State = {
   //SCRIPT
   script?: Script;
   showScript: boolean;
+  //QUOTER
+  showQuoter: boolean;
   //CALL
   isOnCall: boolean;
 };
@@ -80,6 +82,9 @@ type Actions = {
   //SCRIPT
   onScriptOpen: () => void;
   onScriptClose: () => void;
+  //QUOTER
+  onQuoterOpen: () => void;
+  onQuoterClose: () => void;
   fetchData: () => void;
 };
 
@@ -144,14 +149,18 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   onLeadInfoToggle: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen }),
   //SCRIPT
   showScript: false,
-  onScriptOpen: () => set({ showScript: true }),
+  onScriptOpen: () => set({ showScript: true, showQuoter: false }),
   onScriptClose: () => set({ showScript: false }),
+  //QUOTER
+  showQuoter: false,
+  onQuoterOpen: () => set({ showQuoter: true, showScript: false }),
+  onQuoterClose: () => set({ showQuoter: false }),
+  isOnCall: false,
+  setOnCall: (e: boolean) => set({ isOnCall: e }),
   fetchData: async () => {
     const script = await scriptGetOne();
     set({ script: script as Script });
   },
-  isOnCall: false,
-  setOnCall: (e: boolean) => set({ isOnCall: e }),
 }));
 
 export const usePhoneData = (phone: Device | null) => {

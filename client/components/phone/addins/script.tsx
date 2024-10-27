@@ -4,14 +4,12 @@ import { usePhoneStore } from "@/hooks/use-phone";
 import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
-import { Button } from "@/components/ui/button";
 import { Tiptap } from "@/components/reusable/tiptap";
 
 import { replaceScript } from "@/formulas/script";
 
 export const PhoneScript = () => {
-  const { lead, script, showScript, onScriptOpen, onScriptClose } =
-    usePhoneStore();
+  const { lead, script, showScript } = usePhoneStore();
 
   const { onlineUser } = useOnlineUserData();
   const { licenses } = useAgentLicenseData();
@@ -40,15 +38,6 @@ export const PhoneScript = () => {
           onChange={() => {}}
         />
       </div>
-      <Button
-        className="absolute bottom-0 left-1/2 -translate-x-1/2"
-        variant={showScript ? "default" : "outline"}
-        onClick={() => {
-          showScript ? onScriptClose() : onScriptOpen();
-        }}
-      >
-        {script.title}
-      </Button>
     </>
   );
 };

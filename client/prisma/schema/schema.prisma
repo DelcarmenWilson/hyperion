@@ -16,6 +16,7 @@ datasource db {
 //ENUMS
 enum UserRole {
   MASTER
+  DEVELOPER
   SUPER_ADMIN
   ADMIN
   USER
@@ -142,42 +143,6 @@ model Pipeline {
   order Int @default(0)
 
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Feedback {
-  id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  headLine String
-  page     String
-
-  feedback String  @db.LongText
-  images   String? @db.LongText
-
-  status   String  @default("New")
-  comments String? @db.LongText
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-//TASK
-model Task {
-  id String @id @default(cuid())
-
-  headLine    String
-  description String  @db.LongText
-  images      String? @db.LongText
-
-  status   String @default("Pending")
-  comments String @db.LongText
-
-  startAt   DateTime
-  endAt     DateTime
-  published Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -5,7 +5,7 @@ import { MessageSquareDot, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/use-chat";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { usePhoneStore } from "@/hooks/use-phone";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
 import { useLeadStore } from "@/hooks/lead/use-lead";
+import { allAdmins } from "@/constants/page-routes";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ type Props = {
   admin?: boolean;
 };
 const NavBar = ({ admin = false }: Props) => {
-  const user = useCurrentUser();
+  const role = useCurrentRole();
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen } = useChatStore();
@@ -56,9 +57,7 @@ const NavBar = ({ admin = false }: Props) => {
           {/*srini- Agent chat */}
           <NavChat />
           {/* srini- online chat button */}
-          {["ADMIN", "SUPER_ADMIN", "MASTER"].includes(
-            user?.role as string
-          ) && (
+          {allAdmins.includes(role!) && (
             <Button
               variant={isChatOpen ? "default" : "outline"}
               size="icon"

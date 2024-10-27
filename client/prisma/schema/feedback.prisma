@@ -1,0 +1,81 @@
+model Feedback {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  headLine String
+  page     String
+
+  feedback String  @db.LongText
+  images   String? @db.LongText
+
+  status   String  @default("New")
+  comments String? @db.LongText
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobId String?
+  job   Job?    @relation(fields: [jobId], references: [id])
+}
+
+//TASK
+model Task {
+  id String @id @default(cuid())
+
+  headLine    String
+  description String  @db.LongText
+  images      String? @db.LongText
+
+  status   String @default("Pending")
+  comments String @db.LongText
+
+  startAt   DateTime
+  endAt     DateTime
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id String @id @default(cuid())
+
+  headLine    String
+  description String @db.LongText
+  category    String
+
+  status   String @default("Open")
+  comments String @db.LongText
+
+  startAt DateTime?
+  endAt   DateTime?
+
+  assignedTo User?   @relation(fields: [assignedId], references: [id], onDelete: Cascade)
+  assignedId String?
+
+  miniJob  MiniJob[]
+  feedback Feedback[]
+
+  published Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MiniJob {
+  id String @id @default(cuid())
+
+  job   Job    @relation(fields: [jobId], references: [id])
+  jobId String
+
+  name        String
+  description String
+  status      String @default("Open")
+  comments    String @db.LongText
+
+  startAt DateTime?
+  endAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

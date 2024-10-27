@@ -12,6 +12,8 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PhoneScript } from "./script";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
+import { PhoneButtons } from "./phone-buttons";
+import { PhoneQuoter } from "./quoter";
 
 export const PhoneLeadInfo = () => {
   return (
@@ -56,6 +58,8 @@ export const PhoneLeadInfo = () => {
         </TabsContent>
       </Tabs>
       <PhoneScript />
+      <PhoneQuoter />
+      <PhoneButtons />
     </div>
   );
 };

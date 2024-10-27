@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     return new NextResponse(keywordResponse, { status: 200 });
 
   //Check weather titan is enabled globally for this agent
-  const titan = await chatSettingGetTitan(agent?.userId as string);
+  const titan = await chatSettingGetTitan(agentNumber?.agentId as string);
   //If titan is disabled
   if (!titan) {
     await disabledAutoChatResponse(conversation, newMessage);
@@ -158,8 +158,8 @@ export async function POST(req: Request) {
   const delay = Math.round(words.length / wpm);
   const sid = (
     await smsSend({
-      toPhone: sms.to,
-      fromPhone: sms.from,
+      toPhone: sms.from,
+      fromPhone : sms.to,
       message: content,
       timer: delay,
     })

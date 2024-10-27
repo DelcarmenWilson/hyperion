@@ -68,6 +68,7 @@ model User {
 
     feedbacks   Feedback[]
     feeds       Feed[]
+    jobs        Job[]
     // ONE TO ONE RELATIONS
     assitantRel User?      @relation("AssitantToUser")
 

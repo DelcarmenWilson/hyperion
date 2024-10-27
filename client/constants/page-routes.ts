@@ -2,6 +2,7 @@ import { UserRole } from "@prisma/client";
 import {
   Backpack,
   Bot,
+  Briefcase,
   Building,
   Calendar,
   GoalIcon,
@@ -34,16 +35,19 @@ export type NavType = {
   icon?: LucideIcon;
   roles: UserRole[];
 };
-const allAdmins: UserRole[] = ["MASTER", "ADMIN", "SUPER_ADMIN"];
-const upperAdmins: UserRole[] = ["MASTER", "SUPER_ADMIN"];
+export const allAdmins: UserRole[] = ["MASTER", "ADMIN","DEVELOPER", "SUPER_ADMIN"];
+export const devAdmins: UserRole[] = [ "ADMIN","DEVELOPER", "SUPER_ADMIN"];
+const upperAdmins: UserRole[] = ["MASTER","DEVELOPER", "SUPER_ADMIN"];
+
 const allUsers: UserRole[] = [
   "MASTER",
+  "DEVELOPER",
   "ADMIN",
   "SUPER_ADMIN",
   "ASSISTANT",
   "USER",
 ];
-const allAgents: UserRole[] = ["SUPER_ADMIN", "ADMIN", "USER"];
+const allAgents: UserRole[] = ["SUPER_ADMIN","DEVELOPER", "ADMIN", "USER"];
 
 export const AdminRoutes: NavType[] = [
   {
@@ -114,6 +118,12 @@ export const AdminRoutes: NavType[] = [
     href: "/admin/tasks",
     icon: ListTodo,
     roles: upperAdmins,
+  },
+  {
+    title: "Jobs",
+    href: "/admin/jobs",
+    icon: Briefcase,
+    roles: ["DEVELOPER"],
   },
   {
     title: "WorkFlows",

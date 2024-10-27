@@ -27,6 +27,7 @@ import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import ChatBot from "@/components/global/chat-bot/chat-bot";
 import { NewLeadForm } from "./leads/components/new-lead-form";
+import { devAdmins } from "@/constants/page-routes";
 
 export default async function DashBoardLayout({
   children,
@@ -73,7 +74,7 @@ export default async function DashBoardLayout({
                 </AppointmentContextComponent>
               </PhoneContextProvider>
               {/*  THE GLOBAL CHAT BOT ASSISTANT */}
-              {["ADMIN", "SUPER_ADMIN"].includes(user.role) && <ChatBot />}
+              {devAdmins.includes(user.role) && <ChatBot />}
             </div>
           </div>
         </div>

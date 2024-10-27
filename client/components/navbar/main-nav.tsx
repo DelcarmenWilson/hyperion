@@ -29,11 +29,11 @@ export const MainNav = ({ admin }: Props) => {
     ? pname[2].replace("-", " ")
     : pname[1].replace("-", " ");
 
-  useEffect(() => {
-    if (initialLoad) return;
-    setIsPageNotificationOpen(true);
-    setInitialLoad(true);
-  }, []);
+  // useEffect(() => {
+  //   if (initialLoad) return;
+  //   setIsPageNotificationOpen(true);
+  //   setInitialLoad(true);
+  // }, []);
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>

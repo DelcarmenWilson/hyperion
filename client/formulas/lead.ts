@@ -2,6 +2,8 @@ import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
 import { LeadSchemaType } from "@/schemas/lead";
 import { leadDefaultStatus, leadRelationShips } from "@/constants/lead";
+import { getAge } from "./dates";
+import { FullUserCarrier } from "@/types";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -444,10 +446,76 @@ export const GetLeadOppositeRelationship = (
   relationship: string,
   gender: string
 ): string => {
-  if(gender=='N/A') return 'N/A'
-  const index=gender=="Male"?0:1
-const currentRel=leadRelationShips.find(e=>e.relationship==relationship)
-if(!currentRel)return "N/A" 
+  if (gender == "N/A") return "N/A";
+  const index = gender == "Male" ? 0 : 1;
+  const currentRel = leadRelationShips.find(
+    (e) => e.relationship == relationship
+  );
+  if (!currentRel) return "N/A";
 
   return currentRel.opposite[index];
+};
+
+export type CarrierPremium={
+  name:string
+  premium:number
+}
+
+export const CalculatePremium = (
+  carriers: FullUserCarrier[] | undefined,
+  dateOfBirth: string | null | undefined,
+  coverage: string
+): CarrierPremium[]|string => {
+  // Quote Calculation Logic
+  if (!carriers) return "There are no available carriers";
+
+  // Get input values
+  const caluclateAge = getAge(dateOfBirth);
+  const age = caluclateAge == "NA" ? 0 : parseInt(caluclateAge);
+  //  const age=36
+  const health = "good";
+  const coverageAmount = parseInt(coverage);
+
+  // Validate input
+  if (
+    age.toString() === "" ||
+    coverage === "" ||
+    isNaN(age) ||
+    isNaN(coverageAmount)
+  ) {
+    return "Please fill all fields correctly.";
+  }
+
+  // Calculate base premium based on age
+  let basePremium = 100; // Starting premium
+  if (age < 25) {
+    basePremium += 50;
+  } else if (age >= 25 && age <= 40) {
+    basePremium += 20;
+  } else if (age > 40) {
+    basePremium += 100;
+  }
+
+  // Adjust premium based on health condition
+  let healthMultiplier = 1;
+  if (health === "good") {
+    healthMultiplier = 1;
+  } else if (health === "average") {
+    healthMultiplier = 1.5;
+  } else if (health === "poor") {
+    healthMultiplier = 2;
+  }
+
+  // Final premium calculation
+  const premium = basePremium * healthMultiplier * (coverageAmount / 1000);
+
+let carrierPremiums:CarrierPremium[]=[]
+
+carriers.forEach(carrier=>{
+  carrierPremiums.push({name:carrier.carrier.name,premium:premium})
+})
+
+
+  // return premium.toString();
+  return carrierPremiums
 };
