@@ -57,7 +57,7 @@ export const leadUpdateByIdStatus = async ({
     return { error: "Unauthorized" };
   }
 
-  await db.lead.update({
+  const lead=await db.lead.update({
     where: { id: leadId },
     data: {
       statusId,
@@ -76,5 +76,5 @@ export const leadUpdateByIdStatus = async ({
     userId,
     leadStatus?.status
   );
-  return { success: "Lead status has been updated" };
+  return { success: lead };
 };
