@@ -69,6 +69,7 @@ model User {
     feedbacks   Feedback[]
     feeds       Feed[]
     jobs        Job[]
+    todos       UserTodo[]
     // ONE TO ONE RELATIONS
     assitantRel User?      @relation("AssitantToUser")
 
@@ -127,6 +128,26 @@ model UserTemplate {
     attachment  String?
     message     String  @db.LongText
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+//USER TODO
+model UserTodo {
+    id     String @id @default(cuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    name        String
+    description String @db.LongText
+
+    status   String @default("Pending")
+    comments String @db.LongText
+
+    startAt DateTime?
+    endAt   DateTime?
+
+    reminder  Boolean  @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

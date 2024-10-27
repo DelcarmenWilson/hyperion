@@ -30,10 +30,10 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 import { DashboardRoutes } from "@/constants/page-routes";
-import { useJobActions } from "../../hooks/use-jobs";
+import { useJobActions } from "../../hooks/use-job";
 
 export const JobForm = ({ job }: { job: Job }) => {
-  const { onJobUpdate, jobUpdateIsPending } = useJobActions();
+  const { onJobUpdate, jobUpdating } = useJobActions();
 
   const routes = [...DashboardRoutes].sort((a, b) => {
     if (a.title < b.title) {
@@ -77,7 +77,7 @@ export const JobForm = ({ job }: { job: Job }) => {
                       <Input
                         {...field}
                         placeholder="Lead Page"
-                        disabled={jobUpdateIsPending}
+                        disabled={jobUpdating}
                         autoComplete="HeadLine"
                       />
                     </FormControl>
@@ -94,7 +94,7 @@ export const JobForm = ({ job }: { job: Job }) => {
                     <FormLabel> Category</FormLabel>
                     <Select
                       name="ddlCatergory"
-                      disabled={jobUpdateIsPending}
+                      disabled={jobUpdating}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -130,7 +130,7 @@ export const JobForm = ({ job }: { job: Job }) => {
                       <Textarea
                         {...field}
                         placeholder="Description"
-                        disabled={jobUpdateIsPending}
+                        disabled={jobUpdating}
                         autoComplete="Description"
                         rows={4}
                       />
@@ -153,7 +153,7 @@ export const JobForm = ({ job }: { job: Job }) => {
                       <Textarea
                         {...field}
                         placeholder="comments"
-                        disabled={jobUpdateIsPending}
+                        disabled={jobUpdating}
                         autoComplete="comments"
                       />
                     </FormControl>
@@ -166,7 +166,7 @@ export const JobForm = ({ job }: { job: Job }) => {
               <Button onClick={onCancel} type="button" variant="outline">
                 Cancel
               </Button>
-              <Button disabled={jobUpdateIsPending} type="submit">
+              <Button disabled={jobUpdating} type="submit">
                 Update Job
               </Button>
             </div>

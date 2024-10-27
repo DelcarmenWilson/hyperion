@@ -1,6 +1,5 @@
 import * as z from "zod";
 
-
 export const UserAboutMeSchema = z.object({
   id: z.string(),
   aboutMe: z.optional(z.string()),
@@ -52,3 +51,14 @@ export const UserTemplateSchema = z.object({
   message: z.optional(z.string()),
 });
 export type UserTemplateSchemaType = z.infer<typeof UserTemplateSchema>;
+
+export const UserTodoSchema = z.object({
+  id: z.optional(z.string()),
+  userId: z.optional(z.string()),
+  name: z.string(),
+  description: z.string(),
+  comments: z.string(),
+
+  reminder: z.boolean(),
+});
+export type UserTodoSchemaType = z.infer<typeof UserTodoSchema>;

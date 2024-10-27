@@ -1,6 +1,10 @@
 import React from "react";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
+import {
+  useBluePrintStore,
+  useBluePrintActions,
+  useBluePrintData,
+} from "@/hooks/use-blueprint";
 
 import { Bar } from "../card-data";
 import { Badge } from "@/components/ui/badge";
@@ -9,17 +13,22 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
+import { allAdmins } from "@/constants/page-routes";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
-
+type BarType = {
+  label: string;
+  data: number;
+  target: number;
+  percentage: number;
+  dollar: boolean;
+};
 export const BluePrintWeeklyCard = () => {
   const role = useCurrentRole();
-  const { onBluePrintWeekFormOpen } = useBluePrint();
-  const {
-    bluePrintWeekActive,
-    isFetchingBluePrintWeekActive,
-    onCalculateBlueprintTargets,
-  } = useBluePrintActions();
+  const { onBluePrintWeekFormOpen } = useBluePrintStore();
+  const { bluePrintWeekActive, isFetchingBluePrintWeekActive } =
+    useBluePrintData();
+  const { onCalculateBlueprintTargets } = useBluePrintActions();
   if (!bluePrintWeekActive) return <EmptyCard title={"No Details"} />;
   const {
     calls,
@@ -31,9 +40,33 @@ export const BluePrintWeeklyCard = () => {
     createdAt,
     endAt,
   } = bluePrintWeekActive;
-  const callPercentage = Math.ceil(calls / callsTarget);
-  const appPercentage = Math.ceil(appointments / appointmentsTarget);
+  const callsPercentage = Math.ceil(calls / callsTarget);
+  const appsPercentage = Math.ceil(appointments / appointmentsTarget);
   const premiumPercentage = Math.ceil(premium / premiumTarget);
+
+  const barData: BarType[] = [
+    {
+      label: "Calls",
+      data: calls,
+      target: callsTarget,
+      percentage: callsPercentage,
+      dollar: false,
+    },
+    {
+      label: "Appointments",
+      data: appointments,
+      target: appointmentsTarget,
+      percentage: appsPercentage,
+      dollar: false,
+    },
+    {
+      label: "Premium",
+      data: premium,
+      target: premiumTarget,
+      percentage: premiumPercentage,
+      dollar: true,
+    },
+  ];
   return (
     <SkeletonWrapper isLoading={isFetchingBluePrintWeekActive}>
       <div>
@@ -43,30 +76,15 @@ export const BluePrintWeeklyCard = () => {
             {formatDate(createdAt, "MM/dd")} - {formatDate(endAt, "MM/dd")}
           </Badge>
         </div>
-        <Bar
-          label="Calls"
-          data={calls}
-          target={callsTarget}
-          percentage={callPercentage}
-        />
 
-        <Bar
-          label="Appointments"
-          data={appointments}
-          target={appointmentsTarget}
-          percentage={appPercentage}
-        />
-        <Bar
-          label="Premium"
-          data={premium}
-          target={premiumTarget}
-          percentage={premiumPercentage}
-          dollar
-        />
+        {barData.map((data) => (
+          <Bar {...data} />
+        ))}
+
         {/*TODO - dont forget to remove this grid as its for testing purposes
         only */}
 
-        {role == "ADMIN" && (
+        {allAdmins.includes(role!) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
             <Button
               onClick={() => onBluePrintWeekFormOpen(bluePrintWeekActive)}

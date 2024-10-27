@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentRole } from "@/hooks/user-current-role";
-import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,15 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { USDollar } from "@/formulas/numbers";
-import { formatDate, formatJustTime } from "@/formulas/dates";
+import { formatJustTime } from "@/formulas/dates";
+import { allAdmins } from "@/constants/page-routes";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 
 export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
   const role = useCurrentRole();
-  const { onWorkInfoFormOpen } = useBluePrint();
-  const { agentWorkInfo, isFetchingAgentWorkInfo } = useBluePrintActions();
+  const { onWorkInfoFormOpen } = useBluePrintStore();
+  const { agentWorkInfo, isFetchingAgentWorkInfo } = useBluePrintData();
   const hours = agentWorkInfo?.workingHours.split("-");
 
   return (
@@ -32,7 +33,7 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
           <div className="flex justify-between items-center mb-2">
             <p className="font-semibold">Work info</p>
 
-            {role == "ADMIN" && (
+            {allAdmins.includes(role!) && (
               <Button
                 size="sm"
                 onClick={() => onWorkInfoFormOpen(agentWorkInfo)}

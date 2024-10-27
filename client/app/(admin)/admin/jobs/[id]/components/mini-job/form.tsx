@@ -2,7 +2,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useJobStore, useMiniJobActions } from "../../hooks/use-jobs";
+import { useJobStore } from "../../../hooks/use-store";
+import { useMiniJobActions } from "../../../hooks/use-mini-job";
 
 import { MiniJob } from "@prisma/client";
 import { MiniJobSchema, MiniJobSchemaType } from "@/schemas/job";
@@ -18,12 +19,16 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { Textarea } from "@/components/ui/textarea";
 
 export const MiniJobFormDrawer = () => {
-  const { miniJobFormIsOpen, onMiniJobFormClose } = useJobStore();
-  const { onMiniJobInsert, miniJobInserting } = useMiniJobActions();
+  const { miniJob, miniJobFormIsOpen, onMiniJobFormClose } = useJobStore();
+  const {
+    onMiniJobInsert,
+    miniJobInserting,
+    onMiniJobUpdate,
+    miniJobUpdating,
+  } = useMiniJobActions();
 
   return (
     <DrawerRight
@@ -32,9 +37,10 @@ export const MiniJobFormDrawer = () => {
       onClose={onMiniJobFormClose}
     >
       <MiniJobForm
+        job={miniJob}
         onClose={onMiniJobFormClose}
-        submit={onMiniJobInsert}
-        loading={miniJobInserting}
+        submit={miniJob ? onMiniJobUpdate : onMiniJobInsert}
+        loading={miniJob ? miniJobUpdating : miniJobInserting}
       />
     </DrawerRight>
   );
@@ -47,7 +53,7 @@ type Props = {
   onClose?: () => void;
 };
 
-const MiniJobForm = ({ job, submit, loading, onClose }: Props) => {
+export const MiniJobForm = ({ job, submit, loading, onClose }: Props) => {
   const form = useForm<MiniJobSchemaType>({
     resolver: zodResolver(MiniJobSchema),
     defaultValues: job || {

@@ -14,6 +14,16 @@ export const miniJobsGetAll = async () => {
     return [];
   }
 };
+export const miniJobsGetAllByJobId = async (jobId:string) => {
+  try {
+    const role = await currentRole();
+    if (role != "DEVELOPER") return [];
+    const miniJobs = await db.miniJob.findMany({where:{jobId}});
+    return miniJobs;
+  } catch (error) {
+    return [];
+  }
+};
 
 export const miniJobGetById = async (id: string) => {
   try {
@@ -59,9 +69,20 @@ export const miniJobGetPrevNextById = async (id: string) => {
   }
 };
 
-export const miniJobInsert = async (values: MiniJobSchemaType) => {
+// ACTIONS
+export const miniJobDeleteById = async (id: string) => {
   const user = await currentUser();
 
+  if (!user) return { error: "Unauthenticated!" };
+  if (user.role != "DEVELOPER") return { error: "Unauthorized!" };
+
+  await db.miniJob.delete({ where: { id } });
+
+  return { success: "Job has been deleted" };
+};
+
+export const miniJobInsert = async (values: MiniJobSchemaType) => {
+  const user = await currentUser();
   if (!user?.id || !user?.email) return { error: "Unauthenticated!" };
   if (user.role != "DEVELOPER") return { error: "Unauthorized!" };
 

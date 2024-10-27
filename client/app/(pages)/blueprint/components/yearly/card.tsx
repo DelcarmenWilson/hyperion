@@ -1,5 +1,5 @@
 import React from "react";
-import { useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Badge } from "@/components/ui/badge";
 import { EmptyCard } from "@/components/reusable/empty-card";
@@ -8,10 +8,18 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
 import { Bar, CardData } from "../card-data";
 
+type BarType = {
+  label: string;
+  data: number;
+  target: number;
+  percentage: number;
+  dollar: boolean;
+};
+
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 export const BluePrintYearlyCard = () => {
   const { bluePrintYearActive, isFetchingBluePrintYearActive } =
-    useBluePrintActions();
+    useBluePrintData();
 
   if (!bluePrintYearActive) return <EmptyCard title={"No Details"} />;
 
@@ -27,8 +35,32 @@ export const BluePrintYearlyCard = () => {
     endAt,
   } = bluePrintYearActive;
   const callsPercentage = Math.ceil(calls / (callsTarget * weeks));
-  const appPercentage = Math.ceil(appointments / (appointmentsTarget * weeks));
+  const appsPercentage = Math.ceil(appointments / (appointmentsTarget * weeks));
   const premiumPercentage = Math.ceil(premium / (premiumTarget * weeks));
+
+  const barData: BarType[] = [
+    {
+      label: "Calls",
+      data: calls,
+      target: callsTarget * weeks,
+      percentage: callsPercentage,
+      dollar: false,
+    },
+    {
+      label: "Appointments",
+      data: appointments,
+      target: appointmentsTarget * weeks,
+      percentage: appsPercentage,
+      dollar: false,
+    },
+    {
+      label: "Premium",
+      data: premium,
+      target: premiumTarget * weeks,
+      percentage: premiumPercentage,
+      dollar: true,
+    },
+  ];
   return (
     <SkeletonWrapper isLoading={isFetchingBluePrintYearActive}>
       <div>
@@ -39,25 +71,9 @@ export const BluePrintYearlyCard = () => {
           </Badge>
         </div>
 
-        <Bar
-          label="Calls"
-          data={calls}
-          target={callsTarget * weeks}
-          percentage={callsPercentage}
-        />
-        <Bar
-          label="Appointments"
-          data={appointments}
-          target={appointmentsTarget * weeks}
-          percentage={appPercentage}
-        />
-        <Bar
-          label="Premium"
-          data={premium}
-          target={premiumTarget * weeks}
-          percentage={premiumPercentage}
-          dollar
-        />
+        {barData.map((data) => (
+          <Bar {...data} />
+        ))}
       </div>
     </SkeletonWrapper>
   );

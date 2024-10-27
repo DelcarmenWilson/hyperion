@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintStore, useBluePrintActions } from "@/hooks/use-blueprint";
 
 import {
   AgentWorkInfoSchema,
@@ -30,12 +30,47 @@ import { TargetList } from "./list";
 
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { daysOfTheWeek } from "@/formulas/schedule";
+import { AgentWorkInfo } from "@prisma/client";
 
-export const AgentWorkInfoForm = () => {
-  const { workInfo, isWorkInfoFormOpen, onWorkInfoFormClose } = useBluePrint();
-  const { onAgentWorkInfoInsert, onAgentWorkInfoUpdate } =
-    useBluePrintActions(onWorkInfoFormClose);
+export const AgentWorkInfoFormDialog = () => {
+  const { workInfo, isWorkInfoFormOpen, onWorkInfoFormClose } =
+    useBluePrintStore();
+  const {
+    onAgentWorkInfoInsert,
+    agentWorkInfoInserting,
+    onAgentWorkInfoUpdate,
+    agentWorkInfoUpdating,
+  } = useBluePrintActions();
 
+  return (
+    <CustomDialog
+      open={isWorkInfoFormOpen}
+      onClose={onWorkInfoFormClose}
+      title="Work Details"
+      description="Agent Work Info Form"
+    >
+      <AgentWorkInfoForm
+        workInfo={workInfo}
+        onClose={onWorkInfoFormClose}
+        submit={workInfo ? onAgentWorkInfoUpdate : onAgentWorkInfoInsert}
+        loading={workInfo ? agentWorkInfoUpdating : agentWorkInfoInserting}
+      />
+    </CustomDialog>
+  );
+};
+
+type AgentWorkInfoFormProps = {
+  workInfo?: AgentWorkInfo | null;
+  submit: (e: AgentWorkInfoSchemaType) => void;
+  loading: boolean;
+  onClose?: () => void;
+};
+const AgentWorkInfoForm = ({
+  workInfo,
+  submit,
+  loading,
+  onClose,
+}: AgentWorkInfoFormProps) => {
   const form = useForm<AgentWorkInfoSchemaType>({
     resolver: zodResolver(AgentWorkInfoSchema),
     defaultValues: workInfo || {
@@ -46,157 +81,147 @@ export const AgentWorkInfoForm = () => {
     },
   });
 
-  const agentWorkInfoFormSubmit = async (values: AgentWorkInfoSchemaType) => {
-    if (workInfo) {
-      onAgentWorkInfoUpdate(values);
-    } else onAgentWorkInfoInsert(values);
-  };
-
   return (
-    <CustomDialog
-      open={isWorkInfoFormOpen}
-      onClose={onWorkInfoFormClose}
-      title="Work Details"
-      description="Agent Work Info Form"
-    >
-      <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(agentWorkInfoFormSubmit)}
-            className="space-y-2"
-          >
-            {/* WORK TYPE */}
-            <FormField
-              control={form.control}
-              name="workType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Work Type
-                    <FormMessage />
-                  </FormLabel>
-                  <Select
-                    name="ddl-workType"
+    <div className="flex-col items-start xl:flex-row xl:items-center max-h-[400px] p-2 overflow-y-auto">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(submit)} className="space-y-2">
+          {/* WORK TYPE */}
+          <FormField
+            control={form.control}
+            name="workType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Work Type
+                  <FormMessage />
+                </FormLabel>
+                <Select
+                  name="ddl-workType"
+                  defaultValue={field.value}
+                  onValueChange={field.onChange}
+                  autoComplete="workType"
+                  disabled={loading}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Parttime" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="PartTime">Part Time</SelectItem>
+                    <SelectItem value="FullTime">Full Time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+          {/* WORKING DAYS */}
+          <FormField
+            control={form.control}
+            name="workingDays"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Working Days
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <WorkingDays
                     defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    autoComplete="workType"
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Parttime" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="PartTime">Part Time</SelectItem>
-                      <SelectItem value="FullTime">Full Time</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            {/* WORKING DAYS */}
-            <FormField
-              control={form.control}
-              name="workingDays"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Working Days
-                    <FormMessage />
-                  </FormLabel>
-                  <FormControl>
-                    <WorkingDays
-                      defaultValue={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            {/* WORKING HOURS */}
-            <FormField
-              control={form.control}
-              name="workingHours"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Working Hours
-                    <FormMessage />
-                  </FormLabel>
-                  <FormControl>
-                    {/* <Input {...field} placeholder="Please enter workingHours" /> */}
-                    <WorkingHours
-                      defaultValue={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            {/* ANNUAL TARGET */}
-            <FormField
-              control={form.control}
-              name="annualTarget"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Annual Target
-                    <FormMessage />
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Please enter annual target"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            {/* TARGET TYPE */}
-            <FormField
-              control={form.control}
-              name="targetType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Target Type
-                    <FormMessage />
-                  </FormLabel>
-                  <FormControl>
-                    <TargetList
-                      targets={calculateWeeklyBluePrint(
-                        form.getValues("annualTarget")
-                      )}
-                      selectedTarget={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                    onChange={field.onChange}
+                    loading={loading}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* WORKING HOURS */}
+          <FormField
+            control={form.control}
+            name="workingHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Working Hours
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  {/* <Input {...field} placeholder="Please enter workingHours" /> */}
+                  <WorkingHours
+                    defaultValue={field.value}
+                    onChange={field.onChange}
+                    loading={loading}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* ANNUAL TARGET */}
+          <FormField
+            control={form.control}
+            name="annualTarget"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Annual Target
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Please enter annual target"
+                    disabled={loading}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* TARGET TYPE */}
+          <FormField
+            control={form.control}
+            name="targetType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Target Type
+                  <FormMessage />
+                </FormLabel>
+                <FormControl>
+                  <TargetList
+                    targets={calculateWeeklyBluePrint(
+                      form.getValues("annualTarget")
+                    )}
+                    selectedTarget={field.value}
+                    onChange={field.onChange}
+                    loading={loading}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-            <div className="flex mt-2 gap-2 justify-end">
-              <Button
-                variant="outlineprimary"
-                type="button"
-                onClick={onWorkInfoFormClose}
-              >
-                Cancel
-              </Button>
-              <Button>Submit</Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </CustomDialog>
+          <div className="flex mt-2 gap-2 justify-end">
+            <Button
+              variant="outlineprimary"
+              type="button"
+              disabled={loading}
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button disabled={loading}>Submit</Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
-
 type WorkingDaysProps = {
   defaultValue: string;
+  loading: boolean;
   onChange: (e: string) => void;
 };
-const WorkingDays = ({ defaultValue, onChange }: WorkingDaysProps) => {
+const WorkingDays = ({ defaultValue, loading, onChange }: WorkingDaysProps) => {
   const [days, setDays] = useState<string[]>(
     defaultValue ? defaultValue.split(",") : []
   );
@@ -216,6 +241,7 @@ const WorkingDays = ({ defaultValue, onChange }: WorkingDaysProps) => {
           size="sm"
           onClick={() => onSetDay(day)}
           type="button"
+          disabled={loading}
         >
           {day}
         </Button>
@@ -223,7 +249,7 @@ const WorkingDays = ({ defaultValue, onChange }: WorkingDaysProps) => {
 
       <Button
         className="ml-auto"
-        disabled={defaultValue == concateDays}
+        disabled={defaultValue == concateDays || loading}
         size={"sm"}
         variant="success"
         type="button"
@@ -235,7 +261,11 @@ const WorkingDays = ({ defaultValue, onChange }: WorkingDaysProps) => {
   );
 };
 
-const WorkingHours = ({ defaultValue, onChange }: WorkingDaysProps) => {
+const WorkingHours = ({
+  defaultValue,
+  loading,
+  onChange,
+}: WorkingDaysProps) => {
   const [hours, setHours] = useState<{ from: string; to: string }>({
     from: defaultValue ? defaultValue.split("-")[0] : "",
     to: defaultValue ? defaultValue.split("-")[1] : "",
@@ -255,6 +285,7 @@ const WorkingHours = ({ defaultValue, onChange }: WorkingDaysProps) => {
         defaultValue={hours.from}
         autoComplete="time"
         onChange={(e) => onSetHours("from", e.target.value)}
+        disabled={loading}
       />
       <Input
         name="txtTo"
@@ -262,12 +293,13 @@ const WorkingHours = ({ defaultValue, onChange }: WorkingDaysProps) => {
         defaultValue={hours.to}
         autoComplete="time"
         onChange={(e) => onSetHours("to", e.target.value)}
+        disabled={loading}
       />
 
       <div className="col-span-2 text-end">
         <Button
           className="ml-auto"
-          disabled={defaultValue == concateHours}
+          disabled={defaultValue == concateHours || loading}
           size={"sm"}
           variant="success"
           type="button"

@@ -1,18 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FilePenLine } from "lucide-react";
+import { Edit, FilePenLine, Plus } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { User } from "@prisma/client";
-import { LeadPolicySchemaType } from "@/schemas/lead";
+import { FullLeadPolicy } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDate } from "@/formulas/dates";
-import { FullLeadPolicy } from "@/types";
+import { allAdmins } from "@/constants/page-routes";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 type PolicyInfoClientProps = {
   leadId: string;
@@ -27,7 +28,7 @@ export const PolicyInfoClient = ({
   info,
   assistant,
 }: PolicyInfoClientProps) => {
-  const user = useCurrentUser();
+  const role = useCurrentRole();
   const [policyInfo, setPolicyInfo] = useState(info);
   const { onPolicyFormOpen } = useLeadStore();
   const { onAssistantFormOpen } = useLeadStore();
@@ -42,57 +43,55 @@ export const PolicyInfoClient = ({
       userEmitter.off("policyInfoUpdated", (info) => onSetInfo(info));
     };
   }, [info]);
-  if (user?.role == "ASSISTANT" || !policyInfo) return null;
+  if (role == "ASSISTANT" || !policyInfo) return null;
   return (
-    <>
-      <div className="flex flex-col gap-1 text-sm">
-        {user?.role == "ADMIN" && (
-          <div className="border rounded-sm shadow-md p-2  bg-background">
-            <h4 className="text-muted-foreground">Assistant</h4>
-            {assistant && (
-              <h4 className="text-lg text-center font-bold">
-                {assistant.firstName}
-              </h4>
-            )}
+    <div className="flex flex-col gap-1 text-sm">
+      {allAdmins.includes(role!) && (
+        <div className="border rounded-sm shadow-md p-2  bg-background">
+          <div className="flex justify-between items-center">
+            <p className="text-muted-foreground">Assistant</p>
             <Button
-              className="w-full"
-              size="sm"
+              size="icon"
               onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}
             >
-              {assistant ? "Change" : "Add"}
+              {assistant ? <Edit size={15} /> : <Plus size={15} />}
             </Button>
           </div>
-        )}
 
-        {policyInfo.carrier ? (
-          <div className="relative group">
-            <InputGroup title="Carrier" value={policyInfo.carrier.name} />
+          {assistant && (
+            <h4 className="text-lg text-center font-bold">
+              {assistant.firstName}
+            </h4>
+          )}
+        </div>
+      )}
 
-            <InputGroup title="Policy #" value={policyInfo.policyNumber} />
-            <InputGroup title="Status" value={policyInfo.status} />
-            <InputGroup
-              title="Start Date"
-              value={formatDate(policyInfo.startDate)}
-            />
-            <InputGroup title="Ap" value={policyInfo.ap} />
-            <InputGroup title="Commision" value={policyInfo.commision} />
-            <InputGroup
-              title="Coverage Amount"
-              value={policyInfo.coverageAmount}
-            />
-            <Button
-              className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => onPolicyFormOpen(leadId)}
-            >
-              <FilePenLine size={16} />
-            </Button>
-          </div>
-        ) : (
-          <Button onClick={() => onPolicyFormOpen(leadId)}>
-            Create Policy
+      {policyInfo.carrier ? (
+        <div className="relative group">
+          <InputGroup title="Carrier" value={policyInfo.carrier.name} />
+
+          <InputGroup title="Policy #" value={policyInfo.policyNumber} />
+          <InputGroup title="Status" value={policyInfo.status} />
+          <InputGroup
+            title="Start Date"
+            value={formatDate(policyInfo.startDate)}
+          />
+          <InputGroup title="Ap" value={policyInfo.ap} />
+          <InputGroup title="Commision" value={policyInfo.commision} />
+          <InputGroup
+            title="Coverage Amount"
+            value={policyInfo.coverageAmount}
+          />
+          <Button
+            className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
+            onClick={() => onPolicyFormOpen(leadId)}
+          >
+            <FilePenLine size={16} />
           </Button>
-        )}
-      </div>
-    </>
+        </div>
+      ) : (
+        <Button onClick={() => onPolicyFormOpen(leadId)}>Create Policy</Button>
+      )}
+    </div>
   );
 };

@@ -47,7 +47,7 @@ const allUsers: UserRole[] = [
   "ASSISTANT",
   "USER",
 ];
-const allAgents: UserRole[] = ["SUPER_ADMIN","DEVELOPER", "ADMIN", "USER"];
+export const allAgents: UserRole[] = ["SUPER_ADMIN","DEVELOPER", "ADMIN", "USER"];
 
 export const AdminRoutes: NavType[] = [
   {

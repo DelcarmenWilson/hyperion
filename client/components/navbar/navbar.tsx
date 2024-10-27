@@ -1,7 +1,12 @@
 "use client";
 import { Lobster_Two } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { MessageSquareDot, MessageSquarePlus, Smartphone } from "lucide-react";
+import {
+  List,
+  MessageSquareDot,
+  MessageSquarePlus,
+  Smartphone,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/use-chat";
@@ -16,6 +21,7 @@ import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { allAdmins } from "@/constants/page-routes";
+import { useTodoStore } from "@/hooks/user/use-todo";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -29,6 +35,7 @@ const NavBar = ({ admin = false }: Props) => {
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen } = useChatStore();
+  const { isTodosModalOpen, onTodosModalOpen } = useTodoStore();
 
   return (
     <div
@@ -52,6 +59,13 @@ const NavBar = ({ admin = false }: Props) => {
 
       <div className="flex flex-col-reverse gap-1 justify-end items-end md:flex-row flex-1 md:items-center  space-x-2">
         <div className="flex justify-end gap-2">
+          <Button
+            variant={isTodosModalOpen ? "default" : "outline"}
+            size="icon"
+            onClick={onTodosModalOpen}
+          >
+            <List size={15} />
+          </Button>
           {/* messages list */}
           <NavMessages />
           {/*srini- Agent chat */}

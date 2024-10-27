@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
@@ -16,7 +16,7 @@ import {
 import { EmptyCard } from "@/components/reusable/empty-card";
 
 import { AgentWorkInfoCard } from "./card";
-import { AgentWorkInfoForm } from "./form";
+import { AgentWorkInfoFormDialog } from "./form";
 import { BluePrintWeeklyCard } from "../weekly/card";
 import { BluePrintYearlyCard } from "../yearly/card";
 import { OverviewChart, SriniChart } from "@/components/reports/chart";
@@ -35,13 +35,13 @@ import {
 import { allMonths } from "@/constants/texts";
 
 export const AgentWorkInfoClient = () => {
-  const { onWorkInfoFormOpen } = useBluePrint();
+  const { onWorkInfoFormOpen } = useBluePrintStore();
   const {
     agentWorkInfo,
     isFetchingAgentWorkInfo,
     bluePrintWeekReport,
     isFetchingBluePrintWeeksReport,
-  } = useBluePrintActions();
+  } = useBluePrintData();
 
   const [isWeekly, setIsWeekly] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(
@@ -66,7 +66,7 @@ export const AgentWorkInfoClient = () => {
   }, [isWeekly]);
   return (
     <>
-      <AgentWorkInfoForm />
+      <AgentWorkInfoFormDialog />
       <BluePrintWeekForm />
       <div>
         <SkeletonWrapper isLoading={isFetchingAgentWorkInfo}>

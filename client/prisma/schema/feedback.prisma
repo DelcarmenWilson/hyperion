@@ -53,8 +53,8 @@ model Job {
   assignedTo User?   @relation(fields: [assignedId], references: [id], onDelete: Cascade)
   assignedId String?
 
-  miniJob  MiniJob[]
-  feedback Feedback[]
+  miniJobs  MiniJob[]
+  feedbacks Feedback[]
 
   published Boolean @default(false)
 
@@ -65,8 +65,8 @@ model Job {
 model MiniJob {
   id String @id @default(cuid())
 
-  job   Job    @relation(fields: [jobId], references: [id])
   jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
 
   name        String
   description String

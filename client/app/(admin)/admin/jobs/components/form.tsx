@@ -2,7 +2,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useJobActions, useJobStore } from "../hooks/use-jobs";
+import { useJobStore } from "../hooks/use-store";
+import { useJobActions } from "../hooks/use-job";
 
 import { Job } from "@prisma/client";
 import { JobSchema, JobSchemaType } from "@/schemas/job";
@@ -31,19 +32,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { DashboardRoutes } from "@/constants/page-routes";
 
 export const JobFormDrawer = () => {
-  const { jobFormIsOpen, onJobFormClose } = useJobStore();
-  const { onJobInsert, jobInsertIsPending } = useJobActions();
+  const { job, jobFormIsOpen, onJobFormClose } = useJobStore();
+  const { onJobInsert, jobInserting, onJobUpdate, jobUpdating } =
+    useJobActions();
 
   return (
     <DrawerRight
-      title="New Job"
+      title={job ? "Update Job" : "New Job"}
       isOpen={jobFormIsOpen}
       onClose={onJobFormClose}
     >
       <JobForm
+        job={job}
         onClose={onJobFormClose}
-        submit={onJobInsert}
-        loading={jobInsertIsPending}
+        submit={job ? onJobUpdate : onJobInsert}
+        loading={job ? jobUpdating : jobInserting}
       />
     </DrawerRight>
   );

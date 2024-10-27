@@ -1,47 +1,28 @@
 "use client";
 import { useState } from "react";
 import { Edit, Trash } from "lucide-react";
-import { toast } from "sonner";
 import Link from "next/link";
+import { useJobStore } from "../hooks/use-store";
+import { useJobActions } from "../hooks/use-job";
 
 import { Job } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+
 import { AlertModal } from "@/components/modals/alert";
+import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
+import { JobFormDrawer } from "./form";
 import { Switch } from "@/components/ui/switch";
-import { JobForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";
 
 type JobCardProps = {
-  initJob: Job;
-  onJobDeleted: (e: string) => void;
+  job: Job;
 };
 
-export const JobCard = ({ initJob, onJobDeleted }: JobCardProps) => {
-  const [loading, setLoading] = useState(false);
+export const JobCard = ({ job }: JobCardProps) => {
+  const { setJob, onJobFormOpen } = useJobStore();
+  const { onJobDelete, jobDeleting } = useJobActions();
   const [alertOpen, setAlertOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [job, setJob] = useState(initJob);
-
-  const onJobUpdated = (e?: Job) => {
-    if (e) setJob(e);
-    setIsOpen(false);
-  };
-
-  // const onDeleteJob = async () => {
-  //   setLoading(true);
-  //   const deletedJob = await jobDeleteById(job.id);
-
-  //   if (deletedJob.success) {
-  //     onJobDeleted(job.id);
-  //     toast.success(deletedJob.success);
-  //   } else toast.error(deletedJob.error);
-
-  //   setAlertOpen(false);
-  //   setLoading(false);
-  // };
 
   // const onJobPublished = async (e: boolean) => {
   //   setPublished(e);
@@ -57,23 +38,19 @@ export const JobCard = ({ initJob, onJobDeleted }: JobCardProps) => {
 
   return (
     <>
-      {/* <AlertModal
-        title="Want to delete this job"
+      <AlertModal
+        title="Want to delete this job?"
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={onDeleteJob}
-        loading={loading}
+        onConfirm={() => {
+          onJobDelete(job.id);
+          setAlertOpen(false);
+        }}
+        loading={jobDeleting}
         height="h-200"
-      /> */}
-      <DrawerRight
-        title="Edit Job"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        <JobForm job={job} onClose={onJobUpdated} />
-      </DrawerRight>
+      />
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
-        <h3 className="text-2xl text-primary font-semibold text-center">{`${job.headLine}`}</h3>
+        <h3 className="text-2xl text-primary font-semibold text-center capitalize">{`${job.headLine}`}</h3>
         <div className="flex justify-end gap-2">
           <p className="font-semibold">Published:</p>
           {/* <Switch
@@ -85,6 +62,7 @@ export const JobCard = ({ initJob, onJobDeleted }: JobCardProps) => {
         </div>
         <CardData label="Status" value={job.status} />
 
+        <CardData label="Category" value={job.category} />
         <CardData label="Description" value={job.description} column />
         <CardData label="Start Date" value={formatDate(job.startAt)} />
         <CardData label="End Date" value={formatDate(job.endAt)} />
@@ -98,7 +76,13 @@ export const JobCard = ({ initJob, onJobDeleted }: JobCardProps) => {
           >
             <Trash size={16} />
           </Button>
-          <Button size="sm" onClick={() => setIsOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setJob(job);
+              onJobFormOpen();
+            }}
+          >
             <Edit size={16} />
           </Button>
           <Button size="sm" asChild>

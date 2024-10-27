@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintData } from "@/hooks/use-blueprint";
 import { DataTable } from "@/components/tables/data-table";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { columns } from "./columns";
 
 export const BluePrintYearlyClient = () => {
-  const { bluePrints, isFetchingBluePrints } = useBluePrintActions();
+  const { bluePrints, isFetchingBluePrints } = useBluePrintData();
   return (
     <SkeletonWrapper isLoading={isFetchingBluePrints}>
       <DataTable

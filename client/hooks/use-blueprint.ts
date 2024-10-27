@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { AgentWorkInfo, BluePrint, BluePrintWeek } from "@prisma/client";
@@ -25,20 +26,25 @@ import {
   bluePrintsGetAllByUserId,
 } from "@/actions/blueprint/blueprint";
 
-type useBluePrintStore = {
+type State = {
   //AGENTWORKINFO
   workInfo?: AgentWorkInfo;
   isWorkInfoFormOpen: boolean;
-  onWorkInfoFormOpen: (w?: AgentWorkInfo) => void;
-  onWorkInfoFormClose: () => void;
-
+  //BLUEPRINT FORM
   bluePrintWeek?: BluePrintWeek;
   isBluePrintWeekFormOpen: boolean;
+};
+
+type Actions = {
+  //AGENTWORKINFO
+  onWorkInfoFormOpen: (w?: AgentWorkInfo) => void;
+  onWorkInfoFormClose: () => void;
+  //BLUEPRINT FORM
   onBluePrintWeekFormOpen: (b?: BluePrintWeek) => void;
   onBluePrintWeekFormClose: () => void;
 };
 
-export const useBluePrint = create<useBluePrintStore>((set) => ({
+export const useBluePrintStore = create<State & Actions>((set) => ({
   isWorkInfoFormOpen: false,
   onWorkInfoFormOpen: (w) => set({ workInfo: w, isWorkInfoFormOpen: true }),
   onWorkInfoFormClose: () =>
@@ -56,20 +62,18 @@ export const useBluePrint = create<useBluePrintStore>((set) => ({
     }),
 }));
 
-export const useBluePrintActions = (onClose?: () => void) => {
-  const queryClient = useQueryClient();
-
+export const useBluePrintData = () => {
   const { data: agentWorkInfo, isFetching: isFetchingAgentWorkInfo } =
     useQuery<AgentWorkInfo | null>({
       queryFn: () => agentWorkInfoGetByUserId(),
-      queryKey: ["agentWorkInfo"],
+      queryKey: ["agent-work-info"],
     });
 
   const { data: bluePrints, isFetching: isFetchingBluePrints } = useQuery<
     BluePrint[]
   >({
     queryFn: () => bluePrintsGetAllByUserId(),
-    queryKey: ["agentBluePrints"],
+    queryKey: ["agent-blueprints"],
   });
 
   const {
@@ -77,7 +81,7 @@ export const useBluePrintActions = (onClose?: () => void) => {
     isFetching: isFetchingBluePrintWeekActive,
   } = useQuery<BluePrintWeek | null>({
     queryFn: () => bluePrintWeekGetActive(),
-    queryKey: ["agentBluePrintWeekActive"],
+    queryKey: ["agent-blueprint-week-active"],
   });
 
   const {
@@ -85,13 +89,13 @@ export const useBluePrintActions = (onClose?: () => void) => {
     isFetching: isFetchingBluePrintYearActive,
   } = useQuery<BluePrint | null>({
     queryFn: () => bluePrintGetActive(),
-    queryKey: ["agentBluePrintActive"],
+    queryKey: ["agent-blueprint-active"],
   });
 
   const { data: bluePrintsWeekly, isFetching: isFetchingBluePrintsWeekly } =
     useQuery<BluePrintWeek[]>({
       queryFn: () => bluePrintWeeksGetAllByUserId(),
-      queryKey: ["agentBluePrintsWeekly"],
+      queryKey: ["agent-blueprints-weekly"],
     });
 
   const {
@@ -99,59 +103,8 @@ export const useBluePrintActions = (onClose?: () => void) => {
     isFetching: isFetchingBluePrintWeeksReport,
   } = useQuery<BluePrintWeek[]>({
     queryFn: () => bluePrintWeeksReport(),
-    queryKey: ["agentBluePrintWeeksReport"],
+    queryKey: ["agent-blueprint-weeks-report"],
   });
-
-  const invalidate = (key: string) => {
-    queryClient.invalidateQueries({ queryKey: [key] });
-  };
-  //Agent Work Info
-  const onAgentWorkInfoInsert = async (values: AgentWorkInfoSchemaType) => {
-    const insertedAgentWorkInfo = await agentWorkInfoInsert(values);
-    if (insertedAgentWorkInfo.error) {
-      toast.error(insertedAgentWorkInfo.error);
-    } else {
-      [
-        "agentWorkInfo",
-        "agentBluePrints",
-        "agentBluePrintsWeekly",
-        "agentBluePrintWeekActive",
-        "agentBluePrintActive",
-      ].forEach((key) => invalidate(key));
-      if (onClose) onClose();
-      toast.success("Agent details got updated");
-    }
-  };
-  const onAgentWorkInfoUpdate = async (values: AgentWorkInfoSchemaType) => {
-    const updatedAgentWorkInfo = await agentWorkInfoUpdateByUserId(values);
-    if (updatedAgentWorkInfo.error) toast.error(updatedAgentWorkInfo.error);
-    else {
-      invalidate("agentFullTimeInfo");
-      if (onClose) onClose();
-      toast.success("Agent details got updated");
-    }
-  };
-  //Blue Print Week
-  const onBluePrintWeekUpdate = async (values: BluePrintWeekSchemaType) => {
-    const updatedBluePrintWeek = await bluePrintWeekUpdateById(values);
-    if (updatedBluePrintWeek.error) toast.error(updatedBluePrintWeek.error);
-    else {
-      invalidate("agentBluePrintWeekActive");
-      if (onClose) onClose();
-      toast.success("Blue Print details updated");
-    }
-  };
-  //Calculate Next Week BluePrint
-  const onCalculateBlueprintTargets = async () => {
-    createWeeklyBlueprint();
-    [
-      "agentWorkInfo",
-      "agentBluePrints",
-      "agentBluePrintsWeekly",
-      "agentBluePrintWeekActive",
-      "agentBluePrintActive",
-    ].forEach((key) => invalidate(key));
-  };
 
   return {
     agentWorkInfo,
@@ -166,9 +119,136 @@ export const useBluePrintActions = (onClose?: () => void) => {
     isFetchingBluePrintsWeekly,
     bluePrintWeekReport,
     isFetchingBluePrintWeeksReport,
+  };
+};
+
+export const useBluePrintActions = () => {
+  const { onBluePrintWeekFormClose,onWorkInfoFormClose } = useBluePrintStore();
+  const queryClient = useQueryClient();
+
+  const invalidate = (key: string) => {
+    queryClient.invalidateQueries({ queryKey: [key] });
+  };
+  //AGENT WORK INFO INSERT
+  const {
+    mutate: agentWorkInfoInsertMutate,
+    isPending: agentWorkInfoInserting,
+  } = useMutation({
+    mutationFn: agentWorkInfoInsert,
+    onSuccess: (results) => {
+      if (results.success) {
+        toast.success("Agent details have been created", {
+          id: "insert-agent-work-info",
+        });
+        onWorkInfoFormClose();
+        [
+          "agent-work-info",
+          "agent-blueprints",
+          "agent-blueprints-weekly",
+          "agent-blueprint-week-active",
+          "agent-blue-print-active",
+        ].forEach((key) => invalidate(key));
+      } else {
+        toast.error(results.error, { id: "insert-agent-work-info" });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onAgentWorkInfoInsert = useCallback(
+    (values: AgentWorkInfoSchemaType) => {
+      toast.loading("Creating Work Info...", { id: "insert-agent-work-info" });
+      agentWorkInfoInsertMutate(values);
+    },
+    [agentWorkInfoInsertMutate]
+  );
+
+  //AGENT WORK INFO UPDATE
+  const {
+    mutate: agentWorkInfoUpdateMutate,
+    isPending: agentWorkInfoUpdating,
+  } = useMutation({
+    mutationFn: agentWorkInfoUpdateByUserId,
+    onSuccess: (results) => {
+      if (results.success) {
+        invalidate("agent-full-time-info");
+        onWorkInfoFormClose();
+        toast.success("Agent details have been updated", {
+          id: "update-agent-work-info",
+        });
+      } else {
+        toast.error(results.error, { id: "update-agent-work-info" });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onAgentWorkInfoUpdate = useCallback(
+    (values: AgentWorkInfoSchemaType) => {
+      toast.loading("Updating Work Info...", { id: "update-agent-work-info" });
+      agentWorkInfoUpdateMutate(values);
+    },
+    [agentWorkInfoUpdateMutate]
+  );
+
+  
+//BLUE PRINT WEEK UPDATE
+  const {
+    mutate: bluePrintWeekUpdateMutate,
+    isPending: bluePrintWeekUpdating,
+  } = useMutation({
+    mutationFn: bluePrintWeekUpdateById,
+    onSuccess: (results) => {
+      if (results.success) {
+        invalidate("agent-blueprint-week-active");
+         onBluePrintWeekFormClose();
+        toast.success("Blue Print details updated", {
+          id: "update-blueprint-week",
+        });
+      } else {
+        toast.error(results.error, { id: "update-blueprint-week" });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const onBluePrintWeekUpdate = useCallback(
+    (values: BluePrintWeekSchemaType) => {
+      toast.loading("Updating Blueprint Week...", {
+        id: "update-blueprint-week",
+      });
+      bluePrintWeekUpdateMutate(values);
+    },
+    [bluePrintWeekUpdateMutate]
+  );
+  
+
+  //Calculate Next Week BluePrint
+  //TODO - change this to use mutate
+  const onCalculateBlueprintTargets = async () => {
+    createWeeklyBlueprint();
+    [
+      "agent-work-info",
+      "agent-blueprints",
+      "agent-blueprints-weekly",
+      "agent-blueprint-week-active",
+      "agent-blueprint-active",
+    ].forEach((key) => invalidate(key));
+  };
+
+  return {
     onAgentWorkInfoInsert,
+    agentWorkInfoInserting,
     onAgentWorkInfoUpdate,
+    agentWorkInfoUpdating,
     onBluePrintWeekUpdate,
+    bluePrintWeekUpdating,
     onCalculateBlueprintTargets,
   };
 };

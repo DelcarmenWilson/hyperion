@@ -6,10 +6,13 @@ import { MainInfoForm } from "../lead/forms/main-info-form";
 import { PolicyInfoForm } from "../lead/forms/policy-info-form";
 import { ShareForm } from "../lead/forms/share-form";
 import { TransferForm } from "../lead/forms/transfer-form";
+import { TodoModal } from "./todo/modal";
 
 const ModalsContainer = () => {
   return (
     <>
+      {/* USER MODELS */}
+      <TodoModal />
       {/* PHONE MODALS */}
       <MainInfoForm />
       <GeneralInfoForm />

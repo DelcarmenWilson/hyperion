@@ -1,24 +1,22 @@
 "use client";
-import { Briefcase, Plus } from "lucide-react";
-import { useJobActions, useJobData, useJobStore } from "../hooks/use-jobs";
+import { Briefcase } from "lucide-react";
+import { useJobActions, useJobData } from "../hooks/use-job";
 
+import { JobForm } from "../components/form";
+import { MiniJobFormDrawer } from "./components/mini-job/form";
 import { PageLayout } from "@/components/custom/layout/page";
 import { PrevNextMenu } from "@/components/reusable/prev-next-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { JobForm } from "../components/form";
-import { Button } from "@/components/ui/button";
-import { MiniJobFormDrawer } from "./components/mini-form";
+import MiniJobClient from "./components/mini-job/client";
 
 const JobPage = () => {
   const { job, isFetchingJob, jobPrevNext, isFetchingJobPrevNext } =
     useJobData();
-
-  const { onJobUpdate, jobUpdateIsPending } = useJobActions();
-  const { onMiniJobFormOpen } = useJobStore();
+  const { onJobUpdate, jobUpdating } = useJobActions();
 
   return (
     <PageLayout
-      title={`Job - ${job?.headLine} | Status:${job?.status}`}
+      title={`Job - ${job?.headLine} | status:${job?.status}`}
       icon={Briefcase}
       topMenu={
         <SkeletonWrapper isLoading={isFetchingJobPrevNext}>
@@ -35,18 +33,10 @@ const JobPage = () => {
         <div className="flex-1 grid grid-cols-2 space-y-0 pb-2 overflow-hidden">
           <div className="border-e">
             <SkeletonWrapper isLoading={isFetchingJob}>
-              <JobForm
-                job={job!}
-                submit={onJobUpdate}
-                loading={jobUpdateIsPending}
-              />
+              <JobForm job={job!} submit={onJobUpdate} loading={jobUpdating} />
             </SkeletonWrapper>
           </div>
-          <div>
-            <Button onClick={onMiniJobFormOpen}>
-              <Plus size={16} />
-            </Button>
-          </div>
+          <MiniJobClient />
         </div>
       </>
     </PageLayout>
