@@ -39,6 +39,7 @@ import { exportLeads } from "@/lib/xlsx";
 import { useLeadStore, useLeadTitanActions } from "@/hooks/lead/use-lead";
 import { conversationDeleteById } from "@/actions/lead/conversation";
 import { leadDefaultStatus } from "@/constants/lead";
+import { leadDeleteById } from "@/actions/lead";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -61,6 +62,7 @@ export const LeadDropDown = ({
 
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [alertDeleteLeadOpen, setAlertDeleteLeadOpen] = useState(false);
   const isAssistant = role == "ASSISTANT";
   const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
@@ -87,6 +89,14 @@ export const LeadDropDown = ({
     }
     exportLeads(fileType, [lead], `${lead.firstName} ${lead.lastName}`);
   };
+  const onLeadDeleted=async()=>{
+    setLoading(true) 
+    const results=await leadDeleteById(lead.id)
+    if (results.error){toast.error(results.error)}
+    else {toast.success(results.success)}
+    setAlertDeleteLeadOpen(false)
+    setLoading(false)
+  }
   return (
     <>
       <AlertModal
@@ -97,6 +107,14 @@ export const LeadDropDown = ({
         height="h-auto"
       />
 
+      <AlertModal
+        title={`Are you sure you want to delete ${lead.firstName}`}
+        isOpen={alertDeleteLeadOpen}
+        onClose={() => setAlertDeleteLeadOpen(false)}
+        onConfirm={()=>onLeadDeleted}
+        loading={loading}
+        height="h-auto"
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           {action ? (
@@ -139,6 +157,13 @@ export const LeadDropDown = ({
               >
                 <Reply size={16} />
                 Transfer Lead
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => setAlertDeleteLeadOpen(true)}
+              >
+                <Trash size={16}  />
+                Delete Lead
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"

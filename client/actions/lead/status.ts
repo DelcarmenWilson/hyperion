@@ -14,7 +14,7 @@ export const leadStatusGetAllDefault = async () => {
     if (!userId) return [];
 
     const leadStatuses = await db.leadStatus.findMany({
-      where: { OR: [{ userId }, { type: { equals: "default" } }] },
+      where: { OR: [{ userId }, { type: { equals: "default" } }],hidden:false },
     });
     return leadStatuses;
   } catch {

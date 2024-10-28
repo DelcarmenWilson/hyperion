@@ -23,6 +23,9 @@ import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { chatSettingGetTitan } from "../settings/chat";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
+import { string } from "zod";
+import { error } from "console";
+import { leadDefaultStatus } from "@/constants/lead";
 
 //LEAD
 
@@ -519,6 +522,30 @@ export const leadsGetAssociated = async (id: string) => {
   }
 };
 //ACTIONS
+
+export const leadDeleteById = async(id:string)=>{
+  //get current logged in user 
+  const user=await currentUser()
+  // check if there is no user. yes, return an error
+  if(!user)
+    return{error:"Unauthenticated!"}
+    //get existing lead with the ID.
+
+  const existingLead= await db.lead.findUnique({where:{id}})
+// if there is no lead return an error
+if(!existingLead)
+  return{error:"Lead does not exist"}
+//if existing lead's agent id is not equal to userid returns an error
+if(user.id!= existingLead.userId)
+  return{error:"Unauthorized"}
+//if doesn't fall under above conditions change lead status into deleted
+
+await db.lead.update({where:{id},data:{statusId:leadDefaultStatus["Deleted"]}})
+
+// if everything is correct return success
+return{success:"Lead has been deleted"}
+}
+
 export const leadInsert = async (values: LeadSchemaType) => {
   const user = await currentUser();
   if (!user) return { error: "Unauthorized" };

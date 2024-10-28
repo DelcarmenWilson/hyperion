@@ -32,7 +32,7 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
         >
           <div className="flex justify-between items-center mb-2">
             <p className="font-semibold">Work info</p>
-
+            {/* srinitodo - update to allusers if team wants to give BP edit option to all users */}
             {allAdmins.includes(role!) && (
               <Button
                 size="sm"

@@ -142,6 +142,14 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
                 <Reply size={16} />
                 Transfer Lead
               </DropdownMenuItem>
+              {/* srinitodo */}
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={() => {}}
+              >
+                <Trash size={16}  />
+                Delete Lead
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() => onIntakeFormOpen(leadBasic.id, leadFullName)}
