@@ -35,7 +35,7 @@ const NavBar = ({ admin = false }: Props) => {
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen } = useChatStore();
-  const { isTodosModalOpen, onTodosModalOpen } = useTodoStore();
+  const { isTodosOpen, onTodosOpen } = useTodoStore();
 
   return (
     <div
@@ -60,9 +60,9 @@ const NavBar = ({ admin = false }: Props) => {
       <div className="flex flex-col-reverse gap-1 justify-end items-end md:flex-row flex-1 md:items-center  space-x-2">
         <div className="flex justify-end gap-2">
           <Button
-            variant={isTodosModalOpen ? "default" : "outline"}
+            variant={isTodosOpen ? "default" : "outline"}
             size="icon"
-            onClick={onTodosModalOpen}
+            onClick={onTodosOpen}
           >
             <List size={15} />
           </Button>

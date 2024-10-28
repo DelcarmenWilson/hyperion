@@ -48,7 +48,7 @@ export const Header = () => {
                 <Phone size={16} />
               </Button>
 
-              <LeadDropDown />
+              <LeadDropDown lead={lead} conversationId={conversation.id} />
             </div>
             <div className="flex items-center gap-2">
               <Button

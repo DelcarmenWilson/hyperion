@@ -78,7 +78,7 @@ export const BluePrintWeeklyCard = () => {
         </div>
 
         {barData.map((data) => (
-          <Bar {...data} />
+          <Bar key={data.label} {...data} />
         ))}
 
         {/*TODO - dont forget to remove this grid as its for testing purposes

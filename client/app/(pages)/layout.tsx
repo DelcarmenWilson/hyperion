@@ -10,11 +10,9 @@ import GlobalContextProvider from "@/providers/global";
 
 import NavBar from "@/components/navbar/navbar";
 import SideBar from "@/components/sidebar";
-import { ChatDrawer } from "@/components/chat/drawer";
-import { LoginStatusModal } from "@/components/login-status/modal";
+
 import ModalsContainer from "@/components/global/modals-container";
 import ModalProvider from "@/providers/modal";
-import { GroupMessageCard } from "@/components/global/group-message-card";
 
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGet } from "@/actions/user/schedule";
@@ -26,9 +24,7 @@ import {
 import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import ChatBot from "@/components/global/chat-bot/chat-bot";
-import { NewLeadForm } from "./leads/components/new-lead-form";
 import { devAdmins } from "@/constants/page-routes";
-
 export default async function DashBoardLayout({
   children,
 }: {
@@ -66,11 +62,6 @@ export default async function DashBoardLayout({
 
                   {/* ///ALL THE PHONE MODALS */}
                   <ModalsContainer />
-                  <ChatDrawer />
-                  <GroupMessageCard />
-                  <LoginStatusModal />
-                  {/* //LEAD MODALS */}
-                  <NewLeadForm />
                 </AppointmentContextComponent>
               </PhoneContextProvider>
               {/*  THE GLOBAL CHAT BOT ASSISTANT */}

@@ -11,7 +11,7 @@ import { Gender, MaritalStatus } from "@prisma/client";
 import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import {
   Form,
   FormField,

@@ -1,6 +1,4 @@
 "use client";
-import { useState } from "react";
-import { toast } from "sonner";
 import {
   BookText,
   Calendar,
@@ -15,13 +13,10 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { useCurrentRole } from "@/hooks/user-current-role";
-import {
-  useLeadStore,
-  useLeadData,
-  useLeadTitanActions,
-} from "@/hooks/lead/use-lead";
+
 import { useAppointmentStore } from "@/hooks/use-appointment";
+import { useLeadStore, useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadDropdownActions } from "@/hooks/lead/use-dropdown";
 
 import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
@@ -37,64 +32,55 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 
-import { exportLeads } from "@/lib/xlsx";
-
-import { conversationDeleteById } from "@/actions/lead/conversation";
 import { leadDefaultStatus } from "@/constants/lead";
+import { FullLeadNoConvo } from "@/types";
 
 type DropDownProps = {
+  lead: FullLeadNoConvo;
+  conversationId?: string;
   action?: boolean;
 };
 
-export const LeadDropDown = ({ action = false }: DropDownProps) => {
-  const role = useCurrentRole();
-  const { onFormOpen } = useAppointmentStore();
+export const LeadDropDown = ({
+  lead,
+  conversationId,
+  action = false,
+}: DropDownProps) => {
+  const { onAppointmentFormOpen } = useAppointmentStore();
   const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
     useLeadStore();
-  const { leadBasic, lead } = useLeadData();
-  const { onTitanUpdated } = useLeadTitanActions();
+  const {
+    titan,
+    isAssistant,
+    alertDeleteConvoOpen,
+    setAlertDeleteConvoOpen,
+    alertDeleteLeadOpen,
+    setAlertDeleteLeadOpen,
+    onConversationDelete,
+    conversationDeleting,
+    onLeadDelete,
+    leadDeleting,
+    onTitanUpdated,
+    titanUpdating,
+    onPreExport,
+  } = useLeadDropdownActions(lead);
+  const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
-  const [titan, setTitan] = useState<boolean>(lead?.titan!);
-
-  const [loading, setLoading] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const isAssistant = role == "ASSISTANT";
-
-  if (!leadBasic) return null;
-  const leadFullName = `${leadBasic.firstName} ${leadBasic.lastName}`;
-  const conversation = leadBasic.conversations[0];
-
-  const onTitanToggle = () => {
-    setTitan((state) => !state);
-    onTitanUpdated({ id: lead?.id!, titan: !titan });
-  };
-
-  const onDelete = async () => {
-    setLoading(true);
-    const deletedConversation = await conversationDeleteById(
-      conversation?.id as string
-    );
-    if (deletedConversation.success) toast.success(deletedConversation.success);
-    else toast.error(deletedConversation.error);
-    setLoading(false);
-    setAlertOpen(false);
-  };
-
-  const preExport = (fileType: string) => {
-    if (isAssistant) {
-      toast.error("Not Authorized");
-      return;
-    }
-    if (!lead) return;
-    exportLeads(fileType, [lead], `${lead.firstName} ${lead.lastName}`);
-  };
   return (
     <>
       <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
+        isOpen={alertDeleteConvoOpen}
+        onClose={() => setAlertDeleteConvoOpen(false)}
+        onConfirm={() => onConversationDelete(conversationId as string)}
+        loading={conversationDeleting}
+        height="h-auto"
+      />
+      <AlertModal
+        title={`Are you sure you want to delete ${lead?.firstName}`}
+        isOpen={alertDeleteLeadOpen}
+        onClose={() => setAlertDeleteLeadOpen(false)}
+        onConfirm={() => onLeadDelete}
+        loading={leadDeleting}
         height="h-auto"
       />
 
@@ -113,9 +99,9 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={leadBasic.statusId == leadDefaultStatus["DoNotCall"]}
+            disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
             className="cursor-pointer gap-2"
-            onClick={() => onFormOpen()}
+            onClick={() => onAppointmentFormOpen()}
           >
             <Calendar size={16} />
             New Appointment
@@ -125,11 +111,7 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
                 onClick={() =>
-                  onShareFormOpen(
-                    [leadBasic.id],
-                    leadFullName,
-                    lead?.sharedUser!
-                  )
+                  onShareFormOpen([lead.id], leadFullName, lead?.sharedUser!)
                 }
               >
                 <Share size={16} />
@@ -137,22 +119,14 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => onTransferFormOpen([leadBasic.id], leadFullName)}
+                onClick={() => onTransferFormOpen([lead.id], leadFullName)}
               >
                 <Reply size={16} />
                 Transfer Lead
               </DropdownMenuItem>
-              {/* srinitodo */}
               <DropdownMenuItem
                 className="cursor-pointer gap-2"
-                onClick={() => {}}
-              >
-                <Trash size={16}  />
-                Delete Lead
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer gap-2"
-                onClick={() => onIntakeFormOpen(leadBasic.id, leadFullName)}
+                onClick={() => onIntakeFormOpen(lead.id, leadFullName)}
               >
                 <BookText size={16} />
                 Intake Form
@@ -164,7 +138,8 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               " text-background cursor-pointer gap-2",
               titan ? "bg-primary" : "bg-destructive"
             )}
-            onClick={onTitanToggle}
+            disabled={titanUpdating}
+            onClick={onTitanUpdated}
           >
             <div className="flex items-center justify-between gap-2">
               {titan ? <Check size={16} /> : <X size={16} />}
@@ -172,17 +147,6 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               <span>{titan ? "ON" : "OFF"}</span>
             </div>
           </DropdownMenuItem>
-          {conversation?.id && (
-            <>
-              <DropdownMenuItem
-                className="cursor-pointer gap-2"
-                onClick={() => setAlertOpen(true)}
-              >
-                <Trash size={16} />
-                Delete Convo
-              </DropdownMenuItem>
-            </>
-          )}
 
           {!isAssistant && (
             <>
@@ -193,14 +157,14 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
                   <DropdownMenuSubContent>
                     <DropdownMenuItem
                       className="cursor-pointer gap-2"
-                      onClick={() => preExport("Excel")}
+                      onClick={() => onPreExport("Excel")}
                     >
                       <FileBarChart size={16} />
                       Excel
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="cursor-pointer gap-2"
-                      onClick={() => preExport("Pdf")}
+                      onClick={() => onPreExport("Pdf")}
                     >
                       <FileText size={16} />
                       Pdf
@@ -210,6 +174,33 @@ export const LeadDropDown = ({ action = false }: DropDownProps) => {
               </DropdownMenuSub>
             </>
           )}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="bg-red-500 focus:bg-red-500 data-[state=open]:bg-red-500 text-white">
+              Danger Zone
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2"
+                  onClick={() => setAlertDeleteLeadOpen(true)}
+                >
+                  <Trash size={16} />
+                  Delete Lead
+                </DropdownMenuItem>
+                {conversationId && (
+                  <>
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-2"
+                      onClick={() => setAlertDeleteConvoOpen(true)}
+                    >
+                      <Trash size={16} />
+                      Delete Convo
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

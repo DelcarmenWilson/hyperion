@@ -1,8 +1,6 @@
 "use client";
-
 import { Fragment } from "react";
 import { X } from "lucide-react";
-import { useTodoStore } from "@/hooks/user/use-todo";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -10,30 +8,33 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type PhoneDrawerProps = {
+type Props = {
   title: string;
   description?: string;
   isOpen: boolean;
   onClose: () => void;
   scroll?: boolean;
   children: React.ReactNode;
+  sideDrawer: React.ReactNode;
+  sideDrawerOpen: boolean;
   size?: string;
   closeButton?: "simple" | "default";
   autoClose?: boolean;
 };
 
-export const TodoDrawer = ({
+export const DrawerExtended = ({
   title,
   description,
   isOpen,
   onClose,
   scroll = true,
   children,
+  sideDrawer,
+  sideDrawerOpen,
   size = "max-w-sm",
   closeButton = "default",
   autoClose = false,
-}: PhoneDrawerProps) => {
-  const { isTodoInfoOpen } = useTodoStore();
+}: Props) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -61,11 +62,10 @@ export const TodoDrawer = ({
                 <div
                   className={cn(
                     "relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
-                    true && "w-full right-0"
+                    sideDrawerOpen && "w-full right-0"
                   )}
                 >
-                  The todo this goes here
-                  {/* <PhoneLeadInfo /> */}
+                  {sideDrawer}
                 </div>
               </div>
             </div>

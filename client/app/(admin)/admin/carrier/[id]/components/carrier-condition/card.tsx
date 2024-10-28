@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import { FullCarrierCondition } from "@/types";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 import { CarrierConditionForm } from "./form";

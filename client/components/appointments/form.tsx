@@ -12,7 +12,7 @@ import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { CardData } from "@/components/reusable/card-data";
-import { DrawerRight } from "../custom/drawer-right";
+import { DrawerRight } from "../custom/drawer/right";
 import {
   Form,
   FormField,
@@ -34,13 +34,14 @@ import { formatDateTime, formatTimeZone, getYesterday } from "@/formulas/dates";
 
 export const AppointmentForm = () => {
   const { leadBasic, isFetchingLeadBasic } = useLeadData();
-  const { isFormOpen, onFormClose } = useAppointmentStore();
+  const { isAppointmentFormOpen, onApointmentFormClose } =
+    useAppointmentStore();
   if (!leadBasic) return null;
   return (
     <DrawerRight
       title="New appointment"
-      isOpen={isFormOpen}
-      onClose={onFormClose}
+      isOpen={isAppointmentFormOpen}
+      onClose={onApointmentFormClose}
     >
       <SkeletonWrapper isLoading={isFetchingLeadBasic} fullHeight>
         <AppForm lead={leadBasic} />

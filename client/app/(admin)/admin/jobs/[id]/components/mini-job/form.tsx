@@ -9,7 +9,7 @@ import { MiniJob } from "@prisma/client";
 import { MiniJobSchema, MiniJobSchemaType } from "@/schemas/job";
 
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import {
   Form,
   FormField,

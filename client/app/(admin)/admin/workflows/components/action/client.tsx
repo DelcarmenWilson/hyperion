@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useWorkflowDefaultData } from "@/hooks/workflow/use-workflow";
 
 import { DataTable } from "@/components/tables/data-table";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { columns } from "./columns";

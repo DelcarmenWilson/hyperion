@@ -25,6 +25,7 @@ type State = {
   user?: OnlineUser;
   chatId?: string;
   isChatInfoOpen: boolean;
+  isGroupDialogOpen:boolean
 };
 
 type Actions = {
@@ -33,6 +34,8 @@ type Actions = {
   setChatId: (c?: string) => void;
   onChatInfoOpen: (u?: OnlineUser, c?: string) => void;
   onChatInfoClose: () => void;
+  onGroupDialogOpen: () => void;
+  onGroupDialogClose: () => void;
   updateUsers:(u:UserSocket[])=>void
   updateUser:(u:string)=>void
   fetchData: () => void;
@@ -42,13 +45,16 @@ export const useChatStore = create<State & Actions>()(
   immer((set) => ({
   isChatOpen: false,
   onChatOpen: () => set({ isChatOpen: true }),
-  onChatClose: () => set({ isChatOpen: false, isChatInfoOpen: false }),
+  onChatClose: () => set({ user:undefined,isChatOpen: false, isChatInfoOpen: false }),
 
   setChatId: (c) => set({ chatId: c }),
   isChatInfoOpen: false,
   onChatInfoOpen: (u?, c?) => set({ user: u, chatId: c, isChatInfoOpen: true }),
-  onChatInfoClose: () => set({ isChatInfoOpen: false }),
+  onChatInfoClose: () => set({user:undefined, isChatInfoOpen: false }),
 
+  isGroupDialogOpen:false,
+  onGroupDialogOpen: () => set({ isGroupDialogOpen: true }),
+  onGroupDialogClose: () => set({ isGroupDialogOpen: false }),
   updateUsers:(u)=>set((state)=>{state.onlineUsers=state.onlineUsers?.map((user) => {
     return { ...user, online: !!u.find((e) => e.id == user.id) };
   });}),

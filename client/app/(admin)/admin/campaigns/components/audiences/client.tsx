@@ -7,7 +7,7 @@ import { CampaignAudience } from "@prisma/client";
 
 import { AudienceForm } from "./form";
 import { AudienceList } from "./list";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 

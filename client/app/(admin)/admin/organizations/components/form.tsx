@@ -20,7 +20,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 
 type Props = { enabled?: boolean };
 export const OrganizationForm = ({ enabled = false }: Props) => {

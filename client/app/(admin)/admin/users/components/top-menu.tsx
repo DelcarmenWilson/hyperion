@@ -5,7 +5,7 @@ import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { AssistantForm, UserForm } from "./form";
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import {
   DropdownMenu,
   DropdownMenuContent,

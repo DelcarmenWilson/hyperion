@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAgentCarrierData } from "../../hooks/use-carrier";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { CarrierForm } from "./form";

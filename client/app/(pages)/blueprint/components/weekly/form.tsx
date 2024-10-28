@@ -25,9 +25,7 @@ import { daysOfTheWeek } from "@/formulas/schedule";
 export const BluePrintWeekForm = () => {
   const { bluePrintWeek, isBluePrintWeekFormOpen, onBluePrintWeekFormClose } =
     useBluePrintStore();
-  const { onBluePrintWeekUpdate } = useBluePrintActions(
-    onBluePrintWeekFormClose
-  );
+  const { onBluePrintWeekUpdate } = useBluePrintActions();
 
   const form = useForm<BluePrintWeekSchemaType>({
     resolver: zodResolver(BluePrintWeekSchema),

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { FullLeadMedicalCondition } from "@/types";
 
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { AlertModal } from "@/components/modals/alert";
 import { CardData } from "@/components/reusable/card-data";
 

@@ -5,7 +5,7 @@ import { useAgentLeadStatusData } from "../../hooks/use-lead-status";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { columns } from "./columns";
 import { LeadStatusForm } from "./form";
 import { LeadStatusList } from "./list";

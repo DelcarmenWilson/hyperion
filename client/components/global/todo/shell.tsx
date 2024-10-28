@@ -5,7 +5,7 @@ import { TodoActiveList } from "./active-list";
 const TodoShell = () => {
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
-      <Tabs className="w-[400px] flex flex-col h-full" defaultValue="active">
+      <Tabs className="flex flex-col w-full h-full" defaultValue="active">
         <TabsList className="w-full h-auto bg-primary/25">
           <TabsTrigger
             className="flex-1 flex-col justify-center gap-2"

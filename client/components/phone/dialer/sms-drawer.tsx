@@ -1,5 +1,5 @@
 import { useDialerStore } from "../hooks/use-dialer";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { SmsClient } from "../sms/client";
 
 export const SmsDrawer = () => {

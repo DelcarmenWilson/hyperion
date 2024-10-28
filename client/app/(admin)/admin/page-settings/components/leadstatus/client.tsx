@@ -7,7 +7,7 @@ import { Heading } from "@/components/custom/heading";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "@/app/(pages)/settings/(routes)/config/components/status/columns";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { LeadStatusForm } from "@/app/(pages)/settings/(routes)/config/components/status/form";
 import { Plus } from "lucide-react";
 

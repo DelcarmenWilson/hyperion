@@ -9,8 +9,6 @@ import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 import NavBar from "@/components/navbar/navbar";
 
-import { ChatDrawer } from "@/components/chat/drawer";
-import { LoginStatusModal } from "@/components/login-status/modal";
 import SideBar from "@/components/sidebar";
 
 import {
@@ -59,8 +57,6 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
                   {children}
                 </AppointmentContextComponent>
               </PhoneContextProvider>
-              <ChatDrawer />
-              <LoginStatusModal />
             </div>
           </div>
         </div>

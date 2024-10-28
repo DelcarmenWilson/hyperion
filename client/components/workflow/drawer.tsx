@@ -3,7 +3,7 @@ import React from "react";
 
 import { useEditorStore } from "@/hooks/workflow/use-editor";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { ActionList } from "./actions/list";
 import { TriggerList } from "./triggers/list";
 import { EdgeForm } from "./edge/form";

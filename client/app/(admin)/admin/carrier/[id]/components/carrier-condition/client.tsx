@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 

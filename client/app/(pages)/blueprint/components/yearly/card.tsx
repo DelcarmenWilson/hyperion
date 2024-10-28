@@ -72,7 +72,7 @@ export const BluePrintYearlyCard = () => {
         </div>
 
         {barData.map((data) => (
-          <Bar {...data} />
+          <Bar key={data.label} {...data} />
         ))}
       </div>
     </SkeletonWrapper>

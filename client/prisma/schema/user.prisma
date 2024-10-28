@@ -138,7 +138,7 @@ model UserTodo {
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    name        String
+    title       String
     description String @db.LongText
 
     status   String @default("Pending")

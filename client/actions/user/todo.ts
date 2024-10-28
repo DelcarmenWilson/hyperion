@@ -67,11 +67,11 @@ export const userTodoInsert = async (values: UserTodoSchemaType) => {
   const validatedFields = UserTodoSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };
 
-  const { userId, name, description, comments, reminder } =
+  const { title, description, comments, reminder } =
     validatedFields.data;
 
   const exisitingTodo = await db.userTodo.findFirst({
-    where: { name, userId: user.id },
+    where: { title, userId: user.id },
   });
 
   if (exisitingTodo) return { error: "Todo with the same name already exist!" };
@@ -79,7 +79,7 @@ export const userTodoInsert = async (values: UserTodoSchemaType) => {
   const todo = await db.userTodo.create({
     data: {
       userId: user.id,
-      name,
+      title,
       description,
       comments,
       reminder,
@@ -96,7 +96,7 @@ export const userTodoUpdateById = async (
 
   const validatedFields = UserTodoSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };
-  const {id, userId, name, description, comments, reminder } =
+  const {id, userId, title, description, comments, reminder } =
   validatedFields.data;
 
   const exisitingTodo = await db.userTodo.findUnique({
@@ -108,7 +108,7 @@ export const userTodoUpdateById = async (
   const todo = await db.userTodo.update({
     where: { id },
     data: {
-      name,
+      title,
       description,
       comments,
       reminder,

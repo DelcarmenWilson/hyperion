@@ -121,12 +121,14 @@ export const leadsGetAllByAgentIdFiltered = async (
 
 export const leadGetById = async (id: string) => {
   try {
+    const user=await currentUser()
+    if(!user)return null
     const lead = await db.lead.findUnique({
       where: {
         id,
       },
       include: {
-        conversations: true,
+        conversations: {where:{agentId:user.id}},
         appointments: { orderBy: { startDate: "desc" } },
         calls: {
           where: { status: "completed" },
@@ -170,6 +172,7 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         appointments: { where: { status: "Scheduled" } },
         cellPhone: true,
         defaultNumber: true,
+        titan:true
       },
     });
     return lead;
