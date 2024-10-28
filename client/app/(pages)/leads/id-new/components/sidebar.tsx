@@ -56,7 +56,9 @@ export const LeadSidebar = () => {
           <div className="grid grid-cols-2 justify-between items-center gap-2">
             <LeadDropDown
               lead={lead!}
-              conversationId={conversations ? conversations[0].id : undefined}
+              conversationId={
+                conversations?.length ? conversations[0].id : undefined
+              }
               action
             />
             <Button

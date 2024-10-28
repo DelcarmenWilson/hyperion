@@ -15,6 +15,7 @@ type Props = {
   scroll?: boolean;
   children: React.ReactNode;
   sideDrawer: React.ReactNode;
+  sideDrawerOpen: boolean;
   size?: string;
   closeButton?: "simple" | "default";
   autoClose?: boolean;
@@ -26,6 +27,7 @@ export const DrawerExtendedSm = ({
   onClose,
   children,
   sideDrawer,
+  sideDrawerOpen,
   size = "w-auto",
   closeButton = "default",
   autoClose = false,
@@ -54,7 +56,16 @@ export const DrawerExtendedSm = ({
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute indent-0 overflow-hidden">
               <div className="flex fixed inset-y-0 right-[350px] max-w-full">
-                {sideDrawer}
+                {/* <div className="flex flex-1 justify-start relative overflow-hidden"> */}
+                <div
+                  className={cn(
+                    "flex flex-1 relative transition-[all] -right-full bg-background ease-in-out duration-600 h-full w-full overflow-hidden opacity-0",
+                    sideDrawerOpen && "right-0 opacity-100"
+                  )}
+                >
+                  {sideDrawer}
+                </div>
+                {/* </div> */}
               </div>
               <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full pl-10">
                 <Transition.Child
