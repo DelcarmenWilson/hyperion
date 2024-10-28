@@ -6,15 +6,15 @@ import { TodoMenu } from "./menu";
 import TodoShell from "./shell";
 
 export const TodoContainer = () => {
-  const { isTodosOpen: isTodosModalOpen, onTodosClose: onTodosModalClose } =
-    useTodoStore();
+  const { isTodosOpen, onTodosClose, isTodoInfoOpen } = useTodoStore();
   return (
     <DrawerExtendedSm
       title="Todos"
       menu={<TodoMenu />}
-      isOpen={isTodosModalOpen}
-      onClose={onTodosModalClose}
+      isOpen={isTodosOpen}
+      onClose={onTodosClose}
       sideDrawer={<TodoInfo />}
+      sideDrawerOpen={isTodoInfoOpen}
       scroll={false}
       size="w-auto"
     >

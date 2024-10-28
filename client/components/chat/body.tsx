@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCard } from "./message";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { cn } from "@/lib/utils";
+import { EmptyCard } from "../reusable/empty-card";
 
 export const ChatBody = () => {
   const currentUser = useCurrentUser();
@@ -63,6 +64,11 @@ export const ChatBody = () => {
               isOwn={currentUser?.id == message.senderId}
             />
           ))}
+          {chat?.messages.length == 0 && (
+            <EmptyCard
+              title={`No messages have been sent between you and ${user?.userName} `}
+            />
+          )}
           <div className="p-2" ref={bottomRef}></div>
         </SkeletonWrapper>
       </div>

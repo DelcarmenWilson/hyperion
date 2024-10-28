@@ -8,7 +8,7 @@ import { DrawerExtendedSm } from "@/components/custom/drawer/extended-sm";
 import { GroupDialog } from "./group-dialog";
 
 export const ChatContainer = () => {
-  const { isChatOpen, onChatClose } = useChatStore();
+  const { isChatOpen, onChatClose, isChatInfoOpen } = useChatStore();
   return (
     <>
       <GroupDialog />
@@ -18,6 +18,7 @@ export const ChatContainer = () => {
         isOpen={isChatOpen}
         onClose={onChatClose}
         sideDrawer={<ChatInfo />}
+        sideDrawerOpen={isChatInfoOpen}
         scroll={false}
         size="w-auto"
       >

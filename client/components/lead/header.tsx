@@ -45,7 +45,7 @@ export const LeadHeader = () => {
           <LeadDropDown
             lead={lead}
             conversationId={
-              lead.conversations ? lead.conversations[0].id : undefined
+              lead.conversations?.length ? lead.conversations[0].id : undefined
             }
           />
         </div>
