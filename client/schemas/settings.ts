@@ -7,6 +7,7 @@ export const SettingsSchema = z
     isTwoFactorEnabled: z.optional(z.boolean()),
     role: z.enum([
       UserRole.MASTER,
+      UserRole.DEVELOPER,
       UserRole.SUPER_ADMIN,
       UserRole.ADMIN,
       UserRole.USER,
@@ -32,15 +33,15 @@ export const SettingsSchema = z
 export type SettingsSchemaType = z.infer<typeof SettingsSchema>;
 
 export const NotificationSettingsSchema = z.object({
-  userId: z.string(),  
+  userId: z.string(),
   calls: z.boolean(),
   appointments: z.boolean(),
   messages: z.boolean(),
   voicemails: z.boolean(),
-  textForward:z.boolean(),
+  textForward: z.boolean(),
+  blueprint: z.boolean(),
+  updates: z.boolean(),
 });
-
-
 
 export type NotificationSettingsSchemaType = z.infer<
   typeof NotificationSettingsSchema

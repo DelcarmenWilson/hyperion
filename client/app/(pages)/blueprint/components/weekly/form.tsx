@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useBluePrint, useBluePrintActions } from "@/hooks/use-blueprint";
+import { useBluePrintStore, useBluePrintActions } from "@/hooks/use-blueprint";
 
 import {
   BluePrintWeekSchema,
@@ -24,10 +24,8 @@ import { daysOfTheWeek } from "@/formulas/schedule";
 
 export const BluePrintWeekForm = () => {
   const { bluePrintWeek, isBluePrintWeekFormOpen, onBluePrintWeekFormClose } =
-    useBluePrint();
-  const { onBluePrintWeekUpdate } = useBluePrintActions(
-    onBluePrintWeekFormClose
-  );
+    useBluePrintStore();
+  const { onBluePrintWeekUpdate } = useBluePrintActions();
 
   const form = useForm<BluePrintWeekSchemaType>({
     resolver: zodResolver(BluePrintWeekSchema),

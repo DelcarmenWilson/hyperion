@@ -7,7 +7,7 @@ import { CampaignCreative } from "@prisma/client";
 
 import { CreativeForm } from "./form";
 import { CreativeList } from "./list";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 

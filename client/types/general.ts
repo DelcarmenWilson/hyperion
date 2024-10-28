@@ -1,0 +1,1 @@
+export type PrevNext={ prev: string | null; next: string | null } | null;

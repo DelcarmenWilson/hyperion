@@ -37,7 +37,8 @@ const buttonVariants = cva(
           "hover:text-primary-foreground hover:bg-primary/90 focus:text-primary-foreground focus:bg-primary/90",
         transparent: "hover:text-accent-foreground",
         gradient: "gradient-theme border hover:border-primary",
-        gradientDark: "gradient-dark border hover:border-primary",
+        gradientDark:
+          "gradient-dark border hover:border-primary hover:scale-105",
         gradientLight: "gradient-light border hover:border-primary",
       },
 

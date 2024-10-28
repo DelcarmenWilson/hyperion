@@ -1,11 +1,16 @@
 "use client";
 import { Lobster_Two } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { MessageSquareDot, MessageSquarePlus, Smartphone } from "lucide-react";
+import {
+  List,
+  MessageSquareDot,
+  MessageSquarePlus,
+  Smartphone,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/use-chat";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentRole } from "@/hooks/user-current-role";
 
 import { usePhoneStore } from "@/hooks/use-phone";
 import { Button } from "@/components/ui/button";
@@ -15,6 +20,8 @@ import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
 import { useLeadStore } from "@/hooks/lead/use-lead";
+import { allAdmins } from "@/constants/page-routes";
+import { useTodoStore } from "@/hooks/user/use-todo";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -24,10 +31,11 @@ type Props = {
   admin?: boolean;
 };
 const NavBar = ({ admin = false }: Props) => {
-  const user = useCurrentUser();
+  const role = useCurrentRole();
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen } = useChatStore();
+  const { isTodosOpen, onTodosOpen } = useTodoStore();
 
   return (
     <div
@@ -51,14 +59,19 @@ const NavBar = ({ admin = false }: Props) => {
 
       <div className="flex flex-col-reverse gap-1 justify-end items-end md:flex-row flex-1 md:items-center  space-x-2">
         <div className="flex justify-end gap-2">
+          <Button
+            variant={isTodosOpen ? "default" : "outline"}
+            size="icon"
+            onClick={onTodosOpen}
+          >
+            <List size={15} />
+          </Button>
           {/* messages list */}
           <NavMessages />
           {/*srini- Agent chat */}
           <NavChat />
           {/* srini- online chat button */}
-          {["ADMIN", "SUPER_ADMIN", "MASTER"].includes(
-            user?.role as string
-          ) && (
+          {allAdmins.includes(role!) && (
             <Button
               variant={isChatOpen ? "default" : "outline"}
               size="icon"

@@ -202,6 +202,8 @@ export const convertCalls = (result: any): Call[] => {
       recordPrice: d["recordPrice"],
       shared: false,
       appointmentId: d["appointmentId"],
+      answeredBy:d["answeredBy"],
+      machineDetectionDuration:d["machineDetectionDuration"],
     };
     mapped.push(newobj);
   });

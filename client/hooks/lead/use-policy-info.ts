@@ -46,7 +46,7 @@ export const useLeadPolicyActions = () => {
         onPolicyFormClose();
         invalidate();
       } else {
-        toast.error(results.error, { id: "insert-new-lead" });
+        toast.error(results.error, { id: "update-policy-info" });
       }
     },
     onError: (error) => {

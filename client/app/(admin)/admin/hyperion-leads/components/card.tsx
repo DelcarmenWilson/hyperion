@@ -4,7 +4,7 @@ import { adminEmitter } from "@/lib/event-emmiter";
 
 import { HyperionLead } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { CardData } from "@/components/reusable/card-data";
 
 import { HyperionLeadForm } from "./form";

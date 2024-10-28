@@ -30,14 +30,14 @@ import { useCalendarStore } from "./calendar/use-calendar-store";
 type State = {
   appointment?: FullAppointment;
   //APPOINTMENT FORM
-  isFormOpen: boolean;
+  isAppointmentFormOpen: boolean;
   //APPOINTMENT DETAILS
   isDetailsOpen: boolean;
 };
 type Actions = {
   //APPOINTMENT FORM
-  onFormOpen: () => void;
-  onFormClose: () => void;
+  onAppointmentFormOpen: () => void;
+  onApointmentFormClose: () => void;
   //APPOINTMENT DETAILS
   onDetailsOpen: (e: FullAppointment) => void;
   onDetailsClose: () => void;
@@ -46,9 +46,9 @@ type Actions = {
 
 export const useAppointmentStore = create<State&Actions>((set) => ({
   //APPOINTMENT FORM
-  isFormOpen: false,
-  onFormOpen: () => set({ isFormOpen: true }),
-  onFormClose: () => set({ isFormOpen: false }),
+  isAppointmentFormOpen: false,
+  onAppointmentFormOpen: () => set({ isAppointmentFormOpen: true }),
+  onApointmentFormClose: () => set({ isAppointmentFormOpen: false }),
 
   //APPOINTMENT DETAILS
   isDetailsOpen: false,
@@ -59,7 +59,7 @@ export const useAppointmentStore = create<State&Actions>((set) => ({
 export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
   const user = useCurrentUser();
   const {appointments,schedule,labels}=useCalendarStore()
-  const { onFormClose } = useAppointmentStore();
+  const { onApointmentFormClose: onFormClose } = useAppointmentStore();
   const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
 

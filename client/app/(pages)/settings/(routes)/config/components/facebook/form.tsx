@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useFacebookActions } from "../../hooks/use-config";
 
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/custom/heading";
@@ -7,10 +8,9 @@ import { Input } from "@/components/ui/input";
 
 type Props = {
   adAccount: string | null | undefined;
-  loading: boolean;
-  onSubmit: (e: string) => void;
 };
-export const FacebookForm = ({ adAccount, loading, onSubmit }: Props) => {
+export const FacebookForm = ({ adAccount }: Props) => {
+  const { adAccountIsPending, onAdAccountSubmit } = useFacebookActions();
   const [account, setAccount] = useState(adAccount || "");
   return (
     <div>
@@ -20,13 +20,13 @@ export const FacebookForm = ({ adAccount, loading, onSubmit }: Props) => {
           value={account}
           onChange={(e) => setAccount(e.target.value)}
           placeholder="e.g. 1245685"
-          disabled={loading}
+          disabled={adAccountIsPending}
           autoComplete="adAccount"
         />
         <div className="flex justify-end mt-2">
           <Button
-            disabled={loading || adAccount == account}
-            onClick={() => onSubmit(account.replaceAll(" ", ""))}
+            disabled={adAccountIsPending || adAccount == account}
+            onClick={() => onAdAccountSubmit(account.replaceAll(" ", ""))}
           >
             Save
           </Button>

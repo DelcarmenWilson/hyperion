@@ -1,5 +1,5 @@
 "use client";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentRole } from "@/hooks/user-current-role";
 import { useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadPolicyData } from "@/hooks/lead/use-policy-info";
 
@@ -9,14 +9,15 @@ import { SectionWrapper } from "./section-wrapper";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
+import { devAdmins } from "@/constants/page-routes";
 
 export const PolicyInfoClient = () => {
-  const user = useCurrentUser();
+  const role = useCurrentRole();
   const { policy, isFetchingPolicy } = useLeadPolicyData();
   const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
   const { leadId } = useLeadId();
 
-  if (user?.role == "ASSISTANT") return null;
+  if (role == "ASSISTANT") return null;
 
   const leadName = `${policy?.lead.firstName} ${policy?.lead.firstName}`;
   const assistant = policy?.lead.assistant;
@@ -24,7 +25,7 @@ export const PolicyInfoClient = () => {
   return (
     <SkeletonWrapper isLoading={isFetchingPolicy}>
       <div className="flex flex-col gap-2 text-sm">
-        {["ADMIN", "SUPER_ADMIN"].includes(user?.role as string) && (
+        {devAdmins.includes(role!) && (
           <SectionWrapper
             title="Assistant"
             onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}

@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import React, { useState } from "react";
 import { Plus, Shuffle } from "lucide-react";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { Heading } from "@/components/custom/heading";
 import { Quote } from "@prisma/client";

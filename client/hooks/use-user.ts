@@ -5,7 +5,7 @@ import { usersGetAll, usersGetAllByRole } from "@/actions/user";
 
 export const useUserData = (role?:UserRole) => {
   const { data: users, isFetching:isUserFetching } = useQuery<User[]>({
-    queryKey: ["siteUsers"],
+    queryKey: [`site-users-${role}`],
     queryFn: () => (role ? usersGetAllByRole(role) : usersGetAll()),
   });
   return {

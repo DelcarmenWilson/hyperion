@@ -5,7 +5,7 @@ import { useWorkflowData } from "@/hooks/workflow/use-workflow";
 
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { WorkflowForm } from "./form";
 import { WorkflowList } from "./list";

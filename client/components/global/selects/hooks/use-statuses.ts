@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LeadStatus } from "@prisma/client";
 import {
   leadStatusGetAllDefault,
@@ -22,11 +22,11 @@ export const useLeadStatuses = () => {
 };
 
 export const useLeadStatusActions = () => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-  // const invalidate = () => {
-  //   queryClient.invalidateQueries({ queryKey: [`leadPolicy-${leadId}`] });
-  // };
+  const invalidate = (key:string) => {
+    queryClient.invalidateQueries({ queryKey: [key] });
+  };
 
   //LEAD STATUS
   //TODO this need to be moved closer to the lead hooks
@@ -35,7 +35,9 @@ export const useLeadStatusActions = () => {
       mutationFn: leadUpdateByIdStatus,
       onSuccess: (results) => {
         if (results.success) 
-          toast.success("Lead Status Updated!", {id: "update-lead-status"});
+          {
+            invalidate(`lead-call-info-${results.success.id}`)
+          toast.success("Lead Status Updated!", {id: "update-lead-status"});}
         else
         toast.error(results.error, {id: "update-lead-status"});
       },

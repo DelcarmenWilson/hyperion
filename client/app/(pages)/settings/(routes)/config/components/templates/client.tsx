@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useAgentTemplateData } from "../../hooks/user-template";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";

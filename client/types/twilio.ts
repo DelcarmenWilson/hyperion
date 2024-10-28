@@ -35,6 +35,7 @@ export type TwilioCall = {
   conferenceId?:string;
   callSidToCoach?:string;
   voicemailIn?: string | null;
+  voicemailOut?: string | null;
 
   masterSwitch?:string
   personalNumber?:string
@@ -73,6 +74,13 @@ export type TwilioCallResult = {
   toState: string;
   toZip: string;
 };
+export type TwilioAmdResult = {
+  accountSid: string;
+  callSid: string;
+  answeredBy: string;
+  machineDetectionDuration: string;
+};
+
 
 export type TwilioSms = {
   toCountry: string;

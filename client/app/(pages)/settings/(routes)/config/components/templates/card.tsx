@@ -9,7 +9,7 @@ import { useAgentTemplateActions } from "../../hooks/user-template";
 import { UserTemplate } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { AlertModal } from "@/components/modals/alert";
 
 import { TemplateForm } from "./form";

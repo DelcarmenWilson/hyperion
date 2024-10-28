@@ -10,7 +10,7 @@ import { useLeadStore } from "@/hooks/lead/use-lead";
 import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import {
   Form,
   FormField,

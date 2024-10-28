@@ -7,7 +7,7 @@ import { useAgentLicenseData } from "../../hooks/use-license";
 
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { LicenseForm } from "./form";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { LicenseList } from "./list";

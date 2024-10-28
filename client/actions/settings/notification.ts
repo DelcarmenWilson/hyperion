@@ -49,11 +49,11 @@ export const notificationSettingsUpdate = async (
 ) => {
   const validatedFields = NotificationSettingsSchema.safeParse(values);
 
-  if (!validatedFields.success) {
+  if (!validatedFields.success) 
     return { error: "Invalid fields!" };
-  }
+  
 
-  const { userId, calls, appointments, messages, voicemails, textForward } =
+  const { userId, calls, appointments, messages, voicemails, textForward,updates,blueprint } =
     validatedFields.data;
 
   if (!userId) return { error: "No User Id!" };
@@ -65,7 +65,7 @@ export const notificationSettingsUpdate = async (
       appointments,
       messages,
       voicemails,
-      textForward,
+      textForward,updates,blueprint 
     },
   });
 

@@ -6,12 +6,14 @@ import { TargetCard } from "./target-card";
 type TargetListProps = {
   targets: BluePrintType[];
   selectedTarget: string;
+  loading: boolean;
   onChange: (e: string) => void;
 };
 
 export const TargetList = ({
   targets,
   selectedTarget,
+  loading,
   onChange,
 }: TargetListProps) => {
   return (
@@ -19,6 +21,7 @@ export const TargetList = ({
       onValueChange={onChange}
       defaultValue={selectedTarget}
       className="flex-1 grid grid-cols-3 gap-2"
+      disabled={loading}
     >
       {targets.map((target) => (
         <RadioGroupCustomItem key={target.type} value={target.type!}>

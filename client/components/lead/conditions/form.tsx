@@ -28,7 +28,7 @@ import {
 
 import { Textarea } from "@/components/ui/textarea";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const ConditionForm = () => {

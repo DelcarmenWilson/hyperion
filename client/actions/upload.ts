@@ -17,6 +17,7 @@ const client = new S3Client({
 });
 
 const allowedFileTypes = [
+  "audio/mp3",
   "audio/wav",
   "image/jpeg",
   "image/png",

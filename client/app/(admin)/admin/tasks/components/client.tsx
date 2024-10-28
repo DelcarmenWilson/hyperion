@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
 import { Task } from "@prisma/client";
 

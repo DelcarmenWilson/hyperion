@@ -6,7 +6,7 @@ import { Heading } from "@/components/custom/heading";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { UpdateForm } from "./form";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";

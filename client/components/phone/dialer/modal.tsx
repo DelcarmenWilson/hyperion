@@ -1,48 +1,29 @@
 "use client";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 
-import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { DialerMenu } from "./menu";
-import { LeadDialerCard } from "./lead-card";
 import { PhoneLeadInfo } from "@/components/phone/addins/lead-info";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
+import { LeadList } from "./lead-list";
 
 export const PhoneDialerModal = () => {
-  const { isPhoneDialerOpen, onSetLead, lead } = usePhoneStore();
-  const { onSetIndex, pipeIndex, filterLeads, selectedPipeline } =
-    usePipelineStore();
-
-  const { setLeadId } = useLeadStore();
-
-  const indexRef = useRef<HTMLDivElement>(null);
+  const { isPhoneDialerOpen, lead } = usePhoneStore();
+  const { onSetIndex, pipeIndex, selectedPipeline } = usePipelineStore();
 
   const setIndex = (number: number = 0) => {
-    let idx = number == 0 ? 0 : pipeIndex + number;
-    onSetIndex(idx);
-    pipelineUpdateByIdIndex({ id: selectedPipeline?.id!, index: idx });
+    const index = number == 0 ? 0 : pipeIndex + number;
+    onSetIndex(index);
+    pipelineUpdateByIdIndex({ id: selectedPipeline?.id!, index });
   };
-
-  useEffect(() => {
-    if (!filterLeads) return;
-    onSetLead(filterLeads[pipeIndex]);
-    setLeadId(filterLeads[pipeIndex].id);
-    if (!indexRef.current) return;
-    indexRef.current.scrollIntoView({
-      behavior: "smooth",
-      inline: "nearest",
-    });
-  }, [pipeIndex, filterLeads]);
 
   return (
     <Transition.Root show={isPhoneDialerOpen} as={Fragment}>
@@ -89,15 +70,7 @@ export const PhoneDialerModal = () => {
                       minSize={25}
                       maxSize={30}
                     >
-                      <ScrollArea className="h-full pr-2">
-                        {filterLeads?.map((lead, i) => (
-                          <LeadDialerCard
-                            key={lead.id}
-                            lead={lead}
-                            indexRef={i == pipeIndex ? indexRef : null}
-                          />
-                        ))}
-                      </ScrollArea>
+                      <LeadList />
                     </ResizablePanel>
                     <ResizableHandle withHandle />
                     <ResizablePanel

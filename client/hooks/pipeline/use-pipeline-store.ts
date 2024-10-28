@@ -19,6 +19,7 @@ type State = {
 
 type Actions = {
   updateLeadStatus: (e: string, s: string) => void;
+  updateFilteredLeads: (e: string) => void;
   setPipelines: (p: FullPipeline[]) => void;
   setSelectedPipeline: (p: FullPipeline, t: string) => void;
   onSetIndex: (e: number) => void;
@@ -48,11 +49,6 @@ export const usePipelineStore = create<State & Actions>()(
           (state.filterLeads = state.leads?.filter(
             (l) => l.statusId == p.statusId
           ));
-        //   ?.filter((l) =>
-        //     (t == "%" ? l : l.zone == p.statusId) && l.statusId == p.statusId
-        // ));
-        //TODO 0 need to filter the timezone aswell
-        //  state.filterLeads=state.leads?.filter(l=>l.statusId==p.statusId && t!="%"?l.zone==t:l)
       });
     },
 
@@ -66,13 +62,28 @@ export const usePipelineStore = create<State & Actions>()(
         state.pipelines?.push(e);
       }),
 
-    updateLeadStatus: (e, s) =>
+    updateLeadStatus: (leadId, newStatusId) =>
       set((state) => {
-        state.leads = state.leads?.map((l) => {
-          if (l.id == e) return { ...l, status: s };
-          return l;
-        });
+        state.leads = state.leads?.map((lead) =>
+          lead.id == leadId ? { ...lead, statusId: newStatusId } : lead
+        );
+        console.log("inside the leadStatus function");
+        state.updateFilteredLeads(leadId);
       }),
+
+    updateFilteredLeads(leadId) {
+      set((state) => {
+        console.log("inside the filterLeads function", leadId);
+        state.filterLeads = state.filterLeads?.filter((e) => e.id != leadId);
+        console.log(state.filterLeads, state.pipeIndex);
+        state.pipeIndex = 0;
+        console.log(state.filterLeads, state.pipeIndex);
+        // state.pipeIndex =
+        //   state.pipeIndex == state.pipelines!.length - 1
+        //     ? state.pipeIndex - 1
+        //     : state.pipeIndex + 1;
+      });
+    },
     isFormOpen: false,
     onFormOpen: (t, e) => set({ pipelineId: e, type: t, isFormOpen: true }),
     onFormClose: () => set({ isFormOpen: false, pipelineId: undefined }),

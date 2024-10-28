@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { useWorkflowStore } from "@/hooks/workflow/use-workflow";
 import { BirthdayForm } from "./triggers/forms/birthday";
 

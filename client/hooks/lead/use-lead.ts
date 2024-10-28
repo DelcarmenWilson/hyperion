@@ -641,46 +641,6 @@ export const useLeadCallInfoActions = () => {
   };
 };
 
-export const useLeadTitanActions = () => {
-  const queryClient = useQueryClient();
-  //TITAN
-  const { mutate: titanMutate, isPending: titanIsPending } = useMutation({
-    mutationFn: leadUpdateByIdTitan,
-    onSuccess: (results) => {
-      if (results.success) {
-        toast.success(results.success, {
-          id: "update-titan-info",
-        });
-        queryClient.invalidateQueries({
-          queryKey: [`lead-basic-${results.data}`,`lead-${results.data}`],
-        });
-      } else
-        toast.error(results.error, {
-          id: "update-titan-info",
-        });
-    },
-    onError: (error) => {
-      toast.error(error.message, {
-        id: "update-titan-info",
-      });
-    },
-  });
-
-  const onTitanUpdated = useCallback(
-    (values: { id: string; titan: boolean }) => {
-      toast.loading("Updating Titan...", {
-        id: "update-titan-info",
-      });
-      titanMutate(values);
-    },
-    [titanMutate]
-  );
-
-  return {
-    onTitanUpdated,
-    titanIsPending,
-  };
-};
 
 export const useLeadId = () => {
   const params = useParams();

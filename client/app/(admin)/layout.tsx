@@ -9,8 +9,6 @@ import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 import NavBar from "@/components/navbar/navbar";
 
-import { ChatDrawer } from "@/components/chat/drawer";
-import { LoginStatusModal } from "@/components/login-status/modal";
 import SideBar from "@/components/sidebar";
 
 import {
@@ -22,11 +20,12 @@ import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import { scheduleGet } from "@/actions/user/schedule";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
+import { allAdmins } from "@/constants/page-routes";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
   if (!user) return null;
-  const isAdmin = ["MASTER", "ADMIN", "SUPER_ADMIN"].includes(user.role);
+  const isAdmin = allAdmins.includes(user.role);
 
   if (!isAdmin) redirect("/dashboard");
 
@@ -58,8 +57,6 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
                   {children}
                 </AppointmentContextComponent>
               </PhoneContextProvider>
-              <ChatDrawer />
-              <LoginStatusModal />
             </div>
           </div>
         </div>

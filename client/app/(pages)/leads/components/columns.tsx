@@ -1,19 +1,14 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 
 import { FullLead, FullLeadPolicy } from "@/types";
-import {
-  LeadGeneralSchemaType,
-  LeadMainSchemaType,
-  LeadPolicySchemaType,
-} from "@/schemas/lead";
+import { LeadGeneralSchemaType, LeadMainSchemaType } from "@/schemas/lead";
 
 import { CallInfo } from "./info/call";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { LeadDropDown } from "./info/dropdown";
 import { GeneralInfoClient } from "./info/general";
+import { LeadDropDown } from "@/components/lead/dropdown";
 import { PolicyInfoClient } from ".//info/policy-info";
 import { MainInfoClient } from "./info/main";
 import { NotesForm } from "./info/notes-form";
@@ -44,7 +39,7 @@ export const columns: ColumnDef<FullLead>[] = [
         />
         <LeadDropDown
           lead={row.original}
-          conversation={row.original.conversation!}
+          conversationId={row.original.conversation?.id}
         />
       </div>
     ),
@@ -67,7 +62,6 @@ export const columns: ColumnDef<FullLead>[] = [
         address: row.original.address || undefined,
         city: row.original.city || undefined,
         zipCode: row.original.zipCode || undefined,
-        textCode: row.original.textCode!,
       };
       return (
         <div className="max-w-[260px]">
@@ -134,13 +128,6 @@ export const columns: ColumnDef<FullLead>[] = [
       const leadPolicy: FullLeadPolicy = {
         ...row.original?.policy,
         leadId: row.original.id,
-        // leadId: row.original.id,
-        // ap: row.original.policy?.ap!,
-        // carrier: row.original.policy?.carrier!,
-        // policyNumber: row.original.policy?.policyNumber!,
-        // status: row.original.policy?.status!,
-        // commision: row.original.policy?.commision!,
-        // coverageAmount: row.original.policy?.coverageAmount!,
       };
       const leadName = `${row.original.firstName} ${row.original.lastName}`;
       return (

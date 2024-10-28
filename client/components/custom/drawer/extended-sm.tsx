@@ -1,44 +1,43 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { Fragment } from "react";
 import { cn } from "@/lib/utils";
-import { useChatStore } from "@/hooks/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
-import { ChatList } from "./list";
-import { ChatInfo } from "./info";
-import { GroupDialog } from "./group-dialog";
+import { X } from "lucide-react";
 
 type Props = {
+  title: string;
+  menu?: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  scroll?: boolean;
+  children: React.ReactNode;
+  sideDrawer: React.ReactNode;
   size?: string;
   closeButton?: "simple" | "default";
   autoClose?: boolean;
 };
-export const ChatDrawer = ({
+export const DrawerExtendedSm = ({
+  title,
+  menu,
+  isOpen,
+  onClose,
+  children,
+  sideDrawer,
   size = "w-auto",
   closeButton = "default",
   autoClose = false,
 }: Props) => {
-  const { isChatOpen, onChatClose } = useChatStore();
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <GroupDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
-      <Transition.Root show={isChatOpen} as={Fragment}>
+      <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-50"
           onClose={() => {
-            if (autoClose) onChatClose();
+            if (autoClose) onClose();
           }}
         >
           <Transition.Child
@@ -55,7 +54,7 @@ export const ChatDrawer = ({
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute indent-0 overflow-hidden">
               <div className="flex fixed inset-y-0 right-[350px] max-w-full">
-                <ChatInfo />
+                {sideDrawer}
               </div>
               <div className="fixed pointer-events-none inset-y-0 right-0 flex max-w-full pl-10">
                 <Transition.Child
@@ -67,41 +66,29 @@ export const ChatDrawer = ({
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel
-                    className={cn("pointer-events-auto w-screen", size)}
+                    className={cn("pointer-events-auto w-[350px]", size)}
                   >
                     <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
                       <div className=" flex items-center justify-between px-2">
                         <div className="flex justify-center items-center gap-2">
                           <h2 className="font-semibold text-xl tracking-tight">
-                            Agents
+                            {title}
                           </h2>
 
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <ChevronDown size={16} />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setIsOpen(true)}>
-                                Group Message
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          {menu}
                         </div>
 
                         <Button
                           variant={closeButton}
                           size="sm"
-                          onClick={onChatClose}
+                          onClick={onClose}
                         >
                           <span className="sr-only">Close panel</span>
                           <X size={16} />
                         </Button>
                       </div>
                       <div className="flex flex-col w-[350px] flex-1 h-full p-2 overflow-hidden">
-                        <ChatList />
+                        {children}
                       </div>
                     </div>
                   </Dialog.Panel>

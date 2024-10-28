@@ -29,6 +29,7 @@ import { SmsDrawer } from "./sms-drawer";
 type Props = {
   setIndex: (idx: number) => void;
 };
+
 export const DialerMenu = ({ setIndex }: Props) => {
   const user = useCurrentUser();
 
@@ -188,6 +189,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
           <span>Call # {dialNumber}</span>
           <Button
             variant={isSmsFormOpen ? "default" : "outlineprimary"}
+            size="xs"
             onClick={onSmsFormToggle}
           >
             Sms Form

@@ -37,6 +37,7 @@ export const LeadSidebar = () => {
   const callCount = leadBasic?.calls?.length;
 
   const fullName = `${leadBasic?.firstName} ${leadBasic?.lastName}`;
+  const conversations = lead?.conversations;
 
   useEffect(() => {
     if (!leadId) return;
@@ -53,7 +54,11 @@ export const LeadSidebar = () => {
             {fullName}
           </h3>
           <div className="grid grid-cols-2 justify-between items-center gap-2">
-            <LeadDropDown action />
+            <LeadDropDown
+              lead={lead!}
+              conversationId={conversations ? conversations[0].id : undefined}
+              action
+            />
             <Button
               variant="outlineprimary"
               className="relative gap-2"

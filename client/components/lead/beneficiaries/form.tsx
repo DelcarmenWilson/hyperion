@@ -35,7 +35,7 @@ import {
 import { LeadBeneficiary } from "@prisma/client";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { leadRelationShips } from "@/constants/lead";
 
 export const BeneficiaryForm = () => {

@@ -8,7 +8,7 @@ import { WorkflowTriggerSchemaType } from "@/schemas/workflow/trigger";
 import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
-import { DrawerRight } from "@/components/custom/drawer-right";
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { TriggerForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";

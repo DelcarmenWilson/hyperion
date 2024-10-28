@@ -1,39 +1,40 @@
 "use client";
-
 import { Fragment } from "react";
 import { X } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, Transition } from "@headlessui/react";
-import { PhoneLeadInfo } from "./addins/lead-info";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type PhoneDrawerProps = {
+type Props = {
   title: string;
   description?: string;
   isOpen: boolean;
   onClose: () => void;
   scroll?: boolean;
   children: React.ReactNode;
+  sideDrawer: React.ReactNode;
+  sideDrawerOpen: boolean;
   size?: string;
   closeButton?: "simple" | "default";
   autoClose?: boolean;
 };
 
-export const PhoneDrawer = ({
+export const DrawerExtended = ({
   title,
   description,
   isOpen,
   onClose,
   scroll = true,
   children,
+  sideDrawer,
+  sideDrawerOpen,
   size = "max-w-sm",
   closeButton = "default",
   autoClose = false,
-}: PhoneDrawerProps) => {
-  const { isLeadInfoOpen } = usePhoneStore();
+}: Props) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -61,10 +62,10 @@ export const PhoneDrawer = ({
                 <div
                   className={cn(
                     "relative transition-[right] -right-full ease-in-out duration-500 h-full w-full overflow-hidden",
-                    isLeadInfoOpen && "w-full right-0"
+                    sideDrawerOpen && "w-full right-0"
                   )}
                 >
-                  <PhoneLeadInfo />
+                  {sideDrawer}
                 </div>
               </div>
             </div>
