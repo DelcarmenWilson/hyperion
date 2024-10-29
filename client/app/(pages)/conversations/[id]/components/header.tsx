@@ -39,7 +39,7 @@ export const Header = () => {
                 {fullName} {formatPhoneNumber(lead.cellPhone)}
               </span>
               <Button
-                disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
+                disabled={lead.statusId == leadDefaultStatus.doNotCall}
                 className="rounded-full"
                 variant="outlineprimary"
                 size="icon"

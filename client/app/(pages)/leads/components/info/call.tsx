@@ -87,7 +87,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           <Button
             className="gap-2 w-full"
             variant="gradientDark"
-            disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
+            disabled={lead.statusId == leadDefaultStatus.doNotCall}
             onClick={onCallClick}
             size="sm"
           >

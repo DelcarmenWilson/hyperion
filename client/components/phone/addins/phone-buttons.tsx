@@ -1,11 +1,10 @@
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useCurrentRole } from "@/hooks/user-current-role";
 import { Button } from "@/components/ui/button";
-import { allAdmins } from "@/constants/page-routes";
+import { ALLADMINS } from "@/constants/user";
 
 export const PhoneButtons = () => {
   const {
-    lead,
     script,
     showScript,
     onScriptOpen,
@@ -28,7 +27,7 @@ export const PhoneButtons = () => {
         {script?.title}
       </Button>
 
-      {allAdmins.includes(role!) && (
+      {ALLADMINS.includes(role!) && (
         <Button
           variant={showQuoter ? "default" : "outline"}
           onClick={() => {

@@ -8,6 +8,7 @@ import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
 import GlobalContextProvider from "@/providers/global";
 
+import ChatBot from "@/components/global/chat-bot/chat-bot";
 import NavBar from "@/components/navbar/navbar";
 import SideBar from "@/components/sidebar";
 
@@ -23,8 +24,8 @@ import {
 
 import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
-import ChatBot from "@/components/global/chat-bot/chat-bot";
-import { devAdmins } from "@/constants/page-routes";
+import { DEVADMINS } from "@/constants/user";
+
 export default async function DashBoardLayout({
   children,
 }: {
@@ -65,7 +66,7 @@ export default async function DashBoardLayout({
                 </AppointmentContextComponent>
               </PhoneContextProvider>
               {/*  THE GLOBAL CHAT BOT ASSISTANT */}
-              {devAdmins.includes(user.role) && <ChatBot />}
+              {DEVADMINS.includes(user.role) && <ChatBot />}
             </div>
           </div>
         </div>

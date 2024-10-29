@@ -1,5 +1,8 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import { useCurrentRole } from "@/hooks/user-current-role";
+import { useChatStore } from "@/hooks/use-chat";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,9 +10,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useChatStore } from "@/hooks/use-chat";
+
+import { ALLADMINS } from "@/constants/user";
+
 export const ChatMenu = () => {
+  const role = useCurrentRole();
   const { onGroupDialogOpen } = useChatStore();
+  if (!ALLADMINS.includes(role!)) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

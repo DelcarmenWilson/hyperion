@@ -10,18 +10,16 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/use-chat";
-import { useCurrentRole } from "@/hooks/user-current-role";
-
+import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
-import { Button } from "@/components/ui/button";
+import { useTodoStore } from "@/hooks/user/use-todo";
 
+import { Badge } from "../ui/badge";
+import { Button } from "@/components/ui/button";
 import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { allAdmins } from "@/constants/page-routes";
-import { useTodoStore } from "@/hooks/user/use-todo";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -31,10 +29,9 @@ type Props = {
   admin?: boolean;
 };
 const NavBar = ({ admin = false }: Props) => {
-  const role = useCurrentRole();
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
-  const { isChatOpen, onChatOpen } = useChatStore();
+  const { isChatOpen, onChatOpen, masterUnread } = useChatStore();
   const { isTodosOpen, onTodosOpen } = useTodoStore();
 
   return (
@@ -71,7 +68,7 @@ const NavBar = ({ admin = false }: Props) => {
           {/*srini- Agent chat */}
           <NavChat />
           {/* srini- online chat button */}
-          {allAdmins.includes(role!) && (
+          {/* {ALLADMINS.includes(role!) && (
             <Button
               variant={isChatOpen ? "default" : "outline"}
               size="icon"
@@ -79,7 +76,21 @@ const NavBar = ({ admin = false }: Props) => {
             >
               <MessageSquareDot size={15} />
             </Button>
-          )}
+          )} */}
+
+          <Button
+            className="relative"
+            variant={isChatOpen ? "default" : "outline"}
+            size="icon"
+            onClick={onChatOpen}
+          >
+            <MessageSquareDot size={15} />
+            {masterUnread > 0 && (
+              <Badge className="absolute rounded-full text-xs -top-2 -right-2 p-1">
+                {masterUnread}
+              </Badge>
+            )}
+          </Button>
 
           <MasterSwitch />
         </div>

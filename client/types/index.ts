@@ -144,6 +144,7 @@ export type UserSocket = {
   sid: string;
   role: string;
   firstName: string;
+  orgId:string
 };
 //TERM CARRIER
 export type FullCarrierCondition = CarrierCondition & {

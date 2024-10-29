@@ -24,6 +24,13 @@ enum UserRole {
   STUDENT
 }
 
+enum UserAccountStatus {
+  ACTIVE
+  INACTIVE
+  PRE_ACTIVE
+  SUSPENDED
+}
+
 enum Preset {
   Birthday
   FollowUp

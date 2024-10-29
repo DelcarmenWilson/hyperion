@@ -8,7 +8,7 @@ import { UserTemplateClient } from "./components/templates/client";
 import { FacebookClient } from "./components/facebook/client";
 import { ScriptClient } from "./components/script/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { devAdmins } from "@/constants/page-routes";
+import { DEVADMINS } from "@/constants/user";
 
 const ConfigPage = async () => {
   const role = await currentRole();
@@ -34,7 +34,7 @@ const ConfigPage = async () => {
           Scripts
         </TabsTrigger>
 
-        {devAdmins.includes(role!) && (
+        {DEVADMINS.includes(role!) && (
           <TabsTrigger className="w-full" value="facebook">
             Facebook
           </TabsTrigger>
@@ -67,7 +67,7 @@ const ConfigPage = async () => {
             <ScriptClient />
           </ScrollArea>
         </TabsContent>
-        {devAdmins.includes(role!) && (
+        {DEVADMINS.includes(role!) && (
           <TabsContent value="facebook" className="h-full">
             <ScrollArea>
               <FacebookClient />

@@ -25,7 +25,7 @@ const SocketContextComponent: React.FunctionComponent<
 > = (props) => {
   const { children } = props;
   const user = useCurrentUser();
-  const { updateUser, updateUsers } = useChatStore();
+  const { updateUser, updateUsers, fetchData } = useChatStore();
 
   const socket = useSocket(process.env.NEXT_PUBLIC_WS_URL!, {
     reconnectionAttempts: 5,
@@ -40,6 +40,7 @@ const SocketContextComponent: React.FunctionComponent<
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchData();
     socket.connect();
     SocketDispatch({ type: "update_socket", payload: socket });
     StartListeners();
@@ -92,6 +93,7 @@ const SocketContextComponent: React.FunctionComponent<
       user?.id,
       user?.role.toLocaleLowerCase(),
       user?.name,
+      user?.organization,
       async (uid: string, users: UserSocket[]) => {
         updateUsers(users);
         Log("User handshake callback message received");

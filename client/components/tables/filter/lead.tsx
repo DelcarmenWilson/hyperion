@@ -38,7 +38,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
   };
 
   useEffect(() => {
-    OnFilter("statusId", leadDefaultStatus["New"]);
+    OnFilter("statusId", leadDefaultStatus.new);
     // eslint-disable-next-line
   }, []);
   return (
@@ -57,7 +57,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
             <p className="text-muted-foreground">Status</p>
             <LeadStatusSelect
               id="leafFilter"
-              statusId={leadDefaultStatus["New"]}
+              statusId={leadDefaultStatus.new}
               onSetStatus={OnFilter}
             />
           </div>

@@ -6,6 +6,7 @@ type User = {
   sid: string;
   role: string;
   userName: string;
+  orgId: string;
 };
 
 export class ServerSocket {
@@ -24,16 +25,16 @@ export class ServerSocket {
       pingTimeout: 5000,
       cookie: false,
       cors: {
-          //origin: "https://hperioncrm.com", // Replace with your frontend's origin
-          origin: "*", 
-          methods: ["GET", "POST"],
-          credentials: false // If you're using cookies or authentication        
+        //origin: "https://hperioncrm.com", // Replace with your frontend's origin
+        origin: "*",
+        methods: ["GET", "POST"],
+        credentials: false, // If you're using cookies or authentication
       },
     });
 
     this.io.on("connect", this.StartListeners);
   }
-  Actions = (userId: string, type: string, dt: any, dt1: any) => {    
+  Actions = (userId: string, type: string, dt: any, dt1: any) => {
     const sid = this.GetSocketIdFromUid(userId);
     switch (type) {
       case "conversation:updated":
@@ -42,17 +43,17 @@ export class ServerSocket {
         });
         this.SendUserMessage("conversation-message-notify", sid);
         break;
-        case "conversation-messages:new":
+      case "conversation-messages:new":
         this.SendUserMessage("conversation-messages-new", sid, {
-          dt
+          dt,
         });
-        break
-        case "calllog:new":
-          this.SendUserMessage("calllog-new", sid,{dt});
         break;
-        case "leads:new":
-        this.SendUserMessage("leads-new", sid,{dt});
-      break;
+      case "calllog:new":
+        this.SendUserMessage("calllog-new", sid, { dt });
+        break;
+      case "leads:new":
+        this.SendUserMessage("leads-new", sid, { dt });
+        break;
     }
   };
   StartListeners = (socket: Socket) => {
@@ -64,11 +65,13 @@ export class ServerSocket {
         userId,
         role,
         userName,
+        orgId,
         callback: (uid: string, users: User[]) => void
       ) => {
         console.info("Handshake received from: " + socket.id, userId);
 
         const reconnected = this.users.find((e) => e.sid == socket.id);
+        let organizationUsers = this.GetOrganizationUsers(orgId);
 
         if (reconnected) {
           console.info("This user has reconnected.");
@@ -77,46 +80,56 @@ export class ServerSocket {
           if (uid) {
             console.info("Sending callback for reconnect ...");
             // logoff(uid)
-            callback(uid, this.users);
+            callback(uid, organizationUsers);
             return;
           }
         }
-        this.users.push({ id: userId, sid: socket.id, role, userName });
+        this.users.push({ id: userId, sid: socket.id, role, userName, orgId });
 
         console.info("Sending callback ...");
-        callback(userId, this.users);
-        //  login(userId)
+        // const users = organizationUsers.filter((e) => e.sid !== socket.id);
+        organizationUsers = this.GetOrganizationUsers(orgId);
+        callback(userId, organizationUsers);
 
-        this.SendMessage(
-          "user_connected",
-          this.users.filter((e) => e.sid !== socket.id),
-          this.users
-        );
+        //  login(userId)
+        this.SendMessage("user_connected", organizationUsers, organizationUsers);
       }
     );
 
     socket.on("disconnect", () => {
       console.info("Disconnect received from: " + socket.id);
 
-      const uid = this.GetUidFromSocketId(socket.id);
-      if (uid) {
+      const user = this.GetUserFromSocketId(socket.id);
+
+      if (user?.id) {
+        const organizationUsers = this.GetOrganizationUsers(user.orgId);
         // logoff(uid)
-        this.SendMessage("user_disconnected", this.users, uid);
+        this.SendMessage("user_disconnected", organizationUsers, user.id);
       }
       this.users = this.users.filter((e) => e.sid != socket.id);
     });
     //GROUP MESSAGE
     socket.on("group-message-sent", (message) => {
-      const uid = this.GetUidFromSocketId(socket.id);
-      const username=this.users.find(e=>e.id==uid)?.userName
-      const users = this.users.filter((e) => e.id != uid);
-      this.SendMessage("group-message-received", users, { message,username });
+      const user = this.GetUserFromSocketId(socket.id);
+      if (user) {
+        const organizationUsers = this.GetOrganizationUsers(user.orgId);
+        const users = organizationUsers.filter((e) => e.id != user.id);
+        this.SendMessage("group-message-received", users, {
+          message,
+          username: user.userName,
+        });
+      }
     });
     //CONFERENCE
     socket.on("coach-request", (conference) => {
-      const uid = this.GetUidFromSocketId(socket.id);
-      const users = this.users.filter((e) => e.role == "admin" && e.id != uid);
-      this.SendMessage("coach-request-received", users, { conference });
+      const user = this.GetUserFromSocketId(socket.id);
+      if (user) {
+        const organizationUsers = this.GetOrganizationUsers(user.orgId);
+        const users = organizationUsers.filter(
+          (e) => e.role == "admin" && e.id != user.id
+        );
+        this.SendMessage("coach-request-received", users, { conference });
+      }
     });
     socket.on("coach-joined", (userId, conferenceId, coachId, coachName) => {
       const uid = this.GetSocketIdFromUid(userId);
@@ -139,6 +152,11 @@ export class ServerSocket {
       this.SendUserMessage("chat-message-received", sid, {
         message,
       });
+    });
+    //CHAT MESSAGES
+    socket.on("chat-is-typing-sent", (userId) => {
+      const sid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("chat-is-typing-received", sid, {});
     });
     //LEAD SHARING
     socket.on("lead-shared", (userId, agentName, leadId, leadFirstName) => {
@@ -192,8 +210,20 @@ export class ServerSocket {
         });
       }
     );
+    //ADMIN FUNCTIONS
+     //CHAT MESSAGES
+     socket.on("account-suspended-sent", (userId) => {
+      const sid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("account-suspended-recieved", sid, {});
+    });
   };
 
+  GetOrganizationUsers = (orgId: string) => {
+    return this.users.filter((e) => e.orgId == orgId);
+  };
+  GetUserFromSocketId = (sid: string) => {
+    return this.users.find((e) => e.sid == sid);
+  };
   GetUidFromSocketId = (sid: string) => {
     return this.users.find((e) => e.sid == sid)?.id;
   };

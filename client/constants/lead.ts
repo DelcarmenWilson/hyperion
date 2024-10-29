@@ -26,11 +26,16 @@ export const allLeadTypes: LeadType[] = [
   },
 ];
 
-export const leadDefaultStatus: { [status: string]: string } = {
-  New: "clssh61710000hgo3esopwumj",
-  Deleted:  "cm2s8rui802jouo6fit19ljlj",
-  DoNotCall: "clsshj6p80007hgo3avc5s7oe",
-  Sold: "clsshj95h0008hgo3d6tbby9y",
+export const leadDefaultStatus: {
+  new: string;
+  deleted: string;
+  doNotCall: string;
+  sold: string;
+} = {
+  new: "clssh61710000hgo3esopwumj",
+  deleted: "cm2s8rui802jouo6fit19ljlj",
+  doNotCall: "clsshj6p80007hgo3avc5s7oe",
+  sold: "clsshj95h0008hgo3d6tbby9y",
 };
 
 //VENDORS

@@ -45,6 +45,7 @@ type Props = {
   defaultValue?: Delta | Op[];
   disabled?: boolean;
   innerRef?: MutableRefObject<Quill | null>;
+  onTyping?: () => void;
 };
 
 const QuillEditor = ({
@@ -55,6 +56,7 @@ const QuillEditor = ({
   defaultValue = [],
   disabled = false,
   innerRef,
+  onTyping,
 }: Props) => {
   const { onlineUser } = useOnlineUserData();
   const { lead } = useLeadData();
@@ -170,6 +172,11 @@ const QuillEditor = ({
       if (innerRef) innerRef.current = null;
     };
   }, [innerRef]);
+
+  useEffect(() => {
+    if (text.length == 0) return;
+    if (onTyping) onTyping();
+  }, [text]);
 
   const toggleToolbar = () => {
     setIsToolbarVisible((current) => !current);

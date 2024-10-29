@@ -33,6 +33,9 @@ export const {
 
       //Prevent sign in without email verification
       if (!existingUser?.emailVerified) return false;
+      
+      //Prevent sign in without if account status is suspended
+      if (existingUser?.accountStatus=="SUSPENDED") return false;
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(

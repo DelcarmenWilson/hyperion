@@ -21,17 +21,19 @@ export type HalfUser = {
 export type ShortUser = User & {
   team?: Team | null;
 };
-export type OnlineUser = User & { 
-  chatId?:string,
-  calls:number,
-  duration:number,
- online:boolean
+export type OnlineUser = User & {
+  chatId?: string;
+  calls: number;
+  duration: number;
+  online: boolean;
+  unread: number;
+  lastMessage: string;
 };
 
 export type SummaryUser = User & {
   phoneNumbers: PhoneNumber[];
   chatSettings: ChatSettings;
-  phoneSettings:PhoneSettings
+  phoneSettings: PhoneSettings;
 };
 
 export type FullUser = User & {

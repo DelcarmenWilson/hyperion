@@ -15,12 +15,12 @@ export const GlobalContext = createContext<GlobalContext | null>(null);
 export default function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
-  const { fetchData: fetchOnlineUsers } = useChatStore();
+  // const { fetchData: fetchOnlineUsers } = useChatStore();
   const { fetchData: fetchCalendarData } = useCalendarStore();
   const { fetchData: fetchScriptData } = usePhoneStore();
 
   useEffect(() => {
-    fetchOnlineUsers();
+    // fetchOnlineUsers();
     fetchCalendarData();
     fetchScriptData();
   }, []);

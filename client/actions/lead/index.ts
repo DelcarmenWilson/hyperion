@@ -121,14 +121,14 @@ export const leadsGetAllByAgentIdFiltered = async (
 
 export const leadGetById = async (id: string) => {
   try {
-    const user=await currentUser()
-    if(!user)return null
+    const user = await currentUser();
+    if (!user) return null;
     const lead = await db.lead.findUnique({
       where: {
         id,
       },
       include: {
-        conversations: {where:{agentId:user.id}},
+        conversations: { where: { agentId: user.id } },
         appointments: { orderBy: { startDate: "desc" } },
         calls: {
           where: { status: "completed" },
@@ -172,7 +172,7 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         appointments: { where: { status: "Scheduled" } },
         cellPhone: true,
         defaultNumber: true,
-        titan:true
+        titan: true,
       },
     });
     return lead;
@@ -526,28 +526,30 @@ export const leadsGetAssociated = async (id: string) => {
 };
 //ACTIONS
 
-export const leadDeleteById = async(id:string)=>{
-  //get current logged in user 
-  const user=await currentUser()
+export const leadDeleteById = async (id: string) => {
+  //get current logged in user
+  const user = await currentUser();
+
   // check if there is no user. yes, return an error
-  if(!user)
-    return{error:"Unauthenticated!"}
-    //get existing lead with the ID.
+  if (!user) return { error: "Unauthenticated!" };
 
-  const existingLead= await db.lead.findUnique({where:{id}})
-// if there is no lead return an error
-if(!existingLead)
-  return{error:"Lead does not exist"}
-//if existing lead's agent id is not equal to userid returns an error
-if(user.id!= existingLead.userId)
-  return{error:"Unauthorized"}
-//if doesn't fall under above conditions change lead status into deleted
+  //get existing lead with the ID.
+  const existingLead = await db.lead.findUnique({ where: { id } });
+  // if there is no lead return an error
+  if (!existingLead) return { error: "Lead does not exist" };
 
-await db.lead.update({where:{id},data:{statusId:leadDefaultStatus["Deleted"]}})
+  //if existing lead's agent id is not equal to userid returns an error
+  if (user.id != existingLead.userId) return { error: "Unauthorized" };
 
-// if everything is correct return success
-return{success:"Lead has been deleted"}
-}
+  //if doesn't fall under above conditions change lead status into deleted
+  await db.lead.update({
+    where: { id },
+    data: { statusId: leadDefaultStatus.deleted },
+  });
+
+  // if everything is correct return success
+  return { success: "Lead has been deleted" };
+};
 
 export const leadInsert = async (values: LeadSchemaType) => {
   const user = await currentUser();
@@ -591,7 +593,8 @@ export const leadInsert = async (values: LeadSchemaType) => {
     where: { agentId: user.id, status: { not: "Deactive" } },
   });
 
-  const defaultNumber = phoneNumbers.find((e) => e.status == "Default")?.phone||"999-999-9999";
+  const defaultNumber =
+    phoneNumbers.find((e) => e.status == "Default")?.phone || "999-999-9999";
   const phoneNumber = phoneNumbers.find((e) => e.state == st?.abv);
 
   let newLead;
@@ -1019,11 +1022,16 @@ export const leadUpdateByIdGeneralInfo = async (
   return { success: leadInfo as LeadGeneralSchemaType };
 };
 
-export const leadUpdateByIdTitan = async ({id,titan}:{id: string, titan: boolean}) => {
+export const leadUpdateByIdTitan = async ({
+  id,
+  titan,
+}: {
+  id: string;
+  titan: boolean;
+}) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthenticated!" };
-  
+  if (!user) return { error: "Unauthenticated!" };
+
   const existingLead = await db.lead.findUnique({ where: { id } });
 
   if (!existingLead) return { error: "Lead does not exist!" };
@@ -1032,7 +1040,10 @@ export const leadUpdateByIdTitan = async ({id,titan}:{id: string, titan: boolean
 
   await db.lead.update({ where: { id }, data: { titan } });
 
-  return { success: `Titan chat has been turned ${titan ? "on" : "off"} `,data:id };
+  return {
+    success: `Titan chat has been turned ${titan ? "on" : "off"} `,
+    data: id,
+  };
 };
 
 //LEAD ASSISTANT SHARE AND TRANSFER

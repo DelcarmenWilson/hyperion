@@ -38,8 +38,7 @@ export const LeadStatusSelect = ({ id, statusId, onSetStatus }: Props) => {
       <Select
         name="ddlLeadStatus"
         disabled={
-          statusId == leadDefaultStatus["DoNotCall"] ||
-          isPendingLeadStatusUpdate
+          statusId == leadDefaultStatus.doNotCall || isPendingLeadStatusUpdate
         }
         onValueChange={onLeadStatusChanged}
         defaultValue={statusId}

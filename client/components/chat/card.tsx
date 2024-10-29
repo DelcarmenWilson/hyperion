@@ -1,6 +1,19 @@
-import React from "react";
+import { useContext } from "react";
 import { cn } from "@/lib/utils";
-import { Clock, MoreVertical, Phone, UserIcon } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Clock,
+  Cog,
+  Lock,
+  MoreVertical,
+  Phone,
+  User,
+  UserIcon,
+} from "lucide-react";
+
+import SocketContext from "@/providers/socket";
+import { useRouter } from "next/navigation";
+import { useCurrentRole } from "@/hooks/user-current-role";
 import { useChatStore } from "@/hooks/use-chat";
 import { useLoginStatus } from "@/hooks/use-login-status";
 
@@ -13,19 +26,40 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
-import { chatInsert } from "@/actions/chat";
+import { chatInsert, chatUpdateByIdUnread } from "@/actions/chat";
+import { adminSuspendAccount } from "@/actions/admin/user";
+import { ALLADMINS, UPPERADMINS } from "@/constants/user";
 
 const ChatCard = ({ user }: { user: OnlineUser }) => {
-  const { onChatInfoOpen, user: agent } = useChatStore();
+  const router = useRouter();
+  const role = useCurrentRole();
+
+  const { socket } = useContext(SocketContext).SocketState;
+  const { onChatInfoOpen, user: agent, onChatClose } = useChatStore();
   const { onLoginStatusOpen } = useLoginStatus();
+
   const onChatClick = async () => {
-    const chat = await chatInsert(user.id);
-    onChatInfoOpen(user, chat.success?.id);
+    let chatId = user.chatId;
+    if (!chatId) {
+      const chat = await chatInsert(user.id);
+      chatId = chat.success?.id;
+    }
+    chatUpdateByIdUnread(chatId!);
+    onChatInfoOpen(user, chatId);
   };
+  const onAccountSupended = async () => {
+    const results = await adminSuspendAccount(user.id);
+    if (results.success) {
+      socket?.emit("account-suspended-sent", user.id);
+      toast.success(results.success);
+    } else toast.error(results.error);
+  };
+  const isAdmin = ALLADMINS.includes(role!);
   return (
     <div
       className={cn(
@@ -33,29 +67,71 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
         agent?.id == user.id ? "bg-primary/25" : "hover:bg-secondary"
       )}
     >
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-0 right-0"
-          >
-            <MoreVertical size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center">
-          <DropdownMenuItem
-            className="cursor-pointer gap-2"
-            onClick={() => onLoginStatusOpen(user)}
-          >
-            Logins
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {isAdmin && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0"
+            >
+              <MoreVertical size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center">
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => {
+                onChatClose();
+                router.push(`/users/${user.id}`);
+              }}
+            >
+              <User size={16} />
+              Profile
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              asChild
+            >
+              <Link
+                className="flex gap-2 items-center"
+                href={`/users/${user.id}`}
+              >
+                <User size={16} />
+                Profile
+              </Link>
+            </DropdownMenuItem> */}
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => onLoginStatusOpen(user)}
+            >
+              <Cog size={16} /> Logins
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {UPPERADMINS.includes(role!) && (
+              <DropdownMenuItem
+                className="cursor-pointer gap-2"
+                onClick={onAccountSupended}
+              >
+                <Lock size={16} /> Lock Account
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       <div onClick={onChatClick}>
         <div className="flex items-center">
           <div className="relative">
+            {user.unread > 0 && (
+              <Badge
+                variant="gradientDark"
+                className="absolute -top-2 -left-2 rounded-full text-xs z-10"
+              >
+                {user.unread}
+              </Badge>
+            )}
+
             <Badge
               className="p-1 absolute bottom-0 right-0 z-10"
               variant={user.online ? "success" : "destructive"}
@@ -72,27 +148,30 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
             <p className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName}
             </p>
+            {/* <p>{user.lastMessage}</p> */}
           </div>
         </div>
-        <div className="flex justify-between items-center gap-2 opacity-0 group-hover:opacity-100">
-          <span className=" lowercase text-sm font-semibold">
-            {user.role.replace("_", " ")}
-          </span>
-          <div className="flex justify-end items-center gap-2">
-            <div className="flex justify-center items-center gap-2">
-              <Phone size={14} />
-              <p className="text-muted-foreground text-xs font-bold">
-                {user.calls}
-              </p>
-            </div>
-            <div className="flex justify-center items-center gap-2">
-              <Clock size={14} />
-              <p className="text-muted-foreground text-xs font-bold">
-                {formatSecondsToTime(user.duration)}
-              </p>
+        {isAdmin && (
+          <div className="flex justify-between items-center gap-2 opacity-0 group-hover:opacity-100">
+            <span className=" lowercase text-sm font-semibold">
+              {user.role.replace("_", " ")}
+            </span>
+            <div className="flex justify-end items-center gap-2">
+              <div className="flex justify-center items-center gap-2">
+                <Phone size={14} />
+                <p className="text-muted-foreground text-xs font-bold">
+                  {user.calls}
+                </p>
+              </div>
+              <div className="flex justify-center items-center gap-2">
+                <Clock size={14} />
+                <p className="text-muted-foreground text-xs font-bold">
+                  {formatSecondsToTime(user.duration)}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

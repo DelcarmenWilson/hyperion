@@ -1,7 +1,9 @@
 "use client";
 import { Cog, Lock, LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogoutButton } from "./logout-button";
-import { useRouter } from "next/navigation";
-import { allAdmins } from "@/constants/page-routes";
+
+import { ALLADMINS } from "@/constants/user";
 
 export const UserButton = () => {
   const user = useCurrentUser();
@@ -22,7 +22,7 @@ export const UserButton = () => {
   if (!user) {
     return null;
   }
-  const isAdmin = allAdmins.includes(user.role);
+  const isAdmin = ALLADMINS.includes(user.role);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -44,7 +44,6 @@ export const UserButton = () => {
           <span className="text-muted-foreground text-xs">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* {(user.role == "MASTER" || user.role == "ADMIN"||user.role=="SUPER_ADMIN") && ( */}
         {isAdmin && (
           <DropdownMenuItem
             className="cursor-pointer gap-2"
