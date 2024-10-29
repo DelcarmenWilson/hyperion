@@ -106,7 +106,7 @@ export const teamGetByIdSales = async (
     const sales = await db.lead.findMany({
       where: {
         user: { teamId: id },
-        statusId: leadDefaultStatus["Sold"],
+        statusId: leadDefaultStatus.sold,
         policy: { ap: { not: "0.00" } },
         updatedAt: {
           lte: toDate,

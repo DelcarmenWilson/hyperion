@@ -13,7 +13,7 @@ import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { allAdmins } from "@/constants/page-routes";
+import { ALLADMINS } from "@/constants/user";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 type BarType = {
@@ -84,7 +84,7 @@ export const BluePrintWeeklyCard = () => {
         {/*TODO - dont forget to remove this grid as its for testing purposes
         only */}
 
-        {allAdmins.includes(role!) && (
+        {ALLADMINS.includes(role!) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
             <Button
               onClick={() => onBluePrintWeekFormOpen(bluePrintWeekActive)}

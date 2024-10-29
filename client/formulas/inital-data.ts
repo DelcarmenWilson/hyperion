@@ -35,6 +35,7 @@ export const convertUsers = (result: any): User[] => {
       teamId: d["teamId"],
       assitantId: d["assitantId"],
       adAccount:d["adAccount"],
+      accountStatus:d["accountStatus"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };

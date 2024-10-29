@@ -55,7 +55,7 @@ export const leadPolicyUpsert = async (values: LeadPolicySchemaType) => {
     await db.lead.update({
       where: { id: leadId },
       data: {
-        statusId: leadDefaultStatus["Sold"],
+        statusId: leadDefaultStatus.sold,
         assistant: { disconnect: true },
       },
     });

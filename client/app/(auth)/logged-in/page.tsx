@@ -1,19 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Loader from "@/components/reusable/loader";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const LoggedInPage = () => {
   const user = useCurrentUser();
-  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
-    setMounted(true);
-    if (!mounted) return;
-    if (!user) redirect("/login");
-    if (user.role == "MASTER") redirect("/admin/teams");
-    else redirect("/dashboard");
-  }, [mounted]);
+    setTimeout(() => {
+      if (!user) router.push("/login");
+      if (user?.role == "MASTER") router.push("/admin/teams");
+      else router.push("/dashboard");
+    }, 2000);
+  }, []);
 
   return <Loader text="Logging you in please wait..." />;
 };

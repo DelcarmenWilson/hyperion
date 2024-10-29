@@ -64,7 +64,7 @@ export const LeadSidebar = () => {
             <Button
               variant="outlineprimary"
               className="relative gap-2"
-              disabled={leadBasic.statusId == leadDefaultStatus["Do_Not_Call"]}
+              disabled={leadBasic.statusId == leadDefaultStatus.doNotCall}
               //TODO - emeditely need to add a function for this
               onClick={() => onPhoneOutOpen(lead!)}
               size="sm"

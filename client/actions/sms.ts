@@ -239,7 +239,7 @@ export const getKeywordResponse = async (
     case "cancel":
       await db.lead.update({
         where: { id: leadId },
-        data: { statusId:leadDefaultStatus["DoNotCall"] },
+        data: { statusId:leadDefaultStatus.doNotCall },
       });
       await smsSend({
         toPhone: sms.to,

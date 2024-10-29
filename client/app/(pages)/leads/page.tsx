@@ -8,7 +8,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { PageLayout } from "@/components/custom/layout/page";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { TopMenu } from "./components/top-menu";
-import { allAgents } from "@/constants/page-routes";
+import { ALLAGENTS } from "@/constants/user";
 
 const LeadsPage = () => {
   const { leads, isFetchingLeads } = useLeadsData();
@@ -17,7 +17,7 @@ const LeadsPage = () => {
     <PageLayout
       title="View Leads"
       icon={Users}
-      topMenu={allAgents.includes(role!) && <TopMenu />}
+      topMenu={ALLAGENTS.includes(role!) && <TopMenu />}
     >
       <SkeletonWrapper isLoading={isFetchingLeads} fullHeight>
         <DataTable

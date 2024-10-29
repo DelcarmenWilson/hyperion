@@ -11,7 +11,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { USDollar } from "@/formulas/numbers";
 import { formatJustTime } from "@/formulas/dates";
-import { allAdmins } from "@/constants/page-routes";
+import { ALLADMINS } from "@/constants/user";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 
@@ -33,7 +33,7 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
           <div className="flex justify-between items-center mb-2">
             <p className="font-semibold">Work info</p>
             {/* srinitodo - update to allusers if team wants to give BP edit option to all users */}
-            {allAdmins.includes(role!) && (
+            {ALLADMINS.includes(role!) && (
               <Button
                 size="sm"
                 onClick={() => onWorkInfoFormOpen(agentWorkInfo)}

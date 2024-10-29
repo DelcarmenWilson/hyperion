@@ -29,9 +29,7 @@ export const callsGetAllByAgentId = async (userId: string) => {
 export const callsGetAllByAgentIdToday = async () => {
   try {
     const user = await currentUser();
-    if (!user) {
-      return [];
-    }
+    if (!user) return [];
 
     const calls = await db.call.findMany({
       where: { userId: user.id, createdAt: { gte: getEntireDay().start } },
@@ -77,9 +75,7 @@ export const callsGetAllByAgentIdFiltered = async (
 export const callsGetAllByUserIdFiltered = async (from: string, to: string) => {
   try {
     const user = await currentUser();
-    if (!user) {
-      return [];
-    }
+    if (!user) return [];
 
     const fromDate = new Date(from);
     const toDate = new Date(to);
@@ -211,11 +207,13 @@ export const callUpdateByIdAppointment = async (
 
   const diff = timeDiff(call.createdAt, new Date());
 
-  if(diff>60)
-    return {error:"Call time is over 1 hour"}
-  
-  await db.call.update({where:{id:call.id},data:{
-    appointmentId
-  }})
+  if (diff > 60) return { error: "Call time is over 1 hour" };
+
+  await db.call.update({
+    where: { id: call.id },
+    data: {
+      appointmentId,
+    },
+  });
   return { success: "call appointmenthas been updated!" };
 };

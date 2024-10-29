@@ -428,7 +428,7 @@ export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
       recievedAt: d["created_time"],
       vendor: "Amm_Leads",
       type: "General",
-      statusId: leadDefaultStatus["New"],
+      statusId: leadDefaultStatus.new,
       currentlyInsured:
         d["do_you_currently_have_coverage?"] ==
         "no,_and_i_am_looking_for_coverage"

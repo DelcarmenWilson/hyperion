@@ -20,12 +20,12 @@ import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import { scheduleGet } from "@/actions/user/schedule";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
-import { allAdmins } from "@/constants/page-routes";
+import { ALLADMINS } from "@/constants/user";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
   if (!user) return null;
-  const isAdmin = allAdmins.includes(user.role);
+  const isAdmin = ALLADMINS.includes(user.role);
 
   if (!isAdmin) redirect("/dashboard");
 

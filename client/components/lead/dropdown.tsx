@@ -99,7 +99,7 @@ export const LeadDropDown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={lead.statusId == leadDefaultStatus["DoNotCall"]}
+            disabled={lead.statusId == leadDefaultStatus.doNotCall}
             className="cursor-pointer gap-2"
             onClick={() => onAppointmentFormOpen()}
           >

@@ -27,6 +27,7 @@ export default {
 
                     const user=await userGetByEmail(email)
                     if(!user|| !user.password) return null
+                    if(user.accountStatus=="SUSPENDED")return null
 
                     const passwordsMatch=await bcrypt.compare(password,user.password)
 

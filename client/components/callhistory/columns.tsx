@@ -1,18 +1,19 @@
 "use client";
 import { ArrowUpDown, PhoneOutgoing, X } from "lucide-react";
+import Link from "next/link";
+
 import { FullCall } from "@/types";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { AppButton } from "./app-button";
 import { Button } from "@/components/ui/button";
+import { CallHistoryActions } from "./actions";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ColumnDef } from "@tanstack/react-table";
 
+import { formatDateTime } from "@/formulas/dates";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { getPhoneStatusText } from "@/formulas/phone";
-import { CallHistoryActions } from "./actions";
-import { formatDateTime } from "@/formulas/dates";
-import Link from "next/link";
-import { AppButton } from "./app-button";
 
 export const columns: ColumnDef<FullCall>[] = [
   {

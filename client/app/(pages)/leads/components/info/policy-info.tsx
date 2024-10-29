@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Edit, FilePenLine, Plus } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentRole } from "@/hooks/user-current-role";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { User } from "@prisma/client";
@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/reusable/input-group";
 
 import { formatDate } from "@/formulas/dates";
-import { allAdmins } from "@/constants/page-routes";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { ALLADMINS } from "@/constants/user";
 
 type PolicyInfoClientProps = {
   leadId: string;
@@ -46,7 +45,7 @@ export const PolicyInfoClient = ({
   if (role == "ASSISTANT" || !policyInfo) return null;
   return (
     <div className="flex flex-col gap-1 text-sm">
-      {allAdmins.includes(role!) && (
+      {ALLADMINS.includes(role!) && (
         <div className="border rounded-sm shadow-md p-2  bg-background">
           <div className="flex justify-between items-center">
             <p className="text-muted-foreground">Assistant</p>

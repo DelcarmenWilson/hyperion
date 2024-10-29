@@ -21,16 +21,18 @@ export const login = async (
   callbackUrl?: string | null
 ) => {
   const validatedFields = LoginSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  if (!validatedFields.success) 
+    return { error: "Invalid fields!" };  
 
   const { email, password, code } = validatedFields.data;
   const existingUser = await userGetByEmail(email);
 
-  if (!existingUser || !existingUser.email || !existingUser.password) {
+  if (!existingUser || !existingUser.email || !existingUser.password) 
     return { error: "Invalid credentials" };
-  }
+
+  if(existingUser.accountStatus!="ACTIVE")
+    return {error: `Your account is ${existingUser.accountStatus} please contact the administator to resolve this issue.` }
+  
   if (!existingUser.emailVerified) {
     const verificationToken = await generateVerificationToken(
       existingUser.email

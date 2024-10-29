@@ -29,8 +29,7 @@ export const ChatInfo = () => {
 
         <p>
           <span className="text-lg font-bold">{user?.userName}</span>
-
-          <span className="lowercase"> ({user?.role})</span>
+          {/* <span className="lowercase"> ({user?.role})</span> */}
         </p>
 
         <Button size="sm" className="ml-auto" onClick={onChatInfoClose}>

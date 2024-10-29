@@ -1,12 +1,12 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useMainNav } from "./hooks/use-main-nav";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 import { CoachNotification } from "../phone/coach-notification";
-import { cn } from "@/lib/utils";
 import { TextAnimation } from "../custom/text-animate";
 import { PageNotification } from "./page-notification";
-import { useEffect, useState } from "react";
 
 type Props = {
   admin?: boolean;

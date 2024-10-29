@@ -40,7 +40,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
                   className="gap-2"
                   size="sm"
                   variant="gradientDark"
-                  disabled={callInfo.statusId == leadDefaultStatus["DoNotCall"]}
+                  disabled={callInfo.statusId == leadDefaultStatus.doNotCall}
                   onClick={() => {
                     onLeadInfoToggle();
                     onPhoneOutOpen();

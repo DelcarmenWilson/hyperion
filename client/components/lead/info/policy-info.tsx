@@ -9,7 +9,7 @@ import { SectionWrapper } from "./section-wrapper";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { devAdmins } from "@/constants/page-routes";
+import { DEVADMINS } from "@/constants/user";
 
 export const PolicyInfoClient = () => {
   const role = useCurrentRole();
@@ -25,7 +25,7 @@ export const PolicyInfoClient = () => {
   return (
     <SkeletonWrapper isLoading={isFetchingPolicy}>
       <div className="flex flex-col gap-2 text-sm">
-        {devAdmins.includes(role!) && (
+        {DEVADMINS.includes(role!) && (
           <SectionWrapper
             title="Assistant"
             onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}

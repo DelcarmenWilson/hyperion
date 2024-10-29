@@ -27,6 +27,7 @@ import {
   Video,
   Workflow,
 } from "lucide-react";
+import { ALLADMINS, ALLAGENTS, ALLUSERS, HIGHERADMINS, UPPERADMINS } from "./user";
 
 export type NavType = {
   title: string;
@@ -35,19 +36,7 @@ export type NavType = {
   icon?: LucideIcon;
   roles: UserRole[];
 };
-export const allAdmins: UserRole[] = ["MASTER", "ADMIN","DEVELOPER", "SUPER_ADMIN"];
-export const devAdmins: UserRole[] = [ "ADMIN","DEVELOPER", "SUPER_ADMIN"];
-const upperAdmins: UserRole[] = ["MASTER","DEVELOPER", "SUPER_ADMIN"];
 
-const allUsers: UserRole[] = [
-  "MASTER",
-  "DEVELOPER",
-  "ADMIN",
-  "SUPER_ADMIN",
-  "ASSISTANT",
-  "USER",
-];
-export const allAgents: UserRole[] = ["SUPER_ADMIN","DEVELOPER", "ADMIN", "USER"];
 
 export const AdminRoutes: NavType[] = [
   {
@@ -56,38 +45,38 @@ export const AdminRoutes: NavType[] = [
     icon: Building,
     roles: ["MASTER"],
   },
-  { title: "Teams", href: "/admin/teams", icon: ShieldHalf, roles: allAdmins },
-  { title: "Users", href: "/admin/users", icon: Users, roles: allAdmins },
+  { title: "Teams", href: "/admin/teams", icon: ShieldHalf, roles: ALLADMINS },
+  { title: "Users", href: "/admin/users", icon: Users, roles: ALLADMINS },
   { title: "Import", href: "/admin/import", icon: Import, roles: ["MASTER"] },
   {
     title: "Feedback",
     href: "/admin/feedback",
     icon: MessageSquarePlus,
-    roles: ["MASTER","SUPER_ADMIN"],
+    roles: HIGHERADMINS,
   },
   {
     title: "Misc",
     href: "/admin/misc",
     icon: MilestoneIcon,
-    roles: ["MASTER"],
+    roles: UPPERADMINS,
   },
   {
     title: "Phone Setup",
     href: "/admin/phone",
     icon: Phone,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Page Settings",
     href: "/admin/page-settings",
     icon: Key,
-    roles: ["MASTER"],
+    roles: UPPERADMINS,
   },
   {
     title: "Scripts",
     href: "/admin/scripts",
     icon: ScrollText,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Shad",
@@ -105,19 +94,19 @@ export const AdminRoutes: NavType[] = [
     title: "Campaigns",
     href: "/admin/campaigns",
     icon: Backpack,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Hp Leads",
     href: "/admin/hyperion-leads",
     icon: Heading,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Tasks",
     href: "/admin/tasks",
     icon: ListTodo,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Jobs",
@@ -129,13 +118,13 @@ export const AdminRoutes: NavType[] = [
     title: "WorkFlows",
     href: "/admin/workflows",
     icon: Workflow,
-    roles: upperAdmins,
+    roles: HIGHERADMINS,
   },
   {
     title: "Chatbot",
     href: "/admin/chatbot",
     icon: TestTube,
-    roles: allAdmins,
+    roles: ALLADMINS,
   },
 ];
 
@@ -144,19 +133,19 @@ export const DashboardRoutes: NavType[] = [
     title: "Dashboard",
     href: "/dashboard",
     icon: Home,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   {
     title: "Leads",
     href: "/leads",
     icon: Users,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   {
     title: "Conversations",
     href: "/conversations",
     icon: MessagesSquare,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   // {
   //   title: "Inbox",
@@ -167,7 +156,7 @@ export const DashboardRoutes: NavType[] = [
     title: "Sales Pipeline",
     href: "/sales-pipeline",
     icon: UserSquare,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   // {
   //   title: "Reports",
@@ -183,13 +172,13 @@ export const DashboardRoutes: NavType[] = [
     title: "Phone Setup",
     href: "/phone",
     icon: Phone,
-    roles: allAdmins,
+    roles: ALLADMINS,
   },
   {
     title: "Chat",
     href: "/chat",
     icon: Bot,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
 
   // {
@@ -207,25 +196,25 @@ export const DashboardRoutes: NavType[] = [
     title: "Appointments",
     href: "/appointments",
     icon: Calendar,
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   {
     title: "Meetings",
     href: "/meeting",
     icon: Video,
-    roles: allAdmins,
+    roles: ALLADMINS,
   },
   {
     title: "Sms",
     href: "/sms",
     icon: MessageSquare,
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Blue Print",
     href: "/blueprint",
     icon: GoalIcon,
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   // {
   //   title: "Email",
@@ -236,7 +225,7 @@ export const DashboardRoutes: NavType[] = [
     title: "Work Flows",
     href: "/workflows",
     icon: Workflow,
-    roles: allAdmins,
+    roles: ALLADMINS,
   },
   // {
   //   title: "Chatbot",
@@ -257,59 +246,59 @@ export const DashboardRoutes: NavType[] = [
 ];
 
 export const MeetingRoutes: NavType[] = [
-  { title: "Home", href: "/meeting", roles: allUsers },
+  { title: "Home", href: "/meeting", roles: ALLUSERS },
   {
     title: "Upcoming",
     href: "/meeting/upcoming",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Previous",
     href: "/meeting/previous",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Recordings",
     href: "/meeting/recordings",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Personal Room",
     href: "/meeting/personal-room",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
 ];
 
 export const SettingsRoutes: NavType[] = [
-  { title: "Profile", href: "/settings", roles: allUsers },
+  { title: "Profile", href: "/settings", roles: ALLUSERS },
   {
     title: "Config",
     href: "/settings/config",
-    roles: allUsers,
+    roles: ALLUSERS,
   },
   {
     title: "Phone",
     href: "/settings/phone",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Chat",
     href: "/settings/titan",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Availability",
     href: "/settings/availability",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Notifications",
     href: "/settings/notifications",
-    roles: allAgents,
+    roles: ALLAGENTS,
   },
   {
     title: "Display",
     href: "/settings/display",
-    roles: allUsers,
+    roles: ALLUSERS,
   },
 ];

@@ -83,25 +83,77 @@ export const usersGetAllChat = async () => {
     const user = await currentUser();
     if (!user) return [];
     const dbUsers = await db.user.findMany({
-      where: { role: { not: "MASTER" }, id: { not: user.id } },
+      where: {
+        role: { not: "MASTER" },
+        id: { not: user.id },
+        team: { organizationId: user.organization },
+      },
       include: {
         calls: { where: { createdAt: { gte: getEntireDay().start } } },
         loginStatus: { where: { createdAt: { gte: getEntireDay().start } } },
       },
       orderBy: { firstName: "asc" },
     });
+
+    const chats = await db.chat.findMany({
+      where: {
+        OR: [{ userOneId: user.id }, { userTwoId: user.id }],
+        unread: { gt: 0 },
+      },
+      include: { lastMessage: { select: { senderId: true,content:true } } },
+    });
+
+    const getUnreadMessages = (userId: string): number => {
+      const chat = chats.find(
+        (e) => e.userOneId == userId || e.userTwoId == userId
+      );
+      if (!chat) return 0;
+      if (chat.lastMessage?.senderId == userId) return chat.unread;
+      return 0;
+    };
+
+    const getMoreData = (userId: string):{chatId:string,lastMessage:string,unread:number} => {
+      const chat = chats.find(
+        (e) => e.userOneId == userId || e.userTwoId == userId
+      );
+      if (!chat) return {chatId:"",lastMessage:"",unread:0};
+
+      if (chat.lastMessage?.senderId == userId) 
+      return {chatId:chat.id,lastMessage:chat.lastMessage?.content||"",unread:chat.unread};
+      return {chatId:"",lastMessage:"",unread:0};
+    };
     const users: OnlineUser[] = dbUsers.map((usr) => {
       return {
         ...usr,
-        chatId: "",
+        // chatId:
+        //   chats.find((e) => e.userOneId == usr.id || e.userTwoId == usr.id)
+        //     ?.id || "",
         online: false,
         calls: usr.calls.length,
         duration: usr.loginStatus.reduce(
           (sum, login) => sum + login.duration,
           0
         ),
+        // unread: getUnreadMessages(usr.id),
+        ...getMoreData(usr.id)
       };
     });
+
+    // const users: OnlineUser[] = dbUsers.map((usr) => {
+    //   return {
+    //     ...usr,
+    //     chatId:
+    //       chats.find((e) => e.userOneId == usr.id || e.userTwoId == usr.id)
+    //         ?.id || "",
+    //     online: false,
+    //     calls: usr.calls.length,
+    //     duration: usr.loginStatus.reduce(
+    //       (sum, login) => sum + login.duration,
+    //       0
+    //     ),
+    //     unread: getUnreadMessages(usr.id),
+    //   };
+    // });
 
     return users;
   } catch {
