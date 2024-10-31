@@ -4,7 +4,7 @@ import { useChatStore } from "@/hooks/use-chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChatBody } from "./body";
+import { MessageList } from "./message-list";
 import { ChatForm } from "./form";
 
 export const ChatInfo = () => {
@@ -38,8 +38,9 @@ export const ChatInfo = () => {
         </Button>
       </div>
 
-      {/* BODY */}
-      <ChatBody />
+      {/* MESSAGELIST */}
+      <MessageList />
+
       {/* FORM */}
       <ChatForm placeholder="Your message...." />
     </div>

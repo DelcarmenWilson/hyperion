@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import SocketContext from "@/providers/socket";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -17,7 +17,9 @@ import { OnlineUser } from "@/types/user";
 
 import {
   chatGetById,
+  chatMessageDeleteById,
   chatMessageInsert,
+  chatMessageUpdateById,
   chatsGetByUserId,
   chatsGetByUserIdUnread,
   chatUpdateByIdUnread,
@@ -92,7 +94,6 @@ export const useChatStore = create<State & Actions>()(
         state.onlineUsers = state.onlineUsers.map((user) => {
           return { ...user, online: !!u.find((e) => e.id == user.id) };
         });
-        console.log(get().onlineUsers, u);
       }),
     updateUser: (u) => {
       set((state) => {
@@ -125,8 +126,8 @@ export const useChatData = (chatId: string) => {
   //CHAT DRAWER
   const {
     data: chat,
-    isFetching: chatIsLoading,
-    isLoading: chatIsFetching,
+    isFetching:chatIsFetching,
+    isLoading: chatIsLoading,
   } = useQuery<FullChat | null>({
     queryFn: () => chatGetById(chatId),
     queryKey: [`agent-messages-${chatId}`],
@@ -143,17 +144,19 @@ export const useChatData = (chatId: string) => {
     navChats,
     navChatsIsFectching,
     chat,
-    chatIsFetching,
+    chatIsFetching,chatIsLoading,
     fullChats,
     fullChatsIsFetching,
   };
 };
 
-export const useChatActions = (chatId: string, reset?: () => void) => {
+export const useChatActions = () => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { setChatId, user } = useChatStore();
+  
+  const {chatId, setChatId } = useChatStore();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const pathname = usePathname();
 
@@ -170,7 +173,7 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     });
   };
 
-  const { mutate: navMutate, isPending: navIsPending } = useMutation({
+  const { mutate: navUpdateMutate, isPending: navUpdating } = useMutation({
     mutationFn: chatUpdateByIdUnread,
     onSuccess: (result) => {
       if (result.success?.length) {
@@ -184,39 +187,17 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     },
   });
 
-  const { mutate: chatMessageMutate, isPending: chatMessageInsertIsPending } =
-    useMutation({
-      mutationFn: chatMessageInsert,
-      onSuccess: (results) => {
-        if (results.success) {
-          invalidate();
-          const key = `agent-messages-${results.success.chatId}`;
-          // const messages=queryClient.getQueryData([key])
-          //queryClient.setQueryData([key], (old:any) => [...old, results.success])
-          socket?.emit("chat-message-sent", user?.id, results.success);
-          toast.success("Chat message created", { id: "insert-chat-message" });
-        } else toast.error(results.error);
-        if (reset) reset();
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
-
-  const onChatMessageInsert = useCallback(
-    (values: ChatMessageSchemaType) => {
-      toast.loading("Creating new message ...", { id: "insert-chat-message" });
-      chatMessageMutate(values);
-    },
-    [chatMessageMutate]
-  );
-
   // GENERAL FUNCTIONS
+  const onPlay = () => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = 0.5;
+    audioRef.current.play();
+  };
   const onMessageRecieved = (mChatId: string) => {
     if (mChatId == chatId) invalidate();
     if (pathname.startsWith("/chat")) return;
     invalidateNav();
-    if (reset) reset();
+    onPlay();
   };
   const onAccountSuspended = () => {
     toast.error("You account has been supsended");
@@ -228,7 +209,7 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
       onMessageRecieved(data.message.chatId)
     );
-    socket?.on("account-suspended-recieved", (data) => onAccountSuspended());
+    socket?.on("account-suspended-recieved", () => onAccountSuspended());
     return () => {
       socket?.off(
         "chat-message-received",
@@ -240,10 +221,108 @@ export const useChatActions = (chatId: string, reset?: () => void) => {
     // eslint-disable-next-line
   }, []);
   return {
+    audioRef,
     invalidateNav,
-    navMutate,
-    navIsPending,
+    navUpdateMutate,
+    navUpdating
+  };
+};
+
+
+export const useChatMessageActions = () => {
+  const { socket } = useContext(SocketContext).SocketState;
+  const { chatId, user } = useChatStore();
+  const queryClient = useQueryClient();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({
+      queryKey: [`agent-messages-${chatId}`],
+    });
+  };
+
+  const { mutate: chatMessageDeleteMutate, isPending: chatMessageDeleting } =
+    useMutation({
+      mutationFn: chatMessageDeleteById,
+      onSuccess: (results) => {
+        if (results.success) {
+          invalidate();
+          const key = `agent-messages-${results.success.chatId}`;
+          // socket?.emit("chat-message-sent", user?.id, results.success);
+          toast.success("Chat message deleted", { id: "delete-chat-message" });
+        } else toast.error(results.error, { id: "delete-chat-message" });
+      },
+      onError: (error) => {
+        toast.error(error.message, { id: "delete-chat-message" });
+      },
+    });
+
+  const onChatMessageDelete = useCallback(
+    (id:string) => {
+      toast.loading("Deleting message ...", { id: "delete-chat-message" });
+      chatMessageDeleteMutate(id);
+    },
+    [chatMessageDeleteMutate]
+  );
+
+  // INSERT
+  const { mutate: chatMessageInsertMutate, isPending: chatMessageInserting } =
+    useMutation({
+      mutationFn: chatMessageInsert,
+      onSuccess: (results) => {
+        if (results.success) {
+          invalidate();
+          const key = `agent-messages-${results.success.chatId}`;
+          // const messages=queryClient.getQueryData([key])
+          //queryClient.setQueryData([key], (old:any) => [...old, results.success])
+          socket?.emit("chat-message-sent", user?.id, results.success);
+          toast.success("Chat message created", { id: "insert-chat-message" });
+        } else toast.error(results.error);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+
+  const onChatMessageInsert = useCallback(
+    (values: ChatMessageSchemaType) => {
+      toast.loading("Creating new message ...", { id: "insert-chat-message" });
+      chatMessageInsertMutate(values);
+    },
+    [chatMessageInsertMutate]
+  );
+
+  // UPDATE
+  const { mutate: chatMessageUpdateMutate, isPending: chatMessageUpdating } =
+    useMutation({
+      mutationFn: chatMessageUpdateById,
+      onSuccess: (results) => {
+        if (results.success) {
+          invalidate();
+          const key = `agent-messages-${results.success.chatId}`;
+          // socket?.emit("chat-message-sent", user?.id, results.success);
+          toast.success("Chat message updated!", { id: "update-chat-message" });
+        } else toast.error(results.error, { id: "update-chat-message" });
+      },
+      onError: (error) => {
+        toast.error(error.message, { id: "update-chat-message" });
+      },
+    });
+
+  const onChatMessageUpdate = useCallback(
+    (values:{id:string,body:string}) => {
+      toast.loading("Updating message ...", { id: "update-chat-message" });
+      chatMessageUpdateMutate(values);
+    },
+    [chatMessageUpdateMutate]
+  );
+
+
+  return {
+    onChatMessageDelete,
+    chatMessageDeleting,
     onChatMessageInsert,
-    chatMessageInsertIsPending,
+    chatMessageInserting,
+    onChatMessageUpdate,
+    chatMessageUpdating,
   };
 };

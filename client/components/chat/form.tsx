@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import SocketContext from "@/providers/socket";
 import Quill from "quill";
 import { Delta, Op } from "quill/core";
-import { useChatStore, useChatActions } from "@/hooks/use-chat";
+import { useChatStore, useChatMessageActions } from "@/hooks/use-chat";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 import { ChatMessageSchemaType } from "@/schemas/chat";
@@ -21,9 +21,7 @@ export const ChatForm = ({ placeholder }: Props) => {
   const [key, setKey] = useState(0);
   const { chatId, user: agent } = useChatStore();
   const user = useCurrentUser();
-  const { onChatMessageInsert, chatMessageInsertIsPending } = useChatActions(
-    chatId!
-  );
+  const { onChatMessageInsert, chatMessageInserting } = useChatMessageActions();
   const [typing, setTyping] = useState(false);
 
   const onTyping = () => {
@@ -40,9 +38,10 @@ export const ChatForm = ({ placeholder }: Props) => {
     templateImage: string | null;
   }) => {
     const message: ChatMessageSchemaType = {
-      content: body.ops[0].insert as string,
+      // body: body.ops[0].insert as string,
+      body: JSON.stringify(body),
       //@ts-ignore
-      attachment: templateImage,
+      image: templateImage,
       chatId,
       senderId: user?.id!,
     };
@@ -56,17 +55,17 @@ export const ChatForm = ({ placeholder }: Props) => {
         setTyping(false);
       }, 2000);
     };
-    socket?.on("chat-is-typing-received", (data) => {
+    socket?.on("chat-is-typing-received", () => {
       recieveTyping();
     });
   }, []);
   return (
-    <div className="relative px-2 w-full">
+    <div className="relative w-full">
       <QuillEditor
         key={key}
         placeholder={placeholder}
         onSubmit={handleSumbit}
-        disabled={chatMessageInsertIsPending}
+        disabled={chatMessageInserting}
         innerRef={editorRef}
         onTyping={onTyping}
       />

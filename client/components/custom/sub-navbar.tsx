@@ -10,6 +10,7 @@ import { NavType } from "@/constants/page-routes";
 type SubNavBarProps = {
   intialRoutes: NavType[];
 };
+
 export const SubNavBar = ({ intialRoutes }: SubNavBarProps) => {
   const role = useCurrentRole();
   const pathname = usePathname();
@@ -22,11 +23,14 @@ export const SubNavBar = ({ intialRoutes }: SubNavBarProps) => {
   return (
     <div className="flex flex-1 flex-col lg:flex-row  justify-center items-end lg:items-center gap-2">
       {routes.map((route) => (
-        <Link key={route.href} href={route.href}>
-          <Button variant={route.active ? "default" : "ghost"} size="sm">
-            {route.title}
-          </Button>
-        </Link>
+        <Button
+          key={route.href}
+          variant={route.active ? "default" : "ghost"}
+          size="sm"
+          asChild
+        >
+          <Link href={route.href}>{route.title}</Link>
+        </Button>
       ))}
     </div>
   );

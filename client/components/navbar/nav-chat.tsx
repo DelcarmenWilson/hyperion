@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import Link from "next/link";
 import { Bot, User } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -19,14 +18,8 @@ import { formatDate } from "@/formulas/dates";
 
 export const NavChat = () => {
   const user = useCurrentUser();
-  const audioRef = useRef<HTMLAudioElement>(null);
   const { navChats, navChatsIsFectching } = useChatData("empty");
-  const onPlay = () => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = 0.5;
-    audioRef.current.play();
-  };
-  const { navMutate, navIsPending } = useChatActions("empty", onPlay);
+  const { audioRef, navUpdateMutate, navUpdating } = useChatActions();
 
   return (
     <div>
@@ -54,8 +47,8 @@ export const NavChat = () => {
                   <DropdownMenuItem
                     key={chat.id}
                     className="flex gap-2 border-b"
-                    disabled={navIsPending}
-                    onClick={() => navMutate(chat.id)}
+                    disabled={navUpdating}
+                    onClick={() => navUpdateMutate(chat.id)}
                   >
                     <div className="relative">
                       <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
@@ -80,14 +73,14 @@ export const NavChat = () => {
                           {formatDate(chat.lastMessage?.createdAt)}
                         </p>{" "}
                       </div>
-                      <p>{chat.lastMessage?.content}</p>
+                      <p>{chat.lastMessage?.body}</p>
                     </div>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuItem
-                  disabled={navIsPending}
+                  disabled={navUpdating}
                   className="gap-2 justify-center"
-                  onClick={() => navMutate("clear")}
+                  onClick={() => navUpdateMutate("clear")}
                 >
                   Mark all as Read
                 </DropdownMenuItem>

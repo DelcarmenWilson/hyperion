@@ -10,8 +10,8 @@ export type ChatSchemaType = z.infer<typeof ChatSchema>;
 export const ChatMessageSchema = z.object({
   id: z.optional(z.string()),
   chatId: z.optional(z.string()),
-  content: z.optional(z.string()),
-  attachment: z.optional(z.string()),
+  body: z.optional(z.string()),
+  image: z.optional(z.string()),
   senderId: z.string(),  
   userId: z.optional(z.string()),
 });

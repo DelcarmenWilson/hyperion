@@ -100,26 +100,17 @@ export const usersGetAllChat = async () => {
         OR: [{ userOneId: user.id }, { userTwoId: user.id }],
         unread: { gt: 0 },
       },
-      include: { lastMessage: { select: { senderId: true,content:true } } },
+      include: { lastMessage: { select: { senderId: true,body:true } } },
     });
 
-    const getUnreadMessages = (userId: string): number => {
-      const chat = chats.find(
-        (e) => e.userOneId == userId || e.userTwoId == userId
-      );
-      if (!chat) return 0;
-      if (chat.lastMessage?.senderId == userId) return chat.unread;
-      return 0;
-    };
-
-    const getMoreData = (userId: string):{chatId:string,lastMessage:string,unread:number} => {
+      const getMoreData = (userId: string):{chatId:string,lastMessage:string,unread:number} => {
       const chat = chats.find(
         (e) => e.userOneId == userId || e.userTwoId == userId
       );
       if (!chat) return {chatId:"",lastMessage:"",unread:0};
 
       if (chat.lastMessage?.senderId == userId) 
-      return {chatId:chat.id,lastMessage:chat.lastMessage?.content||"",unread:chat.unread};
+      return {chatId:chat.id,lastMessage:chat.lastMessage?.body||"",unread:chat.unread};
       return {chatId:"",lastMessage:"",unread:0};
     };
     const users: OnlineUser[] = dbUsers.map((usr) => {
