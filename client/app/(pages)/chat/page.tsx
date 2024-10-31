@@ -1,14 +1,14 @@
 "use client";
+import { useEffect } from "react";
 import { MessageSquare } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 
-import { ChatBody } from "@/components/chat/body";
 import { ChatForm } from "@/components/chat/form";
 import { useChatStore, useChatData } from "@/hooks/use-chat";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { useEffect } from "react";
 import { Header } from "./components/header";
+import { MessageList } from "@/components/chat/message-list";
 
 const ChatsPage = () => {
   const { chatId, setChatId } = useChatStore();
@@ -32,7 +32,7 @@ const ChatsPage = () => {
             <Header />
           </div>
           <CardContent className="flex flex-col flex-1 !p-2 gap-2 overflow-hidden">
-            <ChatBody />
+            <MessageList />
             <ChatForm placeholder="Your Message..." />
           </CardContent>
         </Card>

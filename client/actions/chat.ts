@@ -24,7 +24,8 @@ export const chatsGetByUserId = async () => {
           },
         ],
       },
-      include: { userOne: true, userTwo: true, lastMessage: true },orderBy:{updatedAt:"desc"}
+      include: { userOne: true, userTwo: true, lastMessage: true },
+      orderBy: { updatedAt: "desc" },
     });
 
     return chats;
@@ -42,7 +43,7 @@ export const chatGetById = async (id: string) => {
     const chat = await db.chat.findUnique({
       where: { id },
       include: {
-        messages: { include: { sender: true } },
+        messages: { include: { sender: true }, orderBy: { createdAt: "desc" } },
         userOne: true,
         userTwo: true,
         lastMessage: true,
@@ -280,63 +281,42 @@ export const chatUpdateByIdUnread = async (id: string) => {
 };
 
 // CHAT MESSAGES
+// ACTIONS
+export const chatMessageDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unauthenticated!" };
+
+  const message = await db.chatMessage.findUnique({ where: { id } });
+
+  if (!message) return { error: "Message not found" };
+
+  if (message.senderId != user.id) return { error: "Unauthorized" };
+
+  const deletedMessage = await db.chatMessage.update({
+    where: { id },
+    data: { deletedBy: user.id },
+  });
+
+  return { success: deletedMessage };
+};
+
 export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
   const validatedFields = ChatMessageSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  if (!validatedFields.success) return { error: "Invalid fields!" };
 
-  const { chatId, content, attachment, senderId } = validatedFields.data;
+  const { chatId, body, image, senderId } = validatedFields.data;
 
-  // let cid = chatId;
-  // let conversation;
-
-  // if (cid)
-  //   conversation = await db.chat.findUnique({
-  //     where: { id: cid },
-  //     include: { lastMessage: true },
-  //   });
-  // else {
-  //   conversation = await db.chat.findFirst({
-  //     where: {
-  //       OR: [
-  //         { userOneId: senderId, userTwoId: userId },
-  //         { userOneId: userId, userTwoId: senderId },
-  //       ],
-  //     },
-  //     include: { lastMessage: true },
-  //   });
-  //   if (!conversation) {
-  //     conversation = await db.chat.create({
-  //       data: {
-  //         userOneId: senderId,
-  //         userTwoId: userId as string,
-  //         isGroup: false,
-  //         name: "",
-  //       },
-  //       include: { lastMessage: true },
-  //     });
-  //   }
-  //   cid = conversation.id;
-  // }
-
-  // if (!conversation) {
-  //   return { error: "Conversation was not created!!!" };
-  // }
-
-  const conversation = await db.chat.findUnique({
+  const chat = await db.chat.findUnique({
     where: { id: chatId },
     include: { lastMessage: true },
   });
-  if (!conversation) {
-    return { error: "Conversation does not exists!!" };
-  }
+  if (!chat) return { error: "Chat does not exists!!" };
 
   const newMessage = await db.chatMessage.create({
     data: {
-      chatId: chatId as string,
-      content,
-      attachment,
+      chatId: chat.id,
+      body,
+      image,
       senderId,
     },
     include: { sender: true },
@@ -346,11 +326,32 @@ export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
     where: { id: chatId },
     data: {
       lastMessageId: newMessage.id,
-      unread:
-        conversation.lastMessage?.senderId == senderId
-          ? conversation.unread + 1
-          : 0,
+      unread: chat.lastMessage?.senderId == senderId ? chat.unread + 1 : 0,
     },
+  });
+
+  return { success: newMessage };
+};
+
+export const chatMessageUpdateById = async ({
+  id,
+  body,
+}: {
+  id: string;
+  body: string;
+}) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unauthenticated!" };
+
+  const message = await db.chatMessage.findUnique({ where: { id } });
+
+  if (!message) return { error: "Message not found" };
+
+  if (message.senderId != user.id) return { error: "Unauthorized" };
+
+  const newMessage = await db.chatMessage.update({
+    where: { id },
+    data: { body },
   });
 
   return { success: newMessage };

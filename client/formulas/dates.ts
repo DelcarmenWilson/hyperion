@@ -5,6 +5,8 @@ import {
   endOfWeek,
   endOfYear,
   format,
+  isToday,
+  isYesterday,
   startOfMonth,
   startOfWeek,
   startOfYear,
@@ -140,6 +142,19 @@ export const formatDateTime = (
 ): string => {
   if (!dateTime) return retval;
   return format(dateTime, defaultDateTime);
+};export const formatFullDateTime = (
+  date: Date | string | null | undefined,
+  retval: string = ""
+): string => {
+  if (!date) return retval;
+
+  return `${
+    isToday(date)
+      ? "Today"
+      : isYesterday(date)
+      ? "Yesterday"
+      : format(date, "MMM d, yyyy")
+  } at ${format(date, "h:mm:ss a")}`;
 };
 export const formatDateTimeZone = (
   date: Date,
@@ -165,6 +180,7 @@ export const formatJustTime = (
   const date = new Date("1970-01-01T" + time);
   return format(date, defaultTime);
 };
+
 
 export const timeDifference = (
   timeZone: string | undefined = "US/Eastern",
