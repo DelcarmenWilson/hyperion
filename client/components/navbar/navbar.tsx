@@ -1,12 +1,7 @@
 "use client";
 import { Lobster_Two } from "next/font/google";
 import { cn } from "@/lib/utils";
-import {
-  List,
-  MessageSquareDot,
-  MessageSquarePlus,
-  Smartphone,
-} from "lucide-react";
+import { Bot, List, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/use-chat";
@@ -16,6 +11,7 @@ import { useTodoStore } from "@/hooks/user/use-todo";
 
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
+import Hint from "../custom/hint";
 import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
@@ -56,42 +52,37 @@ const NavBar = ({ admin = false }: Props) => {
 
       <div className="flex flex-col-reverse gap-1 justify-end items-end md:flex-row flex-1 md:items-center  space-x-2">
         <div className="flex justify-end gap-2">
-          <Button
-            variant={isTodosOpen ? "default" : "outline"}
-            size="icon"
-            onClick={onTodosOpen}
-          >
-            <List size={15} />
-          </Button>
+          <Hint label="Todos" side="bottom" align="center">
+            <Button
+              variant={isTodosOpen ? "default" : "outline"}
+              size="icon"
+              onClick={onTodosOpen}
+            >
+              <List size={15} />
+            </Button>
+          </Hint>
           {/* messages list */}
           <NavMessages />
           {/*srini- Agent chat */}
-          <NavChat />
+          {/* //TODO - dont forget to remove if this wont be used anymore */}
+          {/* <NavChat /> */}
           {/* srini- online chat button */}
-          {/* {ALLADMINS.includes(role!) && (
+
+          <Hint label="Agent Messages" side="bottom" align="center">
             <Button
+              className="relative"
               variant={isChatOpen ? "default" : "outline"}
               size="icon"
               onClick={onChatOpen}
             >
-              <MessageSquareDot size={15} />
+              <Bot size={15} />
+              {masterUnread > 0 && (
+                <Badge className="absolute rounded-full text-xs -top-2 -right-2 p-1">
+                  {masterUnread}
+                </Badge>
+              )}
             </Button>
-          )} */}
-
-          <Button
-            className="relative"
-            variant={isChatOpen ? "default" : "outline"}
-            size="icon"
-            onClick={onChatOpen}
-          >
-            <MessageSquareDot size={15} />
-            {masterUnread > 0 && (
-              <Badge className="absolute rounded-full text-xs -top-2 -right-2 p-1">
-                {masterUnread}
-              </Badge>
-            )}
-          </Button>
-
+          </Hint>
           <MasterSwitch />
         </div>
         <div className="flex gap-2">

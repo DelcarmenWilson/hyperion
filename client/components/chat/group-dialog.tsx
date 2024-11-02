@@ -20,18 +20,19 @@ export const GroupDialog = () => {
   return (
     <CustomDialog
       title="Group Message"
-      description="Group Message"
+      description="Send group message to all agents online"
+      showDescription
       open={isGroupDialogOpen}
       onClose={onGroupDialogClose}
     >
-      <div className="h-full overflow-y-auto p-2">
+      <div className="flex flex-col h-full overflow-y-auto p-2">
         <Textarea
           value={message}
           placeholder="Type Message"
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
         />
-        <div className="grid grid-cols-2 mt-2 gap-2">
+        <div className="grid grid-cols-2 mt-auto gap-2">
           <Button variant="outline" onClick={onGroupDialogClose}>
             Cancel
           </Button>

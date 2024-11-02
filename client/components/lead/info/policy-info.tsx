@@ -1,5 +1,5 @@
 "use client";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadPolicyData } from "@/hooks/lead/use-policy-info";
 

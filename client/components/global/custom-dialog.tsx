@@ -13,6 +13,7 @@ type Props = {
   title: string;
   subTitle?: string;
   description?: string;
+  showDescription?: boolean;
   open: boolean;
   onClose: () => void;
   maxWidth?: boolean;
@@ -23,6 +24,7 @@ export const CustomDialog = ({
   title,
   subTitle,
   description,
+  showDescription = false,
   open,
   onClose,
   maxWidth = false,
@@ -47,7 +49,7 @@ export const CustomDialog = ({
               </>
             )}
           </DialogTitle>
-          <DialogDescription className="hidden">
+          <DialogDescription className={cn(showDescription ? "" : "hidden")}>
             {description}
           </DialogDescription>
         </DialogHeader>

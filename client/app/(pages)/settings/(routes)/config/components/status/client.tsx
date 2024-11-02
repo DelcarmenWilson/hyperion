@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useAgentLeadStatusData } from "../../hooks/use-lead-status";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";

@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 
+import { useUserData } from "@/hooks/user/use-user";
+
 import { UserRole } from "@prisma/client";
 import {
   Select,
@@ -10,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Loader from "@/components/reusable/loader";
-import { useUserData } from "@/hooks/use-user";
 
 type UserSelectProps = {
   userId: string | undefined;
@@ -25,16 +26,17 @@ export const UserSelect = ({
   disabled = false,
   role,
 }: UserSelectProps) => {
-  const { users, isUserFetching } = useUserData(role);
+  const { onSiteUserGet } = useUserData();
+  const { siteUsers, siteUsersFetching } = onSiteUserGet(role);
 
   return (
     <>
-      {isUserFetching ? (
+      {siteUsersFetching ? (
         <Loader text="Loading Users..." />
       ) : (
         <Select
           name="ddlUsers"
-          disabled={isUserFetching || disabled}
+          disabled={siteUsersFetching || disabled}
           onValueChange={setUserId}
           defaultValue={userId}
         >
@@ -42,7 +44,7 @@ export const UserSelect = ({
             <SelectValue placeholder="Select an agent" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
-            {users?.map((user) => (
+            {siteUsers?.map((user) => (
               <SelectItem key={user.id} value={user.id}>
                 {user.firstName} {user.lastName}
               </SelectItem>

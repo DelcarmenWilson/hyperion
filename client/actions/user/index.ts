@@ -69,7 +69,7 @@ export const usersGetAll = async () => {
 
     const filter = user.role == "MASTER" ? undefined : user.organization;
     const users = await db.user.findMany({
-      where: { team: { organizationId: filter } },
+      where: { team: { organizationId: filter },id:{not:user.id} },
       orderBy: { firstName: "asc" },
     });
     return users;
@@ -154,8 +154,12 @@ export const usersGetAllChat = async () => {
 
 export const usersGetAllByRole = async (role: UserRole) => {
   try {
+    const user=await currentUser()
+    if(!user)
+      return [
+    ]
     const users = await db.user.findMany({
-      where: { role },
+      where: { role,id:{not:user.id} },
       orderBy: { firstName: "asc" },
     });
     return users;

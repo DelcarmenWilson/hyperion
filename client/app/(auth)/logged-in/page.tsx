@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Loader from "@/components/reusable/loader";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useRouter } from "next/navigation";
 
 const LoggedInPage = () => {

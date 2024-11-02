@@ -1,6 +1,7 @@
 import {
   Chat,
   ChatMessage,
+  ChatMessageReaction,
   Lead,
   LeadConversation,
   LeadMessage,
@@ -55,6 +56,7 @@ export type FullChat = ShortChat & {
 };
 export type FullChatMessage = ChatMessage & {
   sender: User;
+  reactions:ChatMessageReaction[]
 };
 export type UnreadShortChat = Chat & {
   userOne: User;

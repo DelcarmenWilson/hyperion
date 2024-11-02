@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { cn } from "@/lib/utils";
 import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 

@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import SocketContext from "@/providers/socket";
 
 import axios from "axios";
-import { useConversationId } from "@/app/(pages)/conversations/hooks/use-conversation";
+import { useConversationId } from "@/hooks/use-conversation";
 
 import { FullConversation, FullMessage } from "@/types";
 import { MessageBox } from "@/components/reusable/message-box";

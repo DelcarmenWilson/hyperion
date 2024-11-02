@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useScriptData, useScriptStore } from "@/hooks/admin/use-script";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";

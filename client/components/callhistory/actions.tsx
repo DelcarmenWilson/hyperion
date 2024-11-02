@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { usePhoneStore } from "@/hooks/use-phone";
 import axios from "axios";
 

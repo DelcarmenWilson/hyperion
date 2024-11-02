@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 import { PhoneSwitcher } from "../addins/switcher";
 import { Input } from "@/components/ui/input";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { formatPhoneNumber } from "@/formulas/phones";
 

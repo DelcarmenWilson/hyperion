@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CalendarPlus, Disc, Plus, Presentation } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { toast } from "sonner";
 
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";

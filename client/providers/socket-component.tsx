@@ -5,9 +5,13 @@ import React, {
   useReducer,
   useState,
 } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+
+import { UserSocket } from "@/types";
+
 import { useChatStore } from "@/hooks/use-chat";
-import { useSocket } from "@/hooks/use-socket";
+import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { usePhoneStore } from "@/hooks/use-phone";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import {
   defaultSocketContextState,
@@ -15,8 +19,9 @@ import {
   SocketReducer,
 } from "./socket";
 
-import { UserSocket } from "@/types";
 import { EmptyCard } from "@/components/reusable/empty-card";
+import { useSocketStore } from "@/hooks/use-socket-store";
+import { useSocket } from "@/hooks/use-socket";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -25,7 +30,15 @@ const SocketContextComponent: React.FunctionComponent<
 > = (props) => {
   const { children } = props;
   const user = useCurrentUser();
-  const { updateUser, updateUsers, fetchData } = useChatStore();
+  const {
+    onUserConnectDisconnect,
+    updateUsers,
+    fetchData: fetchAllUsers,
+    loaded,
+  } = useChatStore();
+  const { fetchData: fetchCalendarData } = useCalendarStore();
+  const { fetchData: fetchScriptData } = usePhoneStore();
+  const { onSetSocket } = useSocketStore();
 
   const socket = useSocket(process.env.NEXT_PUBLIC_WS_URL!, {
     reconnectionAttempts: 5,
@@ -40,27 +53,33 @@ const SocketContextComponent: React.FunctionComponent<
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
-    socket.connect();
-    SocketDispatch({ type: "update_socket", payload: socket });
-    StartListeners();
-    SendHandshake();
+    fetchCalendarData();
+    fetchScriptData();
+    fetchAllUsers();
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    if (!loaded) return;
+
+    socket.connect();
+    SocketDispatch({ type: "update_socket", payload: socket });
+    onSetSocket(socket);
+    StartListeners();
+    SendHandshake();
+  }, [loaded]);
+
   const StartListeners = () => {
     /** Messages */
-    socket.on("user_connected", (users: UserSocket[]) => {
-      updateUsers(users);
+    socket.on("user_connected", (userId) => {
+      onUserConnectDisconnect(userId, true);
       Log("User connected message received");
-      SocketDispatch({ type: "update_users", payload: users });
     });
 
     /** Messages */
     socket.on("user_disconnected", (uid: string) => {
       Log("User disconnected message received");
-      updateUser(uid);
-      SocketDispatch({ type: "remove_user", payload: uid });
+      onUserConnectDisconnect(uid, false);
     });
 
     /** Connection / reconnection listeners */
@@ -97,8 +116,6 @@ const SocketContextComponent: React.FunctionComponent<
       async (uid: string, users: UserSocket[]) => {
         updateUsers(users);
         Log("User handshake callback message received");
-        SocketDispatch({ type: "update_users", payload: users });
-        SocketDispatch({ type: "update_uid", payload: uid });
       }
     );
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useQuery } from "@tanstack/react-query";
 
 import { HyperionLead } from "@prisma/client";

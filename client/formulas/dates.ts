@@ -154,7 +154,7 @@ export const formatDateTime = (
       : isYesterday(date)
       ? "Yesterday"
       : format(date, "MMM d, yyyy")
-  } at ${format(date, "h:mm:ss a")}`;
+  } at ${format(date, "h:mm a")}`;
 };
 export const formatDateTimeZone = (
   date: Date,

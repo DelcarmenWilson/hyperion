@@ -31,7 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DashboardRoutes } from "@/constants/page-routes";
 import { feedbackInsert, feedbackUpdateById } from "@/actions/feedback";
 import { Feedback } from "@prisma/client";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { ImageModal } from "@/components/modals/image";
 import { ImageGrid } from "@/components/reusable/image-grid";
 

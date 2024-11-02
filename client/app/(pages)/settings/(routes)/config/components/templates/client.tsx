@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useAgentTemplateData } from "../../hooks/user-template";
 
 import { DrawerRight } from "@/components/custom/drawer/right";

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { adminEmitter } from "@/lib/event-emmiter";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useOrganizationData } from "./hooks/use-organization";
 
 import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";

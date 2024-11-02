@@ -1,5 +1,5 @@
 import { usePhoneStore } from "@/hooks/use-phone";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { Button } from "@/components/ui/button";
 import { ALLADMINS } from "@/constants/user";
 

@@ -57,7 +57,7 @@ export class ServerSocket {
     }
   };
   StartListeners = (socket: Socket) => {
-    console.info("Message received from " + socket.id);
+    this.Log("Message received from " + socket.id);
 
     socket.on(
       "handshake",
@@ -68,17 +68,17 @@ export class ServerSocket {
         orgId,
         callback: (uid: string, users: User[]) => void
       ) => {
-        console.info("Handshake received from: " + socket.id, userId);
+        this.Log("Handshake received from: " + socket.id, userId);
 
         const reconnected = this.users.find((e) => e.sid == socket.id);
         let organizationUsers = this.GetOrganizationUsers(orgId);
 
         if (reconnected) {
-          console.info("This user has reconnected.");
+          this.Log("This user has reconnected.");
 
           const uid = this.GetUidFromSocketId(socket.id);
           if (uid) {
-            console.info("Sending callback for reconnect ...");
+            this.Log("Sending callback for reconnect ...");
             // logoff(uid)
             callback(uid, organizationUsers);
             return;
@@ -86,18 +86,18 @@ export class ServerSocket {
         }
         this.users.push({ id: userId, sid: socket.id, role, userName, orgId });
 
-        console.info("Sending callback ...");
-        // const users = organizationUsers.filter((e) => e.sid !== socket.id);
+        this.Log("Sending callback ...");
         organizationUsers = this.GetOrganizationUsers(orgId);
         callback(userId, organizationUsers);
-
+        
+         const users = organizationUsers.filter((e) => e.sid !== socket.id);
         //  login(userId)
-        this.SendMessage("user_connected", organizationUsers, organizationUsers);
+        this.SendMessage("user_connected", users, userId);
       }
     );
 
     socket.on("disconnect", () => {
-      console.info("Disconnect received from: " + socket.id);
+      this.Log("Disconnect received from: " + socket.id);
 
       const user = this.GetUserFromSocketId(socket.id);
 
@@ -154,9 +154,9 @@ export class ServerSocket {
       });
     });
     //CHAT MESSAGES
-    socket.on("chat-is-typing-sent", (userId) => {
+    socket.on("chat-is-typing-sent", (userId,myUserId) => {
       const sid = this.GetSocketIdFromUid(userId);
-      this.SendUserMessage("chat-is-typing-received", sid, {});
+      this.SendUserMessage("chat-is-typing-received", sid, {myUserId});
     });
     //LEAD SHARING
     socket.on("lead-shared", (userId, agentName, leadId, leadFirstName) => {
@@ -232,7 +232,7 @@ export class ServerSocket {
   };
 
   SendMessage = (name: string, users: User[], payload?: Object) => {
-    console.info("Emitting event: " + name + " to", users);
+    this.Log("Emitting event: " + name + " to", users);
     users.forEach((user) =>
       payload
         ? this.io.to(user.sid).emit(name, payload)
@@ -245,8 +245,11 @@ export class ServerSocket {
     payload?: Object
   ) => {
     if (!sid) return;
-    console.info("Emitting event: " + name + " to", sid);
+    this.Log("Emitting event: " + name + " to", sid);
 
     payload ? this.io.to(sid).emit(name, payload) : this.io.to(sid).emit(name);
   };
+  Log=(message:string,extramessage?:any)=>{
+    console.info(message,extramessage)
+  }
 }

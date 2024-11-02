@@ -3,28 +3,17 @@ import React, { useEffect, useState } from "react";
 
 import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
 
-import { Button } from "@/components/ui/button";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-
-import { EmptyCard } from "@/components/reusable/empty-card";
-
 import { AgentWorkInfoCard } from "./card";
 import { AgentWorkInfoFormDialog } from "./form";
+import { BluePrintWeekForm } from "../weekly/form";
 import { BluePrintWeeklyCard } from "../weekly/card";
 import { BluePrintYearlyCard } from "../yearly/card";
-import { OverviewChart, SriniChart } from "@/components/reports/chart";
-import { BluePrintWeekForm } from "../weekly/form";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
-import { convertBluePrintMonthData } from "@/formulas/reports";
-import { USDollar } from "@/formulas/numbers";
-import { Switch } from "@/components/ui/switch";
+import { OverviewChart, SriniChart } from "@/components/reports/chart";
+
 import {
   Select,
   SelectContent,
@@ -32,16 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { Switch } from "@/components/ui/switch";
+
+import { USDollar } from "@/formulas/numbers";
+import { convertBluePrintMonthData } from "@/formulas/reports";
 import { allMonths } from "@/constants/texts";
 
 export const AgentWorkInfoClient = () => {
   const { onWorkInfoFormOpen } = useBluePrintStore();
-  const {
-    agentWorkInfo,
-    isFetchingAgentWorkInfo,
-    bluePrintWeekReport,
-    isFetchingBluePrintWeeksReport,
-  } = useBluePrintData();
+  const { onAgentWorkInfoGet, onBluePrintWeekReportGet } = useBluePrintData();
+
+  const { agentWorkInfo, agentWorkInfoIsFetching } = onAgentWorkInfoGet();
+  const { bluePrintWeekReport, bluePrintWeeksReportIsFetching } =
+    onBluePrintWeekReportGet();
 
   const [isWeekly, setIsWeekly] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(
@@ -69,38 +62,38 @@ export const AgentWorkInfoClient = () => {
       <AgentWorkInfoFormDialog />
       <BluePrintWeekForm />
       <div>
-        <SkeletonWrapper isLoading={isFetchingAgentWorkInfo}>
-          {agentWorkInfo ? (
-            <Card className="mb-2 border-0">
-              <CardDescription>
-                <CardTitle></CardTitle>
-              </CardDescription>
-              <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
-                <div className="w-full lg:w-[30%] border p-3">
+        {agentWorkInfo ? (
+          <Card className="mb-2 border-0">
+            <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
+              <div className="w-full lg:w-[30%] border p-3">
+                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
                   <BluePrintWeeklyCard />
-                </div>
+                </SkeletonWrapper>
+              </div>
 
-                <div className="w-full lg:w-[30%] border p-3">
+              <div className="w-full lg:w-[30%] border p-3">
+                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
                   <BluePrintYearlyCard />
-                </div>
-                <div className="flex-1 border p-3">
-                  <AgentWorkInfoCard />
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <EmptyCard
-              title="No details Found"
-              subTitle={
-                <Button onClick={() => onWorkInfoFormOpen()}>
-                  Add Details
-                </Button>
-              }
-            />
-          )}
-        </SkeletonWrapper>
+                </SkeletonWrapper>
+              </div>
 
-        <SkeletonWrapper isLoading={isFetchingBluePrintWeeksReport}>
+              <div className="flex-1 border p-3">
+                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+                  <AgentWorkInfoCard showButtons />
+                </SkeletonWrapper>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <EmptyCard
+            title="No details Found"
+            subTitle={
+              <Button onClick={() => onWorkInfoFormOpen()}>Add Details</Button>
+            }
+          />
+        )}
+
+        <SkeletonWrapper isLoading={bluePrintWeeksReportIsFetching}>
           <div className="grid gap-2">
             <SriniChart
               data={premiumReport}

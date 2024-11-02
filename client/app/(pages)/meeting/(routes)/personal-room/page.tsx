@@ -5,7 +5,7 @@ import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 
 import { useGetCallById } from "@/hooks/use-get-call-by-id";
 import { Button } from "@/components/ui/button";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { CopyButton } from "@/components/reusable/copy-button";
 import { Heading } from "@/components/custom/heading";
 

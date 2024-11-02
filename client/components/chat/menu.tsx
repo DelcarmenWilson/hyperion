@@ -1,6 +1,6 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useChatStore } from "@/hooks/use-chat";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export const ChatMenu = () => {
           <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="center">
         <DropdownMenuItem onClick={onGroupDialogOpen}>
           Group Message
         </DropdownMenuItem>

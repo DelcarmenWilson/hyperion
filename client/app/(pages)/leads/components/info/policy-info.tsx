@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Edit, FilePenLine, Plus } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import { User } from "@prisma/client";

@@ -13,7 +13,7 @@ import {
 
 import SocketContext from "@/providers/socket";
 import { useRouter } from "next/navigation";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useChatStore } from "@/hooks/use-chat";
 import { useLoginStatus } from "@/hooks/use-login-status";
 
@@ -31,8 +31,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
+
 import { chatInsert, chatUpdateByIdUnread } from "@/actions/chat";
 import { adminSuspendAccount } from "@/actions/admin/user";
+
 import { ALLADMINS, UPPERADMINS } from "@/constants/user";
 
 const ChatCard = ({ user }: { user: OnlineUser }) => {
@@ -42,13 +44,14 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { onChatInfoOpen, user: agent, onChatClose } = useChatStore();
   const { onLoginStatusOpen } = useLoginStatus();
-
+  //TODO - need to add this to the hooks
   const onChatClick = async () => {
     let chatId = user.chatId;
     if (!chatId) {
       const chat = await chatInsert(user.id);
       chatId = chat.success?.id;
     }
+    console.log(chatId);
     chatUpdateByIdUnread(chatId!);
     onChatInfoOpen(user, chatId);
   };

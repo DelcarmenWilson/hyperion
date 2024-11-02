@@ -1,12 +1,14 @@
 "use client";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useChatStore, useChatData } from "@/hooks/use-chat";
+import { useCurrentUser } from "@/hooks/user/use-current";
+import { useChatData } from "@/hooks/use-chat";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const Header = () => {
   const currentUser = useCurrentUser();
-  const { chatId } = useChatStore();
-  const { chat, chatIsFetching } = useChatData(chatId!);
+  const { onChatGet } = useChatData();
+  const { chat, chatIsFetching } = onChatGet();
   if (!chat) return;
   const user =
     chat?.userOneId == currentUser?.id! ? chat?.userTwo : chat?.userOne;
@@ -22,9 +24,18 @@ export const Header = () => {
         {/* <div className="flex justify-center items-center bg-primary text-accent rounded-full p-1 mr-2">
         <span className="text-lg font-semibold">{initials}</span>
       </div> */}
-        <div className="flex-center  h-10 w-10 text-lg font-bold bg-primary text-accent rounded-full">
+
+        <Avatar className="rounded-full">
+          <AvatarImage className="rounded-full" src={user.image as string} />
+          <AvatarFallback className="rounded-full bg-primary/50 text-xs">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+
+        {/* <div className="flex-center  h-10 w-10 text-lg font-bold bg-primary text-accent rounded-full">
           {initials}
-        </div>
+        </div> */}
+
         <div className="flex flex-1 items-center gap-2">
           <span className="text-lg">{fullName}</span>
           {/* <Button

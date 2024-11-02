@@ -8,7 +8,7 @@ import { MessageList } from "./message-list";
 import { ChatForm } from "./form";
 
 export const ChatInfo = () => {
-  const { onChatInfoClose, user } = useChatStore();
+  const { onChatInfoClose, user, chatId } = useChatStore();
 
   return (
     <div className="flex gap-2 flex-col w-[500px] h-full p-4">
@@ -29,7 +29,7 @@ export const ChatInfo = () => {
 
         <p>
           <span className="text-lg font-bold">{user?.userName}</span>
-          {/* <span className="lowercase"> ({user?.role})</span> */}
+          <span className="lowercase"> ({chatId})</span>
         </p>
 
         <Button size="sm" className="ml-auto" onClick={onChatInfoClose}>

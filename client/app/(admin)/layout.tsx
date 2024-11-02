@@ -6,7 +6,6 @@ import SocketContextComponent from "@/providers/socket-component";
 
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
-import GlobalContextProvider from "@/providers/global";
 import NavBar from "@/components/navbar/navbar";
 
 import SideBar from "@/components/sidebar";
@@ -37,31 +36,29 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const phoneSettings = await phoneSettingsGet();
 
   return (
-    <GlobalContextProvider>
-      <SocketContextComponent>
-        <div className="flex flex-col h-screen w-full overflow-hidden">
-          <NavBar admin />
-          <div className="flex flex-1 w-full h-full overflow-hidden">
-            <SideBar />
-            <div className="flex flex-col flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
-              <PhoneContextProvider
-                initVoicemails={voicemails}
-                token={token!}
-                settings={phoneSettings!}
+    <SocketContextComponent>
+      <div className="flex flex-col h-screen w-full overflow-hidden">
+        <NavBar admin />
+        <div className="flex flex-1 w-full h-full overflow-hidden">
+          <SideBar />
+          <div className="flex flex-col flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
+            <PhoneContextProvider
+              initVoicemails={voicemails}
+              token={token!}
+              settings={phoneSettings!}
+            >
+              <AppointmentContextComponent
+                initSchedule={schedule!}
+                initAppointments={appointments}
+                initLabels={appointmentLabels}
               >
-                <AppointmentContextComponent
-                  initSchedule={schedule!}
-                  initAppointments={appointments}
-                  initLabels={appointmentLabels}
-                >
-                  {children}
-                </AppointmentContextComponent>
-              </PhoneContextProvider>
-            </div>
+                {children}
+              </AppointmentContextComponent>
+            </PhoneContextProvider>
           </div>
         </div>
-      </SocketContextComponent>
-    </GlobalContextProvider>
+      </div>
+    </SocketContextComponent>
   );
 };
 

@@ -2,14 +2,13 @@
 import React from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGroupMessage } from "@/hooks/use-group-message";
+import { useGroupMessageStore } from "@/hooks/use-group-message";
 
 import { Button } from "../ui/button";
 
 export const GroupMessageCard = () => {
-  const { isOpen, onClose, message, userName } = useGroupMessage();
+  const { isOpen, onClose, message, userName } = useGroupMessageStore();
   return (
-    // <div className="fixed w-full -bottom-full z-[100] pl-4 ">
     <div
       className={cn(
         "fixed transition-[bottom] -bottom-full ease-in-out duration-500 w-full z-[100] pl-4",

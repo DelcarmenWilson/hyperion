@@ -1,7 +1,7 @@
 "use client";
 import { Cog, Lock, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {

@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { StreamVideoClient, StreamVideo } from "@stream-io/video-react-sdk";
 
 import { tokenProvider } from "@/actions/stream";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import Loader from "@/components/reusable/loader";
 
 const API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;

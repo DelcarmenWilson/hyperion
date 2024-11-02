@@ -1,16 +1,24 @@
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
+import { Delta } from "quill/core";
+import {
+  useChatMessageActions,
+  useChatMessageReactionActions,
+} from "@/hooks/use-chat";
+
+import { ChatMessageReaction } from "@prisma/client";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-
-import { useChatMessageActions } from "@/hooks/use-chat";
-
 import Hint from "@/components/custom/hint";
+import { Reactions } from "./reactions";
 import { Thumbnail } from "./thumnail";
+import { Toolbar } from "./toolbar";
 
 import { formatDate, formatFullDateTime } from "@/formulas/dates";
-import { Toolbar } from "./toolbar";
-import { Delta } from "quill/core";
-const Renderer = dynamic(() => import("./renderer"), { ssr: false });
+
+const Renderer = dynamic(() => import("@/components/global/message/renderer"), {
+  ssr: false,
+});
 const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
   ssr: false,
 });
@@ -23,6 +31,7 @@ type Props = {
   isAuthor: boolean;
   body?: string | null;
   image?: string | null;
+  reactions: ChatMessageReaction[];
   deletedBy?: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +47,7 @@ export const Message = ({
   isAuthor,
   body,
   image,
+  reactions,
   deletedBy,
   createdAt,
   updatedAt,
@@ -51,6 +61,8 @@ export const Message = ({
     onChatMessageUpdate,
     chatMessageUpdating,
   } = useChatMessageActions();
+  const { onChatMessageReactionToggle, chatMessageReactionToggling } =
+    useChatMessageReactionActions();
   const isPending = chatMessageUpdating || chatMessageDeleting;
 
   //TODO - need to add an alert model to delete message
@@ -65,6 +77,9 @@ export const Message = ({
   }) => {
     onChatMessageUpdate({ id, body: JSON.stringify(body) });
     setEditingId(null);
+  };
+  const handleReaction = (name: string, value: any) => {
+    onChatMessageReactionToggle({ chatMessageId: id, name, value });
   };
 
   if (isCompact)
@@ -107,16 +122,22 @@ export const Message = ({
               )}
             >
               {deletedBy ? (
-                <div className="text-sm italic">This message was deleted</div>
+                <div className="text-sm italic">message deleted</div>
               ) : (
                 <>
-                  <Renderer value={body} />
+                  <div className="ql-editor ql-renderer !text-foreground">
+                    <Renderer value={body} />
+                  </div>
+
                   <Thumbnail url={image} />
                 </>
               )}
               {updatedAt > createdAt && !!!deletedBy && (
-                <span className="text-xs text-muted-foreground">(edited)</span>
+                <span className="text-xs text-muted-foreground">
+                  (edited) {formatFullDateTime(updatedAt, "")}
+                </span>
               )}
+              <Reactions reactions={reactions} onChange={handleReaction} />
             </div>
           )}
         </div>
@@ -126,7 +147,7 @@ export const Message = ({
             isPending={isPending}
             handleEdit={() => setEditingId(id)}
             handleDelete={() => onChatMessageDelete(id)}
-            handleReaction={() => {}}
+            handleReaction={handleReaction}
           />
         )}
       </div>
@@ -143,9 +164,9 @@ export const Message = ({
         className={cn("flex items-start gap-2", isAuthor && "flex-row-reverse")}
       >
         <button>
-          <Avatar className="rounded-md">
-            <AvatarImage className="rounded-md" src={userImage!} />
-            <AvatarFallback className="rounded-md bg-primary/50 text-xs">
+          <Avatar className="rounded-full">
+            <AvatarImage className="rounded-full" src={userImage!} />
+            <AvatarFallback className="rounded-full bg-primary/50 text-xs">
               {avatarFallback}
             </AvatarFallback>
           </Avatar>
@@ -194,16 +215,22 @@ export const Message = ({
               )}
             >
               {deletedBy ? (
-                <div className="text-sm italic">This message was deleted</div>
+                <div className="text-sm italic">message deleted</div>
               ) : (
                 <>
-                  <Renderer value={body} />
+                  <div className="ql-editor ql-renderer !text-foreground">
+                    <Renderer value={body} />
+                  </div>
                   <Thumbnail url={image} />
                 </>
               )}
               {updatedAt > createdAt && !!!deletedBy && (
-                <span className="text-xs text-muted-foreground">(edited)</span>
+                <span className="text-xs text-muted-foreground">
+                  (edited) {formatFullDateTime(updatedAt, "")}
+                </span>
               )}
+
+              <Reactions reactions={reactions} onChange={handleReaction} />
             </div>
           </div>
         )}
@@ -214,7 +241,7 @@ export const Message = ({
           isPending={isPending}
           handleEdit={() => setEditingId(id)}
           handleDelete={() => onChatMessageDelete(id)}
-          handleReaction={() => {}}
+          handleReaction={handleReaction}
         />
       )}
     </div>

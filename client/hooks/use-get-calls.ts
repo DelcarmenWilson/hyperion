@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from './use-current-user';
+import { useCurrentUser } from './user/use-current';
 import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
 
 export const useGetCalls = () => {

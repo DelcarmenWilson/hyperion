@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { userEmitter } from "@/lib/event-emmiter";
 
 import { User } from "@prisma/client";

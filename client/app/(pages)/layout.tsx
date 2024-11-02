@@ -6,7 +6,6 @@ import SocketContextComponent from "@/providers/socket-component";
 
 import AppointmentContextComponent from "@/providers/app-component";
 import PhoneContextProvider from "@/providers/phone";
-import GlobalContextProvider from "@/providers/global";
 
 import ChatBot from "@/components/global/chat-bot/chat-bot";
 import NavBar from "@/components/navbar/navbar";
@@ -42,35 +41,33 @@ export default async function DashBoardLayout({
   const phoneSettings = await phoneSettingsGet();
 
   return (
-    <GlobalContextProvider>
-      <SocketContextComponent>
-        <div className="flex flex-col h-screen w-full overflow-hidden">
-          <NavBar />
-          <div className="flex flex-1 w-full h-full overflow-hidden shrink-0">
-            <SideBar main />
-            <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
-              <PhoneContextProvider
-                initVoicemails={voicemails}
-                token={token!}
-                settings={phoneSettings!}
+    <SocketContextComponent>
+      <div className="flex flex-col h-screen w-full overflow-hidden">
+        <NavBar />
+        <div className="flex flex-1 w-full h-full overflow-hidden shrink-0">
+          <SideBar main />
+          <div className="flex flex-1 h-full w-full p-2 bg-secondary overflow-hidden">
+            <PhoneContextProvider
+              initVoicemails={voicemails}
+              token={token!}
+              settings={phoneSettings!}
+            >
+              <AppointmentContextComponent
+                initSchedule={schedule!}
+                initAppointments={appointments}
+                initLabels={appointmentLabels}
               >
-                <AppointmentContextComponent
-                  initSchedule={schedule!}
-                  initAppointments={appointments}
-                  initLabels={appointmentLabels}
-                >
-                  <ModalProvider>{children}</ModalProvider>
+                <ModalProvider>{children}</ModalProvider>
 
-                  {/* ///ALL THE PHONE MODALS */}
-                  <ModalsContainer />
-                </AppointmentContextComponent>
-              </PhoneContextProvider>
-              {/*  THE GLOBAL CHAT BOT ASSISTANT */}
-              {DEVADMINS.includes(user.role) && <ChatBot />}
-            </div>
+                {/* ///ALL THE PHONE MODALS */}
+                <ModalsContainer />
+              </AppointmentContextComponent>
+            </PhoneContextProvider>
+            {/*  THE GLOBAL CHAT BOT ASSISTANT */}
+            {DEVADMINS.includes(user.role) && <ChatBot />}
           </div>
         </div>
-      </SocketContextComponent>
-    </GlobalContextProvider>
+      </div>
+    </SocketContextComponent>
   );
 }

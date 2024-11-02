@@ -1,7 +1,7 @@
 "use client";
 import { LayoutGrid, List } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";

@@ -127,6 +127,30 @@ export const ChatClient = ({ chatSettings }: Props) => {
               )}
             />
 
+            {/* ONLINE */}
+            <FormField
+              control={form.control}
+              name="online"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Show Only Online User</FormLabel>
+                    <FormDescription>
+                      Only show online users in the side bar chat
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      name="cblOnline"
+                      disabled={loading}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
             {/* COACH */}
             <FormField
               control={form.control}

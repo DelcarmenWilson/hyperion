@@ -29,7 +29,7 @@ import {
   leadUpdateByIdTransfer,
   leadUpdateByIdUnShare,
 } from "@/actions/lead";
-import { useCurrentUser } from "../use-current-user";
+import { useCurrentUser } from "../user/use-current";
 import { useQuery } from "@tanstack/react-query";
 import {
   LeadBasicInfoSchemaTypeP,

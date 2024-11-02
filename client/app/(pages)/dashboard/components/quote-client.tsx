@@ -6,7 +6,7 @@ import {
   adminQuotesGetActive,
 } from "@/actions/admin/quote";
 import { Button } from "@/components/ui/button";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { Quote } from "@prisma/client";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { toast } from "sonner";

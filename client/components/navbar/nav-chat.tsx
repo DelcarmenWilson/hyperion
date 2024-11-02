@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bot, User } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useChatActions, useChatData } from "@/hooks/use-chat";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,7 +18,8 @@ import { formatDate } from "@/formulas/dates";
 
 export const NavChat = () => {
   const user = useCurrentUser();
-  const { navChats, navChatsIsFectching } = useChatData("empty");
+  const { onNavChatsGet } = useChatData();
+  const { navChats, navChatsIsFectching } = onNavChatsGet();
   const { audioRef, navUpdateMutate, navUpdating } = useChatActions();
 
   return (

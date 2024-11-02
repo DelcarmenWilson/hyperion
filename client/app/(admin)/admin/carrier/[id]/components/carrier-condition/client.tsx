@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { Paperclip } from "lucide-react";
 
 import { Carrier } from "@prisma/client";

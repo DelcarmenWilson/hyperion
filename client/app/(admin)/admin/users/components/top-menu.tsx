@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 
 import { AssistantForm, UserForm } from "./form";
 import { Button } from "@/components/ui/button";

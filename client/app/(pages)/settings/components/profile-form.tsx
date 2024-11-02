@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { toast } from "sonner";
 import { UserRole } from "@prisma/client";

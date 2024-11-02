@@ -3,8 +3,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import { toast } from "sonner";
+import { useCurrentRole } from "@/hooks/user/use-current";
+import { useUserData } from "@/hooks/user/use-user";
 import { useLeadStore } from "@/hooks/lead/use-lead";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { usePipelineData } from "@/hooks/pipeline/use-pipeline";
 
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { ImportLeadColumn, columns } from "./columns";
@@ -23,21 +25,14 @@ import { allLeadTypes, importVendors } from "@/constants/lead";
 import { LeadSchemaType } from "@/schemas/lead";
 
 import { leadsImport } from "@/actions/lead";
-import { useQuery } from "@tanstack/react-query";
-import { FullPipeline } from "@/types";
-import { User } from "@prisma/client";
-import { usersGetAllByRole } from "@/actions/user";
-import { pipelineGetAll } from "@/actions/user/pipeline";
 import { CustomDialog } from "@/components/global/custom-dialog";
-import { usePipelineData } from "@/hooks/pipeline/use-pipeline";
-import { useUserData } from "@/hooks/use-user";
 
 export const ImportLeadsForm = () => {
-  const { isImportFormOpen, onImportFormClose } = useLeadStore();
-  const { users, isUserFetching } = useUserData("ASSISTANT");
-  const { pipelines, isFetchingPipelines } = usePipelineData();
   const role = useCurrentRole();
   const router = useRouter();
+  const { isImportFormOpen, onImportFormClose } = useLeadStore();
+  const { onSiteUserGet } = useUserData();
+  const { pipelines, isFetchingPipelines } = usePipelineData();
   const [leads, setLeads] = useState<LeadSchemaType[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
   const [vendor, setVendor] = useState(importVendors[0].value);
@@ -46,6 +41,7 @@ export const ImportLeadsForm = () => {
   const [assistant, setAssistant] = useState<string>();
   const [isPending, startTransition] = useTransition();
   const disabled = leads.length > 0;
+  const { siteUsers, siteUsersFetching } = onSiteUserGet("ASSISTANT");
 
   const onFileUploaded = (e: any) => {
     Papa.parse(e.target.files[0], {
@@ -169,7 +165,7 @@ export const ImportLeadsForm = () => {
             <span>Assistant</span>
             <Select
               name="ddlAssistant"
-              disabled={disabled || isUserFetching}
+              disabled={disabled || siteUsersFetching}
               defaultValue={assistant}
               onValueChange={setAssistant}
             >
@@ -177,7 +173,7 @@ export const ImportLeadsForm = () => {
                 <SelectValue placeholder="Select an Assistant" />
               </SelectTrigger>
               <SelectContent>
-                {users?.map((assistant) => (
+                {siteUsers?.map((assistant) => (
                   <SelectItem key={assistant.id} value={assistant.id}>
                     {assistant.firstName}
                   </SelectItem>

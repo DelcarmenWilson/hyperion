@@ -46,8 +46,8 @@ model ChatMessageReaction {
 
   chatMessageId String
   chatMessage   ChatMessage @relation(fields: [chatMessageId], references: [id], onDelete: Cascade)
-
-  reaction String
+  name          String
+  value         String
 
   userId String
 

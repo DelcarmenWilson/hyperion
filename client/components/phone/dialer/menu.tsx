@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { MdDialpad } from "react-icons/md";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { usePhoneData, usePhoneStore } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 import { useDialerStore } from "../hooks/use-dialer";

@@ -9,9 +9,7 @@ export const useSocket = (
 
   useEffect(() => {
     return () => {
-      if (socket) {
-        socket.close();
-      }
+      if (socket) socket.close();
     };
   }, [socket]);
 

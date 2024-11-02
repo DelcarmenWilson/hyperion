@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,15 +14,22 @@ import { formatJustTime } from "@/formulas/dates";
 import { ALLADMINS } from "@/constants/user";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
-
-export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
+type Props = {
+  size?: string;
+  showButtons?: boolean;
+};
+export const AgentWorkInfoCard = ({
+  size = "md",
+  showButtons = false,
+}: Props) => {
   const role = useCurrentRole();
   const { onWorkInfoFormOpen } = useBluePrintStore();
-  const { agentWorkInfo, isFetchingAgentWorkInfo } = useBluePrintData();
+  const { onAgentWorkInfoGet } = useBluePrintData();
+  const { agentWorkInfo, agentWorkInfoIsFetching } = onAgentWorkInfoGet();
   const hours = agentWorkInfo?.workingHours.split("-");
 
   return (
-    <SkeletonWrapper isLoading={isFetchingAgentWorkInfo}>
+    <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
       {agentWorkInfo ? (
         <div
           className={cn(
@@ -33,9 +40,9 @@ export const AgentWorkInfoCard = ({ size = "md" }: { size?: string }) => {
           <div className="flex justify-between items-center mb-2">
             <p className="font-semibold">Work info</p>
             {/* srinitodo - update to allusers if team wants to give BP edit option to all users */}
-            {ALLADMINS.includes(role!) && (
+            {ALLADMINS.includes(role!) && showButtons && (
               <Button
-                size="sm"
+                size="xs"
                 onClick={() => onWorkInfoFormOpen(agentWorkInfo)}
               >
                 Edit Details

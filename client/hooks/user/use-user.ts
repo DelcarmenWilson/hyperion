@@ -3,14 +3,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { User } from "@prisma/client";
+import { User, UserRole } from "@prisma/client";
 import { FullTeam, FullUserReport } from "@/types";
 import { RegisterSchemaType } from "@/schemas/register";
 
-import { teamsGetAll } from "@/actions/team";
-import { userInsert, userInsertAssistant, usersGetAll, usersGetAllByRole } from "@/actions/user";
 import { adminChangeTeam } from "@/actions/admin/team";
 import { adminChangeUserAccountStatus, adminChangeUserRole } from "@/actions/admin/user";
+import { teamsGetAll } from "@/actions/team";
+import { userInsert, userInsertAssistant, usersGetAll, usersGetAllByRole } from "@/actions/user";
 import { userGetByIdOnline } from "@/actions/user";
 
 export const useOnlineUserData = () => {
@@ -19,7 +19,7 @@ export const useOnlineUserData = () => {
       queryFn: () => userGetByIdOnline(),
       queryKey: ["online-user"],
     });
-
+  
   return {
     onlineUser,
     isFetchingOnlineUser,
@@ -27,6 +27,17 @@ export const useOnlineUserData = () => {
 };
 
 export const useUserData = () => {
+  //SITE USERS
+  const onSiteUserGet=(role?:UserRole)=>{
+    const { data: siteUsers, isFetching:siteUsersFetching } = useQuery<User[]>({
+      queryKey: [`site-users-${role ||"all"}`],
+      queryFn: () => (role ? usersGetAllByRole(role) : usersGetAll()),
+    });
+    return {        
+   siteUsers, siteUsersFetching
+    }
+  }    
+
   //USERS
   const { data: users, isFetching: isFetchingUsers } = useQuery<User[] | []>({
     queryFn: () => usersGetAll(),
@@ -46,6 +57,7 @@ export const useUserData = () => {
   });
 
   return {
+    onSiteUserGet,
     users,
     isFetchingUsers,
     admins,

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useJobData } from "../hooks/use-job";
 
 import { DataTable } from "@/components/tables/data-table";

@@ -10,7 +10,7 @@ import { useGetCallById } from "@/hooks/use-get-call-by-id";
 import Alert from "./components/alert";
 import MeetingSetup from "./components/setup";
 import MeetingRoom from "./components/room";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 const MeetingPage = () => {
   const { id } = useParams();

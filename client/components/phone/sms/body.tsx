@@ -3,7 +3,7 @@ import { MessageSquare } from "lucide-react";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import {
   useLeadMessageActions,

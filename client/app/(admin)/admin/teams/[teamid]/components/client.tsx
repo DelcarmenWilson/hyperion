@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Calendar, DollarSign, MessageCircle, Phone } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { toast } from "sonner";
 

@@ -5,7 +5,7 @@ import { Sparkle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 
 import { UserRole } from "@prisma/client";
 

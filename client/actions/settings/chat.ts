@@ -6,9 +6,24 @@ import { User } from "@prisma/client";
 
 import { defaultChat } from "@/placeholder/chat";
 import { replacePresetUser } from "@/formulas/text";
-import { ChatSettingsSchema, ChatSettingsSchemaType } from "@/schemas/chat-settings";
+import {
+  ChatSettingsSchema,
+  ChatSettingsSchemaType,
+} from "@/schemas/chat-settings";
 
 //DATA
+export const chatSettingsGet = async () => {
+  try {
+    const user=await currentUser()
+    if(!user)return null
+    const chatsetting = await db.chatSettings.findUnique({
+      where: { userId: user.id },include:{user:true}
+    });
+    return chatsetting;
+  } catch {
+    return null;
+  }
+};
 export const chatSettingGetTitan = async (userId: string) => {
   //Get the chatsettings for the user
   const chatSettings = await db.chatSettings.findUnique({
@@ -32,15 +47,10 @@ export const chatSettingsInsert = async (user: User) => {
 
 export const chatSettingsUpdate = async (values: ChatSettingsSchemaType) => {
   const validatedFields = ChatSettingsSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  if (!validatedFields.success) return { error: "Invalid fields!" };
 
-  const {  userId,
-    defaultPrompt,
-    defaultFunction,
-    titan,
-    coach,} = validatedFields.data;
+  const { userId, defaultPrompt, defaultFunction, titan, coach,online } =
+    validatedFields.data;
 
   const chatSettings = await db.chatSettings.update({
     where: { userId: userId },
@@ -49,6 +59,7 @@ export const chatSettingsUpdate = async (values: ChatSettingsSchemaType) => {
       defaultFunction,
       titan,
       coach,
+      online
     },
   });
 
@@ -58,8 +69,6 @@ export const chatSettingsUpdate = async (values: ChatSettingsSchemaType) => {
 
   return { success: "Chat settings have been updated" };
 };
-
-
 
 export const chatSettingsUpdateCoach = async (coach: boolean) => {
   const user = await currentUser();
@@ -78,6 +87,16 @@ export const chatSettingsUpdateCoach = async (coach: boolean) => {
   return { success: `coaching has been turned ${coach ? "on" : "off"}` };
 };
 
+export const chatSettingsToggleOnline = async (online: boolean) => {
+  const user = await currentUser();
+  if (!user) 
+    return { error: "Unauthenticated" };  
 
-
-
+  await db.chatSettings.update({
+    where: { userId: user.id },
+    data: {
+      online,
+    },
+  });
+  return { success: `Show online users has been turned ${online ? "on" : "off"}` };
+};

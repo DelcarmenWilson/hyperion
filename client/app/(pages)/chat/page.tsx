@@ -12,7 +12,8 @@ import { MessageList } from "@/components/chat/message-list";
 
 const ChatsPage = () => {
   const { chatId, setChatId } = useChatStore();
-  const { fullChats } = useChatData(chatId!);
+  const { onFullChatsGet } = useChatData();
+  const { fullChats } = onFullChatsGet();
 
   //set the intial full chat
   useEffect(() => {

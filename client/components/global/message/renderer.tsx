@@ -33,9 +33,7 @@ const Renderer = ({ value }: Props) => {
     };
   }, [value]);
   if (isEmpty) return null;
-  return (
-    <div ref={rendererRef} className="ql-editor ql-renderer text-foreground" />
-  );
+  return <div ref={rendererRef} />;
 };
 
 export default Renderer;

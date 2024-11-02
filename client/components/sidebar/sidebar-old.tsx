@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/store/use-sidebar";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { ArrowRight, Sparkle } from "lucide-react";
 
 import { UserRole } from "@prisma/client";

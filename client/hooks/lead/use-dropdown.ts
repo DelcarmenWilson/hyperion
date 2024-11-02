@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {  FullLeadNoConvo } from "@/types";
 
 import { leadDeleteById, leadUpdateByIdTitan } from "@/actions/lead";
-import { useCurrentRole } from "../user-current-role";
+import { useCurrentRole } from "../user/use-current";
 import { conversationDeleteById } from "@/actions/lead/conversation";
 import { exportLeads } from "@/lib/xlsx";
 

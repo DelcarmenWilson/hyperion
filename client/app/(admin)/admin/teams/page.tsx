@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTeamData } from "./hooks/use-team";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import { TeamForm } from "./components/form";

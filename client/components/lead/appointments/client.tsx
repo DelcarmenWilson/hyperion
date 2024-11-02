@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Calendar } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { FullAppointment } from "@/types";

@@ -1,6 +1,6 @@
 "use client";
 import { Reply, Share } from "lucide-react";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
 import {

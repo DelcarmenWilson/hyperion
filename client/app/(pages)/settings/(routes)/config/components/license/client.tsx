@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useAgentLicenseData } from "../../hooks/use-license";
 
 import { DataTable } from "@/components/tables/data-table";

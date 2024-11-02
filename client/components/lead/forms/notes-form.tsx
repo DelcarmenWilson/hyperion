@@ -1,6 +1,6 @@
 "use client";
 import { X } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useLeadNotesActions } from "@/hooks/lead/use-lead";
 
 import { Button } from "@/components/ui/button";

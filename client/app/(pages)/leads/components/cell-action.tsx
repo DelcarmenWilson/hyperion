@@ -2,7 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { toast } from "sonner";
 

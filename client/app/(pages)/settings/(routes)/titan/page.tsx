@@ -1,12 +1,8 @@
-import { currentUser } from "@/lib/auth";
-import { chatSettingsGetById } from "@/data/chat-settings";
-
 import { ChatClient } from "./components/client";
+import { chatSettingsGet } from "@/actions/settings/chat";
 
 const ChatPage = async () => {
-  const user = await currentUser();
-
-  const chatSettings = await chatSettingsGetById(user?.id as string);
+  const chatSettings = await chatSettingsGet();
   if (!chatSettings) return null;
   return <ChatClient chatSettings={chatSettings} />;
 };

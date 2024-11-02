@@ -8,7 +8,7 @@ import axios from "axios";
 
 import SocketContext from "@/providers/socket";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 

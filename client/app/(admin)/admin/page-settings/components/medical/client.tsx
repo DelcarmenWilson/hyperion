@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { MedicalForm } from "./form";
 import { columns } from "./columns";
 import { ImportMedicalConditionForm } from "./import/form";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 
 type MedicalClientProps = {
   initMedicals: MedicalCondition[];

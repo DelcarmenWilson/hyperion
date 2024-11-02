@@ -1,7 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "@/providers/theme";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MasterModalProvider } from "@/providers/master-modal";

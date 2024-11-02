@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Check, X } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { Button } from "@/components/ui/button";
 import {
   Select,

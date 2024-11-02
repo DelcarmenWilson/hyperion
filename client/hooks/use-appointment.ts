@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
-import { useCurrentUser } from "./use-current-user";
+import { useCurrentUser } from "./user/use-current";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 

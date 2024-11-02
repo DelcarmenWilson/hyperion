@@ -1,7 +1,7 @@
 import React from "react";
 import { Phone, PhoneForwarded, PhoneOff } from "lucide-react";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { toast } from "sonner";
 import {
   Select,

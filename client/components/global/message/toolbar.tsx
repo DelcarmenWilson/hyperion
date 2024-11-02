@@ -10,7 +10,7 @@ type Props = {
   isPending: boolean;
   handleEdit: () => void;
   handleDelete: () => void;
-  handleReaction: (value: string) => void;
+  handleReaction: (id: string, value: string) => void;
 };
 export const Toolbar = ({
   isAuthor,
@@ -24,7 +24,8 @@ export const Toolbar = ({
       <div className="opacity-0 transition-opacity border bg-background rounded-md shadow-sm group-hover:opacity-100">
         <EmojiPopover
           hint="Add reaction"
-          onEmojiSelect={(emoji) => handleReaction(emoji.native)}
+          // onEmojiSelect={(emoji) => handleReaction(emoji.native)}
+          onEmojiSelect={(emoji) => handleReaction(emoji.id, emoji.native)}
         >
           <Button variant="ghost" size="xs" disabled={isPending}>
             <Smile className="size-4" />

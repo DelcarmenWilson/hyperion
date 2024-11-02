@@ -1,7 +1,6 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 import { UnreadShortChat } from "@/types";
 
 // CHAT
@@ -9,23 +8,14 @@ import { UnreadShortChat } from "@/types";
 export const chatsGetByUserId = async () => {
   try {
     const user = await currentUser();
-    if (!user?.email) {
-      return [];
-    }
+    if (!user?.email) return [];
 
     const chats = await db.chat.findMany({
       where: {
-        OR: [
-          {
-            userOne: { id: user.id },
-          },
-          {
-            userTwo: { id: user.id },
-          },
-        ],
+        OR: [{ userOneId: user.id }, { userTwoId: user.id }],
       },
       include: { userOne: true, userTwo: true, lastMessage: true },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { lastMessage: { createdAt: "desc" } },
     });
 
     return chats;
@@ -43,7 +33,10 @@ export const chatGetById = async (id: string) => {
     const chat = await db.chat.findUnique({
       where: { id },
       include: {
-        messages: { include: { sender: true }, orderBy: { createdAt: "desc" } },
+        messages: {
+          include: { sender: true, reactions: true },
+          orderBy: { createdAt: "desc" },
+        },
         userOne: true,
         userTwo: true,
         lastMessage: true,
@@ -89,14 +82,7 @@ export const chatsGetByUserIdUnread = async () => {
 
     const chats = await db.chat.findMany({
       where: {
-        OR: [
-          {
-            userOne: { id: user.id },
-          },
-          {
-            userTwo: { id: user.id },
-          },
-        ],
+        OR: [{ userOneId: user.id }, { userTwoId: user.id }],
         AND: [
           { lastMessage: { senderId: { not: user.id } } },
           { unread: { gt: 0 } },
@@ -113,19 +99,23 @@ export const chatsGetByUserIdUnread = async () => {
     return [];
   }
 };
+//ACTIONS
+export const chatDeleteById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) return { error: "Unauthenticated!" };
 
-// CHAT MESSAGES
-export const messagesGetByChatId = async (chatId: string) => {
-  try {
-    const messages = await db.chatMessage.findMany({
-      where: { chatId },
-      orderBy: { createdAt: "desc" },
-    });
+  const existingChat = await db.chat.findUnique({
+    where: { id },
+  });
+  if (!existingChat) return { error: "Chat does not exist!" };
 
-    return messages;
-  } catch (error: any) {
-    return [];
-  }
+  if (existingChat.lastMessageId) return { error: "Cannot delete chat!" };
+
+  if (existingChat.userOneId != user.id) return { error: "Unauthorized!" };
+
+  await db.chat.delete({ where: { id } });
+
+  return { success: "chat has been deleted" };
 };
 //TODO - need to come back to this
 
@@ -221,45 +211,15 @@ export const chatGroupInsert = async (
   return { success: chat };
 };
 
-export const chatDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
-  const existingChat = await db.chat.findUnique({
-    where: { id },
-  });
-  if (!existingChat) {
-    return { error: "Chat does not exist!" };
-  }
-
-  if (existingChat.userOneId != user.id) {
-    return { error: "Unauthorized!" };
-  }
-
-  await db.chat.delete({ where: { id } });
-
-  return { success: "chat has been deleted" };
-};
-
 export const chatUpdateByIdUnread = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
+  if (!user) return { error: "Unauthenticated!" };
 
   if (id == "clear") {
     id = "";
     await db.chat.updateMany({
       where: {
-        OR: [
-          {
-            userOne: { id: user.id },
-          },
-          {
-            userTwo: { id: user.id },
-          },
-        ],
+        OR: [{ userOneId: user.id }, { userTwoId: user.id }],
         AND: [
           { lastMessage: { senderId: { not: user.id } } },
           { unread: { gt: 0 } },
@@ -278,81 +238,4 @@ export const chatUpdateByIdUnread = async (id: string) => {
   }
 
   return { success: id };
-};
-
-// CHAT MESSAGES
-// ACTIONS
-export const chatMessageDeleteById = async (id: string) => {
-  const user = await currentUser();
-  if (!user) return { error: "Unauthenticated!" };
-
-  const message = await db.chatMessage.findUnique({ where: { id } });
-
-  if (!message) return { error: "Message not found" };
-
-  if (message.senderId != user.id) return { error: "Unauthorized" };
-
-  const deletedMessage = await db.chatMessage.update({
-    where: { id },
-    data: { deletedBy: user.id },
-  });
-
-  return { success: deletedMessage };
-};
-
-export const chatMessageInsert = async (values: ChatMessageSchemaType) => {
-  const validatedFields = ChatMessageSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid fields!" };
-
-  const { chatId, body, image, senderId } = validatedFields.data;
-
-  const chat = await db.chat.findUnique({
-    where: { id: chatId },
-    include: { lastMessage: true },
-  });
-  if (!chat) return { error: "Chat does not exists!!" };
-
-  const newMessage = await db.chatMessage.create({
-    data: {
-      chatId: chat.id,
-      body,
-      image,
-      senderId,
-    },
-    include: { sender: true },
-  });
-
-  await db.chat.update({
-    where: { id: chatId },
-    data: {
-      lastMessageId: newMessage.id,
-      unread: chat.lastMessage?.senderId == senderId ? chat.unread + 1 : 0,
-    },
-  });
-
-  return { success: newMessage };
-};
-
-export const chatMessageUpdateById = async ({
-  id,
-  body,
-}: {
-  id: string;
-  body: string;
-}) => {
-  const user = await currentUser();
-  if (!user) return { error: "Unauthenticated!" };
-
-  const message = await db.chatMessage.findUnique({ where: { id } });
-
-  if (!message) return { error: "Message not found" };
-
-  if (message.senderId != user.id) return { error: "Unauthorized" };
-
-  const newMessage = await db.chatMessage.update({
-    where: { id },
-    data: { body },
-  });
-
-  return { success: newMessage };
 };

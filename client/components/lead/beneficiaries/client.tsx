@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import {
   useBeneficiaryStore,
   useLeadBeneficiaryActions,

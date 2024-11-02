@@ -1,6 +1,6 @@
 "use client";
 import { Users } from "lucide-react";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useLeadsData } from "./hooks/use-leads";
 
 import { columns } from "./components/columns";

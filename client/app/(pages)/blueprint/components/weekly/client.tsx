@@ -1,5 +1,5 @@
 "use client";
-import { useCurrentRole } from "@/hooks/user-current-role";
+import { useCurrentRole } from "@/hooks/user/use-current";
 import { useBluePrintActions, useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Button } from "@/components/ui/button";

@@ -4,7 +4,7 @@ import React from "react";
 import { Share2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 

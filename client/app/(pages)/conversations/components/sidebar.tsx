@@ -1,6 +1,6 @@
 "use client";
 import { useContext } from "react";
-import { useConversationData } from "../hooks/use-conversation";
+import { useConversationData } from "../../../../hooks/use-conversation";
 
 import SocketContext from "@/providers/socket";
 

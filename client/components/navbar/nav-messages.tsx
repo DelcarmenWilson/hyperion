@@ -1,13 +1,11 @@
-import { useContext, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import SocketContext from "@/providers/socket";
 import Link from "next/link";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { MessagesSquare } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/user/use-current";
+import { useConversationActions } from "@/hooks/use-conversation";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,66 +13,22 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
+import Hint from "@/components/custom/hint";
 import SkeletonWrapper from "@/components//skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
 
-import { ShortConvo } from "@/types";
-
-import {
-  conversationsGetByUserIdUnread,
-  conversationUpdateByIdUnread,
-} from "@/actions/lead/conversation";
-
 //TODO - see if we can consolidate the UI with nav Chats
 export const NavMessages = () => {
   const user = useCurrentUser();
-  const router = useRouter();
-  const { socket } = useContext(SocketContext).SocketState;
-  const queryClient = useQueryClient();
-
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  const { data: conversations, isFetching: chatsIsFectching } = useQuery<
-    ShortConvo[]
-  >({
-    queryKey: ["navbarMessages"],
-    queryFn: () => conversationsGetByUserIdUnread(),
-  });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: conversationUpdateByIdUnread,
-    onSuccess: (result) => {
-      if (result.success?.length) {
-        router.push(`/conversations/${result.success}`);
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["navbarMessages"],
-      });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const onPlay = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["navbarMessages"],
-    });
-    if (!audioRef.current) return;
-    audioRef.current.volume = 0.5;
-    audioRef.current.play();
-  };
-
-  useEffect(() => {
-    socket?.on("conversation-message-notify", onPlay);
-    return () => {
-      socket?.off("conversation-message-notify", onPlay);
-    };
-    // eslint-disable-next-line
-  }, []);
+  const {
+    audioRef,
+    conversations,
+    conversationsFectching,
+    onConversationUpdateByIdUnread,
+    conversationUpdating,
+  } = useConversationActions();
 
   return (
     <div>
@@ -90,8 +44,8 @@ export const NavMessages = () => {
             )}
           </Button>
         </DropdownMenuTrigger>
-        <SkeletonWrapper isLoading={chatsIsFectching}>
-          <DropdownMenuContent className="w-full lg:w-[300px]" align="start">
+        <SkeletonWrapper isLoading={conversationsFectching}>
+          <DropdownMenuContent className="w-full lg:w-[300px]" align="center">
             <DropdownMenuLabel>Lead Messages</DropdownMenuLabel>
             {conversations?.length ? (
               <>
@@ -99,8 +53,8 @@ export const NavMessages = () => {
                   <DropdownMenuItem
                     key={chat.id}
                     className="flex gap-2 border-b cursor-pointer"
-                    disabled={isPending}
-                    onClick={() => mutate(chat.id)}
+                    disabled={conversationUpdating}
+                    onClick={() => onConversationUpdateByIdUnread(chat.id)}
                   >
                     <div className="relative">
                       <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
@@ -127,9 +81,9 @@ export const NavMessages = () => {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuItem
-                  disabled={isPending}
+                  disabled={conversationUpdating}
                   className="gap-2 justify-center"
-                  onClick={() => mutate("clear")}
+                  onClick={() => onConversationUpdateByIdUnread("clear")}
                 >
                   Mark all as Read
                 </DropdownMenuItem>

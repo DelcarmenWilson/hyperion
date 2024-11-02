@@ -3,9 +3,9 @@ import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
 import SocketContext from "@/providers/socket";
-import { useGroupMessage } from "@/hooks/use-group-message";
+import { useGroupMessageStore } from "@/hooks/use-group-message";
 import { usePhoneStore } from "@/hooks/use-phone";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import Link from "next/link";
 import { TwilioShortConference } from "@/types";
 
@@ -23,7 +23,7 @@ export const useMainNav = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const { conference, setConference, onPhoneInOpen } = usePhoneStore();
-  const { onOpen } = useGroupMessage();
+  const { onOpen } = useGroupMessageStore();
 
   const onJoinCall = () => {
     setIsNotificationOpen(false);

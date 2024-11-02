@@ -1,7 +1,7 @@
 "use client";
 import { User } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { PageLayout } from "@/components/custom/layout/page";
