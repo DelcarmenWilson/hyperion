@@ -38,11 +38,11 @@ import { capitalize } from "@/formulas/text";
 //TODO need to add all the form data and updates into the useLeadIntakeActions
 export const IntakeForm = () => {
   const {
-    isIntakeFormOpen,
-    onIntakeFormClose,
     leadId,
     leadFullName,
     dialogType,
+    isIntakeFormOpen,
+    onIntakeFormClose,
     isIntakeDialogOpen,
     onIntakeDialogOpen,
     onIntakeDialogClose,
@@ -50,22 +50,22 @@ export const IntakeForm = () => {
   } = useLeadStore();
 
   const {
-    personal,
-    personalIsFectching,
-    beneficiaries,
-    beneficiariesIsFectching,
-    doctor,
-    doctorIsFectching,
-    bank,
-    bankIsFectching,
-    other,
-    otherIsFectching,
-    policy,
-    policyIsFectching,
-    medical,
-    medicalIsFectching,
+    onPersonalGet,
+    onBeneficiariesGet,
+    onDoctorGet,
+    onBankGet,
+    onOtherGet,
+    onPolicyGet,
+    onMedicalGet,
   } = useLeadIntakeData();
 
+  const { personal, personalFetching } = onPersonalGet();
+  const { beneficiaries, beneficiariesFetching } = onBeneficiariesGet();
+  const { doctor, doctorFetching } = onDoctorGet();
+  const { bank, bankFetching } = onBankGet();
+  const { other, otherFetching } = onOtherGet();
+  const { policy, policyFetching } = onPolicyGet();
+  const { medical, medicalFetching } = onMedicalGet();
   if (!personal || !leadId) return null;
   return (
     <>
@@ -105,7 +105,7 @@ export const IntakeForm = () => {
         maxHeight
       >
         {/* PERSONAL INFORMATION */}
-        <SkeletonWrapper isLoading={personalIsFectching}>
+        <SkeletonWrapper isLoading={personalFetching}>
           <SectionWrapper
             title="Personal Information"
             button={
@@ -338,7 +338,7 @@ export const IntakeForm = () => {
 
         {/* PRIMARY BENEFICIARIES AND  CONTINGENT BENEFICIARIES*/}
         {["Primary", "Contingent"].map((type, i) => (
-          <SkeletonWrapper key={i} isLoading={beneficiariesIsFectching}>
+          <SkeletonWrapper key={i} isLoading={beneficiariesFetching}>
             <SectionWrapper title={`${type} Beneficiaries`}>
               <Table>
                 <TableHeader>
@@ -377,7 +377,7 @@ export const IntakeForm = () => {
         ))}
 
         {/* OTHER INFORMATION*/}
-        <SkeletonWrapper isLoading={otherIsFectching}>
+        <SkeletonWrapper isLoading={otherFetching}>
           <SectionWrapper
             title="OTHER INFORMATION"
             button={
@@ -410,7 +410,7 @@ export const IntakeForm = () => {
         </SkeletonWrapper>
 
         {/* DOCTOR INFORMATION*/}
-        <SkeletonWrapper isLoading={doctorIsFectching}>
+        <SkeletonWrapper isLoading={doctorFetching}>
           <SectionWrapper
             title="Doctor Information"
             button={
@@ -448,7 +448,7 @@ export const IntakeForm = () => {
         </SkeletonWrapper>
 
         {/* BANK INFORMATION*/}
-        <SkeletonWrapper isLoading={bankIsFectching}>
+        <SkeletonWrapper isLoading={bankFetching}>
           <SectionWrapper
             title="Bank Information"
             button={
@@ -478,7 +478,7 @@ export const IntakeForm = () => {
         </SkeletonWrapper>
 
         {/* FOR PRODUCERS ONLY*/}
-        <SkeletonWrapper isLoading={policyIsFectching}>
+        <SkeletonWrapper isLoading={policyFetching}>
           <SectionWrapper
             title="For Producers Only"
             button={
@@ -514,7 +514,7 @@ export const IntakeForm = () => {
         </SkeletonWrapper>
         {/*MEDICAL QUESTIONS*/}
 
-        <SkeletonWrapper isLoading={medicalIsFectching}>
+        <SkeletonWrapper isLoading={medicalFetching}>
           <SectionWrapper
             title="MEDICAL QUESTIONS"
             button={

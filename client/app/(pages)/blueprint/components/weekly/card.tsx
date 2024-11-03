@@ -34,9 +34,16 @@ export const BluePrintWeeklyCard = () => {
     endAt,
   } = bluePrintWeekActive;
 
-  const callsPercentage = Math.ceil(calls / callsTarget);
-  const appsPercentage = Math.ceil(appointments / appointmentsTarget);
-  const premiumPercentage = Math.ceil(premium / premiumTarget);
+  const callsPercentage = Math.min(Math.ceil((calls / callsTarget) * 100), 100);
+  const appsPercentage = Math.min(
+    Math.ceil((appointments / appointmentsTarget) * 100),
+    100
+  );
+  // const premiumPercentage = Math.ceil((premium / premiumTarget) * 100);
+  const premiumPercentage = Math.min(
+    Math.ceil((premium / premiumTarget) * 100),
+    100
+  );
 
   const barData: BarType[] = [
     {

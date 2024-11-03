@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMainChatActions, useMainNav } from "./hooks/use-main-nav";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ export const MainNav = ({ admin }: Props) => {
     onJoinCall,
     onRejectCall,
   } = useMainNav();
+
   const { audioRef } = useMainChatActions();
 
   const [initialLoad, setInitialLoad] = useState(false);

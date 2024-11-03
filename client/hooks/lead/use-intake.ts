@@ -40,63 +40,92 @@ import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
 
 export const useLeadIntakeData = () => {
   const { leadId } = useLeadStore();
-  const { data: personal, isFetching: personalIsFectching } =
-    useQuery<IntakePersonalMainSchemaType | null>({
+  const onPersonalGet = () => {
+    const {
+      data: personal,
+      isFetching: personalFetching,
+      isLoading: personalLoading,
+    } = useQuery<IntakePersonalMainSchemaType | null>({
       queryKey: [`lead-intake-personal-${leadId}`],
       queryFn: () => leadGetByIdIntakePersonalInfo(leadId as string),
     });
-
-  const { data: beneficiaries, isFetching: beneficiariesIsFectching } =
-    useQuery<LeadBeneficiary[]>({
+    return { personal, personalFetching, personalLoading };
+  };
+  const onBeneficiariesGet = () => {
+    const {
+      data: beneficiaries,
+      isFetching: beneficiariesFetching,
+      isLoading: beneficiariesLoading,
+    } = useQuery<LeadBeneficiary[]>({
       queryKey: [`lead-intake-beneficiaries-${leadId}`],
       queryFn: () => leadBeneficiariesGetAllById(leadId as string),
     });
-
-  const { data: doctor, isFetching: doctorIsFectching } =
-    useQuery<IntakeDoctorInfoSchemaType | null>({
+    return { beneficiaries, beneficiariesFetching, beneficiariesLoading };
+  };
+  const onDoctorGet = () => {
+    const {
+      data: doctor,
+      isFetching: doctorFetching,
+      isLoading: doctorLoading,
+    } = useQuery<IntakeDoctorInfoSchemaType | null>({
       queryKey: [`lead-intake-doctor-${leadId}`],
       queryFn: () => leadGetByIdIntakeDoctorInfo(leadId as string),
     });
-
-  const { data: bank, isFetching: bankIsFectching } =
-    useQuery<IntakeBankInfoSchemaType | null>({
+    return { doctor, doctorFetching, doctorLoading };
+  };
+  const onBankGet = () => {
+    const {
+      data: bank,
+      isFetching: bankFetching,
+      isLoading: bankLoading,
+    } = useQuery<IntakeBankInfoSchemaType | null>({
       queryKey: [`lead-intake-bank-${leadId}`],
       queryFn: () => leadGetByIdIntakeBankInfo(leadId!),
     });
-
-  const { data: other, isFetching: otherIsFectching } =
-    useQuery<IntakeOtherInfoSchemaType | null>({
+    return { bank, bankFetching, bankLoading };
+  };
+  const onOtherGet = () => {
+    const {
+      data: other,
+      isFetching: otherFetching,
+      isLoading: otherLoading,
+    } = useQuery<IntakeOtherInfoSchemaType | null>({
       queryKey: [`lead-intake-other-${leadId}`],
       queryFn: () => leadGetByIdIntakeOtherInfo(leadId as string),
     });
-
-  const { data: policy, isFetching: policyIsFectching } =
-    useQuery<FullLeadPolicy | null>({
+    return { other, otherFetching, otherLoading };
+  };
+  const onPolicyGet = () => {
+    const {
+      data: policy,
+      isFetching: policyFetching,
+      isLoading: policyLoading,
+    } = useQuery<FullLeadPolicy | null>({
       queryKey: [`lead-intake-policy-${leadId}`],
       queryFn: () => leadGetByIdIntakePolicyInfo(leadId as string),
     });
-
-  const { data: medical, isFetching: medicalIsFectching } =
-    useQuery<IntakeMedicalInfoSchemaType | null>({
+    return { policy, policyFetching, policyLoading };
+  };
+  const onMedicalGet = () => {
+    const {
+      data: medical,
+      isFetching: medicalFetching,
+      isLoading: medicalLoading,
+    } = useQuery<IntakeMedicalInfoSchemaType | null>({
       queryKey: [`lead-intake-medical-${leadId}`],
       queryFn: () => leadGetByIdIntakeMedicalInfo(leadId as string),
     });
 
+    return { medical, medicalFetching, medicalLoading };
+  };
   return {
-    personal,
-    personalIsFectching,
-    beneficiaries,
-    beneficiariesIsFectching,
-    doctor,
-    doctorIsFectching,
-    bank,
-    bankIsFectching,
-    other,
-    otherIsFectching,
-    policy,
-    policyIsFectching,
-    medical,
-    medicalIsFectching,
+    onPersonalGet,
+    onBeneficiariesGet,
+    onDoctorGet,
+    onBankGet,
+    onOtherGet,
+    onPolicyGet,
+    onMedicalGet,
   };
 };
 

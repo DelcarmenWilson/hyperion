@@ -14,18 +14,18 @@ import { chatMessageGetById, chatMessageInsert } from "@/actions/chat/message";
 
 type State = {
   messageId?: string;
-  isOpen: boolean;
+  isMiniMessageOpen: boolean;
 };
 type Actions = {
-  onOpen: (m: string) => void;
-  onClose: () => void;
+  onMiniMessageOpen: (m: string) => void;
+  onMiniMessageClose: () => void;
 };
 
 export const useMiniMessageStore = create<State & Actions>((set) => ({
   //  messageId: "cm30nyurz001587wugvl5np8f",
-  isOpen: false,
-  onOpen: (m) => set({ isOpen: true, messageId: m }),
-  onClose: () => set({ isOpen: false, messageId: undefined }),
+  isMiniMessageOpen: false,
+  onMiniMessageOpen: (m) => set({ isMiniMessageOpen: true, messageId: m }),
+  onMiniMessageClose: () => set({ isMiniMessageOpen: false, messageId: undefined }),
 }));
 
 export const useMiniMessageData = () => {
@@ -53,7 +53,7 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
   const { socket } = useSocketStore();
   const editorRef = useRef<Quill | null>(null);
   const { invalidateMultiple } = useInvalidate();
-  const { onClose } = useMiniMessageStore();
+  const {  onMiniMessageClose } = useMiniMessageStore();
   const user = useCurrentUser();
 
   // INSERT MESSAGE
@@ -65,7 +65,7 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
           invalidateMultiple([`chat-${results.success.chatId}`, "full-chats"]);
           socket?.emit("chat-message-sent", agentId, results.success);
           toast.success("Chat message created", { id: "insert-chat-message" });
-          onClose();
+          onMiniMessageClose();
         } else toast.error(results.error);
       },
       onError: (error) =>

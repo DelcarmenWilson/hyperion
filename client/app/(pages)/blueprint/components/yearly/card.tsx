@@ -35,9 +35,18 @@ export const BluePrintYearlyCard = () => {
     weeks,
     endAt,
   } = bluePrintYearActive;
-  const callsPercentage = Math.ceil(calls / (callsTarget * weeks));
-  const appsPercentage = Math.ceil(appointments / (appointmentsTarget * weeks));
-  const premiumPercentage = Math.ceil(premium / (premiumTarget * weeks));
+  const callsPercentage = Math.min(
+    Math.ceil((calls / (callsTarget * weeks)) * 100),
+    100
+  );
+  const appsPercentage = Math.min(
+    Math.ceil((appointments / (appointmentsTarget * weeks)) * 100),
+    100
+  );
+  const premiumPercentage = Math.min(
+    Math.ceil((premium / (premiumTarget * weeks)) * 100),
+    100
+  );
 
   const barData: BarType[] = [
     {

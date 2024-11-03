@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useChatFormActions } from "@/hooks/chat/use-chat";
 import {
   useMiniMessageData,
   useMiniMessageFormActions,
@@ -17,7 +16,8 @@ import { TimerBar } from "../global/time-bar";
 
 export const MiniMessageCard = () => {
   const [hover, setHover] = useState(false);
-  const { messageId, isOpen, onClose } = useMiniMessageStore();
+  const { messageId, isMiniMessageOpen, onMiniMessageClose } =
+    useMiniMessageStore();
   const { onChatMessageGet } = useMiniMessageData();
   const { message, messageFetching, messageLoading } = onChatMessageGet();
   const { handleSumbit, miniMessageInserting, editorRef, onTyping } =
@@ -33,13 +33,13 @@ export const MiniMessageCard = () => {
       onMouseEnter={() => setHover(true)}
       className={cn(
         "fixed bottom-15 transition-[right] -right-full ease-in-out duration-500 w-full lg:w-[300px] z-[100] overflow-hidden",
-        isOpen && "right-10"
+        isMiniMessageOpen && "right-10"
       )}
     >
       <div className="relative flex flex-col bg-background  border border-primary w-full gap-2 p-2 rounded-sm ">
         <div className="flex justify-between items-center">
           <span className="font-semibold text-sm">New Message</span>
-          <Button variant="simple" size="icon" onClick={onClose}>
+          <Button variant="simple" size="icon" onClick={onMiniMessageClose}>
             <X size={16} />
           </Button>
         </div>

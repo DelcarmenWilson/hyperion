@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
@@ -185,11 +185,13 @@ export const useMainNav = () => {
 export const useMainChatActions = () => {
   const { socket } = useSocketStore();
   const { chatId, isChatOpen } = useChatStore();
-  const { isOpen, onOpen } = useMiniMessageStore();
+  const { isMiniMessageOpen, onMiniMessageOpen } = useMiniMessageStore();
   const { invalidate } = useInvalidate();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const pathname = usePathname();
+  const [chatOpen, setChatOpen] = useState(isChatOpen);
+  const [miniMessageOpen, setMiniMessageOpen] = useState(isMiniMessageOpen);
 
   const invalidateNav = () => {
     invalidate("navbar-chats");
@@ -218,26 +220,28 @@ export const useMainChatActions = () => {
     }
   };
 
-  const onMessageRecieved = (
-    chatId: string,
-    mChatId: string,
-    mid: string,
-    isOpen: boolean
-  ) => {
-    if (mChatId == chatId) {
-      chatUpdateByIdUnread(chatId);
-      invalidate(`chat-${chatId}`);
-    }
+  // const onMessageRecieved = (
+  //   chatId: string,
+  //   mChatId: string,
+  //   mid: string,
+  //   openMini: boolean
+  // ) => {
+  //   if (mChatId == chatId) {
+  //     chatUpdateByIdUnread(chatId);
+  //     invalidate(`chat-${chatId}`);
+  //   }
 
-    console.log(chatId, mChatId, mid, isOpen);
-    if (pathname.startsWith("/chat")) return;
-    //TODO - need to come back to this. Mini message card showul not open if the sidechat is already open
-    if (!isOpen) {
-      onOpen(mid);
-    }
-    invalidate("navbar-chats");
-    onPlay();
-  };
+  //   console.log(chatId, mChatId, mid, openMini, chatOpen);
+  //   if (pathname.startsWith("/chat")) return;
+  //   //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
+  //   if (!chatOpen) {
+  //     console.log(chatId, mChatId, mid, openMini, isMiniMessageOpen, chatOpen);
+  //     onMiniMessageOpen(mid);
+  //   }
+
+  //   invalidate("navbar-chats");
+  //   onPlay();
+  // };
 
   const onAccountSuspended = () => {
     toast.error("You account has been supsended");
@@ -245,15 +249,38 @@ export const useMainChatActions = () => {
   };
 
   useEffect(() => {
-    // full message
-    //TODO we can posibly consolidate the next two socket calls
-    socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
-      onMessageRecieved(
-        chatId as string,
-        data.message.chatId,
-        data.message.id,
-        isChatOpen && isOpen
-      )
+    const onMessageRecieved = (
+      chatId: string,
+      mChatId: string,
+      mid: string,
+      openMini: boolean
+    ) => {
+      if (mChatId == chatId) {
+        chatUpdateByIdUnread(chatId);
+        invalidate(`chat-${chatId}`);
+      }
+
+      console.log(chatId, mChatId, mid, openMini, chatOpen);
+      if (pathname.startsWith("/chat")) return;
+      //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
+      if (!chatOpen) {
+        onMiniMessageOpen(mid);
+      }
+
+      invalidate("navbar-chats");
+      onPlay();
+    };
+    socket?.on(
+      "chat-message-received",
+      (data: { message: FullChatMessage }) => {
+        onMessageRecieved(
+          chatId as string,
+          data.message.chatId,
+          data.message.id,
+          isChatOpen
+        );
+        console.log("here", isChatOpen);
+      }
     );
     socket?.on(
       "chat-action-received",
@@ -269,7 +296,7 @@ export const useMainChatActions = () => {
             chatId as string,
             data.message.chatId,
             data.message.id,
-            isChatOpen && isOpen
+            isChatOpen
           )
       );
       socket?.off(
@@ -279,8 +306,48 @@ export const useMainChatActions = () => {
       );
       socket?.off("account-suspended-recieved", () => onAccountSuspended());
     };
-    // eslint-disable-next-line
-  }, [chatId]);
+  }, [chatId, chatOpen]);
+  // useEffect(() => {
+  //   // full message
+  //   //TODO we can posibly consolidate the next two socket calls
+  //   socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
+  //     onMessageRecieved(
+  //       chatId as string,
+  //       data.message.chatId,
+  //       data.message.id,
+  //       isChatOpen && isOpen
+  //     )
+  //   );
+  //   socket?.on(
+  //     "chat-action-received",
+  //     (data: { chatId: string; action: string }) =>
+  //       onRecievedChatAction(chatId as string, data.chatId, data.action)
+  //   );
+  //   socket?.on("account-suspended-recieved", () => onAccountSuspended());
+  //   return () => {
+  //     socket?.off(
+  //       "chat-message-received",
+  //       (data: { message: FullChatMessage }) =>
+  //         onMessageRecieved(
+  //           chatId as string,
+  //           data.message.chatId,
+  //           data.message.id,
+  //           isChatOpen && isOpen
+  //         )
+  //     );
+  //     socket?.off(
+  //       "chat-action-received",
+  //       (data: { chatId: string; action: string }) =>
+  //         onRecievedChatAction(chatId as string, data.chatId, data.action)
+  //     );
+  //     socket?.off("account-suspended-recieved", () => onAccountSuspended());
+  //   };
+  // }, [chatId, isOpen, isChatOpen]);
+
+  useEffect(() => {
+    setChatOpen(isChatOpen);
+    console.log(isChatOpen);
+  }, [isChatOpen]);
   return {
     audioRef,
     invalidateNav,
