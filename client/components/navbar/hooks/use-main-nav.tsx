@@ -1,19 +1,27 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
 import SocketContext from "@/providers/socket";
-import { useGroupMessageStore } from "@/hooks/use-group-message";
+import { useGroupMessageStore } from "@/hooks/chat/use-group-message";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useCurrentUser } from "@/hooks/user/use-current";
+import { useMiniMessageStore } from "@/hooks/chat/use-mini-message";
+import { useSocketStore } from "@/hooks/use-socket-store";
+import { useChatStore } from "@/hooks/chat/use-chat";
+import { usePathname } from "next/navigation";
+import { useInvalidate } from "@/hooks/use-invalidate";
+import { signOut } from "next-auth/react";
+
 import Link from "next/link";
-import { TwilioShortConference } from "@/types";
+import { FullChatMessage, TwilioShortConference } from "@/types";
+
+import { sendTestEmail } from "@/lib/mail";
 
 //TODO - dont forget to remove these test actions.
 import { sendAppointmentReminders } from "@/actions/appointment";
-
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
-import { sendTestEmail } from "@/lib/mail";
+import { chatUpdateByIdUnread } from "@/actions/chat";
 
 export const useMainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -171,6 +179,111 @@ export const useMainNav = () => {
     conference,
     onJoinCall,
     onRejectCall,
+  };
+};
+
+export const useMainChatActions = () => {
+  const { socket } = useSocketStore();
+  const { chatId, isChatOpen } = useChatStore();
+  const { isOpen, onOpen } = useMiniMessageStore();
+  const { invalidate } = useInvalidate();
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const pathname = usePathname();
+
+  const invalidateNav = () => {
+    invalidate("navbar-chats");
+  };
+
+  // GENERAL FUNCTIONS
+  const onPlay = () => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = 0.5;
+    audioRef.current.play();
+  };
+
+  const onRecievedChatAction = (
+    chatId: string,
+    mChatId: string,
+    action: string
+  ) => {
+    if (mChatId != chatId) return;
+    switch (action) {
+      case "res":
+        break;
+      default:
+        invalidate(`chat-${chatId}`);
+        toast.success("Chat has been deleted");
+        break;
+    }
+  };
+
+  const onMessageRecieved = (
+    chatId: string,
+    mChatId: string,
+    mid: string,
+    isOpen: boolean
+  ) => {
+    if (mChatId == chatId) {
+      chatUpdateByIdUnread(chatId);
+      invalidate(`chat-${chatId}`);
+    }
+
+    console.log(chatId, mChatId, mid, isOpen);
+    if (pathname.startsWith("/chat")) return;
+    //TODO - need to come back to this. Mini message card showul not open if the sidechat is already open
+    if (!isOpen) {
+      onOpen(mid);
+    }
+    invalidate("navbar-chats");
+    onPlay();
+  };
+
+  const onAccountSuspended = () => {
+    toast.error("You account has been supsended");
+    signOut();
+  };
+
+  useEffect(() => {
+    // full message
+    //TODO we can posibly consolidate the next two socket calls
+    socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
+      onMessageRecieved(
+        chatId as string,
+        data.message.chatId,
+        data.message.id,
+        isChatOpen && isOpen
+      )
+    );
+    socket?.on(
+      "chat-action-received",
+      (data: { chatId: string; action: string }) =>
+        onRecievedChatAction(chatId as string, data.chatId, data.action)
+    );
+    socket?.on("account-suspended-recieved", () => onAccountSuspended());
+    return () => {
+      socket?.off(
+        "chat-message-received",
+        (data: { message: FullChatMessage }) =>
+          onMessageRecieved(
+            chatId as string,
+            data.message.chatId,
+            data.message.id,
+            isChatOpen && isOpen
+          )
+      );
+      socket?.off(
+        "chat-action-received",
+        (data: { chatId: string; action: string }) =>
+          onRecievedChatAction(chatId as string, data.chatId, data.action)
+      );
+      socket?.off("account-suspended-recieved", () => onAccountSuspended());
+    };
+    // eslint-disable-next-line
+  }, [chatId]);
+  return {
+    audioRef,
+    invalidateNav,
   };
 };
 

@@ -146,6 +146,14 @@ export class ServerSocket {
         reason,
       });
     });
+    // CHAT ACTIONS
+    socket.on("chat-action-sent", (userId,chatId, action) => {
+      const sid = this.GetSocketIdFromUid(userId);
+      this.SendUserMessage("chat-action-received", sid, {
+        chatId,
+        action,
+      });
+    });
     //CHAT MESSAGES
     socket.on("chat-message-sent", (userId, message) => {
       const sid = this.GetSocketIdFromUid(userId);
@@ -153,7 +161,6 @@ export class ServerSocket {
         message,
       });
     });
-    //CHAT MESSAGES
     socket.on("chat-is-typing-sent", (userId,myUserId) => {
       const sid = this.GetSocketIdFromUid(userId);
       this.SendUserMessage("chat-is-typing-received", sid, {myUserId});

@@ -3,7 +3,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 
 import { ShortChat } from "@/types";
 

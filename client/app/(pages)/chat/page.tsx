@@ -5,7 +5,7 @@ import { MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { ChatForm } from "@/components/chat/form";
-import { useChatStore, useChatData } from "@/hooks/use-chat";
+import { useChatStore, useChatData } from "@/hooks/chat/use-chat";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { Header } from "./components/header";
 import { MessageList } from "@/components/chat/message-list";

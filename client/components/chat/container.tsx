@@ -1,5 +1,5 @@
 "use client";
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 
 import { ChatInfo } from "./info";
 import { ChatList } from "./list";

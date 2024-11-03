@@ -1,5 +1,5 @@
 "use client";
-import { useChatOnlineActions, useChatStore } from "@/hooks/use-chat";
+import { useChatOnlineActions, useChatStore } from "@/hooks/chat/use-chat";
 
 import ChatCard from "./card";
 import { ScrollArea } from "../ui/scroll-area";

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 import SocketContext from "@/providers/socket";
 import { toast } from "sonner";
 

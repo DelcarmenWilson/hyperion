@@ -53,6 +53,7 @@ export const convertChatSettings = (result: any): ChatSettings[] => {
       defaultFunction: d["defaultFunction"],
       titan: d["titan"] == "f" ? false : true,
       coach: d["coach"] == "f" ? false : true,
+      online:d["online"] == "f" ? false : true,
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
     };

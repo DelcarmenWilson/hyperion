@@ -58,6 +58,10 @@ export type FullChatMessage = ChatMessage & {
   sender: User;
   reactions:ChatMessageReaction[]
 };
+export type FullMiniMessage = ChatMessage & {
+  sender: User;
+  chat:{userOneId:string,userTwoId:string}
+};
 export type UnreadShortChat = Chat & {
   userOne: User;
   userTwo: User;

@@ -7,8 +7,8 @@ type EmptyCardProps = {
 };
 export const EmptyCard = ({ title, subTitle }: EmptyCardProps) => {
   return (
-    <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0">
-      <CardContent className="flex-center flex-col h-full gap-2 text-muted-foreground  overflow-hidden p-0">
+    <Card className="flex flex-1 flex-col w-full h-full overflow-hidden p-0 border-0 shadow-none">
+      <CardContent className="flex-center flex-col h-full gap-2 text-muted-foreground  overflow-hidden p-0 border-0">
         <Image
           height={80}
           width={80}
@@ -17,8 +17,8 @@ export const EmptyCard = ({ title, subTitle }: EmptyCardProps) => {
           alt="logo"
           priority
         />
-        <h4 className="text-lg">{title}</h4>
-        <h4 className="text-sm">{subTitle}</h4>
+        <h4 className="text-lg text-center">{title}</h4>
+        <h4 className="text-sm text-center">{subTitle}</h4>
       </CardContent>
     </Card>
   );

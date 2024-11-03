@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Bot, User } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useChatActions, useChatData } from "@/hooks/use-chat";
+import { useChatActions, useChatData } from "@/hooks/chat/use-chat";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,17 +17,12 @@ import SkeletonWrapper from "../skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
 
 export const NavChat = () => {
-  const user = useCurrentUser();
   const { onNavChatsGet } = useChatData();
   const { navChats, navChatsIsFectching } = onNavChatsGet();
-  const { audioRef, navUpdateMutate, navUpdating } = useChatActions();
+  const { navUpdateMutate, navUpdating } = useChatActions();
 
   return (
     <div>
-      <audio
-        ref={audioRef}
-        src={`/sounds/${user?.messageInternalNotification}.wav`}
-      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="relative" size="icon" variant="outline">

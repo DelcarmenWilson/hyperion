@@ -19,10 +19,10 @@ import {
   smsSendLeadAppointmentReminder,
 } from "./sms";
 import { getEntireDay, getToday } from "@/formulas/dates";
-import {  UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { callUpdateByIdAppointment } from "./call";
 import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
-import {  leadGetOrInsert } from "./lead";
+import { leadGetOrInsert } from "./lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { leadEmailInsert } from "./lead/email";
 import { userGetByAssistant } from "@/actions/user";
@@ -36,7 +36,10 @@ export const appointmentsGet = async () => {
 
     const appointments = await db.appointment.findMany({
       where: { agentId: userId },
-      include:{lead:{select:{firstName:true}},label:{select:{color:true}}},
+      include: {
+        lead: { select: { firstName: true } },
+        label: { select: { color: true } },
+      },
       orderBy: { createdAt: "desc" },
     });
     return appointments;
@@ -157,9 +160,9 @@ export const appointmentGetById = async (id: string) => {
 export const appointmentLabelsGetAll = async () => {
   try {
     const userId = await userGetByAssistant();
-    if(!userId) return[]
-    const labels = await db.appointmentLabel.findMany({      
-      where: { OR: [{ userId }, { default: { equals: true} }] },
+    if (!userId) return [];
+    const labels = await db.appointmentLabel.findMany({
+      where: { OR: [{ userId }, { default: { equals: true } }] },
     });
     return labels;
   } catch {
@@ -553,10 +556,9 @@ export const appointmentLabelUpdateById = async (
   const existingLabel = await db.appointmentLabel.findUnique({
     where: { id },
   });
-  if (!existingLabel) {
+  if (!existingLabel) 
     return { error: "This label does not exist!" };
-  }
-
+  
   const label = await db.appointmentLabel.update({
     where: { id },
     data: {
@@ -604,11 +606,8 @@ export const appointmentLabelUpdateByChecked = async (
 
 export const sendAppointmentReminders = async () => {
   // wee need current datetime and + one hour datetime
-
   const currentDate = new Date();
-
   const oneHourPlusDate = new Date(currentDate);
-
   oneHourPlusDate.setHours(oneHourPlusDate.getHours() + 1);
 
   const appointments = await db.appointment.findMany({

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Bot, List, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useTodoStore } from "@/hooks/user/use-todo";

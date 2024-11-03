@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useChatData, useChatActions } from "@/hooks/use-chat";
+import { useChatData, useChatActions } from "@/hooks/chat/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { ChatCard } from "./card";

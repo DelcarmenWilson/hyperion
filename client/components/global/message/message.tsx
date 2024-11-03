@@ -4,7 +4,7 @@ import { Delta } from "quill/core";
 import {
   useChatMessageActions,
   useChatMessageReactionActions,
-} from "@/hooks/use-chat";
+} from "@/hooks/chat/use-chat";
 
 import { ChatMessageReaction } from "@prisma/client";
 
@@ -117,8 +117,8 @@ export const Message = ({
           ) : (
             <div
               className={cn(
-                "flex flex-col border bg-secondary text-white  max-w-[70%] text-wrap break-words rounded-md p-1 px-3 w-fit",
-                isAuthor && " items-end bg-primary/50 text-foreground"
+                "flex flex-col border bg-secondary text-foreground  max-w-[70%] text-wrap break-words rounded-md p-1 px-3 w-fit",
+                isAuthor && " items-end bg-primary/50"
               )}
             >
               {deletedBy ? (
@@ -210,8 +210,8 @@ export const Message = ({
 
             <div
               className={cn(
-                "flex flex-col border bg-secondary text-white max-w-[70%] text-wrap break-words rounded-md p-1 px-3 w-fit",
-                isAuthor && " items-end bg-primary/50 text-foreground"
+                "flex flex-col border bg-secondary text-foreground max-w-[70%] text-wrap break-words rounded-md p-1 px-3 w-fit",
+                isAuthor && " items-end bg-primary/50 "
               )}
             >
               {deletedBy ? (

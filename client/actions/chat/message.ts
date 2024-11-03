@@ -5,7 +5,18 @@ import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 
 //DATA
 // CHAT MESSAGES
-export const chatMessageGetChatId = async (chatId: string) => {
+export const chatMessageGetById = async (id: string) => {
+  try {
+    const message = await db.chatMessage.findUnique({
+      where: { id },include:{sender:true,chat:{select:{userOneId:true,userTwoId:true}}}
+    });
+
+    return message;
+  } catch (error: any) {
+    return null;
+  }
+};
+export const chatMessagesGetByChatId = async (chatId: string) => {
   try {
     const messages = await db.chatMessage.findMany({
       where: { chatId },
@@ -38,11 +49,11 @@ export const chatMessagesHideByChatId = async (chatId: string) => {
     return { error: "UnAuthorized" };
 
   await db.chatMessage.updateMany({
-    where: { chatId, hidden: false },
+    where: { chatId, hidden: false,deletedBy:null },
     data: { hidden: true, deletedBy: user.id },
   });
 
-  return { success: "Chat has been deleted" };
+  return { success: "Chat has been deleted",data:chatId };
 };
 
 //TODO - need to come back to this

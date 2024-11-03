@@ -38,6 +38,7 @@ import {
   ShortChat,
   FullChat,
   FullChatMessage,
+  FullMiniMessage,
   UnreadShortChat,
   FullConversationWithLead,
 } from "./message";
@@ -181,7 +182,7 @@ export type {
   LeadAndConversation,
   ShortChat,
   FullChat,
-  FullChatMessage,
+  FullChatMessage,FullMiniMessage,
   UnreadShortChat,
 };
 //PHONE

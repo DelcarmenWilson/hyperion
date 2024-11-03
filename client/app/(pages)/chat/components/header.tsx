@@ -1,6 +1,6 @@
 "use client";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useChatData } from "@/hooks/use-chat";
+import { useChatData } from "@/hooks/chat/use-chat";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SkeletonWrapper from "@/components/skeleton-wrapper";

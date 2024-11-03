@@ -1,25 +1,22 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { signOut } from "next-auth/react";
 import SocketContext from "@/providers/socket";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useInvalidate } from "./use-invalidate";
+import { useInvalidate } from "../use-invalidate";
+import { useSocketStore } from "../use-socket-store";
+import { useCurrentUser } from "../user/use-current";
+
+import Quill from "quill";
+import { Delta } from "quill/core";
 import { toast } from "sonner";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 import { ChatMessageSchemaType } from "@/schemas/chat";
-import {
-  FullChat,
-  FullChatMessage,
-  ShortChat,
-  UnreadShortChat,
-  UserSocket,
-} from "@/types";
+import { FullChat, ShortChat, UnreadShortChat, UserSocket } from "@/types";
 import { OnlineUser } from "@/types/user";
 
 import {
-  chatDeleteById,
   chatGetById,
   chatInsert,
   chatsGetByUserId,
@@ -38,10 +35,6 @@ import {
   chatSettingsToggleOnline,
 } from "@/actions/settings/chat";
 import { chatMessageReactionToggle } from "@/actions/chat/reaction";
-import { useCurrentUser } from "./user/use-current";
-import Quill from "quill";
-import { Delta } from "quill/core";
-import { useSocketStore } from "./use-socket-store";
 
 type State = {
   isChatOpen: boolean;
@@ -198,13 +191,10 @@ export const useChatData = () => {
 };
 
 export const useChatActions = () => {
-  const { socket } = useContext(SocketContext).SocketState;
-  const { chatId, setChatId } = useChatStore();
+  const { socket } = useSocketStore();
+  const { user, chatId, setChatId } = useChatStore();
   const { invalidate } = useInvalidate();
   const router = useRouter();
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  const pathname = usePathname();
 
   const invalidateNav = () => {
     invalidate("navbar-chats");
@@ -246,20 +236,20 @@ export const useChatActions = () => {
     mutationFn: chatMessagesHideByChatId,
     onSuccess: (results) => {
       if (results.success) {
+        const chatId = results.data;
         invalidate(`chat-${chatId}`);
+        sendChatAction(chatId!, "deleteChat");
         toast.success("Chat deleted", { id: "delete-chat" });
       } else toast.error(results.error, { id: "delete-chat" });
     },
     onError: (error) => toast.error(error.message, { id: "delete-chat" }),
   });
 
-  const onChatDelete = useCallback(
-    (id: string) => {
-      toast.loading("Deleting chat ...", { id: "delete-chat" });
-      chatDeleteMutate(id);
-    },
-    [chatDeleteMutate]
-  );
+  const onChatDelete = useCallback(() => {
+    if (!chatId) return;
+    toast.loading("Deleting chat ...", { id: "delete-chat" });
+    chatDeleteMutate(chatId);
+  }, [chatDeleteMutate, chatId]);
 
   //INSERT CHAT
   const { mutate: chatInsertMutate, isPending: chatInserting } = useMutation({
@@ -283,46 +273,12 @@ export const useChatActions = () => {
   );
 
   // GENERAL FUNCTIONS
-  const onPlay = () => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = 0.5;
-    audioRef.current.play();
+
+  const sendChatAction = (chatId: string, action: string) => {
+    socket?.emit("chat-action-sent", user?.id, chatId, action);
   };
 
-  const onMessageRecieved = (mChatId: string, chatId: string) => {
-    if (mChatId == chatId) {
-      chatUpdateByIdUnread(chatId);
-      invalidate(`chat-${chatId}`);
-    }
-    if (pathname.startsWith("/chat")) return;
-    invalidate("navbar-chats");
-    onPlay();
-  };
-
-  const onAccountSuspended = () => {
-    toast.error("You account has been supsended");
-    signOut();
-  };
-
-  useEffect(() => {
-    if (!chatId) return;
-    // full message
-    socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
-      onMessageRecieved(data.message.chatId, chatId)
-    );
-    socket?.on("account-suspended-recieved", () => onAccountSuspended());
-    return () => {
-      socket?.off(
-        "chat-message-received",
-        (data: { message: FullChatMessage }) =>
-          onMessageRecieved(data.message.chatId, chatId)
-      );
-      socket?.off("account-suspended-recieved", () => onAccountSuspended());
-    };
-    // eslint-disable-next-line
-  }, [chatId]);
   return {
-    audioRef,
     invalidateNav,
     navUpdateMutate,
     navUpdating,
@@ -334,7 +290,7 @@ export const useChatActions = () => {
 };
 
 export const useChatMessageActions = () => {
-  const { socket } = useSocketStore()
+  const { socket } = useSocketStore();
   const { chatId, user } = useChatStore();
   const { invalidate, invalidateMultiple } = useInvalidate();
 

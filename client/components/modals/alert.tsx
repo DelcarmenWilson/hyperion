@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/modals/modal";
 import { Button } from "@/components/ui/button";
 
-type AlertModalProps = {
+type Props = {
   title?: string;
   description?: string;
   isOpen: boolean;
@@ -19,7 +19,7 @@ export const AlertModal = ({
   onConfirm,
   loading,
   height = "h-full",
-}: AlertModalProps) => {
+}: Props) => {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);

@@ -2,7 +2,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGroupMessageStore } from "@/hooks/use-group-message";
+import { useGroupMessageStore } from "@/hooks/chat/use-group-message";
 
 import { Button } from "../ui/button";
 

@@ -11,11 +11,13 @@ import { ALLADMINS } from "@/constants/user";
 
 export const BluePrintWeeklyClient = () => {
   const role = useCurrentRole();
-  const { bluePrintsWeekly, isFetchingBluePrintsWeekly } = useBluePrintData();
+  const { onBluePrintsWeeklyGet } = useBluePrintData();
   const { onCalculateBlueprintTargets } = useBluePrintActions();
+  const { bluePrintsWeekly, bluePrintsWeeklyIsFetching } =
+    onBluePrintsWeeklyGet();
 
   return (
-    <SkeletonWrapper isLoading={isFetchingBluePrintsWeekly}>
+    <SkeletonWrapper isLoading={bluePrintsWeeklyIsFetching}>
       <DataTable
         columns={columns}
         data={bluePrintsWeekly || []}

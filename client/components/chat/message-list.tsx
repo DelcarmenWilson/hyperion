@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useChatActions, useChatData } from "@/hooks/use-chat";
+import { useChatActions, useChatData } from "@/hooks/chat/use-chat";
 import { useScroller } from "@/hooks/use-scroller";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 

@@ -168,7 +168,7 @@ export const useBluePrintData = () => {
 export const useBluePrintActions = () => {
   const { onBluePrintWeekFormClose, onWorkInfoFormClose } = useBluePrintStore();
 
-  const { invalidate } = useInvalidate();
+  const { invalidate,invalidateMultiple } = useInvalidate();
   //AGENT WORK INFO INSERT
   const {
     mutate: agentWorkInfoInsertMutate,
@@ -181,7 +181,7 @@ export const useBluePrintActions = () => {
           id: "insert-blueprint-work-info",
         });
         onWorkInfoFormClose();
-        invalidate([
+        invalidateMultiple([
           "blueprint-work-info",
           "blueprints",
           "blueprints-weekly",
@@ -266,7 +266,7 @@ export const useBluePrintActions = () => {
   //TODO - change this to use mutate
   const onCalculateBlueprintTargets = async () => {
     createWeeklyBlueprint();
-    invalidate([
+    invalidateMultiple([
       "blueprint-work-info",
       "blueprints",
       "blueprints-weekly",

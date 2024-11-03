@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useMainNav } from "./hooks/use-main-nav";
+import { useMainChatActions, useMainNav } from "./hooks/use-main-nav";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,8 @@ export const MainNav = ({ admin }: Props) => {
     onJoinCall,
     onRejectCall,
   } = useMainNav();
+  const { audioRef } = useMainChatActions();
+
   const [initialLoad, setInitialLoad] = useState(false);
   const [isPageNotificationOpen, setIsPageNotificationOpen] = useState(false);
 
@@ -37,6 +39,10 @@ export const MainNav = ({ admin }: Props) => {
 
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>
+      <audio
+        ref={audioRef}
+        src={`/sounds/${user?.messageInternalNotification}.wav`}
+      />
       {/* TODO - dont forget remove these test buttons */}
       {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
       {/* <Button onClick={() => onOpen("Text", "Text")}>Open Group Message</Button> */}

@@ -8,7 +8,7 @@ import React, {
 
 import { UserSocket } from "@/types";
 
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useCurrentUser } from "@/hooks/user/use-current";

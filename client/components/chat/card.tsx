@@ -14,7 +14,7 @@ import {
 import SocketContext from "@/providers/socket";
 import { useRouter } from "next/navigation";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useChatStore } from "@/hooks/use-chat";
+import { useChatStore } from "@/hooks/chat/use-chat";
 import { useLoginStatus } from "@/hooks/use-login-status";
 
 import { OnlineUser } from "@/types/user";
@@ -51,7 +51,6 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
       const chat = await chatInsert(user.id);
       chatId = chat.success?.id;
     }
-    console.log(chatId);
     chatUpdateByIdUnread(chatId!);
     onChatInfoOpen(user, chatId);
   };
