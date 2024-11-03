@@ -36,6 +36,7 @@ export const chatGetById = async (id: string) => {
         messages: {
           include: { sender: true, reactions: true },
           orderBy: { createdAt: "desc" },
+          where:{hidden:false}
         },
         userOne: true,
         userTwo: true,

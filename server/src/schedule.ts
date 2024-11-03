@@ -22,14 +22,19 @@ const newQouteJob = cron.schedule("0 0 * * *", () => {
   axiosCall("newQuote")
 });
 
-//Run everyday at 12am - gets a new randowm quote to display on the dashboard
+//Run every 30min - gets leads from facebook
 const leadsRetrievalJob = cron.schedule("30 * * * *", () => {  
   axiosCall("newLeads")
 });
 
+//Run every 30min - hide deleted messages from chat
+const hideDeletedMessagesJob = cron.schedule("30 * * * *", () => {  
+  axiosCall("hideDeletedMessages")
+});
 export const runJobs = () => {
   //  testJob.start();
   bluePrintTargets.start();
   newQouteJob.start()
   leadsRetrievalJob.start()
+  hideDeletedMessagesJob.start()
 };

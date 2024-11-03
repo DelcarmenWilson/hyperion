@@ -13,6 +13,7 @@ model Chat {
 
   userTwoId String
   userTwo   User     @relation("userTwoChat", fields: [userTwoId], references: [id])
+  deletedBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -37,6 +38,7 @@ model ChatMessage {
   reactions ChatMessageReaction[]
 
   deletedBy String?
+  hidden Boolean               @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

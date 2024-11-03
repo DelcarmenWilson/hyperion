@@ -94,14 +94,14 @@ export const MessageList = ({}) => {
           {chat?.messages.length == 0 && (
             <EmptyCard
               title={`No messages have been sent between you and ${otherUser?.userName} `}
-              subTitle={
-                <Button
-                  onClick={() => onChatDelete(chat.id)}
-                  disabled={chatDeleting}
-                >
-                  Delete Chat
-                </Button>
-              }
+              // subTitle={
+              //   <Button
+              //     onClick={() => onChatDelete(chat.id)}
+              //     disabled={chatDeleting}
+              //   >
+              //     Delete Chat
+              //   </Button>
+              // }
             />
           )}
         </SkeletonWrapper>

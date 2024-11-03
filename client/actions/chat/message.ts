@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 
-
 //DATA
 // CHAT MESSAGES
 export const chatMessageGetChatId = async (chatId: string) => {
@@ -18,6 +17,34 @@ export const chatMessageGetChatId = async (chatId: string) => {
     return [];
   }
 };
+
+//ACTIONS
+
+export const chatMessagesHideByChatId = async (chatId: string) => {
+  const user = await currentUser();
+  if (!user) return { error: "UnAuthenticated" };
+
+  const existingChat = await db.chat.findUnique({
+    where: { id: chatId },
+    select: { userOneId: true, userTwoId: true, deletedBy: true },
+  });
+
+  if (!existingChat) return { error: "Chat doesn't exists" };
+
+  if (existingChat.deletedBy)
+    return { error: "This Chat has been already deleted" };
+
+  if (existingChat.userOneId != user.id && existingChat.userTwoId != user.id)
+    return { error: "UnAuthorized" };
+
+  await db.chatMessage.updateMany({
+    where: { chatId, hidden: false },
+    data: { hidden: true, deletedBy: user.id },
+  });
+
+  return { success: "Chat has been deleted" };
+};
+
 //TODO - need to come back to this
 
 // export const messagesGetByAgentIdUnSeen = async (senderId: string) => {
@@ -107,4 +134,19 @@ export const chatMessageUpdateById = async ({
   });
 
   return { success: newMessage };
+};
+
+// schedule to hide deleted messages info after 1hour
+
+export const hideDeletedMessages = async () => {
+  const currTime = new Date();
+  const lastOneHour = new Date();
+  lastOneHour.setHours(lastOneHour.getHours() - 1);
+  await db.chatMessage.updateMany({
+    where: { NOT: { deletedBy: null },
+    updatedAt:{lte:currTime,gte:lastOneHour} },
+    data: { hidden: true },
+  });
+
+  return {success:"Messages are hidden"}
 };

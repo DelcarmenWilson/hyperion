@@ -29,6 +29,7 @@ import {
 import {
   chatMessageDeleteById,
   chatMessageInsert,
+  chatMessagesHideByChatId,
   chatMessageUpdateById,
 } from "@/actions/chat/message";
 import { usersGetAllChat } from "@/actions/user";
@@ -222,11 +223,30 @@ export const useChatActions = () => {
   });
 
   //DELETE CHAT
+  // const { mutate: chatDeleteMutate, isPending: chatDeleting } = useMutation({
+  //   mutationFn: chatDeleteById,
+  //   onSuccess: (results) => {
+  //     if (results.success) {
+  //       invalidate("full-chats");
+  //       toast.success("Chat deleted", { id: "delete-chat" });
+  //     } else toast.error(results.error, { id: "delete-chat" });
+  //   },
+  //   onError: (error) => toast.error(error.message, { id: "delete-chat" }),
+  // });
+
+  // const onChatDelete = useCallback(
+  //   (id: string) => {
+  //     toast.loading("Deleting chat ...", { id: "delete-chat" });
+  //     chatDeleteMutate(id);
+  //   },
+  //   [chatDeleteMutate]
+  // );
+
   const { mutate: chatDeleteMutate, isPending: chatDeleting } = useMutation({
-    mutationFn: chatDeleteById,
+    mutationFn: chatMessagesHideByChatId,
     onSuccess: (results) => {
       if (results.success) {
-        invalidate("full-chats");
+        invalidate(`chat-${chatId}`);
         toast.success("Chat deleted", { id: "delete-chat" });
       } else toast.error(results.error, { id: "delete-chat" });
     },
