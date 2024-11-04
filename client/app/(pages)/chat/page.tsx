@@ -17,7 +17,7 @@ const ChatsPage = () => {
 
   //set the intial full chat
   useEffect(() => {
-    if (!fullChats) return;
+    if (!fullChats?.length) return;
     setChatId(fullChats[0].id);
   }, [fullChats]);
   return (

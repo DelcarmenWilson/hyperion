@@ -8,7 +8,11 @@ import { ChatMessageSchema, ChatMessageSchemaType } from "@/schemas/chat";
 export const chatMessageGetById = async (id: string) => {
   try {
     const message = await db.chatMessage.findUnique({
-      where: { id },include:{sender:true,chat:{select:{userOneId:true,userTwoId:true}}}
+      where: { id },
+      include: {
+        sender: true,
+        chat: { select: { userOneId: true, userTwoId: true } },
+      },
     });
 
     return message;
@@ -49,11 +53,16 @@ export const chatMessagesHideByChatId = async (chatId: string) => {
     return { error: "UnAuthorized" };
 
   await db.chatMessage.updateMany({
-    where: { chatId, hidden: false,deletedBy:null },
+    where: { chatId, hidden: false, deletedBy: null },
     data: { hidden: true, deletedBy: user.id },
   });
 
-  return { success: "Chat has been deleted",data:chatId };
+  await db.chat.update({
+    where: { id: chatId },
+    data: { lastMessage: { disconnect: true } },
+  });
+
+  return { success: "Chat has been deleted", data: chatId };
 };
 
 //TODO - need to come back to this
@@ -154,10 +163,12 @@ export const hideDeletedMessages = async () => {
   const lastOneHour = new Date();
   lastOneHour.setHours(lastOneHour.getHours() - 1);
   await db.chatMessage.updateMany({
-    where: { NOT: { deletedBy: null },
-    updatedAt:{lte:currTime,gte:lastOneHour} },
+    where: {
+      NOT: { deletedBy: null },
+      updatedAt: { lte: currTime, gte: lastOneHour },
+    },
     data: { hidden: true },
   });
 
-  return {success:"Messages are hidden"}
+  return { success: "Messages are hidden" };
 };

@@ -238,6 +238,8 @@ export const useChatActions = () => {
       if (results.success) {
         const chatId = results.data;
         invalidate(`chat-${chatId}`);
+        invalidate("full-chats");
+        setChatId(undefined);
         sendChatAction(chatId!, "deleteChat");
         toast.success("Chat deleted", { id: "delete-chat" });
       } else toast.error(results.error, { id: "delete-chat" });

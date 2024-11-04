@@ -12,7 +12,7 @@ export const chatsGetByUserId = async () => {
 
     const chats = await db.chat.findMany({
       where: {
-        OR: [{ userOneId: user.id }, { userTwoId: user.id }],
+        OR: [{ userOneId: user.id }, { userTwoId: user.id }], NOT:{lastMessageId:null}
       },
       include: { userOne: true, userTwo: true, lastMessage: true },
       orderBy: { lastMessage: { createdAt: "desc" } },

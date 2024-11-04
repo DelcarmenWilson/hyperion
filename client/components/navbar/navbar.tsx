@@ -16,6 +16,7 @@ import { MainNav } from "./main-nav";
 import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
+import { usePathname } from "next/navigation";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -24,11 +25,14 @@ const lobster = Lobster_Two({
 type Props = {
   admin?: boolean;
 };
+
 const NavBar = ({ admin = false }: Props) => {
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen, masterUnread } = useChatStore();
   const { isTodosOpen, onTodosOpen } = useTodoStore();
+  const pathname=usePathname();
+  const isDisabled=pathname.startsWith("/chat")
 
   return (
     <div
@@ -74,6 +78,7 @@ const NavBar = ({ admin = false }: Props) => {
               variant={isChatOpen ? "default" : "outline"}
               size="icon"
               onClick={onChatOpen}
+              disabled={isDisabled}
             >
               <Bot size={15} />
               {masterUnread > 0 && (
