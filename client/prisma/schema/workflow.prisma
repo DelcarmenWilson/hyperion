@@ -1,53 +1,18 @@
 // REACT FLOW TABLES
 
 model Workflow {
-    id          String             @id @default(cuid())
-    title       String
-    description String
-    nodes       WorkflowNode[]
-    edges       WorkflowNodeEdge[]
-    published   Boolean            @default(false)
-    user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String
-    createdAt   DateTime           @default(now())
-    updatedAt   DateTime           @updatedAt
-}
+    id     String @id @default(cuid())
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
 
-model WorkflowNode {
-    id         String                @id @default(cuid())
-    position   WorkflowNodePosition?
-    data       Json
-    type       String
-    workflowId String
-    workflow   Workflow              @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-    createdAt  DateTime              @default(now())
-    updatedAt  DateTime              @updatedAt
-}
+    name        String
+    description String?
+    definition  String  @db.LongText
+    status      String
 
-model WorkflowNodePosition {
-    nodeId String       @unique
-    node   WorkflowNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-    x      Int          @default(0)
-    y      Int          @default(0)
-}
-
-model WorkflowNodeEdge {
-    id         String    @id @default(cuid())
-    source     String
-    target     String
-    animated   Boolean
-    type       String
-    workflow   Workflow? @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-    workflowId String?
-}
-
-//DEFAULT WORKFLOW NODES
-model WorkflowDefaultNode {
-    id        String   @id @default(cuid())
-    category  String
-    name      String
-    data      Json
-    type      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    //User cannot have two workflkows with the same name
+    @@unique([name, userId])
 }

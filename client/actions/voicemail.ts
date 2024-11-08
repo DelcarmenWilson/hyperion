@@ -4,10 +4,12 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 //DATA
-export const voicemailGetUnHeard = async (userId: string) => {
+export const voicemailGetUnHeard = async () => {
   try {
+    const user=await currentUser()
+    if(!user) return []
     const voicemails = await db.call.findMany({
-      where: { userId, type: "voicemail", listened: false },
+      where: { id:user.id, type: "voicemail", listened: false },
       include: {
         lead: {
           select: {

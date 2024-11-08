@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 import { use } from "react";
-
+///TODO - dont forget to remove this file once the new scipt function are completed
 // DATA
 export const scriptGetOne = async () => {
   try {

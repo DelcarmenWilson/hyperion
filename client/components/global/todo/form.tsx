@@ -17,6 +17,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { formatDate } from "@/formulas/dates";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import ReactDatePicker from "react-datepicker";
 
 type Props = {
   todo?: UserTodo | null;
@@ -30,6 +39,8 @@ export const TodoForm = ({ todo, onSubmit, loading, onClose }: Props) => {
     //@ts-ignore
     defaultValues: todo || {
       reminder: false,
+      startAt: undefined,
+      endAt: undefined,
     },
   });
 
@@ -135,6 +146,103 @@ export const TodoForm = ({ todo, onSubmit, loading, onClose }: Props) => {
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-2">
+            {/* START AT  */}
+            <FormField
+              control={form.control}
+              name="startAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Start Date</FormLabel>
+                  <Popover>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          value={
+                            field.value
+                              ? formatDate(field.value)
+                              : "Pick a date"
+                          }
+                        />
+                        <PopoverTrigger asChild>
+                          <CalendarIcon
+                            size={16}
+                            className="absolute opacity-50 right-2 top-0 translate-y-1/2 cursor-pointer"
+                          />
+                        </PopoverTrigger>
+                      </div>
+                    </FormControl>
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date > new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* START AT */}
+            <FormField
+              control={form.control}
+              name="startAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Start Date</FormLabel>
+
+                  <FormControl>
+                    <Input type="time" autoComplete="time" step="300" />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* END AT */}
+          <FormField
+            control={form.control}
+            name="endAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel> End Date</FormLabel>
+                <Popover>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        value={
+                          field.value ? formatDate(field.value) : "Pick a date"
+                        }
+                      />
+                      <PopoverTrigger asChild>
+                        <CalendarIcon
+                          size={16}
+                          className="absolute opacity-50 right-2 top-0 translate-y-1/2 cursor-pointer"
+                        />
+                      </PopoverTrigger>
+                    </div>
+                  </FormControl>
+                  <PopoverContent className="w-auto p-0" align="end">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
               </FormItem>
             )}
           />

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -27,6 +27,9 @@ export const MiniMessageCard = () => {
     );
 
   const avatarFallback = message?.sender.userName?.charAt(0).toUpperCase();
+  useEffect(() => {
+    setHover(false);
+  }, [messageId]);
   if (!messageId) return null;
   return (
     <div
@@ -68,7 +71,11 @@ export const MiniMessageCard = () => {
         />
         <div className="absolute bottom-2 w-full pe-3">
           {/* TODO - need to add the onclose function. it was giving me an erro when closing the popup automatically. */}
-          <TimerBar hover={hover} hold={messageFetching} />
+          <TimerBar
+            hover={hover}
+            hold={messageFetching}
+            onClose={onMiniMessageClose}
+          />
         </div>
       </div>
     </div>

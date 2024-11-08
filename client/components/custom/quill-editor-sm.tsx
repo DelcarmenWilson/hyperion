@@ -27,7 +27,7 @@ import { CustomDialog } from "../global/custom-dialog";
 
 import Hint from "@/components/custom/hint";
 import EmojiPopover from "./emoji-popover";
-import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
+import { TemplateList } from "@/app/(pages)/(main)/settings/(routes)/config/components/templates/list";
 
 import { replacePreset } from "@/formulas/text";
 

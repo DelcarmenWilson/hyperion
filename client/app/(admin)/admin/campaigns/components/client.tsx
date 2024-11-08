@@ -7,7 +7,7 @@ import { CampaignCard } from "./card";
 import { CampaignForm } from "./form";
 import { CampaignSection } from "./section";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { useFacebookData } from "@/app/(pages)/settings/(routes)/config/hooks/use-config";
+import { useFacebookData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-config";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const CampaignsClient = () => {

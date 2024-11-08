@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
@@ -190,7 +190,6 @@ export const useMainChatActions = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const pathname = usePathname();
-  const [chatOpen, setChatOpen] = useState(isChatOpen);
   const [miniMessageOpen, setMiniMessageOpen] = useState(isMiniMessageOpen);
 
   const invalidateNav = () => {
@@ -204,44 +203,36 @@ export const useMainChatActions = () => {
     audioRef.current.play();
   };
 
-  const onRecievedChatAction = (
-    chatId: string,
-    mChatId: string,
-    action: string
-  ) => {
-    if (mChatId != chatId) return;
-    switch (action) {
-      case "res":
-        break;
-      default:
+  const onRecievedChatAction = useCallback(
+    (mChatId: string, action: string) => {
+      if (mChatId != chatId) return;
+      switch (action) {
+        case "res":
+          break;
+        default:
+          invalidate(`chat-${chatId}`);
+          toast.success("Chat has been deleted");
+          break;
+      }
+    },
+    [chatId]
+  );
+
+  const onMessageRecieved = useCallback(
+    (mChatId: string, mid: string) => {
+      if (mChatId == chatId) {
+        chatUpdateByIdUnread(chatId);
         invalidate(`chat-${chatId}`);
-        toast.success("Chat has been deleted");
-        break;
-    }
-  };
+      }
 
-  // const onMessageRecieved = (
-  //   chatId: string,
-  //   mChatId: string,
-  //   mid: string,
-  //   openMini: boolean
-  // ) => {
-  //   if (mChatId == chatId) {
-  //     chatUpdateByIdUnread(chatId);
-  //     invalidate(`chat-${chatId}`);
-  //   }
+      if (pathname.startsWith("/chat")) return;
+      if (!isChatOpen && !isMiniMessageOpen) onMiniMessageOpen(mid);
 
-  //   console.log(chatId, mChatId, mid, openMini, chatOpen);
-  //   if (pathname.startsWith("/chat")) return;
-  //   //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
-  //   if (!chatOpen) {
-  //     console.log(chatId, mChatId, mid, openMini, isMiniMessageOpen, chatOpen);
-  //     onMiniMessageOpen(mid);
-  //   }
-
-  //   invalidate("navbar-chats");
-  //   onPlay();
-  // };
+      invalidate("navbar-chats");
+      onPlay();
+    },
+    [chatId, isChatOpen, isMiniMessageOpen]
+  );
 
   const onAccountSuspended = () => {
     toast.error("You account has been supsended");
@@ -249,65 +240,24 @@ export const useMainChatActions = () => {
   };
 
   useEffect(() => {
-    const onMessageRecieved = (
-      chatId: string,
-      mChatId: string,
-      mid: string,
-      openMini: boolean
-    ) => {
-      if (mChatId == chatId) {
-        chatUpdateByIdUnread(chatId);
-        invalidate(`chat-${chatId}`);
-      }
-
-      console.log(chatId, mChatId, mid, openMini, chatOpen);
-      if (pathname.startsWith("/chat")) return;
-      //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
-      if (!chatOpen) {
-        onMiniMessageOpen(mid);
-      }
-
-      invalidate("navbar-chats");
-      onPlay();
-    };
     socket?.on(
       "chat-message-received",
       (data: { message: FullChatMessage }) => {
-        onMessageRecieved(
-          chatId as string,
-          data.message.chatId,
-          data.message.id,
-          isChatOpen
-        );
-        console.log("here", isChatOpen);
+        onMessageRecieved(data.message.chatId, data.message.id);
       }
     );
     socket?.on(
       "chat-action-received",
       (data: { chatId: string; action: string }) =>
-        onRecievedChatAction(chatId as string, data.chatId, data.action)
+        onRecievedChatAction(data.chatId, data.action)
     );
     socket?.on("account-suspended-recieved", () => onAccountSuspended());
     return () => {
-      socket?.off(
-        "chat-message-received",
-        (data: { message: FullChatMessage }) =>
-          onMessageRecieved(
-            chatId as string,
-            data.message.chatId,
-            data.message.id,
-            isChatOpen
-          )
-      );
-      socket?.off(
-        "chat-action-received",
-        (data: { chatId: string; action: string }) =>
-          onRecievedChatAction(chatId as string, data.chatId, data.action)
-      );
-      socket?.off("account-suspended-recieved", () => onAccountSuspended());
+      socket?.off("chat-message-received");
+      socket?.off("chat-action-received");
+      socket?.off("account-suspended-recieved");
     };
-  }, [chatId, chatOpen]);
-  // useEffect(() => {
+  }, [socket, onMessageRecieved, onRecievedChatAction]);
   //   // full message
   //   //TODO we can posibly consolidate the next two socket calls
   //   socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
@@ -344,10 +294,10 @@ export const useMainChatActions = () => {
   //   };
   // }, [chatId, isOpen, isChatOpen]);
 
-  useEffect(() => {
-    setChatOpen(isChatOpen);
-    console.log(isChatOpen);
-  }, [isChatOpen]);
+  // useEffect(() => {
+  //   setChatOpen(isChatOpen);
+  //   console.log(isChatOpen);
+  // }, [isChatOpen]);
   return {
     audioRef,
     invalidateNav,

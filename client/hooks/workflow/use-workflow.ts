@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { create } from "zustand";
 
-import { FullWorkflow } from "@/types/workflow";
+import { FullWorkflow } from "@/types/workflow/workflow";
 import {
   FullWorkFlowSchemaType,
   WorkflowEdgeSchemaType,

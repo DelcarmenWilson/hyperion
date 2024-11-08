@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { usePhoneStore } from "@/hooks/use-phone";
-import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
+import { useAgentLicenseData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-license";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { Tiptap } from "@/components/reusable/tiptap";

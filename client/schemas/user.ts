@@ -54,10 +54,14 @@ export type UserTemplateSchemaType = z.infer<typeof UserTemplateSchema>;
 
 export const UserTodoSchema = z.object({
   id: z.optional(z.string()),
-  userId: z.optional(z.string()),
+  userId: z.string().optional(),
   title: z.string(),
   description: z.string(),
   comments: z.string(),
+  startAt:z.date().optional(),
+  endAt:z.date().optional(),
+
+  
 
   reminder: z.boolean(),
 });

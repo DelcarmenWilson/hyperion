@@ -14,14 +14,18 @@ import { allLeadTypes } from "@/constants/lead";
 type Props = {
   id: string;
   type: string;
+  onChange?: (e: string) => void;
 };
 
-export const LeadTypeSelect = ({ id, type }: Props) => {
+export const LeadTypeSelect = ({ id, type, onChange }: Props) => {
   const onTypeUpdated = async (newType: string) => {
     if (newType == type) return;
-    const updatedType = await leadUpdateByIdType(id, newType);
-    if (updatedType.success) toast.success(updatedType.success);
-    else toast.error(updatedType.error);
+    if (onChange) onChange(type);
+    else {
+      const updatedType = await leadUpdateByIdType(id, newType);
+      if (updatedType.success) toast.success(updatedType.success);
+      else toast.error(updatedType.error);
+    }
   };
   return (
     <Select
