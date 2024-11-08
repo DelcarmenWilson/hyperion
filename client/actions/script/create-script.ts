@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { createScriptSchema, createScriptSchemaType } from "@/schemas/script"
 
 import { UPPERADMINS } from "@/constants/user"
+import { redirect } from "next/navigation"
 
 export const createScript=async(values: createScriptSchemaType)=>{
 const user=await currentUser()
@@ -16,14 +17,29 @@ if(!success) throw new Error("invalid data")
 
 const results=await db.script.create({data:{
 ...data,
-content:"new Script",
+content:"",
 userId:user.id!,default:df
 }})
 
 if(!results) throw new Error("failed to create script")
     //Create a renavigation to the next script page
 
-revalidatePath("/admin/scripts");
+redirect(`/admin/scripts/${results.id}`)
+
+
+
+
+
+
+
+
+
+
+
+
+// revalidatePath("/admin/scripts");
 }
+
+
 
 

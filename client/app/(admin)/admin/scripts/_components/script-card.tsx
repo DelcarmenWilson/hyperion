@@ -34,7 +34,7 @@ const ScriptCard = ({ script }: { script: Script }) => {
           <div className="flex items-center">
             <h3 className="flex flex-col">
               <Link
-                href={`/scripts/${script.id}`}
+                href={`/admin/scripts/${script.id}`}
                 className="flex items-center text-base font-bold text-muted-foreground hover:underline capitalize"
               >
                 {script.name}
@@ -47,7 +47,7 @@ const ScriptCard = ({ script }: { script: Script }) => {
         </div>
         <div className="flex items-center space-x-2">
           <Link
-            href={`/scripts/${script.id}`}
+            href={`/admin/scripts/${script.id}`}
             className={cn(
               buttonVariants({
                 variant: "outline",
