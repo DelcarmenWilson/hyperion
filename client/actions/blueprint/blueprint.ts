@@ -32,7 +32,7 @@ export const bluePrintGetActive = async () => {
 //ACTIONS
 export const bluePrintInsert = async (values: BluePrintSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unathenticated" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = BluePrintSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };

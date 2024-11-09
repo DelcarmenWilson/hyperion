@@ -53,9 +53,7 @@ export const userCarrierInsert = async (values: UserCarrierSchemaType) => {
   }
 
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
   const { agentId, carrierId, comments } = validatedFields.data;
 
   const existingLicense = await db.userCarrier.findFirst({

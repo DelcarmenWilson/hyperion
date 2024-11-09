@@ -6,12 +6,12 @@ import { TaskSchema, TaskSchemaType } from "@/schemas/admin";
 export const taskDeleteById = async (id: string) => {
   const user = await currentUser();
 
-  if (!user) {
+  if (!user) 
     return { error: "Unathenticated" };
-  }
-  if (user.role != "ADMIN") {
+  
+  if (user.role != "ADMIN") 
     return { error: "Unauthorized" };
-  }
+  
   const existingTask = await db.task.findUnique({ where: { id } });
   if (!existingTask) {
     return { error: "Task does not exists!" };

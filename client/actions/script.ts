@@ -2,12 +2,12 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
-import { use } from "react";
+import { ScriptStatus } from "@/types/script";
 ///TODO - dont forget to remove this file once the new scipt function are completed
 // DATA
-export const scriptGetOne = async () => {
+export const scriptGetOne = async (type:string|null|undefined) => {
   try {
-    const scripts = await db.script.findFirst({});
+    const scripts = await db.script.findFirst({where:{type:type||"General",status:ScriptStatus.PUBLISHED}});
     return scripts;
   } catch (error: any) {
     return null;
@@ -51,6 +51,7 @@ export const scriptDeleteById = async (id: string) => {
   return { success:"script was delete succesfully" };
 };
 
+//TODO - this needs to be removed-- posinly the entire file along with the main hook
 export const scriptInsert = async () => {
   const user = await currentUser();
   if (!user) {
@@ -67,10 +68,12 @@ export const scriptInsert = async () => {
   }}
   const newScript = await db.script.create({
     data: {
-      title: "New Script",
+      name: "New Script",
       content: "",
-      userId: user.id,
-      type: user.role == "MASTER" ? "Default" : "User Generated",
+      userId: user.id!,
+      default: user.role == "MASTER" ? true : false,
+      status:ScriptStatus.DRAFT,
+      type:"General"
     },
   });
 
@@ -82,19 +85,18 @@ export const scriptUpdateById = async (values: ScriptSchemaType) => {
   if (!user) {
     return { error: "Unauthorized" };
   }
-  const validatedFields = ScriptSchema.safeParse(values);
+  const {success,data} = ScriptSchema.safeParse(values);
 
-  if (!validatedFields.success) {
+  if (!success) 
     return { error: "Invalid fields!" };
-  }
+  
 
-  const { id, title, content } = validatedFields.data;
+
 
   await db.script.update({
-    where: { id },
+    where: { id:data.id },
     data: {
-      title,
-      content,
+      ...data,
     },
   });
 

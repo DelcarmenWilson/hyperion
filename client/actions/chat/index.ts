@@ -137,10 +137,7 @@ export const chatDeleteById = async (id: string) => {
 export const chatInsert = async (userId: string) => {
   const user = await currentUser();
 
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-
+  if (!user?.id)  return { error: "Unathenticated!" };
   const exisitingChat = await db.chat.findFirst({
     where: {
       OR: [
@@ -188,9 +185,7 @@ export const chatGroupInsert = async (
   isGroup: boolean = false
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated!" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   if (!userId) {
     return { error: "User id is Required!" };

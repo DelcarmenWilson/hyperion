@@ -55,16 +55,14 @@ export const campaignFormInsert = async (
   values: CampaignFormSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
-  const validatedFields = CampaignFormSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid Fields!!" };
+  const {success,data} = CampaignFormSchema.safeParse(values);
+  if (!success) return { error: "Invalid Fields!!" };
 
   const newForm = await db.campaignForm.create({
     data: {
-      ...validatedFields.data,
+      ...data,
       user_id: user.id,
     },
   });

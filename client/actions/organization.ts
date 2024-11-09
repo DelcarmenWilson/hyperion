@@ -45,7 +45,7 @@ export const organizationInsert = async (
   //Get the current logged in user
   const user = await currentUser();
   //If there is not logged in user retunr an unauthenticated error
-  if (!user) return { error: "Unauthenticated" };
+  if (!user?.id)  return { error: "Unathenticated!" };
   //If the user is not a the master account  return an unauthorized error
   if (user.role != "MASTER") return { error: "Unauthorized" };
 

@@ -4,9 +4,9 @@ import { tokenGenerator } from "@/lib/twilio/handler";
 export const getTwilioToken = async () => {
       try {
         const user=await currentUser()
-        if(!user){
+        if(!user?.id)
           return null
-        }
+        
 
       const token = tokenGenerator(user.id)
       return token.token;

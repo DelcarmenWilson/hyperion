@@ -47,14 +47,15 @@ model Script {
     id          String  @id @default(cuid())
     name        String
     description String?
-    type        String  @default("General")
+    type        String
     content     String  @db.LongText
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
 
+    status  String
     default Boolean @default(false)
-    active  Boolean @default(true)
+    active  Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

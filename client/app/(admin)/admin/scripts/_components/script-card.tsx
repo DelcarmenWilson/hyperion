@@ -22,8 +22,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import TooltipWrapper from "@/components/tooltip-wrapper";
 import DeleteScriptDialog from "./delete-script-dialog";
+import { Badge } from "@/components/ui/badge";
+import { ScriptStatus } from "@/types/script";
 
 const ScriptCard = ({ script }: { script: Script }) => {
+  const isDraft = script.status == ScriptStatus.DRAFT;
   return (
     <Card className="border border-separate shadow-sm rounded-lg  overflow-hidden hover:shadow-sm dark:shadow-primary/30">
       <CardContent className="p-4 flex items-center justify-between h-[100px]">
@@ -31,8 +34,8 @@ const ScriptCard = ({ script }: { script: Script }) => {
           <div className="flex w-10 h-10 rounded-full items-center justify-center">
             <PlayIcon className="w-5 h-5 stroke-primary" />
           </div>
-          <div className="flex items-center">
-            <h3 className="flex flex-col">
+          <div className="flex items-start gap-2">
+            <h3 className="flex flex-col w-[200px]">
               <Link
                 href={`/admin/scripts/${script.id}`}
                 className="flex items-center text-base font-bold text-muted-foreground hover:underline capitalize"
@@ -43,6 +46,15 @@ const ScriptCard = ({ script }: { script: Script }) => {
                 {script.description}
               </p>
             </h3>
+            <Badge variant="outline" className="uppercase rounded-md text-xs">
+              {script.type}
+            </Badge>
+            <Badge
+              variant={isDraft ? "secondary" : "default"}
+              className="uppercase rounded-md text-xs"
+            >
+              {script.status}
+            </Badge>
           </div>
         </div>
         <div className="flex items-center space-x-2">

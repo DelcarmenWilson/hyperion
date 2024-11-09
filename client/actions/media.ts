@@ -5,7 +5,7 @@ import { CreateMediaType } from "@/types/media";
 //DATA
 export const mediaGetAll = async () => {
   const user = await currentUser();
-  if (!user) return [];
+  if (!user?.id) return [];
 
   const mediafiles = await db.media.findMany({
     where: {
@@ -17,7 +17,7 @@ export const mediaGetAll = async () => {
 //ACTIONS
 export const mediaInsert = async (mediaFile: CreateMediaType) => {
   const user = await currentUser();
-  if (!user) return [];
+  if (!user?.id) return [];
 
   const response = await db.media.create({
     data: {

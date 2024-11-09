@@ -88,6 +88,7 @@ export const pipelineAndLeadsGetAll = async () => {
         address: true,
         smoker: true,
         recievedAt: true,
+        type:true
       },
     });
 

@@ -56,9 +56,7 @@ export const campaignCreativeInsert = async (
   values: CampaignCreativeSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = CampaignCreativeSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields!!" };

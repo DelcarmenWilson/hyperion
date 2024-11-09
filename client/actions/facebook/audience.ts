@@ -55,9 +55,7 @@ export const campaignAudienceInsert = async (
   values: CampaignAudienceSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = CampaignAudienceSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields!!" };

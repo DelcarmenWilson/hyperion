@@ -23,7 +23,7 @@ const WorkflowPage = () => {
   );
 };
 
-export const UserWorkflowsSkeleton = () => {
+const UserWorkflowsSkeleton = () => {
   return (
     <div className="space-y-2">
       {[1, 2, 3, 4].map((i) => (
@@ -33,12 +33,14 @@ export const UserWorkflowsSkeleton = () => {
   );
 };
 
-export const UserWorkflows = async () => {
+const UserWorkflows = async () => {
   const workflows = await getWorkFlowForUser();
   if (!workflows) return <AlertError />;
   if (workflows.length === 0)
     return (
       <NewEmptyCard
+        title="No workflows created yet"
+        subTitle="Click the button below to create your first workflow"
         icon={InboxIcon}
         button={
           <CreateWorkflowDialog triggerText="Create your first workflow" />

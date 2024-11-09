@@ -29,7 +29,7 @@ export const ScriptCard = ({ script }: Props) => {
 
       <div className="flex flex-col border rounded-xl p-2 overflow-hidden text-sm">
         <h3 className="text-2xl text-primary font-semibold text-center">
-          {script.title}
+          {script.name}
         </h3>
         <CardData label="Type" value={script.type} />
         <CardData label="Description" value={script.content as string} />

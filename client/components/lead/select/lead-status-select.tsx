@@ -4,6 +4,9 @@ import {
   useLeadStatusActions,
   useLeadStatuses,
 } from "@/components/global/selects/hooks/use-statuses";
+
+import { LeadDefaultStatus } from "@/types/lead";
+
 import {
   Select,
   SelectContent,
@@ -13,8 +16,6 @@ import {
 } from "@/components/ui/select";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { leadDefaultStatus } from "@/constants/lead";
-
 type Props = {
   id: string;
   statusId: string;
@@ -38,7 +39,7 @@ export const LeadStatusSelect = ({ id, statusId, onSetStatus }: Props) => {
       <Select
         name="ddlLeadStatus"
         disabled={
-          statusId == leadDefaultStatus.doNotCall || isPendingLeadStatusUpdate
+          statusId == LeadDefaultStatus.DONOTCALL || isPendingLeadStatusUpdate
         }
         onValueChange={onLeadStatusChanged}
         defaultValue={statusId}

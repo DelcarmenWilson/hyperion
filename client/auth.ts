@@ -62,7 +62,7 @@ export const {
       if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
         session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.email=token.email as string
         session.user.messageNotification = token.messageNotification as string;
         session.user.messageInternalNotification =
           token.messageInternalNotification as string;

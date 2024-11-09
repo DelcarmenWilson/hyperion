@@ -1,36 +1,42 @@
-"use client"
-import TooltipWrapper from "@/components/tooltip-wrapper";
-import { Button } from "@/components/ui/button";
-import { ChevronLeftIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+"use client";
 
-import React from "react";
+import BackBtn from "@/components/global/back-btn";
+import SaveBtn from "./save-btn";
+import PublishBtn from "./publish-btn";
+import UnPublishBtn from "./unpublish-btn";
 
-type Props={title:string 
-    description?:string|null
-}
-const TopBar = ({title,description}:Props) => {
-    const router=useRouter()
+type Props = {
+  name: string;
+  description?: string | null;
+  scriptId: string;
+  isDraft: boolean;
+};
+const Topbar = ({ name, description, scriptId, isDraft }: Props) => {
   return (
     <div className="flex p-2 border-b-2 border-separate justify-between w-full h-[60px] sticky bg-background z-10">
       <div className="flex flex-1 gap-1">
-        <TooltipWrapper content="Back">
-          <Button variant={"ghost"} size="icon" onClick={()=>router.back()}>
-            <ChevronLeftIcon size={20} />
-          </Button>
-        </TooltipWrapper>
-        <div>
-            <p className="font-bold text-ellipsis truncate">
-                {title}
+        <BackBtn />
+        <div className="capitalize">
+          <p className="font-bold text-ellipsis truncate">{name}</p>
+          {description && (
+            <p className="text-xs text-muted-foreground text-ellipsis truncate">
+              {description}
             </p>
-            {description&&(<p className="text-xs text-muted-foreground text-ellipsis truncate">
-             { description}  
-            </p>)}
-            
+          )}
         </div>
+      </div>
+      <div className="flex flex-1 gap-1 justify-end">
+        {isDraft ? (
+          <>
+            <PublishBtn scriptId={scriptId} />
+            <SaveBtn scriptId={scriptId} />
+          </>
+        ) : (
+          <UnPublishBtn scriptId={scriptId} />
+        )}
       </div>
     </div>
   );
 };
 
-export default TopBar;
+export default Topbar;

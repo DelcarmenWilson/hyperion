@@ -122,13 +122,15 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   onPhoneDialerOpen: () => set({ isPhoneDialerOpen: true }),
   onPhoneDialerClose: () =>
     set({ isPhoneDialerOpen: false, showScript: false }),
-  onPhoneOutOpen: (e, c) =>
+  onPhoneOutOpen: (e, c) => {
     set({
       isPhoneOutOpen: true,
       lead: e,
       conference: c,
       isLeadInfoOpen: e ? true : false,
-    }),
+    });
+    get().fetchData();
+  },
 
   onPhoneOutClose: () =>
     set({ isLeadInfoOpen: false, isPhoneOutOpen: false, showScript: false }),
@@ -137,7 +139,10 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
     set({ isCallOpen: true, fullCall: e, callType: t }),
   onCallClose: () => set({ isCallOpen: false }),
 
-  onSetLead: (e) => set({ lead: e }),
+  onSetLead: (e) => {
+    set({ lead: e });
+    get().fetchData();
+  },
   onSetLeads: (e) => set({ leads: e }),
   //CONFERENCE
   isConferenceOpen: false,
@@ -158,7 +163,8 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   isOnCall: false,
   setOnCall: (e: boolean) => set({ isOnCall: e }),
   fetchData: async () => {
-    const script = await scriptGetOne();
+    //NEED TO REPLACE THIS WITH A MORE SPECIFIC SCRIPT
+    const script = await scriptGetOne(get().lead?.type);
     set({ script: script as Script });
   },
 }));

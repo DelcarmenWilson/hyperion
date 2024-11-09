@@ -1,18 +1,20 @@
 "use client";
 import { Phone } from "lucide-react";
+
 import {
   useConversationData,
   useConversationStore,
-} from "../../../../../../hooks/use-conversation";
-
+} from "@/hooks/use-conversation";
 import { usePhoneStore } from "@/hooks/use-phone";
+
+import { LeadDefaultStatus } from "@/types/lead";
+
 import { Button } from "@/components/ui/button";
 import { EmptyData } from "@/components/lead/info/empty-data";
 import { LeadDropDown } from "@/components/lead/dropdown";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { leadDefaultStatus } from "@/constants/lead";
 
 export const Header = () => {
   const { onPhoneOutOpen } = usePhoneStore();
@@ -39,7 +41,7 @@ export const Header = () => {
                 {fullName} {formatPhoneNumber(lead.cellPhone)}
               </span>
               <Button
-                disabled={lead.statusId == leadDefaultStatus.doNotCall}
+                disabled={lead.statusId == LeadDefaultStatus.DONOTCALL}
                 className="rounded-full"
                 variant="outlineprimary"
                 size="icon"

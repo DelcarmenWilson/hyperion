@@ -4,21 +4,22 @@ import { Pencil, Phone } from "lucide-react";
 import { useLeadStore, useLeadData, useLeadId } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 
-import { Button } from "@/components/ui/button";
-import { LeadSection } from "./section";
+import { LeadDefaultStatus } from "@/types/lead";
 
-import { MainInfoClient } from "@/components/lead/info/main";
-import { GeneralInfoClient } from "@/components/lead/info/general";
 import { Badge } from "@/components/ui/badge";
-import { LeadDropDown } from "@/components/lead/dropdown";
-import { NotesForm } from "@/components/lead/forms/notes-form";
+import { Button } from "@/components/ui/button";
 import { CallInfo } from "@/components/lead/info/call";
+import { GeneralInfoClient } from "@/components/lead/info/general";
+import { LeadDropDown } from "@/components/lead/dropdown";
+import { LeadSection } from "./section";
+import { MainInfoClient } from "@/components/lead/info/main";
+import { NotesForm } from "@/components/lead/forms/notes-form";
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
-import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { formatPhoneNumber } from "@/formulas/phones";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { leadDefaultStatus } from "@/constants/lead";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const LeadSidebar = () => {
   const { onPhoneOutOpen } = usePhoneStore();
@@ -64,7 +65,7 @@ export const LeadSidebar = () => {
             <Button
               variant="outlineprimary"
               className="relative gap-2"
-              disabled={leadBasic.statusId == leadDefaultStatus.doNotCall}
+              disabled={leadBasic.statusId == LeadDefaultStatus.DONOTCALL}
               //TODO - emeditely need to add a function for this
               onClick={() => onPhoneOutOpen(lead!)}
               size="sm"

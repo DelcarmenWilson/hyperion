@@ -5,9 +5,9 @@ import { currentUser } from "@/lib/auth";
 
 export const getWorkflowById = async (id:string) => {
   const user= await currentUser();
-  if (!user) throw new Error("unauthenticated");
+  if (!user?.id) throw new Error("unauthenticated");
 
   return db.workflow.findUnique({
-    where: { id, userId:user.id! },
+    where: { id, userId:user.id },
   });
 };

@@ -175,7 +175,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
   //If there is no user -- Unathenticated
-  if (!user) return { error: "Unauthenticated" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = AppointmentSchema.safeParse(values);
 
@@ -498,9 +498,7 @@ export const appointmentLabelInsert = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
   const validatedFields = AppointmentLabelSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -539,9 +537,7 @@ export const appointmentLabelUpdateById = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
   const validatedFields = AppointmentLabelSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -579,9 +575,7 @@ export const appointmentLabelUpdateByChecked = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
   const validatedFields = AppointmentLabelSchema.safeParse(values);
 
   if (!validatedFields.success) {

@@ -147,7 +147,7 @@ export const messageCreateInitial = async (
 
 export const messageCreate = async (values: SmsMessageSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "unauthenticated!" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = SmsMessageSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };

@@ -40,7 +40,7 @@ export const userLicenseDeleteById = async (id: string) => {
 };
 export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = UserLicenseSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };

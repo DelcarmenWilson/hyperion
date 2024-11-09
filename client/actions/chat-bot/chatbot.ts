@@ -60,9 +60,9 @@ export const chatbotGetActive = async () => {
 //CONVERSATION
 export const chatbotConversationInsert = async () => {
   const user = await currentUser();
-  if (!user?.email) {
+  if (!user?.id) 
     return { error: "Unathentiacted" };
-  }
+  
 
   const lastConvo = await db.chatbotConversation.findFirst({
     where: { userId: user.id },
@@ -169,9 +169,9 @@ console.log(messages)
 //SETTINGS
 export const chatbotSettingsInsert = async (values: ChatbotSettingsSchemaType) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user?.id) 
     return { error: "Unauthorized" };
-  }
+  
   const validatedFields = ChatbotSettingsSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };
@@ -198,9 +198,9 @@ export const chatbotSettingsInsert = async (values: ChatbotSettingsSchemaType) =
 
 export const chatbotSettingsUpsert = async (values: ChatbotSettingsSchemaType) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user?.id) 
     return { error: "Unauthorized" };
-  }
+
   const validatedFields = ChatbotSettingsSchema.safeParse(values);
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };

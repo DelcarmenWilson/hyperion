@@ -62,7 +62,7 @@ export const userTodoDeleteById = async (id: string) => {
 
 export const userTodoInsert = async (values: UserTodoSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthorized" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = UserTodoSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid fields!" };

@@ -5,10 +5,10 @@ import {db} from "@/lib/db";
 
 export const getWorkFlowForUser = async () => {
   const user= await currentUser();
-  if (!user) throw new Error("unauthenticated");
+  if (!user?.id) throw new Error("unauthenticated");
 
   return db.workflow.findMany({
-    where: { userId:user.id! },
+    where: { userId:user.id },
     orderBy: { createdAt: "asc" },
   });
 };

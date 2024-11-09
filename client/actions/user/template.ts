@@ -52,8 +52,7 @@ export const userTemplateInsert = async (values: UserTemplateSchemaType) => {
   
 
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthorized" };
+  if (!user?.id)  return { error: "Unathenticated!" };
   
   const { name, message, description, attachment } = validatedFields.data;
 

@@ -24,7 +24,7 @@ export const agentWorkInfoGetByUserId = async () => {
 //ACTIONS
 export const agentWorkInfoInsert = async (values: AgentWorkInfoSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unathenticated" };
+  if (!user?.id)  return { error: "Unathenticated" };
 
   const validatedFields = AgentWorkInfoSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };

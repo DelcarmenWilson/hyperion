@@ -31,6 +31,7 @@ export const LeadList = () => {
         <LeadDialerCard
           key={lead.id}
           lead={lead}
+          index={i}
           indexRef={i == pipeIndex ? indexRef : null}
         />
       ))}

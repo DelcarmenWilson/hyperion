@@ -1,18 +1,17 @@
 "use client";
 import { Phone } from "lucide-react";
 import { usePhoneStore } from "@/hooks/use-phone";
-
 import { useLeadCallInfoActions } from "@/hooks/lead/use-lead";
+
+import { LeadDefaultStatus } from "@/types/lead";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyData } from "./empty-data";
+import { Input } from "@/components/ui/input";
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
-import { SectionWrapper } from "./section-wrapper";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { leadDefaultStatus } from "@/constants/lead";
-import { Input } from "@/components/ui/input";
 
 type Props = {
   showBtnCall?: boolean;
@@ -40,7 +39,7 @@ export const CallInfo = ({ showBtnCall = true }: Props) => {
                   className="gap-2"
                   size="sm"
                   variant="gradientDark"
-                  disabled={callInfo.statusId == leadDefaultStatus.doNotCall}
+                  disabled={callInfo.statusId == LeadDefaultStatus.DONOTCALL}
                   onClick={() => {
                     onLeadInfoToggle();
                     onPhoneOutOpen();

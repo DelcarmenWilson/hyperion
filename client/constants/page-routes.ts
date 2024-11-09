@@ -114,12 +114,12 @@ export const AdminRoutes: NavType[] = [
     icon: Briefcase,
     roles: ["DEVELOPER"],
   },
-  {
-    title: "WorkFlows",
-    href: "/admin/workflows",
-    icon: Workflow,
-    roles: HIGHERADMINS,
-  },
+  // {
+  //   title: "WorkFlows",
+  //   href: "/admin/workflows",
+  //   icon: Workflow,
+  //   roles: HIGHERADMINS,
+  // },
   {
     title: "Chatbot",
     href: "/admin/chatbot",

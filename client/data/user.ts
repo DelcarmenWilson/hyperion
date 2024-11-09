@@ -12,8 +12,9 @@ export const userGetCurrent = async (id: string) => {
   }
 };
 
-export const userGetById = async (id: string) => {
+export const userGetById = async (id: string | undefined) => {
   try {
+    if(!id)return null
     const user = await db.user.findUnique({
       where: { id },
       include: {

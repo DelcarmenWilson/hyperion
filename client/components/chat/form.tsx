@@ -1,9 +1,12 @@
 import dynamic from "next/dynamic";
 import { useChatFormActions } from "@/hooks/chat/use-chat";
 
-const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
-  ssr: false,
-});
+const QuillEditor = dynamic(
+  () => import("@/components/custom/quill/quill-editor"),
+  {
+    ssr: false,
+  }
+);
 type Props = {
   placeholder: string;
 };

@@ -14,7 +14,7 @@ export type CarrierSchemaType = z.infer<typeof CarrierSchema>;
 
 export const ScriptSchema = z.object({
   id: z.optional(z.string()),
-  title: z.string().min(2, "*"),
+  name: z.string().min(2, "*"),
   content: z.string().min(2, "*"),
 });
 export type ScriptSchemaType = z.infer<typeof ScriptSchema>;

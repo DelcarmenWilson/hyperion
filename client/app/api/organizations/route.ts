@@ -9,13 +9,11 @@ export async function POST(req:Request){
         const body=await req.json()
         const {name}=body;
         
-        if(!user){
+        if(!user?.id)
             return new NextResponse("Unauthenticated",{status:401})
-        }
 
-        if(!name){
-            return new NextResponse("Name is required",{status:400})
-        }
+        if(!name)
+            return new NextResponse("Name is required",{status:400})        
 
          const organization=await db.organization.create({data:{
             name,userId:user.id

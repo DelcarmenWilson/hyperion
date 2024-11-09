@@ -7,6 +7,8 @@ import { useOnlineUserData } from "@/hooks/user/use-user";
 import { Tiptap } from "@/components/reusable/tiptap";
 
 import { replaceScript } from "@/formulas/script";
+import Renderer from "@/components/global/message/renderer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const PhoneScript = () => {
   const { lead, script, showScript } = usePhoneStore();
@@ -32,11 +34,15 @@ export const PhoneScript = () => {
           showScript && "bottom-0"
         )}
       >
-        <Tiptap
+        <ScrollArea className="pb-10">
+          {/* <pre>{JSON.stringify(formattedScript, null, 4)}</pre> */}
+          <Renderer value={formattedScript} />
+          {/* <Tiptap
           key={lead?.id}
           description={formattedScript}
           onChange={() => {}}
-        />
+        /> */}
+        </ScrollArea>
       </div>
     </>
   );

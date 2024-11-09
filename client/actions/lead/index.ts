@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import { AssociatedLead, FullLead } from "@/types";
+import { LeadDefaultStatus } from "@/types/lead";
 import {
   LeadExportSchemaType,
   LeadGeneralSchema,
@@ -23,10 +24,7 @@ import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { chatSettingGetTitan } from "../settings/chat";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
-import { string } from "zod";
-import { error } from "console";
-import { leadDefaultStatus } from "@/constants/lead";
-
+//TODO - need to come back to this file and remove all the ! marks
 //LEAD
 
 //DATA
@@ -544,7 +542,7 @@ export const leadDeleteById = async (id: string) => {
   //if doesn't fall under above conditions change lead status into deleted
   await db.lead.update({
     where: { id },
-    data: { statusId: leadDefaultStatus.deleted },
+    data: { statusId: LeadDefaultStatus.DELETED },
   });
 
   // if everything is correct return success
@@ -613,14 +611,14 @@ export const leadInsert = async (values: LeadSchemaType) => {
         maritalStatus: maritalStatus,
         email,
         dateOfBirth,
-        userId: user.id,
+        userId: user.id!,
       },
     });
   } else {
     //Get a new new Text code
     const textCode = await getNewTextCode(firstName, lastName, cellPhone);
     //Get titan (autoChat) from chat settings
-    const titan = await chatSettingGetTitan(user.id);
+    const titan = await chatSettingGetTitan(user.id!);
 
     newLead = await db.lead.create({
       data: {
@@ -637,7 +635,7 @@ export const leadInsert = async (values: LeadSchemaType) => {
         email,
         dateOfBirth,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber,
-        userId: user.id,
+        userId: user.id!,
         height: "",
         weight: "",
         textCode,
@@ -736,14 +734,14 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           vendor,
           recievedAt:
             Date.parse(recievedAt!) > 0 ? new Date(recievedAt!) : new Date(),
-          userId: user?.id,
+          userId: user?.id!,
         },
       });
     } else {
       //Get New Text Code
       const textCode = await getNewTextCode(firstName, lastName, cellPhone);
       //Get titan (autoChat) from chat settings
-      const titan = await chatSettingGetTitan(user.id);
+      const titan = await chatSettingGetTitan(user.id!);
 
       await db.lead.create({
         data: {
@@ -773,7 +771,7 @@ export const leadsImport = async (values: LeadSchemaType[]) => {
           defaultNumber: phoneNumber
             ? phoneNumber.phone
             : defaultNumber?.phone!,
-          userId: user?.id,
+          userId: user?.id!,
           statusId,
           assistantId,
           notes,
@@ -1172,7 +1170,7 @@ export const leadUpdateByIdShare = async (ids: string[], userId: string) => {
     feedInsert(
       `You shared a lead: ${lead?.firstName} with ${sharedUser?.firstName}`,
       "",
-      user.id,
+      user.id!,
       true
     );
     //Next Agent Feed
@@ -1186,7 +1184,7 @@ export const leadUpdateByIdShare = async (ids: string[], userId: string) => {
     await feedInsert(
       `You shared multiple leads with ${sharedUser?.firstName}`,
       "",
-      user.id,
+      user.id!,
       true
     );
     //Next Agent Feed
@@ -1305,7 +1303,7 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
     await feedInsert(
       `You transfered ${lead?.firstName}'s information to ${tfUser.firstName}`,
       "",
-      user.id,
+      user.id!,
       true
     );
     //Next Agent Feed
@@ -1319,7 +1317,7 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
     await feedInsert(
       `You transfered multiple leads to ${tfUser.firstName}`,
       "",
-      user.id,
+      user.id!,
       true
     );
     //Next Agent Feed

@@ -36,7 +36,7 @@ export const funnelUpsertById = async (
   funnelId: string
 ) => {
   const user = await currentUser();
-  if (!user) return;
+  if (!user?.id) return;
   const response = await db.funnel.upsert({
     where: { id: funnelId },
     update: funnel,

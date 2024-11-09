@@ -9,6 +9,8 @@ import {
 
 const { auth } = NextAuth(authConfig);
 
+//@ts-ignore
+//TODO - need to look into this in the future - cannot return null anymore
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
@@ -18,7 +20,7 @@ export default auth((req) => {
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) 
-    return null;
+    return null ;
   
 
   if (isAuthRoute) {

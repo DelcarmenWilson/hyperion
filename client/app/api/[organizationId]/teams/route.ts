@@ -9,17 +9,17 @@ export async function POST(req:Request,{params}:{params:{organizationId:string}}
         const body=await req.json()
         const {name}=body;
         
-        if(!user){
+        if(!user?.id)
             return new NextResponse("Unathenticated",{status:401})
-        }
+        
 
-        if(!name){
+        if(!name)
             return new NextResponse("Name is required",{status:400})
-        }
+        
 
-        if(!params.organizationId){
+        if(!params.organizationId)
             return new NextResponse("Organization id is required",{status:400})
-        }
+        
         const organizationByUserId=await db.organization.findFirst({where:{
             id:params.organizationId,
             userId:user.id

@@ -11,7 +11,7 @@ import "./globals.css";
 import "./themes/themes.css";
 
 import { Toaster } from "@/components/ui/sonner";
-import RootProviders from "@/providers/root-providers";
+import AppProviders from "@/providers/app-providers";
 
 const poppins = Roboto({
   subsets: ["latin"],
@@ -42,8 +42,8 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en" suppressHydrationWarning>
         <body className={poppins.className}>
+          <AppProviders>{children}</AppProviders>
           <Toaster richColors position="bottom-right" />
-          <RootProviders>{children}</RootProviders>
         </body>
       </html>
     </SessionProvider>

@@ -52,12 +52,12 @@ export const adminUpdateLeadNumbers = async (userId: string) => {
 export const adminLeadStatusInsert = async (status: string) => {
   const user = await currentUser();
 
-  if (!user) {
+  if (!user?.id) 
     return { error: "Unathenticated" };
-  }
-  if (user.role == "USER") {
+  
+  if (user.role == "USER") 
     return { error: "Unauthorized" };
-  }
+  
 
   const existingStatus = await db.leadStatus.findFirst({ where: { status } });
   if (existingStatus) {

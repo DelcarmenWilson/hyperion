@@ -385,9 +385,7 @@ export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
 
 export const userUpdateById = async (values: SettingsSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const dbUser = await userGetById(user.id);
   if (!dbUser) {

@@ -16,15 +16,15 @@ export const PhoneButtons = () => {
   const role = useCurrentRole();
 
   return (
-    <div className="flex absolute bottom-0 left-1/2 -translate-x-1/2 justify-center gap-2 items-center">
+    <div className="flex-center absolute bottom-0 left-1/2 -translate-x-1/2 gap-2">
       <Button
-        className=""
+        className="capitalize"
         variant={showScript ? "default" : "outline"}
         onClick={() => {
           showScript ? onScriptClose() : onScriptOpen();
         }}
       >
-        {script?.title}
+        {script?.name}
       </Button>
 
       {ALLADMINS.includes(role!) && (

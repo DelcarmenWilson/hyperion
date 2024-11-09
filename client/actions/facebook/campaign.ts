@@ -50,9 +50,7 @@ export const campaignGetById = async (id: string) => {
 //ACTIONS
 export const campaignInsert = async (values: CampaignSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const validatedFields = CampaignSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields!!" };

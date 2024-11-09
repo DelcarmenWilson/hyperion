@@ -29,7 +29,7 @@ export const chatMessageReactionToggle = async ({
   value: string;
 }) => {
   const user = await currentUser();
-  if (!user) return { error: "Unathenticated!" };
+  if (!user?.id)  return { error: "Unathenticated!" };
   const userId = user.id;
 
   const existingReaction = await db.chatMessageReaction.findFirst({

@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { user } = body;
-    const script = await scriptGetOne();
+    const script = await scriptGetOne(null);
 
     return NextResponse.json(script);
   } catch (error) {

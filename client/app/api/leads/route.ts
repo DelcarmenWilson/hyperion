@@ -38,17 +38,14 @@ export async function POST(req: Request) {
       dateOfBirth,
     } = body;
 
-    if (!user) {
-      return new NextResponse("Unauthenticated", { status: 401 });
-    }
+    if (!user?.id) 
+      return new NextResponse("Unauthenticated", { status: 401 });    
 
-    if (!firstName || !lastName) {
-      return new NextResponse("Name is required", { status: 400 });
-    }
+    if (!firstName || !lastName) 
+      return new NextResponse("Name is required", { status: 400 });    
 
-    if (!address || !city || !state || !zipCode) {
-      return new NextResponse("Address is required", { status: 400 });
-    }
+    if (!address || !city || !state || !zipCode) 
+      return new NextResponse("Address is required", { status: 400 });    
 
     const st = states.find((e) => e.state == state || e.abv == state);
     const phoneNumbers = await db.phoneNumber.findMany({

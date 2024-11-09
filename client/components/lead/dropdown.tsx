@@ -18,6 +18,9 @@ import { useAppointmentStore } from "@/hooks/use-appointment";
 import { useLeadStore, useLeadData } from "@/hooks/lead/use-lead";
 import { useLeadDropdownActions } from "@/hooks/lead/use-dropdown";
 
+import { LeadDefaultStatus } from "@/types/lead";
+import { FullLeadNoConvo } from "@/types";
+
 import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,9 +34,6 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-
-import { leadDefaultStatus } from "@/constants/lead";
-import { FullLeadNoConvo } from "@/types";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -99,7 +99,7 @@ export const LeadDropDown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
           <DropdownMenuItem
-            disabled={lead.statusId == leadDefaultStatus.doNotCall}
+            disabled={lead.statusId == LeadDefaultStatus.DONOTCALL}
             className="cursor-pointer gap-2"
             onClick={() => onAppointmentFormOpen()}
           >

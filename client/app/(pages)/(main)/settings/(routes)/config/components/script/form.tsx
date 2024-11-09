@@ -33,7 +33,7 @@ export const ScriptForm = () => {
     onScriptUpdate,
     isPendingScriptUpdate,
   } = useScriptActions();
-  const title = script ? ` - ${script.title}` : "";
+  const title = script ? ` - ${script.name}` : "";
   return (
     <Modal
       isOpen={isScriptFormOpen}
@@ -65,7 +65,7 @@ const SpForm = ({ script, loading, onClose, onSubmit }: SpFormProps) => {
     resolver: zodResolver(ScriptSchema),
     //@ts-ignore
     defaultValues: script || {
-      title: "",
+      name: "",
       content: "",
     },
   });
@@ -88,7 +88,7 @@ const SpForm = ({ script, loading, onClose, onSubmit }: SpFormProps) => {
           {/* TITLE */}
           <FormField
             control={form.control}
-            name="title"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex justify-between items-center">

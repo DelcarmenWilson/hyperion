@@ -35,13 +35,11 @@ export const presetInsert = async (values: PresetSchemaType) => {
   const validatedFields = PresetSchema.safeParse(values);
   const user = await currentUser();
 
-  if (!user) {
-    return { error: "Unauthorized!" };
-  }
+  if (!user?.id)  return { error: "Unathenticated!" };
 
-  if (!validatedFields.success) {
+  if (!validatedFields.success) 
     return { error: "Invalid fields!" };
-  }
+  
 
   const { type, content } =
     validatedFields.data;

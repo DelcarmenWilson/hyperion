@@ -28,7 +28,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 
   if (!isAdmin) redirect("/dashboard");
 
-  const voicemails = await voicemailGetUnHeard(user.id);
+  const voicemails = await voicemailGetUnHeard();
   const token = await getTwilioToken();
   const schedule = await scheduleGet();
   const appointments = await appointmentsGetAll();

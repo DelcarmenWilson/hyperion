@@ -1,13 +1,11 @@
 "use client";
-
-import { ThemeProvider } from "@/providers/theme";
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
+import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MasterModalProvider } from "@/providers/master-modal";
 import { ThemeSwitcher } from "@/components/custom/theme/switcher";
 import { ImageViewerModal } from "@/components/modals/image-viewer-modal";
-import ModalProvider from "./modal";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,7 +25,7 @@ const queryClient = new QueryClient({
     },
   },
 });
-const RootProviders = ({ children }: { children: ReactNode }) => {
+const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
@@ -46,4 +44,4 @@ const RootProviders = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default RootProviders;
+export default AppProviders;

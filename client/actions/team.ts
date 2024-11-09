@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { leadDefaultStatus } from "@/constants/lead";
+import { LeadDefaultStatus } from "@/types/lead";
 //DATA
 export const teamsGetAll = async () => {
   try {
@@ -106,7 +106,7 @@ export const teamGetByIdSales = async (
     const sales = await db.lead.findMany({
       where: {
         user: { teamId: id },
-        statusId: leadDefaultStatus.sold,
+        statusId: LeadDefaultStatus.SOLD,
         policy: { ap: { not: "0.00" } },
         updatedAt: {
           lte: toDate,
@@ -126,7 +126,7 @@ export const teamGetByIdSales = async (
 //ACTIONS
 export const teamInsert = async (name: string) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
+  if (!user?.id) return { error: "Unauthenticated" };
   if (user.role != "SUPER_ADMIN") return { error: "Unauthorized" };
   const existingTeam = await db.team.findFirst({ where: { name } });
   //TODO - need to ask johnny if the same team name can exist in another organization

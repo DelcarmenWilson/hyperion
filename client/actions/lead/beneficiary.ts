@@ -181,7 +181,7 @@ export const leadBeneficiaryUpdateById = async (
 
 export const leadBeneficiaryDeleteById = async (id: string) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthorized" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const existingBeneficiery = await db.leadBeneficiary.findUnique({
     where: {
@@ -215,7 +215,7 @@ export const leadBeneficiaryConvertById = async (
   beneficiaryId: string}
 ) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthorized" };
+  if (!user?.id)  return { error: "Unathenticated!" };
 
   const existingBeneficiery = await db.leadBeneficiary.findUnique({
     where: {
