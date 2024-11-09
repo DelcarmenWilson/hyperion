@@ -7,7 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
+import { getEnumValues } from "@/lib/helper/enum-converter";
 import { LeadExportSchema, LeadExportSchemaType } from "@/schemas/lead";
+import { LeadVendor } from "@/types/lead";
 
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer/right";
@@ -38,12 +40,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { formatDate, monthStartEnd } from "@/formulas/dates";
 
 import { states } from "@/constants/states";
-import { importVendors } from "@/constants/lead";
 import { exportLeads } from "@/lib/xlsx";
 
 export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
   const user = useCurrentUser();
   const { isExportFormOpen, onExportFormClose } = useLeadStore();
+  const leadVendors = getEnumValues(LeadVendor).slice(1);
   const [loading, setLoading] = useState(false);
   const month = monthStartEnd();
 
@@ -262,8 +264,8 @@ export const ExportLeadForm = ({ onClose }: { onClose?: () => void }) => {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="All">ALL</SelectItem>
-                        {importVendors.map((vendor) => (
-                          <SelectItem key={vendor.name} value={vendor.value}>
+                        {leadVendors.map((vendor) => (
+                          <SelectItem key={vendor.value} value={vendor.value}>
                             {vendor.name}
                           </SelectItem>
                         ))}

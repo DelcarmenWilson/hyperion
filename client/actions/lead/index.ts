@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import { AssociatedLead, FullLead } from "@/types";
+import { LeadDefaultStatus } from "@/types/lead";
+
 import {
   LeadExportSchemaType,
   LeadGeneralSchema,
@@ -23,9 +25,6 @@ import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { chatSettingGetTitan } from "../settings/chat";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
-import { string } from "zod";
-import { error } from "console";
-import { leadDefaultStatus } from "@/constants/lead";
 
 //LEAD
 
@@ -544,7 +543,7 @@ export const leadDeleteById = async (id: string) => {
   //if doesn't fall under above conditions change lead status into deleted
   await db.lead.update({
     where: { id },
-    data: { statusId: leadDefaultStatus.deleted },
+    data: { statusId: LeadDefaultStatus.DELETED },
   });
 
   // if everything is correct return success

@@ -44,13 +44,18 @@ model CarrierCondition {
 
 // SCRIPTS
 model Script {
-    id      String @id @default(cuid())
-    title   String
-    type    String @default("User Generated")
-    content String @db.LongText
+    id          String  @id @default(cuid())
+    name        String
+    description String?
+    type        String
+    content     String  @db.LongText
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
+
+    status  String
+    default Boolean @default(false)
+    active  Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

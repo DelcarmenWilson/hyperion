@@ -5,9 +5,12 @@ import { Delta, Op } from "quill/core";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
 import { SmsMessageSchemaType } from "@/schemas/message";
 
-const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
-  ssr: false,
-});
+const QuillEditor = dynamic(
+  () => import("@/components/custom/quill/quill-editor"),
+  {
+    ssr: false,
+  }
+);
 type Props = {
   placeholder: string;
 };

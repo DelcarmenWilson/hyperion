@@ -6,9 +6,12 @@ import { usePublicChatBotActions } from "./hooks/use-chatbot";
 import { SmsMessageSchemaType } from "@/schemas/message";
 import { PublicChatbotMessageSchemaType } from "@/schemas/chat-bot/publicchatbot";
 
-const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
-  ssr: false,
-});
+const QuillEditor = dynamic(
+  () => import("@/components/custom/quill/quill-editor"),
+  {
+    ssr: false,
+  }
+);
 type Props = {
   placeholder: string;
 };

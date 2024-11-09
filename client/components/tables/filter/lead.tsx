@@ -3,12 +3,13 @@ import React, { useEffect } from "react";
 import { Table } from "@tanstack/react-table";
 
 import { FullLead } from "@/types";
+import { LeadDefaultStatus } from "@/types/lead";
+
 import { Button } from "@/components/ui/button";
 import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadVendorSelect } from "@/components/lead/select/vendor-select";
 import { LeadStateSelect } from "@/components/lead/select/state-select";
-import { leadDefaultStatus } from "@/constants/lead";
 
 type LeadFilterProps<TData> = {
   table: Table<TData>;
@@ -38,7 +39,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
   };
 
   useEffect(() => {
-    OnFilter("statusId", leadDefaultStatus.new);
+    OnFilter("statusId", LeadDefaultStatus.NEW);
     // eslint-disable-next-line
   }, []);
   return (
@@ -57,7 +58,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
             <p className="text-muted-foreground">Status</p>
             <LeadStatusSelect
               id="leafFilter"
-              statusId={leadDefaultStatus.new}
+              statusId={LeadDefaultStatus.NEW}
               onSetStatus={OnFilter}
             />
           </div>

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { cfg, client } from "@/lib/twilio/config";
 
 import { LeadAndConversation, TwilioSms } from "@/types";
+import { LeadDefaultStatus } from "@/types/lead";
 import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
 import { MessageSchemaType } from "@/schemas/message";
 
@@ -17,7 +18,6 @@ import {
 } from "@/formulas/dates";
 import { sendSocketData } from "@/services/socket-service";
 import { defaultOptOut } from "@/placeholder/chat";
-import { leadDefaultStatus } from "@/constants/lead";
 
 export const smsSend = async ({
   fromPhone,
@@ -239,7 +239,7 @@ export const getKeywordResponse = async (
     case "cancel":
       await db.lead.update({
         where: { id: leadId },
-        data: { statusId:leadDefaultStatus.doNotCall },
+        data: { statusId:LeadDefaultStatus.DONOTCALL },
       });
       await smsSend({
         toPhone: sms.to,

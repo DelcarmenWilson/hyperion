@@ -19,9 +19,12 @@ import { formatDate, formatFullDateTime } from "@/formulas/dates";
 const Renderer = dynamic(() => import("@/components/global/message/renderer"), {
   ssr: false,
 });
-const QuillEditor = dynamic(() => import("@/components/custom/quill-editor"), {
-  ssr: false,
-});
+const QuillEditor = dynamic(
+  () => import("@/components/custom/quill/quill-editor"),
+  {
+    ssr: false,
+  }
+);
 
 type Props = {
   id: string;

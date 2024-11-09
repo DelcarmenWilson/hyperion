@@ -1,5 +1,7 @@
 "use client";
-import React from "react";
+import { getEnumValues } from "@/lib/helper/enum-converter";
+import { LeadVendor } from "@/types/lead";
+
 import {
   Select,
   SelectContent,
@@ -7,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { allVendors } from "@/constants/lead";
 
 type Props = {
   vendor: string;
@@ -20,6 +21,7 @@ export const LeadVendorSelect = ({
   onSetVendor,
   filter = false,
 }: Props) => {
+  const leadVendors = getEnumValues(LeadVendor);
   return (
     <Select
       name="ddlVendor"
@@ -31,8 +33,8 @@ export const LeadVendorSelect = ({
       </SelectTrigger>
       <SelectContent className="max-h-80">
         {filter && <SelectItem value="%">All</SelectItem>}
-        {allVendors.map((vendor) => (
-          <SelectItem key={vendor.name} value={vendor.value}>
+        {leadVendors.map((vendor) => (
+          <SelectItem key={vendor.value} value={vendor.value}>
             {vendor.name}
           </SelectItem>
         ))}

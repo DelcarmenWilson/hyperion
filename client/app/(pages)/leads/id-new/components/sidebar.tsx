@@ -4,6 +4,8 @@ import { Pencil, Phone } from "lucide-react";
 import { useLeadStore, useLeadData, useLeadId } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 
+import { LeadDefaultStatus } from "@/types/lead";
+
 import { Button } from "@/components/ui/button";
 import { LeadSection } from "./section";
 
@@ -18,7 +20,6 @@ import { PolicyInfoClient } from "@/components/lead/info/policy-info";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { leadDefaultStatus } from "@/constants/lead";
 
 export const LeadSidebar = () => {
   const { onPhoneOutOpen } = usePhoneStore();
@@ -64,7 +65,7 @@ export const LeadSidebar = () => {
             <Button
               variant="outlineprimary"
               className="relative gap-2"
-              disabled={leadBasic.statusId == leadDefaultStatus.doNotCall}
+              disabled={leadBasic.statusId == LeadDefaultStatus.DONOTCALL}
               //TODO - emeditely need to add a function for this
               onClick={() => onPhoneOutOpen(lead!)}
               size="sm"

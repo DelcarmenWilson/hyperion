@@ -1,7 +1,8 @@
 import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
+import { LeadDefaultStatus } from "@/types/lead";
 import { LeadSchemaType } from "@/schemas/lead";
-import { leadDefaultStatus, leadRelationShips } from "@/constants/lead";
+import {  leadRelationShips } from "@/constants/lead";
 import { getAge } from "./dates";
 import { FullUserCarrier } from "@/types";
 
@@ -428,7 +429,7 @@ export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
       recievedAt: d["created_time"],
       vendor: "Amm_Leads",
       type: "General",
-      statusId: leadDefaultStatus.new,
+      statusId: LeadDefaultStatus.NEW,
       currentlyInsured:
         d["do_you_currently_have_coverage?"] ==
         "no,_and_i_am_looking_for_coverage"

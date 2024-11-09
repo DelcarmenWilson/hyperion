@@ -24,7 +24,7 @@ export const PhoneButtons = () => {
           showScript ? onScriptClose() : onScriptOpen();
         }}
       >
-        {script?.title}
+        {script?.name}
       </Button>
 
       {ALLADMINS.includes(role!) && (

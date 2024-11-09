@@ -10,7 +10,7 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import QuillEditorSm from "@/components/custom/quill-editor-sm";
+import QuillEditorSm from "@/components/custom/quill/quill-editor-sm";
 import Renderer from "@/components/global/message/renderer";
 import { TimerBar } from "../global/time-bar";
 

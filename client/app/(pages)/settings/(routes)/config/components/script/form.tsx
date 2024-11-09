@@ -33,7 +33,7 @@ export const ScriptForm = () => {
     onScriptUpdate,
     isPendingScriptUpdate,
   } = useScriptActions();
-  const title = script ? ` - ${script.title}` : "";
+  const title = script ? ` - ${script.name}` : "";
   return (
     <Modal
       isOpen={isScriptFormOpen}

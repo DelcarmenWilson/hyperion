@@ -1,11 +1,12 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+
+import { LeadDefaultStatus } from "@/types/lead";
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 
 import { leadActivityInsert } from "./activity";
 import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
-import { leadDefaultStatus } from "@/constants/lead";
 
 //DATA
 export const leadPolicyGet = async (leadId: string) => {
@@ -55,7 +56,7 @@ export const leadPolicyUpsert = async (values: LeadPolicySchemaType) => {
     await db.lead.update({
       where: { id: leadId },
       data: {
-        statusId: leadDefaultStatus.sold,
+        statusId: LeadDefaultStatus.SOLD,
         assistant: { disconnect: true },
       },
     });

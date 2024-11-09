@@ -1,17 +1,28 @@
-import React from "react";
+"use client";
 import { cn } from "@/lib/utils";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
 import { PipelineLead } from "@/types";
 import { formatDate, getAge } from "@/formulas/dates";
 
 type LeadDialerCardProps = {
   lead: PipelineLead;
+  index: number;
   indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 
-export const LeadDialerCard = ({ lead, indexRef }: LeadDialerCardProps) => {
+export const LeadDialerCard = ({
+  lead,
+  index,
+  indexRef,
+}: LeadDialerCardProps) => {
+  const { onSetIndex } = usePipelineStore();
   return (
-    <div ref={indexRef} className="border-b">
+    <div
+      ref={indexRef}
+      className="border-b cursor-pointer"
+      onClick={() => onSetIndex(index)}
+    >
       <div
         className={cn("p-2 hover:bg-primary/25", indexRef && "bg-primary/30")}
       >

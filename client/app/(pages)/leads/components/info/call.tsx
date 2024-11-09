@@ -9,6 +9,7 @@ import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Call } from "@prisma/client";
 import { FullLead, FullLeadNoConvo } from "@/types";
+import { LeadDefaultStatus } from "@/types/lead";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,6 @@ import { Input } from "@/components/ui/input";
 
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadTypeSelect } from "@/components/lead/select/type-select";
-import { leadDefaultStatus } from "@/constants/lead";
 
 type Props = {
   info: FullLead | FullLeadNoConvo;
@@ -87,7 +87,7 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           <Button
             className="gap-2 w-full"
             variant="gradientDark"
-            disabled={lead.statusId == leadDefaultStatus.doNotCall}
+            disabled={lead.statusId == LeadDefaultStatus.DONOTCALL}
             onClick={onCallClick}
             size="sm"
           >

@@ -35,6 +35,10 @@ const buttonVariants = cva(
           "bg-primary/80 text-primary-foreground shadow hover:bg-primary/90",
         sidebar:
           "hover:text-primary-foreground hover:bg-primary/90 focus:text-primary-foreground focus:bg-primary/90",
+        sidebarItem:
+          "gap-2 !justify-start hover:bg-accent hover:bg-primary/80 hover:text-primary-foreground",
+        sidebarActiveItem:
+          "gap-2 !justify-start bg-primary/80 hover:bg-primary/90 text-primary-foreground",
         transparent: "hover:text-accent-foreground",
         gradient: "gradient-theme border hover:border-primary",
         gradientDark:

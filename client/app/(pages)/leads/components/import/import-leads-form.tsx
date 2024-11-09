@@ -8,10 +8,16 @@ import { useUserData } from "@/hooks/user/use-user";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePipelineData } from "@/hooks/pipeline/use-pipeline";
 
+import { getEnumValues } from "@/lib/helper/enum-converter";
+import { LeadVendor } from "@/types/lead";
+import { LeadSchemaType } from "@/schemas/lead";
+
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { ImportLeadColumn, columns } from "./columns";
 import { Button } from "@/components/ui/button";
+import { CustomDialog } from "@/components/global/custom-dialog";
 
+import { LeadTypeSelect } from "@/components/lead/select/type-select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -20,12 +26,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { convertLead } from "@/formulas/lead";
-import { allLeadTypes, importVendors } from "@/constants/lead";
-import { LeadSchemaType } from "@/schemas/lead";
 
+import { convertLead } from "@/formulas/lead";
 import { leadsImport } from "@/actions/lead";
-import { CustomDialog } from "@/components/global/custom-dialog";
 
 export const ImportLeadsForm = () => {
   const role = useCurrentRole();
@@ -35,13 +38,14 @@ export const ImportLeadsForm = () => {
   const { pipelines, isFetchingPipelines } = usePipelineData();
   const [leads, setLeads] = useState<LeadSchemaType[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
-  const [vendor, setVendor] = useState(importVendors[0].value);
+  const leadVendors = getEnumValues(LeadVendor).slice(1);
+  const [vendor, setVendor] = useState(leadVendors[0].value);
   const [leadType, setLeadType] = useState("General");
   const [status, setStatus] = useState<string>();
   const [assistant, setAssistant] = useState<string>();
   const [isPending, startTransition] = useTransition();
-  const disabled = leads.length > 0;
   const { siteUsers, siteUsersFetching } = onSiteUserGet("ASSISTANT");
+  const disabled = leads.length > 0;
 
   const onFileUploaded = (e: any) => {
     Papa.parse(e.target.files[0], {
@@ -111,8 +115,8 @@ export const ImportLeadsForm = () => {
               <SelectValue placeholder="Select a Vendor" />
             </SelectTrigger>
             <SelectContent>
-              {importVendors.map((vendor) => (
-                <SelectItem key={vendor.name} value={vendor.value}>
+              {leadVendors.map((vendor) => (
+                <SelectItem key={vendor.value} value={vendor.value}>
                   {vendor.name}
                 </SelectItem>
               ))}
@@ -121,23 +125,12 @@ export const ImportLeadsForm = () => {
         </div>
         <div className="flex items-center gap-2">
           <span>Type</span>
-          <Select
-            name="ddlLeadType"
+          <LeadTypeSelect
+            id="type"
             disabled={disabled}
-            defaultValue={leadType}
-            onValueChange={setLeadType}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Lead Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {allLeadTypes.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            type={leadType}
+            onChange={setLeadType}
+          />
         </div>
 
         <div className="flex items-center gap-2">

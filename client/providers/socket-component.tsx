@@ -12,6 +12,8 @@ import { useChatStore } from "@/hooks/chat/use-chat";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useCurrentUser } from "@/hooks/user/use-current";
+import { useSocket } from "@/hooks/use-socket";
+import { useSocketStore } from "@/hooks/use-socket-store";
 
 import {
   defaultSocketContextState,
@@ -20,8 +22,7 @@ import {
 } from "./socket";
 
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { useSocketStore } from "@/hooks/use-socket-store";
-import { useSocket } from "@/hooks/use-socket";
+import { TextAnimation } from "@/components/custom/text-animate";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -129,7 +130,7 @@ const SocketContextComponent: React.FunctionComponent<
 
   if (loading)
     return (
-      <EmptyCard title="Loading Hyperion..." subTitle="Only greatness awaits" />
+      <EmptyCard title="Hyperion Loading.." subTitle="Only greatness awaits" />
     );
 
   return (
