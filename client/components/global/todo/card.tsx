@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { UserTodo } from "@prisma/client";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatDate } from "@/formulas/dates";
 
 type Props = {
   todo: UserTodo;
@@ -12,7 +13,7 @@ type Props = {
 export const TodoCard = ({ todo }: Props) => {
   const { todo: currentTodo, onTodoInfoOpen } = useTodoStore();
   const [status, setStatus] = useState(todo.status == "Pending" ? false : true);
-  const { id, title } = todo;
+  const { id, title, nextReminder } = todo;
   return (
     <div
       className={cn(
@@ -22,10 +23,15 @@ export const TodoCard = ({ todo }: Props) => {
     >
       <Checkbox checked={status} />
       <div
-        className="flex-1  whitespace-nowrap overflow-ellipsis pe-2"
+        className="flex-1 flex-col whitespace-nowrap overflow-ellipsis pe-2"
         onClick={() => onTodoInfoOpen(todo)}
       >
         <p className="text-sm">{title}</p>
+        {nextReminder && (
+          <p className="text-muted-foreground text-xs">
+            {formatDate(nextReminder, "PPP h:mm aa")}
+          </p>
+        )}
       </div>
     </div>
   );

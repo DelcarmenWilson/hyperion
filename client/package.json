@@ -64,6 +64,7 @@
     "@tiptap/starter-kit": "^2.2.4",
     "@twilio/voice-sdk": "^2.12.1",
     "@types/react-beautiful-dnd": "^13.1.8",
+    "@xyflow/react": "^12.3.4",
     "add": "^2.0.6",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",

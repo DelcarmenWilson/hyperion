@@ -143,13 +143,19 @@ model UserTodo {
     title       String
     description String @db.LongText
 
-    status   String @default("Pending")
+    status   String
     comments String @db.LongText
 
     startAt DateTime?
     endAt   DateTime?
 
-    reminder  Boolean  @default(false)
+    reminder       Boolean   @default(false)
+    reminderMethod String
+    nextReminder   DateTime?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    //User cannot have two todos with the same name
+    @@unique([title, userId])
 }

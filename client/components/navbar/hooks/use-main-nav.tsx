@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ import { sendTestEmail } from "@/lib/mail";
 import { sendAppointmentReminders } from "@/actions/appointment";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 import { chatUpdateByIdUnread } from "@/actions/chat";
+import { useTodoStore } from "@/hooks/user/use-todo";
 
 export const useMainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -186,12 +187,11 @@ export const useMainChatActions = () => {
   const { socket } = useSocketStore();
   const { chatId, isChatOpen } = useChatStore();
   const { isMiniMessageOpen, onMiniMessageOpen } = useMiniMessageStore();
+  const { onTodoNotificationOpen } = useTodoStore();
   const { invalidate } = useInvalidate();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const pathname = usePathname();
-  const [chatOpen, setChatOpen] = useState(isChatOpen);
-  const [miniMessageOpen, setMiniMessageOpen] = useState(isMiniMessageOpen);
 
   const invalidateNav = () => {
     invalidate("navbar-chats");
@@ -204,111 +204,71 @@ export const useMainChatActions = () => {
     audioRef.current.play();
   };
 
-  const onRecievedChatAction = (
-    chatId: string,
-    mChatId: string,
-    action: string
-  ) => {
-    if (mChatId != chatId) return;
-    switch (action) {
-      case "res":
-        break;
-      default:
+  const onRecievedChatAction = useCallback(
+    (mChatId: string, action: string) => {
+      if (mChatId != chatId) return;
+      switch (action) {
+        case "res":
+          break;
+        default:
+          invalidate(`chat-${chatId}`);
+          toast.success("Chat has been deleted");
+          break;
+      }
+    },
+    [chatId]
+  );
+
+  const onMessageRecieved = useCallback(
+    (mChatId: string, mid: string) => {
+      if (mChatId == chatId) {
+        chatUpdateByIdUnread(chatId);
         invalidate(`chat-${chatId}`);
-        toast.success("Chat has been deleted");
-        break;
-    }
-  };
+      }
 
-  // const onMessageRecieved = (
-  //   chatId: string,
-  //   mChatId: string,
-  //   mid: string,
-  //   openMini: boolean
-  // ) => {
-  //   if (mChatId == chatId) {
-  //     chatUpdateByIdUnread(chatId);
-  //     invalidate(`chat-${chatId}`);
-  //   }
+      if (pathname.startsWith("/chat")) return;
+      if (!isChatOpen && !isMiniMessageOpen) onMiniMessageOpen(mid);
 
-  //   console.log(chatId, mChatId, mid, openMini, chatOpen);
-  //   if (pathname.startsWith("/chat")) return;
-  //   //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
-  //   if (!chatOpen) {
-  //     console.log(chatId, mChatId, mid, openMini, isMiniMessageOpen, chatOpen);
-  //     onMiniMessageOpen(mid);
-  //   }
-
-  //   invalidate("navbar-chats");
-  //   onPlay();
-  // };
+      invalidate("navbar-chats");
+      onPlay();
+    },
+    [chatId, isChatOpen, isMiniMessageOpen]
+  );
 
   const onAccountSuspended = () => {
     toast.error("You account has been supsended");
     signOut();
   };
 
+  const onTodoReminder = (todoId: string) => {
+    onTodoNotificationOpen(todoId);
+    onPlay();
+  };
+
   useEffect(() => {
-    const onMessageRecieved = (
-      chatId: string,
-      mChatId: string,
-      mid: string,
-      openMini: boolean
-    ) => {
-      if (mChatId == chatId) {
-        chatUpdateByIdUnread(chatId);
-        invalidate(`chat-${chatId}`);
-      }
-
-      console.log(chatId, mChatId, mid, openMini, chatOpen);
-      if (pathname.startsWith("/chat")) return;
-      //TODO - need to come back to this. Mini message card should not open if the sidechat is already open
-      if (!chatOpen) {
-        onMiniMessageOpen(mid);
-      }
-
-      invalidate("navbar-chats");
-      onPlay();
-    };
     socket?.on(
       "chat-message-received",
       (data: { message: FullChatMessage }) => {
-        onMessageRecieved(
-          chatId as string,
-          data.message.chatId,
-          data.message.id,
-          isChatOpen
-        );
-        console.log("here", isChatOpen);
+        onMessageRecieved(data.message.chatId, data.message.id);
       }
     );
     socket?.on(
       "chat-action-received",
       (data: { chatId: string; action: string }) =>
-        onRecievedChatAction(chatId as string, data.chatId, data.action)
+        onRecievedChatAction(data.chatId, data.action)
     );
     socket?.on("account-suspended-recieved", () => onAccountSuspended());
+    socket?.on("todo-reminder-recieved", (data: { dt: string }) =>
+      onTodoReminder(data.dt)
+    );
     return () => {
-      socket?.off(
-        "chat-message-received",
-        (data: { message: FullChatMessage }) =>
-          onMessageRecieved(
-            chatId as string,
-            data.message.chatId,
-            data.message.id,
-            isChatOpen
-          )
-      );
-      socket?.off(
-        "chat-action-received",
-        (data: { chatId: string; action: string }) =>
-          onRecievedChatAction(chatId as string, data.chatId, data.action)
-      );
-      socket?.off("account-suspended-recieved", () => onAccountSuspended());
+      socket?.off("chat-message-received");
+      socket?.off("chat-action-received");
+      socket?.off("account-suspended-recieved");
+      socket?.off("todo-reminder-recieved");
     };
-  }, [chatId, chatOpen]);
-  // useEffect(() => {
-  //   // full message
+  }, [socket, onMessageRecieved, onRecievedChatAction, onTodoReminder]);
+
   //   //TODO we can posibly consolidate the next two socket calls
   //   socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
   //     onMessageRecieved(
@@ -344,10 +304,10 @@ export const useMainChatActions = () => {
   //   };
   // }, [chatId, isOpen, isChatOpen]);
 
-  useEffect(() => {
-    setChatOpen(isChatOpen);
-    console.log(isChatOpen);
-  }, [isChatOpen]);
+  // useEffect(() => {
+  //   setChatOpen(isChatOpen);
+  //   console.log(isChatOpen);
+  // }, [isChatOpen]);
   return {
     audioRef,
     invalidateNav,

@@ -31,6 +31,11 @@ const leadsRetrievalJob = cron.schedule("30 * * * *", () => {
 const hideDeletedMessagesJob = cron.schedule("30 * * * *", () => {  
   axiosCall("hideDeletedMessages")
 });
+
+//Run everyminute - send todo reminders
+const todoReminderJob = cron.schedule("0 0 * * *", () => {  
+  axiosCall("todoReminder")
+});
 export const runJobs = () => {
   //  testJob.start();
   bluePrintTargets.start();

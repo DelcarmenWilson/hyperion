@@ -1,9 +1,17 @@
 "use client";
 
-import { createScript } from "@/actions/script/create-script";
-import CustomDialogHeader from "@/components/custom-dialog-header";
-import { LeadTypeSelect } from "@/components/lead/select/type-select";
+import { useCallback, useState } from "react";
+import { Layers2Icon, Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+
+import { LeadType } from "@/types/lead";
+import { createScriptSchema, createScriptSchemaType } from "@/schemas/script";
+
 import { Button } from "@/components/ui/button";
+import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
   Form,
@@ -14,20 +22,16 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { LeadTypeSelect } from "@/components/lead/select/type-select";
 import { Textarea } from "@/components/ui/textarea";
-import { createScriptSchema, createScriptSchemaType } from "@/schemas/script";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { Layers2Icon, Loader2 } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+
+import { createScript } from "@/actions/script/create-script";
 
 const CreateScriptDialog = ({ triggerText }: { triggerText?: string }) => {
   const [open, setOpen] = useState(false);
   const form = useForm<createScriptSchemaType>({
     resolver: zodResolver(createScriptSchema),
-    defaultValues: { type: "General" },
+    defaultValues: { type: LeadType.General },
   });
 
   const scriptMutation = useMutation({

@@ -52,13 +52,16 @@ export const UserTemplateSchema = z.object({
 });
 export type UserTemplateSchemaType = z.infer<typeof UserTemplateSchema>;
 
-export const UserTodoSchema = z.object({
+export const TodoSchema = z.object({
   id: z.optional(z.string()),
   userId: z.optional(z.string()),
   title: z.string(),
   description: z.string(),
   comments: z.string(),
-
-  reminder: z.boolean(),
+  reminder:z.boolean(),
+  reminderMethod:z.string(),
+  nextReminder:z.date().optional(),
+  startAt:z.date().optional(),
+  endAt:z.date().optional(),
 });
-export type UserTodoSchemaType = z.infer<typeof UserTodoSchema>;
+export type TodoSchemaType = z.infer<typeof TodoSchema>;
