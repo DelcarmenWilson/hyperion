@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { getAge } from "@/formulas/dates";
-import { useAgentCarrierData } from "@/app/(pages)/settings/(routes)/config/hooks/use-carrier";
+import { useAgentCarrierData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-carrier";
 import { PremiumCard } from "./premium-card";
 import { InputGroup } from "@/components/reusable/input-group";
 import { TextGroup } from "@/components/reusable/text-group";

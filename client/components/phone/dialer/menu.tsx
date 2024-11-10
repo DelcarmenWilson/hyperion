@@ -192,7 +192,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
             size="xs"
             onClick={onSmsFormToggle}
           >
-            Sms Form
+            SMS
           </Button>
         </div>
         <span className="text-primary font-bold">

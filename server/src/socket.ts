@@ -54,6 +54,9 @@ export class ServerSocket {
       case "leads:new":
         this.SendUserMessage("leads-new", sid, { dt });
         break;
+        case "todo:reminder":
+        this.SendUserMessage("todo-reminder-recieved", sid, { dt });
+        break;
     }
   };
   StartListeners = (socket: Socket) => {

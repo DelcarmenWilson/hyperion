@@ -2,19 +2,26 @@
 import { useTodoStore } from "@/hooks/user/use-todo";
 import { DrawerExtendedSm } from "@/components/custom/drawer/extended-sm";
 import { TodoInfo } from "./info";
-import { TodoMenu } from "./menu";
+import { AddTodoBtn } from "./add-btn";
 import TodoShell from "./shell";
+import { TodoForm } from "./form";
 
 export const TodoContainer = () => {
-  const { isTodosOpen, onTodosClose, isTodoInfoOpen } = useTodoStore();
+  const { isTodosOpen, onTodosClose, isTodoInfoOpen, isTodoFormOpen } =
+    useTodoStore();
   return (
     <DrawerExtendedSm
       title="Todos"
-      menu={<TodoMenu />}
+      menu={<AddTodoBtn />}
       isOpen={isTodosOpen}
       onClose={onTodosClose}
-      sideDrawer={<TodoInfo />}
-      sideDrawerOpen={isTodoInfoOpen}
+      sideDrawer={
+        <>
+          <TodoInfo />
+          <TodoForm />
+        </>
+      }
+      sideDrawerOpen={isTodoInfoOpen || isTodoFormOpen}
       scroll={false}
       size="w-auto"
     >

@@ -18,7 +18,7 @@ export const PhoneButtons = () => {
   return (
     <div className="flex absolute bottom-0 left-1/2 -translate-x-1/2 justify-center gap-2 items-center">
       <Button
-        className=""
+        className="capitalize"
         variant={showScript ? "default" : "outline"}
         onClick={() => {
           showScript ? onScriptClose() : onScriptOpen();

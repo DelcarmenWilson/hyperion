@@ -25,6 +25,10 @@ import {
 
 import { DatesFilter } from "@/components/reusable/dates-filter";
 import { FullUserReport } from "@/types";
+
+import { getEnumValues } from "@/lib/helper/enum-converter";
+import { UserRoles, UserAccountStatus } from "@/types/user";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -33,8 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { USERACCOUNTSTATUS, USERROLES } from "@/constants/user";
 
 import { USDollar } from "@/formulas/numbers";
 import { formatDate } from "@/formulas/dates";
@@ -59,6 +61,9 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
     onAccountStatusChange,
     onTeamChange,
   } = useUserAdminActions(user);
+
+  const userRoles = getEnumValues(UserRoles);
+  const userAccountStatus = getEnumValues(UserAccountStatus);
 
   const ap = user.leads.reduce(
     (sum, lead) => sum + parseFloat(lead.policy?.ap!),
@@ -221,7 +226,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
                           <SelectValue placeholder="Select a Role" />
                         </SelectTrigger>
                         <SelectContent>
-                          {USERROLES.map((role) => (
+                          {userRoles.map((role) => (
                             <SelectItem key={role.value} value={role.value}>
                               {role.name}
                             </SelectItem>
@@ -275,7 +280,7 @@ export const UserClient = ({ user, callsLength, teams }: UserClientProps) => {
                           <SelectValue placeholder="Select a Status" />
                         </SelectTrigger>
                         <SelectContent>
-                          {USERACCOUNTSTATUS.map((status) => (
+                          {userAccountStatus.map((status) => (
                             <SelectItem key={status.value} value={status.value}>
                               {status.name}
                             </SelectItem>

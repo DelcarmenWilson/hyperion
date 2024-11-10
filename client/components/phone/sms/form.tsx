@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageGrid } from "@/components/reusable/image-grid";
-import { TemplateList } from "@/app/(pages)/settings/(routes)/config/components/templates/list";
+import { TemplateList } from "@/app/(pages)/(main)/settings/(routes)/config/components/templates/list";
 import { replacePreset } from "@/formulas/text";
 
 export const SmsForm = () => {

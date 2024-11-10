@@ -2,6 +2,7 @@
 import { AppInitailEmail } from "@/emails/app-remainder-email";
 import ResetPasswordEmail from "@/emails/reset-password-email";
 import TestEmail from "@/emails/test";
+import { TodoReminderEmail } from "@/emails/todo-remainder-email";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "12125");
@@ -58,10 +59,54 @@ export const sendAppointmentInitialEmail = async (
     to: email,
     subject: "New Appointment",
     // html: `<p>Just a test</p>`,
-    react: AppInitailEmail({  teamName, firstName, dateTime, cellPhone,rescheduleLink,cancelLink }),
+    react: AppInitailEmail({
+      teamName,
+      firstName,
+      dateTime,
+      cellPhone,
+      rescheduleLink,
+      cancelLink,
+    }),
   });
   return newEmail;
 };
+
+export const sendTodoReminderEmail = async ({
+  email,
+  todoId,
+  title,
+  description,
+  username,
+  comments,
+  dueDate,
+}: {
+  email:string
+  todoId: string;
+  title: string;
+  description: string;
+  username: string;
+  comments: string;
+  dueDate: Date;
+}) => {
+  const todoLink = `${domain}/todos/${todoId}`;
+  const todoCompleteLink = `${todoLink}/complete`;
+  const newEmail = await resend.emails.send({
+    from: "no-reply@hperioncrm.com",
+    to: email,
+    subject: "Task Reminder",
+    react: TodoReminderEmail({
+      title,
+      description,
+      comments,
+      username,
+      dueDate,
+      todoLink,
+      todoCompleteLink
+    }),
+  });
+  return newEmail;
+};
+
 //TODO - this can be removed one the emails have been implemented
 export const sendTestEmail = async (email: string, username: string) => {
   const newEmail = await resend.emails.send({

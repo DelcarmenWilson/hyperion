@@ -1,11 +1,16 @@
 "use client";
-
 import React, { useEffect, useRef } from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { LeadDialerCard } from "./lead-card";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { cn } from "@/lib/utils";
 import { useLeadStore } from "@/hooks/lead/use-lead";
+import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 import { usePhoneStore } from "@/hooks/use-phone";
+
+import { PipelineLead } from "@/types";
+
+import { TextGroup } from "@/components/reusable/text-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import { formatDate, getAge } from "@/formulas/dates";
 
 export const LeadList = () => {
   const { setLeadId } = useLeadStore();
@@ -28,7 +33,7 @@ export const LeadList = () => {
   return (
     <ScrollArea className="h-full pr-2">
       {filterLeads?.map((lead, i) => (
-        <LeadDialerCard
+        <LeadCard
           key={lead.id}
           lead={lead}
           index={i}
@@ -36,5 +41,40 @@ export const LeadList = () => {
         />
       ))}
     </ScrollArea>
+  );
+};
+
+type LeadDialerCardProps = {
+  lead: PipelineLead;
+  index: number;
+  indexRef?: React.RefObject<HTMLDivElement> | null;
+};
+
+const LeadCard = ({ lead, index, indexRef }: LeadDialerCardProps) => {
+  const { onSetIndex } = usePipelineStore();
+  return (
+    <div
+      ref={indexRef}
+      className="cursor-pointer shadow-sm"
+      onClick={() => onSetIndex(index)}
+    >
+      <div
+        className={cn("p-2 hover:bg-primary/15", indexRef && "bg-primary/15")}
+      >
+        <div className="bg-gradient p-[1px] mb-1">
+          <p className="bg-background text-primary text-center  font-bold">{`${lead.firstName} ${lead.lastName}`}</p>
+        </div>
+        <div className="flex justify-between items-center text-xs">
+          <div>
+            <TextGroup label="State" value={lead.state} />
+            <TextGroup label="Status" value={lead.maritalStatus} />
+          </div>
+          <div>
+            <TextGroup label="Age" value={getAge(lead.dateOfBirth)} />
+            <TextGroup label="Recd" value={formatDate(lead.recievedAt)} />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

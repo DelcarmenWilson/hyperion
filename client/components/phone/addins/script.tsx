@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { usePhoneStore } from "@/hooks/use-phone";
-import { useAgentLicenseData } from "@/app/(pages)/settings/(routes)/config/hooks/use-license";
+import { useAgentLicenseData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-license";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
-import { Tiptap } from "@/components/reusable/tiptap";
-
 import { replaceScript } from "@/formulas/script";
+import Renderer from "@/components/global/message/renderer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const PhoneScript = () => {
   const { lead, script, showScript } = usePhoneStore();
@@ -32,11 +32,9 @@ export const PhoneScript = () => {
           showScript && "bottom-0"
         )}
       >
-        <Tiptap
-          key={lead?.id}
-          description={formattedScript}
-          onChange={() => {}}
-        />
+        <ScrollArea className="pb-10 px-3">
+          <Renderer value={formattedScript} />
+        </ScrollArea>
       </div>
     </>
   );

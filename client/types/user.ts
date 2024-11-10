@@ -67,3 +67,19 @@ export type FullUserTeamReport = {
 export type FullUserCarrier = UserCarrier & {
   carrier: { name: string };
 };
+
+export enum UserRoles {
+  STUDENT = "Student",
+  ASSISTANT = "Assistant",
+  USER = "User",
+  ADMIN = "Admin",
+  SUPER_ADMIN = "Super Admin",
+}
+
+
+export enum UserAccountStatus{
+  ACTIVE="Active",
+  INACTIVE="Inactive",
+  PRE_ACTIVE="Pre active",
+ SUSPENDED="Suspended",
+  }
