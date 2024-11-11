@@ -1,25 +1,26 @@
 import { useCallback, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {  usePathname,useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-import {  FullLeadNoConvo } from "@/types";
-
-import { leadDeleteById, leadUpdateByIdTitan } from "@/actions/lead";
 import { useCurrentRole } from "../user/use-current";
-import { conversationDeleteById } from "@/actions/lead/conversation";
+import { useInvalidate } from "../use-invalidate";
+
+import { FullLeadNoConvo } from "@/types";
+
 import { exportLeads } from "@/lib/xlsx";
+import { deleteLead } from "@/actions/lead/main/delete-lead";
+import { conversationDeleteById } from "@/actions/lead/conversation";
+import { leadUpdateByIdTitan } from "@/actions/lead";
 
 export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
   const role = useCurrentRole();
-  const queryClient = useQueryClient();
+  const { invalidate } = useInvalidate();
   const [titan, setTitan] = useState<boolean>(lead?.titan);
   const isAssistant = role == "ASSISTANT";
   const [alertDeleteConvoOpen, setAlertDeleteConvoOpen] = useState(false);
-  const [alertDeleteLeadOpen, setAlertDeleteLeadOpen] = useState(false);
+  const pathName=usePathname()
+  const router=useRouter()
 
-//   const invalidate = () => {
-//     queryClient.invalidateQueries({ queryKey: [`leadPolicy-${lead.id}`] });
-//   };
 
   //CONVERSATION DELETED
   const { mutate: conversationDeleteMutate, isPending: conversationDeleting } =
@@ -35,29 +36,33 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
         }
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(error.message, { id: "delete-conversation" });
       },
     });
 
-  const onConversationDelete = useCallback((conversationId:string) => {
-    toast.loading("Deleting Conversation...", { id: "delete-conversation" });
-    conversationDeleteMutate(conversationId);
-  }, [conversationDeleteMutate]);
+  const onConversationDelete = useCallback(
+    (conversationId: string) => {
+      toast.loading("Deleting Conversation...", { id: "delete-conversation" });
+      conversationDeleteMutate(conversationId);
+    },
+    [conversationDeleteMutate]
+  );
 
   //LEAD DELETED
   const { mutate: leadDeleteMutate, isPending: leadDeleting } = useMutation({
-    mutationFn: leadDeleteById,
+    mutationFn: deleteLead,
     onSuccess: (results) => {
       if (results.success) {
-        toast.success(results.success, { id: "delete-lead" });
-        //   invalidate();
-        setAlertDeleteLeadOpen(false);
+         invalidate("leads")
+        toast.success("Lead deleted successfully", { id: "delete-lead" });
+        if(pathName===`/leads/${results.success}`)
+        router.push("/leads");
       } else {
         toast.error(results.error, { id: "delete-lead" });
       }
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message, { id: "delete-lead" });
     },
   });
 
@@ -72,9 +77,8 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
     onSuccess: (results) => {
       if (results.success) {
         toast.success(results.success, { id: "update-titan" });
-        queryClient.invalidateQueries({
-          queryKey: [`lead-basic-${results.data}`, `lead-${results.data}`],
-        });
+        invalidate(`lead-basic-${results.data}`);
+        invalidate(`lead-${results.data}`);
       } else toast.error(results.error, { id: "update-titan" });
     },
     onError: (error) => {
@@ -101,8 +105,6 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
     isAssistant,
     alertDeleteConvoOpen,
     setAlertDeleteConvoOpen,
-    alertDeleteLeadOpen,
-    setAlertDeleteLeadOpen,
     onConversationDelete,
     conversationDeleting,
     onLeadDelete,

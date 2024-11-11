@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
 
 import { userEmitter } from "@/lib/event-emmiter";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { leadsGetAll } from "@/actions/lead";
 import { FullLead } from "@/types";
+import { getLeads } from "@/actions/lead/main/get-leads";
 
 export const useLeadsData = () => {
-  const queryClient = useQueryClient();
   const [leads, setLeads] = useState<FullLead[]>();
-
-  // const invalidate = (queries: string[]) => {
-  //   queries.forEach((query) => {
-  //     queryClient.invalidateQueries({ queryKey: [query] });
-  //   });
-  // };
 
   const { data: initLeads, isFetching: isFetchingLeads } = useQuery<
     FullLead[] | []
   >({
-    queryFn: () => leadsGetAll(),
+    queryFn: () => getLeads(),
     queryKey: ["leads"],
   });
 

@@ -144,7 +144,7 @@ export const chatbotMessageInsert = async (values: ChatbotMessageSchemaType) => 
   });
 
   messages.push(newMessage);
-console.log(messages)
+  
   const chatMessage = await chatFetch(messages);
   const response = chatMessage.choices[0].message;
 

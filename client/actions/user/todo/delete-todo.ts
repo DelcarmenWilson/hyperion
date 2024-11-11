@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-export const userTodoDeleteById = async (id: string) => {
+export const deleteTodo = async (id: string) => {
   const user = await currentUser();
   if (!user) return { error: "Unauthenticated" };
  

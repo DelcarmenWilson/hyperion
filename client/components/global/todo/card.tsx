@@ -6,14 +6,15 @@ import { UserTodo } from "@prisma/client";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "@/formulas/dates";
+import { TodoStatus } from "@/types/todo";
 
 type Props = {
   todo: UserTodo;
 };
 export const TodoCard = ({ todo }: Props) => {
   const { todo: currentTodo, onTodoInfoOpen } = useTodoStore();
-  const [status, setStatus] = useState(todo.status == "Pending" ? false : true);
-  const { id, title, nextReminder } = todo;
+  const { id, title, startAt } = todo;
+  const status = todo.status == TodoStatus.COMPLETED;
   return (
     <div
       className={cn(
@@ -27,9 +28,9 @@ export const TodoCard = ({ todo }: Props) => {
         onClick={() => onTodoInfoOpen(todo)}
       >
         <p className="text-sm">{title}</p>
-        {nextReminder && (
+        {startAt && (
           <p className="text-muted-foreground text-xs">
-            {formatDate(nextReminder, "PPP h:mm aa")}
+            {formatDate(startAt, "PPP h:mm aa")}
           </p>
         )}
       </div>

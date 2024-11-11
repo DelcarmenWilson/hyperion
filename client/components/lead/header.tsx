@@ -12,7 +12,7 @@ import { EmptyData } from "./info/empty-data";
 export const LeadHeader = () => {
   const { lead, isFetchingLead } = useLeadData();
   const { socket } = useContext(SocketContext).SocketState;
-  console.log(lead);
+
   useEffect(() => {
     const onSetLead = (leadIds: string[]) => {
       if (leadIds.includes(lead?.id!)) redirect("/leads");

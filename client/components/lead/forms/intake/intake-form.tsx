@@ -482,7 +482,10 @@ export const IntakeForm = () => {
           <SectionWrapper
             title="For Producers Only"
             button={
-              <Button size="sm" onClick={() => onPolicyFormOpen(leadId)}>
+              <Button
+                size="sm"
+                onClick={() => onPolicyFormOpen(leadId, leadFullName!)}
+              >
                 Edit
               </Button>
             }

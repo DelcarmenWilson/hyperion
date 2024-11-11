@@ -33,25 +33,26 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { useCarriers } from "@/components/global/selects/hooks/use-carriers";
 import { useEffect, useState } from "react";
 import { FullUserCarrier } from "@/types";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const PolicyInfoForm = () => {
   const { policy, isFetchingPolicy } = useLeadPolicyData();
   const { isPolicyFormOpen, onPolicyFormClose } = useLeadPolicyActions();
-  if (!policy) return null;
+  const { leadId, leadFullName } = useLeadStore();
 
-  const leadName = `${policy?.lead.firstName} ${policy?.lead.lastName}`;
+  // const leadName = `${policy?.lead.firstName} ${policy?.lead.lastName}`;
 
   return (
     <CustomDialog
       open={isPolicyFormOpen}
       onClose={onPolicyFormClose}
       description="Policy Info Form"
-      title={`Policy Info - ${leadName}`}
+      title={`Policy Info - ${leadFullName}`}
     >
       <SkeletonWrapper isLoading={isFetchingPolicy}>
         <PolicyForm
           policy={policy}
-          leadId={policy.lead.id}
+          leadId={policy?.lead.id || leadId!}
           onClose={onPolicyFormClose}
         />
       </SkeletonWrapper>
@@ -60,7 +61,7 @@ export const PolicyInfoForm = () => {
 };
 
 type Props = {
-  policy: LeadPolicy | null;
+  policy: LeadPolicy | null | undefined;
   leadId: string;
   onClose: () => void;
 };

@@ -25,8 +25,7 @@ export const EmailClient = () => {
             <TableHead>Type</TableHead>
             <TableHead>Subject</TableHead>
             <TableHead>Body</TableHead>
-            <TableHead>Recieved</TableHead>
-            <TableHead>Opened</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Date / Time</TableHead>
           </TableRow>
         </TableHeader>
@@ -38,10 +37,8 @@ export const EmailClient = () => {
                 <TableCell> {email.subject}</TableCell>
                 <TableCell> {email.body}</TableCell>
                 <TableCell>
-                  {email.recieved ? <Check size={15} /> : <X size={15} />}
-                </TableCell>
-                <TableCell>
-                  {email.opened ? <Check size={15} /> : <X size={15} />}
+                  {/* {email.status ? <Check size={15} /> : <X size={15} />} */}
+                  {email.status}
                 </TableCell>
                 <TableCell> {formatDateTime(email.createdAt)}</TableCell>
               </TableRow>

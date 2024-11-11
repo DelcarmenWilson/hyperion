@@ -1,6 +1,6 @@
 "use client";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadPolicyData } from "@/hooks/lead/use-policy-info";
 
 import { EmptyData } from "./empty-data";
@@ -16,10 +16,11 @@ export const PolicyInfoClient = () => {
   const { policy, isFetchingPolicy } = useLeadPolicyData();
   const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
   const { leadId } = useLeadId();
+  const { leadBasic } = useLeadData();
 
   if (role == "ASSISTANT") return null;
 
-  const leadName = `${policy?.lead.firstName} ${policy?.lead.firstName}`;
+  const leadName = `${leadBasic?.firstName} ${leadBasic?.firstName}`;
   const assistant = policy?.lead.assistant;
 
   return (
@@ -43,7 +44,7 @@ export const PolicyInfoClient = () => {
 
         <SectionWrapper
           title="Policy"
-          onClick={() => onPolicyFormOpen(leadId)}
+          onClick={() => onPolicyFormOpen(leadId, leadName)}
           showAdd={!policy}
         >
           {policy ? (

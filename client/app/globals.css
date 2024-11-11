@@ -6,6 +6,11 @@
   --font-sora: "Sora", sans-serif;
   --font-code: "Source Code Pro", monospace;
   --font-grotesk: "Space Grotesk", sans-serif;
+  --clr-1: #052b2f;
+  --clr-2: #073438;
+  --clr-3: #0e4b50;
+  --clr-4: #2d8f85;
+  --clr-5: #637c54;
 }
 
 html,
@@ -208,6 +213,67 @@ body,
   }
 }
 
+.animate-fill {
+  position: relative;
+  overflow: hidden;
+}
+.animate-fill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  @apply bg-gradient-to-tr from-foreground to-primary;
+  overflow: hidden;
+  animation: animate-fill 6s linear infinite;
+}
+@keyframes animate-fill {
+  0%,
+  10%,
+  100% {
+    width: 0;
+  }
+  70%,
+  90% {
+    width: 100%;
+  }
+}
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.card-glowing {
+  position: relative;
+  width: 300px;
+  height: 400px;
+  border-radius: 0.5rem;
+}
+.card-glowing::before,
+.card-glowing::after {
+  position: absolute;
+  content: "";
+  inset: -.5rem;
+  background: conic-gradient(from var(--gradient-angle), var(--clr-3), var(--clr-4), hsl(var(--primary)), var(--clr-4), var(--clr-3));
+  border-radius: inherit;
+  z-index: -1;
+  animation:rotate-glow 20s linear infinite
+}
+.card-glowing::after {
+  filter: blur(3.5rem);
+}
+
+@keyframes rotate-glow {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+
 /* QUILL */
 .ql-toolbar {
   border: none !important;
@@ -281,7 +347,7 @@ body,
 
 /* LOADING */
 .loading-dots {
-  color: var(--primary);
+  @apply text-primary;
   width: 35px;
   height: 15px;
   --d: radial-gradient(farthest-side, currentColor 89%, #0000);

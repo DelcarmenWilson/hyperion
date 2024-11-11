@@ -14,39 +14,32 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { deleteWorkflow } from "@/actions/workflow/delete-workflow";
+import { Button } from "../ui/button";
+import { Trash } from "lucide-react";
 
 type Props = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  workflowId: string;
-  workflowName: string;
+  title: string;
+  cfText: string;
+  onConfirm: () => void;
+  loading: boolean;
 };
-const DeleteWorkflowDialog = ({
-  open,
-  setOpen,
-  workflowId,
-  workflowName,
-}: Props) => {
+const DeleteDialog = ({ title, cfText, onConfirm, loading }: Props) => {
   const [confirmText, setConfirmText] = useState("");
-  const { mutate, isPending } = useMutation({
-    mutationFn: deleteWorkflow,
-    onSuccess: () => {
-      toast.success("Workflow deleted successfully", { id: workflowId });
-      setConfirmText("");
-    },
-    onError: () => toast.error("Something went wrong", { id: workflowId }),
-  });
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" className="gap-2 w-full">
+          <Trash size={16} /> Delete
+        </Button>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            If you delete this workflow, you will not be able to recover it.
+            If you delete this {title}, you will not be able to recover it.
             <div className="flex flex-col py-4 gap-2">
               <p>
-                If you are sure, enter <b>{workflowName}</b> to confirm:
+                If you are sure, enter <b>{cfText}</b> to confirm:
               </p>
               <Input
                 value={confirmText}
@@ -61,11 +54,11 @@ const DeleteWorkflowDialog = ({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            disabled={confirmText !== workflowName || isPending}
+            disabled={confirmText !== cfText || loading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={() => {
-              toast.loading("Deleting workflow", { id: workflowId });
-              mutate(workflowId);
+              setConfirmText("");
+              onConfirm();
             }}
           >
             Delete
@@ -76,4 +69,4 @@ const DeleteWorkflowDialog = ({
   );
 };
 
-export default DeleteWorkflowDialog;
+export default DeleteDialog;

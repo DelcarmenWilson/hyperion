@@ -31,7 +31,8 @@ model User {
     conversations LeadConversation[]
     appointments  Appointment[]
     activities    LeadActivity[]
-    emails        LeadEmail[]
+
+    emails Email[]
 
     assistants  Lead[] @relation("LeadAssistant")
     sharedUsers Lead[] @relation("LeadSharedUser")

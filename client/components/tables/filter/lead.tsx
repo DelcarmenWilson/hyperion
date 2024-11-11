@@ -3,26 +3,39 @@ import React, { useEffect } from "react";
 import { Table } from "@tanstack/react-table";
 
 import { FullLead } from "@/types";
-import { LeadDefaultStatus } from "@/types/lead";
 
 import { Button } from "@/components/ui/button";
 import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadVendorSelect } from "@/components/lead/select/vendor-select";
 import { LeadStateSelect } from "@/components/lead/select/state-select";
+import { useLeadFilterStore } from "@/hooks/lead/use-lead-filter-store";
 
 type LeadFilterProps<TData> = {
   table: Table<TData>;
 };
 
 export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
+  const { statusId, vendor, state, onSetStatus, onSetVendor, onSetState } =
+    useLeadFilterStore();
   const OnFilter = (
     column: "statusId" | "vendor" | "state",
     filter: string
   ) => {
-    if (filter == "%") {
-      filter = "";
+    switch (column) {
+      case "statusId":
+        onSetStatus(filter);
+        break;
+
+      case "vendor":
+        onSetVendor(filter);
+        break;
+      case "state":
+        onSetState(filter);
+        break;
     }
+    if (filter == "%") filter = "";
+
     table.getColumn(column)?.setFilterValue(filter);
   };
 
@@ -39,7 +52,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
   };
 
   useEffect(() => {
-    OnFilter("statusId", LeadDefaultStatus.NEW);
+    OnFilter("statusId", statusId);
     // eslint-disable-next-line
   }, []);
   return (
@@ -58,19 +71,19 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
             <p className="text-muted-foreground">Status</p>
             <LeadStatusSelect
               id="leafFilter"
-              statusId={LeadDefaultStatus.NEW}
+              statusId={statusId}
               onSetStatus={OnFilter}
             />
           </div>
 
           <div className="flex items-center gap-2">
             <p className="text-muted-foreground">Vendor</p>
-            <LeadVendorSelect vendor="%" onSetVendor={OnFilter} filter />
+            <LeadVendorSelect vendor={vendor} onSetVendor={OnFilter} filter />
           </div>
 
           <div className="flex items-center gap-2">
             <p className="text-muted-foreground">State</p>
-            <LeadStateSelect state="%" onSetState={OnFilter} filter />
+            <LeadStateSelect state={state} onSetState={OnFilter} filter />
           </div>
         </>
       )}

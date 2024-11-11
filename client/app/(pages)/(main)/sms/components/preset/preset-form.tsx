@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { AlertCircle, Smile } from "lucide-react";
+import { AlertCircle, Smile, Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +23,7 @@ import { Preset } from "@prisma/client";
 import { PresetSchema, PresetSchemaType } from "@/schemas/settings";
 import { presetKeywords } from "@/constants/texts";
 import { presetInsert } from "@/actions/user/preset";
+import { useAiGeneratorStore } from "@/hooks/ai-generator/use-ai-generator";
 
 type PresetFormProps = {
   type: Preset;
@@ -31,6 +32,7 @@ type PresetFormProps = {
 export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
   const [isPending, startTransition] = useTransition();
   const [count, setCount] = useState(content.length);
+  const { onAiGeneratorOpen } = useAiGeneratorStore();
 
   const form = useForm<PresetSchemaType>({
     resolver: zodResolver(PresetSchema),
@@ -76,6 +78,18 @@ export const PresetForm = ({ type, content = "" }: PresetFormProps) => {
                       // onChange={(e) => setCount(e.target.value.length)}
                     />
                     <Smile className="absolute text-primary -right-2.5 -top-2.5" />
+                    <Button
+                      variant="ghost"
+                      className="absolute bottom-0 right-0 rounded-full"
+                      type="button"
+                      onClick={() =>
+                        onAiGeneratorOpen((e) => {
+                          form.setValue("content", e);
+                        })
+                      }
+                    >
+                      <Star size={16} />
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage />

@@ -95,7 +95,7 @@ type Actions = {
   onGeneralFormOpen: (l: string) => void;
   onGeneralFormClose: () => void;
   //POLICY
-  onPolicyFormOpen: (l: string) => void;
+  onPolicyFormOpen: (l: string,n:string) => void;
   onPolicyFormClose: () => void;
   // SHARE
   onShareFormOpen: (l: string[], n: string, u?: User, f?: () => void) => void;
@@ -134,7 +134,7 @@ export const useLeadStore = create<State & Actions>((set) => ({
   onGeneralFormOpen: (l) => set({ leadId: l, isGeneralFormOpen: true }),
   onGeneralFormClose: () => set({ isGeneralFormOpen: false }),
   isPolicyFormOpen: false,
-  onPolicyFormOpen: (l) => set({ leadId: l, isPolicyFormOpen: true }),
+  onPolicyFormOpen: (l,n) => set({ leadId: l,leadFullName:n, isPolicyFormOpen: true }),
   onPolicyFormClose: () => set({ isPolicyFormOpen: false }),
   //SHARE
   isShareFormOpen: false,
