@@ -18,6 +18,7 @@ type Props = {
   onClose: () => void;
   maxWidth?: boolean;
   maxHeight?: boolean;
+  scroll?: boolean;
 };
 export const CustomDialog = ({
   children,
@@ -29,6 +30,7 @@ export const CustomDialog = ({
   onClose,
   maxWidth = false,
   maxHeight = false,
+  scroll = true,
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -53,8 +55,11 @@ export const CustomDialog = ({
             {description}
           </DialogDescription>
         </DialogHeader>
-
-        <ScrollArea className="pe-2">{children}</ScrollArea>
+        {scroll ? (
+          <ScrollArea className="pe-2">{children}</ScrollArea>
+        ) : (
+          <> {children}</>
+        )}
       </DialogContent>
     </Dialog>
   );

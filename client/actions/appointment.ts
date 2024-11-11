@@ -24,8 +24,8 @@ import { callUpdateByIdAppointment } from "./call";
 import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
 import { leadGetOrInsert } from "./lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
-import { leadEmailInsert } from "./lead/email";
 import { userGetByAssistant } from "@/actions/user";
+import { createEmail } from "@/actions/email/create-email";
 
 //DATA
 //TODO - this was created to test the calendar client and the appoint hook inside of it.
@@ -272,12 +272,14 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
         lead.cellPhone
       );
       if (email.data) {
-        await leadEmailInsert(
-          email.data.id as string,
-          "react-email",
-          "AppInitailEmail",
-          "New Appointment",
-          lead.id
+        await createEmail({
+
+id:email.data.id as string,
+          type: "react-email",
+          body: "AppInitailEmail",
+          subject: "New Appointment",
+          leadId:lead.id,
+          userId:user.id}
         );
       }
     }

@@ -2,6 +2,7 @@ import { PipelineLead } from "@/types";
 import { formatPhoneNumber } from "./phones";
 import { UserLicense } from "@prisma/client";
 import { formatDob } from "./dates";
+import {  Keywords } from "@/constants/texts";
 const NS="Not Set";
 
 export const replaceScript = (
@@ -14,16 +15,16 @@ export const replaceScript = (
     const license=licenses?.find(e=>e.state==lead.state)?.licenseNumber||NS
     const {defaultNumber,firstName,dateOfBirth,address,state,smoker}=lead
     // USER INFO
-    script = script.replaceAll("#my_first_name", agentFirstName)
-    .replace("#my_company_name", "Family First Life")
-    .replace("#my_office_phone_number", formatPhoneNumber(defaultNumber))
-    .replace("#my_license", license)
+    script.replaceAll(Keywords.MY_FIRST_NAME, agentFirstName)
+    .replace(Keywords.MY_COMPANY_NAME, "Family First Life")
+    .replace(Keywords.MY_OFFICE_PHONE_NUMBER, formatPhoneNumber(defaultNumber))
+    .replace(Keywords.MY_LICENSE, license)
     // LEAD INFO
-    .replaceAll("#first_name", firstName)
-    .replaceAll("#birthday",formatDob(dateOfBirth,NS))
-    .replaceAll("#street_adress", address||NS)
-    .replaceAll("#state", state)
-    .replaceAll("#smoker", smoker?"smoker":"non-smoker")    
+    .replaceAll(Keywords.FIRST_NAME, firstName)
+    .replaceAll(Keywords.BIRTHDAY,formatDob(dateOfBirth,NS))
+    .replaceAll(Keywords.STREET_ADRESS, address||NS)
+    .replaceAll(Keywords.STATE, state)
+    .replaceAll(Keywords.SMOKER, smoker?"smoker":"non-smoker")    
 
     return script;
   };

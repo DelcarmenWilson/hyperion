@@ -15,13 +15,15 @@ import {
 import { cn } from "@/lib/utils";
 
 import { useAppointmentStore } from "@/hooks/use-appointment";
-import { useLeadStore, useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 import { useLeadDropdownActions } from "@/hooks/lead/use-dropdown";
 
+import { FullLeadNoConvo } from "@/types";
 import { LeadDefaultStatus } from "@/types/lead";
 
 import { AlertModal } from "@/components/modals/alert";
 import { Button } from "@/components/ui/button";
+import DeleteDialog from "../custom/delete-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,8 +35,6 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-
-import { FullLeadNoConvo } from "@/types";
 
 type DropDownProps = {
   lead: FullLeadNoConvo;
@@ -55,8 +55,6 @@ export const LeadDropDown = ({
     isAssistant,
     alertDeleteConvoOpen,
     setAlertDeleteConvoOpen,
-    alertDeleteLeadOpen,
-    setAlertDeleteLeadOpen,
     onConversationDelete,
     conversationDeleting,
     onLeadDelete,
@@ -74,14 +72,6 @@ export const LeadDropDown = ({
         onClose={() => setAlertDeleteConvoOpen(false)}
         onConfirm={() => onConversationDelete(conversationId as string)}
         loading={conversationDeleting}
-        height="h-auto"
-      />
-      <AlertModal
-        title={`Are you sure you want to delete ${lead?.firstName}`}
-        isOpen={alertDeleteLeadOpen}
-        onClose={() => setAlertDeleteLeadOpen(false)}
-        onConfirm={() => onLeadDelete}
-        loading={leadDeleting}
         height="h-auto"
       />
 
@@ -181,12 +171,13 @@ export const LeadDropDown = ({
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuItem
-                  className="cursor-pointer gap-2"
-                  onClick={() => setAlertDeleteLeadOpen(true)}
-                >
-                  <Trash size={16} />
-                  Delete Lead
+                <DropdownMenuItem className="cursor-pointer gap-2" asChild>
+                  <DeleteDialog
+                    title="lead"
+                    cfText={lead.textCode}
+                    onConfirm={onLeadDelete}
+                    loading={leadDeleting}
+                  />
                 </DropdownMenuItem>
                 {conversationId && (
                   <>

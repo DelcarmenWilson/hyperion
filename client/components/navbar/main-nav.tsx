@@ -72,7 +72,10 @@ export const MainNav = ({ admin }: Props) => {
         x="0"
         y="70%"
       />
-      {/* <Button onClick={() => remindTodos()}>Reminders</Button> */}
+      {user?.role == "DEVELOPER" && (
+        <Button onClick={() => remindTodos()}>Reminders</Button>
+      )}
+
       <CoachNotification
         conference={conference}
         isOpen={isNotificationOpen}

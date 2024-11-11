@@ -83,13 +83,15 @@ export const PolicyInfoClient = ({
           />
           <Button
             className="absolute  bottom-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-            onClick={() => onPolicyFormOpen(leadId)}
+            onClick={() => onPolicyFormOpen(leadId, leadName)}
           >
             <FilePenLine size={16} />
           </Button>
         </div>
       ) : (
-        <Button onClick={() => onPolicyFormOpen(leadId)}>Create Policy</Button>
+        <Button onClick={() => onPolicyFormOpen(leadId, leadName)}>
+          Create Policy
+        </Button>
       )}
     </div>
   );

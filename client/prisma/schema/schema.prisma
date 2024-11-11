@@ -177,3 +177,21 @@ model PageUpdate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Email {
+  id String @id @default(cuid())
+
+  type    String @default("text")
+  subject String
+  body    String
+  status  String @default("Pending")
+
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String?
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

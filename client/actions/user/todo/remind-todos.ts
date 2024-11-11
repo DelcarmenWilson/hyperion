@@ -5,12 +5,15 @@ import { TodoReminderMethod } from "@/types/todo";
 import { sendTodoReminderEmail } from "@/lib/mail";
 import { sendSocketData } from "@/services/socket-service";
 import { smsSend } from "@/actions/sms";
+import { createEmail } from "@/actions/email/create-email";
 
 export const remindTodos = async () => {
   const startDate = new Date();
-   startDate.setHours(startDate.getHours() - 1);
+  //TODO - dont forget to remove this an allow the other line
+  //startDate.setHours(startDate.getHours() - 1);
+  startDate.setSeconds(startDate.getSeconds() -5);
   const endDate = new Date();
-  endDate.setSeconds(endDate.getSeconds() + 30);
+  endDate.setSeconds(endDate.getSeconds() + 10);
 
   const todos = await db.userTodo.findMany({
     where: {
@@ -63,7 +66,7 @@ export const remindTodos = async () => {
         break;
       case TodoReminderMethod.Email:
         if (todo.user.email) {
-          await sendTodoReminderEmail({
+          const email = await sendTodoReminderEmail({
             email: todo.user.email,
             todoId: todo.id,
             title: todo.title,
@@ -72,6 +75,16 @@ export const remindTodos = async () => {
             comments: todo.comments,
             dueDate: todo.startAt!,
           });
+          if (email.data) {
+            await createEmail({
+              id: email.data.id as string,
+              type: "react-email",
+              body: "TodoReminderEmail",
+              subject: "Task Reminder",
+              leadId: undefined,
+              userId: todo.userId,
+            });
+          }
         }
         break;
     }

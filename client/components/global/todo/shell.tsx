@@ -1,8 +1,15 @@
 "use client";
+import { useTodoData } from "@/hooks/user/use-todo";
+
+import { TodoStatus } from "@/types/todo";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TodoActiveList } from "./active-list";
+import { TodosList } from "./list";
 
 const TodoShell = () => {
+  const { onTodosGet } = useTodoData();
+  const { todos, todosFetching } = onTodosGet();
+  if (todos == undefined) return null;
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
       <Tabs className="flex flex-col w-full h-full" defaultValue="active">
@@ -25,14 +32,20 @@ const TodoShell = () => {
             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="active"
           >
-            <TodoActiveList />
+            <TodosList
+              todos={todos.filter((e) => e.status == TodoStatus.PENDING)}
+              loading={todosFetching}
+            />
           </TabsContent>
 
           <TabsContent
             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
             value="completed"
           >
-            Here are the active todos
+            <TodosList
+              todos={todos.filter((e) => e.status == TodoStatus.COMPLETED)}
+              loading={todosFetching}
+            />
           </TabsContent>
         </div>
       </Tabs>

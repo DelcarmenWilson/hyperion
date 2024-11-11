@@ -76,7 +76,7 @@ model Lead {
     dotor         LeadDoctor?
     bank          LeadBank?
     medical       LeadMedicalQuestions?
-    emails        LeadEmail[]
+    emails        Email[]
     leadOne       LeadsOnLeads[]         @relation("leadOne")
     leadTwo       LeadsOnLeads[]         @relation("leadTwo")
 
@@ -257,15 +257,15 @@ model LeadDuplicates {
 }
 
 model LeadStatus {
-    id          String  @id @default(cuid())
+    id          String     @id @default(cuid())
     status      String
-    type        String  @default("User Generated")
+    type        String     @default("User Generated")
     description String?
     userId      String
-    hidden      Boolean @default(false)
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    Pipeline  Pipeline[]
+    hidden      Boolean    @default(false)
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    Pipeline    Pipeline[]
 }
 
 //LEAD CONVERSATIONS
@@ -318,25 +318,6 @@ model LeadActivity {
     type     String  @default("general")
     activity String
     newValue String?
-
-    lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-    leadId String
-
-    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String?
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-model LeadEmail {
-    id String @id @default(cuid())
-
-    type     String  @default("text")
-    subject  String
-    body     String
-    recieved Boolean @default(false)
-    opened   Boolean @default(false)
 
     lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
     leadId String

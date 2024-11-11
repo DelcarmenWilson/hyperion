@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,39 +12,29 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { deleteWorkflow } from "@/actions/workflow/delete-workflow";
+import { useTodoActions } from "@/hooks/user/use-todo";
 
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  workflowId: string;
-  workflowName: string;
+  todoId: string;
+  todoName: string;
 };
-const DeleteWorkflowDialog = ({
-  open,
-  setOpen,
-  workflowId,
-  workflowName,
-}: Props) => {
+const DeleteTodoDialog = ({ open, setOpen, todoId, todoName }: Props) => {
   const [confirmText, setConfirmText] = useState("");
-  const { mutate, isPending } = useMutation({
-    mutationFn: deleteWorkflow,
-    onSuccess: () => {
-      toast.success("Workflow deleted successfully", { id: workflowId });
-      setConfirmText("");
-    },
-    onError: () => toast.error("Something went wrong", { id: workflowId }),
-  });
+  const { onTodoDelete, todoDeleteing } = useTodoActions(() =>
+    setConfirmText("")
+  );
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            If you delete this workflow, you will not be able to recover it.
+            If you delete this todo, you will not be able to recover it.
             <div className="flex flex-col py-4 gap-2">
               <p>
-                If you are sure, enter <b>{workflowName}</b> to confirm:
+                If you are sure, enter <b>{todoName}</b> to confirm:
               </p>
               <Input
                 value={confirmText}
@@ -61,12 +49,9 @@ const DeleteWorkflowDialog = ({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            disabled={confirmText !== workflowName || isPending}
+            disabled={confirmText !== todoName || todoDeleteing}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={() => {
-              toast.loading("Deleting workflow", { id: workflowId });
-              mutate(workflowId);
-            }}
+            onClick={() => onTodoDelete(todoId)}
           >
             Delete
           </AlertDialogAction>
@@ -76,4 +61,4 @@ const DeleteWorkflowDialog = ({
   );
 };
 
-export default DeleteWorkflowDialog;
+export default DeleteTodoDialog;

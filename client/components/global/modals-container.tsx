@@ -13,6 +13,7 @@ import { ShareForm } from "../lead/forms/share-form";
 import { TransferForm } from "../lead/forms/transfer-form";
 import { TodoContainer } from "./todo/container";
 import { TodoNotification } from "./todo/notification";
+import { AiGeneratorDialog } from "./ai-generator/ai-generator-dialog";
 
 const ModalsContainer = () => {
   return (
@@ -39,6 +40,9 @@ const ModalsContainer = () => {
       <NewLeadForm />
       {/* SCRIPT MODAL */}
       <ScriptForm />
+      {/* GLOABAL MODAL */}
+
+      <AiGeneratorDialog />
     </>
   );
 };

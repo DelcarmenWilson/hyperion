@@ -130,7 +130,14 @@ const SocketContextComponent: React.FunctionComponent<
 
   if (loading)
     return (
-      <EmptyCard title="Hyperion Loading.." subTitle="Only greatness awaits" />
+      <div className="h-full w-full flex-center">
+        <div className="card-glowing">
+          <EmptyCard
+            title="Hyperion Loading.."
+            subTitle="Only greatness awaits"
+          />
+        </div>
+      </div>
     );
 
   return (

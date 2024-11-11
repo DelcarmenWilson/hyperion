@@ -2,8 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-import { AssociatedLead, FullLead } from "@/types";
-import { LeadDefaultStatus } from "@/types/lead";
+import { AssociatedLead } from "@/types";
 
 import {
   LeadExportSchemaType,
@@ -20,7 +19,7 @@ import { userGetByAssistant } from "@/actions/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
-import { formatTimeZone, getAge, getEntireDay } from "@/formulas/dates";
+import { getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { chatSettingGetTitan } from "../settings/chat";
@@ -29,64 +28,7 @@ import { GetLeadOppositeRelationship } from "@/formulas/lead";
 //LEAD
 
 //DATA
-// export const leadsGetAll = async () => {
-//   try {
-//     const leads = await db.lead.findMany({ include: { conversations: true } });
 
-//     return leads;
-//   } catch {
-//     return [];
-//   }
-// };
-
-export const leadsGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return [];
-    }
-
-    const leads = await db.lead.findMany({
-      where: {
-        OR: [
-          { userId: user.id },
-          { assistantId: user.id },
-          { sharedUserId: user.id },
-        ],
-      },
-      include: {
-        conversations: { where: { agentId: user.id } },
-        appointments: { where: { status: "scheduled" } },
-        calls: true,
-        activities: true,
-        beneficiaries: true,
-        expenses: true,
-        conditions: { include: { condition: true } },
-        policy: { include: { carrier: true } },
-        assistant: true,
-        sharedUser: true,
-      },
-    });
-    const currentTime = new Date();
-    const fullLeads: FullLead[] = leads.map((lead) => {
-      const timeZone =
-        states.find(
-          (e) => e.abv.toLocaleLowerCase() == lead.state.toLocaleLowerCase()
-        )?.zone || "US/Eastern";
-      return {
-        ...lead,
-        policy: { ...lead.policy },
-        conversation: lead.conversations[0],
-        zone: timeZone,
-        time: formatTimeZone(currentTime, timeZone),
-      };
-    });
-
-    return fullLeads;
-  } catch {
-    return [];
-  }
-};
 
 export const leadsGetAllByAgentIdFiltered = async (
   values: LeadExportSchemaType
@@ -525,30 +467,6 @@ export const leadsGetAssociated = async (id: string) => {
 };
 //ACTIONS
 
-export const leadDeleteById = async (id: string) => {
-  //get current logged in user
-  const user = await currentUser();
-
-  // check if there is no user. yes, return an error
-  if (!user) return { error: "Unauthenticated!" };
-
-  //get existing lead with the ID.
-  const existingLead = await db.lead.findUnique({ where: { id } });
-  // if there is no lead return an error
-  if (!existingLead) return { error: "Lead does not exist" };
-
-  //if existing lead's agent id is not equal to userid returns an error
-  if (user.id != existingLead.userId) return { error: "Unauthorized" };
-
-  //if doesn't fall under above conditions change lead status into deleted
-  await db.lead.update({
-    where: { id },
-    data: { statusId: LeadDefaultStatus.DELETED },
-  });
-
-  // if everything is correct return success
-  return { success: "Lead has been deleted" };
-};
 
 export const leadInsert = async (values: LeadSchemaType) => {
   const user = await currentUser();

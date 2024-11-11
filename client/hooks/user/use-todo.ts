@@ -7,11 +7,12 @@ import { useInvalidate } from "@/hooks/use-invalidate";
 import { UserTodo } from "@prisma/client";
 import { TodoSchemaType } from "@/schemas/user";
 
+import { getTodo } from "@/actions/user/todo/get-todo";
 import { getTodos } from "@/actions/user/todo/get-todos";
 import { createTodo } from "@/actions/user/todo/create-todo";
-import { updateTodo } from "@/actions/user/todo/update-todo";
 import { completeTodo } from "@/actions/user/todo/complete-todo";
-import { getTodo } from "@/actions/user/todo/get-todo";
+import { deleteTodo } from "@/actions/user/todo/delete-todo";
+import { updateTodo } from "@/actions/user/todo/update-todo";
 import { snoozeTodo } from "@/actions/user/todo/snooze-todo";
 
 type State = {
@@ -55,8 +56,6 @@ export const useTodoStore = create<State & Actions>((set) => ({
     set({ isTodoFormOpen: true, isTodoInfoOpen: false, todo: t }),
   onTodoFormClose: () => set({ isTodoFormOpen: false, todo: undefined }),
   isTodoNotificationOpen: false,
-  // ..TODO - dont forget to remove this once testing has been done
-  // todoId:"cm3b2axh5000112lc5eak9xct",
   onTodoNotificationOpen: (t) =>
     set({ isTodoNotificationOpen: true, todoId: t }),
   onTodoNotificationClose: () =>
@@ -78,6 +77,7 @@ export const useTodoData = () => {
   const { data: todo, isFetching: todoFetching,isLoading:todoLoading } = useQuery<UserTodo | null>({
     queryFn: () => getTodo(todoId as string),
     queryKey: [`todo-${todoId}`],
+    enabled:!!todoId
   });
   return { todo, todoFetching, todoLoading };
   };
@@ -88,9 +88,36 @@ export const useTodoData = () => {
   };
 };
 
-export const useTodoActions = () => {
-  const { todo, setTodo, onTodoInfoOpen,onTodoNotificationClose } = useTodoStore();
+export const useTodoActions = (onClose?:()=>void) => {
+  const { todo, setTodo, onTodoInfoOpen,onTodoInfoClose,onTodoNotificationClose } = useTodoStore();
   const { invalidate } = useInvalidate();
+
+   //TODO DELETE
+   const { mutate: todoDeleteMutate, isPending: todoDeleteing } =
+   useMutation({
+     mutationFn: deleteTodo,
+     onSuccess: (results) => {
+       if (results.success) {
+         invalidate("todos");
+         onTodoInfoClose()
+         if(onClose)onClose()
+         toast.success("Todo deleted successfully", { id: "delete-todo" });
+       } else {
+         toast.error(results.error, { id: "delete-todo" });
+       }
+     },
+     onError: (error) => {
+       toast.error(error.message, { id: "delete-todo" });
+     },
+   });
+
+ const onTodoDelete = useCallback(
+   (id: string) => {
+     toast.loading("Deleting todo...", { id: "delete-todo" });
+     todoDeleteMutate(id);
+   },
+   [todoDeleteMutate]
+ );
 
   //TODO INSERT
   const { mutate: todoInsertMutate, isPending: todoInserting } = useMutation({
@@ -197,6 +224,8 @@ export const useTodoActions = () => {
  );
 
   return {
+    onTodoDelete,
+    todoDeleteing,
     onTodoInsert,
     todoInserting,
     onTodoUpdate,
