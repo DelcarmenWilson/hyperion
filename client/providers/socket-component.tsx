@@ -22,7 +22,6 @@ import {
 } from "./socket";
 
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { TextAnimation } from "@/components/custom/text-animate";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 

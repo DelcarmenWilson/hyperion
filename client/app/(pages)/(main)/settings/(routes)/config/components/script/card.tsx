@@ -13,7 +13,7 @@ type Props = {
   script: Script;
 };
 export const ScriptCard = ({ script }: Props) => {
-  const { alertOpen, setAlertOpen, onScriptDelete, isPendingScriptDelete } =
+  const { alertOpen, setAlertOpen, onDeleteScript, deletingScript } =
     useScriptActions();
   const { onScriptFormOpen } = useScriptStore();
 
@@ -22,8 +22,8 @@ export const ScriptCard = ({ script }: Props) => {
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={() => onScriptDelete(script.id)}
-        loading={isPendingScriptDelete}
+        onConfirm={() => onDeleteScript(script.id)}
+        loading={deletingScript}
         height="auto"
       />
 

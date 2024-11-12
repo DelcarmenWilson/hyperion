@@ -49,8 +49,8 @@ export const AdminRoutes: NavType[] = [
   { title: "Users", href: "/admin/users", icon: Users, roles: ALLADMINS },
   { title: "Import", href: "/admin/import", icon: Import, roles: ["MASTER"] },
   {
-    title: "Feedback",
-    href: "/admin/feedback",
+    title: "Feedbacks",
+    href: "/admin/feedbacks",
     icon: MessageSquarePlus,
     roles: HIGHERADMINS,
   },

@@ -19,6 +19,7 @@ import {
   scriptDeleteById,
 } from "@/actions/script";
 import { ScriptSchemaType } from "@/schemas/admin";
+import { deleteScript } from "@/actions/script/delete-script";
 
 type ScriptStore = {
   scriptId?: string;
@@ -75,26 +76,19 @@ export const useScriptActions = () => {
     queryClient.invalidateQueries({ queryKey: ["admin-scripts"] });
   };
 
-  const { mutate: scriptDelete, isPending: isPendingScriptDelete } =
+  const { mutate: deleteScriptMutate, isPending: deletingScript } =
     useMutation({
-      mutationFn: scriptDeleteById,
-      onSuccess: (result) => {
-        if (result.success) {
-          toast.success("Script deleted!", { id: "delete-script" });
-          invalidate();
-        }
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+      mutationFn: deleteScript,
+      onSuccess: () => toast.success("Script deleted successfully", { id: "delete-script" }),
+      onError: () => toast.error("Something went wrong", { id: "delete-script" }),
     });
-  const onScriptDelete = useCallback(
+  const onDeleteScript  = useCallback(
     (id: string) => {
-      toast.loading("Deleteing Script...", { id: "delete-script" });
+      toast.loading("Deleting Script...", { id: "delete-script" });
 
-      scriptDelete(id);
+      deleteScriptMutate(id);
     },
-    [scriptDelete]
+    [deleteScriptMutate]
   );
 
   const { mutate: scriptMutateInsert, isPending: isPendingScriptInsert } =
@@ -146,8 +140,7 @@ export const useScriptActions = () => {
   return {
     alertOpen,
     setAlertOpen,
-    onScriptDelete,
-    isPendingScriptDelete,
+    onDeleteScript, deletingScript,
     onScriptInsert,
     isPendingScriptInsert,
     onScriptUpdate,

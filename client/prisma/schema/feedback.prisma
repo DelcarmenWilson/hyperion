@@ -1,22 +1,25 @@
 model Feedback {
-  id     String @id @default(cuid())
+  id String @id @default(cuid())
+
+  title String
+  page  String
+
+  description String  @db.LongText
+  images      String? @db.LongText
+
+  status   String
+  comments String? @db.LongText
+
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  headLine String
-  page     String
+  jobId String?
+  job   Job?    @relation(fields: [jobId], references: [id])
 
-  feedback String  @db.LongText
-  images   String? @db.LongText
-
-  status   String  @default("New")
-  comments String? @db.LongText
+  devId String? // the develope who completed the job
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  jobId String?
-  job   Job?    @relation(fields: [jobId], references: [id])
 }
 
 //TASK
@@ -40,23 +43,21 @@ model Task {
 model Job {
   id String @id @default(cuid())
 
-  headLine    String
-  description String @db.LongText
+  name        String
+  description String? @db.LongText
   category    String
 
-  status   String @default("Open")
-  comments String @db.LongText
+  status   String  @default("Open")
+  comments String? @db.LongText
 
-  startAt DateTime?
-  endAt   DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
 
   assignedTo User?   @relation(fields: [assignedId], references: [id], onDelete: Cascade)
   assignedId String?
 
   miniJobs  MiniJob[]
   feedbacks Feedback[]
-
-  published Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,12 +70,12 @@ model MiniJob {
   job   Job    @relation(fields: [jobId], references: [id])
 
   name        String
-  description String
-  status      String @default("Open")
-  comments    String @db.LongText
+  description String? @db.LongText
+  status      String  @default("Open")
+  comments    String? @db.LongText
 
-  startAt DateTime?
-  endAt   DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

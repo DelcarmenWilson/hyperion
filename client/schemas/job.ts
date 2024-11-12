@@ -1,19 +1,34 @@
 import { z } from "zod";
 
-export const JobSchema = z.object({
-  id: z.optional(z.string()),
-  headLine: z.string().min(3),
-  description: z.string().min(3),
-  category: z.string().min(3),
-  comments: z.string(),
-});
-export type JobSchemaType = z.infer<typeof JobSchema>;
-
-export const MiniJobSchema = z.object({
-  id: z.optional(z.string()),
-  jobId: z.optional(z.string()),
+export const CreateJobSchema = z.object({
   name: z.string().min(3),
-  description: z.string().min(3),
-  comments: z.string(),
+  description: z.string().optional(),
+  category: z.string().min(3),
 });
-export type MiniJobSchemaType = z.infer<typeof MiniJobSchema>;
+export type CreateJobSchemaType = z.infer<typeof CreateJobSchema>;
+
+export const UpdateJobSchema = z.object({
+  id: z.string(),
+  name: z.string().min(3),
+  description: z.string().optional(),
+  category: z.string().min(3),
+  comments:z.string().optional(),
+});
+export type UpdateJobSchemaType = z.infer<typeof UpdateJobSchema>;
+
+export const CreateMiniJobSchema = z.object({
+  jobId: z.string(),
+  name: z.string().min(3),
+  description: z.string().optional(),
+  comments: z.string().optional(),
+});
+export type CreateMiniJobSchemaType = z.infer<typeof CreateMiniJobSchema>;
+
+export const UpdateMiniJobSchema = z.object({
+  id: z.string(),
+  jobId: z.string(),
+  name: z.string().min(3),
+  description: z.string().optional(),
+  comments: z.string().optional(),
+});
+export type UpdateMiniJobSchemaType = z.infer<typeof UpdateMiniJobSchema>;

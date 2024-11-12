@@ -17,6 +17,7 @@ import { MasterSwitch } from "./master-switch";
 import { NavChat } from "./nav-chat";
 import { NavMessages } from "./nav-messages";
 import { usePathname } from "next/navigation";
+import { NavNotifications } from "./nav-notifications";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
@@ -31,8 +32,8 @@ const NavBar = ({ admin = false }: Props) => {
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen, masterUnread } = useChatStore();
   const { isTodosOpen, onTodosOpen } = useTodoStore();
-  const pathname=usePathname();
-  const isDisabled=pathname.startsWith("/chat")
+  const pathname = usePathname();
+  const isDisabled = pathname.startsWith("/chat");
 
   return (
     <div
@@ -65,6 +66,8 @@ const NavBar = ({ admin = false }: Props) => {
               <List size={15} />
             </Button>
           </Hint>
+          {/* notifications list */}
+          <NavNotifications />
           {/* messages list */}
           <NavMessages />
           {/*srini- Agent chat */}

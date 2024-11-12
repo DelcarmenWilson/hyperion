@@ -25,16 +25,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FeedbackSchema, FeedbackSchemaType } from "@/schemas/feedback";
+import {
+  CreateFeedbackSchema,
+  CreateFeedbackSchemaType,
+} from "@/schemas/feedback";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DashboardRoutes } from "@/constants/page-routes";
-import { feedbackInsert, feedbackUpdateById } from "@/actions/feedback";
+
 import { Feedback } from "@prisma/client";
 import { useCurrentRole } from "@/hooks/user/use-current";
 import { ImageModal } from "@/components/modals/image";
 import { ImageGrid } from "@/components/reusable/image-grid";
-
+import { createScriptSchemaType } from "@/schemas/script";
+import { updateFeedback } from "@/actions/feedback/update-feedback";
+import { createFeedback } from "@/actions/feedback/create-feedback";
+//TODO - keeping this here for reference will need it tommorrow to complete the image fynctionality for the updatefeedback form
 export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
   const role = useCurrentRole();
   const router = useRouter();
@@ -59,8 +65,8 @@ export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
     return 0;
   });
 
-  const form = useForm<FeedbackSchemaType>({
-    resolver: zodResolver(FeedbackSchema),
+  const form = useForm<CreateFeedbackSchemaType>({
+    resolver: zodResolver(CreateFeedbackSchema),
     //@ts-ignore
     defaultValues: feedback || {
       headLine: "",
@@ -97,43 +103,43 @@ export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
     form.reset();
   };
 
-  const onSubmit = async (values: FeedbackSchemaType) => {
+  const onSubmit = async (values: CreateFeedbackSchemaType) => {
     setLoading(true);
 
-    if (feedback) {
-      const updatedFeedback = await feedbackUpdateById(values);
-      if (updatedFeedback.success) {
-        toast.success("Feedback has been updated");
-        userEmitter.emit("feedbackUpdated", updatedFeedback.success);
-        router.refresh();
-      } else {
-        form.reset();
-        toast.error(updatedFeedback.error);
+    // if (feedback) {
+    //   const updatedFeedback = await updateFeedback(values);
+    //   if (updatedFeedback.success) {
+    //     toast.success("Feedback has been updated");
+    //     userEmitter.emit("feedbackUpdated", updatedFeedback.success);
+    //     router.refresh();
+    //   } else {
+    //     form.reset();
+    //     toast.error(updatedFeedback.error);
+    //   }
+    // } else {
+    if (files.urls) {
+      let urls: string[] = [];
+      for (let i = 0; i < files.urls.length; i++) {
+        const url = await handleFileUpload({
+          newFile: files.urls[i],
+          filePath: "feedbacks",
+        });
+        urls.push(url);
       }
-    } else {
-      if (files.urls) {
-        let urls: string[] = [];
-        for (let i = 0; i < files.urls.length; i++) {
-          const url = await handleFileUpload({
-            newFile: files.urls[i],
-            filePath: "feedbacks",
-          });
-          urls.push(url);
-        }
-        values.images = urls.join(",");
-      }
-
-      const insertedFeedback = await feedbackInsert(values);
-
-      if (insertedFeedback.success) {
-        setFiles({ images: [], urls: [] });
-        form.reset();
-        toast.success("Feedback has been created");
-        userEmitter.emit("feedbackInserted", insertedFeedback.success);
-      } else {
-        toast.error(insertedFeedback.error);
-      }
+      values.images = urls.join(",");
     }
+
+    const insertedFeedback = await createFeedback(values);
+
+    // if (insertedFeedback.success) {
+    //   setFiles({ images: [], urls: [] });
+    //   form.reset();
+    //   toast.success("Feedback has been created");
+    //   userEmitter.emit("feedbackInserted", insertedFeedback.success);
+    // } else {
+    //   toast.error(insertedFeedback.error);
+    // }
+    // }
 
     setLoading(false);
   };
@@ -158,15 +164,15 @@ export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
             {/* HeadLine */}
             <FormField
               control={form.control}
-              name="headLine"
+              name="title"
               render={({ field }) => (
                 <FormItem className="space-y-0">
-                  <FormLabel> Head Line</FormLabel>
+                  <FormLabel> Title</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Dashboard Error"
-                      autoComplete="HeadLine"
+                      autoComplete="title"
                       disabled={loading || role == "MASTER"}
                       type="text"
                       maxLength={40}
@@ -211,11 +217,11 @@ export const FeedbackForm = ({ feedback }: { feedback: Feedback | null }) => {
             {/* FEEDBACK */}
             <FormField
               control={form.control}
-              name="feedback"
+              name="description"
               render={({ field }) => (
                 <FormItem className="space-y-0">
                   <FormLabel className="flex flex-wrap justify-between items-center gap-2">
-                    Feedback
+                    Description
                     {role != "MASTER" && feedback?.status != "Resolved" && (
                       <Button
                         type="button"

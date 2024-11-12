@@ -9,7 +9,7 @@ const NotFoundPage = () => {
         <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
         <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
         <p className="text-muted-forground mb-7 max-w-md">
-          Don&apos;t worry, even the best data sometime gets lost in the
+          Don&apos;t worry, even the best data sometimes gets lost in the
           internet.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -23,7 +23,7 @@ const NotFoundPage = () => {
         </div>
       </div>
       <footer className="mt-12 text-center text-sm text-muted-foreground">
-        If you please this is an error, please contact out support team
+        If you believe this is an error, please contact out support team.
       </footer>
     </div>
   );

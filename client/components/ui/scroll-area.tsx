@@ -12,7 +12,7 @@ const ScrollArea = React.forwardRef<
   <ScrollAreaPrimitive.Root
     ref={ref}
     className={cn(
-      "relative overflow-hidden w-full h-full [&>div>div]:h-full",
+      "relative overflow-hidden w-full h-full [&>div>div]:h-full pe-3",
       className
     )}
     {...props}

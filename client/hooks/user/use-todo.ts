@@ -88,7 +88,7 @@ export const useTodoData = () => {
   };
 };
 
-export const useTodoActions = (onClose?:()=>void) => {
+export const useTodoActions = () => {
   const { todo, setTodo, onTodoInfoOpen,onTodoInfoClose,onTodoNotificationClose } = useTodoStore();
   const { invalidate } = useInvalidate();
 
@@ -100,7 +100,6 @@ export const useTodoActions = (onClose?:()=>void) => {
        if (results.success) {
          invalidate("todos");
          onTodoInfoClose()
-         if(onClose)onClose()
          toast.success("Todo deleted successfully", { id: "delete-todo" });
        } else {
          toast.error(results.error, { id: "delete-todo" });

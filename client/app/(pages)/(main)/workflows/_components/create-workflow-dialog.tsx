@@ -27,11 +27,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
 
 import { toast } from "sonner";
-import { createWorkflow } from "@/actions/workflow/createWorkflow";
+import { createWorkflow } from "@/actions/workflow/create-workflow";
 
 const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
   const [open, setOpen] = useState(false);
-
   const form = useForm<createWorkflowSchemaType>({
     resolver: zodResolver(createWorkflowSchema),
     defaultValues: {},

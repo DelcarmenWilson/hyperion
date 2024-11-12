@@ -23,7 +23,7 @@ const CustomDialogHeader = ({
 }: Props) => {
   const Icon = icon;
   return (
-    <DialogHeader className="py-6">
+    <DialogHeader className="py-4">
       <DialogTitle asChild>
         <div className="flex flex-col items-center gap-2 mb-1">
           {Icon && (

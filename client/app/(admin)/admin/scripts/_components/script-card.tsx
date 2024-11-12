@@ -21,9 +21,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import TooltipWrapper from "@/components/tooltip-wrapper";
-import DeleteScriptDialog from "./delete-script-dialog";
+
 import { Badge } from "@/components/ui/badge";
 import { ScriptStatus } from "@/types/script";
+import DeleteDialog from "@/components/custom/delete-dialog";
+import { useScriptActions } from "@/hooks/admin/use-script";
 
 const ScriptCard = ({ script }: { script: Script }) => {
   const isDraft = script.status == ScriptStatus.DRAFT;
@@ -83,37 +85,31 @@ const ScriptActions = ({
   scriptId: string;
   scriptName: string;
 }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { onDeleteScript, deletingScript } = useScriptActions();
   return (
-    <>
-      <DeleteScriptDialog
-        open={showDeleteDialog}
-        setOpen={setShowDeleteDialog}
-        scriptId={scriptId}
-        scriptName={scriptName}
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            <TooltipWrapper content="More actions">
-              <div className="flex items-center justify-center w-full h-full">
-                <MoreVerticalIcon size={18} />
-              </div>
-            </TooltipWrapper>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-destructive flex items-center gap-2"
-            onSelect={() => setShowDeleteDialog((prev) => !prev)}
-          >
-            <TrashIcon size={16} /> Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm">
+          <TooltipWrapper content="More actions">
+            <div className="flex items-center justify-center w-full h-full">
+              <MoreVerticalIcon size={18} />
+            </div>
+          </TooltipWrapper>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer gap-2" asChild>
+          <DeleteDialog
+            title="script"
+            cfText={scriptName}
+            onConfirm={() => onDeleteScript(scriptId)}
+            loading={deletingScript}
+          />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 export default ScriptCard;

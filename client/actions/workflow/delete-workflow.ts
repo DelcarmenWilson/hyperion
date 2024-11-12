@@ -5,16 +5,15 @@ import { currentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export const deleteWorkflow = async (id: string) => {
-  
-  const user= await currentUser();
-  if (!user?.id) throw new Error("unauthenticated");
+  const user = await currentUser();
+  if (!user?.id) throw new Error("Unauthenticated");
 
- await db.workflow.delete({
+  await db.workflow.delete({
     where: {
-        id,
-      userId:user.id,
+      id,
+      userId: user.id,
     },
   });
-  
-revalidatePath("/workflows");
+
+  revalidatePath("/workflows");
 };

@@ -1,18 +1,25 @@
 import { z } from "zod";
 
-export const FeedbackSchema = z.object({
-    id: z.optional(z.string()),
-    userId: z.optional(z.string()),
-    headLine: z.string().min(3),
+export const CreateFeedbackSchema = z.object({
+    title: z.string().min(3),
+    description: z.string().min(5),
     page: z.string(),
-    feedback: z.string().min(5),
     images: z.optional(z.string()),
   });
-  export type FeedbackSchemaType = z.infer<typeof FeedbackSchema>;
-  
-  export const DevFeedbackSchema = z.object({
-    id: z.optional(z.string()),
-    status: z.string(),
-    comments: z.optional(z.string()),
+  export type CreateFeedbackSchemaType = z.infer<typeof CreateFeedbackSchema>;
+
+  export const UpdateFeedbackSchema = z.object({
+    id: z.string(),
+    title: z.string().min(3),
+    description: z.string().min(5),
+    page: z.string(),
+    images: z.optional(z.string()),
   });
- export type DevFeedbackSchemaType = z.infer<typeof DevFeedbackSchema>;
+  export type UpdateFeedbackSchemaType = z.infer<typeof UpdateFeedbackSchema>;
+  
+  export const UpdateDevFeedbackSchema = z.object({
+    id: z.string(),
+    status: z.string(),
+    comments: z.string().optional(),
+  });
+ export type UpdateDevFeedbackSchemaType = z.infer<typeof UpdateDevFeedbackSchema>;

@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +27,7 @@ const DeleteDialog = ({ title, cfText, onConfirm, loading }: Props) => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" className="gap-2 w-full">
+          <span className="sr-only">Delete {title}</span>
           <Trash size={16} /> Delete
         </Button>
       </AlertDialogTrigger>

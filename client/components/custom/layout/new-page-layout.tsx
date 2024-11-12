@@ -10,8 +10,8 @@ type Props = {
 
 const NewPageLayout = ({ children, topMenu, title, subTitle }: Props) => {
   return (
-    <div className="flex flex-1 flex-col h-full overflow-hidden">
-      <div className="flex justify-between">
+    <div className="flex flex-1 flex-col h-full container overflow-hidden">
+      <div className="flex justify-between bg-background p-2 border-b border-primary">
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold">{title}</h1>
           <p className="text-muted-foreground">{subTitle}</p>
