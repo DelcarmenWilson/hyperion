@@ -7,20 +7,18 @@ import { Button } from "@/components/ui/button";
 import { CarrierClient } from "./components/carrier/client";
 import { LeadStatusClient } from "./components/leadstatus/client";
 import { MedicalClient } from "./components/medical/client";
-import { QuoteClient } from "./components/quote/client";
+import QuoteClient from "./components/quote/client";
 import UpdateClient from "./components/update/client";
 
 import { adminCarriersGetAll } from "@/actions/admin/carrier";
 import { adminLeadStatusGetAll } from "@/actions/admin/lead";
 import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
-import { adminQuotesGetAll } from "@/actions/admin/quote";
 import { pageUpdatesGetAll } from "@/actions/admin/page-update";
 
 const PageSettings = async () => {
   const carriers = await adminCarriersGetAll();
   const leadstatus = await adminLeadStatusGetAll();
   const medical = await adminMedicalConditionsGetAll();
-  const quotes = await adminQuotesGetAll();
   return (
     <PageLayoutAdmin
       title="Page Settings"
@@ -53,7 +51,7 @@ const PageSettings = async () => {
             <MedicalClient initMedicals={medical} />
           </TabsContent>
           <TabsContent value="quotes">
-            <QuoteClient initQuotes={quotes} />
+            <QuoteClient />
           </TabsContent>
           <TabsContent value="updates">
             <UpdateClient />

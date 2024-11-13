@@ -47,6 +47,7 @@ const CardBox = ({
 }: CardBoxProps) => {
   return (
     <Card className="relative overflow-hidden w-full group">
+      <Icon size={60} className="absolute bottom-2 -right-2 stroke-secondary" />
       <SkeletonWrapper isLoading={loading}>
         <div className="flex justify-between items-center mb-2">
           <div className="bg-accent p-4 rounded-br-lg">

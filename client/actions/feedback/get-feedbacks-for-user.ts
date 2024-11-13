@@ -7,5 +7,6 @@ export const getFeedbacksForUser = async () => {
   if (!user?.id) throw new Error("unauthenticated");
   return db.feedback.findMany({
     where: { userId: user.id },
+    include: { user: {select:{id:true,firstName:true}} },
   });
 };

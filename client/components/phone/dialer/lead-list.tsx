@@ -55,15 +55,16 @@ const LeadCard = ({ lead, index, indexRef }: LeadDialerCardProps) => {
   return (
     <div
       ref={indexRef}
-      className="cursor-pointer shadow-sm"
+      className="cursor-pointer shadow-sm hover:shadow-lg"
       onClick={() => onSetIndex(index)}
     >
       <div
-        className={cn("p-2 hover:bg-primary/15", indexRef && "bg-primary/15")}
+        className={cn(
+          "p-2 hover:bg-primary/15",
+          indexRef && "bg-primary/15 shadow-lg"
+        )}
       >
-        <div className="bg-gradient p-[1px] mb-1">
-          <p className="bg-background text-primary text-center  font-bold">{`${lead.firstName} ${lead.lastName}`}</p>
-        </div>
+        <p className="text-center font-bold">{`${lead.firstName} ${lead.lastName}`}</p>
         <div className="flex justify-between items-center text-xs">
           <div>
             <TextGroup label="State" value={lead.state} />

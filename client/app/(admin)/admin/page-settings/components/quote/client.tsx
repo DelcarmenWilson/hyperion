@@ -1,66 +1,69 @@
-"use client";
-import { toast } from "sonner";
-import React, { useState } from "react";
-import { Plus, Shuffle } from "lucide-react";
+import { MessageCircleDashed } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import { DrawerRight } from "@/components/custom/drawer/right";
-import { DataTable } from "@/components/tables/data-table";
-import { Heading } from "@/components/custom/heading";
 import { Quote } from "@prisma/client";
-import { Button } from "@/components/ui/button";
 
-import { QuoteForm } from "./form";
-import { columns } from "./columns";
-import { adminQuoteUpdateActive } from "@/actions/admin/quote";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heading } from "@/components/custom/heading";
 
-type QuoteClientProps = {
-  initQuotes: Quote[];
-};
+import { formatDate } from "@/formulas/dates";
+import CreateQuoteDialog from "./create-quote-dialog";
+import AlertError from "@/components/custom/alert-error";
+import NewEmptyCard from "@/components/reusable/new-empty-card";
+import { getQuotes } from "@/actions/admin/quote/get-quotes";
+import SetActiveQuoteBtn from "./set-active-quote-btn";
 
-export const QuoteClient = ({ initQuotes }: QuoteClientProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [quotes, setQuote] = useState(initQuotes);
-  const onQuoteCreated = (e?: Quote) => {
-    if (e) {
-      setQuote((quote) => {
-        return [...quote, e];
-      });
-    }
-    setIsDrawerOpen(false);
-  };
-  const onSetRandomQuote = () => {
-    adminQuoteUpdateActive().then((data) => {
-      if (data.success) {
-        toast.success("New quote has been selected!");
-      }
-    });
-  };
+const QuoteClient = async () => {
+  const quotes = await getQuotes();
+  if (!quotes) return <AlertError />;
+  if (quotes.length === 0)
+    return <NewEmptyCard title="No quote found" icon={MessageCircleDashed} />;
   return (
     <>
-      <DrawerRight
-        title={"New Quote"}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-      >
-        <QuoteForm onClose={onQuoteCreated} />
-      </DrawerRight>
+      <div className="flex justify-between items-center">
+        <Heading title="Quotes" description="Manage all quotes" />
+        <div className="flex gap-2">
+          <SetActiveQuoteBtn />
+          <CreateQuoteDialog triggerText="Create Quote" />
+        </div>
+      </div>
 
-      <Heading title="Quotes" description="Manage all quotes" />
-
-      <DataTable
-        columns={columns}
-        data={quotes}
-        topMenu={
-          <div className="flex col-span-3 gap-2 justify-end">
-            <Button variant="outline" onClick={onSetRandomQuote}>
-              <Shuffle size={16} className="mr-2" /> Set Random Quote
-            </Button>
-            <Button onClick={() => setIsDrawerOpen(true)}>
-              <Plus size={16} className="mr-2" /> New Quote
-            </Button>
-          </div>
-        }
-      />
+      <div className=" grid grid-cols-2 gap-2">
+        {quotes.map((quote) => (
+          <QuoteCard key={quote.id} quote={quote} />
+        ))}
+      </div>
     </>
   );
 };
+
+const QuoteCard = ({ quote }: { quote: Quote }) => {
+  const { quote: qt, author, active, createdAt } = quote;
+  return (
+    <Card
+      className={cn(
+        "border border-separate shadow-sm rounded-lg overflow-hidden hover:bg-primary/30 hover:shadow-sm dark:shadow-primary/30",
+        active && "bg-primary/30"
+      )}
+    >
+      <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
+        <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-sm">
+          <span className="italic">{formatDate(createdAt)}</span>
+        </div>
+        <div className="flex items-center justify-end space-x-3 overflow-ellipsis">
+          <div>
+            <h3 className="flex text-base font-bold text-muted-foreground items-center">
+              {author}
+            </h3>
+
+            <p className="text-xs text-muted-foreground w-[80%] text-ellipsis line-clamp-2">
+              {qt}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default QuoteClient;

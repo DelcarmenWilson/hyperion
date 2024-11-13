@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { createWeeklyBlueprint } from "@/actions/blueprint/blueprint-week";
-import { adminQuoteUpdateActive } from "@/actions/admin/quote";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 import { hideDeletedMessages } from "@/actions/chat/message";
 import { remindTodos } from "@/actions/user/todo/remind-todos";
+import { setActiveQuote } from "@/actions/admin/quote/set-active-quote";
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         await createWeeklyBlueprint();
         break;
       case "newQuote":
-        await adminQuoteUpdateActive();
+        await setActiveQuote();
         break;
       case "hideDeletedMessages":
         await hideDeletedMessages();

@@ -316,7 +316,7 @@ export const TaskIdForm = ({ task }: { task: Task }) => {
           </Form>
         </div>
         <ImageGrid
-          enableButton={isMaster}
+          enabled={isMaster}
           images={images}
           setModalOpen={setModalOpen}
           onImageRemove={onImageRemove}
