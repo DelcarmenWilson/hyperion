@@ -57,6 +57,8 @@ const NavBar = ({ admin = false }: Props) => {
 
       <div className="flex flex-col-reverse gap-1 justify-end items-end md:flex-row flex-1 md:items-center  space-x-2">
         <div className="flex justify-end gap-2">
+          {/* notifications list */}
+          <NavNotifications />
           <Hint label="Todos" side="bottom" align="center">
             <Button
               variant={isTodosOpen ? "default" : "outline"}
@@ -66,8 +68,7 @@ const NavBar = ({ admin = false }: Props) => {
               <List size={15} />
             </Button>
           </Hint>
-          {/* notifications list */}
-          <NavNotifications />
+
           {/* messages list */}
           <NavMessages />
           {/*srini- Agent chat */}

@@ -25,11 +25,11 @@ export const MedicalConditionSchema = z.object({
 });
 export type MedicalConditionSchemaType = z.infer<typeof MedicalConditionSchema>;
 
-export const QuoteSchema = z.object({
+export const CreateQuoteSchema = z.object({
   quote: z.string().min(2, "*"),
   author: z.string(),
 });
-export type QuoteSchemaType = z.infer<typeof QuoteSchema>;
+export type CreateQuoteSchemaType = z.infer<typeof CreateQuoteSchema>;
 
 export const TaskSchema = z.object({
   id: z.string(),

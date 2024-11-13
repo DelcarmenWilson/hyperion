@@ -1,59 +1,48 @@
 "use client";
 
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import {
-  adminQuoteUpdateActive,
-  adminQuotesGetActive,
-} from "@/actions/admin/quote";
-import { Button } from "@/components/ui/button";
+import { QuoteIcon } from "lucide-react";
+import { useQuoteActions, useQuoteData } from "@/hooks/admin/use-quote";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { Quote } from "@prisma/client";
+
+import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { toast } from "sonner";
+
 import { UPPERADMINS } from "@/constants/user";
 
 export const QuoteClient = () => {
   const role = useCurrentRole();
-
-  const queryClient = useQueryClient();
-  const { data: quote, isFetching } = useQuery<Quote | null>({
-    queryKey: ["page-quote"],
-    queryFn: () => adminQuotesGetActive(),
-  });
-
-  const { mutate } = useMutation({
-    mutationFn: adminQuoteUpdateActive,
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Quote Updated!!", {
-          id: "update-active-quote",
-        });
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["page-quote"],
-      });
-    },
-    onError: (error) => toast.error(error.message),
-  });
+  const { onGetActiveQuote } = useQuoteData();
+  const { activeQuote, fetchingActiveQuote, loadingActiveQuote } =
+    onGetActiveQuote();
+  const { setActiveQuoteMutate, settingActiveQuote } = useQuoteActions();
 
   return (
     <div className="p-2 rounded-xl border bg-gradient w-full">
-      <div className="relative flex flex-col rounded-xl  bg-background text-foreground shadow w-full">
-        <SkeletonWrapper isLoading={isFetching}>
+      <div className="relative flex flex-col rounded-xl  bg-background text-foreground shadow w-full group">
+        <SkeletonWrapper isLoading={fetchingActiveQuote}>
           {UPPERADMINS.includes(role!) && (
             <Button
               variant="outlineprimary"
-              className="absolute top-2 right-2"
-              onClick={() => mutate()}
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in-out duration-500"
+              disabled={settingActiveQuote}
+              onClick={() => setActiveQuoteMutate()}
             >
               NEW QUOTE
             </Button>
           )}
-          <p className="font-medium italic p-4 text-3xl lg:text-5xl lg:p-20">
-            &quot;{quote?.quote}&quot;
+          <p className=" inline-block font-medium italic p-4 text-3xl lg:text-5xl lg:p-20">
+            <QuoteIcon
+              size={40}
+              className="inline stroke-secondary-foreground rotate-180 -mt-4"
+            />
+            {activeQuote?.quote}
+            <QuoteIcon
+              size={40}
+              className="inline stroke-secondary-foreground"
+            />
           </p>
           <div className="text-end font-bold text-2xl lg:text-3xl italic pr-3">
-            - {quote?.author}
+            - {activeQuote?.author}
           </div>
         </SkeletonWrapper>
       </div>

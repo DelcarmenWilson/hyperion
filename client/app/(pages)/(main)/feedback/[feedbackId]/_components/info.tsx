@@ -9,7 +9,7 @@ import { FeedbackStatus } from "@/types/feedback";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DataDisplay,
+  DataDisplayBox,
   DataDisplayItalic,
 } from "@/components/global/data-display/data-display";
 import DeleteDialog from "@/components/custom/delete-dialog";
@@ -60,10 +60,10 @@ const FeedbackInfo = ({ feedback }: { feedback: Feedback }) => {
         </div>
 
         <div className="container space-y-2">
-          <DataDisplay title="Title" value={title} />
-          <DataDisplay title="Page" value={page} />
-          <DataDisplay title="Description" value={description} />
-          <DataDisplay title="Comments" value={comments ?? "No Comments"} />
+          <DataDisplayBox title="Title" value={title} />
+          <DataDisplayBox title="Page" value={page} />
+          <DataDisplayBox title="Description" value={description} />
+          <DataDisplayBox title="Comments" value={comments ?? "No Comments"} />
 
           <div className="p-2">
             <div className="bg-gradient p-1">

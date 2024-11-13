@@ -31,12 +31,12 @@ const Sidebar = ({ main = false }: Props) => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return;
+  if (!isMounted) return null;
 
   return (
     <aside className="flex-center flex-col h-full bg-background/80 pb-2 overflow-hidden shrink-0">
       <nav className="flex flex-col flex-1  items-center  overflow-hidden ">
-        <ScrollArea className="p-2 pr-4">
+        <ScrollArea>
           {routes.map((route) => {
             const Icon = route.icon!;
             return (

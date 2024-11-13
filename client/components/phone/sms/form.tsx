@@ -94,7 +94,6 @@ export const SmsForm = () => {
             <ImageGrid
               images={attachment}
               header={false}
-              bgSize={40}
               onImageRemove={onAttachmentRemove}
             />
             <div className="flex items-center p-2 w-full">
