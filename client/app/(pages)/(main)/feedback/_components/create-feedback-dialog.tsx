@@ -45,25 +45,6 @@ const CreateFeedbackDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button>{triggerText}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <CustomDialogHeader icon={BriefcaseIcon} title="Create Feedback" />
-        <CreateFeedbackForm />
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const CreateFeedbackForm = () => {
   const [files, setFiles] = useState<{
     images: string[];
     urls: File[] | undefined;
@@ -91,7 +72,7 @@ const CreateFeedbackForm = () => {
   });
 
   const { onCreateFeedback, creatingFeedback } = useFeedbackActions(() => {
-    form.reset();
+    onCancel()
   });
 
   const onImagesAdded = (e: string[], fls?: File[]) => {
@@ -120,6 +101,7 @@ const CreateFeedbackForm = () => {
   const onCancel = () => {
     form.clearErrors();
     form.reset();
+    setOpen(false);
   };
 
   const onSubmit = async (values: CreateFeedbackSchemaType) => {
@@ -136,9 +118,19 @@ const CreateFeedbackForm = () => {
     }
     onCreateFeedback(values);
   };
-
   return (
-    <>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button>{triggerText}</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <CustomDialogHeader icon={BriefcaseIcon} title="Create Feedback" />
+      
       <ImageModal
         title="Upload FeedBack Images?"
         description=""
@@ -257,8 +249,12 @@ const CreateFeedbackForm = () => {
           onImageRemove={onImageRemove}
         />
       </div>
-    </>
+  
+      </DialogContent>
+    </Dialog>
   );
 };
+
+
 
 export default CreateFeedbackDialog;

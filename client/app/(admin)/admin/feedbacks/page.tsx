@@ -7,6 +7,8 @@ import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getFeedbacks } from "@/actions/feedback/get-feedbacks";
+import { currentRole } from "@/lib/auth";
+import Unauthenticated from "@/components/global/unauthenticated";
 
 const FeedBackPage = () => {
   return (
@@ -29,6 +31,9 @@ const FeedbacksSkeleton = () => {
 };
 
 const Feedbacks = async () => {
+  const role = await currentRole();
+if (role != "DEVELOPER") return <Unauthenticated/>
+
   const feedbacks = await getFeedbacks();
   if (!feedbacks) return <AlertError />;
   if (feedbacks.length === 0)

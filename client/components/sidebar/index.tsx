@@ -35,7 +35,7 @@ const Sidebar = ({ main = false }: Props) => {
 
   return (
     <aside className="flex-center flex-col h-full bg-background/80 pb-2 overflow-hidden shrink-0">
-      <nav className="flex flex-col flex-1  items-center  overflow-hidden ">
+      <nav className="flex flex-col flex-1  items-center  overflow-hidden py-2">
         <ScrollArea>
           {routes.map((route) => {
             const Icon = route.icon!;

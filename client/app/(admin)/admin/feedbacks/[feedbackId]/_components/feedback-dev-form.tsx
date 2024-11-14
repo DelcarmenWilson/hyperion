@@ -30,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { formatDate } from "@/formulas/dates";
 import { getEnumValues } from "@/lib/helper/enum-converter";
+import { Loader } from "lucide-react";
 
 const FeedbackFormDev = ({ feedback }: { feedback: Feedback }) => {
   const feedbackStatuses = getEnumValues(FeedbackStatus);
@@ -45,7 +46,7 @@ const FeedbackFormDev = ({ feedback }: { feedback: Feedback }) => {
   });
 
   return (
-    <div>
+    <div className="container">
       <h3 className="ml-1 text-sm font-semibold">Dev Comments</h3>
       <div className="flex justify-between items-center gap-2 text-sm text-muted-foreground px-2">
         <p>Created At: {formatDate(feedback.createdAt)}</p>
@@ -66,12 +67,12 @@ const FeedbackFormDev = ({ feedback }: { feedback: Feedback }) => {
                   <FormLabel> Status</FormLabel>
                   <Select
                     name="ddlStatus"
-                    disabled={updatingFeedbackDev}
+                    disabled={updatingFeedbackDev || isCompleted}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-fit">
                         <SelectValue placeholder="Select Status" />
                       </SelectTrigger>
                     </FormControl>
@@ -98,8 +99,8 @@ const FeedbackFormDev = ({ feedback }: { feedback: Feedback }) => {
                   <FormControl>
                     <Textarea
                       {...field}
+                      disabled={updatingFeedbackDev || isCompleted}
                       placeholder="No comments yet"
-                      disabled={updatingFeedbackDev}
                       autoComplete="comments"
                       rows={5}
                     />
@@ -111,8 +112,20 @@ const FeedbackFormDev = ({ feedback }: { feedback: Feedback }) => {
           </div>
 
           <div className="text-end mt-2">
-            <Button disabled={updatingFeedbackDev || isCompleted} type="submit">
-              Update Comments
+            <Button
+              className="gap-2"
+              disabled={updatingFeedbackDev || isCompleted}
+              type="submit"
+            >
+              {isCompleted ? (
+                "Updated"
+              ) : updatingFeedbackDev ? (
+                <>
+                  <Loader size={15} className="animate-spin" /> Updating
+                </>
+              ) : (
+                "Update Comments"
+              )}
             </Button>
           </div>
         </form>

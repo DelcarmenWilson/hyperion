@@ -66,7 +66,7 @@ const FeedbackList = ({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2">
+       {admin&&( <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">Agent</p>
           <Select name="ddlAgent" onValueChange={setAgent} defaultValue={agent}>
             <SelectTrigger className="max-w-max">
@@ -83,7 +83,8 @@ const FeedbackList = ({
                 ))}
             </SelectContent>
           </Select>
-        </div>
+        </div>)}
+       
 
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">Feedbacks:</p>
