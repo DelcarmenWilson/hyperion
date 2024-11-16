@@ -3,7 +3,7 @@ import { usePhoneStore } from "@/hooks/use-phone";
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
-import { Phone } from "lucide-react";
+import { Phone, PhoneIncoming, PhoneOff } from "lucide-react";
 
 const IncomingDialog = () => {
   const { isIncomingCallOpen, onIncomingCallClose } = usePhoneStore();
@@ -11,15 +11,15 @@ const IncomingDialog = () => {
   return (
     <div
       className={cn(
-        "absolute -bottom-full w-full border bg-primary text-white h-[100px] transition-bottom duration-500 ease-in-out",
+        "absolute -bottom-full w-full border bg-primary border-black-100 text-background transition-bottom duration-500 p-2 ease-in-out",
         isIncomingCallOpen && "bottom-0"
       )}
     >
-      <p>Incoming Call</p>
-      <p>Wilson Del Carmen TODO: Leads Name</p>
+      <p className="font-bold" >Incoming Call</p>
+      <p>Call From: Phone Number (Lead Name) </p>
 
-      <Button variant="gradientDark" className="gap-2">
-        <Phone size={16} /> Call
+      <Button variant="gradientDark" className="gap-2 mr-2">
+        <PhoneIncoming size={16} /> Answer
       </Button>
 
       <Button
@@ -27,7 +27,7 @@ const IncomingDialog = () => {
         variant="destructive"
         onClick={onIncomingCallClose}
       >
-        <Phone size={16} /> Hang up
+        <PhoneOff size={16} /> Decline
       </Button>
     </div>
   );
