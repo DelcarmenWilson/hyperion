@@ -75,6 +75,7 @@ export const ImageModal = ({
       setUploading(false);
     } else {
       onImageUpdate(files.images, files.urls);
+      setFiles({ images: [], urls: undefined });
     }
   };
 

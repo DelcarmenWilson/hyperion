@@ -4,7 +4,6 @@ import { EyeIcon, ImageIcon, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
 
 import { FeedbackStatus } from "@/types/feedback";
-import { Feedback } from "@prisma/client";
 
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,8 +23,10 @@ type Props = {
   createdAt: Date;
   firstName: string;
   images: boolean;
+  page: string;
   admin: boolean;
 };
+
 const FeedbackCard = ({
   id,
   title,
@@ -34,23 +35,27 @@ const FeedbackCard = ({
   createdAt,
   firstName,
   images,
+  page,
   admin,
 }: Props) => {
   const baseUrl = admin ? "/admin/feedbacks" : "/feedback";
   return (
     <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30">
       <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
-        <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-sm">
+        <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-xs">
           {images && (
             <ImageIcon className="stroke-secondary-foreground h-5 w-5" />
           )}
           <span>{firstName}</span>
           <span className="italic">{formatDate(createdAt)}</span>
         </div>
+        <p className="absolute bottom-1 right-2 text-sm text-muted-foreground">
+          <span>page: {page}</span>
+        </p>
         <div className="flex items-center justify-end space-x-3 overflow-ellipsis">
           <div
             className={cn(
-              "flex w-10 h-10 rounded-full items-center justify-center  shrink-0",
+              "flex w-10 h-10 rounded-full items-center justify-center shrink-0",
               statusColors[status as FeedbackStatus]
             )}
           >

@@ -1,23 +1,22 @@
 import { useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
-import { useMutation} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { CreateJobSchemaType,UpdateJobSchemaType } from "@/schemas/job";
+import { CreateJobSchemaType, UpdateJobSchemaType } from "@/schemas/job";
 
 import { createJob } from "@/actions/developer/job/create-job";
 import { deleteJob } from "@/actions/developer/job/delete-job";
 import { updateJob } from "@/actions/developer/job/update-job";
 
-
 export const useJobActions = () => {
-    //JOB DELETE
+  //JOB DELETE
   const { mutate: jobDeleteMutate, isPending: jobDeleting } = useMutation({
     mutationFn: deleteJob,
     onSuccess: (results) => {
       if (results?.error) {
         toast.error(results.error, { id: "delete-job" });
-      } else {        
+      } else {
         toast.success("job deleted succesfully", { id: "delete-job" });
       }
     },
@@ -62,16 +61,9 @@ export const useJobActions = () => {
   //JOB UPDATE
   const { mutate: jobUpdateMutate, isPending: jobUpdating } = useMutation({
     mutationFn: updateJob,
-    onSuccess: (results) => {
-      if (results.success) {
-        toast.success("Job Updated!!!", { id: "update-job" });
-      } else {
-        toast.error(results.error, { id: "update-job" });
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message, { id: "update-job" });
-    },
+    onSuccess: (results) =>
+      toast.success("Job Updated!!!", { id: "update-job" }),
+    onError: (error) => toast.error(error.message, { id: "update-job" }),
   });
 
   const onJobUpdate = useCallback(

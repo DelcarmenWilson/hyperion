@@ -3,9 +3,9 @@ import { BriefcaseIcon } from "lucide-react";
 
 import AlertError from "@/components/custom/alert-error";
 import CreateJobDialog from "./_components/create-job-dialog";
+import JobCard from "./_components/job-card";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
-import JobCard from "./_components/job-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getJobs } from "@/actions/developer/job/get-jobs";
 

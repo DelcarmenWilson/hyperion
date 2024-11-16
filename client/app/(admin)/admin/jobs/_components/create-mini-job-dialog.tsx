@@ -22,10 +22,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+import { DashboardRoutes } from "@/constants/page-routes";
 
 const CreateMiniJobDialog = ({ triggerText }: { triggerText?: string }) => {
   const [open, setOpen] = useState(false);
+  const routes = [...DashboardRoutes].sort((a, b) => {
+    if (a.title < b.title) {
+      return -1;
+    }
+    if (a.title > b.title) {
+      return 1;
+    }
+    return 0;
+  });
 
   const { jobId } = useJobId();
   const { onCreateMiniJob, creatingMiniJob } = useMiniJobActions(() =>
@@ -79,6 +97,45 @@ const CreateMiniJobDialog = ({ triggerText }: { triggerText?: string }) => {
                     </FormControl>
                     <FormDescription>
                       Choose a descriptive and unique name
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+
+              {/* CATEGORY */}
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex gap-1 items-center">
+                      Category
+                      <p className="text-xs text-primary">(required)</p>
+                      <div className="ml-auto">
+                        <FormMessage />
+                      </div>
+                    </FormLabel>
+                    <Select
+                      name="ddlCatergory"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="max-h-[250px]">
+                        {routes.map((route) => (
+                          <SelectItem key={route.title} value={route.title}>
+                            {route.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Choose a category for this job
                     </FormDescription>
                   </FormItem>
                 )}

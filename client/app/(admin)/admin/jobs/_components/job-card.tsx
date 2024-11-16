@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DeleteDialog from "@/components/custom/delete-dialog";
 import TooltipWrapper from "@/components/tooltip-wrapper";
+import { formatDate } from "@/formulas/dates";
 
 const statusColors = {
   [JobStatus.OPEN]: "bg-yellow-400 text-yellow-600",
@@ -32,17 +33,20 @@ const JobCard = ({ job }: { job: Job }) => {
   const isOpen = job.status === JobStatus.OPEN;
   return (
     <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30">
-      <CardContent className="p-4 flex items-center justify-between h-[100px]">
-        <div className="flex items-center justify-end space-x-3">
+      <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
+        <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-xs">
+          <span className="italic">{formatDate(job.createdAt)}</span>
+        </div>
+        <div className="flex flex-1 items-center justify-end space-x-3">
           <div
             className={cn(
-              "flex w-10 h-10 rounded-full items-center justify-center bg-primary",
+              "flex w-10 h-10 rounded-full items-center justify-center shrink-0",
               statusColors[job.status as JobStatus]
             )}
           >
-            <BriefcaseIcon className="h-5 w-5 stroke-background" />
+            <BriefcaseIcon className="h-5 w-5" />
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="flex text-base font-bold text-muted-foreground items-center">
               <Link
                 href={`/admin/jobs/${job.id}`}
@@ -50,12 +54,19 @@ const JobCard = ({ job }: { job: Job }) => {
               >
                 {job.name}
               </Link>
-              {isOpen && (
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full ">
-                  Open
-                </span>
-              )}
+
+              <span
+                className={cn(
+                  "ml-2 px-2 py-0.5 text-xs font-medium rounded-full",
+                  statusColors[job.status as JobStatus]
+                )}
+              >
+                {job.status}
+              </span>
             </h3>
+            <p className="text-xs text-muted-foreground w-[50%] text-ellipsis line-clamp-2">
+              {job.description}
+            </p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -71,7 +82,7 @@ const JobCard = ({ job }: { job: Job }) => {
           >
             <ShuffleIcon size={16} /> Edit
           </Link>
-          <JobActions jobId={job.id} jobName={job.name} />
+          {isOpen && <JobActions jobId={job.id} jobName={job.name} />}
         </div>
       </CardContent>
     </Card>
