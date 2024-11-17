@@ -1,11 +1,11 @@
-import { leadGetByPhone } from "@/actions/lead";
+import { getLeadByPhone } from "@/actions/lead/main/get-lead-by-phone";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { phone } = body;
-    const lead = await leadGetByPhone(phone)  
+    const lead = await getLeadByPhone(phone)  
     
     if(!lead){
       return NextResponse.json(null);

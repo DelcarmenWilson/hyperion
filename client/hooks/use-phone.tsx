@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo, PipelineLead } from "@/types";
 import { Pipeline, Script } from "@prisma/client";
@@ -9,6 +9,8 @@ import {
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
 import { scriptGetOne } from "@/actions/script";
+import { getLeadByPhone } from "@/actions/lead/main/get-lead-by-phone";
+import { useQuery } from "@tanstack/react-query";
 
 type State = {
   //PHONE SPECIFIC
@@ -259,4 +261,26 @@ export const usePhoneData = (phone: Device | null) => {
     pipeline,
     onPhoneDialerClose,
   };
+};
+
+export const useIncomingCallData = () => {
+  // PHONE VARIABLES
+  const [from, setFrom] = useState<{ name: string; number: string }>({
+    name: "unknown",
+    number: "unknown",
+  });
+
+  const onGetLeadByPhone = (cellPhone: string) => {
+    const {
+      data: lead,
+      isFetching: leadFetching,
+      isLoading: leadLoading,
+    } = useQuery<{ firstName: string; lastName: string } | null>({
+      queryFn: () => getLeadByPhone(cellPhone as string),
+      queryKey: [`lead-by-phone-${cellPhone}`],
+      enabled: !!cellPhone,
+    });
+    return { lead, leadFetching, leadLoading };
+  };
+  return { from, setFrom, onGetLeadByPhone };
 };

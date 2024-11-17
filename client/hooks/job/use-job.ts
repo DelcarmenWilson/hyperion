@@ -36,16 +36,10 @@ export const useJobActions = () => {
   //JOB INSERT
   const { mutate: jobInsertMutate, isPending: jobInserting } = useMutation({
     mutationFn: createJob,
-    onSuccess: (results) => {
-      if (results?.error) {
-        toast.error(results.error, { id: "insert-job" });
-      } else {
-        toast.success("Job created!!", { id: "insert-job" });
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message, { id: "insert-job" });
-    },
+    onSuccess: (results) =>
+      toast.success("Job created!!", { id: "insert-job" }),
+
+    onError: (error) => toast.error(error.message, { id: "insert-job" }),
   });
 
   const onJobInsert = useCallback(
