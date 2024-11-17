@@ -21,8 +21,9 @@ import { sendTestEmail } from "@/lib/mail";
 //TODO - dont forget to remove these test actions.
 import { sendAppointmentReminders } from "@/actions/appointment";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
-import { chatUpdateByIdUnread } from "@/actions/chat";
+
 import { useTodoStore } from "@/hooks/user/use-todo";
+import { updateUnreadChat } from "@/actions/chat/update-unread-chat";
 
 export const useMainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -222,7 +223,7 @@ export const useMainChatActions = () => {
   const onMessageRecieved = useCallback(
     (mChatId: string, mid: string) => {
       if (mChatId == chatId) {
-        chatUpdateByIdUnread(chatId);
+        updateUnreadChat(chatId);
         invalidate(`chat-${chatId}`);
       }
 

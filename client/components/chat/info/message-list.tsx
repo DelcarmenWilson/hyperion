@@ -43,7 +43,6 @@ export const MessageList = ({}) => {
     chat?.userOneId == user?.id! ? chat?.userTwo : chat?.userOne;
   return (
     //TODO make this use the scroll area
-
     <div className="relative flex-1 border p-1 rounded overflow-hidden">
       <div
         ref={parentRef}

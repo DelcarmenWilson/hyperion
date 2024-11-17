@@ -15,7 +15,7 @@ export const DashBoardClient = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:grid-cols-2">
       {dataCard.map((data) => (
-        <CardBox
+        <DataCard
           key={data.title}
           icon={data.icon}
           title={data.title}
@@ -29,7 +29,7 @@ export const DashBoardClient = () => {
   );
 };
 
-type CardBoxProps = {
+type Props = {
   icon: LucideIcon;
   title: string;
   value: number;
@@ -37,14 +37,14 @@ type CardBoxProps = {
   hrefTitle: string;
   loading: boolean;
 };
-const CardBox = ({
+const DataCard = ({
   icon: Icon,
   title,
   value,
   href,
   hrefTitle,
   loading = false,
-}: CardBoxProps) => {
+}: Props) => {
   return (
     <Card className="relative overflow-hidden w-full group">
       <Icon size={60} className="absolute bottom-2 -right-2 stroke-secondary" />

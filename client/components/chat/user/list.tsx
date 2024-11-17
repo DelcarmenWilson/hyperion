@@ -2,12 +2,12 @@
 import { useChatOnlineActions, useChatStore } from "@/hooks/chat/use-chat";
 
 import ChatCard from "./card";
-import { ScrollArea } from "../ui/scroll-area";
-import { Switch } from "../ui/switch";
+import { ScrollArea } from "../../ui/scroll-area";
+import { Switch } from "../../ui/switch";
 import { useEffect, useState } from "react";
-import { EmptyCard } from "../reusable/empty-card";
+import { EmptyCard } from "../../reusable/empty-card";
 
-export const ChatList = () => {
+const ChatUserList = () => {
   const { allUsers: onlineUsers, showOnline } = useChatStore();
   const { onChatSettingsOnlineToggleMutate, chatSettingsOnlineToggling } =
     useChatOnlineActions();
@@ -43,3 +43,5 @@ export const ChatList = () => {
     </div>
   );
 };
+
+export default ChatUserList;

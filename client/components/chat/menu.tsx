@@ -13,7 +13,7 @@ import {
 
 import { ALLADMINS } from "@/constants/user";
 
-export const ChatMenu = () => {
+const ChatMenu = () => {
   const role = useCurrentRole();
   const { onGroupDialogOpen } = useChatStore();
   if (!ALLADMINS.includes(role!)) return null;
@@ -33,3 +33,5 @@ export const ChatMenu = () => {
     </DropdownMenu>
   );
 };
+
+export default ChatMenu;

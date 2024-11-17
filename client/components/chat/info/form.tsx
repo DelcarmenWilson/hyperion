@@ -10,7 +10,7 @@ const QuillEditor = dynamic(
 type Props = {
   placeholder: string;
 };
-export const ChatForm = ({ placeholder }: Props) => {
+const ChatForm = ({ placeholder }: Props) => {
   const {
     agent,
     key,
@@ -37,3 +37,4 @@ export const ChatForm = ({ placeholder }: Props) => {
     </div>
   );
 };
+export default ChatForm;

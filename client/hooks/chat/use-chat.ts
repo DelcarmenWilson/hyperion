@@ -12,29 +12,28 @@ import { toast } from "sonner";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-import { ChatMessageSchemaType } from "@/schemas/chat";
+import {
+  CreateChatMessageSchemaType,
+} from "@/schemas/chat";
 import { FullChat, ShortChat, UnreadShortChat, UserSocket } from "@/types";
 import { OnlineUser } from "@/types/user";
 
-import {
-  chatGetById,
-  chatInsert,
-  chatsGetByUserId,
-  chatsGetByUserIdUnread,
-  chatUpdateByIdUnread,
-} from "@/actions/chat";
-import {
-  chatMessageDeleteById,
-  chatMessageInsert,
-  chatMessagesHideByChatId,
-  chatMessageUpdateById,
-} from "@/actions/chat/message";
 import { usersGetAllChat } from "@/actions/user";
 import {
   chatSettingsGet,
   chatSettingsToggleOnline,
 } from "@/actions/settings/chat";
-import { chatMessageReactionToggle } from "@/actions/chat/reaction";
+
+import { createChat } from "@/actions/chat/create-chat";
+import { getChat } from "@/actions/chat/get-chat";
+import { getChats } from "@/actions/chat/get-chats";
+import { getUnreadChats } from "@/actions/chat/get-unread-chats";
+import { updateUnreadChat } from "@/actions/chat/update-unread-chat";
+import { deleteMessages } from "@/actions/chat/message/delete-messages";
+import { deleteMessage } from "@/actions/chat/message/delete-message";
+import { createMessage } from "@/actions/chat/message/create-message";
+import { updateMessage } from "@/actions/chat/message/update-message";
+import { toggleReaction } from "@/actions/chat/reaction/toggle-reaction";
 
 type State = {
   isChatOpen: boolean;
@@ -149,7 +148,7 @@ export const useChatData = () => {
       isFetching: navChatsIsFectching,
       isLoading: navChatsIsLoading,
     } = useQuery<UnreadShortChat[]>({
-      queryFn: () => chatsGetByUserIdUnread(),
+      queryFn: () => getUnreadChats(),
       queryKey: ["chats"],
     });
     return {
@@ -165,8 +164,9 @@ export const useChatData = () => {
       isFetching: chatIsFetching,
       isLoading: chatIsLoading,
     } = useQuery<FullChat | null>({
-      queryFn: () => chatGetById(chatId as string),
+      queryFn: () => getChat(chatId as string),
       queryKey: [`chat-${chatId}`],
+      enabled: !!chatId,
     });
     return { chat, chatIsFetching, chatIsLoading };
   };
@@ -177,7 +177,7 @@ export const useChatData = () => {
       isFetching: fullChatsFetching,
       isLoading: fullChatsLoading,
     } = useQuery<ShortChat[]>({
-      queryFn: () => chatsGetByUserId(),
+      queryFn: () => getChats(),
       queryKey: ["full-chats"],
     });
     return { fullChats, fullChatsFetching, fullChatsLoading };
@@ -201,48 +201,22 @@ export const useChatActions = () => {
   };
 
   const { mutate: navUpdateMutate, isPending: navUpdating } = useMutation({
-    mutationFn: chatUpdateByIdUnread,
-    onSuccess: (result) => {
-      if (result.success?.length) {
-        setChatId(result.success);
-        router.push("/chat");
-      }
+    mutationFn: updateUnreadChat,
+    onSuccess: () => {
+      router.push("/chat");
       invalidate("navbar-chats");
     },
     onError: (error) => toast.error(error.message, { id: "delete-chat" }),
   });
 
-  //DELETE CHAT
-  // const { mutate: chatDeleteMutate, isPending: chatDeleting } = useMutation({
-  //   mutationFn: chatDeleteById,
-  //   onSuccess: (results) => {
-  //     if (results.success) {
-  //       invalidate("full-chats");
-  //       toast.success("Chat deleted", { id: "delete-chat" });
-  //     } else toast.error(results.error, { id: "delete-chat" });
-  //   },
-  //   onError: (error) => toast.error(error.message, { id: "delete-chat" }),
-  // });
-
-  // const onChatDelete = useCallback(
-  //   (id: string) => {
-  //     toast.loading("Deleting chat ...", { id: "delete-chat" });
-  //     chatDeleteMutate(id);
-  //   },
-  //   [chatDeleteMutate]
-  // );
-
   const { mutate: chatDeleteMutate, isPending: chatDeleting } = useMutation({
-    mutationFn: chatMessagesHideByChatId,
+    mutationFn: deleteMessages,
     onSuccess: (results) => {
-      if (results.success) {
-        const chatId = results.data;
-        invalidate(`chat-${chatId}`);
-        invalidate("full-chats");
-        setChatId(undefined);
-        sendChatAction(chatId!, "deleteChat");
-        toast.success("Chat deleted", { id: "delete-chat" });
-      } else toast.error(results.error, { id: "delete-chat" });
+      invalidate(`chat-${results}`);
+      invalidate("full-chats");
+      setChatId(undefined);
+      sendChatAction(results!, "deleteChat");
+      toast.success("Chat deleted", { id: "delete-chat" });
     },
     onError: (error) => toast.error(error.message, { id: "delete-chat" }),
   });
@@ -255,13 +229,11 @@ export const useChatActions = () => {
 
   //INSERT CHAT
   const { mutate: chatInsertMutate, isPending: chatInserting } = useMutation({
-    mutationFn: chatInsert,
+    mutationFn: createChat,
     onSuccess: (results) => {
-      if (results.success) {
-        invalidate("full-chats");
-        setChatId(results.success?.id);
-        toast.success("Chat created", { id: "insert-chat" });
-      } else toast.error(results.error, { id: "insert-chat" });
+      setChatId(results);
+      invalidate("full-chats");
+      toast.success("Chat created", { id: "insert-chat" });
     },
     onError: (error) => toast.error(error.message, { id: "insert-chat" }),
   });
@@ -299,14 +271,10 @@ export const useChatMessageActions = () => {
   // DELETE MESSAGE
   const { mutate: chatMessageDeleteMutate, isPending: chatMessageDeleting } =
     useMutation({
-      mutationFn: chatMessageDeleteById,
+      mutationFn: deleteMessage,
       onSuccess: (results) => {
-        if (results.success) {
-          invalidate(`chat-${chatId}`);
-          // const key = `agent-messages-${results.success.chatId}`;
-          // socket?.emit("chat-message-sent", user?.id, results.success);
-          toast.success("Chat message deleted", { id: "delete-chat-message" });
-        } else toast.error(results.error, { id: "delete-chat-message" });
+        invalidate(`chat-${results}`);
+        toast.success("Chat message deleted", { id: "delete-chat-message" });
       },
       onError: (error) =>
         toast.error(error.message, { id: "delete-chat-message" }),
@@ -323,24 +291,17 @@ export const useChatMessageActions = () => {
   // INSERT MESSAGE
   const { mutate: chatMessageInsertMutate, isPending: chatMessageInserting } =
     useMutation({
-      mutationFn: chatMessageInsert,
+      mutationFn: createMessage,
       onSuccess: (results) => {
-        if (results.success) {
-          invalidateMultiple([`chat-${results.success.chatId}`, "full-chats"]);
-          // const key = `agent-messages-${results.success.chatId}`;
-          // const messages=queryClient.getQueryData([key])
-          //queryClient.setQueryData([key], (old:any) => [...old, results.success])
-          socket?.emit("chat-message-sent", user?.id, results.success);
-          toast.success("Chat message created", { id: "insert-chat-message" });
-        } else toast.error(results.error);
+        invalidateMultiple([`chat-${results.chatId}`, "full-chats"]);
+        socket?.emit("chat-message-sent", user?.id, results);
       },
       onError: (error) =>
-        toast.error(error.message, { id: "insert-chat-message" }),
+        toast.error(error.message),
     });
 
   const onChatMessageInsert = useCallback(
-    (values: ChatMessageSchemaType) => {
-      toast.loading("Creating new message ...", { id: "insert-chat-message" });
+    (values: CreateChatMessageSchemaType) => {
       chatMessageInsertMutate(values);
     },
     [chatMessageInsertMutate]
@@ -349,14 +310,9 @@ export const useChatMessageActions = () => {
   // UPDATE
   const { mutate: chatMessageUpdateMutate, isPending: chatMessageUpdating } =
     useMutation({
-      mutationFn: chatMessageUpdateById,
+      mutationFn: updateMessage,
       onSuccess: (results) => {
-        if (results.success) {
-          invalidate(`chat-${chatId}`);
-          //const key = `agent-messages-${results.success.chatId}`;
-          // socket?.emit("chat-message-sent", user?.id, results.success);
-          toast.success("Chat message updated!", { id: "update-chat-message" });
-        } else toast.error(results.error, { id: "update-chat-message" });
+        invalidate(`chat-${results}`);
       },
       onError: (error) =>
         toast.error(error.message, { id: "update-chat-message" }),
@@ -389,9 +345,9 @@ export const useChatMessageReactionActions = () => {
     mutate: onChatMessageReactionToggle,
     isPending: chatMessageReactionToggling,
   } = useMutation({
-    mutationFn: chatMessageReactionToggle,
-    onSuccess: (results) => {
-      if (results.success) invalidate(`chat-${chatId}`);
+    mutationFn: toggleReaction,
+    onSuccess: () => {
+      invalidate(`chat-${chatId}`);
     },
     onError: (error) => toast.error(error.message),
   });
@@ -427,12 +383,12 @@ export const useChatFormActions = () => {
     image: File | null;
     templateImage: string | null;
   }) => {
-    const message: ChatMessageSchemaType = {
+    const message: CreateChatMessageSchemaType = {
       // body: body.ops[0].insert as string,
       body: JSON.stringify(body),
       //@ts-ignore
       image: templateImage,
-      chatId,
+      chatId:chatId as string,
       senderId: user?.id!,
     };
     onChatMessageInsert(message);
