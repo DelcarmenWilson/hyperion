@@ -25,6 +25,7 @@ import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { DialerSettingsType } from "@/types";
 import { DialerSettings } from "./settings";
 import { SmsDrawer } from "./sms-drawer";
+import { DialpadDrawer } from "./dialpad-drawer";
 
 type Props = {
   setIndex: (idx: number) => void;
@@ -46,7 +47,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
   } = usePhoneData(phone);
   const { pipeIndex, selectedPipeline, filterLeads, timeZone } =
     usePipelineStore();
-  const { isSmsFormOpen, onSmsFormToggle } = useDialerStore();
+  const { isSmsFormOpen, onSmsFormToggle,isDialPadFormOpen, onDialPadFormToggle } = useDialerStore();
 
   const [dialNumber, setDialNumber] = useState(1);
 
@@ -194,12 +195,20 @@ export const DialerMenu = ({ setIndex }: Props) => {
           >
             SMS
           </Button>
+          <Button
+            variant={isDialPadFormOpen ? "default" : "outlineprimary"}
+            size="xs"
+            onClick={onDialPadFormToggle}
+          >
+            Dialpad
+          </Button>
         </div>
         <span className="text-primary font-bold">
           {formatSecondsToTime(time)}
         </span>
       </div>
       <SmsDrawer />
+      <DialpadDrawer/>
     </>
   );
 };
