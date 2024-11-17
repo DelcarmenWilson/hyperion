@@ -12,12 +12,12 @@ import { formatDate } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 
-type LeadCardProps = {
+type Props = {
   lead: PipelineLead;
   indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 
-export const LeadCard = ({ lead, indexRef }: LeadCardProps) => {
+export const LeadCard = ({ lead, indexRef }: Props) => {
   const { onPhoneOutOpen } = usePhoneStore();
   const { setLeadId, setConversationId } = useLeadStore();
 
