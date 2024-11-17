@@ -1,13 +1,12 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const deleteJob = async (id: string) => {
   const user = await currentUser();
-
-  if (!user) return { error: "Unauthenticated!" };
-  if (user.role != "DEVELOPER") return { error: "Unauthorized!" };
+  if (!user) throw new Error("Unauthenticated!");
+  if (user.role != "DEVELOPER") throw new Error("Unauthorized!" );
 
   const exisitingJob = await db.job.findUnique({
     where: { id },
@@ -21,5 +20,5 @@ export const deleteJob = async (id: string) => {
     return { error: "Please detach all the feedbacks first!" };
 
   await db.job.delete({ where: { id } });
-  revalidatePath("/admin/jobs");
+  redirect("/admin/jobs");
 };

@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
+import {
+  usePhoneStore,
+  usePhoneData,
+  useIncomingCallData,
+} from "@/hooks/use-phone";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
@@ -32,10 +36,12 @@ export const PhoneInModal = () => {
     isOnCall,
     isPhoneInOpen,
     onPhoneInOpen,
+    isPhoneOutOpen,
     onSetLead,
     lead,
     isLeadInfoOpen,
-    onLeadInfoToggle: onToggleLeadInfo,
+    onLeadInfoToggle,
+    onIncomingCallOpen,
   } = usePhoneStore();
   const { phone } = usePhoneContext();
   const {
@@ -47,12 +53,12 @@ export const PhoneInModal = () => {
     onIncomingCallReject,
   } = usePhoneData(phone);
   const [agent, setAgent] = useState("");
-
-  // PHONE VARIABLES
-  const [from, setFrom] = useState<{ name: string; number: string }>();
+  const { from, setFrom, onGetLeadByPhone } = useIncomingCallData();
 
   const addDeviceListeners = () => {
     if (!phone) return;
+    //If the phone out fialog is open then dont display this modal. instead display the smaller incoming dialog
+    if (isPhoneOutOpen) return;
 
     phone.on("incoming", async function (incomingCall: Call) {
       // if (phone.status() == "busy") {
@@ -60,30 +66,28 @@ export const PhoneInModal = () => {
       //   return;
       // }
 
-      //On Call disconnect or canecel - call the diconnect function
+      //On Call disconnect or cancel - call the diconnect function
       ["disconnect", "cancel"].forEach((type) => {
         incomingCall.on(type, (call) => {
           console.log("call disconnected", call);
           onDisconnect();
         });
       });
+
       //Get the leads infomation based on the phone number
-      const response = await axios.post("/api/leads/details", {
-        phone: incomingCall.parameters.From,
-      });
-
-      const data = response.data;
-      if (data) {
-        onSetLead(data);
-
+      const { lead } = onGetLeadByPhone(incomingCall.parameters.From);
+      if (lead) {
+        // onSetLead(data);
         setFrom({
-          name: data.firstName
-            ? `${data.firstName} ${data.lastName}`
+          name: lead.firstName
+            ? `${lead.firstName} ${lead.lastName}`
             : "Unknown Caller",
-          number: data.cellPhone || incomingCall.parameters.From,
+          number: incomingCall.parameters.From,
         });
       }
-      onPhoneInOpen(incomingCall);
+
+      if (isPhoneOutOpen) onIncomingCallOpen();
+      else onPhoneInOpen(incomingCall);
     });
   };
 
@@ -156,7 +160,7 @@ export const PhoneInModal = () => {
                 {isLeadInfoOpen ? (
                   <div className="relative flex flex-col bg-background gap-2 pt-6 p-2 shadow-xl rounded-md text-sm h-full overflow-y-auto lg:pt-2">
                     <div className="flex gap-2 absolute top-2 left-2 z-50">
-                      <Button size="sm" onClick={onToggleLeadInfo}>
+                      <Button size="sm" onClick={onLeadInfoToggle}>
                         Return to call
                       </Button>
                       {isOnCall ? (
@@ -222,7 +226,7 @@ export const PhoneInModal = () => {
                         <Button
                           size="sm"
                           className="ml-auto"
-                          onClick={onToggleLeadInfo}
+                          onClick={onLeadInfoToggle}
                         >
                           Show Lead
                         </Button>

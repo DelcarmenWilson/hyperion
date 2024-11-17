@@ -30,14 +30,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { formatSecondsToTime } from "@/formulas/numbers";
-
-import { chatInsert, chatUpdateByIdUnread } from "@/actions/chat";
-import { adminSuspendAccount } from "@/actions/admin/user";
-
 import { ALLADMINS, UPPERADMINS } from "@/constants/user";
 
-const ChatCard = ({ user }: { user: OnlineUser }) => {
+import { adminSuspendAccount } from "@/actions/admin/user";
+import { createChat } from "@/actions/chat/create-chat";
+import { updateUnreadChat } from "@/actions/chat/update-unread-chat";
+import { formatSecondsToTime } from "@/formulas/numbers";
+
+const ChatUserCard = ({ user }: { user: OnlineUser }) => {
   const router = useRouter();
   const role = useCurrentRole();
 
@@ -48,10 +48,10 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
   const onChatClick = async () => {
     let chatId = user.chatId;
     if (!chatId) {
-      const chat = await chatInsert(user.id);
-      chatId = chat.success?.id;
+      const id = await createChat(user.id);
+      chatId = id;
     }
-    chatUpdateByIdUnread(chatId!);
+    updateUnreadChat(chatId!);
     onChatInfoOpen(user, chatId);
   };
   const onAccountSupended = async () => {
@@ -91,18 +91,6 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
               <User size={16} />
               Profile
             </DropdownMenuItem>
-            {/* <DropdownMenuItem
-              className="cursor-pointer gap-2"
-              asChild
-            >
-              <Link
-                className="flex gap-2 items-center"
-                href={`/users/${user.id}`}
-              >
-                <User size={16} />
-                Profile
-              </Link>
-            </DropdownMenuItem> */}
             <DropdownMenuItem
               className="cursor-pointer gap-2"
               onClick={() => onLoginStatusOpen(user)}
@@ -134,12 +122,13 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
               </Badge>
             )}
 
-            <Badge
-              className="p-1 absolute bottom-0 right-0 z-10"
-              variant={user.online ? "success" : "destructive"}
-            ></Badge>
-            <Avatar>
-              <AvatarImage src={user.image || ""} />
+            <Avatar
+              className={cn(
+                "border-2 border-transparent p-[1px]",
+                user.online && "border-primary"
+              )}
+            >
+              <AvatarImage className="rounded-full" src={user.image || ""} />
               <AvatarFallback className="bg-primary dark:bg-accent">
                 <UserIcon className="text-accent dark:text-primary" />
               </AvatarFallback>
@@ -179,4 +168,4 @@ const ChatCard = ({ user }: { user: OnlineUser }) => {
   );
 };
 
-export default ChatCard;
+export default ChatUserCard;

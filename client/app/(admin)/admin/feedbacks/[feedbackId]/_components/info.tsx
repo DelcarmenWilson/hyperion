@@ -1,13 +1,11 @@
 "use client";
 import React from "react";
 import { Feedback, User } from "@prisma/client";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  DataDisplay,
-  DataDisplayItalic,
-} from "@/components/global/data-display/data-display";
+
 import { Badge } from "@/components/ui/badge";
+import { DataDisplay } from "@/components/global/data-display/data-display";
 import { ImageGrid } from "@/components/reusable/image-grid";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const FeedbackInfo = ({
   feedback,
@@ -17,7 +15,7 @@ const FeedbackInfo = ({
   const { jobId, description, status, comments, title, page, images } =
     feedback;
   return (
-    <aside className="relative w-[300px] min-w-[300px] max-w-[300px] border-r-2 border h-full p-2 pl-2 overflow-y-auto bg-background ">
+    <aside className="relative w-[300px] min-w-[300px] max-w-[300px] border-r h-full p-2 overflow-y-auto bg-background ">
       <ScrollArea>
         <Badge className="absolute top-0 right-0">{status}</Badge>
         <div className="space-y-2">

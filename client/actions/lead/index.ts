@@ -232,32 +232,7 @@ export const leadGetByConversationId = async (id: string) => {
   }
 };
 
-export const leadGetByPhone = async (cellPhone: string) => {
-  try {
-    const lead = await db.lead.findFirst({
-      where: {
-        cellPhone,
-      },
-      include: {
-        conversations: true,
-        appointments: { orderBy: { startDate: "desc" } },
-        calls: {
-          where: { status: "completed" },
-          orderBy: { createdAt: "desc" },
-        },
-        activities: { orderBy: { createdAt: "desc" } },
-        expenses: true,
-        beneficiaries: true,
-        conditions: { include: { condition: true } },
-        policy: true,
-      },
-    });
 
-    return lead;
-  } catch {
-    return null;
-  }
-};
 
 export const leadGetPrevNextById = async (id: string) => {
   try {

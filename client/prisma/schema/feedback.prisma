@@ -1,3 +1,4 @@
+//FEEDBACK
 model Feedback {
   id String @id @default(cuid())
 
@@ -40,12 +41,12 @@ model Task {
   updatedAt DateTime @updatedAt
 }
 
+//JOB
 model Job {
   id String @id @default(cuid())
 
   name        String
   description String? @db.LongText
-  category    String
 
   status   String  @default("Open")
   comments String? @db.LongText
@@ -63,16 +64,19 @@ model Job {
   updatedAt DateTime @updatedAt
 }
 
+//MINIJOB
 model MiniJob {
   id String @id @default(cuid())
 
   jobId String
-  job   Job    @relation(fields: [jobId], references: [id])
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   name        String
+  category    String
   description String? @db.LongText
-  status      String  @default("Open")
-  comments    String? @db.LongText
+
+  status   String  @default("Open")
+  comments String? @db.LongText
 
   startedAt   DateTime?
   completedAt DateTime?

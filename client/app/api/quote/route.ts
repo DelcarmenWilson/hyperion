@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { createWeeklyBlueprint } from "@/actions/blueprint/blueprint-week";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
-import { hideDeletedMessages } from "@/actions/chat/message";
 import { remindTodos } from "@/actions/user/todo/remind-todos";
 import { setActiveQuote } from "@/actions/admin/quote/set-active-quote";
-
+import { hideDeletedMessages } from "@/actions/chat/message/hide-deleted-messages";
+//TODO - need to change the name of this route and make sure to also update the server
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       case "newQuote":
         await setActiveQuote();
         break;
+        //TODO - need to change the name of this function call
       case "hideDeletedMessages":
         await hideDeletedMessages();
         break;

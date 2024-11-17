@@ -2,23 +2,23 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { CreateJobSchema, CreateJobSchemaType } from "@/schemas/job";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const createJob = async (values: CreateJobSchemaType) => {
   const user = await currentUser();
 
-  if (!user?.id || !user?.email) return { error: "Unauthenticated!" };
-  if (user.role != "DEVELOPER") return { error: "Unauthorized!" };
+  if (!user) throw new Error("Unauthenticated!");
+  if (user.role != "DEVELOPER") throw new Error("Unauthorized!" );
 
   const { success, data } = CreateJobSchema.safeParse(values);
 
-  if (!success) return { error: "Invalid fields!" };
+  if (!success) throw new Error("Invalid fields!" ); 
 
- await db.job.create({
+ const job=await db.job.create({
     data: {
       ...data,
     },
   });
 
- revalidatePath("/admin/jobs")
+ redirect(`/admin/jobs/${job.id}`)
 };

@@ -25,6 +25,7 @@ const FeedbackList = ({
     FeedbackStatus.PENDING
   );
   const [agent, setAgent] = useState("All");
+  const [page, setPage] = useState("All");
   const feedbackStatuses = getEnumValues(FeedbackStatus);
 
   const groupedAgents = initFeedbacks.reduce((groups, feedback) => {
@@ -33,13 +34,20 @@ const FeedbackList = ({
     return groups;
   }, {} as Record<string, number>);
 
+  const groupedPages = initFeedbacks.reduce((groups, feedback) => {
+    if (!groups[feedback.page]) groups[feedback.page] = 1;
+    else groups[feedback.page] += 1;
+    return groups;
+  }, {} as Record<string, number>);
+
   useEffect(() => {
     let filtered = [...initFeedbacks];
     if (status != "All") filtered = filtered.filter((e) => e.status == status);
     if (agent != "All")
       filtered = filtered.filter((e) => e.user.firstName == agent);
+    if (page != "All") filtered = filtered.filter((e) => e.page == page);
     setFeedbacks(filtered);
-  }, [status, agent]);
+  }, [status, agent, page]);
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="flex gap-2 p-2 bg-background items-center justify-between sticky">
@@ -66,24 +74,56 @@ const FeedbackList = ({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground">Agent</p>
-          <Select name="ddlAgent" onValueChange={setAgent} defaultValue={agent}>
-            <SelectTrigger className="max-w-max">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent className="w-[150px]">
-              <SelectItem value="All">All </SelectItem>
-              {Object.entries(groupedAgents || {})
-                .sort()
-                .map(([id, count]) => (
-                  <SelectItem key={id} value={id}>
-                    {id} ({count})
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {admin && (
+          <>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">Agent</p>
+              <Select
+                name="ddlAgent"
+                onValueChange={setAgent}
+                defaultValue={agent}
+              >
+                <SelectTrigger className="max-w-max">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent className="w-[150px]">
+                  <SelectItem value="All">All </SelectItem>
+                  {Object.entries(groupedAgents || {})
+                    .sort()
+                    .map(([id, count]) => (
+                      <SelectItem key={id} value={id}>
+                        {id} ({count})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">Page</p>
+              <Select
+                name="ddlPage"
+                onValueChange={setPage}
+                defaultValue={page}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All </SelectItem>
+
+                  {Object.entries(groupedPages || {})
+                    .sort()
+                    .map(([id, count]) => (
+                      <SelectItem key={id} value={id}>
+                        {id} ({count})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
 
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">Feedbacks:</p>
@@ -101,6 +141,7 @@ const FeedbackList = ({
           createdAt={feedback.createdAt}
           firstName={feedback.user.firstName}
           images={!!feedback.images}
+          page={feedback.page}
           admin={admin}
         />
       ))}

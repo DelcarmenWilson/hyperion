@@ -2,14 +2,15 @@
 import { db } from "@/lib/db";
 import {  currentUser } from "@/lib/auth";
 import { JobStatus } from "@/types/job";
+import { revalidatePath } from "next/cache";
 
 export const startJob = async (id: string) => {
   const user = await currentUser();
 
-  if (!user) return { error: "Unauthenticated!" };
-  if (user.role != "DEVELOPER") return { error: "Unauthorized!" };
+  if (!user) throw new Error("Unauthenticated!");
+  if (user.role != "DEVELOPER") throw new Error("Unauthorized!" );
 
-  const updatedJob = await db.job.update({
+  const job = await db.job.update({
     where: { id },
     data: {
       startedAt: new Date(),
@@ -17,5 +18,5 @@ export const startJob = async (id: string) => {
     },
   });
 
-  return { success: updatedJob };
+  revalidatePath(`/admin/jobs/${job.id}`)
 };

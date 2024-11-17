@@ -22,7 +22,8 @@ export const LeadList = () => {
   useEffect(() => {
     if (!filterLeads) return;
     onSetLead(filterLeads[pipeIndex]);
-    setLeadId(filterLeads[pipeIndex].id);
+    // setLeadId(filterLeads[pipeIndex].id);
+    console.log(filterLeads,pipeIndex)
     if (!indexRef.current) return;
     indexRef.current.scrollIntoView({
       behavior: "smooth",

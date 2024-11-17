@@ -27,7 +27,7 @@ import {
   Video,
   Workflow,
 } from "lucide-react";
-import { ALLADMINS, ALLAGENTS, ALLUSERS, HIGHERADMINS, UPPERADMINS } from "./user";
+import { ALLADMINS, ALLAGENTS, ALLUSERS, DEVADMINS, HIGHERADMINS, UPPERADMINS } from "./user";
 
 export type NavType = {
   title: string;
@@ -52,7 +52,7 @@ export const AdminRoutes: NavType[] = [
     title: "Feedbacks",
     href: "/admin/feedbacks",
     icon: MessageSquarePlus,
-    roles: HIGHERADMINS,
+    roles: DEVADMINS,
   },
   {
     title: "Misc",

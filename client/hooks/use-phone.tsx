@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { FullCall, FullLead, FullLeadNoConvo, PipelineLead } from "@/types";
 import { Pipeline, Script } from "@prisma/client";
@@ -9,6 +9,8 @@ import {
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
 import { scriptGetOne } from "@/actions/script";
+import { getLeadByPhone } from "@/actions/lead/main/get-lead-by-phone";
+import { useQuery } from "@tanstack/react-query";
 
 type State = {
   //PHONE SPECIFIC
@@ -45,6 +47,8 @@ type State = {
   showQuoter: boolean;
   //CALL
   isOnCall: boolean;
+  //INCOMING CALL
+  isIncomingCallOpen: boolean;
 };
 
 type Actions = {
@@ -86,6 +90,10 @@ type Actions = {
   onQuoterOpen: () => void;
   onQuoterClose: () => void;
   fetchData: () => void;
+
+  //INCOMING CALL
+  onIncomingCallOpen: () => void;
+  onIncomingCallClose: () => void;
 };
 
 export const usePhoneStore = create<State & Actions>((set, get) => ({
@@ -127,7 +135,8 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
       isPhoneOutOpen: true,
       lead: e,
       conference: c,
-      isLeadInfoOpen: e ? true : false,
+      isLeadInfoOpen: e != undefined ? true : false,
+  
     });
     get().fetchData();
   },
@@ -162,6 +171,11 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
   onQuoterClose: () => set({ showQuoter: false }),
   isOnCall: false,
   setOnCall: (e: boolean) => set({ isOnCall: e }),
+  //INCOMING CALL
+  isIncomingCallOpen: false,
+  onIncomingCallOpen: () => set({ isIncomingCallOpen: true }),
+  onIncomingCallClose: () => set({ isIncomingCallOpen: false }),
+
   fetchData: async () => {
     //NEED TO REPLACE THIS WITH A MORE SPECIFIC SCRIPT
     const script = await scriptGetOne(get().lead?.type);
@@ -248,4 +262,26 @@ export const usePhoneData = (phone: Device | null) => {
     pipeline,
     onPhoneDialerClose,
   };
+};
+
+export const useIncomingCallData = () => {
+  // PHONE VARIABLES
+  const [from, setFrom] = useState<{ name: string; number: string }>({
+    name: "unknown",
+    number: "unknown",
+  });
+
+  const onGetLeadByPhone = (cellPhone: string) => {
+    const {
+      data: lead,
+      isFetching: leadFetching,
+      isLoading: leadLoading,
+    } = useQuery<{ firstName: string; lastName: string } | null>({
+      queryFn: () => getLeadByPhone(cellPhone as string),
+      queryKey: [`lead-by-phone-${cellPhone}`],
+      enabled: !!cellPhone,
+    });
+    return { lead, leadFetching, leadLoading };
+  };
+  return { from, setFrom, onGetLeadByPhone };
 };

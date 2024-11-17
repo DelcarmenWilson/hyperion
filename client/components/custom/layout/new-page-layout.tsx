@@ -19,7 +19,7 @@ const NewPageLayout = ({ children, topMenu, title, subTitle }: Props) => {
         {topMenu}
       </div>
 
-      <div className="flex-1 h-full py-6 overflow-hidden">
+      <div className="flex-1 h-full py-2 overflow-hidden">
         <ScrollArea>{children}</ScrollArea>
       </div>
     </div>

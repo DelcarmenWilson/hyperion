@@ -1,11 +1,11 @@
 "use client";
 import { useChatStore } from "@/hooks/chat/use-chat";
 
-import { ChatInfo } from "./info";
-import { ChatList } from "./list";
-import { ChatMenu } from "./menu";
+import ChatInfo from "./info/info";
+import ChatUserList from "./user/list";
+import ChatMenu from "./menu";
 import { DrawerExtendedSm } from "@/components/custom/drawer/extended-sm";
-import { GroupDialog } from "./group-dialog";
+import GroupDialog from "./group-dialog";
 
 export const ChatContainer = () => {
   const { isChatOpen, onChatClose, isChatInfoOpen } = useChatStore();
@@ -22,7 +22,7 @@ export const ChatContainer = () => {
         scroll={false}
         size="w-auto"
       >
-        <ChatList />
+        <ChatUserList />
       </DrawerExtendedSm>
     </>
   );

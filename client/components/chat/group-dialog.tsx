@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CustomDialog } from "../global/custom-dialog";
 import { Textarea } from "@/components/ui/textarea";
 
-export const GroupDialog = () => {
+const GroupDialog = () => {
   const { isGroupDialogOpen, onGroupDialogClose } = useChatStore();
   const { socket } = useContext(SocketContext).SocketState;
   const [message, setMessage] = useState("");
@@ -45,3 +45,5 @@ export const GroupDialog = () => {
     </CustomDialog>
   );
 };
+
+export default GroupDialog;

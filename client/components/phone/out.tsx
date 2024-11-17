@@ -31,6 +31,7 @@ import { formatSecondsToTime } from "@/formulas/numbers";
 import { useLeadData } from "@/hooks/lead/use-lead";
 import { AudioPlayer } from "../custom/audio-player";
 import { phoneSettingsUpdateCurrentCall } from "@/actions/settings/phone";
+import IncomingDialog from "./incoming-dialog";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -49,6 +50,7 @@ export const PhoneOut = () => {
     isOnCall,
     isLeadInfoOpen,
     onLeadInfoToggle,
+    onIncomingCallOpen,
   } = usePhoneStore();
   const { phone } = usePhoneContext();
   const { onDisconnect, onCallMuted } = usePhoneData(phone);
@@ -250,7 +252,7 @@ export const PhoneOut = () => {
   // }, []);
 
   return (
-    <div className="flex flex-col flex-1 gap-2 p-2 overflow-hidden">
+    <div className="relative flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden">
       {empty ? (
         <EmptyCard title="No phone Number has been setup" />
       ) : (
@@ -298,7 +300,32 @@ export const PhoneOut = () => {
               src={`/sounds/dialtone/dial-${dialToneCliked}.mp3`}
             />
 
-            {!isOnCall ? (
+            {isOnCall ? (
+              <>
+                <Button
+                  className="gap-2"
+                  variant="destructive"
+                  onClick={onDisconnect}
+                >
+                  <Phone size={16} /> Hang up
+                </Button>
+                <Button
+                  className="gap-2"
+                  variant={isCallMuted ? "destructive" : "outlinedestructive"}
+                  onClick={onCallMuted}
+                >
+                  {isCallMuted ? (
+                    <>
+                      <MicOff size={16} /> Muted
+                    </>
+                  ) : (
+                    <>
+                      <Mic size={16} /> Mute
+                    </>
+                  )}
+                </Button>
+              </>
+            ) : (
               <Button
                 variant="gradientDark"
                 className="gap-2"
@@ -306,31 +333,6 @@ export const PhoneOut = () => {
                 onClick={onStarted}
               >
                 <Phone size={16} /> Call
-              </Button>
-            ) : (
-              <Button
-                className="gap-2"
-                variant="destructive"
-                onClick={onDisconnect}
-              >
-                <Phone size={16} /> Hang up
-              </Button>
-            )}
-            {isOnCall && (
-              <Button
-                className="gap-2"
-                variant={isCallMuted ? "destructive" : "outlinedestructive"}
-                onClick={onCallMuted}
-              >
-                {isCallMuted ? (
-                  <>
-                    <MicOff size={16} /> Muted
-                  </>
-                ) : (
-                  <>
-                    <Mic size={16} /> Mute
-                  </>
-                )}
               </Button>
             )}
 
@@ -355,6 +357,10 @@ export const PhoneOut = () => {
           </div>
         </>
       )}
+
+      <Button onClick={onIncomingCallOpen}>Open Incoming</Button>
+
+      <IncomingDialog />
     </div>
   );
 };

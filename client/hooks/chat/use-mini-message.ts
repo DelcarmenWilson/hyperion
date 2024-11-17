@@ -9,8 +9,10 @@ import Quill from "quill";
 import { Delta } from "quill/core";
 
 import { FullMiniMessage } from "@/types";
-import { ChatMessageSchemaType } from "@/schemas/chat";
-import { chatMessageGetById, chatMessageInsert } from "@/actions/chat/message";
+import {  CreateChatMessageSchemaType } from "@/schemas/chat";
+import { getMessage } from "@/actions/chat/message/get-message";
+import { createMessage } from "@/actions/chat/message/create-message";
+
 
 type State = {
   messageId?: string;
@@ -38,8 +40,9 @@ export const useMiniMessageData = () => {
       isFetching: messageFetching,
       isLoading: messageLoading,
     } = useQuery<FullMiniMessage | null>({
-      queryFn: () => chatMessageGetById(messageId as string),
+      queryFn: () => getMessage(messageId as string),
       queryKey: [`chat-message-${messageId}`],
+      enabled:!!messageId
     });
     return { message, messageFetching, messageLoading };
   };
@@ -59,22 +62,20 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
   // INSERT MESSAGE
   const { mutate: miniMessageInsertMutate, isPending: miniMessageInserting } =
     useMutation({
-      mutationFn: chatMessageInsert,
+      mutationFn: createMessage,
       onSuccess: (results) => {
-        if (results.success) {
-          invalidateMultiple([`chat-${results.success.chatId}`, "full-chats"]);
-          socket?.emit("chat-message-sent", agentId, results.success);
-          toast.success("Chat message created", { id: "insert-chat-message" });
+     
+          invalidateMultiple([`chat-${results.chatId}`, "full-chats"]);
+          socket?.emit("chat-message-sent", agentId, results);
           onMiniMessageClose();
-        } else toast.error(results.error);
+     
       },
       onError: (error) =>
         toast.error(error.message, { id: "insert-chat-message" }),
     });
 
   const onChatMessageInsert = useCallback(
-    (values: ChatMessageSchemaType) => {
-      toast.loading("Creating new message ...", { id: "insert-chat-message" });
+    (values: CreateChatMessageSchemaType) => {
       miniMessageInsertMutate(values);
     },
     [miniMessageInsertMutate]
@@ -85,7 +86,7 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
   };
 
   const handleSumbit = ({ body }: { body: Delta }) => {
-    const message: ChatMessageSchemaType = {
+    const message: CreateChatMessageSchemaType = {
       chatId,
       body: JSON.stringify(body),
       image: undefined,

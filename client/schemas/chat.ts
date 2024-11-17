@@ -7,12 +7,24 @@ export const ChatSchema = z.object({
 export type ChatSchemaType = z.infer<typeof ChatSchema>;
 
 
-export const ChatMessageSchema = z.object({
+
+export const CreateChatMessageSchema = z.object({
   id: z.optional(z.string()),
-  chatId: z.optional(z.string()),
+  chatId: z.string(),
   body: z.optional(z.string()),
   image: z.optional(z.string()),
   senderId: z.string(),  
   userId: z.optional(z.string()),
 });
-export type ChatMessageSchemaType = z.infer<typeof ChatMessageSchema>;
+export type CreateChatMessageSchemaType = z.infer<typeof CreateChatMessageSchema>;
+
+
+export const UpdateChatMessageSchema = z.object({
+  id: z.string(),
+  chatId: z.string(),
+  body: z.optional(z.string()),
+  image: z.optional(z.string()),
+  senderId: z.string(),  
+  userId: z.string(),
+});
+export type UpdateChatMessageSchemaType = z.infer<typeof UpdateChatMessageSchema>;
