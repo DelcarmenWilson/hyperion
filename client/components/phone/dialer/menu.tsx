@@ -31,6 +31,7 @@ type Props = {
 
 export const DialerMenu = ({ setIndex }: Props) => {
   const user = useCurrentUser();
+  const { call } = usePhoneStore();
 
   const { phone } = usePhoneContext();
   const {
@@ -202,6 +203,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
             variant={isDialPadFormOpen ? "default" : "outlineprimary"}
             size="xs"
             onClick={onDialPadFormToggle}
+            disabled={!call}
           >
             Dialpad
           </Button>
