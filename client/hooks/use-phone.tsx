@@ -135,7 +135,8 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
       isPhoneOutOpen: true,
       lead: e,
       conference: c,
-      isLeadInfoOpen: e ? true : false,
+      isLeadInfoOpen: e != undefined ? true : false,
+  
     });
     get().fetchData();
   },

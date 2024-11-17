@@ -14,8 +14,11 @@ import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 import { PhoneButtons } from "./phone-buttons";
 import { PhoneQuoter } from "./quoter";
+import { usePhoneStore } from "@/hooks/use-phone";
 
 export const PhoneLeadInfo = () => {
+  const {lead}=usePhoneStore()
+  if (!lead) return null;
   return (
     <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
