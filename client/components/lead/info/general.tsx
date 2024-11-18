@@ -24,6 +24,7 @@ export const GeneralInfoClient = ({
 
   const lastCall = generalInfo?.calls[0];
   const nextAppointment = generalInfo?.appointments[0];
+  // console.log(formatDob(generalInfo?.dateOfBirth))
 
   return (
     <SkeletonWrapper isLoading={isFetchingGeneralInfo}>

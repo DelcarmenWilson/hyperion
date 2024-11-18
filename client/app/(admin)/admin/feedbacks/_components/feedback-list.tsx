@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { Button } from "@/components/ui/button";
+import { useFeedbackStore } from "@/hooks/feedback/use-feedback";
 
 const FeedbackList = ({
   initFeedbacks,
@@ -22,11 +22,11 @@ const FeedbackList = ({
   admin?: boolean;
 }) => {
   const [feedbacks, setFeedbacks] = useState(initFeedbacks);
-  const [status, setStatus] = useState<FeedbackStatus | "All">(
-    FeedbackStatus.PENDING
-  );
-  const [agent, setAgent] = useState("All");
-  const [page, setPage] = useState("All");
+  // const [status, setStatus] = useState<FeedbackStatus | "All">(
+  //   FeedbackStatus.PENDING
+  // );
+  const { status, setStatus, agent, setAgent, page, setPage } =
+    useFeedbackStore();
   const feedbackStatuses = getEnumValues(FeedbackStatus);
 
   const groupedAgents = initFeedbacks.reduce((groups, feedback) => {

@@ -130,11 +130,13 @@ export const formatDate = (
 
 export const formatDob = (
   date: Date | string | undefined | null,
+  timeZone: string = "US/Eastern",
   retval: string = ""
 ): string => {
   if (!date) return retval;
-  return format(date, "MM/dd/yy");
+  return formatInTimeZone(date, timeZone, "MM/dd/yy");
 };
+
 
 export const formatDateTime = (
   dateTime: Date | string | undefined | null,
@@ -157,7 +159,7 @@ export const formatDateTime = (
   } at ${format(date, "h:mm a")}`;
 };
 export const formatDateTimeZone = (
-  date: Date,
+  date: Date|null|string,
   timeZone: string = "US/Eastern",
   retval: string = ""
 ): string => {

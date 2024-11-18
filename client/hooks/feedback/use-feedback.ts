@@ -1,3 +1,4 @@
+import { create } from "zustand";
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,6 +13,30 @@ import { createFeedback } from "@/actions/feedback/create-feedback";
 import { deleteFeedback } from "@/actions/feedback/delete-feedback";
 import { updateFeedback } from "@/actions/feedback/update-feedback";
 import { updateFeedbackDev } from "@/actions/feedback/update-feedback-dev";
+import { FeedbackStatus } from "@/types/feedback";
+
+ // const [status, setStatus] = useState<FeedbackStatus | "All">(
+  //   FeedbackStatus.PENDING
+  // );
+type State = {
+ status:FeedbackStatus|string
+ agent:string
+ page:string
+ setStatus:(s:string)=>void
+ setAgent:(a:string)=>void
+ setPage:(a:string)=>void
+};
+
+export const useFeedbackStore = create<State>((set) => ({
+  status:FeedbackStatus.PENDING,
+  agent:"All",
+  page:"All",
+  setStatus:(s)=>set({status:s}),
+  setAgent:(a)=>set({agent:a}),
+  setPage:(p)=>set({page:p})
+
+}));
+
 
 export const useFeedbackActions = (callback?: () => void) => {
   //DELETE FEEDBACK
