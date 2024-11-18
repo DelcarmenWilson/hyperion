@@ -21,11 +21,12 @@ import {
 import { getEntireDay, getToday } from "@/formulas/dates";
 import { UserRole } from "@prisma/client";
 import { callUpdateByIdAppointment } from "./call";
-import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
-import { leadGetOrInsert } from "./lead";
+
+import { leadGetOrInsert } from "@/actions/lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { userGetByAssistant } from "@/actions/user";
 import { createEmail } from "@/actions/email/create-email";
+import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
 
 //DATA
 //TODO - this was created to test the calendar client and the appoint hook inside of it.
@@ -285,7 +286,7 @@ id:email.data.id as string,
     }
   }
 
-  bluePrintWeekUpdateByUserIdData(user.id, "appointments");
+  updateBluePrintWeekData(user.id, "appointments");
 
   return { success: { appointment, message } };
 };
@@ -385,7 +386,7 @@ export const appointmentInsertBook = async (
   );
 
   //Update the blue print for this week
-  bluePrintWeekUpdateByUserIdData(agentId, "appointments");
+  updateBluePrintWeekData(agentId, "appointments");
 
   //If everything was successfull return a success message
   return { success: "Appointment Scheduled!" };

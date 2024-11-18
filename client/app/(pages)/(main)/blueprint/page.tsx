@@ -4,7 +4,7 @@ import { GoalIcon } from "lucide-react";
 import { PageLayout } from "@/components/custom/layout/page";
 import { AgentWorkInfoClient } from "./components/agent-work-info/client";
 import { BluePrintWeeklyClient } from "./components/weekly/client";
-import { BluePrintTopMenu } from "./components/top-menu";
+import BluePrintTopMenu from "./components/top-menu";
 import { BluePrintYearlyClient } from "./components/yearly/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

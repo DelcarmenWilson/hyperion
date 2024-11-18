@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { MdDialpad } from "react-icons/md";
+import { DialerSettingsType } from "@/types";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { usePhoneData, usePhoneStore } from "@/hooks/use-phone";
@@ -22,9 +23,7 @@ import { Button } from "@/components/ui/button";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
-import { DialerSettingsType } from "@/types";
 import { DialerSettings } from "./settings";
-import { SmsDrawer } from "./sms-drawer";
 
 type Props = {
   setIndex: (idx: number) => void;
@@ -32,6 +31,7 @@ type Props = {
 
 export const DialerMenu = ({ setIndex }: Props) => {
   const user = useCurrentUser();
+  const { call } = usePhoneStore();
 
   const { phone } = usePhoneContext();
   const {
@@ -46,7 +46,12 @@ export const DialerMenu = ({ setIndex }: Props) => {
   } = usePhoneData(phone);
   const { pipeIndex, selectedPipeline, filterLeads, timeZone } =
     usePipelineStore();
-  const { isSmsFormOpen, onSmsFormToggle } = useDialerStore();
+  const {
+    isSmsFormOpen,
+    onSmsFormToggle,
+    isDialPadFormOpen,
+    onDialPadFormToggle,
+  } = useDialerStore();
 
   const [dialNumber, setDialNumber] = useState(1);
 
@@ -88,8 +93,8 @@ export const DialerMenu = ({ setIndex }: Props) => {
   const onReset = () => setIndex(0);
 
   return (
-    <>
-      <div className="flex justify-between items-center gap-2">
+    <div>
+      <div className="flex justify-between items-center gap-2 mb-1">
         <div className="flex items-center gap-2">
           <MdDialpad size={16} />
           Dialer
@@ -194,12 +199,19 @@ export const DialerMenu = ({ setIndex }: Props) => {
           >
             SMS
           </Button>
+          <Button
+            variant={isDialPadFormOpen ? "default" : "outlineprimary"}
+            size="xs"
+            onClick={onDialPadFormToggle}
+            disabled={!call}
+          >
+            Dialpad
+          </Button>
         </div>
         <span className="text-primary font-bold">
           {formatSecondsToTime(time)}
         </span>
       </div>
-      <SmsDrawer />
-    </>
+    </div>
   );
 };

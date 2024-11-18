@@ -1,31 +1,37 @@
 import * as z from "zod";
-export const BluePrintSchema = z.object({
+export const CreateBluePrintSchema = z.object({
   id: z.optional(z.string()),
   callsTarget: z.coerce.number().min(1),
   appointmentsTarget: z.coerce.number().min(1),
   premiumTarget: z.coerce.number().min(1),
 });
-export type BluePrintSchemaType = z.infer<typeof BluePrintSchema>;
+export type CreateBluePrintSchemaType = z.infer<typeof CreateBluePrintSchema>;
 
-export const BluePrintWeekSchema = z.object({
+export const UpdateBluePrintWeekSchema = z.object({
   id: z.optional(z.string()),
   calls: z.coerce.number().min(1),
   appointments: z.coerce.number().min(1),
   premium: z.coerce.number().min(1),
 });
-export type BluePrintWeekSchemaType = z.infer<typeof BluePrintWeekSchema>;
+export type UpdateBluePrintWeekSchemaType = z.infer<typeof UpdateBluePrintWeekSchema>;
 
-export const AgentWorkInfoSchema = z.object({
+export const CreateAgentWorkInfoSchema = z.object({
   workType: z.string().min(1),
   workingDays: z.string().min(1),
   workingHours: z.string().min(1),
-  // annualTarget: z.coerce.number().min(40000).max(300000),
-  // annualTarget: z.coerce.number().refine(target=>{if (target<400000)return true},"target less than 40000"),
   annualTarget: z.coerce.number(),
   targetType: z.string().min(1),
 })
-// .refine(schema=>{
-// schema.workType=
 
-// });
-export type AgentWorkInfoSchemaType = z.infer<typeof AgentWorkInfoSchema>;
+export type CreateAgentWorkInfoSchemaType = z.infer<typeof CreateAgentWorkInfoSchema>;
+
+export const UpdateAgentWorkInfoSchema = z.object({
+  userId:z.string(),
+  workType: z.string().min(1),
+  workingDays: z.string().min(1),
+  workingHours: z.string().min(1),
+  annualTarget: z.coerce.number(),
+  targetType: z.string().min(1),
+})
+
+export type UpdateAgentWorkInfoSchemaType = z.infer<typeof UpdateAgentWorkInfoSchema>;

@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
           {topMenu}
         </div>
       </div>
-      <div className="rounded-md border w-full">
+      <div className="rounded-md border w-full overflow-hidden">
         <Table className="w-full">
           {headers && (
             <TableHeader>

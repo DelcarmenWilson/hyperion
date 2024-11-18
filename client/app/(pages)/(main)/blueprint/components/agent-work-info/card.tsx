@@ -1,13 +1,14 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
+import { useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { UpdateAgentWorkInfoDialog } from "./form";
 
 import { USDollar } from "@/formulas/numbers";
 import { formatJustTime } from "@/formulas/dates";
@@ -23,13 +24,12 @@ export const AgentWorkInfoCard = ({
   showButtons = false,
 }: Props) => {
   const role = useCurrentRole();
-  const { onWorkInfoFormOpen } = useBluePrintStore();
-  const { onAgentWorkInfoGet } = useBluePrintData();
-  const { agentWorkInfo, agentWorkInfoIsFetching } = onAgentWorkInfoGet();
+  const { onGetAgentWorkInfo } = useBluePrintData();
+  const { agentWorkInfo, agentWorkInfoFetching } = onGetAgentWorkInfo();
   const hours = agentWorkInfo?.workingHours.split("-");
 
   return (
-    <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+    <SkeletonWrapper isLoading={agentWorkInfoFetching}>
       {agentWorkInfo ? (
         <div
           className={cn(
@@ -41,12 +41,10 @@ export const AgentWorkInfoCard = ({
             <p className="font-semibold">Work info</p>
             {/* srinitodo - update to allusers if team wants to give BP edit option to all users */}
             {ALLADMINS.includes(role!) && showButtons && (
-              <Button
-                size="xs"
-                onClick={() => onWorkInfoFormOpen(agentWorkInfo)}
-              >
-                Edit Details
-              </Button>
+              <UpdateAgentWorkInfoDialog
+                triggerText="Edit Details"
+                workInfo={agentWorkInfo}
+              />
             )}
           </div>
 

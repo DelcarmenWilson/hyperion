@@ -9,6 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
+import { useLeadData } from "@/hooks/lead/use-lead";
 import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
@@ -23,15 +24,14 @@ import { Input } from "@/components/ui/input";
 import { PhoneSwitcher } from "./addins/switcher";
 
 import { EmptyCard } from "../reusable/empty-card";
+import IncomingDialog from "./incoming-dialog";
+import { NotesForm } from "../lead/forms/notes-form";
 import { ParticipantList } from "./participant/list";
 import { TouchPad } from "./addins/touch-pad";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
-import { useLeadData } from "@/hooks/lead/use-lead";
-import { AudioPlayer } from "../custom/audio-player";
 import { phoneSettingsUpdateCurrentCall } from "@/actions/settings/phone";
-import IncomingDialog from "./incoming-dialog";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -51,6 +51,7 @@ export const PhoneOut = () => {
     isLeadInfoOpen,
     onLeadInfoToggle,
     onIncomingCallOpen,
+    showScript,
   } = usePhoneStore();
   const { phone } = usePhoneContext();
   const { onDisconnect, onCallMuted } = usePhoneData(phone);
@@ -58,7 +59,6 @@ export const PhoneOut = () => {
   let leadFullName = leadBasic
     ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
     : "New Call";
-  const [dialToneCliked, setDialToneCliked] = useState("");
   const [disabled, setDisabled] = useState(false);
   const [empty, setEmpty] = useState(false);
 
@@ -148,7 +148,6 @@ export const PhoneOut = () => {
     if (call) {
       call.sendDigits(num);
     } else {
-      setDialToneCliked(num);
       setTo((state) => {
         return { ...state, number: (state.number += num) };
       });
@@ -158,7 +157,6 @@ export const PhoneOut = () => {
   };
 
   const onNumberTyped = (num: string) => {
-    if (num.slice(-1)) setDialToneCliked(num.slice(-1));
     setTo((state) => {
       return { ...state, number: num };
     });
@@ -293,12 +291,18 @@ export const PhoneOut = () => {
             <PhoneSwitcher number={myNumber} onSetDefaultNumber={setMyNumber} />
           </div>
           <div className="relative flex flex-col gap-2 flex-1 overflow-hidden">
-            <TouchPad onNumberClick={onNumberClick} />
-            <AudioPlayer
-              className="hidden"
-              autoPlay
-              src={`/sounds/dialtone/dial-${dialToneCliked}.mp3`}
-            />
+            <div className="relative">
+              <div
+                className={cn(
+                  "absolute bg-background -top-[102%] left-0 w-full h-full p-1 transition-[top] ease-in-out duration-100",
+                  showScript && "top-0"
+                )}
+              >
+                <NotesForm showShared={false} rows={9} />
+              </div>
+
+              <TouchPad onNumberClick={onNumberClick} />
+            </div>
 
             {isOnCall ? (
               <>
@@ -357,8 +361,9 @@ export const PhoneOut = () => {
           </div>
         </>
       )}
-
-      <Button onClick={onIncomingCallOpen}>Open Incoming</Button>
+      {user?.role == "DEVELOPER" && (
+        <Button onClick={onIncomingCallOpen}>Open Incoming</Button>
+      )}
 
       <IncomingDialog />
     </div>

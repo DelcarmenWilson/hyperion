@@ -7,10 +7,10 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { columns } from "./columns";
 
 export const BluePrintYearlyClient = () => {
-  const { onBluePrintsGet } = useBluePrintData();
-  const { bluePrints, bluePrintsIsFetching } = onBluePrintsGet();
+  const { onGetBluePrints } = useBluePrintData();
+  const { bluePrints, bluePrintsFetching } = onGetBluePrints();
   return (
-    <SkeletonWrapper isLoading={bluePrintsIsFetching}>
+    <SkeletonWrapper isLoading={bluePrintsFetching}>
       <DataTable
         columns={columns}
         data={bluePrints || []}

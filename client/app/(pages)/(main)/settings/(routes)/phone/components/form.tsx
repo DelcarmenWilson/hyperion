@@ -350,16 +350,9 @@ export const PhoneSettingsForm = ({
                 </div>
                 <TouchPad
                   onNumberClick={setDialToneCliked}
-                  displayScript={false}
+                  dmftPack={form.getValues("dtmfPack")}
                   disabled={form.getValues("dtmfPack") == "N/A"}
                   btnHeight="sm"
-                />
-                <AudioPlayer
-                  className="hidden"
-                  autoPlay
-                  src={`/sounds/dialtone/${form.getValues(
-                    "dtmfPack"
-                  )}-${dialToneCliked}.mp3`}
                 />
               </FormItem>
             )}

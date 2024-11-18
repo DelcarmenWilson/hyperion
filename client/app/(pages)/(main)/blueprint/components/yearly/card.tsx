@@ -18,9 +18,9 @@ type BarType = {
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 export const BluePrintYearlyCard = () => {
-  const { onBluePrintYearActiveGet } = useBluePrintData();
-  const { bluePrintYearActive, bluePrintYearActiveIsFetching } =
-    onBluePrintYearActiveGet();
+  const { onGetBluePrintYearActive } = useBluePrintData();
+  const { bluePrintYearActive, bluePrintYearActiveFetching } =
+    onGetBluePrintYearActive();
 
   if (!bluePrintYearActive) return <EmptyCard title={"No Details"} />;
 
@@ -72,7 +72,7 @@ export const BluePrintYearlyCard = () => {
     },
   ];
   return (
-    <SkeletonWrapper isLoading={bluePrintYearActiveIsFetching}>
+    <SkeletonWrapper isLoading={bluePrintYearActiveFetching}>
       <div>
         <div className="flex justify-between items-center mb-2">
           <p className="font-semibold">Yearly Goals</p>

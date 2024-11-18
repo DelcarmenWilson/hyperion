@@ -18,9 +18,9 @@ type BarType = {
 };
 
 export const BluePrintWeeklyCard = () => {
-  const { onBluePrintWeekActiveGet } = useBluePrintData();
-  const { bluePrintWeekActive, bluePrintWeekActiveIsFetching } =
-    onBluePrintWeekActiveGet();
+  const { onGetBluePrintWeekActive } = useBluePrintData();
+  const { bluePrintWeekActive, bluePrintWeekActiveFetching } =
+    onGetBluePrintWeekActive();
   if (!bluePrintWeekActive) return <EmptyCard title={"No Details"} />;
 
   const {
@@ -69,7 +69,7 @@ export const BluePrintWeeklyCard = () => {
     },
   ];
   return (
-    <SkeletonWrapper isLoading={bluePrintWeekActiveIsFetching}>
+    <SkeletonWrapper isLoading={bluePrintWeekActiveFetching}>
       <div>
         <div className="flex justify-between items-center mb-2">
           <p className="font-semibold">Weekly Goals</p>

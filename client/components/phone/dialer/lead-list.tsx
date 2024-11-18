@@ -22,8 +22,8 @@ export const LeadList = () => {
   useEffect(() => {
     if (!filterLeads) return;
     onSetLead(filterLeads[pipeIndex]);
-    // setLeadId(filterLeads[pipeIndex].id);
-    console.log(filterLeads,pipeIndex)
+    setLeadId(filterLeads[pipeIndex].id);
+    //console.log(filterLeads,pipeIndex)
     if (!indexRef.current) return;
     indexRef.current.scrollIntoView({
       behavior: "smooth",
@@ -45,13 +45,13 @@ export const LeadList = () => {
   );
 };
 
-type LeadDialerCardProps = {
+type Props = {
   lead: PipelineLead;
   index: number;
   indexRef?: React.RefObject<HTMLDivElement> | null;
 };
 
-const LeadCard = ({ lead, index, indexRef }: LeadDialerCardProps) => {
+const LeadCard = ({ lead, index, indexRef }: Props) => {
   const { onSetIndex } = usePipelineStore();
   return (
     <div

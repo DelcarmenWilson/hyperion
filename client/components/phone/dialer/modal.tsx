@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/resizable";
 import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
 import { LeadList } from "./lead-list";
+import { SmsDrawer } from "./sms-drawer";
+import DialpadDialog from "./dialpad-dialog";
 
 export const PhoneDialerModal = () => {
   const { isPhoneDialerOpen, lead } = usePhoneStore();
@@ -79,6 +81,9 @@ export const PhoneDialerModal = () => {
                       maxSize={80}
                     >
                       {lead && <PhoneLeadInfo />}
+
+                      <SmsDrawer />
+                      <DialpadDialog />
                     </ResizablePanel>
                   </ResizablePanelGroup>
                 </div>
