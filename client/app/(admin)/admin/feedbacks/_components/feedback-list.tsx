@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useFeedbackStore } from "@/hooks/feedback/use-feedback";
+
 import { FeedbackStatus, ShortFeedback } from "@/types/feedback";
 
 import FeedbackCard from "./feedback-card";
@@ -12,7 +14,8 @@ import {
 } from "@/components/ui/select";
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { useFeedbackStore } from "@/hooks/feedback/use-feedback";
+import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 const FeedbackList = ({
   initFeedbacks,
@@ -22,11 +25,16 @@ const FeedbackList = ({
   admin?: boolean;
 }) => {
   const [feedbacks, setFeedbacks] = useState(initFeedbacks);
-  // const [status, setStatus] = useState<FeedbackStatus | "All">(
-  //   FeedbackStatus.PENDING
-  // );
-  const { status, setStatus, agent, setAgent, page, setPage } =
-    useFeedbackStore();
+  const {
+    status,
+    setStatus,
+    agent,
+    setAgent,
+    page,
+    setPage,
+    sorted,
+    toggleSorted,
+  } = useFeedbackStore();
   const feedbackStatuses = getEnumValues(FeedbackStatus);
 
   const groupedAgents = initFeedbacks.reduce((groups, feedback) => {
@@ -47,8 +55,13 @@ const FeedbackList = ({
     if (agent != "All")
       filtered = filtered.filter((e) => e.user.firstName == agent);
     if (page != "All") filtered = filtered.filter((e) => e.page == page);
+    filtered.sort((a, b) =>
+      sorted
+        ? a.createdAt.getTime() - b.createdAt.getTime()
+        : b.createdAt.getTime() - a.createdAt.getTime()
+    );
     setFeedbacks(filtered);
-  }, [status, agent, page]);
+  }, [status, agent, page, sorted]);
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="flex gap-2 p-2 bg-background items-center justify-between sticky">
@@ -123,7 +136,11 @@ const FeedbackList = ({
                 </SelectContent>
               </Select>
             </div>
-            <Button></Button>
+            <Button variant="outline" className="gap-2" onClick={toggleSorted}>
+              <span className="sr-only">Sort by date</span>
+              <span className="text-sm text-muted-foreground">Created At</span>
+              {sorted ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
+            </Button>
           </>
         )}
 
