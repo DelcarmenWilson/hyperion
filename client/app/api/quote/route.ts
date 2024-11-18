@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createWeeklyBlueprint } from "@/actions/blueprint/week/get-blueprint-weeks";
-import { scheduleLeadsToImport } from "@/actions/facebook/leads";
-import { remindTodos } from "@/actions/user/todo/remind-todos";
-import { setActiveQuote } from "@/actions/admin/quote/set-active-quote";
+import { createNewBlueprintWeek } from "@/actions/blueprint/week/create-new-blueprint-week";
 import { hideDeletedMessages } from "@/actions/chat/message/hide-deleted-messages";
+import { remindTodos } from "@/actions/user/todo/remind-todos";
+import { scheduleLeadsToImport } from "@/actions/facebook/leads";
+import { setActiveQuote } from "@/actions/admin/quote/set-active-quote";
 //TODO - need to change the name of this route and make sure to also update the server
 export async function POST(req: Request) {
   try {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const { type } = body;
     switch (type) {
       case "createWeeklyBlueprint":
-        await createWeeklyBlueprint();
+        await createNewBlueprintWeek();
         break;
       case "newQuote":
         await setActiveQuote();

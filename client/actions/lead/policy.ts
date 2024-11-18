@@ -6,7 +6,7 @@ import { LeadDefaultStatus } from "@/types/lead";
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 
 import { leadActivityInsert } from "./activity";
-import { bluePrintWeekUpdateByUserIdData } from "../blueprint/week/get-blueprint-weeks";
+import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
 
 //DATA
 export const leadPolicyGet = async (leadId: string) => {
@@ -72,7 +72,7 @@ export const leadPolicyUpsert = async (values: LeadPolicySchemaType) => {
     },
   });
 
-  bluePrintWeekUpdateByUserIdData(user.id, "premium", diff);
+  updateBluePrintWeekData(user.id, "premium", diff);
   leadActivityInsert(leadId, "sale", "policy info updated", user.id);
   return { success: leadPolicyInfo };
 };

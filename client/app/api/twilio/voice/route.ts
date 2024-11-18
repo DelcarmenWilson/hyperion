@@ -5,8 +5,8 @@ import { TwilioCall } from "@/types";
 import { voiceResponse } from "@/lib/twilio/handler";
 import { formatObject } from "@/formulas/objects";
 
-import { bluePrintWeekUpdateByUserIdData } from "@/actions/blueprint/week/get-blueprint-weeks";
 import { leadGetOrCreateByPhoneNumber } from "@/actions/lead";
+import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
 
 
 export async function POST(req: Request) {
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     call.direction = "outbound";
 
     if (agentPhoneNumber) {
-      bluePrintWeekUpdateByUserIdData(
+      updateBluePrintWeekData(
         agentPhoneNumber.agentId as string,
         "calls"
       );

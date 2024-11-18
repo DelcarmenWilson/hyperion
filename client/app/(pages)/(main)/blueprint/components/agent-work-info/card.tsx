@@ -1,18 +1,18 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
+import { useBluePrintData } from "@/hooks/use-blueprint";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { UpdateAgentWorkInfoDialog } from "./form";
 
 import { USDollar } from "@/formulas/numbers";
 import { formatJustTime } from "@/formulas/dates";
 import { ALLADMINS } from "@/constants/user";
-import { UpdateAgentWorkInfoDialog } from "./form";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 type Props = {
@@ -25,11 +25,11 @@ export const AgentWorkInfoCard = ({
 }: Props) => {
   const role = useCurrentRole();
   const { onGetAgentWorkInfo } = useBluePrintData();
-  const { agentWorkInfo, agentWorkInfoIsFetching } = onGetAgentWorkInfo();
+  const { agentWorkInfo, agentWorkInfoFetching } = onGetAgentWorkInfo();
   const hours = agentWorkInfo?.workingHours.split("-");
 
   return (
-    <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+    <SkeletonWrapper isLoading={agentWorkInfoFetching}>
       {agentWorkInfo ? (
         <div
           className={cn(
