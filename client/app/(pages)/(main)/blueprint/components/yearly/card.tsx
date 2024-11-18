@@ -18,9 +18,9 @@ type BarType = {
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 export const BluePrintYearlyCard = () => {
-  const { onBluePrintYearActiveGet } = useBluePrintData();
+  const { onGetBluePrintYearActive } = useBluePrintData();
   const { bluePrintYearActive, bluePrintYearActiveIsFetching } =
-    onBluePrintYearActiveGet();
+    onGetBluePrintYearActive();
 
   if (!bluePrintYearActive) return <EmptyCard title={"No Details"} />;
 

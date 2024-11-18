@@ -12,6 +12,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { USDollar } from "@/formulas/numbers";
 import { formatJustTime } from "@/formulas/dates";
 import { ALLADMINS } from "@/constants/user";
+import { UpdateAgentWorkInfoDialog } from "./form";
 
 //TODO see if we can merge the UI from this and the dashboad client and the yearly blueprint
 type Props = {
@@ -23,9 +24,8 @@ export const AgentWorkInfoCard = ({
   showButtons = false,
 }: Props) => {
   const role = useCurrentRole();
-  const { onWorkInfoFormOpen } = useBluePrintStore();
-  const { onAgentWorkInfoGet } = useBluePrintData();
-  const { agentWorkInfo, agentWorkInfoIsFetching } = onAgentWorkInfoGet();
+  const { onGetAgentWorkInfo } = useBluePrintData();
+  const { agentWorkInfo, agentWorkInfoIsFetching } = onGetAgentWorkInfo();
   const hours = agentWorkInfo?.workingHours.split("-");
 
   return (
@@ -41,12 +41,10 @@ export const AgentWorkInfoCard = ({
             <p className="font-semibold">Work info</p>
             {/* srinitodo - update to allusers if team wants to give BP edit option to all users */}
             {ALLADMINS.includes(role!) && showButtons && (
-              <Button
-                size="xs"
-                onClick={() => onWorkInfoFormOpen(agentWorkInfo)}
-              >
-                Edit Details
-              </Button>
+              <UpdateAgentWorkInfoDialog
+                triggerText="Edit Details"
+                workInfo={agentWorkInfo}
+              />
             )}
           </div>
 

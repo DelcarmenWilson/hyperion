@@ -30,7 +30,7 @@ export const PageLayout = ({
   return (
     <Card
       className={cn(
-        "flex flex-col flex-1 relative w-full",
+        "relative flex flex-col flex-1 w-full overflow-hidden",
         !show && "overflow-hidden",
         cardClass
       )}
@@ -58,9 +58,9 @@ export const PageLayout = ({
         )}
       >
         {scroll ? (
-          <ScrollArea className="w-full flex-1 pr-2">{children}</ScrollArea>
+          <ScrollArea className="w-full flex-1">{children}</ScrollArea>
         ) : (
-          <div className="w-full flex-1 pr-2 overflow-hidden">{children}</div>
+          <div className="w-full flex-1 overflow-hidden">{children}</div>
         )}
       </CardContent>
     </Card>

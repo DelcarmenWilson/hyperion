@@ -5,7 +5,7 @@ import { TwilioCall } from "@/types";
 import { voiceResponse } from "@/lib/twilio/handler";
 import { formatObject } from "@/formulas/objects";
 
-import { bluePrintWeekUpdateByUserIdData } from "@/actions/blueprint/blueprint-week";
+import { bluePrintWeekUpdateByUserIdData } from "@/actions/blueprint/week/get-blueprint-weeks";
 import { leadGetOrCreateByPhoneNumber } from "@/actions/lead";
 
 

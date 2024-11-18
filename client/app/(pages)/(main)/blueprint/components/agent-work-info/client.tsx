@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { useBluePrintStore, useBluePrintData } from "@/hooks/use-blueprint";
+import { useBluePrintData } from "@/hooks/use-blueprint";
 
 import { AgentWorkInfoCard } from "./card";
-import { AgentWorkInfoFormDialog } from "./form";
-import { BluePrintWeekForm } from "../weekly/form";
 import { BluePrintWeeklyCard } from "../weekly/card";
 import { BluePrintYearlyCard } from "../yearly/card";
 import { Button } from "@/components/ui/button";
@@ -27,14 +25,16 @@ import { Switch } from "@/components/ui/switch";
 import { USDollar } from "@/formulas/numbers";
 import { convertBluePrintMonthData } from "@/formulas/reports";
 import { allMonths } from "@/constants/texts";
+import { CreateAgentWorkInfoDialog } from "./form";
 
 export const AgentWorkInfoClient = () => {
-  const { onWorkInfoFormOpen } = useBluePrintStore();
-  const { onAgentWorkInfoGet, onBluePrintWeekReportGet } = useBluePrintData();
+  const { onGetAgentWorkInfo, onGetBluePrintWeekReport } = useBluePrintData();
 
-  const { agentWorkInfo, agentWorkInfoIsFetching } = onAgentWorkInfoGet();
-  const { bluePrintWeekReport, bluePrintWeeksReportIsFetching } =
-    onBluePrintWeekReportGet();
+  const { agentWorkInfo, agentWorkInfoFetching } = onGetAgentWorkInfo();
+  const { bluePrintWeekReport, bluePrintWeeksReportFetching } =
+    onGetBluePrintWeekReport();
+
+  const isEmpty = !agentWorkInfo && !agentWorkInfoFetching;
 
   const [isWeekly, setIsWeekly] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(
@@ -59,41 +59,39 @@ export const AgentWorkInfoClient = () => {
   }, [isWeekly]);
   return (
     <>
-      <AgentWorkInfoFormDialog />
-      <BluePrintWeekForm />
       <div>
-        {agentWorkInfo ? (
-          <Card className="mb-2 border-0">
-            <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2">
+        {agentWorkInfo && (
+          <Card className="mb-2 border-0 shadow-none">
+            <CardContent className="flex flex-col lg:flex-row justify-center items-start gap-2 !p-0">
               <div className="w-full lg:w-[30%] border p-3">
-                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+                <SkeletonWrapper isLoading={agentWorkInfoFetching}>
                   <BluePrintWeeklyCard />
                 </SkeletonWrapper>
               </div>
 
               <div className="w-full lg:w-[30%] border p-3">
-                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+                <SkeletonWrapper isLoading={agentWorkInfoFetching}>
                   <BluePrintYearlyCard />
                 </SkeletonWrapper>
               </div>
 
               <div className="flex-1 border p-3">
-                <SkeletonWrapper isLoading={agentWorkInfoIsFetching}>
+                <SkeletonWrapper isLoading={agentWorkInfoFetching}>
                   <AgentWorkInfoCard showButtons />
                 </SkeletonWrapper>
               </div>
             </CardContent>
           </Card>
-        ) : (
+        )}
+
+        {isEmpty && (
           <EmptyCard
             title="No details Found"
-            subTitle={
-              <Button onClick={() => onWorkInfoFormOpen()}>Add Details</Button>
-            }
+            subTitle={<CreateAgentWorkInfoDialog triggerText="Add Details" />}
           />
         )}
 
-        <SkeletonWrapper isLoading={bluePrintWeeksReportIsFetching}>
+        <SkeletonWrapper isLoading={bluePrintWeeksReportFetching}>
           <div className="grid gap-2">
             <SriniChart
               data={premiumReport}

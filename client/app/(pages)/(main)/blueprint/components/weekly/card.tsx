@@ -18,9 +18,9 @@ type BarType = {
 };
 
 export const BluePrintWeeklyCard = () => {
-  const { onBluePrintWeekActiveGet } = useBluePrintData();
+  const { onGetBluePrintWeekActive } = useBluePrintData();
   const { bluePrintWeekActive, bluePrintWeekActiveIsFetching } =
-    onBluePrintWeekActiveGet();
+    onGetBluePrintWeekActive();
   if (!bluePrintWeekActive) return <EmptyCard title={"No Details"} />;
 
   const {

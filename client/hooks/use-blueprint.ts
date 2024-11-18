@@ -2,185 +2,146 @@ import { create } from "zustand";
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useInvalidate } from "./use-invalidate";
 
 import { AgentWorkInfo, BluePrint, BluePrintWeek } from "@prisma/client";
 import {
-  AgentWorkInfoSchemaType,
-  BluePrintWeekSchemaType,
+  UpdateBluePrintWeekSchemaType,
+  CreateAgentWorkInfoSchemaType,
+  UpdateAgentWorkInfoSchemaType,
 } from "@/schemas/blueprint";
 
-import {
-  agentWorkInfoGetByUserId,
-  agentWorkInfoInsert,
-  agentWorkInfoUpdateByUserId,
-} from "@/actions/blueprint/agent-work-info";
-import {
-  bluePrintWeekGetActive,
-  bluePrintWeeksGetAllByUserId,
-  bluePrintWeeksReport,
-  bluePrintWeekUpdateById,
-  createWeeklyBlueprint,
-} from "@/actions/blueprint/blueprint-week";
-import {
-  bluePrintGetActive,
-  bluePrintsGetAllByUserId,
-} from "@/actions/blueprint/blueprint";
-import { useInvalidate } from "./use-invalidate";
+import { getActiveBlueprint } from "@/actions/blueprint/get-active-blueprint";
+import { getBlueprints } from "@/actions/blueprint/get-blueprints";
 
-type State = {
-  //AGENTWORKINFO
-  workInfo?: AgentWorkInfo;
-  isWorkInfoFormOpen: boolean;
-  //BLUEPRINT FORM
-  bluePrintWeek?: BluePrintWeek;
-  isBluePrintWeekFormOpen: boolean;
-};
+import { createAgentWorkInfo } from "@/actions/blueprint/agent-work-info/create-agent-work-info";
+import { getAgentWorkInfo } from "@/actions/blueprint/agent-work-info/get-agent-work-info";
+import { updateAgentWorkInfo } from "@/actions/blueprint/agent-work-info/update-agent-work-info";
 
-type Actions = {
-  //AGENTWORKINFO
-  onWorkInfoFormOpen: (w?: AgentWorkInfo) => void;
-  onWorkInfoFormClose: () => void;
-  //BLUEPRINT FORM
-  onBluePrintWeekFormOpen: (b?: BluePrintWeek) => void;
-  onBluePrintWeekFormClose: () => void;
-};
+import { createNewBlueprintWeek } from "@/actions/blueprint/week/create-new-blueprint-week";
+import { getActiveBluePrintWeek } from "@/actions/blueprint/week/get-active-blueprint-week";
+import { getBluePrintWeeksReport } from "@/actions/blueprint/week/get-blueprint-weeks-report";
+import { getBluePrintWeeks } from "@/actions/blueprint/week/get-blueprint-weeks";
+import { updateBluePrintWeek } from "@/actions/blueprint/week/update-blueprint-week";
 
-export const useBluePrintStore = create<State & Actions>((set) => ({
-  isWorkInfoFormOpen: false,
-  onWorkInfoFormOpen: (w) => set({ workInfo: w, isWorkInfoFormOpen: true }),
-  onWorkInfoFormClose: () =>
-    set({
-      workInfo: undefined,
-      isWorkInfoFormOpen: false,
-    }),
-  isBluePrintWeekFormOpen: false,
-  onBluePrintWeekFormOpen: (b) =>
-    set({ bluePrintWeek: b, isBluePrintWeekFormOpen: true }),
-  onBluePrintWeekFormClose: () =>
-    set({
-      bluePrintWeek: undefined,
-      isBluePrintWeekFormOpen: false,
-    }),
-}));
+
 
 export const useBluePrintData = () => {
-  const onAgentWorkInfoGet = () => {
+  const onGetAgentWorkInfo = () => {
     const {
       data: agentWorkInfo,
-      isFetching: agentWorkInfoIsFetching,
-      isLoading: agentWorkInfoIsLoading,
+      isFetching: agentWorkInfoFetching,
+      isLoading: agentWorkInfoLoading,
     } = useQuery<AgentWorkInfo | null>({
-      queryFn: () => agentWorkInfoGetByUserId(),
+      queryFn: () => getAgentWorkInfo(),
       queryKey: ["blueprint-work-info"],
     });
-    return { agentWorkInfo, agentWorkInfoIsFetching, agentWorkInfoIsLoading };
+    return { agentWorkInfo, agentWorkInfoFetching, agentWorkInfoLoading };
   };
 
-  const onBluePrintsGet = () => {
+  const onGetBluePrints = () => {
     const {
       data: bluePrints,
-      isFetching: bluePrintsIsFetching,
-      isLoading: bluePrintsIsLoading,
+      isFetching: bluePrintsFetching,
+      isLoading: bluePrintsLoading,
     } = useQuery<BluePrint[]>({
-      queryFn: () => bluePrintsGetAllByUserId(),
+      queryFn: () => getBlueprints(),
       queryKey: ["blueprints"],
     });
     return {
       bluePrints,
-      bluePrintsIsFetching,
-      bluePrintsIsLoading,
+      bluePrintsFetching,
+      bluePrintsLoading,
     };
   };
 
-  const onBluePrintWeekActiveGet = () => {
+  const onGetBluePrintWeekActive = () => {
     const {
       data: bluePrintWeekActive,
-      isFetching: bluePrintWeekActiveIsFetching,
-      isLoading: bluePrintWeekActiveIsLoading,
+      isFetching: bluePrintWeekActiveFetching,
+      isLoading: bluePrintWeekActiveLoading,
     } = useQuery<BluePrintWeek | null>({
-      queryFn: () => bluePrintWeekGetActive(),
+      queryFn: () => getActiveBluePrintWeek(),
       queryKey: ["blueprint-week-active"],
     });
     return {
       bluePrintWeekActive,
-      bluePrintWeekActiveIsFetching,
-      bluePrintWeekActiveIsLoading,
+      bluePrintWeekActiveFetching,
+      bluePrintWeekActiveLoading,
     };
   };
 
-  const onBluePrintYearActiveGet = () => {
+  const onGetBluePrintYearActive = () => {
     const {
       data: bluePrintYearActive,
-      isFetching: bluePrintYearActiveIsFetching,
-      isLoading: bluePrintYearActiveIsLoading,
+      isFetching: bluePrintYearActiveFetching,
+      isLoading: bluePrintYearActiveLoading,
     } = useQuery<BluePrint | null>({
-      queryFn: () => bluePrintGetActive(),
+      queryFn: () => getActiveBlueprint(),
       queryKey: ["blueprint-active"],
     });
     return {
       bluePrintYearActive,
-      bluePrintYearActiveIsFetching,
-      bluePrintYearActiveIsLoading,
+      bluePrintYearActiveFetching,
+      bluePrintYearActiveLoading,
     };
   };
 
-  const onBluePrintsWeeklyGet = () => {
+  const onGetBluePrintsWeekly = () => {
     const {
       data: bluePrintsWeekly,
-      isFetching: bluePrintsWeeklyIsFetching,
-      isLoading: bluePrintsWeeklyIsLoading,
+      isFetching: bluePrintsWeeklyFetching,
+      isLoading: bluePrintsWeeklyLoading,
     } = useQuery<BluePrintWeek[]>({
-      queryFn: () => bluePrintWeeksGetAllByUserId(),
+      queryFn: () => getBluePrintWeeks(),
       queryKey: ["blueprints-weekly"],
     });
     return {
       bluePrintsWeekly,
-      bluePrintsWeeklyIsFetching,
-      bluePrintsWeeklyIsLoading,
+      bluePrintsWeeklyFetching,
+      bluePrintsWeeklyLoading,
     };
   };
 
-  const onBluePrintWeekReportGet = () => {
+  const onGetBluePrintWeekReport = () => {
     const {
       data: bluePrintWeekReport,
-      isFetching: bluePrintWeeksReportIsFetching,
-      isLoading: bluePrintWeeksReportIsLoading,
+      isFetching: bluePrintWeeksReportFetching,
+      isLoading: bluePrintWeeksReportLoading,
     } = useQuery<BluePrintWeek[]>({
-      queryFn: () => bluePrintWeeksReport(),
+      queryFn: () => getBluePrintWeeksReport(),
       queryKey: ["blueprint-weeks-report"],
     });
     return {
       bluePrintWeekReport,
-      bluePrintWeeksReportIsFetching,
-      bluePrintWeeksReportIsLoading,
+      bluePrintWeeksReportFetching,
+      bluePrintWeeksReportLoading,
     };
   };
   return {
-    onAgentWorkInfoGet,
-    onBluePrintsGet,
-    onBluePrintWeekActiveGet,
-    onBluePrintYearActiveGet,
-    onBluePrintsWeeklyGet,
-    onBluePrintWeekReportGet,
+    onGetAgentWorkInfo,
+    onGetBluePrints,
+    onGetBluePrintWeekActive,
+    onGetBluePrintYearActive,
+    onGetBluePrintsWeekly,
+    onGetBluePrintWeekReport,
   };
 };
 
-export const useBluePrintActions = () => {
-  const { onBluePrintWeekFormClose, onWorkInfoFormClose } = useBluePrintStore();
-
+export const useBluePrintActions = (callBack:()=>void) => {
   const { invalidate,invalidateMultiple } = useInvalidate();
   //AGENT WORK INFO INSERT
   const {
     mutate: agentWorkInfoInsertMutate,
     isPending: agentWorkInfoInserting,
   } = useMutation({
-    mutationFn: agentWorkInfoInsert,
+    mutationFn: createAgentWorkInfo,
     onSuccess: (results) => {
       if (results.success) {
         toast.success("Agent details have been created", {
           id: "insert-blueprint-work-info",
         });
-        onWorkInfoFormClose();
+       callBack();
         invalidateMultiple([
           "blueprint-work-info",
           "blueprints",
@@ -195,7 +156,7 @@ export const useBluePrintActions = () => {
   });
 
   const onAgentWorkInfoInsert = useCallback(
-    (values: AgentWorkInfoSchemaType) => {
+    (values: CreateAgentWorkInfoSchemaType) => {
       toast.loading("Creating Work Info...", {
         id: "insert-blueprint-work-info",
       });
@@ -209,22 +170,21 @@ export const useBluePrintActions = () => {
     mutate: agentWorkInfoUpdateMutate,
     isPending: agentWorkInfoUpdating,
   } = useMutation({
-    mutationFn: agentWorkInfoUpdateByUserId,
-    onSuccess: (results) => {
-      if (results.success) {
+    mutationFn: updateAgentWorkInfo,
+    onSuccess: (results) => {      
         invalidate("blueprint-work-info");
-        onWorkInfoFormClose();
+       callBack();
         toast.success("Agent details have been updated", {
           id: "update-agent-work-info",
         });
-      } else toast.error(results.error, { id: "update-blueprint-work-info" });
+  
     },
     onError: (error) =>
       toast.error(error.message, { id: "update-agent-work-info" }),
   });
 
   const onAgentWorkInfoUpdate = useCallback(
-    (values: AgentWorkInfoSchemaType) => {
+    (values: UpdateAgentWorkInfoSchemaType) => {
       toast.loading("Updating Work Info...", { id: "update-agent-work-info" });
       agentWorkInfoUpdateMutate(values);
     },
@@ -236,24 +196,22 @@ export const useBluePrintActions = () => {
     mutate: bluePrintWeekUpdateMutate,
     isPending: bluePrintWeekUpdating,
   } = useMutation({
-    mutationFn: bluePrintWeekUpdateById,
-    onSuccess: (results) => {
-      if (results.success) {
+    mutationFn: updateBluePrintWeek,
+    onSuccess: () => {
+      
         invalidate("blueprint-week-active");
-        onBluePrintWeekFormClose();
+        callBack();
         toast.success("Blue Print details updated", {
           id: "update-blueprint-week",
         });
-      } else {
-        toast.error(results.error, { id: "update-blueprint-week" });
-      }
+    
     },
     onError: (error) => 
       toast.error(error.message, { id: "update-blueprint-week" })    
   });
 
   const onBluePrintWeekUpdate = useCallback(
-    (values: BluePrintWeekSchemaType) => {
+    (values: UpdateBluePrintWeekSchemaType) => {
       toast.loading("Updating Blueprint Week...", {
         id: "update-blueprint-week",
       });
@@ -265,7 +223,7 @@ export const useBluePrintActions = () => {
   //Calculate Next Week BluePrint
   //TODO - change this to use mutate
   const onCalculateBlueprintTargets = async () => {
-    createWeeklyBlueprint();
+    createNewBlueprintWeek();
     invalidateMultiple([
       "blueprint-work-info",
       "blueprints",

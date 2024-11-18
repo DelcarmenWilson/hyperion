@@ -6,7 +6,7 @@ import { LeadDefaultStatus } from "@/types/lead";
 import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 
 import { leadActivityInsert } from "./activity";
-import { bluePrintWeekUpdateByUserIdData } from "../blueprint/blueprint-week";
+import { bluePrintWeekUpdateByUserIdData } from "../blueprint/week/get-blueprint-weeks";
 
 //DATA
 export const leadPolicyGet = async (leadId: string) => {

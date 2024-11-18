@@ -21,7 +21,7 @@ import {
 import { getEntireDay, getToday } from "@/formulas/dates";
 import { UserRole } from "@prisma/client";
 import { callUpdateByIdAppointment } from "./call";
-import { bluePrintWeekUpdateByUserIdData } from "./blueprint/blueprint-week";
+import { bluePrintWeekUpdateByUserIdData } from "./blueprint/week/get-blueprint-weeks";
 import { leadGetOrInsert } from "./lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { userGetByAssistant } from "@/actions/user";
