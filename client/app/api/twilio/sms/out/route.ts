@@ -3,6 +3,7 @@ import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 import { client } from "@/lib/twilio/config";
+import { MessageType } from "@/types/message";
 
 export async function POST(req: Request) {
   try {
@@ -32,6 +33,7 @@ export async function POST(req: Request) {
       data: {
         role: "assistant",
         content: message,
+        type:MessageType.TITAN,
         hasSeen: hasSeen || false,
         conversation: {
           connect: {

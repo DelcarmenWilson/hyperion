@@ -1,7 +1,6 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 import {
   Appointment,
   Call,

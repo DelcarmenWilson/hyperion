@@ -126,8 +126,8 @@ export const LeadDropDown = ({
           )}
           <DropdownMenuItem
             className={cn(
-              " text-background cursor-pointer gap-2",
-              titan ? "bg-primary" : "bg-destructive"
+              "cursor-pointer gap-2 ",
+              titan && "bg-primary text-background"
             )}
             disabled={titanUpdating}
             onClick={onTitanUpdated}
@@ -173,6 +173,7 @@ export const LeadDropDown = ({
               <DropdownMenuSubContent>
                 <DropdownMenuItem className="cursor-pointer gap-2" asChild>
                   <DeleteDialog
+                    triggerText="Delete Lead"
                     title="lead"
                     cfText={lead.textCode}
                     onConfirm={onLeadDelete}

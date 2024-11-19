@@ -1,70 +1,60 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
-
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import {  ShortConvo } from "@/types";
-import {
-  conversationsGetByUserIdUnread,
-  conversationUpdateByIdUnread,
-} from "@/actions/lead/conversation";
-import SocketContext from "@/providers/socket";
+import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { getNotificationsUnread } from "@/actions/notification/get-notifications-unread";
-import { Notification } from "@prisma/client";
-import { updateNotificationUnread } from "@/actions/notification/update-notification-unread";
-import { useSocketStore } from "../use-socket-store";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useInvalidate } from "../use-invalidate";
+import { useSocketStore } from "../use-socket-store";
 
+import { getUnreadNotifications } from "@/actions/notification/get-unread-notifications";
+import { Notification } from "@prisma/client";
+import { updateUnreadNotification } from "@/actions/notification/update-unread-notification";
 
 export const useNotificationData = () => {
+  const onGetNotificationsUnread = () => {
+    const {
+      data: notifications,
+      isFetching: fetchingNotifications,
+      isLoading: loadingNotifications,
+    } = useQuery<Notification[]>({
+      queryFn: () => getUnreadNotifications(),
+      queryKey: [`notifications`],
+    });
 
-  const onGetNotificationsUnread=()=>{
-
-  const { data: notifications, isFetching: fetchingNotifications,isLoading:loadingNotifications } = useQuery<
-    Notification[]
-  >({
-    queryFn: () => getNotificationsUnread(),
-    queryKey: [`notifications`],
-  });
-
-  return {notifications,fetchingNotifications,loadingNotifications}
-}
+    return { notifications, fetchingNotifications, loadingNotifications };
+  };
   return {
-    onGetNotificationsUnread
+    onGetNotificationsUnread,
   };
 };
 
 export const useNotificationActions = () => {
-  const { socket } = useSocketStore()
-  const {invalidate} = useInvalidate();
-  const audioRef = useRef<HTMLAudioElement>(null); 
- 
+  const { socket } = useSocketStore();
+  const { invalidate } = useInvalidate();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-   
-  //UPDATE NOTIFICATIONS UNDREAD
-  const { mutate: updateNotificationUnreadMutate, isPending: updatingNotificationUnread } = useMutation({
-    mutationFn: updateNotificationUnread,
-    onSuccess: () => {      
-        invalidate("notifications")
+  //UPDATE UNREAD NOTIFICATIONS
+  const {
+    mutate: updateNotificationUnreadMutate,
+    isPending: updatingNotificationUnread,
+  } = useMutation({
+    mutationFn: updateUnreadNotification,
+    onSuccess: () => {
+      invalidate("notifications");
     },
     onError: () => {
       toast.error("Failed to update unread notifications");
     },
   });
 
-
-    const onUpdateNotificationUnread = useCallback(
+  const onUpdateNotificationUnread = useCallback(
     (id: string) => {
       updateNotificationUnreadMutate(id);
     },
     [updateNotificationUnreadMutate]
   );
 
-
   // GENERAL FUNCTIONS
   const onPlay = () => {
-    invalidate("navbar-conversations")
+    invalidate("navbar-conversations");
     if (!audioRef.current) return;
     audioRef.current.volume = 0.5;
     audioRef.current.play();
@@ -80,6 +70,7 @@ export const useNotificationActions = () => {
   }, []);
   return {
     audioRef,
-    onUpdateNotificationUnread,updatingNotificationUnread
+    onUpdateNotificationUnread,
+    updatingNotificationUnread,
   };
 };

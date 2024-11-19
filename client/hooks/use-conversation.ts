@@ -1,18 +1,16 @@
 import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { create } from "zustand";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import SocketContext from "@/providers/socket";
+import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { FullConversation, ShortConversation, ShortConvo } from "@/types";
-import {
-  conversationGetById,
-  conversationsGetByUserId,
-  conversationsGetByUserIdUnread,
-  conversationUpdateByIdUnread,
-} from "@/actions/lead/conversation";
-import SocketContext from "@/providers/socket";
-import { toast } from "sonner";
+
+import { getConversation } from "@/actions/lead/conversation/get-conversation";
+import { getConversations } from "@/actions/lead/conversation/get-conversations";
+import { getUnreadConversations } from "@/actions/lead/conversation/get-unread-conversations";
+import { updateUnreadConversation } from "@/actions/lead/conversation/update-unread-conversation";
 
 type ConversationStore = {
   isLeadInfoOpen: boolean;
@@ -21,105 +19,110 @@ type ConversationStore = {
 
 export const useConversationStore = create<ConversationStore>((set, get) => ({
   isLeadInfoOpen: false,
-  onLeadInfoToggle: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen  }),
+  onLeadInfoToggle: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen }),
 }));
 
 export const useConversationData = () => {
   const { conversationId } = useConversationId();
-  const { setLeadId,setConversationId } = useLeadStore();
 
-  const { data: conversations, isFetching: isFetchingConversations } = useQuery<
-    ShortConversation[]
-  >({
-    queryFn: () => conversationsGetByUserId(),
-    queryKey: [`conversations`],
-  });
-
-  const { data: conversation, isFetching: isFetchingConversation } =
-    useQuery<FullConversation | null>({
-      queryFn: () => conversationGetById(conversationId),
-      queryKey: [`conversation-${conversationId}`],
-      enabled:!!conversationId
+  const onGetConversations = () => {
+    const {
+      data: conversations,
+      isFetching: conversationsFetching,
+      isLoading: conversationsLoading,
+    } = useQuery<ShortConversation[]>({
+      queryFn: () => getConversations(),
+      queryKey: [`conversations`],
     });
-
-  useEffect(() => {
-    if (!conversation) return;
-    setLeadId(conversation.leadId);
-    setConversationId(conversation.id)
-  }, [conversation]);
+    return {
+      conversations,
+      conversationsFetching,
+      conversationsLoading,
+    };
+  };
+  const onGetConversation = () => {
+    const {
+      data: conversation,
+      isFetching: conversationFetching,
+      isLoading: conversationLoading,
+    } = useQuery<FullConversation | null>({
+      queryFn: () => getConversation(conversationId),
+      queryKey: [`conversation-${conversationId}`],
+      enabled: !!conversationId,
+    });
+    return {
+      conversation,
+      conversationFetching,
+      conversationLoading,
+    };
+  };
+  const onGetUnreadConversation = () => {
+    const {
+      data: unreadConversations,
+      isFetching: unreadConversationsFetching,
+      isLoading: unreadConversationsLoading,
+    } = useQuery<ShortConvo[]>({
+      queryKey: ["navbar-conversations"],
+      queryFn: () => getUnreadConversations(),
+    });
+    return {
+      unreadConversations,
+      unreadConversationsFetching,
+      unreadConversationsLoading,
+    };
+  };
 
   return {
-    conversationId,
-    conversations,
-    isFetchingConversations,
-    conversation,
-    isFetchingConversation,
+    onGetUnreadConversation,
+    onGetConversations,
+    onGetConversation,
   };
 };
 
 export const useConversationActions = () => {
-  const { socket } = useContext(SocketContext).SocketState; 
+  const { socket } = useContext(SocketContext).SocketState;
   const queryClient = useQueryClient();
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement>(null);
-  
-  const invalidate = (key:string) => {
+
+  const invalidate = (key: string) => {
     queryClient.invalidateQueries({
       queryKey: [key],
     });
   };
 
-  const { data: conversations, isFetching: conversationsFectching } = useQuery<
-    ShortConvo[]
-  >({
-    queryKey: ["navbar-conversations"],
-    queryFn: () => conversationsGetByUserIdUnread(),
-  });
-  
   //UPDATE CONVERSATION UNDREAD
-  const { mutate: conversationUpdateByIdUnreadMutate, isPending: conversationUpdating } = useMutation({
-    mutationFn: conversationUpdateByIdUnread,
+  const {
+    mutate: updateUnreadConversationMutate,
+    isPending: unreadConversationUpdating,
+  } = useMutation({
+    mutationFn: updateUnreadConversation,
     onSuccess: (results) => {
-      if (results.success) {
-        invalidate("navbar-conversations")
-        if (results.success?.length) 
-          router.push(`/conversations/${results.success}`);
-        
-      } else toast.error(results.error, { id: "update-conversation" });
+      invalidate("navbar-conversations");
+      if (results.success?.length)
+        router.push(`/conversations/${results.success}`);
     },
     onError: (error) => {
       toast.error(error.message, { id: "update-conversation" });
     },
   });
 
-
-
-    const onConversationUpdateByIdUnread = useCallback(
+  const onUpdateUnreadConversation = useCallback(
     (id: string) => {
       toast.loading("Deleting chat ...", { id: "delete-chat" });
-      conversationUpdateByIdUnreadMutate(id);
+      updateUnreadConversationMutate(id);
     },
-    [conversationUpdateByIdUnreadMutate]
+    [updateUnreadConversationMutate]
   );
-
-
 
   // GENERAL FUNCTIONS
   const onPlay = () => {
-    invalidate("navbar-conversations")
+    invalidate("navbar-conversations");
     if (!audioRef.current) return;
     audioRef.current.volume = 0.5;
     audioRef.current.play();
   };
-  // const onMessageRecieved = (mChatId: string) => {
-  //   if (mChatId == chatId) invalidate();
-  //   if (pathname.startsWith("/chat")) return;
-  //   invalidateNav();
-  //   onPlay();
-  // };
 
-
-  
   useEffect(() => {
     socket?.on("conversation-message-notify", onPlay);
     return () => {
@@ -129,9 +132,8 @@ export const useConversationActions = () => {
   }, []);
   return {
     audioRef,
-    conversations, conversationsFectching,
-    onConversationUpdateByIdUnread,
-    conversationUpdating
+    onUpdateUnreadConversation,
+    unreadConversationUpdating,
   };
 };
 

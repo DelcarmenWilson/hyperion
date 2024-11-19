@@ -1,78 +1,18 @@
 "use client";
-import { useContext } from "react";
-import { useConversationData } from "../../../../../hooks/use-conversation";
-
-import SocketContext from "@/providers/socket";
+import { useEffect } from "react";
+import {
+  useConversationData,
+  useConversationId,
+} from "@/hooks/use-conversation";
 
 import { ConversationCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { ChatCard } from "@/app/(pages)/(main)/chat/components/chats/card";
-import { useRouter } from "next/navigation";
 
 export const ConversationsSidebar = () => {
-  const { conversationId, conversations, isFetchingConversations } =
-    useConversationData();
-  const router = useRouter();
-
-  const setConversationId = (id: string) => {
-    router.push(`/conversations/${id}`);
-  };
-
-  // const [conversations, setConversations] = useState<ShortConversation[]>(
-  //   convos || []
-  // );
-  // useEffect(() => {
-  //   const onMessageInserted = (newMessage: Message) => {
-  //     if (!newMessage) return;
-
-  //     setConversations((current) => {
-  //       const convo = current.find((e) => e.id == newMessage.conversationId);
-  //       if (convo) {
-  //         const index = current.findIndex(
-  //           (e) => e.id == newMessage.conversationId
-  //         );
-  //         if (!convo) {
-  //           return current;
-  //         }
-  //         convo.message = newMessage.content!;
-  //         convo.updatedAt = newMessage.createdAt;
-  //         current.unshift(current.splice(index, 1)[0]);
-  //         return [...current];
-  //       }
-  //       return [...current];
-  //     });
-  //   };
-
-  //   const onConversationSeen = (conversationId: string) => {
-  //     setConversations((current) => {
-  //       const convo = current.find((e) => e.id == conversationId);
-
-  //       if (!convo) {
-  //         return current;
-  //       }
-  //       convo.unread = 0;
-
-  //       return [...current];
-  //     });
-  //   };
-  //   socket?.on("conversation-messages-new", (data: { dt: Message[] }) => {
-  //     data.dt.forEach((message) => onMessageInserted(message));
-  //   });
-
-  //   userEmitter.on("messageInserted", (info) => onMessageInserted(info));
-  //   userEmitter.on("conversationSeen", (conversationId) =>
-  //     onConversationSeen(conversationId)
-  //   );
-  //   return () => {
-  //     userEmitter.off("conversationSeen", (conversationId) =>
-  //       onConversationSeen(conversationId)
-  //     );
-  //     socket?.off("conversation-messages-new", (data: { dt: Message[] }) => {
-  //       data.dt.forEach((message) => onMessageInserted(message));
-  //     });
-  //   };
-  // }, []);
+  const { onGetConversations } = useConversationData();
+  const { conversations, conversationsFetching } = onGetConversations();
+  const { conversationId } = useConversationId();
 
   return (
     <div className="flex flex-col h-full gap-1 p-1">
@@ -80,7 +20,7 @@ export const ConversationsSidebar = () => {
         Conversations
       </h4>
       <div className="flex-1 space-y-2 overflow-hidden overflow-y-auto h-full">
-        <SkeletonWrapper isLoading={isFetchingConversations} fullHeight>
+        <SkeletonWrapper isLoading={conversationsFetching} fullHeight>
           {conversations && conversations.length > 0 ? (
             <>
               {conversations.map((conversation) => (

@@ -1,14 +1,13 @@
 import { redirect } from "next/navigation";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { conversationGetLast } from "@/actions/lead/conversation";
+import { getLastConversation } from "@/actions/lead/conversation/get-last-conversation";
 
 const ConversationsPage = async () => {
-  const conversation = await conversationGetLast();
+  const conversation = await getLastConversation();
 
-  // if (conversation) {
-  //   redirect(`/conversations/${conversation.id}`);
-    
-  // }
+  if (conversation) {
+    redirect(`/conversations/${conversation.id}`);
+  }
   return <EmptyCard title="Start a new Conversation" />;
 };
 

@@ -1,9 +1,12 @@
 "use client";
+import { useEffect } from "react";
 import { Phone } from "lucide-react";
+
 import {
   useConversationData,
   useConversationStore,
 } from "@/hooks/use-conversation";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 
 import { LeadDefaultStatus } from "@/types/lead";
@@ -18,7 +21,17 @@ import { formatPhoneNumber } from "@/formulas/phones";
 export const Header = () => {
   const { onPhoneOutOpen } = usePhoneStore();
   const { isLeadInfoOpen, onLeadInfoToggle } = useConversationStore();
-  const { conversation, isFetchingConversation } = useConversationData();
+  const { onGetConversation } = useConversationData();
+  const { conversation, conversationFetching } = onGetConversation();
+
+  const { setLeadId, setConversationId } = useLeadStore();
+
+  useEffect(() => {
+    if (!conversation) return;
+    setLeadId(conversation.leadId);
+    setConversationId(conversation.id);
+  }, [conversation]);
+
   const lead = conversation?.lead;
 
   const initials = `${lead?.firstName.substring(
@@ -29,7 +42,7 @@ export const Header = () => {
 
   return (
     <div className="h-14 p-2 flex-1">
-      <SkeletonWrapper isLoading={isFetchingConversation}>
+      <SkeletonWrapper isLoading={conversationFetching}>
         {lead ? (
           <div className="flex flex-1 justify-between items-center">
             <div className="flex justify-center items-center bg-primary text-accent rounded-full p-1 mr-2">

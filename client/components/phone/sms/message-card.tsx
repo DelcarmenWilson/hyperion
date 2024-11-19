@@ -4,9 +4,16 @@ import Image from "next/image";
 
 import { LeadMessage } from "@prisma/client";
 import { formatDistance } from "date-fns";
+import { MessageType } from "@/types/message";
 
 type MessageCardProps = {
-  message: LeadMessage;
+  id: string;
+  body: string;
+  attachment: string | null;
+  role: string;
+  status: string;
+  type: string;
+  createdAt: Date;
   username: string;
 };
 
@@ -33,16 +40,25 @@ const setBg = (role: string): { bg: string; pos: boolean } => {
   }
 };
 
-export const MessageCard = ({ message, username }: MessageCardProps) => {
-  const isOwn = setBg(message.role);
-  const Icon = setStatus(message.status);
+export const MessageCard = ({
+  id,
+  body,
+  attachment,
+  role,
+  status,
+  type,
+  createdAt,
+  username,
+}: MessageCardProps) => {
+  const isOwn = setBg(role);
+  const Icon = setStatus(status);
 
   return (
     <div className={cn("flex flex-col group mb-2", isOwn.pos && "items-end")}>
       <div className=" text-xs italic px-2">
-        <span>{username}</span>{" "}
+        <span>{type === MessageType.TITAN ? "Titan" : username}</span>{" "}
         <span className=" text-muted-foreground">
-          {formatDistance(message.createdAt, new Date(), {
+          {formatDistance(createdAt, new Date(), {
             addSuffix: true,
           })}
         </span>
@@ -53,17 +69,12 @@ export const MessageCard = ({ message, username }: MessageCardProps) => {
           isOwn.bg
         )}
       >
-        {message.attachment && (
-          <Image
-            height={100}
-            width={100}
-            src={message.attachment}
-            alt="Chat Image"
-          />
+        {attachment && (
+          <Image height={100} width={100} src={attachment} alt="Chat Image" />
         )}
-        {message.content}
+        {body}
         <div
-          className={cn("absolute bottom-0 right-0", isOwn.pos && "opacity-0")}
+          className={cn("absolute bottom-0 right-1", isOwn.pos && "opacity-0")}
         >
           <Icon size={14} />
         </div>

@@ -7,30 +7,37 @@ import { toast } from "sonner";
 import { LeadMessage } from "@prisma/client";
 import { SmsMessageSchemaType } from "@/schemas/message";
 
-import {
-  messageCreate,
-  messageCreateInitial,
-  messagesGetAllByConversationId,
-} from "@/actions/lead/message";
+import { getMessagesForConversation } from "@/actions/lead/message/get-messages-for-conversation";
+import { createInitialMessage } from "@/actions/lead/message/create-intial-message";
+import { createNewMessage } from "@/actions/lead/message/create-new-message";
 
 export const useLeadMessageData = () => {
   const { conversationId } = useLeadStore();
   //ALL MESSAGES
 
-  const { data: messages, isFetching: isFetchingMessages } = useQuery<
-    LeadMessage[]
-  >({
-    queryFn: () => messagesGetAllByConversationId(conversationId),
-    queryKey: [`leadMessages-${conversationId}`],
-  });
+  const onGetMessages = () => {
+    const {
+      data: messages,
+      isFetching: messagesFetching,
+      isLoading: messagesLoading,
+    } = useQuery<LeadMessage[]>({
+      queryFn: () => getMessagesForConversation(conversationId),
+      queryKey: [`leadMessages-${conversationId}`],
+      enabled: !!conversationId,
+    });
+    return {
+      messages,
+      messagesFetching,
+      messagesLoading,
+    };
+  };
 
   return {
-    messages,
-    isFetchingMessages,
+    onGetMessages,
   };
 };
 
-export const useLeadMessageActions = (onCancel?: () => void) => {
+export const useLeadMessageActions = (callback?: () => void) => {
   const { leadId, conversationId, setConversationId } = useLeadStore();
   const queryClient = useQueryClient();
   const invalidate = () => {
@@ -42,19 +49,13 @@ export const useLeadMessageActions = (onCancel?: () => void) => {
   //INITIAL MESSAGE
   const { mutate: initialMessageMutate, isPending: IsPendinginitialMessage } =
     useMutation({
-      mutationFn: messageCreateInitial,
+      mutationFn: createInitialMessage,
       onSuccess: (result) => {
-        if (result.success) {
-          toast.success("Inital message sent!", {
-            id: "insert-initial-message",
-          });
-          setConversationId(result.success);
-          invalidate();
-        } else {
-          toast.error(result.error, {
-            id: "insert-initial-message",
-          });
-        }
+        toast.success("Inital message sent!", {
+          id: "insert-initial-message",
+        });
+        setConversationId(result);
+        invalidate();
       },
       onError: (error) => {
         toast.error(error.message);
@@ -71,39 +72,13 @@ export const useLeadMessageActions = (onCancel?: () => void) => {
   //NEW MESSAGES
   const { mutate: insertMessageMutate, isPending: IsPendingInsertMessage } =
     useMutation({
-      mutationFn: messageCreate,
-      // onMutate: async (newMessage) => {
-      //   // Cancel any outgoing refetches
-      //   // (so they don't overwrite our optimistic update)
-      //   const key=`leadMessages-${conversationId}`
-      //           await queryClient.cancelQueries({ queryKey: [key] })
-
-      //   // Snapshot the previous value
-      //   const previousMessages = queryClient.getQueryData([key])
-
-      //   // Optimistically update to the new value
-      //   //@ts-ignore
-      //   queryClient.setQueryData([key], (old) => [...old, newMessage])
-
-      //   // Return a context object with the snapshotted value
-      //   return { previousMessages }
-      // },
+      mutationFn: createNewMessage,
       onSuccess: (result) => {
-        if (result.success) {
-          toast.success("message sent!", {
-            id: "insert-message",
-          });
-          if (onCancel) onCancel();
-
-          const key = `leadMessages-${conversationId}`;
-          userEmitter.emit("messageInserted", result.success);
-          //@ts-ignore
-          // queryClient.setQueryData([key], (old) => [...old, result.success]);
-        } else {
-          toast.error(result.error, {
-            id: "insert-message",
-          });
-        }
+        toast.success("message sent!", {
+          id: "insert-message",
+        });
+        if (callback) callback();
+        userEmitter.emit("messageInserted", result);
       },
       onError: (error) => {
         toast.error(error.message);

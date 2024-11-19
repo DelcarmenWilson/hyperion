@@ -16,19 +16,26 @@ import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
 
 type Props = {
+  triggerText?: string;
   title: string;
   cfText: string;
   onConfirm: () => void;
   loading: boolean;
 };
-const DeleteDialog = ({ title, cfText, onConfirm, loading }: Props) => {
+const DeleteDialog = ({
+  triggerText = "Delete",
+  title,
+  cfText,
+  onConfirm,
+  loading,
+}: Props) => {
   const [confirmText, setConfirmText] = useState("");
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" className="gap-2 w-full">
           <span className="sr-only">Delete {title}</span>
-          <Trash size={16} /> Delete
+          <Trash size={16} /> {triggerText}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

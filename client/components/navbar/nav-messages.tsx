@@ -2,7 +2,10 @@ import Link from "next/link";
 
 import { MessagesSquare } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useConversationActions } from "@/hooks/use-conversation";
+import {
+  useConversationActions,
+  useConversationData,
+} from "@/hooks/use-conversation";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-
-import Hint from "@/components/custom/hint";
 import SkeletonWrapper from "@/components//skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
@@ -22,13 +23,15 @@ import { formatDate } from "@/formulas/dates";
 //TODO - see if we can consolidate the UI with nav Chats
 export const NavMessages = () => {
   const user = useCurrentUser();
+  const { audioRef, onUpdateUnreadConversation, unreadConversationUpdating } =
+    useConversationActions();
+
+  const { onGetUnreadConversation } = useConversationData();
   const {
-    audioRef,
-    conversations,
-    conversationsFectching,
-    onConversationUpdateByIdUnread,
-    conversationUpdating,
-  } = useConversationActions();
+    unreadConversations,
+    unreadConversationsFetching,
+    unreadConversationsLoading,
+  } = onGetUnreadConversation();
 
   return (
     <div>
@@ -37,24 +40,24 @@ export const NavMessages = () => {
         <DropdownMenuTrigger asChild>
           <Button className="relative" size="icon" variant="outline">
             <MessagesSquare size={16} />
-            {conversations && conversations?.length > 0 && (
+            {unreadConversations && unreadConversations?.length > 0 && (
               <Badge className="absolute rounded-full text-xs -top-2 -right-2">
-                {conversations.length}
+                {unreadConversations.length}
               </Badge>
             )}
           </Button>
         </DropdownMenuTrigger>
-        <SkeletonWrapper isLoading={conversationsFectching}>
+        <SkeletonWrapper isLoading={unreadConversationsFetching}>
           <DropdownMenuContent className="w-full lg:w-[300px]" align="center">
             <DropdownMenuLabel>Lead Messages</DropdownMenuLabel>
-            {conversations?.length ? (
+            {unreadConversations?.length ? (
               <>
-                {conversations?.map((chat) => (
+                {unreadConversations?.map((chat) => (
                   <DropdownMenuItem
                     key={chat.id}
                     className="flex gap-2 border-b cursor-pointer"
-                    disabled={conversationUpdating}
-                    onClick={() => onConversationUpdateByIdUnread(chat.id)}
+                    disabled={unreadConversationUpdating}
+                    onClick={() => onUpdateUnreadConversation(chat.id)}
                   >
                     <div className="relative">
                       <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
@@ -81,9 +84,9 @@ export const NavMessages = () => {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuItem
-                  disabled={conversationUpdating}
+                  disabled={unreadConversationUpdating}
                   className="gap-2 justify-center"
-                  onClick={() => onConversationUpdateByIdUnread("clear")}
+                  onClick={() => onUpdateUnreadConversation("clear")}
                 >
                   Mark all as Read
                 </DropdownMenuItem>

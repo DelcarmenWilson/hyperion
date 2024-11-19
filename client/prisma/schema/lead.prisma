@@ -294,8 +294,11 @@ model LeadMessage {
     id             String           @id @default(cuid())
     conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
     conversationId String
+    //todo- dont forget to repush this in the production database - all the manual labor has been completed
+    type           String           @default("AGENT")
+    //type String
+    role           MessageRole      @default(user)
 
-    role        MessageRole       @default(user)
     lastMessage LeadConversation? @relation("lastConversationMessage")
 
     content    String  @db.LongText

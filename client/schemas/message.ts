@@ -5,6 +5,7 @@ export const MessageSchema = z.object({
   role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
   conversationId: z.string(),
+  type:z.string(),
   attachment: z.optional(z.string()),
   senderId: z.string(),
   hasSeen: z.boolean(),
