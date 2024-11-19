@@ -23,6 +23,8 @@ const Footer = () => {
               <li key={id}>
                 <a href={url} className="social-icon">
                   <Image
+                    width={100}
+                    height={100}
                     src={icon}
                     alt={title}
                     className="size-1/3 object-contain"

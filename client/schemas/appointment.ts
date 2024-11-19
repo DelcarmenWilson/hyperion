@@ -35,7 +35,7 @@ export const AppointmentLeadSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   state: z.string(),
   cellPhone: z.string(),
-  dateOfBirth: z.string(),
+  dateOfBirth: z.date(),
   gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   maritalStatus: z.enum([
     MaritalStatus.Single,

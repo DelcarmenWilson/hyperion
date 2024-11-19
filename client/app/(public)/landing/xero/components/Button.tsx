@@ -27,6 +27,8 @@ const Button = ({
 
         {icon && (
           <Image
+            width={100}
+            height={100}
             src={icon}
             alt="circle"
             className="size-10 mr-5 object-contain z-10"

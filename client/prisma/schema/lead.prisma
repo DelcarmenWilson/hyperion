@@ -12,7 +12,7 @@ model Lead {
     maritalStatus    MaritalStatus @default(Single)
     email            String?
     ssn              String        @default("")
-    dateOfBirth      String?       @default("")
+    dateOfBirth      DateTime?
     weight           String?
     //for intake form
     weightLastYear   String?
@@ -126,27 +126,27 @@ model LeadPolicy {
 }
 
 model LeadBeneficiary {
-    id              String   @id @default(cuid())
+    id              String    @id @default(cuid())
     leadId          String
-    lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-    type            String   @default("Primary")
-    relationship    String   @default("")
+    lead            Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    type            String    @default("Primary")
+    relationship    String    @default("")
     firstName       String
     lastName        String
-    address         String   @default("")
-    city            String   @default("")
+    address         String    @default("")
+    city            String    @default("")
     state           String
-    zipCode         String   @default("")
-    cellPhone       String   @default("")
-    gender          Gender   @default(NA)
-    email           String   @default("noemail@email.com")
-    dateOfBirth     String   @default("")
-    share           String   @default("")
-    ssn             String   @default("")
-    notes           String   @default("")
+    zipCode         String    @default("")
+    cellPhone       String    @default("")
+    gender          Gender    @default(NA)
+    email           String    @default("noemail@email.com")
+    dateOfBirth     DateTime?
+    share           String    @default("")
+    ssn             String    @default("")
+    notes           String    @default("")
     convertedLeadId String?
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
 }
 
 model LeadMedicalCondition {
@@ -237,7 +237,7 @@ model LeadDuplicates {
     gender           Gender        @default(NA)
     maritalStatus    MaritalStatus @default(Single)
     email            String?
-    dateOfBirth      String?       @default("")
+    dateOfBirth      DateTime?
     weight           String?
     height           String?
     income           String?

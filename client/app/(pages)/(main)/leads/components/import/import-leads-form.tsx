@@ -65,7 +65,7 @@ export const ImportLeadsForm = () => {
             id: "",
             ...lead,
             fullName: `${lead.firstName} ${lead.lastName}`,
-            dob: lead.dateOfBirth || "",
+            dob: lead.dateOfBirth ? new Date(lead.dateOfBirth) : null,
             zip: lead.zipCode,
           }));
           setFormmatedLeads(fls);

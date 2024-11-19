@@ -524,7 +524,7 @@ model CampaignForm {
 }
 
 model HyperionLead {
-    id            String   @unique
+    id            String    @unique
     formId        String
     adName        String
     campaignName  String
@@ -537,11 +537,11 @@ model HyperionLead {
     gender        String
     maritalStatus String
     email         String
-    dateOfBirth   String
+    dateOfBirth   DateTime?
     weight        String
     height        String
     policyAmount  String
     smoker        String
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 }

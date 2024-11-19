@@ -18,7 +18,7 @@ export type AssociatedLead = {
   id: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string | null;
+  dateOfBirth: Date | null;
   relationship: string;
 };
 
@@ -84,7 +84,7 @@ export type PipelineLead = {
   state: string;
   statusId: string;
   maritalStatus: string;
-  dateOfBirth: string | null;
+  dateOfBirth: Date | null;
   defaultNumber: string;
   address?: string | null;
   smoker: boolean;

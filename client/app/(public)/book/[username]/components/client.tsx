@@ -33,6 +33,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { states } from "@/constants/states";
 import { formatTime } from "@/formulas/dates";
 import { cn } from "@/lib/utils";
+import ReactDatePicker from "react-datepicker";
 
 type Props = {
   userId: string;
@@ -274,12 +275,18 @@ export const BookAgentClient = ({
                             <FormMessage />
                           </FormLabel>
                           <FormControl>
-                            <Input
+                            {/* <Input
                               {...field}
                               placeholder="Dob"
                               disabled={loading}
                               type="date"
                               autoComplete="DateOfBirth"
+                            /> */}
+                            <ReactDatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              dateFormat="MM-dd-yy"
+                              className="w-full rounded bg-dark-3 p-2 focus:outline-none"
                             />
                           </FormControl>
                         </FormItem>

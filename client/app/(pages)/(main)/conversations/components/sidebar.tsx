@@ -7,12 +7,17 @@ import SocketContext from "@/providers/socket";
 import { ConversationCard } from "./card";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { ChatCard } from "@/app/(pages)/(main)/chat/components/chats/card";
+import { useRouter } from "next/navigation";
 
 export const ConversationsSidebar = () => {
-  const { socket } = useContext(SocketContext).SocketState;
-
   const { conversationId, conversations, isFetchingConversations } =
     useConversationData();
+  const router = useRouter();
+
+  const setConversationId = (id: string) => {
+    router.push(`/conversations/${id}`);
+  };
 
   // const [conversations, setConversations] = useState<ShortConversation[]>(
   //   convos || []
@@ -74,14 +79,19 @@ export const ConversationsSidebar = () => {
       <h4 className="text-lg text-muted-foreground font-semibold">
         Conversations
       </h4>
-      <div className="flex-1 space-y-2 overflow-y-auto h-full">
+      <div className="flex-1 space-y-2 overflow-hidden overflow-y-auto h-full">
         <SkeletonWrapper isLoading={isFetchingConversations} fullHeight>
           {conversations && conversations.length > 0 ? (
             <>
               {conversations.map((conversation) => (
                 <ConversationCard
                   key={conversation.id}
-                  conversation={conversation}
+                  id={conversation.id}
+                  body={conversation.message}
+                  firstName={conversation.firstName}
+                  lastName={conversation.lastName}
+                  unread={conversation.unread}
+                  lastDate={conversation.updatedAt}
                   active={conversationId == conversation.id}
                 />
               ))}

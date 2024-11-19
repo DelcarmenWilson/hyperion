@@ -41,6 +41,8 @@ const Download = () => {
                         <Marker />
                       </span>
                       <Image
+                        width={100}
+                        height={100}
                         src={"/assets/xora/lines.svg"}
                         alt="lines"
                         className="absolute size-13/20 object-contain"

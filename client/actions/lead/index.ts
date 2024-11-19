@@ -867,25 +867,16 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
 export const leadUpdateByIdGeneralInfo = async (
   values: LeadGeneralSchemaType
 ) => {
-  const validatedFields = LeadGeneralSchema.safeParse(values);
-  if (!validatedFields.success) {
+  const {success,data} = LeadGeneralSchema.safeParse(values);
+  if (!success) {
     return { error: "Invalid fields!" };
   }
-  const {
-    id,
-    gender,
-    maritalStatus,
-    dateOfBirth,
-    weight,
-    height,
-    income,
-    smoker,
-  } = validatedFields.data;
+  
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
   }
-  const existingLead = await db.lead.findUnique({ where: { id } });
+  const existingLead = await db.lead.findUnique({ where: { id:data.id } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
@@ -894,20 +885,14 @@ export const leadUpdateByIdGeneralInfo = async (
   if (![existingLead.userId, existingLead.assistantId].includes(user.id)) {
     return { error: "Unauthorized" };
   }
-  let dob = dateOfBirth;
-  if (dob) {
-    dob = new Date(dob).toString();
-  }
+  // let dob = dateOfBirth;
+  // if (dob) {
+  //   dob = new Date(dob).toString();
+  // }
   const leadInfo = await db.lead.update({
-    where: { id },
+    where: { id:data.id },
     data: {
-      gender,
-      maritalStatus,
-      dateOfBirth: dob,
-      weight,
-      height,
-      income,
-      smoker,
+     ...data
     },
   });
   leadActivityInsert(leadInfo.id!, "general", "General info updated", user.id);

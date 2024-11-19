@@ -21,6 +21,7 @@ import {
 import { HyperionLeadSchema, HyperionLeadSchemaType } from "@/schemas/admin";
 import { HyperionLead } from "@prisma/client";
 import { hyperionLeadUpdateById } from "@/actions/hyperion";
+import ReactDatePicker from "react-datepicker";
 
 type HyperionLeadFormProps = {
   lead: HyperionLead;
@@ -132,12 +133,18 @@ export const HyperionLeadForm = ({ lead, onClose }: HyperionLeadFormProps) => {
                   <FormItem className="flex flex-col pt-2">
                     <FormLabel>Date of birth</FormLabel>
                     <FormControl>
-                      <Input
+                      {/* <Input
                         {...field}
                         placeholder="Dob"
                         disabled={loading}
                         type="date"
                         autoComplete="DateOfBirth"
+                      /> */}
+                      <ReactDatePicker
+                        selected={field.value}
+                        onChange={(date) => field.onChange(date)}
+                        dateFormat="MM-dd-yy"
+                        className="w-full rounded bg-dark-3 p-2 focus:outline-none"
                       />
                     </FormControl>
                     <FormMessage />
