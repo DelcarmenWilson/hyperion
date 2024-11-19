@@ -67,3 +67,9 @@ export type UnreadShortChat = Chat & {
   userTwo: User;
   lastMessage: FullChatMessage | null;
 };
+export enum MessageType{
+  AGENT="AGENT",
+  LEAD="LEAD",
+  TITAN="TITAN",
+  AI="AI"
+}

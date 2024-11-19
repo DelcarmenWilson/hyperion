@@ -17,6 +17,8 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { LeadMessage } from "@prisma/client";
 import { FullMessage } from "@/types";
 import axios from "axios";
+import { MessageType } from "@/types/message";
+import { AiCard } from "./ai-card";
 
 export const SmsBody = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -110,13 +112,30 @@ export const SmsBody = () => {
             </div>
           )}
           {messages?.map((message) => (
-            <MessageCard
-              key={message.id}
-              message={message}
-              username={
-                message.role === "user" ? leadBasic?.firstName! : user?.name!
-              }
-            />
+            <>
+             
+              {message.type === MessageType.AI ? (
+                <AiCard
+                  key={message.id}
+                  message={message}
+                  username={
+                    message.role === "user"
+                      ? leadBasic?.firstName!
+                      : user?.name!
+                  }
+                />
+              ) : (
+                <MessageCard
+                  key={message.id}
+                  message={message}
+                  username={
+                    message.role === "user"
+                      ? leadBasic?.firstName!
+                      : user?.name!
+                  }
+                />
+              )}
+            </>
           ))}
           <div ref={bottomRef} className="pt-2" />
         </SkeletonWrapper>

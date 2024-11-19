@@ -294,8 +294,11 @@ model LeadMessage {
     id             String           @id @default(cuid())
     conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
     conversationId String
-
+    //todo- after prisma db push remove @default
+    // type String @default("AGENT")
+    type String
     role        MessageRole       @default(user)
+
     lastMessage LeadConversation? @relation("lastConversationMessage")
 
     content    String  @db.LongText
@@ -305,7 +308,7 @@ model LeadMessage {
     status String  @default("sent")
     error  String?
     price  String?
-
+   
     senderId String?
 
     hasSeen   Boolean  @default(false)

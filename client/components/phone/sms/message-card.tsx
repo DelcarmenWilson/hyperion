@@ -4,6 +4,8 @@ import Image from "next/image";
 
 import { LeadMessage } from "@prisma/client";
 import { formatDistance } from "date-fns";
+import { MessageType } from "@/types/message";
+import { Message } from "@/components/global/message/message";
 
 type MessageCardProps = {
   message: LeadMessage;
@@ -40,7 +42,8 @@ export const MessageCard = ({ message, username }: MessageCardProps) => {
   return (
     <div className={cn("flex flex-col group mb-2", isOwn.pos && "items-end")}>
       <div className=" text-xs italic px-2">
-        <span>{username}</span>{" "}
+        <span>{message.type===MessageType.TITAN? "Titan":username}</span>{" "}
+
         <span className=" text-muted-foreground">
           {formatDistance(message.createdAt, new Date(), {
             addSuffix: true,

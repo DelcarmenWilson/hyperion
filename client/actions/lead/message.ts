@@ -16,6 +16,7 @@ import { userGetByAssistantOld } from "@/data/user";
 import { defaultChat, defaultOptOut } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
+import { MessageType } from "@/types/message";
 
 // ACTIONS
 export const messagesGetAllByConversationId = async (
@@ -118,6 +119,7 @@ export const messageCreateInitial = async (
     role: "system",
     content: prompt,
     conversationId,
+    type:MessageType.AGENT,
     senderId: user.id,
     hasSeen: true,
   });
@@ -137,6 +139,7 @@ export const messageCreateInitial = async (
     role: "assistant",
     content: message,
     conversationId,
+    type: MessageType.TITAN,
     senderId: user.id,
     hasSeen: true,
     sid: result.success,
@@ -149,17 +152,15 @@ export const messageCreate = async (values: SmsMessageSchemaType) => {
   const user = await currentUser();
   if (!user) return { error: "unauthenticated!" };
 
-  const validatedFields = SmsMessageSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid fields!" };
+  const {success,data} = SmsMessageSchema.safeParse(values);
+  if (!success) return { error: "Invalid fields!" };
 
-  const { conversationId, leadId, content, images, type } =
-    validatedFields.data;
 
-  const lead = await db.lead.findUnique({ where: { id: leadId } });
+  const lead = await db.lead.findUnique({ where: { id: data.leadId } });
 
   if (!lead) return { error: "Lead does not exist" };
 
-  let convoid = conversationId;
+  let convoid = data.conversationId;
   let agentId = user.id;
 
   if (!convoid) {
@@ -177,15 +178,16 @@ export const messageCreate = async (values: SmsMessageSchemaType) => {
   const result = await smsSend({
     fromPhone: lead.defaultNumber,
     toPhone: lead.cellPhone || (lead.homePhone as string),
-    media: images,
-    message: content,
+    media: data.images,
+    message: data.content,
   });
 
   const newMessage = await messageInsert({
     role: "assistant",
-    content,
+    content:data.content,
     conversationId: convoid!,
-    attachment: images,
+    type:MessageType.TITAN,
+    attachment: data.images,
     senderId: user.id,
     hasSeen: true,
   });
@@ -198,16 +200,14 @@ export const messageCreate = async (values: SmsMessageSchemaType) => {
 };
 
 export const messageInsert = async (values: MessageSchemaType) => {
-  const validatedFields = MessageSchema.safeParse(values);
-  if (!validatedFields.success) {
+  const {success,data} = MessageSchema.safeParse(values);
+  if (!success) {
     return { error: "Invalid fields!" };
   }
 
-  const { role, content, conversationId, attachment, senderId, hasSeen, sid } =
-    validatedFields.data;
 
   const conversation = await db.leadConversation.findUnique({
-    where: { id: conversationId },
+    where: { id: data.conversationId },
   });
 
   if (!conversation) {
@@ -216,21 +216,15 @@ export const messageInsert = async (values: MessageSchemaType) => {
 
   const newMessage = await db.leadMessage.create({
     data: {
-      conversationId,
-      role,
-      content,
-      attachment,
-      hasSeen,
-      senderId,
-      sid,
+      ...data
     },
   });
 
   await db.leadConversation.update({
-    where: { id: conversationId },
+    where: { id: data.conversationId },
     data: {
       lastMessageId: newMessage.id,
-      unread: conversation.leadId == senderId ? conversation.unread + 1 : 0,
+      unread: conversation.leadId == data.senderId ? conversation.unread + 1 : 0,
     },
   });
 

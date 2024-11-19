@@ -20,6 +20,7 @@ import { formatDateTime } from "@/formulas/dates";
 import { formatObject } from "@/formulas/objects";
 import { sendSocketData } from "@/services/socket-service";
 import { chatSettingGetTitan } from "@/actions/settings/chat";
+import { MessageType } from "@/types/message";
 
 export async function POST(req: Request) {
   //The paramters passed in from twilio
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     role: "user",
+    type:MessageType.LEAD,
     content: sms.body,
     conversationId: conversation.id,
     senderId: conversation.leadId,
@@ -78,7 +80,7 @@ export async function POST(req: Request) {
   
   //Create a new message from the leads response
   const newMessage = (await messageInsert(smsFromLead)).success;
-
+  
   //Get Keyword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
   const keywordResponse = await getKeywordResponse(
@@ -170,6 +172,7 @@ export async function POST(req: Request) {
     await messageInsert({
       role,
       content,
+      type:MessageType.TITAN,
       conversationId: conversation.id,
       senderId: conversation.agentId,
       hasSeen: true,
