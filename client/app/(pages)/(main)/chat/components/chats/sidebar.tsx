@@ -1,7 +1,12 @@
 "use client";
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useChatData, useChatActions } from "@/hooks/chat/use-chat";
+import { useCurrentUser } from "@/hooks/user/use-current";
+import {
+  useChatData,
+  useChatActions,
+  useChatStore,
+} from "@/hooks/chat/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { ChatCard } from "./card";
@@ -10,12 +15,14 @@ import { ChatUsersList } from "./list";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const ChatsClient = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+const ChatsSidebar = () => {
+  const user = useCurrentUser();
   const { onFullChatsGet } = useChatData();
   const { fullChats, fullChatsFetching, fullChatsLoading } = onFullChatsGet();
+  const { chatId, setChatId } = useChatStore();
   const { onChatInsert, chatInserting } = useChatActions();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
   //TODO - see if we can also add this to the useChatActionsHook
   const onSelectUser = (userId: string) => {
     onChatInsert(userId);
@@ -45,14 +52,28 @@ export const ChatsClient = () => {
           </Button>
         </div>
         <div className="flex-1 space-y-2 overflow-y-auto h-full">
-          {fullChats?.map((chat) => (
-            <SkeletonWrapper key={chat.id} isLoading={fullChatsLoading}>
-              <ChatCard chat={chat} />
-            </SkeletonWrapper>
-          ))}
+          {fullChats?.map((chat) => {
+            const { firstName, lastName, image } =
+              chat.userOneId == user?.id! ? chat.userTwo : chat.userOne;
+            return (
+              <SkeletonWrapper key={chat.id} isLoading={fullChatsLoading}>
+                <ChatCard
+                  id={chat.id}
+                  body={chat.lastMessage?.body}
+                  firstName={firstName}
+                  lastName={lastName}
+                  image={image}
+                  lastDate={chat.updatedAt}
+                  setId={setChatId}
+                  active={chatId == chat.id}
+                />
+              </SkeletonWrapper>
+            );
+          })}
           {!fullChats && !fullChatsFetching && <EmptyCard title="No Chats" />}
         </div>
       </div>
     </>
   );
 };
+export default ChatsSidebar;

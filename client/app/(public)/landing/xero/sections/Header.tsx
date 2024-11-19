@@ -116,6 +116,8 @@ const Header = () => {
           onClick={() => setIsOpen((prevState) => !prevState)}
         >
           <Image
+            width={100}
+            height={100}
             src={`/assets/xora/${isOpen ? "close" : "magic"}.svg`}
             alt="magic"
             className="size-1/2 object-contain"

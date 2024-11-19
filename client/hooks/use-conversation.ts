@@ -39,6 +39,7 @@ export const useConversationData = () => {
     useQuery<FullConversation | null>({
       queryFn: () => conversationGetById(conversationId),
       queryKey: [`conversation-${conversationId}`],
+      enabled:!!conversationId
     });
 
   useEffect(() => {

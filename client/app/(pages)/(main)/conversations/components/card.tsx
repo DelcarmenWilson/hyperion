@@ -1,54 +1,69 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { ShortConversation } from "@/types";
-import { formatDistance } from "date-fns";
 import { cn } from "@/lib/utils";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { formatDistance } from "date-fns";
+
 type Props = {
-  conversation: ShortConversation;
+  id: string;
+  body: string | null | undefined;
+  firstName: string;
+  lastName: string;
+  unread: number;
+  lastDate: Date;
   active: boolean;
 };
-export const ConversationCard = ({ conversation, active }: Props) => {
-  const initials = `${conversation.firstName.substring(
-    0,
-    1
-  )} ${conversation.lastName.substring(0, 1)}`;
-  const fullName = `${conversation.firstName} ${conversation.lastName}`;
+export const ConversationCard = ({
+  id,
+  body,
+  firstName,
+  lastName,
+  unread,
+  lastDate,
+  active = false,
+}: Props) => {
+  const initials = `${firstName.charAt(0)} ${lastName.charAt(0)}`;
+  const fullName = `${firstName} ${lastName}`;
   return (
     <Link
-      href={`/conversations/${conversation.id}`}
+      href={`/conversations/${id}`}
       className={cn(
-        "flex flex-col border rounded-xl overflow-hidden p-2 hover:bg-secondary cursor-pointer",
-        active && "bg-secondary"
+        "relative flex items-center gap-2 border rounded hover:bg-secondary p-2 cursor-pointer w-full",
+        active && "bg-primary/25"
       )}
     >
-      <div className="flex justify-between items-center">
-        <div className="relative">
-          {conversation.unread > 0 && (
-            <span className="absolute -top-2 -right-2 bg-primary text-accent rounded-full text-sm p-1">
-              {conversation.unread}
-            </span>
-          )}
+      <div className="relative">
+        {unread > 0 && (
+          <span className="absolute -top-2 -right-2 bg-primary text-accent rounded-full text-sm p-1">
+            {unread}
+          </span>
+        )}
 
-          <div className="flex-center bg-primary text-accent rounded-full p-1 mr-2">
-            <span className="text-lg font-semibold">{initials}</span>
-          </div>
-        </div>
-        <div className="text-sm">
+        <Avatar className="rounded-full">
+          <AvatarImage className="rounded-full" src={""} />
+          <AvatarFallback className="rounded-full bg-primary/50 text-xs">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+      </div>
+
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-sm">{fullName}</p>
           <p className="text-xs text-right">
-            {formatDistance(conversation.updatedAt, new Date(), {
+            {formatDistance(lastDate, new Date(), {
               addSuffix: true,
             })}
           </p>
-          <p className="font-semibold">{fullName}</p>
         </div>
-      </div>
-      <div className=" flex flex-col">
-        <span className=" text-muted-foreground text-sm truncate overflow-hidden">
-          {conversation.message}
-        </span>
-        {/*<span>{conversation.updatedAt.toString()}</span> */}
+
+        {/* <div className="text-muted-foreground w-full text-sm truncate overflow-hidden"> */}
+        <div className="text-sm text-muted-foreground w-full text-ellipsis line-clamp-1">
+          <span>{body}</span>
+        </div>
       </div>
     </Link>
   );

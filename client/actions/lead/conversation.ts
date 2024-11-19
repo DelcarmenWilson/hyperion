@@ -83,7 +83,6 @@ export const conversationGetById = async (conversationId: string) => {
       include: {
         lead: {
           include: {
-
             calls: true,
             appointments: true,
             activities: true,

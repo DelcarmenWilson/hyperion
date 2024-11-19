@@ -4,9 +4,9 @@ type FeaturesType = {
   caption: string;
   title: string;
   text: string;
-  button: string;
+  button: { icon: string; title: string };
 };
-export const features = [
+export const features: FeaturesType[] = [
   {
     id: "0",
     icon: "/assets/xora/feature-1.png",

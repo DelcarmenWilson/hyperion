@@ -76,6 +76,8 @@ const Pricing = () => {
                   )}
                 >
                   <Image
+                    width={100}
+                    height={100}
                     src={plan.logo}
                     alt={plan.title}
                     className={clsx(
@@ -138,6 +140,8 @@ const Pricing = () => {
                       className="relative flex items-center gap-5"
                     >
                       <Image
+                        width={100}
+                        height={100}
                         src={"/assets/xora/check.png"}
                         alt="check"
                         className="size-10 object-contain"

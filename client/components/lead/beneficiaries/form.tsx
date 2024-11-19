@@ -37,6 +37,7 @@ import { LeadBeneficiary } from "@prisma/client";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { leadRelationShips } from "@/constants/lead";
+import ReactDatePicker from "react-datepicker";
 
 export const BeneficiaryForm = () => {
   const { leadId, beneficiary, isFetchingBeneficiary } =
@@ -74,6 +75,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
 
   const form = useForm<LeadBeneficiarySchemaType>({
     resolver: zodResolver(LeadBeneficiarySchema),
+    //@ts-ignore
     defaultValues: beneficiary || {
       leadId: leadId,
       type: "Primary",
@@ -267,12 +269,18 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <FormMessage />
                     </FormLabel>
                     <FormControl>
-                      <Input
+                      {/* <Input
                         {...field}
                         placeholder="Dob"
                         disabled={isBeneficiaryPending}
                         type="date"
                         autoComplete="DateOfBirth"
+                      /> */}
+                      <ReactDatePicker
+                        selected={field.value}
+                        onChange={(date) => field.onChange(date)}
+                        dateFormat="MM-dd-yy"
+                        className="w-full rounded bg-dark-3 p-2 focus:outline-none"
                       />
                     </FormControl>
                   </FormItem>

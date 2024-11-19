@@ -129,12 +129,11 @@ export const formatDate = (
 };
 
 export const formatDob = (
-  date: Date | string | undefined | null,
-  timeZone: string = "US/Eastern",
+  date: Date  | undefined | null,
   retval: string = ""
 ): string => {
   if (!date) return retval;
-  return formatInTimeZone(date, timeZone, "MM/dd/yy");
+  return format(date,  "MM/dd/yy");
 };
 
 

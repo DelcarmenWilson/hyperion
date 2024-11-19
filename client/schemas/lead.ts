@@ -27,7 +27,7 @@ export const LeadSchema = z.object({
     MaritalStatus.Divorced,
   ]),
   email: z.string().email(),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z.optional(z.date()),
   weight: z.optional(z.string()),
   height: z.optional(z.string()),
   income: z.optional(z.string()),
@@ -76,10 +76,11 @@ export const LeadGeneralSchema = z.object({
     MaritalStatus.Widowed,
     MaritalStatus.Divorced,
   ]),
-  dateOfBirth: z
-    .string()
-    .nullish()
-    .transform((x) => x ?? undefined),
+  dateOfBirth:z.date().optional(),
+  // dateOfBirth: z
+  //   .string()
+  //   .nullish()
+  //   .transform((x) => x ?? undefined),
   weight: z.optional(z.string()),
   height: z.optional(z.string()),
   income: z
@@ -128,7 +129,7 @@ export const LeadBeneficiarySchema = z.object({
   cellPhone: z.optional(z.string()),
   gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
   email: z.optional(z.string().email()),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z.optional(z.date()),
   ssn: z.optional(z.string()),
   share: z.optional(z.string()),
 
@@ -192,7 +193,7 @@ export const IntakePersonalMainSchema = z.object({
   city: z.optional(z.string()),
   state: z.string(),
   zipCode: z.optional(z.string()),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z.optional(z.date()),
   placeOfBirth: z.optional(z.string()),
   stateOfBirth: z.optional(z.string()),
   ssn: z.optional(z.string()),
@@ -234,7 +235,7 @@ export const IntakeGeneralSchema = z.object({
   city: z.optional(z.string()),
   state: z.string(),
   zipCode: z.optional(z.string()),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z.optional(z.date()),
   placeOfBirth: z.optional(z.string()),
   stateOfBirth: z.optional(z.string()),
 });

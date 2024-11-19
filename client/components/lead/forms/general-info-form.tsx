@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Switch } from "@/components/ui/switch";
+import ReactDatePicker from "react-datepicker";
 
 export const GeneralInfoForm = () => {
   const { isGeneralFormOpen, onGeneralFormClose } = useLeadStore();
@@ -96,12 +97,19 @@ export const GeneralForm = ({
                 <FormItem>
                   <FormLabel>Date of birth</FormLabel>
                   <FormControl>
-                    <Input
+                    {/* <Input
                       {...field}
                       placeholder="Dob"
                       disabled={loading}
                       type="date"
                       autoComplete="DateOfBirth"
+                    /> */}
+
+                    <ReactDatePicker
+                      selected={field.value}
+                      onChange={(date) => field.onChange(date)}
+                      dateFormat="MM-dd-yy"
+                      className="w-full rounded bg-dark-3 p-2 focus:outline-none"
                     />
                   </FormControl>
                 </FormItem>

@@ -60,7 +60,7 @@ export const HyperionLeadSchema = z.object({
   gender: z.optional(z.string()),
   maritalStatus: z.optional(z.string()),
   email: z.optional(z.string()),
-  dateOfBirth: z.optional(z.string()),
+  dateOfBirth: z.optional(z.date()),
   weight: z.optional(z.string()),
   height: z.optional(z.string()),
   policyAmount: z.optional(z.string()),
@@ -81,7 +81,7 @@ export const ammLeadSchema = z.object({
   email: z.string(),
   cellPhone: z.string(),
   state: z.string(),
-  dateOfBirth: z.string(),
+  dateOfBirth: z.date().optional(),
   recievedAt:z.date()
 });
 export type ammLeadSchemaType = z.infer<typeof ammLeadSchema>;

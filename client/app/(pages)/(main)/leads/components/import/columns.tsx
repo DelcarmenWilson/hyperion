@@ -7,7 +7,7 @@ export type ImportLeadColumn = {
   fullName: string;
   email: string;
   cellPhone: string;
-  dob: string;
+  dob: Date | null;
   address: string;
   city: string;
   state: string;

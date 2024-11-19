@@ -317,7 +317,7 @@ const MutualOfOmaha = (
       email: "no.email@email.com",
       homePhone: reFormatPhoneNumber(d["Tele"]),
       cellPhone: reFormatPhoneNumber(d["Tele"]),
-      dateOfBirth: "",
+      dateOfBirth: undefined,
       address: capitalize(d["address"]),
       city: capitalize(d["city"]),
       state: capitalize(d["State"]),
@@ -464,7 +464,7 @@ export type CarrierPremium={
 
 export const CalculatePremium = (
   carriers: FullUserCarrier[] | undefined,
-  dateOfBirth: string | null | undefined,
+  dateOfBirth: Date | null | undefined,
   coverage: string
 ): CarrierPremium[]|string => {
   // Quote Calculation Logic

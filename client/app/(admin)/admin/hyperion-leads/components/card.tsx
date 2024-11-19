@@ -8,7 +8,7 @@ import { DrawerRight } from "@/components/custom/drawer/right";
 import { CardData } from "@/components/reusable/card-data";
 
 import { HyperionLeadForm } from "./form";
-import { formatDate } from "@/formulas/dates";
+import { formatDate, formatDob } from "@/formulas/dates";
 
 type HyperionLeadCardProps = {
   initLead: HyperionLead;
@@ -50,7 +50,7 @@ export const HyperionLeadCard = ({ initLead }: HyperionLeadCardProps) => {
           </address>
         )}
         <CardData label="cellPhone" value={lead.cellPhone} />
-        <CardData label="dateOfBirth" value={lead.dateOfBirth} />
+        <CardData label="dateOfBirth" value={formatDob(lead.dateOfBirth)} />
         <CardData label="gender" value={lead.gender} />
         <CardData label="maritalStatus" value={lead.maritalStatus} />
         <CardData label="height" value={lead.height} />

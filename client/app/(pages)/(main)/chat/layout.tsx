@@ -1,10 +1,11 @@
 import { CardLayout } from "@/components/custom/layout/card";
-import { ChatsClient } from "./components/chats/client";
+import ChatsSidebar from "./components/chats/sidebar";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+
 type Props = {
   children: React.ReactNode;
 };
@@ -13,7 +14,7 @@ const ChatsLayout = ({ children }: Props) => {
     <CardLayout>
       <ResizablePanelGroup direction="horizontal" autoSaveId="rpg-chats">
         <ResizablePanel defaultSize={25} minSize={25} maxSize={30}>
-          <ChatsClient />
+          <ChatsSidebar />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel

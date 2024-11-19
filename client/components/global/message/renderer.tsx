@@ -11,7 +11,7 @@ const Renderer = ({ value }: Props) => {
   useEffect(() => {
     if (!rendererRef.current) return;
     const container = rendererRef.current;
-    const quill = new Quill(document.createElement("div"), { theme: "snow" });
+    const quill = new Quill(document.createElement("p"), { theme: "snow" });
 
     quill.enable(false);
     if (!value) return;
@@ -33,7 +33,7 @@ const Renderer = ({ value }: Props) => {
     };
   }, [value]);
   if (isEmpty) return null;
-  return <div ref={rendererRef} />;
+  return <p ref={rendererRef} />;
 };
 
 export default Renderer;

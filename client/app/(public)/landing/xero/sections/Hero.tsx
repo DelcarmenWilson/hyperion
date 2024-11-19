@@ -25,6 +25,8 @@ const Hero = () => {
 
           <div className="absolute -top-32 left-[calc(50%-340px)] w-[1230px] pointer-events-none hero-img_res">
             <Image
+              width={100}
+              height={100}
               src="/assets/xora/hero.png"
               className="size-1230 max-lg:h-auto"
               alt="hero"
