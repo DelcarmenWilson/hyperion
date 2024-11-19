@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { PhoneSwitcher } from "../addins/switcher";
-import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { formatPhoneNumber } from "@/formulas/phones";
-
-import { SmsBody } from "./body";
-import { SmsForm } from "./form";
-import { Button } from "@/components/ui/button";
 import { useLeadData } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/hooks/use-phone";
+
+import { Button } from "@/components/ui/button";
 import FormInput from "./form-input";
+import { Input } from "@/components/ui/input";
+import { SmsBody } from "./body";
+import { PhoneSwitcher } from "../addins/switcher";
+
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const SmsClient = ({
   leadId,
@@ -127,7 +127,6 @@ export const SmsClient = ({
         />
       </div>
       <SmsBody />
-      {/* <SmsForm /> */}
       <FormInput placeholder="Write Something" />
     </div>
   );

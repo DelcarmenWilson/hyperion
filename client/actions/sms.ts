@@ -4,18 +4,21 @@ import { db } from "@/lib/db";
 
 import { cfg, client } from "@/lib/twilio/config";
 
-import { LeadAndConversation, TwilioSms } from "@/types";
-import { LeadDefaultStatus } from "@/types/lead";
 import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
+import { LeadAndConversation, TwilioSms } from "@/types";
+import { MessageType } from "@/types/message";
+import { LeadDefaultStatus } from "@/types/lead";
 import { MessageSchemaType } from "@/schemas/message";
 
-import { messageInsert } from "./lead/message";
-import { conversationInsert } from "./lead/conversation";
+import { createConversation } from "./lead/conversation/create-conversation";
+import { insertMessage } from "./lead/message/insert-message";
+
 import {
   formatDateTimeZone,
   formatHyperionDate,
   formatTimeZone,
 } from "@/formulas/dates";
+
 import { sendSocketData } from "@/services/socket-service";
 import { defaultOptOut } from "@/placeholder/chat";
 
@@ -36,7 +39,6 @@ export const smsSend = async ({
     return { error: "Message cannot be empty!" };
   }
 
-  
   let result;
 
   if (timer > 900) {
@@ -127,9 +129,7 @@ export const smsSendLeadAppointmentNotification = async (
   lead: Lead | null | undefined,
   date: Date
 ) => {
-  if (!lead) {
-    return { error: "Lead Info requiered" };
-  }
+  if (!lead)  throw new Error("Lead Info required!")
   //TODO - update does not go as planned tommorrow - change this back to use the default time ln.292
   //const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
   const message = `Hi ${
@@ -153,26 +153,21 @@ export const smsSendLeadAppointmentNotification = async (
     },
   });
   let convoid = existingConversation?.id;
-  if (!convoid) {
-    convoid = (await conversationInsert(userId, lead.id)).success;
-  }
+  if (!convoid) convoid = await createConversation(userId, lead.id);
 
-  if (!result.success) {
-    return { error: "Message was not sent!" };
-  }
-  const newMessage = await messageInsert({
+  if (!result.success) throw new Error("Message was not sent!");
+
+  const newMessage = await insertMessage({
     role: "assistant",
     content: message,
     conversationId: convoid!,
     senderId: userId,
     hasSeen: true,
+    type: MessageType.AGENT,
     sid: result.success,
   });
-  if (!newMessage.success) {
-    return { error: newMessage.error };
-  }
 
-  return { success: newMessage.success };
+  return newMessage;
 };
 
 export const smsSendLeadAppointmentReminder = async (
@@ -239,7 +234,7 @@ export const getKeywordResponse = async (
     case "cancel":
       await db.lead.update({
         where: { id: leadId },
-        data: { statusId:LeadDefaultStatus.DONOTCALL },
+        data: { statusId: LeadDefaultStatus.DONOTCALL },
       });
       await smsSend({
         toPhone: sms.to,
@@ -327,16 +322,14 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
   ).success;
 
   //Update Messages And conversation
-  const insertedMessage = (
-    await messageInsert({
-      role: "user",
-      content: message[1],
-      conversationId: conversation.id,
-      senderId: agentId,
-      hasSeen: true,
-      sid: sid,
-    })
-  ).success;
-
+  const insertedMessage = await insertMessage({
+    role: "user",
+    content: message[1],
+    conversationId: conversation.id,
+    senderId: agentId,
+    hasSeen: true,
+    type: MessageType.AGENT,
+    sid: sid,
+  });
   return insertedMessage;
 };

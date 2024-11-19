@@ -259,7 +259,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
     if (smsReminder) {
       message = (
         await smsSendLeadAppointmentNotification(userId, lead, localDate!)
-      ).success;
+      );
     }
 
     if (emailReminder && lead.email) {

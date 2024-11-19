@@ -5,22 +5,24 @@ import { NextResponse } from "next/server";
 import { TwilioSms } from "@/types";
 import { MessageSchemaType } from "@/schemas/message";
 
+import { MessageType } from "@/types/message";
+
 import {
   disabledAutoChatResponse,
   getKeywordResponse,
   smsSend,
   forwardTextToLead,
 } from "@/actions/sms";
-import { messageInsert } from "@/actions/lead/message";
+
 import { chatFetch } from "@/actions/gpt";
 
 import { appointmentInsert } from "@/actions/appointment";
+import { chatSettingGetTitan } from "@/actions/settings/chat";
+import { insertMessage } from "@/actions/lead/message/insert-message";
 
 import { formatDateTime } from "@/formulas/dates";
 import { formatObject } from "@/formulas/objects";
 import { sendSocketData } from "@/services/socket-service";
-import { chatSettingGetTitan } from "@/actions/settings/chat";
-import { MessageType } from "@/types/message";
 
 export async function POST(req: Request) {
   //The paramters passed in from twilio
@@ -43,7 +45,6 @@ export async function POST(req: Request) {
     where: { personalNumber: sms.from },
   });
 
- 
   //TODO - neeed to reintergrate this functionality
   // if (agent && agentNumber?.agentId == agent.userId) {
   //   //Start Agent to Lead Message Process
@@ -58,29 +59,30 @@ export async function POST(req: Request) {
       lead: {
         cellPhone: sms.from,
       },
+      agentId: agentNumber.agentId!,
     },
     include: { lead: true },
   });
 
   //If the conversation does not exist - exit the work flow
-  if (!conversation) 
+  if (!conversation)
     //TODO - create a new lead into a temp lead table
     return new NextResponse(null, { status: 200 });
-  
+
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     role: "user",
-    type:MessageType.LEAD,
+    type: MessageType.LEAD,
     content: sms.body,
     conversationId: conversation.id,
     senderId: conversation.leadId,
     hasSeen: false,
     sid: sms.smsSid,
   };
-  
+
   //Create a new message from the leads response
-  const newMessage = (await messageInsert(smsFromLead)).success;
-  
+  const newMessage = await insertMessage(smsFromLead);
+
   //Get Keyword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
   const keywordResponse = await getKeywordResponse(
@@ -95,30 +97,29 @@ export async function POST(req: Request) {
   //Check weather titan is enabled globally for this agent
   const titan = await chatSettingGetTitan(agentNumber?.agentId as string);
   //If titan is disabled
-  if (!titan) {
+  if (!titan || !conversation.lead.titan) {
     await disabledAutoChatResponse(conversation, newMessage);
     //exit the workflow
     return new NextResponse("Titan is turned off", { status: 200 });
   }
-  
+
   //If autochat is enabled - get all the messages in the conversation
   const messages = await db.leadMessage.findMany({
     where: { conversationId: conversation.id },
   });
-  
+
   //Convert all the messags into a list that chatGpt can read
   let chatMessages = messages.map((message) => {
     return { role: message.role, content: message.content };
   });
-  
+
   //Add the current message from the lead
   chatMessages.push({ ...smsFromLead });
-  
+
   //Send the conversation from chatGpt and return a response
   const chatResponse = await chatFetch(chatMessages);
   const { role, content } = chatResponse.choices[0].message;
-  
-  
+
   //If there is no response from chatGpt - exit the workflow
   if (!content)
     return new NextResponse("Thank you for your message", { status: 200 });
@@ -138,8 +139,7 @@ export async function POST(req: Request) {
       smsReminder: false,
       emailReminder: false,
     });
-    
-    
+
     const appointmentMessage = `Appointment has been schedule for ${formatDateTime(
       aptDate
     )}`;
@@ -161,25 +161,22 @@ export async function POST(req: Request) {
   const sid = (
     await smsSend({
       toPhone: sms.from,
-      fromPhone : sms.to,
+      fromPhone: sms.to,
       message: content,
       timer: delay,
     })
   ).success;
 
   //Insert the new message from chat gpt into the conversation
-  const newChatMessage = (
-    await messageInsert({
-      role,
-      content,
-      type:MessageType.TITAN,
-      conversationId: conversation.id,
-      senderId: conversation.agentId,
-      hasSeen: true,
-      sid,
-    })
-  ).success;
-
+  const newChatMessage = await insertMessage({
+    role,
+    content,
+    type: MessageType.TITAN,
+    conversationId: conversation.id,
+    senderId: conversation.agentId,
+    hasSeen: true,
+    sid,
+  });
   if (newChatMessage) {
     updatedConversation = await db.leadConversation.update({
       where: { id: conversation.id },

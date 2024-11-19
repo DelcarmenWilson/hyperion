@@ -2,31 +2,39 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
+import axios from "axios";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useConversationId } from "@/hooks/use-conversation";
+import { useLeadData } from "@/hooks/lead/use-lead";
 import {
   useLeadMessageActions,
   useLeadMessageData,
 } from "@/hooks/lead/use-message";
 
+import { LeadMessage } from "@prisma/client";
+import { FullMessage } from "@/types";
+import { MessageType } from "@/types/message";
+
+import { AiCard } from "./ai-card";
 import { Button } from "@/components/ui/button";
 import { MessageCard } from "./message-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { LeadMessage } from "@prisma/client";
-import { FullMessage } from "@/types";
-import axios from "axios";
-import { MessageType } from "@/types/message";
-import { AiCard } from "./ai-card";
 
 export const SmsBody = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const { leadBasic } = useLeadData();
 
-  const { messages: initMessages, isFetchingMessages } = useLeadMessageData();
-  const { conversationId, setConversationId } = useLeadStore();
+  const { onGetMessages } = useLeadMessageData();
+  const {
+    messages: initMessages,
+    messagesFetching,
+    messagesLoading,
+  } = onGetMessages();
+
+  const { conversationId } = useConversationId();
   const { IsPendinginitialMessage, onMessageInitialSubmit } =
     useLeadMessageActions();
 
@@ -43,9 +51,6 @@ export const SmsBody = () => {
   const onSetMessage = (newMessage: LeadMessage) => {
     const existing = messages?.find((e) => e.id == newMessage.id);
     if (existing != undefined) return;
-    if (!conversationId) {
-      setConversationId(newMessage.conversationId);
-    }
     setMessages((messages) => [...messages!, newMessage]);
     scrollToBottom();
   };
@@ -94,7 +99,7 @@ export const SmsBody = () => {
         ref={chatContainerRef}
         className="flex flex-1 flex-col h-full w-full"
       >
-        <SkeletonWrapper isLoading={isFetchingMessages} fullHeight>
+        <SkeletonWrapper isLoading={messagesFetching} fullHeight>
           {!messages?.length && (
             <div className="flex-center flex-col text-muted-foreground h-full gap-2">
               <p className="font-bold">No sms have been sent</p>
@@ -113,21 +118,23 @@ export const SmsBody = () => {
           )}
           {messages?.map((message) => (
             <>
-             
               {message.type === MessageType.AI ? (
                 <AiCard
                   key={message.id}
-                  message={message}
-                  username={
-                    message.role === "user"
-                      ? leadBasic?.firstName!
-                      : user?.name!
-                  }
+                  id={message.id}
+                  body={message.content}
+                  createdAt={message.createdAt}
                 />
               ) : (
                 <MessageCard
                   key={message.id}
-                  message={message}
+                  id={message.id}
+                  body={message.content}
+                  attachment={message.attachment}
+                  role={message.role}
+                  status={message.status}
+                  type={message.type}
+                  createdAt={message.createdAt}
                   username={
                     message.role === "user"
                       ? leadBasic?.firstName!

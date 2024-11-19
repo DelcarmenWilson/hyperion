@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-export const updateNotificationUnread = async (id: string) => {
+export const updateUnreadNotification = async (id: string) => {
   const user = await currentUser();
   if (!user?.id) throw new Error("Unauthenticated");
 

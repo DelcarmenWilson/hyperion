@@ -1,7 +1,7 @@
 "use server";
 
-import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 
 export const getScriptsForUser = async () => {
   try {

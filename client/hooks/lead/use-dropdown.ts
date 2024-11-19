@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import {  usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useCurrentRole } from "../user/use-current";
@@ -9,7 +9,7 @@ import { FullLeadNoConvo } from "@/types";
 
 import { exportLeads } from "@/lib/xlsx";
 import { deleteLead } from "@/actions/lead/main/delete-lead";
-import { conversationDeleteById } from "@/actions/lead/conversation";
+import { deleteConversation } from "@/actions/lead/conversation/delete-conversation";
 import { leadUpdateByIdTitan } from "@/actions/lead";
 
 export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
@@ -18,26 +18,19 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
   const [titan, setTitan] = useState<boolean>(lead?.titan);
   const isAssistant = role == "ASSISTANT";
   const [alertDeleteConvoOpen, setAlertDeleteConvoOpen] = useState(false);
-  const pathName=usePathname()
-  const router=useRouter()
-
+  const pathName = usePathname();
+  const router = useRouter();
 
   //CONVERSATION DELETED
   const { mutate: conversationDeleteMutate, isPending: conversationDeleting } =
     useMutation({
-      mutationFn: conversationDeleteById,
-      onSuccess: (results) => {
-        if (results.success) {
-          toast.success(results.success, { id: "delete-conversation" });
-          //   invalidate();
-          setAlertDeleteConvoOpen(false);
-        } else {
-          toast.error(results.error, { id: "delete-conversation" });
-        }
+      mutationFn: deleteConversation,
+      onSuccess: () => {
+        toast.success("Conversation Deleted", { id: "delete-conversation" });
+        setAlertDeleteConvoOpen(false);
       },
-      onError: (error) => {
-        toast.error(error.message, { id: "delete-conversation" });
-      },
+      onError: (error) =>
+        toast.error(error.message, { id: "delete-conversation" }),
     });
 
   const onConversationDelete = useCallback(
@@ -53,10 +46,9 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
     mutationFn: deleteLead,
     onSuccess: (results) => {
       if (results.success) {
-         invalidate("leads")
+        invalidate("leads");
         toast.success("Lead deleted successfully", { id: "delete-lead" });
-        if(pathName===`/leads/${results.success}`)
-        router.push("/leads");
+        if (pathName === `/leads/${results.success}`) router.push("/leads");
       } else {
         toast.error(results.error, { id: "delete-lead" });
       }

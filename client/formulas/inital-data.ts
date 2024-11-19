@@ -12,7 +12,6 @@ import {
 } from "@prisma/client";
 import { capitalize } from "./text";
 import { reFormatPhoneNumber } from "./phones";
-import { DisasterType } from "@/app/(admin)/admin/import/components/disaster/columns";
 //TODO - i believe this code plus the associated page can be removed. including the db calls
 export const convertUsers = (result: any): User[] => {
   let mapped: User[] = [];
@@ -269,6 +268,7 @@ export const convertMessages = (result: any): LeadMessage[] => {
       price: d["price"],
       sid: d["sid"],
       status: d["status"],
+      type:d["type"],
     };
     mapped.push(newobj);
   });
@@ -296,28 +296,3 @@ export const convertPhoneNumbers = (result: any): PhoneNumber[] => {
   return mapped;
 };
 
-//DONT FORGET TO REMOVE THIS AFTER FIX
-//DISASTER IN JUNE
-export const convertDisaster = (result: any): DisasterType[] => {
-  let mapped: DisasterType[] = [];
-  result.data.map((d: any) => {
-    const newobj: DisasterType = {
-      id: "",
-      conversationId: "",
-      role: "user",
-      attachment: d["attachment"],
-      content: d["content"],
-      senderId: d["senderId"],
-      createdAt: new Date(d["createdAt"]),
-      hasSeen: d["hasSeen"] == "f" ? false : true,
-      error: d["error"],
-      price: d["price"],
-      sid: d["sid"],
-      status: d["status"],
-      agentId:d["agentId"],
-      leadId:d["leadId"],
-    };
-    mapped.push(newobj);
-  });
-  return mapped;
-};
