@@ -64,7 +64,7 @@ export const DrawerRight = ({
                 <Dialog.Panel
                   className={cn("pointer-events-auto w-screen", size)}
                 >
-                  <div className="flex flex-col h-full overflow-hidden bg-background  py-2 shadow-xl">
+                  <div className="flex flex-col h-full overflow-hidden bg-background py-2 shadow-xl">
                     <div className=" flex items-center justify-between px-2">
                       <div>
                         <h2 className="font-semibold text-xl tracking-tight">

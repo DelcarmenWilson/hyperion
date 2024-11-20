@@ -1,27 +1,25 @@
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { ChevronDown, X } from "lucide-react";
+import { useDialerStore } from "../hooks/use-dialer";
+import { usePhoneStore } from "@/hooks/use-phone";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TouchPad } from "../addins/touch-pad";
-import { useDialerStore } from "../hooks/use-dialer";
-import { DrawerRight } from "@/components/custom/drawer/right";
-import { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { usePhoneStore } from "@/hooks/use-phone";
 
 const DialpadDialog = () => {
   const { call } = usePhoneStore();
   const { isDialPadFormOpen, onDialPadFormToggle } = useDialerStore();
   const [number, setNumber] = useState("");
+
   const onNumberClick = (num: string) => {
     setNumber((prev) => (prev += num));
-    if (call) {
-      call.sendDigits(num);
-    }
+    if (call) call.sendDigits(num);
   };
 
-  const onReset = () => {
-    setNumber("");
-  };
+  const onReset = () => setNumber("");
+  if (call) return null;
   return (
     <div
       className={cn(

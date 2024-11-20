@@ -56,7 +56,7 @@ const LeadCard = ({ lead, index, indexRef }: Props) => {
   return (
     <div
       ref={indexRef}
-      className="cursor-pointer shadow-sm hover:shadow-lg"
+      className="cursor-pointer shadow-sm hover:shadow-lg rounded"
       onClick={() => onSetIndex(index)}
     >
       <div
