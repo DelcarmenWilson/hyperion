@@ -15,7 +15,7 @@ export const SectionWrapper = ({
   showAdd = false,
 }: Props) => {
   return (
-    <div className="border rounded-sm shadow-md p-2">
+    <div className="border rounded shadow-md p-2">
       <div className="flex justify-between items-center pb-1">
         <h4 className="text-muted-foreground">{title}</h4>
         {onClick && (

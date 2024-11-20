@@ -93,7 +93,7 @@ export const DialerMenu = ({ setIndex }: Props) => {
   const onReset = () => setIndex(0);
 
   return (
-    <div>
+    <div className="border-b">
       <div className="flex justify-between items-center gap-2 mb-1">
         <div className="flex items-center gap-2">
           <MdDialpad size={16} />
@@ -199,14 +199,14 @@ export const DialerMenu = ({ setIndex }: Props) => {
           >
             SMS
           </Button>
-          <Button
+          {/* <Button
             variant={isDialPadFormOpen ? "default" : "outlineprimary"}
             size="xs"
             onClick={onDialPadFormToggle}
             disabled={!call}
           >
             Dialpad
-          </Button>
+          </Button> */}
         </div>
         <span className="text-primary font-bold">
           {formatSecondsToTime(time)}

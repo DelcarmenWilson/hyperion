@@ -46,50 +46,46 @@ export const PhoneDialerModal = () => {
           <div className="fixed inset-0 bg-black bg-opacity-40" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-hidden pointer-events-none ">
-          <div className="flex flex-col w-full h-full overflow-hidden pointer-events-none items-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-500"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-500"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Panel className="pointer-events-auto w-full h-full overflow-hidden">
-                <div className="flex flex-col justify-between gap-2 overflow-hidden h-full bg-background p-2 shadow-xl rounded-md text-sm">
-                  <DialerMenu setIndex={setIndex} />
+        <div className="fixed inset-0 flex flex-col w-full h-full overflow-hidden pointer-events-none items-center">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-500"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-500"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Panel className="pointer-events-auto w-full flex flex-col justify-between gap-2 overflow-hidden h-full bg-background p-2 shadow-xl rounded-md text-sm">
+              <DialerMenu setIndex={setIndex} />
 
-                  <ResizablePanelGroup
-                    className="flex flex-1 gap-2 overflow-hidden h-full"
-                    direction="horizontal"
-                    autoSaveId="rpg-dailer"
-                  >
-                    <ResizablePanel
-                      className="border border-secondary overflow-hidden h-full"
-                      defaultSize={25}
-                      minSize={25}
-                      maxSize={30}
-                    >
-                      <LeadList />
-                    </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel
-                      className="flex flex-col flex-1 border border-secondary h-full overflow-hidden"
-                      defaultSize={80}
-                      maxSize={80}
-                    >
-                      {lead && <PhoneLeadInfo />}
+              <ResizablePanelGroup
+                className="flex flex-1 gap-2 overflow-hidden h-full"
+                direction="horizontal"
+                autoSaveId="rpg-dailer"
+              >
+                <ResizablePanel
+                  className="border border-secondary overflow-hidden h-full"
+                  defaultSize={25}
+                  minSize={25}
+                  maxSize={30}
+                >
+                  <LeadList />
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel
+                  className="flex flex-col flex-1 border border-secondary h-full overflow-hidden"
+                  defaultSize={80}
+                  maxSize={80}
+                >
+                  {lead && <PhoneLeadInfo />}
 
-                      <SmsDrawer />
-                      <DialpadDialog />
-                    </ResizablePanel>
-                  </ResizablePanelGroup>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+                  <SmsDrawer />
+                  {/* <DialpadDialog /> */}
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
       </Dialog>
     </Transition.Root>

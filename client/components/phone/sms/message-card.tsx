@@ -31,12 +31,27 @@ const setStatus = (status: string): LucideIcon => {
   }
 };
 
-const setBg = (role: string): { bg: string; pos: boolean } => {
-  switch (role) {
-    case "user":
+// const setBg = (role: string): { bg: string; pos: boolean } => {
+//   switch (role) {
+//     case "user":
+//       return { bg: "bg-primary text-background", pos: false };
+//     default:
+//       return { bg: "bg-accent", pos: true };
+//   }
+// };
+
+const setBg = (type: MessageType): { bg: string; pos: boolean } => {
+  switch (type) {
+    case MessageType.LEAD:
       return { bg: "bg-primary text-background", pos: false };
-    default:
+    case MessageType.AGENT:
       return { bg: "bg-accent", pos: true };
+    default:
+      return {
+        // bg: "bg-radial-gradient from-slate-500  to-white ",
+        bg: "bg-gradient-to-tr from-slate-500  to-background",
+        pos: true,
+      };
   }
 };
 
@@ -50,14 +65,14 @@ export const MessageCard = ({
   createdAt,
   username,
 }: MessageCardProps) => {
-  const isOwn = setBg(role);
+  const isOwn = setBg(type as MessageType);
   const Icon = setStatus(status);
 
   return (
     <div className={cn("flex flex-col group mb-2", isOwn.pos && "items-end")}>
       <div className=" text-xs italic px-2">
         <span>{type === MessageType.TITAN ? "Titan" : username}</span>{" "}
-        <span className=" text-muted-foreground">
+        <span className="text-muted-foreground ">
           {formatDistance(createdAt, new Date(), {
             addSuffix: true,
           })}
@@ -65,7 +80,7 @@ export const MessageCard = ({
       </div>
       <div
         className={cn(
-          "relative text-sm max-w-[60%] w-fit rounded-md py-2 px-3 text-wrap  break-words",
+          "relative text-sm max-w-[60%] w-fit rounded py-2 px-3 text-wrap  break-words",
           isOwn.bg
         )}
       >
