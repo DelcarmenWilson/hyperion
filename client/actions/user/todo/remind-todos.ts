@@ -10,9 +10,10 @@ import { createEmail } from "@/actions/email/create-email";
 export const remindTodos = async () => {
   const startDate = new Date();
   //TODO - dont forget to remove this an allow the other line
-  //startDate.setHours(startDate.getHours() - 1);
+  // startDate.setHours(startDate.getHours() - 1);
   startDate.setSeconds(startDate.getSeconds() -5);
   const endDate = new Date();
+  // endDate.setHours(endDate.getHours() + 1);
   endDate.setSeconds(endDate.getSeconds() + 10);
 
   const todos = await db.userTodo.findMany({
@@ -45,6 +46,7 @@ export const remindTodos = async () => {
     },
   });
 
+
   for (const todo of todos) {
     const method = todo.reminderMethod as TodoReminderMethod;
 
@@ -60,7 +62,7 @@ export const remindTodos = async () => {
           await smsSend({
             fromPhone: hyperionNumber,
             toPhone: personalNumber,
-            message: `Hyperion Reminders: \n ${todo.title} `,
+            message: `Hyperion Reminders: \n ${todo.title} \n -${todo.description} `,
           });
         }
         break;

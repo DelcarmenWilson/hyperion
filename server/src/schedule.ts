@@ -33,7 +33,7 @@ const hideDeletedMessagesJob = cron.schedule("30 * * * *", () => {
 });
 
 //Run everyminute - send todo reminders
-const todoReminderJob = cron.schedule("0 0 * * *", () => {  
+const todoReminderJob = cron.schedule("* * * * *", () => {  
   axiosCall("todoReminder")
 });
 export const runJobs = () => {
@@ -42,4 +42,6 @@ export const runJobs = () => {
   newQouteJob.start()
   leadsRetrievalJob.start()
   hideDeletedMessagesJob.start()
+  todoReminderJob.start()
+  
 };
