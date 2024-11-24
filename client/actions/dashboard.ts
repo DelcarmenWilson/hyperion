@@ -30,7 +30,7 @@ export const dashboardGetAllCards = async () => {
 
     const messages = await db.leadMessage.aggregate({
       _count:{id:true},      
-      where: {senderId:user.id,hasSeen:false },
+      where: {senderId:user.id,hasSeen:false,createdAt: { gte: date.start }, },
     });
 
     const feeds = await db.feed.aggregate({

@@ -28,7 +28,6 @@ export type DataType = {
 export const useDashboardData = () => {
   const {socket}=useSocketStore()
   const {invalidate}=useInvalidate()
-
   const { data, isFetching } = useQuery<DashboardDataType | null>({
     queryFn: () => dashboardGetAllCards(),
     queryKey: ['dashboard-card-data'],
