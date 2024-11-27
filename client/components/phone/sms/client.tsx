@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ export const SmsClient = ({
   let leadFullName = `${leadBasic?.firstName} ${leadBasic?.lastName}`;
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const {conversationId}=useLeadStore()
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
@@ -126,7 +127,7 @@ export const SmsClient = ({
           onSetDefaultNumber={setSelectedNumber}
         />
       </div>
-      <SmsBody />
+      <SmsBody conversationId={conversationId!}/>
       <FormInput placeholder="Write Something" />
     </div>
   );

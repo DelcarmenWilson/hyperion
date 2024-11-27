@@ -113,7 +113,7 @@ type Actions = {
   onIntakeDialogOpen: (d: DialogType) => void;
   onIntakeDialogClose: () => void;
   //NEW LEAD FORM
-  onNewLeadFormOpen: (a?: boolean) => void;
+  onNewLeadFormOpen: (a: boolean) => void;
   onNewLeadFormClose: () => void;
   //EXPORT LEAD FORM
   onExportFormOpen: () => void;
@@ -181,7 +181,7 @@ export const useLeadStore = create<State & Actions>((set) => ({
   onIntakeDialogClose: () => set({ isIntakeDialogOpen: false }),
   //NEW LEAD FORM
   isNewLeadFormOpen: false,
-  onNewLeadFormOpen: (a: boolean = false) =>
+  onNewLeadFormOpen: (a: boolean) =>
     set({ isNewLeadFormOpen: true, associatedLead: a }),
   onNewLeadFormClose: () =>
     set({ isNewLeadFormOpen: false, associatedLead: false }),
@@ -196,7 +196,7 @@ export const useLeadStore = create<State & Actions>((set) => ({
 }));
 
 export const useLeadData = () => {
-  const { leadId, setConversationId: setConverationId } = useLeadStore();
+  const { leadId, setConversationId } = useLeadStore();
   const [edit, setEdit] = useState(false);
   const [defaultNumber, setDefaultNumber] = useState("");
 
@@ -244,7 +244,7 @@ export const useLeadData = () => {
 
   useEffect(() => {
     if (!leadBasic) return;
-    setConverationId(leadBasic.conversations[0]?.id);
+    setConversationId(leadBasic.conversations[0]?.id);
   }, [leadBasic]);
 
   return {

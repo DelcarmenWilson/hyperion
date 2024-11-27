@@ -6,8 +6,10 @@ import { Separator } from "@/components/ui/separator";
 import { Header } from "./header";
 import { SmsBody } from "@/components/phone/sms/body";
 import FormInput from "@/components/phone/sms/form-input";
+import { useConversationId } from "@/hooks/use-conversation";
 
 const ConversationClient = () => {
+  const {conversationId}=useConversationId()
   return (
     <Card className="flex flex-col flex-1 relative overflow-hidden">
       <div className="flex items-center">
@@ -20,7 +22,7 @@ const ConversationClient = () => {
       </div>
       <Separator />
       <CardContent className="flex flex-col flex-1 gap-2 overflow-hidden !p-0">
-        <SmsBody />
+        <SmsBody conversationId={conversationId}/>
         <FormInput placeholder="Your Message..." />
       </CardContent>
     </Card>
