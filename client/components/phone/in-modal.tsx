@@ -79,6 +79,7 @@ export const PhoneInModal = () => {
       if (lead) {
         // onSetLead(data);
         setFrom({
+          id: lead.id,
           name: lead.firstName
             ? `${lead.firstName} ${lead.lastName}`
             : "Unknown Caller",

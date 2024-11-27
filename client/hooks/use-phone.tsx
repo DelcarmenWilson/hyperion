@@ -136,7 +136,6 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
       lead: e,
       conference: c,
       isLeadInfoOpen: e != undefined ? true : false,
-  
     });
     get().fetchData();
   },
@@ -266,7 +265,12 @@ export const usePhoneData = (phone: Device | null) => {
 
 export const useIncomingCallData = () => {
   // PHONE VARIABLES
-  const [from, setFrom] = useState<{ name: string; number: string }>({
+  const [from, setFrom] = useState<{
+    id: string;
+    name: string;
+    number: string;
+  }>({
+    id: "unknown",
     name: "unknown",
     number: "unknown",
   });
@@ -276,7 +280,7 @@ export const useIncomingCallData = () => {
       data: lead,
       isFetching: leadFetching,
       isLoading: leadLoading,
-    } = useQuery<{ firstName: string; lastName: string } | null>({
+    } = useQuery<{ id: string; firstName: string; lastName: string } | null>({
       queryFn: () => getLeadByPhone(cellPhone as string),
       queryKey: [`lead-by-phone-${cellPhone}`],
       enabled: !!cellPhone,
