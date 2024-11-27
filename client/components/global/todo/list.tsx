@@ -16,7 +16,7 @@ export const TodosList = ({
   if (todos?.length == 0 && !loading)
     return (
       <EmptyCard
-        title="You are all cuaght up"
+        title="You are all caught up"
         subTitle={<AddTodoBtn text="New Task" />}
       />
     );
