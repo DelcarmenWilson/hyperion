@@ -71,8 +71,9 @@ export const leadPolicyUpsert = async (values: LeadPolicySchemaType) => {
       ...validatedFields.data,
     },
   });
-
-  updateBluePrintWeekData(user.id, "premium", diff);
+//TODO - this seems like the more correct one. if the policy is updated we should update the current blue print with the difference in the changes prior and after the change
+  // updateBluePrintWeekData(user.id, "premium", diff);
+  updateBluePrintWeekData(user.id, "premium");
   leadActivityInsert(leadId, "sale", "policy info updated", user.id);
   return { success: leadPolicyInfo };
 };

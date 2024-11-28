@@ -29,7 +29,7 @@ const JobLayout = async ({
     <div className="flex flex-col h-full overflow-hidden">
       <Topbar job={job} />
       <section className="flex h-full overflow-auto">
-        <JobMenu miniJobs={miniJobs} />
+        <JobMenu miniJobs={miniJobs} jobStatus={job.status} />
         <div className="flex flex-col flex-1 bg-background p-2">{children}</div>
       </section>
     </div>

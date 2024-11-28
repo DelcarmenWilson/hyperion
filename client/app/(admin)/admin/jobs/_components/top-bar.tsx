@@ -1,6 +1,7 @@
 "use client";
 
 import BackBtn from "@/components/global/back-btn";
+import { Badge } from "@/components/ui/badge";
 import { Job } from "@prisma/client";
 
 const Topbar = ({ job }: { job: Job }) => {
@@ -18,7 +19,7 @@ const Topbar = ({ job }: { job: Job }) => {
           )}
         </div>
       </div>
-      <div className="flex flex-1 gap-1 justify-end">{status}</div>
+      <Badge> {status}</Badge>
     </div>
   );
 };

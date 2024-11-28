@@ -13,26 +13,30 @@ type Props = {
 };
 export const TodoCard = ({ todo }: Props) => {
   const { todo: currentTodo, onTodoInfoOpen } = useTodoStore();
-  const { id, title, startAt } = todo;
-  const status = todo.status == TodoStatus.COMPLETED;
+  const { id, title, startAt, description, status } = todo;
+  const todoStatus = status == TodoStatus.COMPLETED;
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border p-1 hover:bg-primary/25 cursor-pointer",
+        "flex items-start gap-2 border p-1 hover:bg-primary/25 cursor-pointer",
         currentTodo?.id == id && "bg-primary/25"
       )}
     >
-      <Checkbox checked={status} />
+      <Checkbox checked={todoStatus} />
       <div
-        className="flex-1 flex-col whitespace-nowrap overflow-ellipsis pe-2"
+        className="relative flex-1 flex-col whitespace-nowrap overflow-ellipsis pe-2"
         onClick={() => onTodoInfoOpen(todo)}
       >
-        <p className="text-sm">{title}</p>
         {startAt && (
-          <p className="text-muted-foreground text-xs">
-            {formatDate(startAt, "PPP h:mm aa")}
+          <p className="absolute top-0 right-0 text-muted-foreground text-xs">
+            {formatDate(startAt, "MM-dd-yy h:mm aa")}
           </p>
         )}
+
+        <p className="text-sm">{title}</p>
+        <p className="text-muted-foreground truncate text-ellipsis">
+          {description}
+        </p>
       </div>
     </div>
   );
