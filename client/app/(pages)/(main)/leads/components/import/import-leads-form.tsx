@@ -29,6 +29,7 @@ import {
 
 import { convertLead } from "@/formulas/lead";
 import { leadsImport } from "@/actions/lead";
+import { Loader2 } from "lucide-react";
 
 export const ImportLeadsForm = () => {
   const role = useCurrentRole();
@@ -43,7 +44,7 @@ export const ImportLeadsForm = () => {
   const [leadType, setLeadType] = useState("General");
   const [status, setStatus] = useState<string>();
   const [assistant, setAssistant] = useState<string>();
-  const [isPending, startTransition] = useTransition();
+  const [loading, startTransition] = useTransition();
   const { siteUsers, siteUsersFetching } = onSiteUserGet("ASSISTANT");
   const disabled = leads.length > 0;
 
@@ -92,6 +93,7 @@ export const ImportLeadsForm = () => {
   const onCancel = () => {
     setLeads([]);
     setFormmatedLeads([]);
+    onImportFormClose();
   };
   return (
     <CustomDialog
@@ -101,8 +103,9 @@ export const ImportLeadsForm = () => {
       description="Import Leads Form"
       maxWidth={true}
       maxHeight={true}
+      scroll={false}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-4 items-center gap-2 w-full mb-2">
+      <div className="bg-secondary grid grid-cols-1 lg:grid-cols-4 items-center gap-2 w-full mb-2 p-2">
         <div className="flex items-center gap-2">
           <span>Vendor</span>
           <Select
@@ -111,7 +114,7 @@ export const ImportLeadsForm = () => {
             defaultValue={vendor}
             onValueChange={setVendor}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Select a Vendor" />
             </SelectTrigger>
             <SelectContent>
@@ -141,7 +144,7 @@ export const ImportLeadsForm = () => {
             defaultValue={status}
             onValueChange={setStatus}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Select a Pipeline" />
             </SelectTrigger>
             <SelectContent>
@@ -162,7 +165,7 @@ export const ImportLeadsForm = () => {
               defaultValue={assistant}
               onValueChange={setAssistant}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select an Assistant" />
               </SelectTrigger>
               <SelectContent>
@@ -185,16 +188,26 @@ export const ImportLeadsForm = () => {
           setFile={onFileUploaded}
         />
       </ScrollArea>
-      {disabled && (
-        <div className="flex justify-end items-center gap-2">
-          <Button variant="outline" disabled={isPending} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button disabled={isPending} onClick={onImport}>
-            Import
-          </Button>
-        </div>
-      )}
+
+      <div className="flex justify-end items-center gap-2">
+        <Button variant="outline" disabled={loading} onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          className="gap-2"
+          disabled={loading || !disabled}
+          onClick={onImport}
+        >
+          <span className="sr-only">Import Button</span>
+          {loading ? (
+            <>
+              <Loader2 size={15} className="animate-spin" /> Importing
+            </>
+          ) : (
+            <span>Import</span>
+          )}
+        </Button>
+      </div>
     </CustomDialog>
   );
 };

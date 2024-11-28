@@ -6,7 +6,7 @@ dotenv.config()
 const BASEURL=process.env.APP_URL||"https://hperioncrm.com"
 
 const axiosCall=(type:string)=>{
-  axios.post(`${BASEURL}/api/quote`,{type})
+  axios.post(`${BASEURL}/api/cron`,{type})
 }
 
 // const testJob = cron.schedule("* * * * *", () => {
@@ -17,6 +17,7 @@ const axiosCall=(type:string)=>{
 const bluePrintTargets = cron.schedule("0 0 * * 1", () => {
   axiosCall("createWeeklyBlueprint")
 });
+
 //Run everyday at 12am - gets a new randowm quote to display on the dashboard
 const newQouteJob = cron.schedule("0 0 * * *", () => {  
   axiosCall("newQuote")
@@ -33,7 +34,7 @@ const hideDeletedMessagesJob = cron.schedule("30 * * * *", () => {
 });
 
 //Run everyminute - send todo reminders
-const todoReminderJob = cron.schedule("0 0 * * *", () => {  
+const todoReminderJob = cron.schedule("* * * * *", () => {  
   axiosCall("todoReminder")
 });
 export const runJobs = () => {
@@ -42,4 +43,6 @@ export const runJobs = () => {
   newQouteJob.start()
   leadsRetrievalJob.start()
   hideDeletedMessagesJob.start()
+  todoReminderJob.start()
+  
 };

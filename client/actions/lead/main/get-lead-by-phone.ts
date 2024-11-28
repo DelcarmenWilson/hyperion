@@ -27,7 +27,7 @@ import { db } from "@/lib/db";
         where: {
           cellPhone,
         },
-     select:{firstName:true,lastName:true}
+     select:{id:true,firstName:true,lastName:true}
       });
   
       return lead;

@@ -46,7 +46,7 @@ const CreateJobDialog = ({
   });
   const onSubmit = useCallback(
     (values: CreateJobSchemaType) => {
-      toast.loading("Creating workflow", { id: "create-job" });
+      toast.loading("Creating new job...", { id: "create-job" });
       mutate(values);
     },
     [mutate]

@@ -6,5 +6,6 @@ export enum TodoStatus{
 export enum TodoReminderMethod{
     Notification="Notification",
     Email="Email",
-    Phone="Phone"
+    Sms="Sms",
+    EmailSms="Email And Sms"
 }

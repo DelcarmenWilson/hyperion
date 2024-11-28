@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
 import { useCurrentUser } from "./user/use-current";
 import { useMutation } from "@tanstack/react-query";
+import { useCalendarStore } from "./calendar/use-calendar-store";
+import { useInvalidate } from "./use-invalidate";
 import { toast } from "sonner";
+
 
 import { FullAppointment } from "@/types";
 import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
@@ -25,7 +28,6 @@ import {
 } from "@/formulas/schedule";
 
 import { appointmentInsert } from "@/actions/appointment";
-import { useCalendarStore } from "./calendar/use-calendar-store";
 
 type State = {
   appointment?: FullAppointment;
@@ -56,9 +58,10 @@ export const useAppointmentStore = create<State&Actions>((set) => ({
   onDetailsClose: () => set({ isDetailsOpen: false }),
 }));
 
-export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
+export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {  
   const user = useCurrentUser();
   const {appointments,schedule,labels}=useCalendarStore()
+  const {invalidate}=useInvalidate()
   const { onApointmentFormClose: onFormClose } = useAppointmentStore();
   const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
@@ -148,6 +151,8 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
       onSuccess: (result) => {
         if (result.success) {
           toast.success("Appointment scheduled!", {id: "insert-appointent",});
+          invalidate("blueprint-active");
+      invalidate("blueprint-week-active");
           onCancel();
         } else {
           toast.success(result.error, {id: "insert-appointent", });

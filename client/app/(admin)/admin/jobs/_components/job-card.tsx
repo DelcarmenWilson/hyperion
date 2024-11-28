@@ -117,4 +117,5 @@ const JobActions = ({ jobId, jobName }: { jobId: string; jobName: string }) => {
     </DropdownMenu>
   );
 };
+
 export default JobCard;

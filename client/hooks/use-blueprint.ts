@@ -24,8 +24,6 @@ import { getBluePrintWeeksReport } from "@/actions/blueprint/week/get-blueprint-
 import { getBluePrintWeeks } from "@/actions/blueprint/week/get-blueprint-weeks";
 import { updateBluePrintWeek } from "@/actions/blueprint/week/update-blueprint-week";
 
-
-
 export const useBluePrintData = () => {
   const onGetAgentWorkInfo = () => {
     const {
@@ -128,8 +126,8 @@ export const useBluePrintData = () => {
   };
 };
 
-export const useBluePrintActions = (callBack:()=>void) => {
-  const { invalidate,invalidateMultiple } = useInvalidate();
+export const useBluePrintActions = (callBack: () => void) => {
+  const { invalidate, invalidateMultiple } = useInvalidate();
   //AGENT WORK INFO INSERT
   const {
     mutate: agentWorkInfoInsertMutate,
@@ -141,7 +139,7 @@ export const useBluePrintActions = (callBack:()=>void) => {
         toast.success("Agent details have been created", {
           id: "insert-blueprint-work-info",
         });
-       callBack();
+        callBack();
         invalidateMultiple([
           "blueprint-work-info",
           "blueprints",
@@ -171,13 +169,12 @@ export const useBluePrintActions = (callBack:()=>void) => {
     isPending: agentWorkInfoUpdating,
   } = useMutation({
     mutationFn: updateAgentWorkInfo,
-    onSuccess: (results) => {      
-        invalidate("blueprint-work-info");
-       callBack();
-        toast.success("Agent details have been updated", {
-          id: "update-agent-work-info",
-        });
-  
+    onSuccess: (results) => {
+      invalidate("blueprint-work-info");
+      callBack();
+      toast.success("Agent details have been updated", {
+        id: "update-agent-work-info",
+      });
     },
     onError: (error) =>
       toast.error(error.message, { id: "update-agent-work-info" }),
@@ -198,16 +195,15 @@ export const useBluePrintActions = (callBack:()=>void) => {
   } = useMutation({
     mutationFn: updateBluePrintWeek,
     onSuccess: () => {
-      
-        invalidate("blueprint-week-active");
-        callBack();
-        toast.success("Blue Print details updated", {
-          id: "update-blueprint-week",
-        });
-    
+      invalidate("blueprint-active");
+      invalidate("blueprint-week-active");
+      callBack();
+      toast.success("Blue Print details updated", {
+        id: "update-blueprint-week",
+      });
     },
-    onError: (error) => 
-      toast.error(error.message, { id: "update-blueprint-week" })    
+    onError: (error) =>
+      toast.error(error.message, { id: "update-blueprint-week" }),
   });
 
   const onBluePrintWeekUpdate = useCallback(

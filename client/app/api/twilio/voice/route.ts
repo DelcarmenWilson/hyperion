@@ -8,35 +8,32 @@ import { formatObject } from "@/formulas/objects";
 import { leadGetOrCreateByPhoneNumber } from "@/actions/lead";
 import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
 
-
 export async function POST(req: Request) {
   const body = await req.formData();
 
   //get all the variable from the body into the twlio cal type
   const call: TwilioCall = formatObject(body);
-
+  let agentId = call.caller.replace("client:", "");
   //check information for the agent based on the number called
   const agentPhoneNumber = await db.phoneNumber.findFirst({
-    where: { phone: call.callDirection == "outbound" ? call.from : call.to },
+    where: { phone: call.to },
   });
 
-  //get the lead information based on the phone number and call direction
+  //if there is an associated agent phonenumber change the agent id to the agent id from the database
+  if (agentPhoneNumber) agentId = agentPhoneNumber.agentId!;
+
+   //get the lead information based on the phone number and call direction
   const lead = await leadGetOrCreateByPhoneNumber(
     call.callDirection == "outbound" ? call.to : call.from,
     call.callerState,
-    agentPhoneNumber?.agentId as string
+    agentId
   );
 
   if (call.callDirection == "outbound") {
-    call.agentId = call.caller.replace("client:", "");
+    call.agentId = agentId;
     call.direction = "outbound";
 
-    if (agentPhoneNumber) {
-      updateBluePrintWeekData(
-        agentPhoneNumber.agentId as string,
-        "calls"
-      );
-    }
+    updateBluePrintWeekData(agentId, "calls");
   } else {
     switch (call.direction) {
       //INCOMING CALL
@@ -69,7 +66,7 @@ export async function POST(req: Request) {
         break;
       //OUTGOING CALL
       default:
-        call.agentId = call.caller.replace("client:", "");
+        call.agentId = agentId;
         break;
     }
   }
@@ -91,5 +88,3 @@ export async function POST(req: Request) {
   const reponse = await voiceResponse(call);
   return new NextResponse(reponse, { status: 200 });
 }
-
-

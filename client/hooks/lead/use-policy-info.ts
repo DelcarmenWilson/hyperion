@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { useLeadStore } from "./use-lead";
 
 import { LeadPolicySchemaType, LeadPolicySchemaTypeP } from "@/schemas/lead";
-import { leadPolicyGet,leadPolicyUpsert } from "@/actions/lead/policy";
+import { leadPolicyGet, leadPolicyUpsert } from "@/actions/lead/policy";
+import { useInvalidate } from "../use-invalidate";
 
 export const useLeadPolicyData = () => {
   const { leadId } = useLeadStore();
@@ -25,15 +26,11 @@ export const useLeadPolicyData = () => {
 
 export const useLeadPolicyActions = () => {
   const { leadId, isPolicyFormOpen, onPolicyFormClose } = useLeadStore();
-  const queryClient = useQueryClient();
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`leadPolicy-${leadId}`] });
-  };
+  const { invalidate } = useInvalidate();
 
   //POLICY
   const { mutate: policyMutate, isPending: policyIsPending } = useMutation({
-    mutationFn: leadPolicyUpsert ,
+    mutationFn: leadPolicyUpsert,
     onSuccess: (results) => {
       if (results.success) {
         userEmitter.emit("policyInfoUpdated", {
@@ -43,15 +40,16 @@ export const useLeadPolicyActions = () => {
         userEmitter.emit("leadStatusChanged", results.success.leadId, "Sold");
 
         toast.success("Lead Policy Info Updated", { id: "update-policy-info" });
+        invalidate("blueprint-active");
+        invalidate("blueprint-week-active");
+        invalidate(`leadPolicy-${leadId}`);
         onPolicyFormClose();
-        invalidate();
-      } else {
+      } else 
         toast.error(results.error, { id: "update-policy-info" });
-      }
+      
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) =>
+      toast.error(error.message, { id: "update-policy-info" }),
   });
 
   const onPolicySubmit = useCallback(

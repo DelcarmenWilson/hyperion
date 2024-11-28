@@ -8,14 +8,23 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MiniJob } from "@prisma/client";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import CreateMiniJobDialog from "./create-mini-job-dialog";
+import { JobStatus } from "@/types/job";
+import { CheckCheck } from "lucide-react";
 
-const JobMenu = ({ miniJobs }: { miniJobs: MiniJob[] }) => {
+const JobMenu = ({
+  miniJobs,
+  jobStatus,
+}: {
+  miniJobs: MiniJob[];
+  jobStatus: string;
+}) => {
   const { miniJobId } = useMiniJobId();
   return (
     <aside className="w-[250px] min-w-[250px] max-w-[250px] border-r-2 border h-full p-2 px-4 overflow-hidden bg-background">
       <div className="flex justify-between items-center mb-1">
         <p className="font-semibold">Mini Jobs</p>
-        <CreateMiniJobDialog />
+
+        {jobStatus == JobStatus.OPEN && <CreateMiniJobDialog />}
       </div>
       <ScrollArea>
         {miniJobs.length == 0 && (
@@ -31,6 +40,7 @@ const JobMenu = ({ miniJobs }: { miniJobs: MiniJob[] }) => {
             id={job.id}
             name={job.name}
             selected={job.id == miniJobId}
+            status={job.status}
           />
         ))}
       </ScrollArea>
@@ -43,11 +53,13 @@ const TaskMenuBtn = ({
   id,
   name,
   selected,
+  status,
 }: {
   jobId: string;
   id: string;
   name: string;
   selected: boolean;
+  status: string;
 }) => {
   return (
     <Link
@@ -57,10 +69,15 @@ const TaskMenuBtn = ({
           // variant: {selected?"default":"link"},
           variant: selected ? "default" : "ghost",
         }),
-        "w-full capitalize justify-start"
+        "relative w-full capitalize justify-start mb-1"
       )}
     >
       {name}
+      {status == JobStatus.COMPLETED && (
+        <span className="absolute bottom-0 right-0 stroke-background">
+          <CheckCheck size={15} />
+        </span>
+      )}
     </Link>
   );
 };
