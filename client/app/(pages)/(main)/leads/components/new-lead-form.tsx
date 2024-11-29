@@ -97,7 +97,7 @@ const NewLForm = ({ leadId,showRelationship, onClose }: NewLFormProps) => {
             control={form.control}
             name="relationship"
             render={({ field }) => (
-              <FormItem className={showRelationship ? "" : "opacity-0"}>
+              <FormItem>
                 <FormLabel className="flex justify-between items-center">
                   Relationship
                   <FormMessage />
