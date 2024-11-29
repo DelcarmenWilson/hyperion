@@ -22,7 +22,7 @@ import { MessageCard } from "./message-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const SmsBody = () => {
+export const SmsBody = ({conversationId}:{conversationId:string}) => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
   const { leadBasic } = useLeadData();
@@ -34,7 +34,7 @@ export const SmsBody = () => {
     messagesLoading,
   } = onGetMessages();
 
-  const { conversationId } = useConversationId();
+  // const { conversationId } = useConversationId();
   const { IsPendinginitialMessage, onMessageInitialSubmit } =
     useLeadMessageActions();
 

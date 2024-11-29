@@ -2,6 +2,7 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { getEntireDay } from "@/formulas/dates";
+import { MessageType } from "@/types/message";
 
 //DATA
 export const dashboardGetAllCards = async () => {
@@ -30,8 +31,9 @@ export const dashboardGetAllCards = async () => {
 
     const messages = await db.leadMessage.aggregate({
       _count:{id:true},      
-      where: {senderId:user.id,hasSeen:false,createdAt: { gte: date.start }, },
+      where: {conversation:{agentId:user.id}, type:MessageType.LEAD, createdAt: { gte: date.start }, },
     });
+
 
     const feeds = await db.feed.aggregate({
       _count:{id:true}, 

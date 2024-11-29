@@ -65,7 +65,7 @@ const IncomingDialog = () => {
     <div
       className={cn(
         "absolute -bottom-full w-full border bg-primary border-black-100 text-background transition-bottom duration-500 p-2 ease-in-out",
-        true && "bottom-0"
+        isIncomingCallOpen && "bottom-0"
       )}
     >
       <p className="font-bold">Incoming Call</p>

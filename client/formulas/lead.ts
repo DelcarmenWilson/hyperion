@@ -505,6 +505,7 @@ export const CalculatePremium = (
     basePremium += 100;
   }
 
+ 
   // Adjust premium based on health condition
   let healthMultiplier = 1;
   if (health === "good") {
@@ -517,6 +518,8 @@ export const CalculatePremium = (
 
   // Final premium calculation
   const premium = basePremium * healthMultiplier * (coverageAmount / 1000);
+
+  console.log(premium,basePremium,healthMultiplier,coverageAmount)
 
 let carrierPremiums:CarrierPremium[]=[]
 

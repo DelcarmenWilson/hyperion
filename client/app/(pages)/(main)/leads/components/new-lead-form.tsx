@@ -46,7 +46,7 @@ export const NewLeadForm = () => {
       onClose={onNewLeadFormClose}
     >
       <SkeletonWrapper isLoading={isFetchingLeadBasic}>
-        {leadBasic && (
+        {associatedLead && leadBasic && (
           <div className="bg-gradient text-background p-2 mb-2">
             <p className="text-center">Associated Lead</p>
             <p className="font-bold">
@@ -55,16 +55,17 @@ export const NewLeadForm = () => {
           </div>
         )}
       </SkeletonWrapper>
-      <NewLForm leadId={leadBasic?.id} onClose={onNewLeadFormClose} />
+      <NewLForm showRelationship={associatedLead} leadId={leadBasic?.id} onClose={onNewLeadFormClose} />
     </DrawerRight>
   );
 };
 
 type NewLFormProps = {
   leadId: string | undefined;
+  showRelationship: boolean;
   onClose: () => void;
 };
-const NewLForm = ({ leadId, onClose }: NewLFormProps) => {
+const NewLForm = ({ leadId,showRelationship, onClose }: NewLFormProps) => {
   const { onLeadInsertMutate, leadInsertIsPending } = useLeadInsertActions();
   const form = useForm<LeadSchemaType>({
     resolver: zodResolver(LeadSchema),
@@ -91,11 +92,12 @@ const NewLForm = ({ leadId, onClose }: NewLFormProps) => {
       >
         <div className="flex flex-col gap-2">
           {/* RELATIONSHIP */}
-          <FormField
+          {showRelationship&&(
+            <FormField
             control={form.control}
             name="relationship"
             render={({ field }) => (
-              <FormItem className={leadId ? "" : "opacity-0"}>
+              <FormItem>
                 <FormLabel className="flex justify-between items-center">
                   Relationship
                   <FormMessage />
@@ -125,6 +127,8 @@ const NewLForm = ({ leadId, onClose }: NewLFormProps) => {
               </FormItem>
             )}
           />
+          )}
+          
 
           {/* FIRSTNAME */}
           <FormField

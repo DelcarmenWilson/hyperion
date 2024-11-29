@@ -61,7 +61,7 @@ export const TopMenu = () => {
       </Hint>
 
       <Hint label="Add new lead" side="bottom">
-        <Button className="gap-2" size="sm" onClick={() => onNewLeadFormOpen()}>
+        <Button className="gap-2" size="sm" onClick={() => onNewLeadFormOpen(false)}>
           <Plus size={16} />
           CREATE LEAD
         </Button>
