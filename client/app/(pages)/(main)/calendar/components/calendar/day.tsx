@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
-
-import { getAppLabelBgColor } from "@/formulas/labels";
-import { format } from "date-fns";
-import { CalendarAppointment } from "@/types/appointment";
-import { cn } from "@/lib/utils";
+import {
+  CalendarAppointment,
+  LabelColor,
+  labelColors,
+} from "@/types/appointment";
 
 type DayProps = {
   day: dayjs.Dayjs;
@@ -51,19 +53,19 @@ export const Day = ({ day, rowIdx }: DayProps) => {
           setShowAppointmentModal(true);
         }}
       >
-        {dayAppointments.map((app) => {
-          const bg = getAppLabelBgColor(app.label?.color as string);
-          return (
-            <div
-              key={app.id}
-              className={cn("text-xs truncate", bg)}
-              onClick={() => setSelectedAppointment(app)}
-            >
-              {app.lead ? app.lead.firstName : app.title} -{" "}
-              {format(app.startDate, "h:mm")}
-            </div>
-          );
-        })}
+        {dayAppointments.map((app) => (
+          <div
+            key={app.id}
+            className={cn(
+              "text-xs truncate",
+              labelColors[app.label?.color as LabelColor]
+            )}
+            onClick={() => setSelectedAppointment(app)}
+          >
+            {app.lead ? app.lead.firstName : app.title} -{" "}
+            {format(app.startDate, "h:mm")}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
-import { CalendarAppointment } from "@/types/appointment";
-import { getAppLabelBgColor } from "@/formulas/labels";
+
+import {
+  CalendarAppointment,
+  LabelColor,
+  labelColors,
+} from "@/types/appointment";
+
 import { format } from "date-fns";
 import dayjs from "dayjs";
 
@@ -29,15 +34,18 @@ export const RightSidebarClient = () => {
       <p className="text-sm font-semibold">
         {format(new Date(daySelected?.toDate()!), "PPP")}
       </p>
-      {dayAppointments.map((app) => {
-        const bg = getAppLabelBgColor(app.label?.color as string);
-        return (
-          <div key={app.id} className={cn("text-xs truncate", bg)}>
-            {app.lead ? app.lead.firstName : app.title} -{" "}
-            {format(app.startDate, "h:mm")}
-          </div>
-        );
-      })}
+      {dayAppointments.map((app) => (
+        <div
+          key={app.id}
+          className={cn(
+            "text-xs truncate",
+            labelColors[app.label?.color as LabelColor]
+          )}
+        >
+          {app.lead ? app.lead.firstName : app.title} -{" "}
+          {format(app.startDate, "h:mm")}
+        </div>
+      ))}
     </div>
   );
 };

@@ -4,8 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash, X } from "lucide-react";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { useCalendarActions } from "@/hooks/calendar/use-calendar";
-
 import { useAppointmentContext } from "@/providers/app";
+import { cn } from "@/lib/utils";
+
+import { LabelColor, labelCirlceColors } from "@/types/appointment";
 
 import {
   Form,
@@ -28,9 +30,8 @@ import {
   AppointmentLabelSchema,
   AppointmentLabelSchemaType,
 } from "@/schemas/appointment";
-import { getLabelBgColor, labelClasses } from "@/formulas/labels";
 import { EmptyCard } from "@/components/reusable/empty-card";
-import { cn } from "@/lib/utils";
+import { getEnumValues } from "@/lib/helper/enum-converter";
 
 export const LabelModal = () => {
   const { setShowLabelModal, labels, selectedLabel, addLabel, updateLabel } =
@@ -47,10 +48,12 @@ export const LabelModal = () => {
     //@ts-ignore
     defaultValues: selectedLabel || {
       id: "",
-      color: labelClasses[0],
+      color: "PRIMARY",
       checked: true,
     },
   });
+
+  const colors = getEnumValues(LabelColor);
 
   return (
     <div className="flex-center absolute inset-0">
@@ -86,23 +89,20 @@ export const LabelModal = () => {
             <div className="flex flex-col w-[200px] px-2 border-e space-y-2">
               <h4>My Labels</h4>
               {!labels?.length && <EmptyCard title="No Labels Yet" />}
-              {labels?.map((lbl) => {
-                const bg = getLabelBgColor(lbl.color);
-                return (
-                  <div
-                    key={lbl.id}
-                    className="flex items-center capitalize gap-2"
-                  >
-                    <span
-                      className={cn(
-                        "w-6 h-6 rounded-full flex items-center justify-center cursor-pointer",
-                        bg.label
-                      )}
-                    ></span>
-                    {lbl.name}
-                  </div>
-                );
-              })}
+              {labels?.map((lbl) => (
+                <div
+                  key={lbl.id}
+                  className="flex items-center capitalize gap-2"
+                >
+                  <span
+                    className={cn(
+                      "flex-center w-6 h-6 rounded-full ",
+                      labelCirlceColors[lbl.color as LabelColor]
+                    )}
+                  ></span>
+                  {lbl.name}
+                </div>
+              ))}
             </div>
             <div className="flex-1 space-y-2 ps-2">
               <Form {...form}>
@@ -153,16 +153,20 @@ export const LabelModal = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {labelClasses.map((color, i) => (
-                              <SelectItem key={i} value={color}>
+                            {colors.map((color, i) => (
+                              <SelectItem key={i} value={color.value}>
                                 <div className="flex gap-2">
                                   <span
                                     className={cn(
-                                      "w-6 h-6 rounded-full flex items-center justify-center cursor-pointer",
-                                      getLabelBgColor(color).label
+                                      "w-6 h-6 rounded-full flex items-center justify-cente",
+                                      labelCirlceColors[
+                                        color.value as LabelColor
+                                      ]
                                     )}
                                   ></span>
-                                  {color}
+                                  <span className="lowercase">
+                                    {color.name}
+                                  </span>
                                 </div>
                               </SelectItem>
                             ))}
