@@ -23,11 +23,26 @@ export const updateBluePrintWeek = async (
 
   if (!bluePrintWeek) throw new Error("No weekly blueprint found!"); 
 
-  await db.bluePrintWeek.update({
-    where: { id:bluePrintWeek.id },
-    data: { ...data },
-  });
+
+  await db.$transaction([
+
+    db.bluePrintWeek.update({
+      where: { id:bluePrintWeek.id },
+      data: { ...data },
+    }),
+
+    db.bluePrint.update({
+      where:{id:bluePrintWeek.bluePrintId},
+      data:{
+        calls:{increment:data.calls},
+        appointments:{increment:data.appointments},
+        premium:{increment:data.premium}
+      }
+    })
+
+  ]) 
 
   revalidatePath("/blueprint")
+  revalidatePath("/")
 };
 

@@ -112,8 +112,6 @@ const MiniJobInfo = ({ miniJob }: { miniJob: MiniJob }) => {
             )}
           </div>
         </div>
-
-        <pre>{JSON.stringify(miniJob, null, 4)}</pre>
       </ScrollArea>
       <MiniJobForm
         open={showForm}
