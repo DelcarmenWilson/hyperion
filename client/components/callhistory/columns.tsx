@@ -14,6 +14,8 @@ import { formatDateTime } from "@/formulas/dates";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { getPhoneStatusText } from "@/formulas/phone";
+import { AppointmentDetails } from "../lead/appointments/details-appointment-dialog";
+import { original } from "immer";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -132,8 +134,18 @@ export const columns: ColumnDef<FullCall>[] = [
 
   {
     accessorKey: "appointmentId",
-    header: "Appointment?",
-    cell: ({ row }) => <AppButton appointmentId={row.original.appointmentId} />,
+    header: "Appointment",
+    cell: ({ row }) =>
+    {row.original.appointment&&(<AppointmentDetails 
+    status={row.original.appointment.status}
+    firstName={row.original.lead?.firstName!}
+    lastName={row.original.lead?.lastName!}
+    startDate={row.original.appointment.startDate}
+    localDate={row.original.appointment.localDate}
+    cellPhone={row.original.lead?.cellPhone!}
+    email={row.original.lead?.email!}
+    comments={row.original.appointment.comments}
+    reason={row.original.appointment.reason} />)},
   },
 
   {

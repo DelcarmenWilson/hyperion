@@ -24,40 +24,40 @@ import { appointmentUpdateByIdStatus } from "@/actions/appointment";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Calendar, ClipboardList } from "lucide-react";
-import { AppointmentStatus } from "@/types/appointment";
+import {
+  AppointmentStatus,
+  AppointmentStatusColors,
+} from "@/types/appointment";
 import { capitalize } from "@/formulas/text";
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import { DataDisplay } from "@/components/global/data-display/data-display";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
-export const AppointmentDetails = ({
-  appointment,
-}: {
-  appointment: FullAppointment;
-}) => {
-  const queryClient = useQueryClient();
+type Props={status:string;
+  firstName:string;
+  lastName:string;
+  startDate:Date;
+  localDate:Date;
+  cellPhone:string;
+  email:string|null;
+  comments:string|null
+  reason: string|null
+}
 
-  const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState(appointment?.status);
+export const AppointmentDetails = ({status,
+  firstName,
+  lastName,
+  startDate,
+  localDate,
+  cellPhone,
+  email,
+  comments,
+  reason
+}: Props) => {
+const [open, setOpen] = useState(false);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: appointmentUpdateByIdStatus,
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("appointment has been updated!!!", {
-          id: "appointment-update",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["agentAppointments"],
-        });
-      }
-    },
-  });
-
-  const statuses = getEnumValues(AppointmentStatus);
-
-  if (!appointment) return null;
-
-  const { lead, startDate, endDate, localDate } = appointment;
 
   return (
     <Dialog
@@ -76,77 +76,51 @@ export const AppointmentDetails = ({
         <CustomDialogHeader
           icon={Calendar}
           title="Appointment details"
-          subTitle="Start building your workflow"
+          // subTitle="Start building your workflow"
         />
-        <div>
-          <p className="text-xl text-center font-bold">
-            {lead.firstName} {lead.lastName}
+        <ScrollArea className="max-h-[400px] relative">
+         
+          <Badge
+            className={cn(
+              "absolute top-0 right-1",
+              AppointmentStatusColors[status as AppointmentStatus]
+            )}
+          >
+            {status}
+          </Badge>
+          <p className="font-semibold mb-1">
+            <span>Name: </span>
+            <span>
+              {firstName} {lastName}           </span>
           </p>
-
-          <DataDisplay
-            title="Lead Date"
-            value={startDate ? formatDateTime(startDate, "MM-dd-yy") : "No set"}
-          />
-          <div className="grid grid-cols-1 lg:grid-cols-2 ">
-            <DataDisplay
-              title="Lead Date"
-              value={
-                localDate
-                  ? formatDateTime(localDate, "MM-dd-yy h:mm aa")
-                  : "No set"
-              }
-            />
-
-            <DataDisplay
-              title="Start Time"
-              value={startDate ? formatTime(startDate, "MM-dd-yy") : "No set"}
-            />
-
-            <DataDisplay
-              title="End Time"
-              value={endDate ? formatTime(endDate) : "No set"}
-            />
+          <div className="grid grid-cols-2 gap-y-1">
+            <Box title="Start Date" value={formatDate(startDate)} />
+            <Box title="Start Time" value={formatTime(startDate)} />
+            <Box title="Lead Date" value={formatDate(localDate)} />
+            <Box title="Lead Time" value={formatTime(localDate)} />
+            <Box title="Phone#" value={cellPhone} />
+            <Box title="Email" value={email || ""} />
           </div>
-
-          <div className="flex items-center gap-2">
-            <p className="font-semibold">Status:</p>
-            <Select
-              name="ddlStatus"
-              onValueChange={setStatus}
-              defaultValue={status}
-              disabled={appointment.status != AppointmentStatus.SCHEDULED}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a status" />
-              </SelectTrigger>
-              <SelectContent className="w-[200px]">
-                {statuses.map((status) => (
-                  <SelectItem key={status.value} value={status.value}>
-                    <span>{capitalize(status.name)}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <DataDisplay
-            title="Phone #"
-            value={formatPhoneNumber(lead.cellPhone)}
-          />
-          <DataDisplay title="Email" value={lead.email || "N?A"} />
-
-          {appointment.status != status && (
-            <Button
-              disabled={isPending}
-              onClick={() =>
-                mutate({ id: appointment.id, status: status as string })
-              }
-            >
-              Save
-            </Button>
+          <p>
+            <Box title="Comments" value={comments || ""} />
+          </p>
+          {reason && (
+            <p>
+              <Box title="Reason" value={reason} />
+            </p>
           )}
-        </div>{" "}
+          {/* <pre>{JSON.stringify(appointment, null, 4)}</pre> */}
+        </ScrollArea>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const Box = ({ title, value }: { title: string; value: string }) => {
+  return (
+    <p>
+      <span className="font-semibold">{title}: </span>
+      <span className="text-muted-foreground">{value}</span>
+    </p>
   );
 };

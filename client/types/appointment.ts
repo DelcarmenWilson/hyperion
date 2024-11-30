@@ -28,6 +28,16 @@ export enum AppointmentStatus{
   SCHEDULED = "SCHEDULED",
 }
 
+
+
+export const AppointmentStatusColors = {
+  [AppointmentStatus.CANCELLED]: "bg-orange-500 hover:bg-orange-200",
+  [AppointmentStatus.CLOSED]: "bg-blue-500 hover:bg-blue-200",
+  [AppointmentStatus.NO_SHOW]: "bg-red-500 hover:bg-red-200",
+  [AppointmentStatus.RESCHEDULED]: "bg-yellow-500 hover:bg-yellow-200",
+  [AppointmentStatus.SCHEDULED]: "",
+};
+
 export enum LabelColor {
   INDIGO = "INDIGO",
   GRAY = "GRAY",

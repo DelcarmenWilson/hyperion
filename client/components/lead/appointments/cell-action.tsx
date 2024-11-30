@@ -34,7 +34,16 @@ export const CellAction = ({
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem asChild>
-            <AppointmentDetails appointment={appointment} />
+            <AppointmentDetails 
+            status={appointment.status}
+            firstName={appointment.lead.firstName}
+            lastName={appointment.lead.lastName}
+            startDate={appointment.startDate}
+            localDate={appointment.localDate}
+            cellPhone={appointment.lead.cellPhone}
+            email={appointment.lead.email}
+            comments={appointment.comments}
+            reason={appointment.reason} />
           </DropdownMenuItem>
 
           {appointment.status === AppointmentStatus.SCHEDULED && (

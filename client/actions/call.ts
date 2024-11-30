@@ -2,6 +2,7 @@
 import { db } from "@/lib/db";
 import { timeDiff, getEntireDay } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
+import { FullCall } from "@/types";
 //DATA
 export const callsGetAllByAgentId = async (userId: string) => {
   try {
@@ -33,10 +34,10 @@ export const callsGetAllByAgentIdToday = async () => {
 
     const calls = await db.call.findMany({
       where: { userId: user.id, createdAt: { gte: getEntireDay().start } },
-      include: { lead: true },
+      include: { lead: true, appointment: true },
       orderBy: { createdAt: "desc" },
     });
-    return calls;
+    return calls as FullCall[];
   } catch {
     return [];
   }
@@ -63,10 +64,11 @@ export const callsGetAllByAgentIdFiltered = async (
             email: true,
           },
         },
+        appointment:true,
       },
       orderBy: { createdAt: "desc" },
     });
-    return calls;
+    return calls as FullCall[];
   } catch {
     return [];
   }
@@ -92,10 +94,11 @@ export const callsGetAllByUserIdFiltered = async (from: string, to: string) => {
             email: true,
           },
         },
+        appointment:true,
       },
       orderBy: { createdAt: "desc" },
     });
-    return calls;
+    return calls as FullCall[];
   } catch {
     return [];
   }
