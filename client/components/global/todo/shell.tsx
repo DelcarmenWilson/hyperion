@@ -5,11 +5,14 @@ import { TodoStatus } from "@/types/todo";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TodosList } from "./list";
+import { useTodoCategoryData } from "@/hooks/user/use-todo-category";
 
 const TodoShell = () => {
   const { onTodosGet } = useTodoData();
   const { todos, todosFetching } = onTodosGet();
-  if (todos == undefined) return null;
+  const { onGetCategories } = useTodoCategoryData();
+  const { categories } = onGetCategories();
+  if (todos == undefined || categories == undefined) return null;
   return (
     <div className="flex flex-1 border-t h-full overflow-hidden">
       <Tabs className="flex flex-col w-full h-full" defaultValue="active">
@@ -33,6 +36,7 @@ const TodoShell = () => {
             value="active"
           >
             <TodosList
+              categories={categories}
               todos={todos.filter((e) => e.status == TodoStatus.PENDING)}
               loading={todosFetching}
             />
@@ -43,6 +47,7 @@ const TodoShell = () => {
             value="completed"
           >
             <TodosList
+              categories={categories}
               todos={todos.filter((e) => e.status == TodoStatus.COMPLETED)}
               loading={todosFetching}
             />

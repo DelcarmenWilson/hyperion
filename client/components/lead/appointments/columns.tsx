@@ -7,7 +7,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime, getAge } from "@/formulas/dates";
 import { CellDetails } from "./cell-details";
-import { AppointmentStatus, AppointmentStatusColors } from "@/types/appointment";
+import { AppointmentStatus } from "@/types/appointment";
+
+const AppointmentStatusColors = {
+  [AppointmentStatus.CANCELLED]: "bg-orange-500 hover:bg-orange-200",
+  [AppointmentStatus.CLOSED]: "bg-blue-500 hover:bg-blue-200",
+  [AppointmentStatus.NO_SHOW]: "bg-red-500 hover:bg-red-200",
+  [AppointmentStatus.RESCHEDULED]: "bg-yellow-500 hover:bg-yellow-200",
+  [AppointmentStatus.SCHEDULED]: "",
+};
 
 export const columns: ColumnDef<FullAppointment>[] = [
   {
@@ -51,7 +59,9 @@ export const columns: ColumnDef<FullAppointment>[] = [
     cell: ({ row }) => (
       <div>
         <Badge
-          className={AppointmentStatusColors[row.original.status as AppointmentStatus]}
+          className={
+            AppointmentStatusColors[row.original.status as AppointmentStatus]
+          }
         >
           {row.original.status}
         </Badge>

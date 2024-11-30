@@ -1,52 +1,41 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-
-import { FullAppointment } from "@/types";
-
-import { Button } from "@/components/ui/button";
-import { CardData } from "@/components/reusable/card-data";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { formatPhoneNumber } from "@/formulas/phones";
-import { formatDate, formatDateTime, formatTime } from "@/formulas/dates";
-import { appointmentStatus } from "@/constants/texts";
-import { appointmentUpdateByIdStatus } from "@/actions/appointment";
-
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import CustomDialogHeader from "@/components/custom-dialog-header";
+import { useState } from "react";
 import { Calendar, ClipboardList } from "lucide-react";
-import {
-  AppointmentStatus,
-  AppointmentStatusColors,
-} from "@/types/appointment";
-import { capitalize } from "@/formulas/text";
-import { getEnumValues } from "@/lib/helper/enum-converter";
-import { DataDisplay } from "@/components/global/data-display/data-display";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { cn } from "@/lib/utils";
 
-type Props={status:string;
-  firstName:string;
-  lastName:string;
-  startDate:Date;
-  localDate:Date;
-  cellPhone:string;
-  email:string|null;
-  comments:string|null
-  reason: string|null
-}
+import { AppointmentStatus } from "@/types/appointment";
 
-export const AppointmentDetails = ({status,
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import CustomDialogHeader from "@/components/custom-dialog-header";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import { formatDate, formatTime } from "@/formulas/dates";
+
+export const AppointmentStatusColors = {
+  [AppointmentStatus.CANCELLED]: "bg-orange-500 hover:bg-orange-200",
+  [AppointmentStatus.CLOSED]: "bg-blue-500 hover:bg-blue-200",
+  [AppointmentStatus.NO_SHOW]: "bg-red-500 hover:bg-red-200",
+  [AppointmentStatus.RESCHEDULED]: "bg-yellow-500 hover:bg-yellow-200",
+  [AppointmentStatus.SCHEDULED]: "",
+};
+
+type Props = {
+  status: string;
+  firstName: string;
+  lastName: string;
+  startDate: Date;
+  localDate: Date;
+  cellPhone: string;
+  email: string | null;
+  comments: string | null;
+  reason: string | null;
+};
+
+export const AppointmentDetails = ({
+  status,
   firstName,
   lastName,
   startDate,
@@ -54,10 +43,9 @@ export const AppointmentDetails = ({status,
   cellPhone,
   email,
   comments,
-  reason
+  reason,
 }: Props) => {
-const [open, setOpen] = useState(false);
-
+  const [open, setOpen] = useState(false);
 
   return (
     <Dialog
@@ -79,7 +67,6 @@ const [open, setOpen] = useState(false);
           // subTitle="Start building your workflow"
         />
         <ScrollArea className="max-h-[400px] relative">
-         
           <Badge
             className={cn(
               "absolute top-0 right-1",
@@ -91,7 +78,8 @@ const [open, setOpen] = useState(false);
           <p className="font-semibold mb-1">
             <span>Name: </span>
             <span>
-              {firstName} {lastName}           </span>
+              {firstName} {lastName}{" "}
+            </span>
           </p>
           <div className="grid grid-cols-2 gap-y-1">
             <Box title="Start Date" value={formatDate(startDate)} />

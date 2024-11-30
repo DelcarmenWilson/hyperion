@@ -53,8 +53,9 @@ export const UserTemplateSchema = z.object({
 export type UserTemplateSchemaType = z.infer<typeof UserTemplateSchema>;
 
 export const TodoSchema = z.object({
-  id: z.optional(z.string()),
-  userId: z.optional(z.string()),
+  id: z.string().optional(),
+  userId: z.string().optional(),
+  categoryId:z.string().optional(),
   title: z.string(),
   description: z.string(),
   comments: z.string(),

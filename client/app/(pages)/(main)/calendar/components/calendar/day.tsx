@@ -4,11 +4,19 @@ import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
-import {
-  CalendarAppointment,
-  LabelColor,
-  labelColors,
-} from "@/types/appointment";
+
+import { CalendarAppointment } from "@/types/appointment";
+import { HyperionColors } from "@/lib/colors";
+
+export const labelColors = {
+  [HyperionColors.INDIGO]: "bg-indigo-200",
+  [HyperionColors.GRAY]: "bg-gray-200",
+  [HyperionColors.GREEN]: "bg-green-200",
+  [HyperionColors.BLUE]: "bg-blue-200",
+  [HyperionColors.RED]: "bg-red-200",
+  [HyperionColors.PURPLE]: "bg-purple-200",
+  [HyperionColors.PRIMARY]: "bg-primary text-background",
+};
 
 type DayProps = {
   day: dayjs.Dayjs;
@@ -58,7 +66,7 @@ export const Day = ({ day, rowIdx }: DayProps) => {
             key={app.id}
             className={cn(
               "text-xs truncate",
-              labelColors[app.label?.color as LabelColor]
+              labelColors[app.label?.color as HyperionColors]
             )}
             onClick={() => setSelectedAppointment(app)}
           >

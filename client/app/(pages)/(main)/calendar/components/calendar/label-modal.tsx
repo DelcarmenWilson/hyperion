@@ -7,7 +7,7 @@ import { useCalendarActions } from "@/hooks/calendar/use-calendar";
 import { useAppointmentContext } from "@/providers/app";
 import { cn } from "@/lib/utils";
 
-import { LabelColor, labelCirlceColors } from "@/types/appointment";
+import { HyperionColors } from "@/lib/colors";
 
 import {
   Form,
@@ -33,6 +33,16 @@ import {
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { getEnumValues } from "@/lib/helper/enum-converter";
 
+export const labelCirlceColors = {
+  [HyperionColors.INDIGO]: "bg-indigo-500",
+  [HyperionColors.GRAY]: "bg-gray-500",
+  [HyperionColors.GREEN]: "bg-green-500",
+  [HyperionColors.BLUE]: "bg-blue-500",
+  [HyperionColors.RED]: "bg-red-500",
+  [HyperionColors.PURPLE]: "bg-purple-500",
+  [HyperionColors.PRIMARY]: "bg-primary text-background",
+};
+
 export const LabelModal = () => {
   const { setShowLabelModal, labels, selectedLabel, addLabel, updateLabel } =
     useCalendarStore();
@@ -53,7 +63,7 @@ export const LabelModal = () => {
     },
   });
 
-  const colors = getEnumValues(LabelColor);
+  const colors = getEnumValues(HyperionColors);
 
   return (
     <div className="flex-center absolute inset-0">
@@ -97,7 +107,7 @@ export const LabelModal = () => {
                   <span
                     className={cn(
                       "flex-center w-6 h-6 rounded-full ",
-                      labelCirlceColors[lbl.color as LabelColor]
+                      labelCirlceColors[lbl.color as HyperionColors]
                     )}
                   ></span>
                   {lbl.name}
@@ -160,7 +170,7 @@ export const LabelModal = () => {
                                     className={cn(
                                       "w-6 h-6 rounded-full flex items-center justify-cente",
                                       labelCirlceColors[
-                                        color.value as LabelColor
+                                        color.value as HyperionColors
                                       ]
                                     )}
                                   ></span>

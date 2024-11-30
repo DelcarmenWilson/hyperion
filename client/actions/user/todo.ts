@@ -1,20 +1,107 @@
 "use server";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { sendTodoReminderEmail } from "@/lib/mail";
+
+import { TodoSchema, TodoSchemaType } from "@/schemas/user";
+import { TodoStatus } from "@/types/todo";
+
 import { TodoReminderMethod } from "@/types/todo";
 
-import { sendTodoReminderEmail } from "@/lib/mail";
 import { sendSocketData } from "@/services/socket-service";
-import { smsSend } from "@/actions/sms";
 import { createEmail } from "@/actions/email/create-email";
+import { smsSend } from "@/actions/sms";
 
-export const remindTodos = async () => {
+// DATA
+export const getTodo = async (id: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  return await db.userTodo.findUnique({
+    where: { id, userId: user.id },
+    include: { category: true },
+  });
+};
+
+export const getTodos = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  return await db.userTodo.findMany({
+    where: { userId: user.id },
+    include: { category: true },
+  });
+};
+
+// ACTIONS
+export const createTodo = async (values: TodoSchemaType) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const { success, data } = TodoSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
+
+  const nextReminder = data.reminder ? data.startAt : undefined;
+
+  return await db.userTodo.create({
+    data: {
+      userId: user.id,
+      ...data,
+      nextReminder,
+      status: TodoStatus.PENDING,
+    },
+  });
+};
+
+export const deleteTodo = async (id: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  await db.userTodo.delete({
+    where: {
+      id,
+      userId: user.id,
+    },
+  });
+};
+export const updateTodo = async (values: TodoSchemaType) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const { success, data } = TodoSchema.safeParse(values);
+  if (!success) throw new Error("UnauthenticatedInvalid fields!");
+
+  return await db.userTodo.update({
+    where: { id: data.id, userId: user.id },
+    data: {
+      ...data,
+    },
+  });
+};
+
+export const completeTodo = async (id: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  return await db.userTodo.update({
+    where: { id, userId: user.id },
+    data: {
+      status: TodoStatus.COMPLETED,
+      nextReminder: undefined,
+    },
+  });
+};
+
+export const remindTodos = async (test: boolean = false) => {
   const startDate = new Date();
-  //TODO - dont forget to remove this an allow the other line
-  // startDate.setHours(startDate.getHours() - 1);
-  startDate.setSeconds(startDate.getSeconds() - 5);
   const endDate = new Date();
-  // endDate.setHours(endDate.getHours() + 1);
-  endDate.setSeconds(endDate.getSeconds() + 10);
+  if (test) {
+    startDate.setHours(startDate.getHours() - 1);
+    endDate.setHours(endDate.getHours() + 1);
+  } else {
+    startDate.setSeconds(startDate.getSeconds() - 5);
+    endDate.setSeconds(endDate.getSeconds() + 10);
+  }
 
   const todos = await db.userTodo.findMany({
     where: {
@@ -123,4 +210,19 @@ export const remindTodos = async () => {
         break;
     }
   }
+};
+
+export const snoozeTodo = async (id: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const nextReminder = new Date();
+  nextReminder.setMinutes(nextReminder.getMinutes() + 5);
+
+  return await db.userTodo.update({
+    where: { id, userId: user.id },
+    data: {
+      nextReminder: nextReminder,
+    },
+  });
 };

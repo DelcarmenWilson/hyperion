@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { FullCall } from "@/types";
 
-import { AppButton } from "./app-button";
+import { AppointmentDetails } from "../lead/appointments/details-appointment-dialog";
 import { Button } from "@/components/ui/button";
 import { CallHistoryActions } from "./actions";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,8 +14,6 @@ import { formatDateTime } from "@/formulas/dates";
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber } from "@/formulas/phones";
 import { getPhoneStatusText } from "@/formulas/phone";
-import { AppointmentDetails } from "../lead/appointments/details-appointment-dialog";
-import { original } from "immer";
 
 export const columns: ColumnDef<FullCall>[] = [
   {
@@ -100,11 +98,6 @@ export const columns: ColumnDef<FullCall>[] = [
       </div>
     ),
   },
-
-  // {
-  //   accessorKey: "timeZone",
-  //   header: "Time Zone",
-  // },
   {
     accessorKey: "duration",
     // header: "Duration",
@@ -120,9 +113,9 @@ export const columns: ColumnDef<FullCall>[] = [
       );
     },
     cell: ({ row }) => (
-      <div>
+      <span>
         {row.original.duration && formatSecondsToTime(row.original.duration)}
-      </div>
+      </span>
     ),
   },
 
@@ -135,17 +128,23 @@ export const columns: ColumnDef<FullCall>[] = [
   {
     accessorKey: "appointmentId",
     header: "Appointment",
-    cell: ({ row }) =>
-    {row.original.appointment&&(<AppointmentDetails 
-    status={row.original.appointment.status}
-    firstName={row.original.lead?.firstName!}
-    lastName={row.original.lead?.lastName!}
-    startDate={row.original.appointment.startDate}
-    localDate={row.original.appointment.localDate}
-    cellPhone={row.original.lead?.cellPhone!}
-    email={row.original.lead?.email!}
-    comments={row.original.appointment.comments}
-    reason={row.original.appointment.reason} />)},
+    cell: ({ row }) => {
+      return (
+        row.original.appointment && (
+          <AppointmentDetails
+            status={row.original.appointment.status}
+            firstName={row.original.lead?.firstName!}
+            lastName={row.original.lead?.lastName!}
+            startDate={row.original.appointment.startDate}
+            localDate={row.original.appointment.localDate}
+            cellPhone={row.original.lead?.cellPhone!}
+            email={row.original.lead?.email!}
+            comments={row.original.appointment.comments}
+            reason={row.original.appointment.reason}
+          />
+        )
+      );
+    },
   },
 
   {
