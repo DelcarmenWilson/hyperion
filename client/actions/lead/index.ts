@@ -24,11 +24,11 @@ import { generateTextCode } from "@/formulas/phone";
 import { feedInsert } from "../feed";
 import { chatSettingGetTitan } from "../settings/chat";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
+import { AppointmentStatus } from "@/types/appointment";
 
 //LEAD
 
 //DATA
-
 
 export const leadsGetAllByAgentIdFiltered = async (
   values: LeadExportSchemaType
@@ -110,7 +110,9 @@ export const leadGetByIdBasicInfo = async (id: string) => {
         userId: true,
         sharedUserId: true,
         state: true,
-        appointments: { where: { status: "Scheduled" } },
+        appointments: {
+          where: { status: AppointmentStatus.SCHEDULED, agentId: user.id },
+        },
         cellPhone: true,
         defaultNumber: true,
         titan: true,
@@ -231,8 +233,6 @@ export const leadGetByConversationId = async (id: string) => {
     return null;
   }
 };
-
-
 
 export const leadGetPrevNextById = async (id: string) => {
   try {
@@ -441,7 +441,6 @@ export const leadsGetAssociated = async (id: string) => {
   }
 };
 //ACTIONS
-
 
 export const leadInsert = async (values: LeadSchemaType) => {
   const user = await currentUser();
@@ -867,16 +866,16 @@ export const leadUpdateByIdMainInfo = async (values: LeadMainSchemaType) => {
 export const leadUpdateByIdGeneralInfo = async (
   values: LeadGeneralSchemaType
 ) => {
-  const {success,data} = LeadGeneralSchema.safeParse(values);
+  const { success, data } = LeadGeneralSchema.safeParse(values);
   if (!success) {
     return { error: "Invalid fields!" };
   }
-  
+
   const user = await currentUser();
   if (!user?.id || !user?.email) {
     return { error: "Unauthenticated" };
   }
-  const existingLead = await db.lead.findUnique({ where: { id:data.id } });
+  const existingLead = await db.lead.findUnique({ where: { id: data.id } });
 
   if (!existingLead) {
     return { error: "Lead does not exist" };
@@ -890,9 +889,9 @@ export const leadUpdateByIdGeneralInfo = async (
   //   dob = new Date(dob).toString();
   // }
   const leadInfo = await db.lead.update({
-    where: { id:data.id },
+    where: { id: data.id },
     data: {
-     ...data
+      ...data,
     },
   });
   leadActivityInsert(leadInfo.id!, "general", "General info updated", user.id);
@@ -1137,18 +1136,13 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
     include: { phoneNumbers: true },
   });
 
-  if (!tfUser) {
-    return { error: "User does not exists!!" };
-  }
+  if (!tfUser) return { error: "User does not exists!!" };
 
   for (let id of ids) {
     const lead = await db.lead.findUnique({ where: { id } });
-    if (!lead) {
-      return { error: "Lead does not exists!!" };
-    }
-    if (lead.userId != user.id) {
-      return { error: "Unauthorized!!" };
-    }
+    if (!lead) return { error: "Lead does not exists!!" };
+
+    if (lead.userId != user.id) return { error: "Unauthorized!!" };
 
     const st = states.find(
       (e) =>
@@ -1173,6 +1167,19 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
       data: {
         userId: tfUser.id,
         defaultNumber: phoneNumber ? phoneNumber.phone : defaultNumber?.phone,
+      },
+    });
+
+    //Update all the upcoming appointments with this lead an agent
+    await db.appointment.updateMany({
+      where: {
+        leadId: id,
+        agentId: user.id,
+        status: AppointmentStatus.SCHEDULED,
+      },
+      data: {
+        status: AppointmentStatus.CANCELLED,
+        reason: "Appointment has been canclled due to the lead transfer",
       },
     });
   }

@@ -76,6 +76,7 @@ export const DefaultStatus: StatusType[] = [
   { type: "lead", name: "Resolved", value: "Resolved" },
 ];
 
+///TODO - see if we can remove this and use the num instad
 export const appointmentStatus = [
   "Closed",
   "No-Show",

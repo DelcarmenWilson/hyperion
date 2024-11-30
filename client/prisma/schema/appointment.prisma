@@ -6,7 +6,7 @@ model Appointment {
     endDate   DateTime
     title     String?
 
-    status   String  @default("Scheduled")
+    status   String
     comments String? @db.LongText
     reason   String? @db.LongText
 

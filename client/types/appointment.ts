@@ -20,6 +20,14 @@ export type CalendarLabel = {
   checked: boolean;
 };
 
+export enum AppointmentStatus{
+  CANCELLED="CANCELLED",
+  CLOSED = "CLOSED",
+  NO_SHOW = "NO SHOW",
+  RESCHEDULED = "RESCHEDULED",
+  SCHEDULED = "SCHEDULED",
+}
+
 export enum LabelColor {
   INDIGO = "INDIGO",
   GRAY = "GRAY",
@@ -29,6 +37,8 @@ export enum LabelColor {
   PURPLE = "PURPLE",
   PRIMARY = "PRIMARY",
 }
+
+
 
 export const checkBoxColors = {
   [LabelColor.INDIGO]: "data-[state=checked]:bg-indigo-500 border-indigo-500",

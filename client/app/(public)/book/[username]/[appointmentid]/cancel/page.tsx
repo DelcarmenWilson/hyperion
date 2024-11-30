@@ -1,18 +1,10 @@
 "use client";
-
-import { toast } from "sonner";
-
-import {
-  useAppointmentCancelFormActions,
-  useAppointmentData,
-} from "../../../hooks/use-appointment";
+import { useAppointmentCancelFormActions } from "../../../hooks/use-appointment";
 
 import { CardData } from "@/components/reusable/card-data";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { appointmentCanceledByLead } from "@/actions/appointment";
-import { useEffect, useState } from "react";
 import { formatDateTime } from "@/formulas/dates";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ErrorCard } from "../../../components/error-card";

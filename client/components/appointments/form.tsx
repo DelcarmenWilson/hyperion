@@ -67,6 +67,7 @@ const AppForm = ({ lead }: AppFormProps) => {
     onAppointmentSubmit,
     isPendingAppointment,
   } = useAppointmentActions(lead);
+
   const dt = form.getValues("date")?.getDate();
   const app = lead?.appointments[0];
 

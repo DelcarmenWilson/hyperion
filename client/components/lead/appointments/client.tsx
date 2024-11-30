@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Calendar } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { startOfMonth } from "date-fns";
 
 import { FullAppointment } from "@/types";
 
@@ -13,7 +14,6 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { TopMenu } from "./top-menu";
 import { columns } from "./columns";
 
-import { weekStartEnd } from "@/formulas/dates";
 import {
   appointmentsGetAllByUserIdToday,
   appointmentsGetByUserIdFiltered,
@@ -29,32 +29,23 @@ export const AppointmentClient = ({
   showLink = false,
 }: AppointmentClientProps) => {
   const user = useCurrentUser();
-  const queryClient = useQueryClient();
-  const [dates, setDates] = useState<DateRange | undefined>(weekStartEnd());
+
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
 
   const { data: appointments, isFetching } = useQuery<FullAppointment[]>({
-    queryKey: ["agentAppointments"],
+    queryKey: ["agentAppointments", dateRange.to, dateRange.from],
     queryFn: () =>
       showDate
         ? appointmentsGetByUserIdFiltered(
             user?.id as string,
-            dates?.from?.toString() as string,
-            dates?.to?.toString() as string
+            dateRange?.from?.toString() as string,
+            dateRange?.to?.toString() as string
           )
         : appointmentsGetAllByUserIdToday(user?.id as string),
   });
-
-  const onDateSelected = (e: DateRange) => {
-    if (!e) return;
-    setDates(e);
-    invalidate();
-  };
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["agentAppointments"],
-    });
-  };
 
   return (
     <PageLayout
@@ -65,7 +56,8 @@ export const AppointmentClient = ({
         <TopMenu
           showLink={showLink}
           showDate={showDate}
-          onDateSelected={onDateSelected}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
         />
       }
     >

@@ -8,7 +8,6 @@ import { useCalendarStore } from "./calendar/use-calendar-store";
 import { useInvalidate } from "./use-invalidate";
 import { toast } from "sonner";
 
-
 import { FullAppointment } from "@/types";
 import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
 
@@ -27,7 +26,10 @@ import {
   ScheduleDay,
 } from "@/formulas/schedule";
 
-import { appointmentInsert } from "@/actions/appointment";
+import {
+  appointmentCanceledByAgent,
+  appointmentInsert,
+} from "@/actions/appointment";
 
 type State = {
   appointment?: FullAppointment;
@@ -45,8 +47,7 @@ type Actions = {
   onDetailsClose: () => void;
 };
 
-
-export const useAppointmentStore = create<State&Actions>((set) => ({
+export const useAppointmentStore = create<State & Actions>((set) => ({
   //APPOINTMENT FORM
   isAppointmentFormOpen: false,
   onAppointmentFormOpen: () => set({ isAppointmentFormOpen: true }),
@@ -58,10 +59,10 @@ export const useAppointmentStore = create<State&Actions>((set) => ({
   onDetailsClose: () => set({ isDetailsOpen: false }),
 }));
 
-export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {  
+export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
   const user = useCurrentUser();
-  const {appointments,schedule,labels}=useCalendarStore()
-  const {invalidate}=useInvalidate()
+  const { appointments, schedule, labels } = useCalendarStore();
+  const { invalidate } = useInvalidate();
   const { onApointmentFormClose: onFormClose } = useAppointmentStore();
   const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
@@ -93,7 +94,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
 
   const onCancel = () => {
     form.clearErrors();
-    form.reset();    
+    form.reset();
     onDateSelected(defaultDate);
     onFormClose();
   };
@@ -145,17 +146,17 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
     form.setValue("startDate", tm ? tm.agentDate : undefined);
   };
 
-   const { mutate: appointmentMutate, isPending: isPendingAppointment } =
+  const { mutate: appointmentMutate, isPending: isPendingAppointment } =
     useMutation({
       mutationFn: appointmentInsert,
       onSuccess: (result) => {
         if (result.success) {
-          toast.success("Appointment scheduled!", {id: "insert-appointent",});
+          toast.success("Appointment scheduled!", { id: "insert-appointent" });
           invalidate("blueprint-active");
-      invalidate("blueprint-week-active");
+          invalidate("blueprint-week-active");
           onCancel();
         } else {
-          toast.success(result.error, {id: "insert-appointent", });
+          toast.success(result.error, { id: "insert-appointent" });
         }
       },
       onError: (error) => {
@@ -189,4 +190,34 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
     onAppointmentSubmit,
     isPendingAppointment,
   };
+};
+
+export const useAppointmentCancel = () => {
+  const {invalidate}=useInvalidate()
+  const { mutate: cancelAppointmentMutate, isPending: AppointmentCancelling } =
+    useMutation({
+      mutationFn: appointmentCanceledByAgent,
+      onSuccess: () => {
+        toast.success("Appointment Cancel!", { id: "cancel-appointent" });
+        invalidate("agentAppointments")
+      },
+      onError: (error) => {
+        toast.error(error.message, { id: "cancel-appointent" });
+      },
+    });
+
+  const onCancelAppointment = useCallback(
+    (values: { id: string; reason: string }) => {
+      toast.loading("Cancelling Appointment...", {
+        id: "cancel-appointent",
+      });
+      cancelAppointmentMutate(values);
+    },
+    [cancelAppointmentMutate]
+  );
+
+  return {
+    onCancelAppointment,
+    AppointmentCancelling
+  }
 };

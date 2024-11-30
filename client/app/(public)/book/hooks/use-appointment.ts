@@ -335,8 +335,8 @@ export const useAppointmentCancelFormActions = (
     setLoading(true);
 
     const cancelledAppointment = await appointmentCanceledByLead(
-      appointmentId,
-      reason
+      {id:appointmentId,
+        reason}
     );
     if (cancelledAppointment.success) setCancel(true);
 
