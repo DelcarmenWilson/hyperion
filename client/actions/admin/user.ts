@@ -20,12 +20,14 @@ export const adminUsersGetAll = async () => {
 
 //ACTIONS
 export const adminUpdateUserNumber = async (userId: string) => {
-  const role=await currentRole()
-  if(!role)return {error:"unauthenticated!" };
+  const role = await currentRole();
+  if (!role) return { error: "unauthenticated!" };
 
-  if(!UPPERADMINS.includes(role))return {error:"Unauthorized" };
+  if (!UPPERADMINS.includes(role)) return { error: "Unauthorized" };
 
-  const phoneNumbers = await db.phoneNumber.findMany({ where: { agentId:userId } });
+  const phoneNumbers = await db.phoneNumber.findMany({
+    where: { agentId: userId },
+  });
   if (!phoneNumbers.length) {
     return { error: "No phone number found" };
   }
@@ -58,61 +60,69 @@ export const adminConfirmUserEmail = async (userId: string, date: string) => {
   return { success: "Email has been confirmed" };
 };
 
-export const adminChangeUserRole = async (userId: string, newRole: string) => {
-  const role=await currentRole()
-  if(!role)return {error:"unauthenticated!" };
+export const updateUserRole = async ({
+  userId,
+  newRole,
+}: {
+  userId: string;
+  newRole: string;
+}) => {
+  const role = await currentRole();
+  if (!role) throw new Error("Unauthenticated!");
 
-  if(!UPPERADMINS.includes(role))return {error:"Unauthorized" };
+  if (!UPPERADMINS.includes(role))  throw new Error("Unauthorized" );
 
   const user = await db.user.findUnique({
     where: { id: userId },
-  });  
+  });
 
-  if (!user) 
-    return { error: "User does not exist" }; 
+  if (!user) throw new Error("User does not exist");
 
   await db.user.update({
     where: { id: userId },
-    data: { role:  UserRole[newRole as keyof typeof UserRole] },
+    data: { role: UserRole[newRole as keyof typeof UserRole] },
   });
 
-  return { success: "Role has been changed" };
+  return "Role has been changed";
 };
-export const adminChangeUserAccountStatus = async (userId: string, newStatus: string) => {
-  const role=await currentRole()
-  if(!role)return {error:"unauthenticated!" };
+export const updateUserAccountStatus = async (
+  {userId,
+  statusId}:{userId: string,
+    statusId: string}
+) => {
+  const role = await currentRole();
+  if (!role)  throw new Error("Unauthenticated!");
 
-  if(!UPPERADMINS.includes(role))return {error:"Unauthorized" };
+  if (!UPPERADMINS.includes(role))  throw new Error("Unauthorized" );
 
   const user = await db.user.findUnique({
-    where: { id:userId },
+    where: { id: userId },
   });
 
-  if (!user) 
-    return { error: "user does not exist" }; 
-  
+  if (!user) throw new Error("User does not exist");
 
   await db.user.update({
-    where: { id:user.id },
-    data: { accountStatus:  UserAccountStatus[newStatus as keyof typeof UserAccountStatus] },
+    where: { id: user.id },
+    data: {
+      accountStatus:
+        UserAccountStatus[statusId as keyof typeof UserAccountStatus],
+    },
   });
 
-  return { success: "Account has been updated" };
+  return   "Account has been updated" ;
 };
 
 export const adminSuspendAccount = async (id: string) => {
-  const role=await currentRole()
-  if(!role)return {error:"unauthenticated!" };
+  const role = await currentRole();
+  if (!role) return { error: "unauthenticated!" };
 
-  if(!UPPERADMINS.includes(role))return {error:"Unauthorized" };
+  if (!UPPERADMINS.includes(role)) return { error: "Unauthorized" };
 
   const user = await db.user.findUnique({
     where: { id },
   });
 
-  if (!user) 
-    return { error: "user does not exist" }; 
-  
+  if (!user) return { error: "user does not exist" };
 
   await db.user.update({
     where: { id },
@@ -121,6 +131,3 @@ export const adminSuspendAccount = async (id: string) => {
 
   return { success: "Account has been Suspended" };
 };
-
-
-

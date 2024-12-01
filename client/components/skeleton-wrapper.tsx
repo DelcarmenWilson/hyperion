@@ -16,7 +16,9 @@ const SkeletonWrapper = ({
 }: Props) => {
   if (!isLoading) return children;
   return (
-    <Skeleton className={cn(fullWidth && "w-full", fullHeight && "h-full")}>
+    <Skeleton
+      className={cn("rounded", fullWidth && "w-full", fullHeight && "h-full")}
+    >
       <div className="opacity-0">{children}</div>
     </Skeleton>
   );

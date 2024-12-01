@@ -35,7 +35,7 @@ export const ImportLeadsForm = () => {
   const role = useCurrentRole();
   const router = useRouter();
   const { isImportFormOpen, onImportFormClose } = useLeadStore();
-  const { onSiteUserGet } = useUserData();
+  const { onGetSiteUsers } = useUserData();
   const { pipelines, isFetchingPipelines } = usePipelineData();
   const [leads, setLeads] = useState<LeadSchemaType[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
@@ -45,7 +45,7 @@ export const ImportLeadsForm = () => {
   const [status, setStatus] = useState<string>();
   const [assistant, setAssistant] = useState<string>();
   const [loading, startTransition] = useTransition();
-  const { siteUsers, siteUsersFetching } = onSiteUserGet("ASSISTANT");
+  const { siteUsers, siteUsersFetching } = onGetSiteUsers("ASSISTANT");
   const disabled = leads.length > 0;
 
   const onFileUploaded = (e: any) => {

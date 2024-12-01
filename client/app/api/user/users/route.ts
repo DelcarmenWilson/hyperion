@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { usersGetAll } from "@/actions/user";
-import { usersGetAllByRole } from "@/actions/user";
+import { getUsers } from "@/actions/user";
+import { getUsersByRole } from "@/actions/user";
 
 export async function POST(req: Request) {
   try {
@@ -9,9 +9,9 @@ export async function POST(req: Request) {
 
     let users;
     if (role == "all") 
-      users = await usersGetAll();
+      users = await getUsers();
      else 
-      users = await usersGetAllByRole(role);
+      users = await getUsersByRole(role);
     
 
     return NextResponse.json(users);

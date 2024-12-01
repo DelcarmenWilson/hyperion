@@ -523,8 +523,8 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
             </div>
           </div>
           {!isSmallScreen && (
-            <div className="flex flex-col items-end gap-1 pr-2 pl-6 pb-6">
-              <div className="flex w-full flex-col items-end gap-1 pr-2 pl-6 pb-6">
+            <div className="flex flex-col items-end gap-1 px-2">
+              <div className="flex w-full flex-col items-end gap-1 px-2">
                 {PRESETS.map((preset) => (
                   <PresetButton
                     key={preset.name}

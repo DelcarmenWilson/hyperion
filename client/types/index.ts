@@ -96,7 +96,7 @@ export type FullCall = Call & {
 export type FullTeam = Team & {
   users?: User[];
   organization: Organization;
-  owner: User | null;
+  owner?: User | null;
 };
 
 export type FullTeamReport = {

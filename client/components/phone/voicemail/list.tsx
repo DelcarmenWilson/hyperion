@@ -1,18 +1,32 @@
 "use client";
 import { useEffect } from "react";
+import { Eye, MoreHorizontal, Phone, Trash } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { usePhoneContext } from "@/providers/phone";
+import { usePhoneStore } from "@/hooks/use-phone";
+import axios from "axios";
+import { format } from "date-fns";
 
+import { FullCall } from "@/types";
+
+import { AudioPlayer } from "@/components/custom/audio-player";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { VoicemailCard } from "./card";
 import { voicemailUpdateByIdListened } from "@/actions/voicemail";
 
 export const VoicemailList = () => {
@@ -60,5 +74,70 @@ export const VoicemailList = () => {
         </Table>
       )}
     </ScrollArea>
+  );
+};
+
+type VoicemailCardProps = {
+  voicemail: FullCall;
+  onUpdate: (e: string) => void;
+};
+
+const VoicemailCard = ({ voicemail: vm, onUpdate }: VoicemailCardProps) => {
+  const { onCallOpen, onPhoneOutOpen, onPhoneOutClose } = usePhoneStore();
+
+  const onCallBack = async () => {
+    //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
+    const response = await axios.post("/api/leads/details/by-id", {
+      leadId: vm?.lead?.id,
+    });
+    const lead = response.data;
+    onPhoneOutClose();
+    onPhoneOutOpen(lead);
+  };
+  return (
+    <TableRow key={vm.id}>
+      <TableCell className="font-medium">
+        {vm.lead ? vm.lead.firstName : vm.from}
+      </TableCell>
+      <TableCell>
+        <AudioPlayer
+          src={vm.recordUrl as string}
+          // onListened={() => onUpdate(vm.id)}
+        />
+      </TableCell>
+      <TableCell>{format(vm.updatedAt, "MM/dd hh:mm aa")}</TableCell>
+      <TableCell>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon">
+              <MoreHorizontal size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center">
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => onCallOpen(vm, "voicemail")}
+            >
+              <Eye size={16} />
+              Details
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={onCallBack}
+            >
+              <Phone size={16} />
+              Call Back
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer gap-2"
+              onClick={() => onUpdate(vm.id)}
+            >
+              <Trash size={16} />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
   );
 };

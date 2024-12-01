@@ -15,7 +15,7 @@ import {
 } from "@/schemas/lead";
 
 import { leadActivityInsert } from "./activity";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
@@ -236,7 +236,7 @@ export const leadGetByConversationId = async (id: string) => {
 
 export const leadGetPrevNextById = async (id: string) => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return null;
     const prev = (
       await db.lead.findMany({

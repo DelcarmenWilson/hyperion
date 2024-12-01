@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tiptap } from "@/components/reusable/tiptap";
 
-import { userUpdateByIdAboutMe } from "@/actions/user";
+import { updateUserAboutMe } from "@/actions/user";
 import { UserAboutMeSchemaType, UserAboutMeSchema } from "@/schemas/user";
 export const AboutMeForm = ({ user }: { user: User }) => {
   const [isPending, startTransition] = useTransition();
@@ -32,11 +32,9 @@ export const AboutMeForm = ({ user }: { user: User }) => {
 
   const onSubmit = (values: UserAboutMeSchemaType) => {
     startTransition(() => {
-      userUpdateByIdAboutMe(values)
+      updateUserAboutMe(values)
         .then((data) => {
-          if (data.success) {
-            toast.success(data.success);
-          } else toast.error(data.error);
+          toast.success(data);
         })
         .catch(() => {
           toast.error("Something went wrong");

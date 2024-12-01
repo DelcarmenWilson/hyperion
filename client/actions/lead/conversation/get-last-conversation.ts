@@ -1,9 +1,9 @@
 "use server";
 import { db } from "@/lib/db";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 export const getLastConversation = async () => {
-  const agentId = await userGetByAssistant();
+  const agentId = await getAssitantForUser();
   if (!agentId) throw new Error("Unauthenticated!");
 
   return await db.leadConversation.findFirst({

@@ -30,7 +30,7 @@ export const ChatBotForm = ({ open, onClose }: Props) => {
         </Button>
 
         <Button size="icon" variant="ghost" onClick={onClose}>
-          <X size={15} />
+          <X size={15} className="text-forground" />
         </Button>
       </div>
       {/* body */}

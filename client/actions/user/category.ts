@@ -2,14 +2,17 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { CreateCategorySchema, CreateCategorySchemaType } from "@/schemas/category";
+import {
+  CreateCategorySchema,
+  CreateCategorySchemaType,
+} from "@/schemas/category";
 
 export const getCategories = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
 
   return await db.userTodoCategory.findMany({
-    where: { userId: user.id },
+    where: { OR: [{ userId: user.id }, { default: true }] },
   });
 };
 
@@ -25,14 +28,12 @@ export const getCategory = async (id: string) => {
 export const createCategory = async (form: CreateCategorySchemaType) => {
   const { success, data } = CreateCategorySchema.safeParse(form);
 
-  if (!success) 
-    throw new Error("bad request");  
+  if (!success) throw new Error("bad request");
 
   const user = await currentUser();
-  if (!user) 
-    redirect("/sign-in");
+  if (!user) redirect("/sign-in");
 
-  const categories= await db.userTodoCategory.findMany({
+  const categories = await db.userTodoCategory.findMany({
     where: { userId: user.id },
   });
 
@@ -40,7 +41,7 @@ export const createCategory = async (form: CreateCategorySchemaType) => {
     data: {
       ...data,
       userId: user.id,
-      order:categories.length
+      order: categories.length,
     },
   });
 };

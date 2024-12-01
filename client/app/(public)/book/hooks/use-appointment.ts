@@ -23,7 +23,7 @@ import {
 import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
 import { leadGetByIdMain } from "@/actions/lead";
 import { scheduleGet } from "@/actions/user/schedule";
-import { userGetByUserName } from "@/actions/user";
+import { getUserByUserName } from "@/actions/user";
 
 import {
   AppointmentLeadSchema,
@@ -63,7 +63,7 @@ export const useAppointmentActions = () => {
   const [userId, setUserId] = useState<string>();
 
   const { data: user, isFetching: isFetchingUser } = useQuery<User | null>({
-    queryFn: () => userGetByUserName(username),
+    queryFn: () => getUserByUserName(username),
     queryKey: [`appUser-${username}`],
   });
 

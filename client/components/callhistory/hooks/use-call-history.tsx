@@ -10,52 +10,51 @@ import {
   callsGetAllByAgentIdFiltered,
   callsGetAllByAgentIdToday,
 } from "@/actions/call";
+import { useSocketStore } from "@/hooks/use-socket-store";
+import { useInvalidate } from "@/hooks/use-invalidate";
 
-export const useCallHistoryData = (userId?: string, showDate?: boolean) => {
-  const { socket } = useContext(SocketContext).SocketState;
-  const queryClient = useQueryClient();
-  const [dates, setDates] = useState<DateRange | undefined>(weekStartEnd());
+export const useCallHistoryData = (
+  dateRange?: DateRange,
+  userId?: string,
+  showDate?: boolean
+) => {
+  const { socket } = useSocketStore();
+  const { invalidate } = useInvalidate();
 
-  const { data: calls, isLoading: callsLoading } = useQuery<FullCall[]>({
-    queryKey: ["agent-calls"],
+  const {
+    data: calls,
+    isFetching: callsFetching,
+    isLoading: callsLoading,
+  } = useQuery<FullCall[]>({
+    queryKey: ["agent-calls", dateRange?.from, dateRange?.to],
     queryFn: () =>
       userId
         ? callsGetAllByAgentIdFiltered(
             userId,
-            dates?.from?.toString() as string,
-            dates?.to?.toString() as string
+            dateRange?.from?.toString() as string,
+            dateRange?.to?.toString() as string
           )
         : showDate
         ? callsGetAllByUserIdFiltered(
-            dates?.from?.toString() as string,
-            dates?.to?.toString() as string
+            dateRange?.from?.toString() as string,
+            dateRange?.to?.toString() as string
           )
         : callsGetAllByAgentIdToday(),
   });
 
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["agent-calls"],
-    });
-  };
-
-  const onDateSelected = (e: DateRange) => {
-    if (!e) return;
-    setDates(e);
-    invalidate();
-  };
-
   useEffect(() => {
-    socket?.on("calllog-new", invalidate);
+    socket?.on("calllog-new", () => {
+      invalidate("agent-calls");
+    });
     return () => {
-      socket?.off("calllog-new", invalidate);
+      socket?.off("calllog-new", () => {
+        invalidate("agent-calls");
+      });
     };
   }, []);
   return {
-    dates,
-    setDates,
     calls,
+    callsFetching,
     callsLoading,
-    onDateSelected,
   };
 };

@@ -6,6 +6,7 @@ import {
   LeadConversation,
   PhoneNumber,
   PhoneSettings,
+  Prisma,
   Team,
   User,
   UserCarrier,
@@ -13,6 +14,7 @@ import {
 
 import { LeadPolicyType } from "./lead";
 import { FullTeam } from ".";
+import { getUserProfile } from "@/actions/user/profile";
 
 export type HalfUser = {
   id: string;
@@ -52,6 +54,21 @@ export type FullUserReport = User & {
   appointments: Appointment[];
   team?: FullTeam | null;
 };
+
+// export type UserProfile = User & {
+//   phoneNumbers: PhoneNumber[];
+//   team: {
+//     name: string;
+//     organization: {
+//       id:string,
+//       name: string;
+//     };
+//   }|null;
+// };
+export type UserProfile = Prisma.PromiseReturnType<
+  typeof getUserProfile
+>;
+
 
 export type FullUserTeamReport = {
   id: string;

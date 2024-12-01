@@ -159,8 +159,8 @@ model UserTodo {
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    categoryId String?
-    category   UserTodoCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    categoryId String           @default("cm448mzwq0000ujp4ok281xfg")
+    category   UserTodoCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     title       String
     description String @db.LongText

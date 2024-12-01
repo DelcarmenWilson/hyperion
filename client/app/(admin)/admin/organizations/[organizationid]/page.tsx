@@ -7,7 +7,7 @@ import { UsersClient } from "./components/users/client";
 import { RecentSales } from "./components/sales/client";
 import { OverviewChart } from "@/components/reports/chart";
 
-import { teamGetByIdStats, teamGetByIdSales } from "@/actions/team";
+import { getTeamStats, getTeamSales } from "@/actions/team";
 import { adminUsersGetAll } from "@/actions/admin/user";
 
 const OrganizationPage = () => {

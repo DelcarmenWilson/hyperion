@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { SettingsSchema, SettingsSchemaType } from "@/schemas/settings";
-import { userUpdateById } from "@/actions/user";
+import { updateUser } from "@/actions/user";
 
 export const ProfileForm = () => {
   const user = useCurrentUser();
@@ -54,12 +54,10 @@ export const ProfileForm = () => {
 
   const onSubmit = (values: SettingsSchemaType) => {
     startTransition(() => {
-      userUpdateById(values)
+      updateUser(values)
         .then((data) => {
-          if (data.success) {
-            toast.success(data.success);
-            update();
-          } else toast.error(data.error);
+          toast.success(data);
+          update();
         })
         .catch(() => {
           toast.error("Something went wrong");

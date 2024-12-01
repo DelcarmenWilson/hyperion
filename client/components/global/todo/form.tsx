@@ -89,6 +89,7 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
     resolver: zodResolver(TodoSchema),
     //@ts-ignore
     defaultValues: todo || {
+      categoryId: "cm448mzwq0000ujp4ok281xfg",
       reminder: false,
       reminderMethod: TodoReminderMethod.Notification,
     },

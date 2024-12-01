@@ -1,5 +1,5 @@
 "use client";
-import { useTeamActions } from "../hooks/use-team";
+import { useTeamActions } from "../../../../../hooks/use-team";
 
 import { Button } from "@/components/ui/button";
 import { CustomDialog } from "@/components/global/custom-dialog";

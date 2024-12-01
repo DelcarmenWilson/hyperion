@@ -8,11 +8,7 @@ import {
   UpdateMiniJobSchemaType,
 } from "@/schemas/job";
 
-import { createMiniJob } from "@/actions/developer/mini-job/create-mini-job";
-import { deleteMiniJob } from "@/actions/developer/mini-job/delete-mini-job";
-import { updateMiniJob } from "@/actions/developer/mini-job/update-mini-job";
-import { completeMiniJob } from "@/actions/developer/mini-job/complete-mini-job";
-import { startMiniJob } from "@/actions/developer/mini-job/start-mini-job";
+import { createMiniJob ,deleteMiniJob,updateMiniJob,completeMiniJob,startMiniJob } from "@/actions/developer/mini-job";
 
 export const useMiniJobActions = (callback?: () => void) => {
   //DELETE MINI JOB

@@ -1,11 +1,11 @@
 "use server";
 import { db } from "@/lib/db";
 import { ShortConversation } from "@/types";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 export const getConversations = async () => {
 
-    const agentId = await userGetByAssistant();
+    const agentId = await getAssitantForUser();
     if (!agentId) throw new Error("Unauthenticated!");
 
     const conversations = await db.leadConversation.findMany({

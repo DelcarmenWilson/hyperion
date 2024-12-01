@@ -2,7 +2,7 @@ import React from "react";
 
 import { EmptyCard } from "@/components/reusable/empty-card";
 import MiniJobInfo from "./_components/info";
-import { getMiniJob } from "@/actions/developer/mini-job/get-mini-job";
+import { getMiniJob } from "@/actions/developer/mini-job";
 
 const MiniJobPage = async ({ params }: { params: { miniJobId: string } }) => {
   const { miniJobId } = params;

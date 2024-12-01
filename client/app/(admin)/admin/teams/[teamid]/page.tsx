@@ -7,11 +7,10 @@ import { UsersClient } from "./components/users/client";
 import { RecentSales } from "./components/sales/client";
 import { OverviewChart } from "@/components/reports/chart";
 
-import { teamGetByIdStats, teamGetByIdSales } from "@/actions/team";
-import { adminUsersGetAll } from "@/actions/admin/user";
-
 import { weekStartEnd } from "@/formulas/dates";
 import { convertSalesData } from "@/formulas/reports";
+import { getTeamStats, getTeamSales } from "@/actions/team";
+import { adminUsersGetAll } from "@/actions/admin/user";
 
 const TeamPage = async ({
   params,
@@ -25,18 +24,18 @@ const TeamPage = async ({
   const week = weekStartEnd();
   const from = searchParams.from || week.from.toString();
   const to = searchParams.to || week.to.toString();
-  const team = await teamGetByIdStats(
-    params.teamid,
-    from as string,
-    to as string
-  );
+  const team = await getTeamStats({
+    id: params.teamid,
+    from: from as string,
+    to: to as string,
+  });
 
   const users = await adminUsersGetAll();
-  const sales = await teamGetByIdSales(
-    params.teamid,
-    from as string,
-    to as string
-  );
+  const sales = await getTeamSales({
+    id: params.teamid,
+    from: from as string,
+    to: to as string,
+  });
   if (!team) return null;
 
   const teamReport: FullTeamReport = {

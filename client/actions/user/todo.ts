@@ -49,6 +49,7 @@ export const createTodo = async (values: TodoSchemaType) => {
       ...data,
       nextReminder,
       status: TodoStatus.PENDING,
+      categoryId:"cm448mzwq0000ujp4ok281xfg"
     },
   });
 };

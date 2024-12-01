@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useUserActions, useUserData } from "@/hooks/user/use-user";
+import { useTeamData } from "@/hooks/use-team";
 
 import { RegisterSchema, RegisterSchemaType } from "@/schemas/register";
 
@@ -31,11 +32,13 @@ type Props = {
 };
 
 export const AssistantForm = ({ onClose }: Props) => {
-  const { admins, teams } = useUserData();
-  const { onAssistantInsert, assistantIsPending } = useUserActions();
   const user = useCurrentUser();
-
   const [show, setShow] = useState(false);
+  const { onGetAdmins } = useUserData();
+  const { admins } = onGetAdmins();
+  const { onGetTeams } = useTeamData();
+  const { teams } = onGetTeams();
+  const { onCreateAssistant, assistantCreating } = useUserActions();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
@@ -56,7 +59,7 @@ export const AssistantForm = ({ onClose }: Props) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onAssistantInsert)}
+        onSubmit={form.handleSubmit(onCreateAssistant)}
         className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -72,7 +75,7 @@ export const AssistantForm = ({ onClose }: Props) => {
                 </FormLabel>
                 <Select
                   name="ddlTeam"
-                  disabled={assistantIsPending}
+                  disabled={assistantCreating}
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   autoComplete="team"
@@ -105,7 +108,7 @@ export const AssistantForm = ({ onClose }: Props) => {
                 </FormLabel>
                 <Select
                   name="ddlAgent"
-                  disabled={assistantIsPending}
+                  disabled={assistantCreating}
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   autoComplete="agent"
@@ -139,7 +142,7 @@ export const AssistantForm = ({ onClose }: Props) => {
                 <FormControl>
                   <Input
                     id="txtFirstName"
-                    disabled={assistantIsPending}
+                    disabled={assistantCreating}
                     {...field}
                     placeholder="John"
                   />
@@ -160,7 +163,7 @@ export const AssistantForm = ({ onClose }: Props) => {
                 <FormControl>
                   <Input
                     id="txtLastName"
-                    disabled={assistantIsPending}
+                    disabled={assistantCreating}
                     {...field}
                     placeholder="Doe"
                   />
@@ -182,7 +185,7 @@ export const AssistantForm = ({ onClose }: Props) => {
               <FormControl>
                 <Input
                   id="txtUsername"
-                  disabled={assistantIsPending}
+                  disabled={assistantCreating}
                   {...field}
                   placeholder="j.doe"
                   autoComplete="off"
@@ -204,7 +207,7 @@ export const AssistantForm = ({ onClose }: Props) => {
               <FormControl>
                 <Input
                   id="txtEmail"
-                  disabled={assistantIsPending}
+                  disabled={assistantCreating}
                   {...field}
                   placeholder="john.doe@example.com"
                   type="email"
@@ -228,7 +231,7 @@ export const AssistantForm = ({ onClose }: Props) => {
                 <div className="w-full flex items-center">
                   <Input
                     id="txtPassword"
-                    disabled={assistantIsPending}
+                    disabled={assistantCreating}
                     {...field}
                     placeholder="******"
                     type={show ? "text" : "password"}
@@ -254,7 +257,7 @@ export const AssistantForm = ({ onClose }: Props) => {
           <Button onClick={onCancel} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={assistantIsPending} type="submit">
+          <Button disabled={assistantCreating} type="submit">
             Add Assistant
           </Button>
         </div>
@@ -264,11 +267,11 @@ export const AssistantForm = ({ onClose }: Props) => {
 };
 
 export const UserForm = ({ onClose }: Props) => {
-  const { teams } = useUserData();
-  const { onUserInsert, userIsPending } = useUserActions();
   const user = useCurrentUser();
-
   const [show, setShow] = useState(false);
+  const { onGetTeams } = useTeamData();
+  const { teams } = onGetTeams();
+  const { onCreateUser, userCreating } = useUserActions();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
@@ -289,7 +292,7 @@ export const UserForm = ({ onClose }: Props) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onUserInsert)}
+        onSubmit={form.handleSubmit(onCreateUser)}
         className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -305,7 +308,7 @@ export const UserForm = ({ onClose }: Props) => {
                 </FormLabel>
                 <Select
                   name="ddlTeam"
-                  disabled={userIsPending}
+                  disabled={userCreating}
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   autoComplete="team"
@@ -339,7 +342,7 @@ export const UserForm = ({ onClose }: Props) => {
                 <FormControl>
                   <Input
                     id="txtNpn"
-                    disabled={userIsPending}
+                    disabled={userCreating}
                     {...field}
                     placeholder="e.g. 525634"
                   />
@@ -360,7 +363,7 @@ export const UserForm = ({ onClose }: Props) => {
                 <FormControl>
                   <Input
                     id="txtFirstName"
-                    disabled={userIsPending}
+                    disabled={userCreating}
                     {...field}
                     placeholder="John"
                   />
@@ -381,7 +384,7 @@ export const UserForm = ({ onClose }: Props) => {
                 <FormControl>
                   <Input
                     id="txtLastName"
-                    disabled={userIsPending}
+                    disabled={userCreating}
                     {...field}
                     placeholder="Doe"
                   />
@@ -403,7 +406,7 @@ export const UserForm = ({ onClose }: Props) => {
               <FormControl>
                 <Input
                   id="txtUsername"
-                  disabled={userIsPending}
+                  disabled={userCreating}
                   {...field}
                   placeholder="j.doe"
                   autoComplete="off"
@@ -425,7 +428,7 @@ export const UserForm = ({ onClose }: Props) => {
               <FormControl>
                 <Input
                   id="txtEmail"
-                  disabled={userIsPending}
+                  disabled={userCreating}
                   {...field}
                   placeholder="john.doe@example.com"
                   type="email"
@@ -449,7 +452,7 @@ export const UserForm = ({ onClose }: Props) => {
                 <div className="w-full flex items-center">
                   <Input
                     id="txtPassword"
-                    disabled={userIsPending}
+                    disabled={userCreating}
                     {...field}
                     placeholder="******"
                     type={show ? "text" : "password"}
@@ -475,7 +478,7 @@ export const UserForm = ({ onClose }: Props) => {
           <Button onClick={onCancel} type="button" variant="outline">
             Cancel
           </Button>
-          <Button disabled={userIsPending} type="submit">
+          <Button disabled={userCreating} type="submit">
             Add User
           </Button>
         </div>

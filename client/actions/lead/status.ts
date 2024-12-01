@@ -3,14 +3,14 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import { leadActivityInsert } from "@/actions/lead/activity";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 // LEADSTATUS
 
 //DATA
 export const leadStatusGetAllDefault = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const leadStatuses = await db.leadStatus.findMany({
@@ -24,7 +24,7 @@ export const leadStatusGetAllDefault = async () => {
 
 export const leadStatusGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const leadStatuses = await db.leadStatus.findMany({
@@ -44,7 +44,7 @@ export const leadUpdateByIdStatus = async ({
   leadId: string;
   statusId: string;
 }) => {
-  const userId = await userGetByAssistant();
+  const userId = await getAssitantForUser();
   if (!userId) return { error: "Unauthenticated" };
 
   const existingLead = await db.lead.findUnique({ where: { id: leadId } });

@@ -5,9 +5,7 @@ import { toast } from "sonner";
 
 import { CreateJobSchemaType, UpdateJobSchemaType } from "@/schemas/job";
 
-import { createJob } from "@/actions/developer/job/create-job";
-import { deleteJob } from "@/actions/developer/job/delete-job";
-import { updateJob } from "@/actions/developer/job/update-job";
+import { createJob,deleteJob,updateJob } from "@/actions/developer/job";
 
 export const useJobActions = () => {
   //JOB DELETE

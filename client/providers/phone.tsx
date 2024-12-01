@@ -5,7 +5,7 @@ import { PhoneOutModal } from "@/components/phone/out-modal";
 import { PhoneInModal } from "@/components/phone/in-modal";
 import { PhoneDialerModal } from "@/components/phone/dialer/modal";
 import { FullCall } from "@/types";
-import { CallModal } from "@/components/phone/call-modal";
+import { CallModal } from "@/components/phone/details-call-dialog";
 import { PhoneSettings } from "@prisma/client";
 
 type PhoneContextProviderProps = {

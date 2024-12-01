@@ -7,7 +7,7 @@ import JobCard from "./_components/job-card";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getJobs } from "@/actions/developer/job/get-jobs";
+import { getJobs } from "@/actions/developer/job";
 
 const JobsPage = () => {
   return (

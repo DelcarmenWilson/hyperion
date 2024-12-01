@@ -69,7 +69,7 @@ export const AppointmentDetails = ({
         <ScrollArea className="max-h-[400px] relative">
           <Badge
             className={cn(
-              "absolute top-0 right-1",
+              "absolute top-0 right-1 flex-center",
               AppointmentStatusColors[status as AppointmentStatus]
             )}
           >
@@ -97,7 +97,6 @@ export const AppointmentDetails = ({
               <Box title="Reason" value={reason} />
             </p>
           )}
-          {/* <pre>{JSON.stringify(appointment, null, 4)}</pre> */}
         </ScrollArea>
       </DialogContent>
     </Dialog>

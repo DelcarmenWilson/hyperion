@@ -6,8 +6,8 @@ import JobMenu from "../_components/menu";
 import Topbar from "../_components/top-bar";
 import Unauthenticated from "@/components/global/unauthenticated";
 
-import { getJob } from "@/actions/developer/job/get-job";
-import { getMiniJobsForJob } from "@/actions/developer/mini-job/get-mini-jobs-for-jobs";
+import { getJob } from "@/actions/developer/job";
+import { getMiniJobsForJob } from "@/actions/developer/mini-job";
 
 const JobLayout = async ({
   children,

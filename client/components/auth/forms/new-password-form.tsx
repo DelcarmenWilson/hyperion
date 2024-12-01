@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { userUpdatePassword } from "@/actions/user";
+import { updateUserPassword } from "@/actions/user";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
@@ -44,7 +44,7 @@ export const NewPasswordForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      userUpdatePassword(values, token).then((data) => {
+      updateUserPassword(values, token).then((data) => {
         setError(data?.error);
         setSuccess(data?.success);
       });

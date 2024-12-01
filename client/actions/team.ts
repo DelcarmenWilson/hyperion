@@ -3,63 +3,43 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { LeadDefaultStatus } from "@/types/lead";
 //DATA
-export const teamsGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return [];
-    //TODO need to aggregate the use count
-    const filter = user.role == "MASTER" ? undefined : user.organization;
-    const teams = await db.team.findMany({
-      where: { organizationId: filter },
-      include: { users: true, organization: true, owner: true },
-    });
-    return teams;
-  } catch (error: any) {
-    return [];
-  }
+export const getTeams = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
+  //TODO need to aggregate the use count
+  const filter = user.role == "MASTER" ? undefined : user.organization;
+  return await db.team.findMany({
+    where: { organizationId: filter },
+    include: { users: true, organization: true, owner: true },
+  });
 };
 
-export const teamsGetAllByOrganization = async (organizationId: string) => {
-  try {
-    const teams = await db.team.findMany({
-      where: { organizationId },
-      include: { users: true, organization: true, owner: true },
-    });
-    return teams;
-  } catch (error: any) {
-    return [];
-  }
+export const getTeamsForOrganization = async (organizationId: string) => {
+  return await db.team.findMany({
+    where: { organizationId },
+    include: { users: true, organization: true, owner: true },
+  });
 };
 
-export const teamGetById = async (id: string) => {
-  try {
-    //TODO need to aggregate the use count
-    const teams = await db.team.findUnique({
-      where: { id },
-      include: {
-        users: {
-          include: {
-            calls: true,
-            appointments: true,
-            conversations: true,
-            leads: { include: { policy: true } },
-          },
+export const getTeam = async (id: string) => {
+  return await db.team.findUnique({
+    where: { id },
+    include: {
+      users: {
+        include: {
+          calls: true,
+          appointments: true,
+          conversations: true,
+          leads: { include: { policy: true } },
         },
-        organization: true,
-        owner: true,
       },
-    });
-    return teams;
-  } catch (error: any) {
-    return null;
-  }
+      organization: true,
+      owner: true,
+    },
+  });
 };
 
-export const teamGetByIdStats = async (
-  id: string,
-  from: string,
-  to: string
-) => {
+export const getTeamStats = async ({id,from,to}:{id: string, from: string, to: string}) => {
   try {
     const fromDate = new Date(from);
     const toDate = new Date(to);
@@ -91,11 +71,15 @@ export const teamGetByIdStats = async (
   }
 };
 
-export const teamGetByIdSales = async (
-  id: string,
-  from: string,
-  to: string
-) => {
+export const getTeamSales = async ({
+  id,
+  from,
+  to,
+}: {
+  id: string;
+  from: string;
+  to: string;
+}) => {
   try {
     const fromDate = new Date(from);
     const toDate = new Date(to);
@@ -124,20 +108,13 @@ export const teamGetByIdSales = async (
   }
 };
 //ACTIONS
-export const teamInsert = async (name: string) => {
+export const createTeam = async (name: string) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
-  if (user.role != "SUPER_ADMIN") return { error: "Unauthorized" };
+  if (!user) throw new Error("Unauthenticated");
+  if (user.role != "SUPER_ADMIN") throw new Error("Unauthorized");
   const existingTeam = await db.team.findFirst({ where: { name } });
   //TODO - need to ask johnny if the same team name can exist in another organization
-  if (existingTeam) return { error: "A team already exist with this name!" };
-
-  // const userTeam = await db.team.findUnique({
-  //   where: { ownerId: user.id },
-  // });
-
-  // if (!userTeam )
-  //   return { error: "Unauthorized" };
+  if (existingTeam) throw new Error("A team already exist with this name!");
 
   await db.team.create({
     data: {
@@ -147,5 +124,5 @@ export const teamInsert = async (name: string) => {
     },
   });
 
-  return { success: "Team created!" };
+  return "Team created!";
 };

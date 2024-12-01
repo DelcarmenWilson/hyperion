@@ -15,11 +15,12 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const LicenseClient = () => {
   const user = useCurrentUser();
-  const { licenses, isFetchingLicenses } = useAgentLicenseData();
+  const { onGetLicences } = useAgentLicenseData();
+  const { licenses, licensesFetching } = onGetLicences();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
-    <SkeletonWrapper isLoading={isFetchingLicenses}>
+    <SkeletonWrapper isLoading={licensesFetching}>
       <ListGridTopMenu
         text="Add License"
         isList={isList}
@@ -40,7 +41,7 @@ export const LicenseClient = () => {
         <LicenseForm onClose={() => setIsDrawerOpen(false)} />
       </DrawerRight>
       {isList ? (
-        <SkeletonWrapper isLoading={isFetchingLicenses}>
+        <SkeletonWrapper isLoading={licensesFetching}>
           <DataTable
             columns={columns}
             data={licenses || []}

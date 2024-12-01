@@ -15,25 +15,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-type CredentialsProps = {
-  licenses: UserLicense[];
-  npn: string;
-};
-export const Credentials = ({ licenses, npn }: CredentialsProps) => {
+import { useUserData } from "@/hooks/user/use-user";
+
+import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { useAgentLicenseData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-license";
+
+const CredentialsCard = ({ userId }: { userId: string }) => {
+  const { onGetUserById } = useUserData();
+  const { user } = onGetUserById(userId);
+  const { onGetLicencesForUser } = useAgentLicenseData();
+  const { licenses, licensesFetching } = onGetLicencesForUser(userId);
   return (
     <Card className="flex flex-col gap-2 p-2">
       <h3 className="text-xl font-bold text-center w-full">
         LICENSES AND CREDENTIALS
       </h3>
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-2">
-        {licenses.map((license) => (
-          <LicenseCard key={license.id} license={license} />
-        ))}
+        <SkeletonWrapper isLoading={licensesFetching}>
+          {licenses?.map((license) => (
+            <LicenseCard key={license.id} license={license} />
+          ))}
+        </SkeletonWrapper>
       </div>
 
       <div className="text-center w-full mt-auto">
         <p className="text-muted-foreground text-lg p-2">
-          National Producer #: {npn}
+          National Producer #: {user?.npn}
         </p>
         <Select name="ddlState">
           <SelectTrigger className="p-10">
@@ -54,7 +61,7 @@ export const Credentials = ({ licenses, npn }: CredentialsProps) => {
   );
 };
 
-export const LicenseCard = ({ license }: { license: UserLicense }) => {
+const LicenseCard = ({ license }: { license: UserLicense }) => {
   const { onOpen } = useImageViewer();
   const state = states.find((e) => e.abv == license.state)?.state;
   return (
@@ -68,3 +75,5 @@ export const LicenseCard = ({ license }: { license: UserLicense }) => {
     </div>
   );
 };
+
+export default CredentialsCard;

@@ -39,46 +39,38 @@ import { capitalize } from "@/formulas/text";
 import { getEntireDay } from "@/formulas/dates";
 
 //DATA
-export const userGetByIdOnline = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return null;
-    const onlineUser = await db.user.findUnique({
-      where: { id: user.id },
-    });
-    return onlineUser;
-  } catch {
-    return null;
-  }
+export const getOnlineUser = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  return await db.user.findUnique({
+    where: { id: user.id },
+  });
 };
-export const userGetByUserName = async (userName: string) => {
-  try {
-    const user = await db.user.findUnique({
-      where: { userName },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
+export const getUserByUserName = async (userName: string) => {
+  return await db.user.findUnique({
+    where: { userName },
+  });
 };
-export const usersGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return [];
+export const getUsers = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
 
-    const filter = user.role == "MASTER" ? undefined : user.organization;
-    const users = await db.user.findMany({
-      where: { team: { organizationId: filter },id:{not:user.id} },
-      orderBy: { firstName: "asc" },
-    });
-    return users;
-  } catch {
-    return [];
-  }
+  const filter = user.role == "MASTER" ? undefined : user.organization;
+  return await db.user.findMany({
+    where: { team: { organizationId: filter }, id: { not: user.id } },
+    orderBy: { firstName: "asc" },
+  });
+};
+export const getUserById = async (id: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  return await db.user.findUnique({
+    where: { id },
+  });
 };
 
-export const usersGetAllChat = async () => {
+export const getUsersChat = async () => {
   try {
     const user = await currentUser();
     if (!user) return [];
@@ -100,18 +92,24 @@ export const usersGetAllChat = async () => {
         OR: [{ userOneId: user.id }, { userTwoId: user.id }],
         unread: { gt: 0 },
       },
-      include: { lastMessage: { select: { senderId: true,body:true } } },
+      include: { lastMessage: { select: { senderId: true, body: true } } },
     });
 
-      const getMoreData = (userId: string):{chatId:string,lastMessage:string,unread:number} => {
+    const getMoreData = (
+      userId: string
+    ): { chatId: string; lastMessage: string; unread: number } => {
       const chat = chats.find(
         (e) => e.userOneId == userId || e.userTwoId == userId
       );
-      if (!chat) return {chatId:"",lastMessage:"",unread:0};
+      if (!chat) return { chatId: "", lastMessage: "", unread: 0 };
 
-      if (chat.lastMessage?.senderId == userId) 
-      return {chatId:chat.id,lastMessage:chat.lastMessage?.body||"",unread:chat.unread};
-      return {chatId:"",lastMessage:"",unread:0};
+      if (chat.lastMessage?.senderId == userId)
+        return {
+          chatId: chat.id,
+          lastMessage: chat.lastMessage?.body || "",
+          unread: chat.unread,
+        };
+      return { chatId: "", lastMessage: "", unread: 0 };
     };
     const users: OnlineUser[] = dbUsers.map((usr) => {
       return {
@@ -126,7 +124,7 @@ export const usersGetAllChat = async () => {
           0
         ),
         // unread: getUnreadMessages(usr.id),
-        ...getMoreData(usr.id)
+        ...getMoreData(usr.id),
       };
     });
 
@@ -152,77 +150,55 @@ export const usersGetAllChat = async () => {
   }
 };
 
-export const usersGetAllByRole = async (role: UserRole) => {
-  try {
-    const user=await currentUser()
-    if(!user)
-      return [
-    ]
-    const users = await db.user.findMany({
-      where: { role,id:{not:user.id} },
-      orderBy: { firstName: "asc" },
-    });
-    return users;
-  } catch {
-    return [];
-  }
+export const getUsersByRole = async (role: UserRole) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  return await db.user.findMany({
+    where: { role, id: { not: user.id } },
+    orderBy: { firstName: "asc" },
+  });
 };
 
-export const usersGetSummaryByTeamId = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return [];
-    }
-    if (user.role != "MASTER") return [];
+export const getUserSummaryByTeam = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  if (user.role != "MASTER") throw new Error("Unauthorized!");
 
-    const agents = await db.user.findMany({
-      where: { teamId: user.team, NOT: { id: user.id } },
-      include: {
-        phoneNumbers: {
-          where: { status: "default" },
-        },
-        chatSettings: true,
-        phoneSettings: { select: { currentCall: true } },
+  const agents = await db.user.findMany({
+    where: { teamId: user.team, NOT: { id: user.id } },
+    include: {
+      phoneNumbers: {
+        where: { status: "default" },
       },
-    });
+      chatSettings: true,
+      phoneSettings: { select: { currentCall: true } },
+    },
+  });
 
-    return agents as SummaryUser[];
-  } catch {
-    return [];
-  }
+  return agents as SummaryUser[];
 };
 
-export const userGetAdAccount = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return null;
-    }
-    const account = await db.user.findUnique({
-      where: { id: user.id },
-      select: { adAccount: true },
-    });
-    if (!account) {
-      return null;
-    }
-    return account.adAccount;
-  } catch {
-    return null;
-  }
+export const getUserAdAccount = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  const account = await db.user.findUnique({
+    where: { id: user.id },
+    select: { adAccount: true },
+  });
+  if (!account) throw new Error("No account!");
+  return account.adAccount;
 };
 
 //ACTIONS
-export const userInsert = async (values: RegisterSchemaType) => {
+export const createUser = async (values: RegisterSchemaType) => {
   //Validate the data passed in
-  const validatedFields = RegisterSchema.safeParse(values);
+  const { success, data } = RegisterSchema.safeParse(values);
 
   //If the data was not succesfully validated return an error
-  if (!validatedFields.success) return { error: "Invalid fields!" };
+  if (!success) return { error: "Invalid fields!" };
 
   //Destructure the fields
-  const { team, npn, userName, password, email, firstName, lastName } =
-    validatedFields.data;
+  const { team, npn, userName, password, email, firstName, lastName } = data;
 
   //Get matching user based on email or username
   const existingUser = await userGetByEmailOrUsername(email, userName);
@@ -252,36 +228,35 @@ export const userInsert = async (values: RegisterSchemaType) => {
   if (!user) return { error: "User could not be created at this time!" };
 
   //Insert all the user settings for the newly created user
-  await userInsertAllSettings(user);
+  await createUserSettings(user);
 
   //If everything went well return a success message
   return { success: "Account created continue to login" };
 };
 
-export const userInsertAssistant = async (values: RegisterSchemaType) => {
+export const createAssistant = async (values: RegisterSchemaType) => {
   //Validate the data passed in
-  const validatedFields = RegisterSchema.safeParse(values);
+  const { success, data } = RegisterSchema.safeParse(values);
 
   //If the data was not succesfully validated return an error
-  if (!validatedFields.success) return { error: "Invalid fields!" };
+  if (!success) throw new Error("Invalid fields!");
 
   //Destructure the fields
-  const { id, team, userName, password, email, firstName, lastName } =
-    validatedFields.data;
+  const { id, team, userName, password, email, firstName, lastName } = data;
 
   //Try to get the agent associated with this account
   const existingAgent = await db.user.findUnique({ where: { id } });
   //If no agent was found return an error
-  if (!existingAgent) return { error: "Agent does not exists!" };
+  if (!existingAgent) throw new Error("Agent does not exists!");
 
   //If the agent already has an assitant return and error
   if (existingAgent.assitantId)
-    return { error: "Agent already has an assitant!" };
+    throw new Error("Agent already has an assitant!");
 
   //Get matching assistant based on email or username
   const existingAssistant = await userGetByEmailOrUsername(email, userName);
   //If email or username already exist return an error
-  if (existingAssistant) return { error: "Email or UserName already in use!" };
+  if (existingAssistant) throw new Error("Email or UserName already in use!");
 
   //Encrypt the users password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -302,34 +277,33 @@ export const userInsertAssistant = async (values: RegisterSchemaType) => {
   });
   //If the assistant was not created return an error
   if (!assistant)
-    return { error: "Assitant could not be created at this time!" };
+    throw new Error("Assitant could not be created at this time!");
 
   //Assign asistant to agent
   await db.user.update({ where: { id }, data: { assitantId: assistant.id } });
 
   //Insert all the user settings for the newly created user
-  await userInsertAllSettings(assistant);
+  await createUserSettings(assistant);
 
   //If everything went well return a success message
-  return { success: "Assistant account created!" };
+  return "Assistant account created!";
 };
 
-export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
+export const createMaster = async (values: MasterRegisterSchemaType) => {
   //Validate the data passed in
-  const validatedFields = MasterRegisterSchema.safeParse(values);
+  const { success, data } = MasterRegisterSchema.safeParse(values);
 
   //If the data was not succesfully validated return an error
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  if (!success) throw new Error("Invalid fields!");
+
   //Destructure the fields
   const { organization, team, userName, password, email, firstName, lastName } =
-    validatedFields.data;
+    data;
 
   //Get matching user based on email or username
   const existingUser = await userGetByEmailOrUsername(email, userName);
   //If email or username already exist return an error
-  if (existingUser) return { error: "Email or Username already in use!" };
+  if (existingUser) throw new Error("Email or Username already in use!");
 
   //Get the master account if it already exist
   const existingMaster = await db.user.findFirst({
@@ -339,7 +313,7 @@ export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
   });
 
   //if the master account already exist return an error
-  if (existingMaster) return { error: "Master account already exist" };
+  if (existingMaster) throw new Error("Master account already exist");
 
   //Encrypt the users password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -374,25 +348,21 @@ export const userInsertMaster = async (values: MasterRegisterSchemaType) => {
 
   //If the organition was not created return an error
   if (!newOrganization)
-    return { error: "Organization could not be created at this time!" };
+    throw new Error("Organization could not be created at this time!");
 
   //Insert all the user settings for the newly created user
-  await userInsertAllSettings(newUser);
+  await createUserSettings(newUser);
 
   //If everything went well return a success message
-  return { success: "Master account created" };
+  return "Master account created";
 };
 
-export const userUpdateById = async (values: SettingsSchemaType) => {
+export const updateUser = async (values: SettingsSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) throw new Error("Unauthenticated!");
 
   const dbUser = await userGetById(user.id);
-  if (!dbUser) {
-    return { error: "Unauthorized" };
-  }
+  if (!dbUser) throw new Error("Unauthorized");
 
   if (user.isOAuth) {
     values.email = undefined;
@@ -403,9 +373,8 @@ export const userUpdateById = async (values: SettingsSchemaType) => {
 
   if (values.email && values.email !== user.email) {
     const existingUser = await userGetByEmail(values.email);
-    if (existingUser && existingUser.id !== user.id) {
-      return { error: "Email already in use!" };
-    }
+    if (existingUser && existingUser.id !== user.id)
+      throw new Error("Email already in use!");
 
     const verificationToken = await generateVerificationToken(values.email);
     await sendVerificationEmail(
@@ -413,7 +382,7 @@ export const userUpdateById = async (values: SettingsSchemaType) => {
       verificationToken.token
     );
 
-    return { success: "Verification email sent" };
+    return "Verification email sent";
   }
 
   if (values.password && values.newPassword && dbUser.password) {
@@ -421,9 +390,7 @@ export const userUpdateById = async (values: SettingsSchemaType) => {
       values.password,
       dbUser.password
     );
-    if (!passwordsMatch) {
-      return { error: "Incorrect password" };
-    }
+    if (!passwordsMatch) throw new Error("Incorrect password");
     const hashedPassword = await bcrypt.hash(values.newPassword, 10);
     values.password = hashedPassword;
     values.newPassword = undefined;
@@ -435,14 +402,12 @@ export const userUpdateById = async (values: SettingsSchemaType) => {
       ...values,
     },
   });
-  return { success: "Settings Updated! " };
+  return "Settings Updated! ";
 };
 
-export const userUpdateByIdImage = async (image: string) => {
+export const updateUserImage = async (image: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) throw new Error("Unauthenticated!");
 
   await db.user.update({
     where: {
@@ -454,53 +419,40 @@ export const userUpdateByIdImage = async (image: string) => {
   });
 
   revalidatePath("/");
-  return { success: "User profile image updated!" };
+  return "User profile image updated!";
 };
 
-export const userUpdateByIdAboutMe = async (values: UserAboutMeSchemaType) => {
+export const updateUserAboutMe = async (values: UserAboutMeSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) throw new Error("Unauthenticated!");
 
-  const validatedFields = UserAboutMeSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { id, aboutMe, title } = validatedFields.data;
+  const { success, data } = UserAboutMeSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
 
   await db.user.update({
     where: {
-      id,
+      id: data.id,
     },
     data: {
-      aboutMe,
-      title,
+      ...data,
     },
   });
 
-  return { success: "About Me section updated!" };
+  return "About Me section updated!";
 };
 
-export const userUpdateEmailVerification = async (token: string) => {
-  if (!token) {
-    return { error: "Missing token!" };
-  }
+export const updateUserEmailVerification = async (token: string) => {
+  if (!token) return { error: "Missing token!" };
+
   const existingToken = await getVerificationTokenByToken(token);
 
-  if (!existingToken) {
-    return { error: "Token does not exist" };
-  }
+  if (!existingToken) return { error: "Token does not exist" };
 
   const hasExpired = new Date(existingToken.expires) < new Date();
-  if (hasExpired) {
-    return { error: "Token has expired" };
-  }
+  if (hasExpired) return { error: "Token has expired" };
 
   const existingUser = await userGetByEmail(existingToken.email);
-  if (!existingUser) {
-    return { error: "Email does not exist!" };
-  }
+  if (!existingUser) return { error: "Email does not exist!" };
 
   await db.user.update({
     where: { id: existingUser.id },
@@ -519,62 +471,51 @@ export const userUpdateEmailVerification = async (token: string) => {
   return { success: "Email verified" };
 };
 
-export const userUpdatePassword = async (
+export const updateUserPassword = async (
   values: NewPasswordSchemaType,
   token?: string | null
 ) => {
-  if (!token) {
-    return { error: "Missing token!" };
-  }
-  const validatedFields = NewPasswordSchema.safeParse(values);
+  if (!token) return { error: "Missing token!" };
 
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+  const { success, data } = NewPasswordSchema.safeParse(values);
 
-  const { password } = validatedFields.data;
+  if (!success) return { error: "Invalid fields!" };
 
   const existingToken = await getPasswordResetTokenByToken(token);
-  if (!existingToken) {
-    return { error: "Invalid token!" };
-  }
+  if (!existingToken) return { error: "Invalid token!" };
 
   const hasExpired = new Date(existingToken.expires) < new Date();
-  if (hasExpired) {
-    return { error: "Token has expired!" };
-  }
+  if (hasExpired) return { error: "Token has expired!" };
 
   const existingUser = await userGetByEmail(existingToken.email);
-  if (!existingUser) {
-    return { error: " Email does not exist!" };
-  }
+  if (!existingUser) return { error: "Email does not exist!" };
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  await db.user.update({
-    where: {
-      id: existingUser.id,
-    },
-    data: {
-      password: hashedPassword,
-    },
-  });
+  await db.$transaction([
+    db.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    }),
 
-  await db.passwordResetToken.delete({
-    where: {
-      id: existingToken.id,
-    },
-  });
+    db.passwordResetToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    }),
+  ]);
 
   return { success: "Password updated!" };
 };
 
 //FACEBOOK
-export const userUpdateAdAccount = async (adAccount: string) => {
+export const updateUserAdAccount = async (adAccount: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthentiocated" };
-  }
+  if (!user) throw new Error("Unauthenticated!");
 
   await db.user.update({
     where: { id: user.id },
@@ -583,11 +524,11 @@ export const userUpdateAdAccount = async (adAccount: string) => {
     },
   });
 
-  return { success: "Ad account has been added!" };
+  return "Ad account has been added!";
 };
 
 //HELPER FUNCTION
-export const userGetByAssistant = async () => {
+export const getAssitantForUser = async () => {
   //check if the user is currently logged in
   const user = await currentUser();
   //if there is no logged in used return null
@@ -605,7 +546,7 @@ export const userGetByAssistant = async () => {
   return user?.id;
 };
 
-export const userInsertAllSettings = async (user: User) => {
+export const createUserSettings = async (user: User) => {
   //create phone settings
   await phoneSettingsInsert(user.id);
 

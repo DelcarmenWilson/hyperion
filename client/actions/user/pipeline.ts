@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 import { PipelineSchemaType, PipelineSchema } from "@/schemas/pipeline";
 import { states } from "@/constants/states";
 import { FullLead, PipelineLead } from "@/types";
@@ -10,7 +10,7 @@ import { formatTimeZone } from "@/formulas/dates";
 //DATA
 export const pipelineGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const pipelines = await db.pipeline.findMany({
@@ -30,7 +30,7 @@ export const pipelineAndLeadsGetAll = async () => {
 
   try {
     //get the online user and if the user is an assistant get the userid of the agent
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return empty;
 
     //Get all the pipeline for this agent
@@ -127,7 +127,7 @@ export const pipelineGetById = async (id: string | undefined) => {
 };
 //ACTIONS
 export const pipelineInsert = async (values: PipelineSchemaType) => {
-  const userId = await userGetByAssistant();
+  const userId = await getAssitantForUser();
   if (!userId) return { error: "Unauthenticated" };
 
   const validatedFields = PipelineSchema.safeParse(values);

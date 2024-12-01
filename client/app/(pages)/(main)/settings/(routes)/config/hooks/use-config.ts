@@ -10,7 +10,7 @@ import {
   notificationSettingsUpdate,
 } from "@/actions/settings/notification";
 
-import { userGetAdAccount, userUpdateAdAccount } from "@/actions/user";
+import { getUserAdAccount, updateUserAdAccount } from "@/actions/user";
 
 export const useNotificationData = () => {
   const { data: settings, isFetching: isFetchingSettings } =
@@ -69,7 +69,7 @@ export const useFacebookData = () => {
   const { data: adAccount, isFetching: isFetchingAdAccount } = useQuery<
     string | null
   >({
-    queryFn: () => userGetAdAccount(),
+    queryFn: () => getUserAdAccount(),
     queryKey: ["ad-account"],
   });
 
@@ -84,13 +84,11 @@ export const useFacebookActions = () => {
   //AD ACCOUNT
   const { mutate: adAccountMutate, isPending: adAccountIsPending } =
     useMutation({
-      mutationFn: userUpdateAdAccount,
-      onSuccess: (results) => {
-        if (results.success) {
+      mutationFn: updateUserAdAccount,
+      onSuccess: () => {        
           toast.success("Ad Account Updated", {
             id: "update-ad-account",
           });
-        } else toast.error(results.error, { id: "update-ad-account" });
       },
       onError: (error) =>
         toast.error(error.message, { id: "update-ad-account" }),
