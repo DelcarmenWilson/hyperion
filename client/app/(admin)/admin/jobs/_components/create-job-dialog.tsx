@@ -22,10 +22,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
 import { Textarea } from "@/components/ui/textarea";
 
-import { createJob } from "@/actions/developer/job/create-job";
+import { createJob } from "@/actions/developer/job";
 
 const CreateJobDialog = ({
   triggerText = "Create Job",

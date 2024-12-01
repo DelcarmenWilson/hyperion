@@ -7,34 +7,42 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { DataTable } from "@/components/tables/data-table";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { TopMenu } from "./top-menu";
+import { useState } from "react";
+import { startOfMonth } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 type CallHistoryClientProps = {
   userId?: string;
-  duration?: number;
   showLink?: boolean;
   showDate?: boolean;
 };
 
 export const CallHistoryClient = ({
   userId,
-  duration = 0,
   showLink = false,
   showDate = false,
 }: CallHistoryClientProps) => {
-  const { calls, callsLoading, onDateSelected } = useCallHistoryData(
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
+  const { calls, callsLoading } = useCallHistoryData(
+    dateRange,
     userId,
     showDate
   );
+  const duration = calls?.reduce((sum, call) => sum + call.duration!, 0) || 0;
   return (
     <CardLayout
       title="Call History"
       icon={Phone}
       topMenu={
         <TopMenu
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+          duration={duration}
           showLink={showLink}
           showDate={showDate}
-          duration={duration}
-          onDateSelected={onDateSelected}
         />
       }
     >

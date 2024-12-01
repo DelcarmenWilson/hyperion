@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { FullCall } from "@/types";
 
-import { AppButton } from "./app-button";
+import { AppointmentDetails } from "../lead/appointments/details-appointment-dialog";
 import { Button } from "@/components/ui/button";
 import { CallHistoryActions } from "./actions";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -98,11 +98,6 @@ export const columns: ColumnDef<FullCall>[] = [
       </div>
     ),
   },
-
-  // {
-  //   accessorKey: "timeZone",
-  //   header: "Time Zone",
-  // },
   {
     accessorKey: "duration",
     // header: "Duration",
@@ -118,9 +113,9 @@ export const columns: ColumnDef<FullCall>[] = [
       );
     },
     cell: ({ row }) => (
-      <div>
+      <span>
         {row.original.duration && formatSecondsToTime(row.original.duration)}
-      </div>
+      </span>
     ),
   },
 
@@ -132,8 +127,24 @@ export const columns: ColumnDef<FullCall>[] = [
 
   {
     accessorKey: "appointmentId",
-    header: "Appointment?",
-    cell: ({ row }) => <AppButton appointmentId={row.original.appointmentId} />,
+    header: "Appointment",
+    cell: ({ row }) => {
+      return (
+        row.original.appointment && (
+          <AppointmentDetails
+            status={row.original.appointment.status}
+            firstName={row.original.lead?.firstName!}
+            lastName={row.original.lead?.lastName!}
+            startDate={row.original.appointment.startDate}
+            localDate={row.original.appointment.localDate}
+            cellPhone={row.original.lead?.cellPhone!}
+            email={row.original.lead?.email!}
+            comments={row.original.appointment.comments}
+            reason={row.original.appointment.reason}
+          />
+        )
+      );
+    },
   },
 
   {

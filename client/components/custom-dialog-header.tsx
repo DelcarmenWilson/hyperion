@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 
 type Props = {
@@ -24,6 +28,7 @@ const CustomDialogHeader = ({
   const Icon = icon;
   return (
     <DialogHeader className="py-4">
+      <DialogDescription className="sr-only">{title}</DialogDescription>
       <DialogTitle asChild>
         <div className="flex flex-col items-center gap-2 mb-1">
           {Icon && (

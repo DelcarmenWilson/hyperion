@@ -1,186 +1,253 @@
 import { useCallback, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
 import { toast } from "sonner";
 
 import { User, UserRole } from "@prisma/client";
-import { FullTeam, FullUserReport } from "@/types";
 import { RegisterSchemaType } from "@/schemas/register";
 
-import { adminChangeTeam } from "@/actions/admin/team";
-import { adminChangeUserAccountStatus, adminChangeUserRole } from "@/actions/admin/user";
-import { teamsGetAll } from "@/actions/team";
-import { userInsert, userInsertAssistant, usersGetAll, usersGetAllByRole } from "@/actions/user";
-import { userGetByIdOnline } from "@/actions/user";
+import {
+  createAssistant,
+  createUser,
+  getUserById,
+  getUsers,
+  getUsersByRole,
+} from "@/actions/user";
+
+import { updateUserAccountStatus, updateUserRole } from "@/actions/admin/user";
+import { updateUserTeam } from "@/actions/admin/team";
+
+import { getOnlineUser } from "@/actions/user";
 
 export const useOnlineUserData = () => {
-  const { data: onlineUser, isFetching: isFetchingOnlineUser } =
-    useQuery<User | null>({
-      queryFn: () => userGetByIdOnline(),
-      queryKey: ["online-user"],
-    });
-  
+  const {
+    data: onlineUser,
+    isFetching: onlineUserFetching,
+    isLoading: onlineUserLoading,
+  } = useQuery<User | null>({
+    queryFn: () => getOnlineUser(),
+    queryKey: ["online-user"],
+  });
   return {
     onlineUser,
-    isFetchingOnlineUser,
+    onlineUserFetching,
+    onlineUserLoading,
   };
 };
 
 export const useUserData = () => {
   //SITE USERS
-  const onSiteUserGet=(role?:UserRole)=>{
-    const { data: siteUsers, isFetching:siteUsersFetching } = useQuery<User[]>({
-      queryKey: [`site-users-${role ||"all"}`],
-      queryFn: () => (role ? usersGetAllByRole(role) : usersGetAll()),
+  const onGetSiteUsers = (role?: UserRole) => {
+    const {
+      data: siteUsers,
+      isFetching: siteUsersFetching,
+      isLoading: siteUsersLoading,
+    } = useQuery<User[]>({
+      queryKey: [`site-users-${role || "all"}`],
+      queryFn: () => (role ? getUsersByRole(role) : getUsers()),
     });
-    return {        
-   siteUsers, siteUsersFetching
-    }
-  }    
+    return {
+      siteUsers,
+      siteUsersFetching,
+      siteUsersLoading,
+    };
+  };
 
   //USERS
-  const { data: users, isFetching: isFetchingUsers } = useQuery<User[] | []>({
-    queryFn: () => usersGetAll(),
-    queryKey: ["users"],
-  });
+  const onGetUsers = () => {
+    const {
+      data: users,
+      isFetching: usersFetching,
+      isLoading: usersLoading,
+    } = useQuery<User[] | []>({
+      queryFn: () => getUsers(),
+      queryKey: ["users"],
+    });
+    return {
+      users,
+      usersFetching,
+      usersLoading,
+    };
+  };
+
+  //USER BY ID
+  const onGetUserById = (userId: string) => {
+    const {
+      data: user,
+      isFetching: userFetching,
+      isLoading: userLoading,
+    } = useQuery<User | null>({
+      queryFn: () => getUserById(userId),
+      queryKey: [`user-${userId}`],
+    });
+    return {
+      user,
+      userFetching,
+      userLoading,
+    };
+  };
+
   //ADMINS
-  const { data: admins, isFetching: isFetchingAdmins } = useQuery<User[] | []>({
-    queryFn: () => usersGetAllByRole("ADMIN"),
-    queryKey: ["admins"],
-  });
-  //TEAMS
-  const { data: teams, isFetching: isFetchingTeams } = useQuery<
-    FullTeam[] | []
-  >({
-    queryFn: () => teamsGetAll(),
-    queryKey: ["userTeams"],
-  });
+  const onGetAdmins = () => {
+    const {
+      data: admins,
+      isFetching: adminsFetching,
+      isLoading: adminsLoading,
+    } = useQuery<User[] | []>({
+      queryFn: () => getUsersByRole("ADMIN"),
+      queryKey: ["admins"],
+    });
+    return {
+      admins,
+      adminsFetching,
+      adminsLoading,
+    };
+  };
 
   return {
-    onSiteUserGet,
-    users,
-    isFetchingUsers,
-    admins,
-    isFetchingAdmins,
-    teams,
-    isFetchingTeams,
+    onGetSiteUsers,
+    onGetUsers,
+    onGetUserById,
+    onGetAdmins,
   };
 };
 
 export const useUserActions = () => {
   const [isFormOpen, setFormOpen] = useState(false);
-  const queryClient = useQueryClient();
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["users"] });
-  };
+  const { invalidate } = useInvalidate();
 
   //USER
-  const { mutate: userInsertMutate, isPending: userIsPending } = useMutation({
-    mutationFn: userInsert,
+  const { mutate: createUsertMutate, isPending: userCreating } = useMutation({
+    mutationFn: createUser,
     onSuccess: (result) => {
-      if (result.success) {
-        toast.success("User Created", { id: "insert-user" });
-        setFormOpen(false);
-        invalidate();
-      } else toast.error(result.error, { id: "insert-user" });
+      toast.success("User Created", { id: "create-user" });
+      setFormOpen(false);
+      invalidate("users");
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) => toast.error(error.message, { id: "create-user" }),
   });
 
-  const onUserInsert = useCallback(
+  const onCreateUser = useCallback(
     (values: RegisterSchemaType) => {
-      toast.loading("Creating New User", { id: "insert-user" });
-      userInsertMutate(values);
+      toast.loading("Creating New User", { id: "create-user" });
+      createUsertMutate(values);
     },
-    [userInsertMutate]
+    [createUsertMutate]
   );
 
   //ASSISTANT
-  const { mutate: assistantInsertMutate, isPending: assistantIsPending } = useMutation({
-    mutationFn: userInsertAssistant,
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Assistant Created", { id: "insert-assistant" });
+  const { mutate: createAssistantMutate, isPending: assistantCreating } =
+    useMutation({
+      mutationFn: createAssistant,
+      onSuccess: () => {
+        toast.success("Assistant Created", { id: "create-assistant" });
         setFormOpen(false);
-        invalidate();
-      } else toast.error(result.error, { id: "insert-assistant" });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+        invalidate("users");
+      },
 
-  const onAssistantInsert = useCallback(
+      onError: (error) =>
+        toast.error(error.message, { id: "create-assistant" }),
+    });
+
+  const onCreateAssistant = useCallback(
     (values: RegisterSchemaType) => {
-      toast.loading("Creating New Asssistant", { id: "insert-assistant" });
-      assistantInsertMutate(values);
+      toast.loading("Creating New Asssistant", { id: "create-assistant" });
+      createAssistantMutate(values);
     },
-    [assistantInsertMutate]
+    [createAssistantMutate]
   );
 
   return {
-
     isFormOpen,
-    setFormOpen,onUserInsert,userIsPending,
-    onAssistantInsert,
-    assistantIsPending,
+    setFormOpen,
+    onCreateUser,
+    userCreating,
+    onCreateAssistant,
+    assistantCreating,
   };
 };
 
-export const useUserAdminActions=(user:FullUserReport)=>{
+export const useUserAdminActions = (
+  userId: string,
+  user: User | null | undefined
+) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [team, setTeam] = useState(user.teamId!);
-  const [role, setRole] = useState(user.role.toString());
-  const [accountStatus, setAccountStatus] = useState(
-    user.accountStatus.toString()
+  //UPDATE ROLE
+  const { mutate: updateRoleMutate, isPending: userRoleUpdating } = useMutation(
+    {
+      mutationFn: updateUserRole,
+      onSuccess: () => {
+        toast.success("Role updated!", { id: "update-user-role" });
+        router.refresh();
+      },
+      onError: () =>
+        toast.error("Failed to update role", { id: "update-user-role" }),
+    }
   );
 
-  const onRoleChange = async () => {
-    if (!role) return;
-    setLoading(true);
-    const updatedUserRole = await adminChangeUserRole(user.id, role);
+  const onUpdateRole = useCallback(
+    (role: string) => {
+      toast.loading("Updating role ...", {
+        id: "update-user-role",
+      });
+      updateRoleMutate({ userId: userId, newRole: role });
+    },
+    [updateRoleMutate]
+  );
 
-    if (updatedUserRole.success) {
-      toast.success(updatedUserRole.success);
-      router.refresh();
-    } else toast.error(updatedUserRole.error);
-    setLoading(false);
-  };
-  const onAccountStatusChange = async () => {
-    if (!accountStatus) return;
-    setLoading(true);
-    const results = await adminChangeUserAccountStatus(user.id, accountStatus);
-    if (results.success) {
-      toast.success(results.success);
-      router.refresh();
-    } else toast.error(results.error);
-    setLoading(false);
-  };
+  //UPDATE ACCOUNT STATUS
+  const {
+    mutate: updateAccountStatusMutate,
+    isPending: userAccountStatusUpdating,
+  } = useMutation({
+    mutationFn: updateUserAccountStatus,
+    onSuccess: () =>
+      toast.success("Account status updated!", {
+        id: "update-user-account-status",
+      }),
+    onError: () =>
+      toast.error("Failed to update account statius", {
+        id: "update-user-account-status",
+      }),
+  });
 
-  const onTeamChange = async () => {
-    if (!team) return;
-    setLoading(true);
-    const updatedTeam = await adminChangeTeam(user.id, team);
+  const onUpdateAccountStatus = useCallback(
+    (statusId: string) => {
+      toast.loading("Updating account status ...", {
+        id: "update-user-account-status",
+      });
+      updateAccountStatusMutate({ userId: userId, statusId });
+    },
+    [updateAccountStatusMutate]
+  );
 
-    if (updatedTeam.success) {
-      toast.success(updatedTeam.success);
-      router.refresh();
-    } else toast.error(updatedTeam.error);
-    setLoading(false);
-  };
+  //UPDATE TEAM
+  const { mutate: updateUserTeamMutate, isPending: userTeamUpdating } =
+    useMutation({
+      mutationFn: updateUserTeam,
+      onSuccess: () =>
+        toast.success("Team updated!", { id: "update-user-team" }),
+      onError: () =>
+        toast.error("Failed to update team", { id: "update-user-team" }),
+    });
+
+  const onUpdateTeam = useCallback(
+    (teamId: string) => {
+      toast.loading("Updating team ...", {
+        id: "update-user-team",
+      });
+      updateUserTeamMutate({ userId: userId, teamId });
+    },
+    [updateUserTeamMutate]
+  );
 
   return {
-    loading, team, setTeam,role, setRole,accountStatus, setAccountStatus,
-    onRoleChange,
-    onAccountStatusChange,
-    onTeamChange,
- 
-  }
-}
+    onUpdateAccountStatus,
+    onUpdateRole,
+    onUpdateTeam,
+  };
+};
 
 export const useUserId = () => {
   const params = useParams();

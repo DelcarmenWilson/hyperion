@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 export async function POST(req: Request) {
   try {
-    const agentId = await userGetByAssistant();
+    const agentId = await getAssitantForUser();
     if (!agentId) return new NextResponse("Unauthenticated", { status: 401 });
 
     const body = await req.json();

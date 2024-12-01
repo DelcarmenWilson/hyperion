@@ -3,12 +3,12 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
 
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 // DATA
 export const userCarriersGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if(!userId) return[]
 
     const carriers = await db.userCarrier.findMany({

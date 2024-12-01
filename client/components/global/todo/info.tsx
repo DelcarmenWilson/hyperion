@@ -30,6 +30,7 @@ export const TodoInfo = () => {
     reminder,
     reminderMethod,
     nextReminder,
+    category,
   } = todo;
   const isPending = status == TodoStatus.PENDING;
 
@@ -75,15 +76,9 @@ export const TodoInfo = () => {
           {title}
         </p>
 
-        <div className="border border-separate p-2">
-          <p className="text-xs text-muted-foreground">Description</p>
-          <p className="text-foreground font-semibold pl-3">{description}</p>
-        </div>
-
-        <div className="border border-separate p-2">
-          <p className="text-xs text-muted-foreground">Comments</p>
-          <p className="text-foreground font-semibold pl-3">{comments}</p>
-        </div>
+        <Box title="Category" value={category?.name} />
+        <Box title="Comments" value={comments} />
+        <Box title="Comments" value={comments} />
 
         {reminder && (
           <div className="p-2">
@@ -130,6 +125,20 @@ export const TodoInfo = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+const Box = ({
+  title,
+  value,
+}: {
+  title: string;
+  value: string | null | undefined;
+}) => {
+  return (
+    <div className="border border-separate p-2">
+      <p className="text-xs text-muted-foreground">{title}</p>
+      <p className="text-foreground font-semibold pl-3">{value}</p>
     </div>
   );
 };

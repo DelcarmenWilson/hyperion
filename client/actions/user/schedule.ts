@@ -1,12 +1,12 @@
 "use server";
 import { db } from "@/lib/db";
 import { ScheduleSchema, ScheduleSchemaType } from "@/schemas/settings";
-import { userGetByAssistant } from ".";
+import { getAssitantForUser } from ".";
 
 //DATA
 export const scheduleGet = async () => {
   try {
-    const userId = await userGetByAssistant();   
+    const userId = await getAssitantForUser();   
     if (!userId) return null;
     const schedule = await db.schedule.findUnique({
       where: { userId },

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
+import { AppointmentStatus } from "@/types/appointment";
 
-import { Table } from "@tanstack/react-table";
 import {
   Select,
   SelectContent,
@@ -8,7 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { appointmentStatus } from "@/constants/texts";
+import { Table } from "@tanstack/react-table";
+
+import { getEnumValues } from "@/lib/helper/enum-converter";
+import { capitalize } from "@/formulas/text";
 
 type AppointmentFilterProps<TData> = {
   table: Table<TData>;
@@ -17,6 +20,7 @@ type AppointmentFilterProps<TData> = {
 export function AppointmentFilter<TData>({
   table,
 }: AppointmentFilterProps<TData>) {
+  const statuses = getEnumValues(AppointmentStatus);
   const OnFilter = (column: string, filter: string) => {
     if (filter == "%") {
       filter = "";
@@ -25,7 +29,7 @@ export function AppointmentFilter<TData>({
   };
 
   useEffect(() => {
-    OnFilter("status", "Scheduled");
+    OnFilter("status", AppointmentStatus.SCHEDULED);
     // eslint-disable-next-line
   }, []);
   return (
@@ -35,16 +39,16 @@ export function AppointmentFilter<TData>({
         <Select
           name="ddlStatus"
           onValueChange={(e) => OnFilter("status", e)}
-          defaultValue="Scheduled"
+          defaultValue={AppointmentStatus.SCHEDULED}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="%">All</SelectItem>
-            {appointmentStatus.map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
+            {statuses.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                <span>{capitalize(status.name)}</span>
               </SelectItem>
             ))}
           </SelectContent>

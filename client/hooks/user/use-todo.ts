@@ -1,22 +1,25 @@
 import { create } from "zustand";
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useInvalidate } from "@/hooks/use-invalidate";
+import { toast } from "sonner";
 
 import { UserTodo } from "@prisma/client";
 import { TodoSchemaType } from "@/schemas/user";
 
-import { getTodo } from "@/actions/user/todo/get-todo";
-import { getTodos } from "@/actions/user/todo/get-todos";
-import { createTodo } from "@/actions/user/todo/create-todo";
-import { completeTodo } from "@/actions/user/todo/complete-todo";
-import { deleteTodo } from "@/actions/user/todo/delete-todo";
-import { updateTodo } from "@/actions/user/todo/update-todo";
-import { snoozeTodo } from "@/actions/user/todo/snooze-todo";
+import { FullTodo } from "@/types/todo";
 
+import {
+  getTodo,
+  getTodos,
+  createTodo,
+  completeTodo,
+  deleteTodo,
+  updateTodo,
+  snoozeTodo,
+} from "@/actions/user/todo";
 type State = {
-  todo?: UserTodo;
+  todo?: FullTodo;
   todoId?: string;
   isTodosOpen: boolean;
   isTodoInfoOpen: boolean;
@@ -25,12 +28,12 @@ type State = {
 };
 
 type Actions = {
-  setTodo: (t: UserTodo) => void;
+  setTodo: (t: FullTodo) => void;
   onTodosOpen: () => void;
   onTodosClose: () => void;
-  onTodoInfoOpen: (t?: UserTodo) => void;
+  onTodoInfoOpen: (t?: FullTodo) => void;
   onTodoInfoClose: () => void;
-  onTodoFormOpen: (t?: UserTodo) => void;
+  onTodoFormOpen: (t?: FullTodo) => void;
   onTodoFormClose: () => void;
   onTodoNotificationOpen: (t: string) => void;
   onTodoNotificationClose: () => void;
@@ -65,79 +68,80 @@ export const useTodoStore = create<State & Actions>((set) => ({
 export const useTodoData = () => {
   const { todoId } = useTodoStore();
   const onTodosGet = () => {
-  const { data: todos, isFetching: todosFetching,isLoading: todosLoading} = useQuery<UserTodo[] | []>(
-    {
+    const {
+      data: todos,
+      isFetching: todosFetching,
+      isLoading: todosLoading,
+    } = useQuery<FullTodo[] | []>({
       queryFn: () => getTodos(),
       queryKey: ["todos"],
-    }
-  );
-  return { todos, todosFetching, todosLoading };
+    });
+    return { todos, todosFetching, todosLoading };
   };
   const onTodoGet = () => {
-  const { data: todo, isFetching: todoFetching,isLoading:todoLoading } = useQuery<UserTodo | null>({
-    queryFn: () => getTodo(todoId as string),
-    queryKey: [`todo-${todoId}`],
-    enabled:!!todoId
-  });
-  return { todo, todoFetching, todoLoading };
+    const {
+      data: todo,
+      isFetching: todoFetching,
+      isLoading: todoLoading,
+    } = useQuery<FullTodo | null>({
+      queryFn: () => getTodo(todoId as string),
+      queryKey: [`todo-${todoId}`],
+      enabled: !!todoId,
+    });
+    return { todo, todoFetching, todoLoading };
   };
 
   return {
     onTodosGet,
-    onTodoGet
+    onTodoGet,
   };
 };
 
 export const useTodoActions = () => {
-  const { todo, setTodo, onTodoInfoOpen,onTodoInfoClose,onTodoNotificationClose } = useTodoStore();
+  const {
+    todo,
+    setTodo,
+    onTodoInfoOpen,
+    onTodoInfoClose,
+    onTodoNotificationClose,
+  } = useTodoStore();
   const { invalidate } = useInvalidate();
 
-   //TODO DELETE
-   const { mutate: todoDeleteMutate, isPending: todoDeleteing } =
-   useMutation({
-     mutationFn: deleteTodo,
-     onSuccess: (results) => {
-       if (results.success) {
-         invalidate("todos");
-         onTodoInfoClose()
-         toast.success("Todo deleted successfully", { id: "delete-todo" });
-       } else {
-         toast.error(results.error, { id: "delete-todo" });
-       }
-     },
-     onError: (error) => {
-       toast.error(error.message, { id: "delete-todo" });
-     },
-   });
+  //TODO DELETE
+  const { mutate: todoDeleteMutate, isPending: todoDeleteing } = useMutation({
+    mutationFn: deleteTodo,
+    onSuccess: () => {
+      invalidate("todos");
+      onTodoInfoClose();
+      toast.success("Todo deleted successfully", { id: "delete-todo" });
+    },
+    onError: (error) => toast.error(error.message, { id: "delete-todo" }),
+  });
 
- const onTodoDelete = useCallback(
-   (id: string) => {
-     toast.loading("Deleting todo...", { id: "delete-todo" });
-     todoDeleteMutate(id);
-   },
-   [todoDeleteMutate]
- );
+  const onTodoDelete = useCallback(
+    (id: string) => {
+      toast.loading("Deleting todo...", { id: "delete-todo" });
+      todoDeleteMutate(id);
+    },
+    [todoDeleteMutate]
+  );
 
   //TODO INSERT
   const { mutate: todoInsertMutate, isPending: todoInserting } = useMutation({
     mutationFn: createTodo,
     onSuccess: (results) => {
-      if (results.success) {
-        toast.success("Todo has been added", { id: "insert-todo" });
-        onTodoInfoOpen(results.success);
-        invalidate("todos");
-      } else {
-        toast.error(results.error, { id: "insert-todo" });
-      }
+      toast.success("Todo has been added", { id: "create-todo" });
+      onTodoInfoOpen(results);
+      invalidate("todos");
     },
     onError: (error) => {
-      toast.error(error.message, { id: "insert-todo" });
+      toast.error(error.message, { id: "create-todo" });
     },
   });
 
   const onTodoInsert = useCallback(
     (values: TodoSchemaType) => {
-      toast.loading("Creating Todo...", { id: "insert-todo" });
+      toast.loading("Creating Todo...", { id: "create-todo" });
       todoInsertMutate(values);
     },
     [todoInsertMutate]
@@ -146,18 +150,11 @@ export const useTodoActions = () => {
   //TODO UPDATE
   const { mutate: todoUpdateMutate, isPending: todoUpdating } = useMutation({
     mutationFn: updateTodo,
-    onSuccess: (results) => {
-      if (results.success) {
-        onTodoInfoOpen(results.success);
-        invalidate("todos");
-        toast.success("Todo has been updated!!", { id: "update-todo" });
-      } else {
-        toast.error(results.error, { id: "update-todo" });
-      }
+    onSuccess: () => {
+      invalidate("todos");
+      toast.success("Todo has been updated!!", { id: "update-todo" });
     },
-    onError: (error) => {
-      toast.error(error.message, { id: "update-todo" });
-    },
+    onError: (error) => toast.error(error.message, { id: "update-todo" }),
   });
 
   const onTodoUpdate = useCallback(
@@ -172,20 +169,13 @@ export const useTodoActions = () => {
     useMutation({
       mutationFn: completeTodo,
       onSuccess: (results) => {
-        if (results.success) {
-          invalidate("todos");
-          if (todo?.id == results.success.id) {
-            setTodo(results.success);
-          }
-          onTodoNotificationClose()
-          toast.success("Todo has been completed!!", { id: "complete-todo" });
-        } else {
-          toast.error(results.error, { id: "complete-todo" });
-        }
+        invalidate("todos");
+        if (todo?.id == results.id) setTodo(results);
+
+        onTodoNotificationClose();
+        toast.success("Todo has been completed!!", { id: "complete-todo" });
       },
-      onError: (error) => {
-        toast.error(error.message, { id: "complete-todo" });
-      },
+      onError: (error) => toast.error(error.message, { id: "complete-todo" }),
     });
 
   const onTodoComplete = useCallback(
@@ -196,31 +186,24 @@ export const useTodoActions = () => {
     [todoComepleteMutate]
   );
 
-   //TODO SNOOZE
-   const { mutate: todoSnoozeMutate, isPending: todoSnoozing } =
-   useMutation({
-     mutationFn: snoozeTodo,
-     onSuccess: (results) => {
-       if (results.success) {
-         invalidate("todos");
-         onTodoNotificationClose()
-         toast.success("Todo has been rescheduled!!", { id: "snooze-todo" });
-       } else {
-         toast.error(results.error, { id: "snooze-todo" });
-       }
-     },
-     onError: (error) => {
-       toast.error(error.message, { id: "snooze-todo" });
-     },
-   });
+  //TODO SNOOZE
+  const { mutate: todoSnoozeMutate, isPending: todoSnoozing } = useMutation({
+    mutationFn: snoozeTodo,
+    onSuccess: (results) => {
+      invalidate("todos");
+      onTodoNotificationClose();
+      toast.success("Todo has been rescheduled!!", { id: "snooze-todo" });
+    },
+    onError: (error) => toast.error(error.message, { id: "snooze-todo" }),
+  });
 
- const onTodoSnooze = useCallback(
-   (id: string) => {
-     toast.loading("Rescheduling Todo...", { id: "snooze-todo" });
-     todoSnoozeMutate(id);
-   },
-   [todoSnoozeMutate]
- );
+  const onTodoSnooze = useCallback(
+    (id: string) => {
+      toast.loading("Rescheduling Todo...", { id: "snooze-todo" });
+      todoSnoozeMutate(id);
+    },
+    [todoSnoozeMutate]
+  );
 
   return {
     onTodoDelete,
@@ -231,6 +214,7 @@ export const useTodoActions = () => {
     todoUpdating,
     onTodoComplete,
     todoCompleting,
-    onTodoSnooze,todoSnoozing
+    onTodoSnooze,
+    todoSnoozing,
   };
 };

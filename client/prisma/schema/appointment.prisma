@@ -6,7 +6,7 @@ model Appointment {
     endDate   DateTime
     title     String?
 
-    status   String  @default("Scheduled")
+    status   String
     comments String? @db.LongText
     reason   String? @db.LongText
 
@@ -19,6 +19,7 @@ model Appointment {
     label   AppointmentLabel? @relation(fields: [labelId], references: [id])
     labelId String?
 
+    calls Call[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

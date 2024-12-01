@@ -26,8 +26,8 @@ export const UserSelect = ({
   disabled = false,
   role,
 }: UserSelectProps) => {
-  const { onSiteUserGet } = useUserData();
-  const { siteUsers, siteUsersFetching } = onSiteUserGet(role);
+  const { onGetSiteUsers } = useUserData();
+  const { siteUsers, siteUsersFetching } = onGetSiteUsers(role);
 
   return (
     <>

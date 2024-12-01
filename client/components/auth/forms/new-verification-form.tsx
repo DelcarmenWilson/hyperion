@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { userUpdateEmailVerification } from "@/actions/user";
+import { updateUserEmailVerification } from "@/actions/user";
 
 export const NewVerificationForm = () => {
   const searchParams = useSearchParams();
@@ -20,7 +20,7 @@ export const NewVerificationForm = () => {
       setError("Missing token!");
       return;
     }
-    userUpdateEmailVerification(token)
+    updateUserEmailVerification(token)
       .then((data) => {
         setSuccess(data.success);
         setError(data.error);

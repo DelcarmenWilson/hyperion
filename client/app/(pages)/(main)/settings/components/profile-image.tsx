@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ImageModal } from "@/components/modals/image";
 
-import { userUpdateByIdImage } from "@/actions/user";
+import { updateUserImage } from "@/actions/user";
 
 export const ProfileImage = ({ image }: { image: string }) => {
   const { update } = useSession();
@@ -17,11 +17,10 @@ export const ProfileImage = ({ image }: { image: string }) => {
 
   const onImageUpdated = async (images: string[]) => {
     setModalOpen(false);
-    const imageUpdated = await userUpdateByIdImage(images[0]);
-    if (imageUpdated.success) {
-      update();
-      toast.success(imageUpdated.success);
-    } else toast.error(imageUpdated.error);
+    const imageUpdated = await updateUserImage(images[0]);
+
+    update();
+    toast.success(imageUpdated);
   };
   return (
     <>

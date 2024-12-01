@@ -76,14 +76,16 @@ const convertBluePrintWeekData = (weeks: BluePrintWeek[]) => {
   return graphData;
 };
 
-type CallReportData = {
+export type CallReportData = {
   day: string;
   duration: number;
   total: number;
 };
 
-export const convertCallData = (calls: FullCall[]) => {
+export const convertCallData = (calls: FullCall[]|undefined) => {
   const dailyCalls: CallReportData[] = [];
+
+  if(!calls) return dailyCalls
 
   for (const call of calls) {
     const day = call.createdAt.toDateString();

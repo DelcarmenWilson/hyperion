@@ -8,7 +8,7 @@ import { CoachNotification } from "../phone/coach-notification";
 import { TextAnimation } from "../custom/text-animate";
 import { PageNotification } from "./page-notification";
 import { Button } from "../ui/button";
-import { remindTodos } from "@/actions/user/todo/remind-todos";
+import { remindTodos } from "@/actions/user/todo";
 
 type Props = {
   admin?: boolean;

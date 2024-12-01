@@ -12,7 +12,8 @@ export const PhoneScript = () => {
   const { lead, script, showScript } = usePhoneStore();
 
   const { onlineUser } = useOnlineUserData();
-  const { licenses } = useAgentLicenseData();
+  const { onGetLicences } = useAgentLicenseData();
+  const { licenses } = onGetLicences();
 
   const formattedScript = useMemo(() => {
     return replaceScript(

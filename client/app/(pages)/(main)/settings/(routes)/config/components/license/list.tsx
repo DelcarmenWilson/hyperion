@@ -9,9 +9,10 @@ type LicenseListProps = {
   size?: string;
 };
 export const LicenseList = ({ size = "full" }: LicenseListProps) => {
-  const { licenses, isFetchingLicenses } = useAgentLicenseData();
+  const { onGetLicences } = useAgentLicenseData();
+  const { licenses, licensesFetching } = onGetLicences();
   return (
-    <SkeletonWrapper isLoading={isFetchingLicenses}>
+    <SkeletonWrapper isLoading={licensesFetching}>
       {licenses?.length ? (
         <div
           className={cn(

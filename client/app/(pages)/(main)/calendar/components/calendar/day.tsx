@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
 import dayjs from "dayjs";
+import { cn } from "@/lib/utils";
 import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
 
-import { getAppLabelBgColor } from "@/formulas/labels";
-import { format } from "date-fns";
 import { CalendarAppointment } from "@/types/appointment";
-import { cn } from "@/lib/utils";
+import { HyperionColors } from "@/lib/colors";
+
+export const labelColors = {
+  [HyperionColors.INDIGO]: "bg-indigo-200",
+  [HyperionColors.GRAY]: "bg-gray-200",
+  [HyperionColors.GREEN]: "bg-green-200",
+  [HyperionColors.BLUE]: "bg-blue-200",
+  [HyperionColors.RED]: "bg-red-200",
+  [HyperionColors.PURPLE]: "bg-purple-200",
+  [HyperionColors.PRIMARY]: "bg-primary text-background",
+};
 
 type DayProps = {
   day: dayjs.Dayjs;
@@ -51,19 +61,19 @@ export const Day = ({ day, rowIdx }: DayProps) => {
           setShowAppointmentModal(true);
         }}
       >
-        {dayAppointments.map((app) => {
-          const bg = getAppLabelBgColor(app.label?.color as string);
-          return (
-            <div
-              key={app.id}
-              className={cn("text-xs truncate", bg)}
-              onClick={() => setSelectedAppointment(app)}
-            >
-              {app.lead ? app.lead.firstName : app.title} -{" "}
-              {format(app.startDate, "h:mm")}
-            </div>
-          );
-        })}
+        {dayAppointments.map((app) => (
+          <div
+            key={app.id}
+            className={cn(
+              "text-xs truncate",
+              labelColors[app.label?.color as HyperionColors]
+            )}
+            onClick={() => setSelectedAppointment(app)}
+          >
+            {app.lead ? app.lead.firstName : app.title} -{" "}
+            {format(app.startDate, "h:mm")}
+          </div>
+        ))}
       </div>
     </div>
   );

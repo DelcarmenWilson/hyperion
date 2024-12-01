@@ -4,20 +4,42 @@ import { toast } from "sonner";
 import { UserLicense } from "@prisma/client";
 import {
   userLicenseDeleteById,
-  userLicensesGetAll,
+  getLicenses,
+  getLicensesForUser,
 } from "@/actions/user/license";
 
 export const useAgentLicenseData = () => {
-  const { data: licenses, isFetching: isFetchingLicenses} = useQuery<
+  const onGetLicences = () => {
+  const { data: licenses, isFetching: licensesFetching,isLoading:licensesLoading} = useQuery<
   UserLicense[]
   >({
-    queryFn: () => userLicensesGetAll(),
+    queryFn: () => getLicenses(),
     queryKey: ["agent-licenses"],
   });
 
   return {
     licenses,
-    isFetchingLicenses,
+    licensesFetching,
+    licensesLoading
+  };}
+  const onGetLicencesForUser = (userId: string) => {
+    const { data: licenses, isFetching: licensesFetching,isLoading:licensesLoading} = useQuery<
+    UserLicense[]
+    >({
+      queryFn: () => getLicensesForUser(userId),
+      queryKey: [`agent-licenses-${userId}`],
+      enabled:!!userId
+    });
+  
+    return {
+      licenses,
+      licensesFetching,
+      licensesLoading
+    };}
+
+  return {
+    onGetLicences,
+    onGetLicencesForUser,
   };
 };
 

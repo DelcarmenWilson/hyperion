@@ -25,11 +25,7 @@ import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
 import { DEVADMINS } from "@/constants/user";
 
-export default async function DashBoardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
   if (!user) redirect("/login");
 
@@ -64,10 +60,12 @@ export default async function DashBoardLayout({
               </AppointmentContextComponent>
             </PhoneContextProvider>
             {/*  THE GLOBAL CHAT BOT ASSISTANT */}
-            {DEVADMINS.includes(user.role) && <ChatBot />}
+            {/* {DEVADMINS.includes(user.role) && <ChatBot />} */}
           </div>
         </div>
       </div>
     </SocketContextComponent>
   );
-}
+};
+
+export default DashBoardLayout;

@@ -1,17 +1,22 @@
 import { formatSecondsToHours } from "@/formulas/numbers";
 import Link from "next/link";
-import { DatesFilter } from "../reusable/dates-filter";
 import { DateRange } from "react-day-picker";
+import { DateRangePicker } from "../ui/date-range-picker";
+import { differenceInDays } from "date-fns";
+import { MAX_DATE_RANGE_DAYS } from "@/lib/constants";
+import { toast } from "sonner";
 
 type TopMenuProps = {
+  dateRange: DateRange;
+  setDateRange: (e: DateRange) => void;
   duration: number;
-  onDateSelected?: (e: DateRange) => void;
   showLink: boolean;
   showDate: boolean;
 };
 export const TopMenu = ({
+  dateRange,
+  setDateRange,
   duration,
-  onDateSelected,
   showLink = false,
   showDate = false,
 }: TopMenuProps) => {
@@ -23,7 +28,22 @@ export const TopMenu = ({
         </Link>
       )}
       {showDate ? (
-        <DatesFilter link="/calls" onDateSelected={onDateSelected} />
+        <DateRangePicker
+          initialDateFrom={dateRange.from}
+          initialDateTo={dateRange.to}
+          onUpdate={(values) => {
+            const { from, to } = values.range;
+            if (!from || !to) return;
+            if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
+              toast.error(
+                `The selected date range od to big. Max allowed range is ${MAX_DATE_RANGE_DAYS}`
+              );
+              return;
+            }
+            setDateRange({ from, to });
+          }}
+          showCompare={false}
+        />
       ) : (
         <p>{formatSecondsToHours(duration)}</p>
       )}

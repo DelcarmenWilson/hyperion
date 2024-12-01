@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "../ui/scroll-area";
-import { userInsertMaster } from "@/actions/user";
+import { createMaster } from "@/actions/user";
 
 export const MasterAccountModal = () => {
   const router = useRouter();
@@ -44,12 +44,9 @@ export const MasterAccountModal = () => {
 
   const onSubmit = async (values: MasterRegisterSchemaType) => {
     setLoading(true);
-    const insertedMaster = await userInsertMaster(values);
-
-    if (insertedMaster.success) {
-      router.push(`/admin`);
-      toast.success(insertedMaster.success);
-    } else toast.error(insertedMaster.error);
+    const insertedMaster = await createMaster(values);
+    router.push(`/admin`);
+    toast.success(insertedMaster);
 
     setLoading(false);
   };

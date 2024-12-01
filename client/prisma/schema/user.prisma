@@ -136,10 +136,31 @@ model UserTemplate {
 }
 
 //USER TODO
+model UserTodoCategory {
+    id     String @id @default(cuid())
+    userId String
+
+    name        String
+    color       String
+    description String?    @db.LongText
+    order       Int
+    default     Boolean    @default(false)
+    todos       UserTodo[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    //User cannot have two categories with the same name
+    @@unique([name, userId])
+}
+
 model UserTodo {
     id     String @id @default(cuid())
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    categoryId String           @default("cm448mzwq0000ujp4ok281xfg")
+    category   UserTodoCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
     title       String
     description String @db.LongText

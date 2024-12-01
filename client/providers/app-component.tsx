@@ -9,7 +9,6 @@ import {
 } from "./app";
 
 import { Appointment, AppointmentLabel, Schedule } from "@prisma/client";
-import { AppointmentDetails } from "@/components/appointments/details";
 
 import { CalendarLabel } from "@/types";
 import { appointmentLabelUpdateByChecked } from "@/actions/appointment";
@@ -124,7 +123,6 @@ function AppointmentContextComponent({
     >
       {children}
       <AppointmentForm />
-      <AppointmentDetails />
     </AppointmentContextProvider>
   );
 }

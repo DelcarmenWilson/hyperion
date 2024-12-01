@@ -7,7 +7,7 @@ import {
   SuperAdminRegisterSchemaType,
 } from "@/schemas/register";
 import { userGetByEmailOrUsername } from "@/data/user";
-import { userInsertAllSettings } from "./user";
+import { createUserSettings } from "./user";
 import { capitalize } from "@/formulas/text";
 //DATA
 export const organizationsGetAll = async () => {
@@ -120,7 +120,7 @@ export const organizationInsert = async (
     return { error: "Organization could not be created at this time!" };
 
   //Insert all the user settings for the newly created user
-  await userInsertAllSettings(newUser);
+  await createUserSettings(newUser);
 
   //If everything went well return a success message
   return { success: "Organization created!" };

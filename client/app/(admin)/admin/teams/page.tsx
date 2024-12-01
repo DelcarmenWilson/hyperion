@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useTeamData } from "./hooks/use-team";
+import { useTeamData } from "@/hooks/use-team";
 import { useCurrentUser } from "@/hooks/user/use-current";
 
 import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
@@ -13,8 +13,9 @@ import { TeamList } from "./components/list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 const TeamsPage = () => {
-  const { teams, isFetchingTeams } = useTeamData();
   const user = useCurrentUser();
+  const { onGetTeams } = useTeamData();
+  const { teams, teamsFetching } = onGetTeams();
 
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
@@ -33,7 +34,7 @@ const TeamsPage = () => {
       description="Manage teams for your organization."
       topMenu={<TeamForm enabled={user?.role == "SUPER_ADMIN"} />}
     >
-      <SkeletonWrapper isLoading={isFetchingTeams}>
+      <SkeletonWrapper isLoading={teamsFetching}>
         {isList ? (
           <DataTable
             columns={columns}

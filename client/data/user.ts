@@ -56,9 +56,12 @@ export const userGetByEmailOrUsername = async (
   }
 };
 
+//TODO see if this can get replace with get user profile
+// look for all the reference, change it to the new one then dont forget to delete this one
+
 export const userGetByIdReport = async (id: string) => {
-  try {
-    const user = await db.user.findUnique({
+
+    return await db.user.findUnique({
       where: { id },
       include: {
         phoneNumbers: true,
@@ -71,10 +74,6 @@ export const userGetByIdReport = async (id: string) => {
       },
     });
 
-    return user;
-  } catch {
-    return null;
-  }
 };
 //TODO - see if this can be removed, some files are still using this
 export const userGetByAssistantOld = async (assitantId: string) => {

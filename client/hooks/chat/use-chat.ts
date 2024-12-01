@@ -18,7 +18,7 @@ import {
 import { FullChat, ShortChat, UnreadShortChat, UserSocket } from "@/types";
 import { OnlineUser } from "@/types/user";
 
-import { usersGetAllChat } from "@/actions/user";
+import { getUsersChat } from "@/actions/user";
 import {
   chatSettingsGet,
   chatSettingsToggleOnline,
@@ -124,7 +124,7 @@ export const useChatStore = create<State & Actions>()(
       });
     },
     fetchData: async () => {
-      const users = await usersGetAllChat();
+      const users = await getUsersChat();
       const settings = await chatSettingsGet();
       set({
         allUsers: users,

@@ -76,12 +76,6 @@ export const DefaultStatus: StatusType[] = [
   { type: "lead", name: "Resolved", value: "Resolved" },
 ];
 
-export const appointmentStatus = [
-  "Closed",
-  "No-Show",
-  "Scheduled",
-  "Rescheduled",
-];
 
 export const allMonths: MonthProps[] = [
   { name: "January", abv: "Jan", value: 0 },

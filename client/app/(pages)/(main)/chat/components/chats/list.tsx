@@ -11,8 +11,8 @@ export const ChatUsersList = ({
   onSelectUser,
   loading,
 }: ChatUsersListProps) => {
-  const { onSiteUserGet } = useUserData();
-  const { siteUsers, siteUsersFetching } = onSiteUserGet();
+  const { onGetSiteUsers } = useUserData();
+  const { siteUsers, siteUsersFetching } = onGetSiteUsers();
 
   return (
     <div className="flex flex-1 flex-col gap-2 h-full overflow-hidden">

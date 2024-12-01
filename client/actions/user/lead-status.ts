@@ -2,12 +2,12 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { LeadStatusSchema, LeadStatusSchemaType } from "@/schemas/lead";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 // USER LICENSES
 export const userLicensesGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const licenses = await db.userLicense.findMany({ where: { userId } });
@@ -49,7 +49,7 @@ export const userLeadStatusDeleteById = async (id: string) => {
   return { success: "Lead Status deleted!" };
 };
 export const userLeadStatusInsert = async (values: LeadStatusSchemaType) => {
-  const userId = await userGetByAssistant();
+  const userId = await getAssitantForUser();
   if (!userId) return { error: "Unauthenticated" };
 
   const validatedFields = LeadStatusSchema.safeParse(values);

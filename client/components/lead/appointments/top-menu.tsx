@@ -1,14 +1,20 @@
-import { DatesFilter } from "@/components/reusable/dates-filter";
 import Link from "next/link";
+import { toast } from "sonner";
+import { MAX_DATE_RANGE_DAYS } from "@/lib/constants";
+import { differenceInDays } from "date-fns";
+
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 
 type TopMenuProps = {
-  onDateSelected?: (e: DateRange) => void;
+  dateRange: DateRange;
+  setDateRange: (e: DateRange) => void;
   showLink?: boolean;
   showDate?: boolean;
 };
 export const TopMenu = ({
-  onDateSelected,
+  dateRange,
+  setDateRange,
   showLink = false,
   showDate = false,
 }: TopMenuProps) => {
@@ -23,7 +29,22 @@ export const TopMenu = ({
         Calendar
       </Link>
       {showDate && (
-        <DatesFilter link="/appointments" onDateSelected={onDateSelected} />
+        <DateRangePicker
+          initialDateFrom={dateRange.from}
+          initialDateTo={dateRange.to}
+          onUpdate={(values) => {
+            const { from, to } = values.range;
+            if (!from || !to) return;
+            if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
+              toast.error(
+                `The selected date range od to big. Max allowed range is ${MAX_DATE_RANGE_DAYS}`
+              );
+              return;
+            }
+            setDateRange({ from, to });
+          }}
+          showCompare={false}
+        />
       )}
     </div>
   );

@@ -26,7 +26,7 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { Team } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { userInsert } from "@/actions/user";
+import { createUser } from "@/actions/user";
 
 export const RegisterForm = ({ teams }: { teams: Team[] }) => {
   const [error, setError] = useState<string | undefined>("");
@@ -49,7 +49,7 @@ export const RegisterForm = ({ teams }: { teams: Team[] }) => {
     setError("");
     setSuccess("");
     startTransition(() => {
-      userInsert(values).then((data) => {
+      createUser(values).then((data) => {
         setError(data.error);
         setSuccess(data.success);
         if (data.success) {

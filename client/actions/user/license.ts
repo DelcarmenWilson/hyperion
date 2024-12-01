@@ -2,20 +2,17 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { UserLicenseSchema, UserLicenseSchemaType } from "@/schemas/user";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 
 //DATA
 
-export const userLicensesGetAll = async (
-) => {
-  try {
-    const userId = await userGetByAssistant();
-    if(!userId) return[]
-    const licenses = await db.userLicense.findMany({ where: { userId } });
-    return licenses;
-  } catch {
-    return [];
-  }
+export const getLicenses = async () => {
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated!");
+  return await db.userLicense.findMany({ where: { userId } });
+};
+export const getLicensesForUser = async (userId: string) => {  
+  return await db.userLicense.findMany({ where: { userId } });
 };
 // ACTIONS
 export const userLicenseDeleteById = async (id: string) => {

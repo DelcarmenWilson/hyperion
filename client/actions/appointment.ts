@@ -24,15 +24,16 @@ import { callUpdateByIdAppointment } from "./call";
 
 import { leadGetOrInsert } from "@/actions/lead";
 import { sendAppointmentInitialEmail } from "@/lib/mail";
-import { userGetByAssistant } from "@/actions/user";
+import { getAssitantForUser } from "@/actions/user";
 import { createEmail } from "@/actions/email/create-email";
 import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
+import { AppointmentStatus } from "@/types/appointment";
 
 //DATA
 //TODO - this was created to test the calendar client and the appoint hook inside of it.
 export const appointmentsGet = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const appointments = await db.appointment.findMany({
@@ -51,7 +52,7 @@ export const appointmentsGet = async () => {
 
 export const appointmentsGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
 
     const appointments = await db.appointment.findMany({
@@ -160,7 +161,7 @@ export const appointmentGetById = async (id: string) => {
 //APPOINTMENT LABELS
 export const appointmentLabelsGetAll = async () => {
   try {
-    const userId = await userGetByAssistant();
+    const userId = await getAssitantForUser();
     if (!userId) return [];
     const labels = await db.appointmentLabel.findMany({
       where: { OR: [{ userId }, { default: { equals: true } }] },
@@ -176,34 +177,27 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
   //If there is no user -- Unathenticated
-  if (!user) return { error: "Unauthenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
-  const validatedFields = AppointmentSchema.safeParse(values);
+  const { data, success } = AppointmentSchema.safeParse(values);
 
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const {
-    localDate,
-    startDate,
-    leadId,
-    labelId,
-    comments,
-    smsReminder,
-    emailReminder,
-  } = validatedFields.data;
+  if (!success) throw new Error("Invalid fields!");
+
   let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistantOld(userId)) as string;
   }
+
+  //check the agents schedule and see if there in an appointment already made
   const conflctingApp = await db.appointment.findFirst({
-    where: { agentId: userId, startDate, status: "Scheduled" },
+    where: { agentId: userId, startDate: data.startDate, status: "Scheduled" },
   });
+
   if (conflctingApp)
-    return { error: "Conflicting time Please select another time!" };
+    throw new Error("Conflicting time Please select another time!");
 
   const existingAppointment = await db.appointment.findFirst({
-    where: { leadId, agentId: userId, status: "Scheduled" },
+    where: { leadId: data.leadId, agentId: userId, status: "Scheduled" },
   });
 
   if (existingAppointment)
@@ -212,22 +206,22 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
       data: { status: "Rescheduled" },
     });
 
+  //get the agents availability
   const config = await db.schedule.findUnique({ where: { userId } });
-  const appointmentDate = startDate!;
-  let endDate = new Date(startDate!);
+  const appointmentDate = data.startDate!;
+  let endDate = new Date(data.startDate!);
 
   if (config?.type == "hourly") endDate.setHours(endDate.getHours() + 1);
   else endDate.setMinutes(endDate.getMinutes() + 30);
 
   const appointment = await db.appointment.create({
     data: {
+      ...data,
       agentId: userId,
-      leadId,
-      localDate: localDate!,
-      startDate: startDate!,
       endDate,
-      labelId,
-      comments,
+      localDate: data.localDate!,
+      startDate: data.startDate!,
+      status: AppointmentStatus.SCHEDULED,
     },
     include: { lead: true },
   });
@@ -237,7 +231,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   if (!appointment) return { error: "Appointment was not created!" };
 
   const lead = await db.lead.findUnique({
-    where: { id: leadId },
+    where: { id: data.leadId },
     include: {
       user: {
         select: {
@@ -256,13 +250,15 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   let message;
   if (lead) {
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
-    if (smsReminder) {
-      message = (
-        await smsSendLeadAppointmentNotification(userId, lead, localDate!)
+    if (data.smsReminder) {
+      message = await smsSendLeadAppointmentNotification(
+        userId,
+        lead,
+        data.localDate!
       );
     }
 
-    if (emailReminder && lead.email) {
+    if (data.emailReminder && lead.email) {
       const email = await sendAppointmentInitialEmail(
         lead.email,
         lead.user.team?.name,
@@ -274,14 +270,13 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
       );
       if (email.data) {
         await createEmail({
-
-id:email.data.id as string,
+          id: email.data.id as string,
           type: "react-email",
           body: "AppInitailEmail",
           subject: "New Appointment",
-          leadId:lead.id,
-          userId:user.id}
-        );
+          leadId: lead.id,
+          userId: user.id,
+        });
       }
     }
   }
@@ -368,6 +363,7 @@ export const appointmentInsertBook = async (
       endDate,
       localDate: localDate!,
       comments: "",
+      status: AppointmentStatus.SCHEDULED,
     },
   });
   //If the appointment was not created return and error and exit the function
@@ -463,6 +459,7 @@ export const appointmentRescheduledByLead = async (
       endDate,
       localDate: localDate!,
       comments: "",
+      status: AppointmentStatus.RESCHEDULED,
     },
     include: { lead: true },
   });
@@ -484,18 +481,40 @@ export const appointmentRescheduledByLead = async (
   //If everything was successfull return a success message
   return { success: "Appointment rescheduled!" };
 };
-export const appointmentCanceledByLead = async (id: string, reason: string) => {
+export const appointmentCanceledByLead = async ({
+  id,
+  reason,
+}: {
+  id: string;
+  reason: string;
+}) => {
   await db.appointment.update({
     where: { id },
     data: {
-      status: "Cancelled",
+      status: AppointmentStatus.CANCELLED,
       reason,
     },
   });
 
   return { success: "Appointment has been canceled" };
 };
+export const appointmentCanceledByAgent = async ({
+  id,
+  reason,
+}: {
+  id: string;
+  reason: string;
+}) => {
+  await db.appointment.update({
+    where: { id },
+    data: {
+      status: AppointmentStatus.CANCELLED,
+      reason,
+    },
+  });
 
+  return { success: "Appointment has been canceled" };
+};
 //APPOINTMENT LABELS
 export const appointmentLabelInsert = async (
   values: AppointmentLabelSchemaType
@@ -559,9 +578,8 @@ export const appointmentLabelUpdateById = async (
   const existingLabel = await db.appointmentLabel.findUnique({
     where: { id },
   });
-  if (!existingLabel) 
-    return { error: "This label does not exist!" };
-  
+  if (!existingLabel) return { error: "This label does not exist!" };
+
   const label = await db.appointmentLabel.update({
     where: { id },
     data: {
@@ -637,4 +655,55 @@ export const sendAppointmentReminders = async () => {
   }
 
   return { success: appointments };
+};
+
+//Update appointment status from a call
+export const updatAppointmentStatusFromCall = async ({
+  callId,
+  leadId,
+  agentId,
+  duration,
+  direction,
+  setAppointment
+}: {
+  callId: string;
+  leadId: string;
+  agentId: string;
+  duration: number;
+  direction: string;
+  setAppointment: boolean
+}) => {
+  const startTime = new Date();
+  startTime.setMinutes(startTime.getMinutes() - 30);
+  const endTime = new Date();
+  const appointment = await db.appointment.findFirst({
+    where: {
+      leadId,
+      agentId,
+      OR: [
+        {
+          endDate: {
+            gte: startTime,
+            lte: endTime,
+          },
+        },
+        { status: AppointmentStatus.SCHEDULED },
+      ],
+    },
+  });
+  if (!appointment) return;
+
+  await db.appointment.update({
+    where: { id: appointment.id }, data: {
+      status: duration > 30 ? AppointmentStatus.CLOSED : AppointmentStatus.NO_SHOW
+    }
+  })
+
+
+  if (setAppointment)
+    await db.call.update({
+      where: { id: callId }, data: {
+        appointment: { connect: appointment }
+      }
+    })
 };

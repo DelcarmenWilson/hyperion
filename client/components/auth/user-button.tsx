@@ -44,6 +44,20 @@ export const UserButton = () => {
           <span className="text-muted-foreground text-xs">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => router.push(`/users/${user.id}`)}
+        >
+          <User size={16} />
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => router.push("/settings")}
+        >
+          <Cog size={16} />
+          Settings
+        </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem
             className="cursor-pointer gap-2"
@@ -53,13 +67,6 @@ export const UserButton = () => {
             Admin
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem
-          className="cursor-pointer gap-2"
-          onClick={() => router.push("/settings")}
-        >
-          <Cog size={16} />
-          Settings
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <LogoutButton>
           <DropdownMenuItem className="gap-2">

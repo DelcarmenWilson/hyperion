@@ -20,6 +20,7 @@ import { phoneSettingsGet } from "@/actions/settings/phone";
 import { scheduleGet } from "@/actions/user/schedule";
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { ALLADMINS } from "@/constants/user";
+import ModalsContainer from "@/components/global/modals-container";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await currentUser();
@@ -53,6 +54,8 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
                 initLabels={appointmentLabels}
               >
                 {children}
+                {/* ///ALL THE PHONE MODALS */}
+                <ModalsContainer />
               </AppointmentContextComponent>
             </PhoneContextProvider>
           </div>

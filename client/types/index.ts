@@ -10,6 +10,7 @@ import {
   LeadPolicy,
   Carrier,
   CarrierCondition,
+  Appointment,
 } from "@prisma/client";
 
 import { FullAppointment, CalendarEvent, CalendarLabel } from "./appointment";
@@ -89,12 +90,13 @@ export type FullCall = Call & {
   user?: {
     firstName: string;
   };
+  appointment?:Appointment
 };
 
 export type FullTeam = Team & {
   users?: User[];
   organization: Organization;
-  owner: User | null;
+  owner?: User | null;
 };
 
 export type FullTeamReport = {
