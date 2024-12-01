@@ -658,6 +658,7 @@ export const sendAppointmentReminders = async () => {
 };
 
 //Update appointment status from a call
+const MINCALLDURATION = 60;
 export const updatAppointmentStatusFromCall = async ({
   callId,
   leadId,
@@ -693,9 +694,27 @@ export const updatAppointmentStatusFromCall = async ({
   });
   if (!appointment) return;
 
+let reason=appointment.reason
+switch(direction){
+  case "inbound": 
+  if(duration<MINCALLDURATION)
+    reason="Agent No Show"
+   else
+   reason="Closed"
+  break
+  case "outbound": 
+    if(duration<MINCALLDURATION)
+    reason="Lead No Show"
+  else
+   reason="Closed"
+  break
+
+}
+
   await db.appointment.update({
     where: { id: appointment.id }, data: {
-      status: duration > 30 ? AppointmentStatus.CLOSED : AppointmentStatus.NO_SHOW
+      status: duration > MINCALLDURATION ? AppointmentStatus.CLOSED : AppointmentStatus.NO_SHOW
+      ,reason
     }
   })
 
