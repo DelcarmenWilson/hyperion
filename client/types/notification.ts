@@ -1,3 +1,4 @@
 export enum NotificationReference{
-    FEEDBACK="Feedback"
+    FEEDBACK="Feedback",
+    APPOINTMENT="Appointment"
 }

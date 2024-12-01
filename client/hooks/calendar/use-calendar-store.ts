@@ -6,8 +6,8 @@ import dayjs from "dayjs";
 import { CalendarAppointment } from "@/types/appointment";
 import { scheduleGet } from "@/actions/user/schedule";
 import {
-  appointmentLabelsGetAll,
-  appointmentsGet,
+  getAppointmentLabels,
+  getAppointmentsTest,
 } from "@/actions/appointment";
 
 type State = {
@@ -83,8 +83,8 @@ export const useCalendarStore = create<State & Actions>()(
     setDaySelected: (e) => set({ daySelected: e }),
     fetchData: async () => {
       const schedule = await scheduleGet();
-      const appointments = await appointmentsGet();
-      const labels = await appointmentLabelsGetAll();
+      const appointments = await getAppointmentsTest();
+      const labels = await getAppointmentLabels();
       set({
         appointments: appointments,
         labels: labels,

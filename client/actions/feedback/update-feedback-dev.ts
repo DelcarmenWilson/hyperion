@@ -2,15 +2,16 @@
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@/lib/auth";
+
+import { NotificationReference } from "@/types/notification";
+import { FeedbackStatus } from "@/types/feedback";
 import {
   UpdateDevFeedbackSchema,
   UpdateDevFeedbackSchemaType,
 } from "@/schemas/feedback";
 import { UserRole } from "@prisma/client";
 import { DEVADMINS } from "@/constants/user";
-import { createNotification } from "../notification/create-notification";
-import { NotificationReference } from "@/types/notification";
-import { FeedbackStatus } from "@/types/feedback";
+import { createNotification } from "@/actions/notification";
 
 export const updateFeedbackDev = async (
   values: UpdateDevFeedbackSchemaType

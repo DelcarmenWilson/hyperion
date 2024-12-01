@@ -16,10 +16,7 @@ import ModalProvider from "@/providers/modal";
 
 import { voicemailGetUnHeard } from "@/actions/voicemail";
 import { scheduleGet } from "@/actions/user/schedule";
-import {
-  appointmentLabelsGetAll,
-  appointmentsGetAll,
-} from "@/actions/appointment";
+import { getAppointmentLabels, getAppointments } from "@/actions/appointment";
 
 import { getTwilioToken } from "@/actions/twilio";
 import { phoneSettingsGet } from "@/actions/settings/phone";
@@ -32,8 +29,8 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
   const schedule = await scheduleGet();
-  const appointments = await appointmentsGetAll();
-  const appointmentLabels = await appointmentLabelsGetAll();
+  const appointments = await getAppointments();
+  const appointmentLabels = await getAppointmentLabels();
   const phoneSettings = await phoneSettingsGet();
 
   return (

@@ -10,10 +10,7 @@ import NavBar from "@/components/navbar/navbar";
 
 import SideBar from "@/components/sidebar";
 
-import {
-  appointmentLabelsGetAll,
-  appointmentsGetAll,
-} from "@/actions/appointment";
+import { getAppointmentLabels, getAppointments } from "@/actions/appointment";
 import { getTwilioToken } from "@/actions/twilio";
 
 import { phoneSettingsGet } from "@/actions/settings/phone";
@@ -32,8 +29,8 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const voicemails = await voicemailGetUnHeard(user.id);
   const token = await getTwilioToken();
   const schedule = await scheduleGet();
-  const appointments = await appointmentsGetAll();
-  const appointmentLabels = await appointmentLabelsGetAll();
+  const appointments = await getAppointments();
+  const appointmentLabels = await getAppointmentLabels();
   const phoneSettings = await phoneSettingsGet();
 
   return (

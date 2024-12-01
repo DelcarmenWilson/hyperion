@@ -4,9 +4,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useInvalidate } from "../use-invalidate";
 import { useSocketStore } from "../use-socket-store";
 
-import { getUnreadNotifications } from "@/actions/notification/get-unread-notifications";
 import { Notification } from "@prisma/client";
-import { updateUnreadNotification } from "@/actions/notification/update-unread-notification";
+import { getUnreadNotifications,updateUnreadNotification } from "@/actions/notification";
 
 export const useNotificationData = () => {
   const onGetNotificationsUnread = () => {
@@ -54,17 +53,17 @@ export const useNotificationActions = () => {
 
   // GENERAL FUNCTIONS
   const onPlay = () => {
-    invalidate("navbar-conversations");
+    invalidate("notifications");
     if (!audioRef.current) return;
     audioRef.current.volume = 0.5;
     audioRef.current.play();
   };
 
-  //Need to change this to notifications
+  //TODO-Need to include the notification id and create a new notification toast dialog thing
   useEffect(() => {
-    socket?.on("conversation-message-notify", onPlay);
+    socket?.on("notification-recieved", onPlay);
     return () => {
-      socket?.off("conversation-message-notify", onPlay);
+      socket?.off("notification-recieved", onPlay);
     };
     // eslint-disable-next-line
   }, []);

@@ -27,8 +27,8 @@ import {
 } from "@/formulas/schedule";
 
 import {
-  appointmentCanceledByAgent,
-  appointmentInsert,
+  cancelAppointmentAgent,
+  createAppointment,
 } from "@/actions/appointment";
 import { AppointmentStatus } from "@/types/appointment";
 
@@ -155,7 +155,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
 
   const { mutate: appointmentMutate, isPending: isPendingAppointment } =
     useMutation({
-      mutationFn: appointmentInsert,
+      mutationFn: createAppointment,
       onSuccess: (result) => {
         if (result.success) {
           toast.success("Appointment scheduled!", { id: "insert-appointent" });
@@ -203,7 +203,7 @@ export const useAppointmentCancel = () => {
   const { invalidate } = useInvalidate();
   const { mutate: cancelAppointmentMutate, isPending: AppointmentCancelling } =
     useMutation({
-      mutationFn: appointmentCanceledByAgent,
+      mutationFn: cancelAppointmentAgent,
       onSuccess: () => {
         toast.success("Appointment Cancel!", { id: "cancel-appointent" });
         invalidate("agentAppointments");

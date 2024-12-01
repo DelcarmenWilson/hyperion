@@ -23,15 +23,16 @@ const newQouteJob = cron.schedule("0 0 * * *", () => {
   axiosCall("newQuote")
 });
 
-//Run every 30min - gets leads from facebook
-const leadsRetrievalJob = cron.schedule("30 * * * *", () => {  
+//Run every 30min
+const halfHourJob = cron.schedule("30 * * * *", () => {
+  //gets leads from facebook
   axiosCall("newLeads")
-});
-
-//Run every 30min - hide deleted messages from chat
-const hideDeletedMessagesJob = cron.schedule("30 * * * *", () => {  
+  //closed all the open scheduled appointments that were not fullfilled
+  axiosCall("closeOpenAppointments")
+  //hide deleted messages from chat
   axiosCall("hideDeletedMessages")
 });
+
 
 //Run everyminute - send todo reminders
 const todoReminderJob = cron.schedule("* * * * *", () => {  
@@ -41,8 +42,7 @@ export const runJobs = () => {
   //  testJob.start();
   bluePrintTargets.start();
   newQouteJob.start()
-  leadsRetrievalJob.start()
-  hideDeletedMessagesJob.start()
+  halfHourJob.start()
   todoReminderJob.start()
   
 };

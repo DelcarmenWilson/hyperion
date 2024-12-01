@@ -15,8 +15,8 @@ import { TopMenu } from "./top-menu";
 import { columns } from "./columns";
 
 import {
-  appointmentsGetAllByUserIdToday,
-  appointmentsGetByUserIdFiltered,
+  getTodaysAppointments,
+  getAppointmentsForUser,
 } from "@/actions/appointment";
 
 type AppointmentClientProps = {
@@ -39,12 +39,11 @@ export const AppointmentClient = ({
     queryKey: ["agentAppointments", dateRange.to, dateRange.from],
     queryFn: () =>
       showDate
-        ? appointmentsGetByUserIdFiltered(
-            user?.id as string,
-            dateRange?.from?.toString() as string,
-            dateRange?.to?.toString() as string
-          )
-        : appointmentsGetAllByUserIdToday(user?.id as string),
+        ? getAppointmentsForUser({
+            userId: user?.id as string,
+            dateRange,
+          })
+        : getTodaysAppointments(user?.id as string),
   });
 
   return (
