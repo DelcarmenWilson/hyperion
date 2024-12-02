@@ -5,7 +5,22 @@ import { useInvalidate } from "../use-invalidate";
 import { useSocketStore } from "../use-socket-store";
 
 import { Notification } from "@prisma/client";
-import { getUnreadNotifications,updateUnreadNotification } from "@/actions/notification";
+import {
+  getUnreadNotifications,
+  updateUnreadNotification,
+} from "@/actions/notification";
+import { create } from "zustand";
+
+type State = { isNotificationOpen: boolean };
+type Actions = {
+  onNotificationOpen: () => void;
+  onNotificationClose: () => void;
+};
+export const useNotificationStore = create<State & Actions>((set) => ({
+  isNotificationOpen: false,
+  onNotificationOpen: () => set({ isNotificationOpen: true }),
+  onNotificationClose: () => set({ isNotificationOpen: false }),
+}));
 
 export const useNotificationData = () => {
   const onGetNotificationsUnread = () => {
