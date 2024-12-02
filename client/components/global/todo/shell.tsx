@@ -8,8 +8,8 @@ import { TodosList } from "./list";
 import { useTodoCategoryData } from "@/hooks/user/use-todo-category";
 
 const TodoShell = () => {
-  const { onTodosGet } = useTodoData();
-  const { todos, todosFetching } = onTodosGet();
+  const { onGetTodos } = useTodoData();
+  const { todos, todosFetching } = onGetTodos();
   const { onGetCategories } = useTodoCategoryData();
   const { categories } = onGetCategories();
   if (todos == undefined || categories == undefined) return null;

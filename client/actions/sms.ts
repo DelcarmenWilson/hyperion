@@ -35,9 +35,7 @@ export const smsSend = async ({
   media?: string | undefined;
   timer?: number;
 }) => {
-  if (!message) {
-    return { error: "Message cannot be empty!" };
-  }
+  if (!message) return { error: "Message cannot be empty!" };
 
   let result;
 
@@ -76,9 +74,8 @@ export const smsSendAgentAppointmentNotification = async (
   lead: Lead | null | undefined,
   date: Date
 ) => {
-  if (!lead) {
-    return { error: "Lead Info requiered" };
-  }
+  if (!lead) return { error: "Lead Info requiered" };
+
   const user = await db.user.findUnique({
     where: { id: userId },
     include: {
@@ -88,21 +85,17 @@ export const smsSendAgentAppointmentNotification = async (
       phoneSettings: { select: { personalNumber: true } },
     },
   });
-  if (!user) {
-    return { error: "User Not Found!" };
-  }
+  if (!user) return { error: "User Not Found!" };
 
-  if (!user.notificationSettings) {
-    return { error: "Settings Not Found!" };
-  }
-  if (!user.notificationSettings.appointments) {
+  if (!user.notificationSettings) return { error: "Settings Not Found!" };
+
+  if (!user.notificationSettings.appointments)
     return { error: "Appointment notifications not set!" };
-  }
-  if (!user.phoneSettings?.personalNumber) {
-    return { error: "PhoneNumber not set!" };
-  }
-  //TODO - dont forget to remap the agents timezone here
 
+  if (!user.phoneSettings?.personalNumber)
+    return { error: "PhoneNumber not set!" };
+
+  //TODO - dont forget to remap the agents timezone here
   const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
     lead.lastName
   } has booked an appointment for ${formatDateTimeZone(
@@ -117,9 +110,7 @@ export const smsSendAgentAppointmentNotification = async (
     message,
   });
 
-  if (!result.success) {
-    return { error: "Message was not sent!" };
-  }
+  if (!result.success) return { error: "Message was not sent!" };
 
   return { success: "Message sent!" };
 };
@@ -129,7 +120,7 @@ export const smsSendLeadAppointmentNotification = async (
   lead: Lead | null | undefined,
   date: Date
 ) => {
-  if (!lead)  throw new Error("Lead Info required!")
+  if (!lead) throw new Error("Lead Info required!");
   //TODO - update does not go as planned tommorrow - change this back to use the default time ln.292
   //const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
   const message = `Hi ${
@@ -163,7 +154,7 @@ export const smsSendLeadAppointmentNotification = async (
     conversationId: convoid!,
     senderId: userId,
     hasSeen: true,
-    type: MessageType.AGENT,
+    type: MessageType.APPOINTMENT,
     sid: result.success,
   });
 

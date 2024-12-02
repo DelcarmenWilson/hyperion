@@ -12,6 +12,7 @@ import { Table } from "@tanstack/react-table";
 
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import { capitalize } from "@/formulas/text";
+import { useAppointmentStore } from "@/hooks/use-appointment";
 
 type AppointmentFilterProps<TData> = {
   table: Table<TData>;
@@ -20,8 +21,10 @@ type AppointmentFilterProps<TData> = {
 export function AppointmentFilter<TData>({
   table,
 }: AppointmentFilterProps<TData>) {
+  const {status,onSetStatus}=useAppointmentStore()
   const statuses = getEnumValues(AppointmentStatus);
   const OnFilter = (column: string, filter: string) => {
+    onSetStatus(filter)
     if (filter == "%") {
       filter = "";
     }
@@ -29,7 +32,7 @@ export function AppointmentFilter<TData>({
   };
 
   useEffect(() => {
-    OnFilter("status", AppointmentStatus.SCHEDULED);
+    OnFilter("status", status);
     // eslint-disable-next-line
   }, []);
   return (
@@ -39,7 +42,7 @@ export function AppointmentFilter<TData>({
         <Select
           name="ddlStatus"
           onValueChange={(e) => OnFilter("status", e)}
-          defaultValue={AppointmentStatus.SCHEDULED}
+          defaultValue={status}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a status" />

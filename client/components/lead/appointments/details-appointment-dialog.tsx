@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { formatDate, formatTime } from "@/formulas/dates";
 
-export const AppointmentStatusColors = {
+const AppointmentStatusColors = {
   [AppointmentStatus.CANCELLED]: "bg-orange-500 hover:bg-orange-200",
   [AppointmentStatus.CLOSED]: "bg-blue-500 hover:bg-blue-200",
   [AppointmentStatus.NO_SHOW]: "bg-red-500 hover:bg-red-200",

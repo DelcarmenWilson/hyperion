@@ -4,11 +4,10 @@ import { useMainChatActions, useMainNav } from "./hooks/use-main-nav";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+import AdminTestMenu from "./admin-test-menu";
 import { CoachNotification } from "../phone/coach-notification";
 import { TextAnimation } from "../custom/text-animate";
 import { PageNotification } from "./page-notification";
-import { Button } from "../ui/button";
-import { remindTodos } from "@/actions/user/todo";
 
 type Props = {
   admin?: boolean;
@@ -26,7 +25,6 @@ export const MainNav = ({ admin }: Props) => {
 
   const { audioRef } = useMainChatActions();
 
-  const [initialLoad, setInitialLoad] = useState(false);
   const [isPageNotificationOpen, setIsPageNotificationOpen] = useState(false);
 
   const pname = usePathname().split("/");
@@ -34,37 +32,13 @@ export const MainNav = ({ admin }: Props) => {
     ? pname[2].replace("-", " ")
     : pname[1].replace("-", " ");
 
-  // useEffect(() => {
-  //   if (initialLoad) return;
-  //   setIsPageNotificationOpen(true);
-  //   setInitialLoad(true);
-  // }, []);
-
   return (
     <div className={cn(" flex-1 hidden", "md:flex")}>
       <audio
         ref={audioRef}
         src={`/sounds/${user?.messageInternalNotification}.wav`}
       />
-      {/* TODO - dont forget remove these test buttons */}
-      {/* <Button onClick={() => onPhoneInOpen()}>OpenModel</Button> */}
-      {/* <Button onClick={() => onOpen("Text", "Text")}>Open Group Message</Button> */}
 
-      {/* <Button onClick={onReminders}>Reminders</Button> 
-       <Button onClick={() => onGetFacebookData("campaigns")}>Campaings</Button> 
-      <Button onClick={() => onGetFacebookData("leads")}>Leads</Button>
-      <Button onClick={() => onGetFacebookData("adSets")}>AdSets</Button>
-      <Button onClick={() => onGetFacebookData("ads")}>Ads</Button> 
-      <Button onClick={() => onGetFacebookData("audiences")}>Audiences</Button>
-      <Button onClick={() => onGetFacebookData("creatives")}>Creatives</Button> 
-      <Button onClick={() => onGetFacebookData("adImages")}>Ad Images</Button>
-      <Button onClick={() => onGetFacebookData("forms")}>Forms</Button>*/}
-      {/* {user?.role == "MASTER" && (
-        <>
-          <Button onClick={onSendEmail}>Send Email</Button>
-          <Button onClick={onSheduledLeads}>Schedule Leads</Button>
-        </>
-      )} */}
       <TextAnimation
         text={pathname}
         textAnchor="left"
@@ -72,9 +46,8 @@ export const MainNav = ({ admin }: Props) => {
         x="0"
         y="70%"
       />
-      {user?.role == "DEVELOPER" && (
-        <Button onClick={() => remindTodos()}>Reminders</Button>
-      )}
+
+      <AdminTestMenu />
 
       <CoachNotification
         conference={conference}

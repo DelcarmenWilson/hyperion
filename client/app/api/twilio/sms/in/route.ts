@@ -16,7 +16,7 @@ import {
 
 import { chatFetch } from "@/actions/gpt";
 
-import { appointmentInsert } from "@/actions/appointment";
+import { createAppointment } from "@/actions/appointment";
 import { chatSettingGetTitan } from "@/actions/settings/chat";
 import { insertMessage } from "@/actions/lead/message/insert-message";
 
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
   if (content.includes("{schedule}")) {
     const aptDate = new Date(content.replace("{schedule}", "").trim());
     //TODO - need to calculate the agentDate (startDate) based on the agents timeZone
-    await appointmentInsert({
+    await createAppointment({
       date: new Date(),
       localDate: aptDate,
       startDate: aptDate,

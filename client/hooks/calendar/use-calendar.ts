@@ -5,8 +5,8 @@ import { useCalendarStore } from "./use-calendar-store";
 
 import { AppointmentLabelSchemaType } from "@/schemas/appointment";
 import {
-  appointmentLabelInsert,
-  appointmentLabelUpdateById,
+  createAppointmentLabel,
+  updateAppointmentLabel,
 } from "@/actions/appointment";
 
 export const useCalendarData = () => {
@@ -37,7 +37,7 @@ export const useCalendarActions = () => {
     mutate: appointmentLabelInsertMutate,
     isPending: appointmentLabelInsertIsPending,
   } = useMutation({
-    mutationFn: appointmentLabelInsert,
+    mutationFn: createAppointmentLabel,
     onSuccess: (results) => {
       if (results.success) {
         addLabel(results.success);
@@ -54,7 +54,7 @@ export const useCalendarActions = () => {
     mutate: appointmentLabelUpdateMutate,
     isPending: appointmentLabelUpdateIsPending,
   } = useMutation({
-    mutationFn: appointmentLabelUpdateById,
+    mutationFn: updateAppointmentLabel,
     onSuccess: (results) => {
       if (results.success) {
         updateLabel(results.success);

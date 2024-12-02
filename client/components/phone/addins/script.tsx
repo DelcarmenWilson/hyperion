@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useAgentLicenseData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-license";
@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const PhoneScript = () => {
   const { lead, script, showScript } = usePhoneStore();
+  const [index, setIndex] = useState(0);
 
   const { onlineUser } = useOnlineUserData();
   const { onGetLicences } = useAgentLicenseData();
@@ -24,6 +25,11 @@ export const PhoneScript = () => {
     );
   }, [script, onlineUser, lead, licenses]);
 
+  useEffect(() => {
+    if (!lead) return;
+    setIndex((prev) => prev + 1);
+  }, [lead]);
+
   if (!script) return null;
   return (
     <>
@@ -34,7 +40,7 @@ export const PhoneScript = () => {
         )}
       >
         <ScrollArea className="pb-10 px-3">
-          <Renderer value={formattedScript} />
+          <Renderer key={index} value={formattedScript} />
         </ScrollArea>
       </div>
     </>

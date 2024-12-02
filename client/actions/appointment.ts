@@ -1,7 +1,11 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentRole, currentUser } from "@/lib/auth";
+import { sendAppointmentInitialEmail } from "@/lib/mail";
 
+import { UserRole } from "@prisma/client";
+import { AppointmentStatus } from "@/types/appointment";
+import { NotificationReference } from "@/types/notification";
 import {
   AppointmentLabelSchema,
   AppointmentLabelSchemaType,
@@ -12,26 +16,28 @@ import {
   AppointmentSchema,
   AppointmentSchemaType,
 } from "@/schemas/appointment";
+
 import { userGetByAssistantOld } from "@/data/user";
 import {
+  smsSend,
   smsSendAgentAppointmentNotification,
   smsSendLeadAppointmentNotification,
   smsSendLeadAppointmentReminder,
 } from "./sms";
+
 import { getEntireDay, getToday } from "@/formulas/dates";
-import { UserRole } from "@prisma/client";
 import { callUpdateByIdAppointment } from "./call";
 
 import { leadGetOrInsert } from "@/actions/lead";
-import { sendAppointmentInitialEmail } from "@/lib/mail";
 import { getAssitantForUser } from "@/actions/user";
 import { createEmail } from "@/actions/email/create-email";
 import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
-import { AppointmentStatus } from "@/types/appointment";
+import { createNotification } from "./notification";
+import { DateRange } from "react-day-picker";
 
 //DATA
 //TODO - this was created to test the calendar client and the appoint hook inside of it.
-export const appointmentsGet = async () => {
+export const getAppointmentsTest = async () => {
   try {
     const userId = await getAssitantForUser();
     if (!userId) return [];
@@ -50,7 +56,7 @@ export const appointmentsGet = async () => {
   }
 };
 
-export const appointmentsGetAll = async () => {
+export const getAppointments = async () => {
   try {
     const userId = await getAssitantForUser();
     if (!userId) return [];
@@ -66,7 +72,14 @@ export const appointmentsGetAll = async () => {
   }
 };
 
-export const appointmentsGetAllByUserIdUpcoming = async (
+export const getAppointment = async (id: string) => {
+    return await db.appointment.findUnique({
+      where: { id },
+      include: { lead: true },
+    });
+};
+
+export const getUpcomingAppointments = async (
   agentId: string | null | undefined,
   role: UserRole = "USER"
 ) => {
@@ -86,7 +99,7 @@ export const appointmentsGetAllByUserIdUpcoming = async (
     return [];
   }
 };
-export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
+export const getTodaysAppointments = async (agentId: string) => {
   try {
     const role = await currentRole();
     if (role == "ASSISTANT") {
@@ -107,20 +120,24 @@ export const appointmentsGetAllByUserIdToday = async (agentId: string) => {
     return [];
   }
 };
-export const appointmentsGetByUserIdFiltered = async (
-  userId: string,
-  from: string,
-  to: string
-) => {
+export const getAppointmentsForUser = async ({
+  userId,
+  dateRange,
+}: {
+  userId: string;
+  dateRange: DateRange;
+}) => {
   try {
     const role = await currentRole();
     if (role == "ASSISTANT") {
       userId = (await userGetByAssistantOld(userId)) as string;
     }
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
+
     const appointments = await db.appointment.findMany({
-      where: { agentId: userId, startDate: { lte: toDate, gte: fromDate } },
+      where: {
+        agentId: userId,
+        startDate: { gte: dateRange.from, lte: dateRange.to },
+      },
       include: { lead: true },
       orderBy: { createdAt: "desc" },
     });
@@ -146,34 +163,19 @@ export const appointmentsGetByUserIdFiltered = async (
     return [];
   }
 };
-export const appointmentGetById = async (id: string) => {
-  try {
-    const appointment = await db.appointment.findUnique({
-      where: { id },
-      include: { lead: true },
-    });
-    return appointment;
-  } catch {
-    return null;
-  }
-};
+
 
 //APPOINTMENT LABELS
-export const appointmentLabelsGetAll = async () => {
-  try {
+export const getAppointmentLabels = async () => {
     const userId = await getAssitantForUser();
-    if (!userId) return [];
-    const labels = await db.appointmentLabel.findMany({
+    if (!userId) throw new Error("Unauthenticated!")
+    return await db.appointmentLabel.findMany({
       where: { OR: [{ userId }, { default: { equals: true } }] },
     });
-    return labels;
-  } catch {
-    return [];
-  }
 };
 
 //ACTIONS
-export const appointmentInsert = async (values: AppointmentSchemaType) => {
+export const createAppointment = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
   //If there is no user -- Unathenticated
@@ -182,6 +184,16 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   const { data, success } = AppointmentSchema.safeParse(values);
 
   if (!success) throw new Error("Invalid fields!");
+
+  const {
+    localDate,
+    startDate,
+    leadId,
+    labelId,
+    comments,
+    smsReminder,
+    emailReminder,
+  } = data;
 
   let userId = user.id;
   if (user.role == "ASSISTANT") {
@@ -216,11 +228,13 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
 
   const appointment = await db.appointment.create({
     data: {
-      ...data,
+      leadId,
+      labelId,
+      comments,
       agentId: userId,
       endDate,
-      localDate: data.localDate!,
-      startDate: data.startDate!,
+      localDate: localDate!,
+      startDate: startDate!,
       status: AppointmentStatus.SCHEDULED,
     },
     include: { lead: true },
@@ -250,15 +264,15 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   let message;
   if (lead) {
     await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
-    if (data.smsReminder) {
+    if (smsReminder) {
       message = await smsSendLeadAppointmentNotification(
         userId,
         lead,
-        data.localDate!
+        localDate!
       );
     }
 
-    if (data.emailReminder && lead.email) {
+    if (emailReminder && lead.email) {
       const email = await sendAppointmentInitialEmail(
         lead.email,
         lead.user.team?.name,
@@ -286,7 +300,7 @@ export const appointmentInsert = async (values: AppointmentSchemaType) => {
   return { success: { appointment, message } };
 };
 
-export const appointmentInsertBook = async (
+export const createBookingAppointment = async (
   values: AppointmentLeadSchemaType
 ) => {
   //Validate the data passed in
@@ -388,25 +402,24 @@ export const appointmentInsertBook = async (
   return { success: "Appointment Scheduled!" };
 };
 
-export const appointmentUpdateByIdStatus = async (values: {
+export const updateAppointmentStatus = async (values: {
   id: string;
   status: string;
 }) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unauthenticated" };
-  }
+  
   const { id, status } = values;
   const existingAppointment = await db.appointment.findUnique({
     where: { id },
   });
-  if (!existingAppointment) {
+  if (!existingAppointment) 
     return { error: "appointment does not exist" };
-  }
+  
 
-  if (existingAppointment.agentId != user.id) {
-    return { error: "Unauthorized" };
-  }
+  if (existingAppointment.agentId != user.id) 
+    return { error: "Unauthorized" };  
 
   const updatedAppointment = await db.appointment.update({
     where: { id },
@@ -417,7 +430,7 @@ export const appointmentUpdateByIdStatus = async (values: {
 
   return { success: { updatedAppointment } };
 };
-export const appointmentRescheduledByLead = async (
+export const rescheduleAppointmentByLead = async (
   values: AppointmentRescheduleSchemaType
 ) => {
   //Validate the data passed in
@@ -435,7 +448,7 @@ export const appointmentRescheduledByLead = async (
   if (!existingAppointment) return { error: "Appointment does not exist" };
   await db.appointment.update({
     where: { id: existingAppointment.id },
-    data: { status: "Rescheduled", comments: "Rescheduled by Lead" },
+    data: { status: AppointmentStatus.RESCHEDULED, comments: "Rescheduled by Lead" },
   });
 
   const { agentId, leadId } = existingAppointment;
@@ -459,7 +472,7 @@ export const appointmentRescheduledByLead = async (
       endDate,
       localDate: localDate!,
       comments: "",
-      status: AppointmentStatus.RESCHEDULED,
+      status: AppointmentStatus.SCHEDULED,
     },
     include: { lead: true },
   });
@@ -481,7 +494,8 @@ export const appointmentRescheduledByLead = async (
   //If everything was successfull return a success message
   return { success: "Appointment rescheduled!" };
 };
-export const appointmentCanceledByLead = async ({
+// TODO- See if we can solidate the next two functions
+export const cancelAppointmentByLead = async ({
   id,
   reason,
 }: {
@@ -492,13 +506,13 @@ export const appointmentCanceledByLead = async ({
     where: { id },
     data: {
       status: AppointmentStatus.CANCELLED,
-      reason,
+      reason:`Cancelled by Lead - ${reason}`,
     },
   });
 
   return { success: "Appointment has been canceled" };
 };
-export const appointmentCanceledByAgent = async ({
+export const cancelAppointmentAgent = async ({
   id,
   reason,
 }: {
@@ -509,14 +523,14 @@ export const appointmentCanceledByAgent = async ({
     where: { id },
     data: {
       status: AppointmentStatus.CANCELLED,
-      reason,
+      reason:`Cancelled by Agent - ${reason}`,
     },
   });
 
   return { success: "Appointment has been canceled" };
 };
 //APPOINTMENT LABELS
-export const appointmentLabelInsert = async (
+export const createAppointmentLabel = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
@@ -557,62 +571,60 @@ export const appointmentLabelInsert = async (
   return { success: label };
 };
 
-export const appointmentLabelUpdateById = async (
+export const updateAppointmentLabel = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unathenticated" };
-  }
-  const validatedFields = AppointmentLabelSchema.safeParse(values);
+  
+  const {success,data} = AppointmentLabelSchema.safeParse(values);
 
-  if (!validatedFields.success) {
+  if (!success) 
     return { error: "Invalid fields!" };
-  }
-  const { id, name, color, description } = validatedFields.data;
+  
+  
   let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistantOld(userId)) as string;
   }
 
   const existingLabel = await db.appointmentLabel.findUnique({
-    where: { id },
+    where: { id:data.id },
   });
   if (!existingLabel) return { error: "This label does not exist!" };
 
   const label = await db.appointmentLabel.update({
-    where: { id },
+    where: { id:data.id },
     data: {
-      name,
-      color,
-      description,
+     ...data
     },
   });
 
-  if (!label) {
+  if (!label) 
     return { error: "Label was not updated!" };
-  }
+  
 
   return { success: label };
 };
 
-export const appointmentLabelUpdateByChecked = async (
+export const updateAppointmentLabelChecked = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
+  if (!user) 
     return { error: "Unathenticated" };
-  }
-  const validatedFields = AppointmentLabelSchema.safeParse(values);
+  
+  const {success,data} = AppointmentLabelSchema.safeParse(values);
 
-  if (!validatedFields.success) {
+  if (!success) 
     return { error: "Invalid fields!" };
-  }
-  const { id, checked } = validatedFields.data;
+  
+  const { id, checked } = data;
   let userId = user.id;
-  if (user.role == "ASSISTANT") {
+  if (user.role == "ASSISTANT") 
     userId = (await userGetByAssistantOld(userId)) as string;
-  }
+  
   await db.appointmentLabel.update({
     where: { id },
     data: {
@@ -624,17 +636,16 @@ export const appointmentLabelUpdateByChecked = async (
 };
 
 //create notification alert for appointment
-
 export const sendAppointmentReminders = async () => {
   // wee need current datetime and + one hour datetime
-  const currentDate = new Date();
-  const oneHourPlusDate = new Date(currentDate);
-  oneHourPlusDate.setHours(oneHourPlusDate.getHours() + 1);
+  const startDate = new Date();
+  const endDate = new Date(startDate);
+  endDate.setHours(endDate.getHours() + 1);
 
   const appointments = await db.appointment.findMany({
     where: {
-      startDate: { gt: currentDate, lte: oneHourPlusDate },
-      status: "Scheduled",
+      startDate: { gt: startDate, lte: endDate },
+      status: AppointmentStatus.SCHEDULED,
     },
     include: {
       lead: true,
@@ -642,14 +653,14 @@ export const sendAppointmentReminders = async () => {
     },
   });
 
-  if (appointments.length == 0) {
+  if (appointments.length == 0) 
     return { error: "No reminders available" };
-  }
+  
 
   for (const app of appointments) {
     const { agent, lead, startDate } = app;
     const minutesRemaining = Math.floor(
-      (startDate.getTime() - currentDate.getTime()) / 1000 / 60
+      (startDate.getTime() - startDate.getTime()) / 1000 / 60
     );
     await smsSendLeadAppointmentReminder(lead, minutesRemaining);
   }
@@ -658,20 +669,21 @@ export const sendAppointmentReminders = async () => {
 };
 
 //Update appointment status from a call
+const MINCALLDURATION = 60;
 export const updatAppointmentStatusFromCall = async ({
   callId,
   leadId,
   agentId,
   duration,
   direction,
-  setAppointment
+  setAppointment,
 }: {
   callId: string;
   leadId: string;
   agentId: string;
   duration: number;
   direction: string;
-  setAppointment: boolean
+  setAppointment: boolean;
 }) => {
   const startTime = new Date();
   startTime.setMinutes(startTime.getMinutes() - 30);
@@ -687,23 +699,120 @@ export const updatAppointmentStatusFromCall = async ({
             lte: endTime,
           },
         },
-        { status: AppointmentStatus.SCHEDULED },
+        {
+          status: {
+            in: [AppointmentStatus.SCHEDULED, AppointmentStatus.NO_SHOW],
+          },
+        },
       ],
     },
   });
   if (!appointment) return;
 
-  await db.appointment.update({
-    where: { id: appointment.id }, data: {
-      status: duration > 30 ? AppointmentStatus.CLOSED : AppointmentStatus.NO_SHOW
-    }
-  })
+  let reason = appointment.reason;
+  switch (direction) {
+    case "inbound":
+      if (duration < MINCALLDURATION) reason = "Agent No Show";
+      else reason = "Closed";
+      break;
+    case "outbound":
+      if (duration < MINCALLDURATION) reason = "Lead No Show";
+      else reason = "Closed";
+      break;
+  }
 
+  await db.appointment.update({
+    where: { id: appointment.id },
+    data: {
+      status:
+        duration > MINCALLDURATION
+          ? AppointmentStatus.CLOSED
+          : AppointmentStatus.NO_SHOW,
+      reason,
+    },
+  });
 
   if (setAppointment)
     await db.call.update({
-      where: { id: callId }, data: {
-        appointment: { connect: appointment }
-      }
-    })
+      where: { id: callId },
+      data: {
+        appointment: { connect: appointment },
+      },
+    });
+};
+//CRON SCHEDULING
+
+export const closeOpenAppointments = async (test: boolean = false) => {
+  const timeDiff = test ? 60 : 5;
+  const startTime = new Date();
+  const endTime = new Date();
+  startTime.setMinutes(startTime.getMinutes() - timeDiff);
+  endTime.setMinutes(endTime.getMinutes() + timeDiff);
+
+  const appointments = await db.appointment.findMany({
+    where: {
+      status: AppointmentStatus.SCHEDULED,
+      endDate: {
+        gte: startTime,
+        lte: endTime,
+      },
+    },
+    include: {
+      agent: {
+        select: {
+          phoneSettings: { select: { personalNumber: true } },
+          phoneNumbers: {
+            where: { status: "default" },
+            select: { phone: true },
+          },
+        },
+      },
+      lead: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  for (const appointment of appointments) {
+    await db.appointment.update({
+      where: { id: appointment.id },
+      data: {
+        status: AppointmentStatus.NO_SHOW,
+        reason: "Agent and Lead no show",
+      },
+    });
+    const personalNumber = appointment.agent.phoneSettings?.personalNumber;
+    const message = `Hyperion Notifications \n You missed an appointment with ${appointment.lead.firstName} ${appointment.lead.lastName}`;
+
+    if (personalNumber) {
+      await smsSend({
+        fromPhone: appointment.agent.phoneNumbers[0].phone,
+        toPhone: personalNumber,
+        message,
+      });
+    }
+
+    await createNotification({
+      reference: NotificationReference.APPOINTMENT,
+      title: "Missed appointment",
+      content: message,
+      userId: appointment.agentId,
+      link: `/appointments/${appointment.id}`,
+      linkText: "View Appointment",
+    });
+
+    return { success: "Message sent!" };
+  }
+
+  // const appointment = await db.appointment.updateMany({
+  //   where: {
+  //     status: AppointmentStatus.SCHEDULED,
+  //     endDate: {
+  //       gte: startTime,
+  //       lte: endTime,
+  //     },
+  //   },
+  //   data: {
+  //     status: AppointmentStatus.NO_SHOW,
+  //     reason: "Agent and Lead no show",
+  //   },
+  // });
 };

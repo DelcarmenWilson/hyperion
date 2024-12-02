@@ -14,7 +14,7 @@ const NewEmptyCard = ({
 }) => {
   const Icon = icon;
   return (
-    <div className="flex flex-col gap-4 h-full items-center justify-center bg-background">
+    <div className="flex-center flex-col gap-4 h-full bg-background">
       <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">
         <Icon size={40} className="stroke-primary" />
       </div>

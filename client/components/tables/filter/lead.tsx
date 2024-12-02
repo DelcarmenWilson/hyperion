@@ -70,7 +70,7 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
           <div className="flex items-center gap-2">
             <p className="text-muted-foreground">Status</p>
             <LeadStatusSelect
-              id="leafFilter"
+              id="leadFilter"
               statusId={statusId}
               onSetStatus={OnFilter}
             />

@@ -1,7 +1,6 @@
 "use client";
 import { Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/user/use-current";
 import {
   useNotificationActions,
   useNotificationData,
@@ -22,41 +21,39 @@ import { DataDisplayItalic } from "@/components/global/data-display/data-display
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
+import { ScrollArea } from "../ui/scroll-area";
 
 export const NavNotifications = () => {
-  const user = useCurrentUser();
   const { onGetNotificationsUnread } = useNotificationData();
   const { notifications, fetchingNotifications } = onGetNotificationsUnread();
-  const { audioRef, onUpdateNotificationUnread, updatingNotificationUnread } =
+  const { onUpdateNotificationUnread, updatingNotificationUnread } =
     useNotificationActions();
 
   return (
-    <div>
-      <audio ref={audioRef} src={`/sounds/${user?.messageNotification}.wav`} />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="relative" size="icon" variant="outline">
-            <Bell size={16} />
-            {notifications && notifications?.length > 0 && (
-              <Badge className="absolute rounded-full text-xs -top-2 -right-2">
-                {notifications.length}
-              </Badge>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <SkeletonWrapper isLoading={fetchingNotifications}>
-          <DropdownMenuContent
-            className="flex flex-col max-h-[450px] w-full lg:w-[300px] "
-            align="center"
-          >
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="relative" size="icon" variant="outline">
+          <Bell size={16} />
+          {notifications && notifications?.length > 0 && (
+            <Badge className="absolute rounded-full text-xs -top-2 -right-2">
+              {notifications.length}
+            </Badge>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
 
-            {!notifications?.length && !fetchingNotifications && (
-              <NewEmptyCard title="You Are all Caught Up" icon={Bell} />
-            )}
-            {notifications && notifications?.length > 0 && (
-              <>
-                {/* //TODO - was not able to use scroll are here lets see why */}
+      <DropdownMenuContent
+        className="w-full lg:w-[300px] overflow-hidden"
+        align="center"
+      >
+        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+        <SkeletonWrapper isLoading={fetchingNotifications}>
+          <ScrollArea>
+            <div className="max-h-[400px]">
+              {!notifications?.length && !fetchingNotifications && (
+                <NewEmptyCard title="You Are all Caught Up" icon={Bell} />
+              )}
+              {notifications && notifications?.length > 0 && (
                 <div className="flex-1 h-full overflow-y-auto">
                   {notifications?.map((notification) => (
                     <NotificationCard
@@ -68,19 +65,21 @@ export const NavNotifications = () => {
                     />
                   ))}
                 </div>
-                <Button
-                  className="mt-2 w-full"
-                  disabled={updatingNotificationUnread}
-                  onClick={() => onUpdateNotificationUnread("clear")}
-                >
-                  Mark all as Read
-                </Button>
-              </>
-            )}
-          </DropdownMenuContent>
+              )}
+            </div>
+          </ScrollArea>
+          {notifications && notifications?.length > 0 && (
+            <Button
+              className="mt-2 w-full"
+              disabled={updatingNotificationUnread}
+              onClick={() => onUpdateNotificationUnread("clear")}
+            >
+              Mark all as Read
+            </Button>
+          )}
         </SkeletonWrapper>
-      </DropdownMenu>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

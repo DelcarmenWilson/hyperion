@@ -71,5 +71,6 @@ export enum MessageType{
   AGENT="AGENT",
   LEAD="LEAD",
   TITAN="TITAN",
-  AI="AI"
+  AI="AI",
+  APPOINTMENT="APPOINTMENT"
 }

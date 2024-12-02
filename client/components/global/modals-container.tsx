@@ -14,6 +14,7 @@ import { TransferForm } from "../lead/forms/transfer-form";
 import { TodoContainer } from "./todo/container";
 import { TodoNotification } from "./todo/notification";
 import { AiGeneratorDialog } from "./ai-generator/ai-generator-dialog";
+import NotificationDialog from "./notification-dialog";
 
 const ModalsContainer = () => {
   return (
@@ -25,6 +26,7 @@ const ModalsContainer = () => {
       <GroupMessageCard />
       <MiniMessageCard />
       <TodoNotification />
+      <NotificationDialog/>
 
       {/* PHONE MODALS */}
       <MainInfoForm />

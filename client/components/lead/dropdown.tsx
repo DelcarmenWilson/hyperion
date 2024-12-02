@@ -48,7 +48,7 @@ export const LeadDropDown = ({
   action = false,
 }: DropDownProps) => {
   const { onAppointmentFormOpen } = useAppointmentStore();
-  const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen } =
+  const { onShareFormOpen, onTransferFormOpen, onIntakeFormOpen, setLeadId } =
     useLeadStore();
   const {
     titan,
@@ -92,7 +92,10 @@ export const LeadDropDown = ({
           <DropdownMenuItem
             disabled={lead.statusId == LeadDefaultStatus.DONOTCALL}
             className="cursor-pointer gap-2"
-            onClick={() => onAppointmentFormOpen()}
+            onClick={() => {
+              setLeadId(lead.id);
+              onAppointmentFormOpen();
+            }}
           >
             <Calendar size={16} />
             New Appointment

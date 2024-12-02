@@ -27,9 +27,10 @@ import {
 } from "@/formulas/schedule";
 
 import {
-  appointmentCanceledByAgent,
-  appointmentInsert,
+  cancelAppointmentAgent,
+  createAppointment,
 } from "@/actions/appointment";
+import { AppointmentStatus } from "@/types/appointment";
 
 type State = {
   appointment?: FullAppointment;
@@ -37,6 +38,7 @@ type State = {
   isAppointmentFormOpen: boolean;
   //APPOINTMENT DETAILS
   isDetailsOpen: boolean;
+  status: string;
 };
 type Actions = {
   //APPOINTMENT FORM
@@ -45,6 +47,7 @@ type Actions = {
   //APPOINTMENT DETAILS
   onDetailsOpen: (e: FullAppointment) => void;
   onDetailsClose: () => void;
+  onSetStatus: (s: string) => void;
 };
 
 export const useAppointmentStore = create<State & Actions>((set) => ({
@@ -57,6 +60,10 @@ export const useAppointmentStore = create<State & Actions>((set) => ({
   isDetailsOpen: false,
   onDetailsOpen: (e) => set({ isDetailsOpen: true, appointment: e }),
   onDetailsClose: () => set({ isDetailsOpen: false }),
+
+  // to store status value(default will be scheduled)
+  status: AppointmentStatus.SCHEDULED,
+  onSetStatus: (s) => set({ status: s }),
 }));
 
 export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
@@ -148,7 +155,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
 
   const { mutate: appointmentMutate, isPending: isPendingAppointment } =
     useMutation({
-      mutationFn: appointmentInsert,
+      mutationFn: createAppointment,
       onSuccess: (result) => {
         if (result.success) {
           toast.success("Appointment scheduled!", { id: "insert-appointent" });
@@ -193,13 +200,13 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
 };
 
 export const useAppointmentCancel = () => {
-  const {invalidate}=useInvalidate()
+  const { invalidate } = useInvalidate();
   const { mutate: cancelAppointmentMutate, isPending: AppointmentCancelling } =
     useMutation({
-      mutationFn: appointmentCanceledByAgent,
+      mutationFn: cancelAppointmentAgent,
       onSuccess: () => {
         toast.success("Appointment Cancel!", { id: "cancel-appointent" });
-        invalidate("agentAppointments")
+        invalidate("agentAppointments");
       },
       onError: (error) => {
         toast.error(error.message, { id: "cancel-appointent" });
@@ -218,6 +225,6 @@ export const useAppointmentCancel = () => {
 
   return {
     onCancelAppointment,
-    AppointmentCancelling
-  }
+    AppointmentCancelling,
+  };
 };

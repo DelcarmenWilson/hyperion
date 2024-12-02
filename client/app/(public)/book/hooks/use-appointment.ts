@@ -15,12 +15,12 @@ import { FullAppointment } from "@/types";
 import { LeadMainSchemaTypeP } from "@/schemas/lead";
 
 import {
-  appointmentInsertBook,
-  appointmentGetById,
-  appointmentRescheduledByLead,
-  appointmentCanceledByLead,
+  createBookingAppointment,
+  getAppointment,
+  rescheduleAppointmentByLead,
+  cancelAppointmentByLead,
 } from "@/actions/appointment";
-import { appointmentsGetAllByUserIdUpcoming } from "@/actions/appointment";
+import { getUpcomingAppointments } from "@/actions/appointment";
 import { leadGetByIdMain } from "@/actions/lead";
 import { scheduleGet } from "@/actions/user/schedule";
 import { getUserByUserName } from "@/actions/user";
@@ -47,7 +47,7 @@ export const useAppointmentData = () => {
 
   const { data: appointment, isFetching: isFetchingAppointment } =
     useQuery<FullAppointment | null>({
-      queryFn: () => appointmentGetById(appointmentId),
+      queryFn: () => getAppointment(appointmentId),
       queryKey: [`appointment-${appointmentId}`],
     });
 
@@ -69,12 +69,12 @@ export const useAppointmentActions = () => {
 
   const { data: appointment, isFetching: isFetchingAppointment } =
     useQuery<Appointment | null>({
-      queryFn: () => appointmentGetById(appointmentId),
+      queryFn: () => getAppointment(appointmentId),
       queryKey: [`appointment-${appointmentId}`],
     });
 
   const { data: appointments, isFetching: isFetchingAppointments } = useQuery<Appointment[]>({
-    queryFn: () => appointmentsGetAllByUserIdUpcoming(userId),
+    queryFn: () => getUpcomingAppointments(userId),
     queryKey: [`appointments-${userId}`],
   });
 
@@ -196,7 +196,7 @@ export const useAppointmentFormActions = (
     if (!values) return;
     setLoading(true);
 
-    const insertedAppointment = await appointmentInsertBook(values);
+    const insertedAppointment = await createBookingAppointment(values);
     if (insertedAppointment.success) {
       toast.success("Appointment scheduled!");
     } else toast.error(insertedAppointment.error);
@@ -296,7 +296,7 @@ export const useAppointmentRescheduleFormActions = (
     if (!values) return;
     setLoading(true);
 
-    const rescheduledAppointment = await appointmentRescheduledByLead(values);
+    const rescheduledAppointment = await rescheduleAppointmentByLead(values);
     if (rescheduledAppointment.success) {
       toast.success("Appointment scheduled!");
     } else toast.error(rescheduledAppointment.error);
@@ -334,7 +334,7 @@ export const useAppointmentCancelFormActions = (
   const onSubmit = async () => {
     setLoading(true);
 
-    const cancelledAppointment = await appointmentCanceledByLead(
+    const cancelledAppointment = await cancelAppointmentByLead(
       {id:appointmentId,
         reason}
     );

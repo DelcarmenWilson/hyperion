@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useLeadStore } from "@/hooks/lead/use-lead";
@@ -105,21 +105,31 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
           )}
         </div>
       )}
-      <div className="text-sm">
-        <div className="py-1">
-          <p className="text-sm">Type</p>
-          <LeadTypeSelect id={lead.id} type={lead.type} />
-        </div>
 
-        <div className="py-1">
-          <p className="text-sm">Status</p>
-          <LeadStatusSelect id={lead.id} statusId={lead.statusId} />
-        </div>
-        <div className="py-1">
-          <p className="text-sm">Vendor</p>
-          <Input value={lead.vendor.replace("_", " ")} disabled />
-        </div>
-      </div>
+      <Box title="Type">
+        <LeadTypeSelect id={lead.id} type={lead.type} />
+      </Box>
+
+      <Box title="Status">
+        <LeadStatusSelect id={lead.id} statusId={lead.statusId} />
+      </Box>
+
+      <Box title="Vendor">
+        <Input
+          className="bg-background"
+          value={lead.vendor.replace("_", " ")}
+          readOnly
+        />
+      </Box>
+    </div>
+  );
+};
+
+const Box = ({ title, children }: { title: string; children: ReactNode }) => {
+  return (
+    <div className="py-1">
+      <p className="text-xs italic">{title}</p>
+      {children}
     </div>
   );
 };

@@ -24,6 +24,7 @@ import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 
 import { useTodoStore } from "@/hooks/user/use-todo";
 import { updateUnreadChat } from "@/actions/chat/update-unread-chat";
+import { useNotificationStore } from "@/hooks/notification/use-notification";
 
 export const useMainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -189,6 +190,7 @@ export const useMainChatActions = () => {
   const { chatId, isChatOpen } = useChatStore();
   const { isMiniMessageOpen, onMiniMessageOpen } = useMiniMessageStore();
   const { onTodoNotificationOpen } = useTodoStore();
+  const { onNotificationOpen } = useNotificationStore();
   const { invalidate } = useInvalidate();
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -245,6 +247,11 @@ export const useMainChatActions = () => {
     onTodoNotificationOpen(todoId);
     onPlay();
   };
+  const onNotificationReminder = (notificationId: string) => {
+    onNotificationOpen(notificationId);
+    invalidate("notifications");
+    onPlay();
+  };
 
   useEffect(() => {
     socket?.on(
@@ -259,14 +266,18 @@ export const useMainChatActions = () => {
         onRecievedChatAction(data.chatId, data.action)
     );
     socket?.on("account-suspended-recieved", () => onAccountSuspended());
-    socket?.on("todo-reminder-recieved", (data: { dt: string }) =>
+    socket?.on("todo:reminder-recieved", (data: { dt: string }) =>
       onTodoReminder(data.dt)
+    );
+    socket?.on("notification:new-recieved", (data: { dt: string }) =>
+      onNotificationReminder(data.dt)
     );
     return () => {
       socket?.off("chat-message-received");
       socket?.off("chat-action-received");
       socket?.off("account-suspended-recieved");
-      socket?.off("todo-reminder-recieved");
+      socket?.off("notification:new-recieved");
+      socket?.off("todo:reminder-recieved");
     };
   }, [socket, onMessageRecieved, onRecievedChatAction, onTodoReminder]);
 

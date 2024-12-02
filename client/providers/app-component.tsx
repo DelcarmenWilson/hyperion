@@ -11,7 +11,7 @@ import {
 import { Appointment, AppointmentLabel, Schedule } from "@prisma/client";
 
 import { CalendarLabel } from "@/types";
-import { appointmentLabelUpdateByChecked } from "@/actions/appointment";
+import { updateAppointmentLabelChecked } from "@/actions/appointment";
 import { AppointmentForm } from "@/components/appointments/form";
 
 type AppointmentContextComponentProps = {
@@ -59,7 +59,7 @@ function AppointmentContextComponent({
 
   const updateLabel = (label: AppointmentLabel) => {
     //@ts-ignore
-    appointmentLabelUpdateByChecked(label);
+    updateAppointmentLabelChecked(label);
     setUserLabels(
       userLabels.map((lbl) => (lbl.name === label.name ? label : lbl))
     );

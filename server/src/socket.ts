@@ -54,8 +54,11 @@ export class ServerSocket {
       case "leads:new":
         this.SendUserMessage("leads-new", sid, { dt });
         break;
+        case "notification:new":
+        this.SendUserMessage("notification:new-recieved", sid, { dt });
+        break;
         case "todo:reminder":
-        this.SendUserMessage("todo-reminder-recieved", sid, { dt });
+        this.SendUserMessage("todo:reminder-recieved", sid, { dt });
         break;
     }
   };
