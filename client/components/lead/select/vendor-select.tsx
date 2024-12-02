@@ -28,7 +28,7 @@ export const LeadVendorSelect = ({
       onValueChange={(e) => onSetVendor("vendor", e)}
       defaultValue={vendor}
     >
-      <SelectTrigger>
+      <SelectTrigger className="bg-background">
         <SelectValue placeholder="Select Vendor" />
       </SelectTrigger>
       <SelectContent className="max-h-80">

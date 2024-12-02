@@ -18,9 +18,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAppointmentCancel } from "@/hooks/use-appointment";
 
 type Props = {
-  id: string;
+  appointmentId: string;
+  triggerText?: string;
 };
-const CancelAppointmentDialog = ({ id }: Props) => {
+const CancelAppointmentDialog = ({
+  appointmentId,
+  triggerText = "Cancel",
+}: Props) => {
   const [reason, setReason] = useState("");
   const { onCancelAppointment, AppointmentCancelling } = useAppointmentCancel();
   return (
@@ -31,7 +35,7 @@ const CancelAppointmentDialog = ({ id }: Props) => {
           className="w-full justify-between items-center"
         >
           <span className="sr-only">Cancel Appointment</span>
-          <span>Cancel</span> <XCircle size={16} />
+          <span>{triggerText}</span> <XCircle size={16} />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -57,7 +61,7 @@ const CancelAppointmentDialog = ({ id }: Props) => {
             disabled={reason.length == 0 || AppointmentCancelling}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={() => {
-              onCancelAppointment({ id, reason });
+              onCancelAppointment({ id: appointmentId, reason });
               setReason("");
             }}
           >

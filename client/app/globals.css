@@ -255,11 +255,18 @@ body,
 .card-glowing::after {
   position: absolute;
   content: "";
-  inset: -.5rem;
-  background: conic-gradient(from var(--gradient-angle), var(--clr-3), var(--clr-4), hsl(var(--primary)), var(--clr-4), var(--clr-3));
+  inset: -0.5rem;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    var(--clr-3),
+    var(--clr-4),
+    hsl(var(--primary)),
+    var(--clr-4),
+    var(--clr-3)
+  );
   border-radius: inherit;
   z-index: -1;
-  animation:rotate-glow 20s linear infinite
+  animation: rotate-glow 20s linear infinite;
 }
 .card-glowing::after {
   filter: blur(3.5rem);

@@ -15,7 +15,7 @@ export function SimpleFilter<TData>({
     <>
       <Input
         id="search"
-        className="max-w-sm"
+        className="max-w-sm bg-background"
         placeholder={placeHolder}
         value={filtering}
         onChange={(event) => setFiltering(event.target.value)}

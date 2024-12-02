@@ -740,7 +740,7 @@ export const updatAppointmentStatusFromCall = async ({
       },
     });
 };
-///CRON SCHEDULING
+//CRON SCHEDULING
 
 export const closeOpenAppointments = async (test: boolean = false) => {
   const timeDiff = test ? 60 : 5;
@@ -795,8 +795,8 @@ export const closeOpenAppointments = async (test: boolean = false) => {
       title: "Missed appointment",
       content: message,
       userId: appointment.agentId,
-      link: "/appointments",
-      linkText: "View Apps",
+      link: `/appointments/${appointment.id}`,
+      linkText: "View Appointment",
     });
 
     return { success: "Message sent!" };

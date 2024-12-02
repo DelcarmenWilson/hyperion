@@ -33,7 +33,10 @@ export const MainInfoClient = ({
     <>
       <div className="space-y-1 text-sm">
         {showInfo && (
-          <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+          <Link className="font-semibold text-lg" href={`/leads/${info.id}`}>
+            {info.firstName} {info.lastName}
+          </Link>
+          // <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
         )}
         <p className="flex items-center gap-2 text-primary">
           {showInfo ? (
@@ -46,7 +49,8 @@ export const MainInfoClient = ({
             </span>
           )}
           <CopyButton value={info.cellPhone} message="Lead phone#" />
-          <span>{info.textCode}</span>
+
+          <Link href={`/leads-new/${info.id}`}>{info.textCode}</Link>
         </p>
         <div className="relative group">
           <p>{info.email}</p>

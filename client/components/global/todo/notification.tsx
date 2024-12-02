@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Bell, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -14,15 +14,15 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 export const TodoNotification = () => {
   const { isTodoNotificationOpen, onTodoNotificationClose } = useTodoStore();
 
-  const { onTodoGet } = useTodoData();
-  const { todo, todoFetching } = onTodoGet();
+  const { onGetTodo } = useTodoData();
+  const { todo, todoFetching } = onGetTodo();
   const { onTodoComplete, todoCompleting, onTodoSnooze, todoSnoozing } =
     useTodoActions();
   const loading = todoCompleting || todoSnoozing;
   return (
     <div
       className={cn(
-        "fixed bottom-15 transition-[right] -right-full ease-in-out duration-500 w-full lg:w-[300px] z-[100] bg-gradient overflow-hidden p-[1px]",
+        "fixed bottom-15 transition-[right] -right-full ease-in-out duration-500 w-full lg:w-[300px] z-[100] bg-gradient overflow-hidden rounded p-[1px]",
         isTodoNotificationOpen && "right-10"
       )}
     >

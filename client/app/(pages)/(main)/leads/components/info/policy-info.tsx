@@ -50,7 +50,7 @@ export const PolicyInfoClient = ({
           <div className="flex justify-between items-center">
             <p className="text-muted-foreground">Assistant</p>
             <Button
-              size="icon"
+              size="xs"
               onClick={() => onAssistantFormOpen(leadId, leadName, assistant!)}
             >
               {assistant ? <Edit size={15} /> : <Plus size={15} />}

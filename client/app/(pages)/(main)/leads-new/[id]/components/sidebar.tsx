@@ -55,13 +55,13 @@ export const LeadSidebar = () => {
             {fullName}
           </h3>
           <div className="grid grid-cols-2 justify-between items-center gap-2">
-            <LeadDropDown
+            {/* <LeadDropDown
               lead={lead!}
               conversationId={
                 conversations?.length ? conversations[0].id : undefined
               }
               action
-            />
+            /> */}
             <Button
               variant="outlineprimary"
               className="relative gap-2"

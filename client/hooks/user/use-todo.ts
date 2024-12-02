@@ -67,7 +67,7 @@ export const useTodoStore = create<State & Actions>((set) => ({
 
 export const useTodoData = () => {
   const { todoId } = useTodoStore();
-  const onTodosGet = () => {
+  const onGetTodos = () => {
     const {
       data: todos,
       isFetching: todosFetching,
@@ -78,7 +78,7 @@ export const useTodoData = () => {
     });
     return { todos, todosFetching, todosLoading };
   };
-  const onTodoGet = () => {
+  const onGetTodo = () => {
     const {
       data: todo,
       isFetching: todoFetching,
@@ -92,8 +92,8 @@ export const useTodoData = () => {
   };
 
   return {
-    onTodosGet,
-    onTodoGet,
+    onGetTodos,
+    onGetTodo,
   };
 };
 

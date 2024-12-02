@@ -1,44 +1,79 @@
 "use client";
-
-import { useNotificationStore } from "@/hooks/notification/use-notification";
-import { cn } from "@/lib/utils";
 import React from "react";
-import { Button, buttonVariants } from "../ui/button";
-import { Bell, Ghost, X } from "lucide-react";
+import {
+  useNotificationActions,
+  useNotificationData,
+  useNotificationStore,
+} from "@/hooks/notification/use-notification";
+import { cn } from "@/lib/utils";
+import { Bell, X } from "lucide-react";
 import Link from "next/link";
+
+import { Button, buttonVariants } from "../ui/button";
+import SkeletonWrapper from "../skeleton-wrapper";
 
 const NotificationDialog = () => {
   const { isNotificationOpen, onNotificationClose } = useNotificationStore();
+  const { onGetNotification } = useNotificationData();
+  const { notification, notificationFetching } = onGetNotification();
+  const { onUpdateNotificationUnread, updatingNotificationUnread } =
+    useNotificationActions();
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden h-[200px] w-[300px] bg-background fixed right-5 -bottom-full border-primary border-[5px] rounded-xl p-2 transition-[bottom] ease-in-out duration-500",
+        "fixed -bottom-full right-5 transition-[bottom] ease-in-out duration-500 w-full lg:w-[300px] z-[100] bg-gradient overflow-hidden rounded p-[1px]",
         isNotificationOpen && "bottom-0"
       )}
     >
-      <div className="flex items-center justify-between px-2">
-        <p className="flex items-center gap-2 font-semibold text-sm text-muted-foreground">
-          <Bell size={15} />
-          Notification
-        </p>
+      <div className="relative flex flex-col bg-background  w-full gap-2 p-2 rounded-sm ">
+        <div className="flex items-center justify-between px-2">
+          <p className="flex items-center gap-2 font-semibold text-sm text-muted-foreground">
+            <Bell size={16} />
+            Notification
+          </p>
 
-        <Button variant="simple" size="sm" onClick={onNotificationClose}>
-          <X size={15} />
-        </Button>
-      </div>
-      <div className="h-full w-full flex flex-col gap-2"> 
-        
-        <p className="text-primary font-bold text-sm text-center">Title</p>
-        <p className="font-bold italic text-sm">This is for content</p>
-        
-<div className="grid grid-cols-2 items-center mt-auto gap-2">
- <Button variant="ghost" size="sm">Dismiss</Button>
- <Link href="/appointment" className={cn(buttonVariants({
-    variant:"outlineprimary", size:"sm"
- }))} >View Appointment</Link>
+          <Button variant="simple" size="sm" onClick={onNotificationClose}>
+            <X size={16} />
+          </Button>
+        </div>
 
-</div>
+        <SkeletonWrapper isLoading={notificationFetching}>
+          <p className="text-center text-primary font-bold">
+            {notification?.title}
+          </p>
+          <div className="font-semibold truncate overflow-hidden text-sm italic">
+            {notification?.content}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={updatingNotificationUnread}
+              onClick={() =>
+                onUpdateNotificationUnread(notification?.id as string)
+              }
+            >
+              Dismiss
+            </Button>
 
+            {notification?.link && (
+              <Link
+                href={notification.link}
+                className={cn(
+                  buttonVariants({
+                    variant: "outlineprimary",
+                    size: "sm",
+                  })
+                )}
+                onClick={() =>
+                  onUpdateNotificationUnread(notification?.id as string)
+                }
+              >
+                {notification?.linkText}
+              </Link>
+            )}
+          </div>
+        </SkeletonWrapper>
       </div>
     </div>
   );

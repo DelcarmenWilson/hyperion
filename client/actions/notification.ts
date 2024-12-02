@@ -3,26 +3,28 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { sendSocketData } from "@/services/socket-service";
+
 // DATA
 export const getNotifications = async (id: string) => {
   const user = await currentUser();
   if (!user?.id) throw new Error("unauthenticated");
-
-  return db.notification.findMany({ where: { id, userId: user.id } });
+  return await db.notification.findMany({ where: { id, userId: user.id } });
 };
 
 export const getNotification = async (id: string) => {
   const user = await currentUser();
   if (!user?.id) throw new Error("unauthenticated");
-
-  return db.notification.findUnique({ where: { id, userId: user.id } });
+  return await db.notification.findUnique({
+    where: { id, userId: user.id },
+  });
 };
 
 export const getUnreadNotifications = async () => {
   const user = await currentUser();
   if (!user?.id) throw new Error("unauthenticated");
-
-  return db.notification.findMany({ where: { userId: user.id, read: false } });
+  return await db.notification.findMany({
+    where: { userId: user.id, read: false },
+  });
 };
 
 // ACTIONS

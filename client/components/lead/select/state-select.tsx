@@ -26,7 +26,7 @@ export const LeadStateSelect = ({
       onValueChange={(e) => onSetState("state", e)}
       defaultValue={state}
     >
-      <SelectTrigger>
+      <SelectTrigger className="bg-background">
         <SelectValue placeholder="Select State" />
       </SelectTrigger>
       <SelectContent className="max-h-80">
