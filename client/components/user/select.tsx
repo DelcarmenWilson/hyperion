@@ -11,13 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Loader from "@/components/reusable/loader";
+import SkeletonWrapper from "../skeleton-wrapper";
 
 type UserSelectProps = {
   userId: string | undefined;
   setUserId: React.Dispatch<React.SetStateAction<string | undefined>>;
   disabled?: boolean;
   role?: UserRole;
+  unassigned?: boolean;
 };
 
 export const UserSelect = ({
@@ -25,33 +26,33 @@ export const UserSelect = ({
   setUserId,
   disabled = false,
   role,
+  unassigned = false,
 }: UserSelectProps) => {
   const { onGetSiteUsers } = useUserData();
   const { siteUsers, siteUsersFetching } = onGetSiteUsers(role);
 
   return (
-    <>
-      {siteUsersFetching ? (
-        <Loader text="Loading Users..." />
-      ) : (
-        <Select
-          name="ddlUsers"
-          disabled={siteUsersFetching || disabled}
-          onValueChange={setUserId}
-          defaultValue={userId}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select an agent" />
-          </SelectTrigger>
-          <SelectContent className="max-h-[300px]">
-            {siteUsers?.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                {user.firstName} {user.lastName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    </>
+    <SkeletonWrapper isLoading={siteUsersFetching}>
+      <Select
+        name="ddlUsers"
+        disabled={siteUsersFetching || disabled}
+        onValueChange={setUserId}
+        defaultValue={userId}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select an agent" />
+        </SelectTrigger>
+        <SelectContent className="max-h-[300px]">
+          {unassigned && (
+            <SelectItem value="unassigned">LEAVE UNASSIGNED</SelectItem>
+          )}
+          {siteUsers?.map((user) => (
+            <SelectItem key={user.id} value={user.id}>
+              {user.firstName} {user.lastName}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </SkeletonWrapper>
   );
 };

@@ -11,87 +11,62 @@ export const getLicenses = async () => {
   if (!userId) throw new Error("Unauthenticated!");
   return await db.userLicense.findMany({ where: { userId } });
 };
-export const getLicensesForUser = async (userId: string) => {  
+export const getLicensesForUser = async (userId: string) => {
   return await db.userLicense.findMany({ where: { userId } });
 };
 // ACTIONS
-export const userLicenseDeleteById = async (id: string) => {
+export const deleteLicense = async (id: string) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
-  const existingLicense = await db.userLicense.findUnique({
-    where: { id },
-  });
+  await db.userLicense.delete({ where: { id, userId: user.id } });
 
-  if (!existingLicense) {
-    return { error: "License does not exist!" };
-  }
-
-  if (user.id != existingLicense?.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  await db.userLicense.delete({ where: { id } });
-
-  return { success: "License Deleted" };
+  return "License Deleted";
 };
-export const userLicenseInsert = async (values: UserLicenseSchemaType) => {
+export const createLicense = async (values: UserLicenseSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
-  const validatedFields = UserLicenseSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid fields!" };
-
-  const { state, type, licenseNumber, dateExpires, comments } =
-    validatedFields.data;
+  const { success, data } = UserLicenseSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");  
 
   const existingLicense = await db.userLicense.findFirst({
-    where: { state, licenseNumber },
-  });
-
-  if (existingLicense) return { error: "License already exist!" };
-
-  const license = await db.userLicense.create({
-    data: {
-      state,
-      type,
-      licenseNumber,
-      dateExpires: new Date(dateExpires),
-      comments,
+    where: {
+      state: data.state,
+      licenseNumber: data.licenseNumber,
       userId: user.id,
     },
   });
 
-  return { success: license };
+  if (existingLicense) throw new Error("License already exist!");
+
+return await db.userLicense.create({
+    data: {
+      ...data,     
+      userId: user.id,
+    },
+  });
+
+
 };
-export const userLicenseUpdateById = async (values: UserLicenseSchemaType) => {
-  const validatedFields = UserLicenseSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid fields!" };
-
+export const updateLicense = async (values: UserLicenseSchemaType) => {
   const user = await currentUser();
-  if (!user) return { error: "Unauthenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
-  const { id, image, state, type, licenseNumber, dateExpires, comments } =
-    validatedFields.data;
+  const {success,data} = UserLicenseSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");  
 
   const existingLicense = await db.userLicense.findUnique({
-    where: { id },
+    where: { id:data.id,userId:user.id },
   });
 
-  if (!existingLicense) return { error: "License does not exist!" };
+  if (!existingLicense) throw new Error("License does not exist!" );
 
-  const license = await db.userLicense.update({
-    where: { id },
+return await db.userLicense.update({
+    where: { id:existingLicense.id },
     data: {
-      image,
-      state,
-      type,
-      licenseNumber,
-      dateExpires: new Date(dateExpires),
-      comments,
-      userId: user.id,
+     ...data,
     },
   });
 
-  return { success: license };
 };

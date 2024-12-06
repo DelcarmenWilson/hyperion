@@ -1,6 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "lucide-react";
 import { useLeadStore, useLeadGeneralInfoActions } from "@/hooks/lead/use-lead";
 
 import {
@@ -11,7 +12,8 @@ import {
 import { Gender, MaritalStatus } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { CustomDialog } from "@/components/global/custom-dialog";
+import CustomDialogHeader from "@/components/custom-dialog-header";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -32,6 +34,7 @@ import {
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Switch } from "@/components/ui/switch";
 import ReactDatePicker from "react-datepicker";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const GeneralInfoForm = () => {
   const { isGeneralFormOpen, onGeneralFormClose } = useLeadStore();
@@ -39,22 +42,23 @@ export const GeneralInfoForm = () => {
     useLeadGeneralInfoActions(onGeneralFormClose);
   if (!generalInfo) return null;
   return (
-    <CustomDialog
-      title="General"
-      subTitle={`${generalInfo.firstName} ${generalInfo.lastName}`}
-      description="General Info Form"
-      open={isGeneralFormOpen}
-      onClose={onGeneralFormClose}
-    >
-      <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
-        <GeneralForm
-          generalInfo={generalInfo}
-          loading={loading}
-          onSubmit={onGeneralInfoUpdate}
-          onClose={onGeneralFormClose}
+    <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>
+      <DialogContent>
+        <CustomDialogHeader
+          icon={User}
+          title="General"
+          subTitle={`${generalInfo.firstName} ${generalInfo.lastName}`}
         />
-      </SkeletonWrapper>
-    </CustomDialog>
+        <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
+          <GeneralForm
+            generalInfo={generalInfo}
+            loading={loading}
+            onSubmit={onGeneralInfoUpdate}
+            onClose={onGeneralFormClose}
+          />
+        </SkeletonWrapper>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -82,101 +86,13 @@ export const GeneralForm = ({
   };
 
   return (
-    <div className="h-full overflow-y-auto">
-      <Form {...form}>
-        <form
-          className="space-y-2 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="grid grid-cols-2 gap-2 justify-between">
-            {/* DATE OF BIRTH */}
-            <FormField
-              control={form.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date of birth</FormLabel>
-                  <FormControl>
-                    {/* <Input
-                      {...field}
-                      placeholder="Dob"
-                      disabled={loading}
-                      type="date"
-                      autoComplete="DateOfBirth"
-                    /> */}
-
-                    <ReactDatePicker
-                      selected={field.value}
-                      onChange={(date) => field.onChange(date)}
-                      dateFormat="MM-dd-yy"
-                      className="w-full rounded bg-dark-3 p-2 focus:outline-none"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* WEIGHT */}
-            <FormField
-              control={form.control}
-              name="weight"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Weight</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="120"
-                      disabled={loading}
-                      autoComplete="Weight"
-                      type="number"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* HEIGHT */}
-            <FormField
-              control={form.control}
-              name="height"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel> Height</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="5'2"
-                      disabled={loading}
-                      autoComplete="Height"
-                      type="text"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* INCOME */}
-            <FormField
-              control={form.control}
-              name="income"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Income</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="12000"
-                      disabled={loading}
-                      autoComplete="Income"
-                      type="number"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+    <Form {...form}>
+      <form
+        className="flex flex-col space-y-2 px-2 w-full overflow-hidden"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <ScrollArea className="flex-1 max-h-[350px]">
+          <div className="grid grid-cols-2 gap-3 justify-between">
             {/* GENDER */}
             <FormField
               control={form.control}
@@ -201,6 +117,34 @@ export const GeneralForm = ({
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* DATE OF BIRTH */}
+            <FormField
+              control={form.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of birth</FormLabel>
+                  <FormControl>
+                    {/* <Input
+                      {...field}
+                      placeholder="Dob"
+                      disabled={loading}
+                      type="date"
+                      autoComplete="DateOfBirth"
+                    /> */}
+
+                    <ReactDatePicker
+                      selected={field.value}
+                      onChange={(date) => field.onChange(date)}
+                      dateFormat="MM-dd-yy"
+                      className="w-full rounded bg-dark-3 p-2 focus:outline-none"
+                      autoFocus={false}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -243,15 +187,84 @@ export const GeneralForm = ({
               )}
             />
 
+            {/* HEIGHT */}
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel> Height</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="5'2"
+                      disabled={loading}
+                      autoComplete="Height"
+                      type="text"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* WEIGHT */}
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weight</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="120"
+                      disabled={loading}
+                      autoComplete="Weight"
+                      type="number"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* INCOME */}
+            <FormField
+              control={form.control}
+              name="income"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Income</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="12000"
+                      disabled={loading}
+                      autoComplete="Income"
+                      type="number"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* SMOKER */}
             <FormField
               control={form.control}
               name="smoker"
               render={({ field }) => (
-                <FormItem className="flex gap-x-1 items-end">
-                  <FormLabel className="w-[100px]">Smoker</FormLabel>
+                <FormItem className="flex flex-col col-span-2 lg:flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-3">
+                  <div className="flex flex-col space-y-0.5">
+                    <FormLabel>Smoker</FormLabel>
+
+                    <span className="text-[0.8rem] text-muted-foreground">
+                      Is the lead a smoker?
+                    </span>
+                  </div>
+
                   <FormControl>
                     <Switch
+                      name="cblSmoker"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -260,16 +273,16 @@ export const GeneralForm = ({
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outlineprimary">
-              Cancel
-            </Button>
-            <Button disabled={loading} type="submit">
-              Update
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        </ScrollArea>
+        <div className="mat-auto grid grid-cols-2 gap-x-2 justify-between my-2">
+          <Button onClick={onCancel} type="button" variant="outlineprimary">
+            Cancel
+          </Button>
+          <Button disabled={loading} type="submit">
+            Update
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

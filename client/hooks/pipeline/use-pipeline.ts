@@ -4,49 +4,52 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useModal } from "@/providers/modal";
 import { usePipelineStore } from "./use-pipeline-store";
 import { toast } from "sonner";
-import {  FullPipeline, PipelineAndLeads } from "@/types";
+import { FullPipeline, PipelineAndLeads } from "@/types";
 import { Pipeline } from "@prisma/client";
-import { PipelineSchemaType } from "@/schemas/pipeline";
+import {
+  CreatePipelineSchemaType,
+  UpdatePipelineSchemaType,
+} from "@/schemas/pipeline";
 
 import {
-  pipelineAndLeadsGetAll,
-  pipelineDeleteById,
-  pipelineGetAll,
-  pipelineGetById,
-  pipelineInsert,
-  pipelineUpdateById,
+  getPipelinesAndLeads,
+  deletedPipeline,
+  getPipelines,
+  getPipeline,
+  createPipeline,
+  updatePipeline,
   pipelineUpdateByIdIndex,
-  pipelineUpdateOrder,
+  updatePipelineOrder,
 } from "@/actions/user/pipeline";
-
+import { useInvalidate } from "../use-invalidate";
 
 export const usePipelineData = () => {
-  const { pipelineId,initialSetUp,loaded } = usePipelineStore();
+  const { pipelineId, initialSetUp, loaded } = usePipelineStore();
 
   const { data: pipeline, isFetching: isFetchingPipeline } =
     useQuery<Pipeline | null>({
-      queryFn: () => pipelineGetById(pipelineId),
+      queryFn: () => getPipeline(pipelineId),
       queryKey: [`pipeline-${pipelineId}`],
     });
 
   const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<
     FullPipeline[]
   >({
-    queryFn: () => pipelineGetAll(),
+    queryFn: () => getPipelines(),
     queryKey: ["pipelines"],
   });
 
   const { data: pipelineAndLeads, isFetching: isFetchingPipelineAndLeads } =
     useQuery<PipelineAndLeads>({
-      queryFn: () => pipelineAndLeadsGetAll(),
+      queryFn: () => getPipelinesAndLeads(),
       queryKey: ["pipeline-and-leads"],
     });
 
-    useEffect(() => {
-      if (loaded) return;
-      if (!pipelineAndLeads) return;
-      initialSetUp(pipelineAndLeads.pipelines, pipelineAndLeads.leads);
-    }, [loaded, pipelineAndLeads]);
+  useEffect(() => {
+    if (loaded) return;
+    if (!pipelineAndLeads) return;
+    initialSetUp(pipelineAndLeads.pipelines, pipelineAndLeads.leads);
+  }, [loaded, pipelineAndLeads]);
 
   return {
     pipeline,
@@ -58,122 +61,111 @@ export const usePipelineData = () => {
   };
 };
 
-export const usePipelineActions = () => {
-  const { onFormClose, onAlertClose, deletePipeline, addPipeline,updateLeadStatus } =
-    usePipelineStore();
-  const queryClient = useQueryClient();
-  const invalidate = (queries: string[]) => {
-    queries.forEach((query) => {
-      queryClient.invalidateQueries({ queryKey: [query] });
-    });
-  };
+export const usePipelineActions = (cb?: () => void) => {
+  const {
+    onFormClose,
+    onAlertClose,
+    deletePipeline,
+    addPipeline,
+    updateLeadStatus,
+  } = usePipelineStore();
+  const { invalidate } = useInvalidate();
 
   //DELETE PIPELINE
-  const { mutate: onPipelineDelete, isPending: isPendingPipelineDelete } =
+  const { mutate: onDeletePipelineMutate, isPending: pipelineDeleting } =
     useMutation({
-      mutationFn: pipelineDeleteById,
+      mutationFn: deletedPipeline,
       onSuccess: (results) => {
-        if (results.success) {
-          deletePipeline(results.data);
-          toast.success("Pipeline Deleted", { id: "delete-pipeline" });
-          onAlertClose();
-          invalidate(["pipelines"]);
-        } else toast.error(results.error);
+        deletePipeline(results);
+        toast.success("Pipeline Deleted", { id: "delete-pipeline" });
+        onAlertClose();
+        invalidate("pipelines");
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+      onError: (error) => toast.error(error.message, { id: "delete-pipeline" }),
     });
 
-  const onPipelineDeleteSubmit = useCallback(
+  const onDeletePipeline = useCallback(
     (pipelineId: string) => {
       toast.loading("Deleting pipeline...", { id: "delete-pipeline" });
       console.log(pipelineId);
-      onPipelineDelete(pipelineId);
+      onDeletePipelineMutate(pipelineId);
     },
-    [onPipelineDelete]
+    [onDeletePipelineMutate]
   );
 
   //INSERT PIPELINE
-  const { mutate: onPipelineInsert, isPending: isPendingPipelineInsert } =
+  const { mutate: onCreatePipelineMutate, isPending: pipelineCreating } =
     useMutation({
-      mutationFn: pipelineInsert,
+      mutationFn: createPipeline,
       onSuccess: (results) => {
-        if (results.success) {
-          toast.success("Pipeline Created!", { id: "insert-pipiline" });
-          addPipeline(results.data);
-          onFormClose();
-          invalidate(["pipelines"]);
-        } else toast.error(results.error);
+        toast.success("Pipeline Created!", { id: "insert-pipiline" });
+        addPipeline(results);
+        if (cb) cb();
+        invalidate("pipelines");
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+      onError: (error) => toast.error(error.message, { id: "insert-pipeline" }),
     });
 
-  const onPipelineInsertSubmit = useCallback(
-    (values: PipelineSchemaType) => {
+  const onCreatePipeline = useCallback(
+    (values: CreatePipelineSchemaType) => {
       toast.loading("Creating pipeline...", { id: "insert-pipeline" });
-      onPipelineInsert(values);
+      onCreatePipelineMutate(values);
     },
-    [onPipelineInsert]
+    [onCreatePipelineMutate]
   );
   //UPDATE PIPELINE
-  const { mutate: onPipelineUpdate, isPending: isPendingPipelineUpdate } =
+  const { mutate: onUpdatePipelineMutate, isPending: pipelineUpdating } =
     useMutation({
-      mutationFn: pipelineUpdateById,
-      onSuccess: (result) => {
-        if (result.success) {
-          toast.success("Pipeline Updated", {
-            id: "update-pipiline",
-          });
-          onFormClose();
-          invalidate(["pipelines"]);
-        } else toast.error(result.error);
+      mutationFn: updatePipeline,
+      onSuccess: () => {
+        toast.success("Pipeline Updated", {
+          id: "update-pipiline",
+        });
+        if (cb) cb();
+        invalidate("pipelines");
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+      onError: (error) =>
+        toast.error(error.message, {
+          id: "update-pipiline",
+        }),
     });
 
-  const onPipelineUpdateSubmit = useCallback(
-    (values: PipelineSchemaType) => {
+  const onUpdatePipeline = useCallback(
+    (values: UpdatePipelineSchemaType) => {
       toast.loading("Updating pipeline...", { id: "update-pipeline" });
-      onPipelineUpdate(values);
+      onUpdatePipelineMutate(values);
     },
-    [onPipelineUpdate]
+    [onUpdatePipelineMutate]
   );
 
   //UPDATE PIPELINE INDEX
-  const { mutate: onPipelineUpdateIndex } = useMutation({
+  const { mutate: onUpdatePipelineIndexMutate } = useMutation({
     mutationFn: pipelineUpdateByIdIndex,
-    onSuccess: (result) => {
-      if (result.error) toast.error(result.error);
-    },
+    onSuccess: (result) => {},
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
-  const onPipelineUpdateIndexSubmit = useCallback(
+  const onUpdatePipelineUpdateIndex = useCallback(
     (id: string, index: number) => {
-      onPipelineUpdateIndex({ id, index });
+      onUpdatePipelineIndexMutate({ id, index });
     },
-    [onPipelineUpdateIndex]
+    [onUpdatePipelineIndexMutate]
   );
   useEffect(() => {
-    userEmitter.on("leadStatusChanged",updateLeadStatus);
+    userEmitter.on("leadStatusChanged", updateLeadStatus);
   }, []);
 
   return {
     invalidate,
-    onPipelineDeleteSubmit,
-    isPendingPipelineDelete,
-    isPendingPipelineInsert,
-    onPipelineInsertSubmit,
-    isPendingPipelineUpdate,
-    onPipelineUpdateSubmit,
-    onPipelineUpdateIndexSubmit,
+    onDeletePipeline,
+    pipelineDeleting,
+    pipelineCreating,
+    onCreatePipeline,
+    pipelineUpdating,
+    onUpdatePipeline,
+    onUpdatePipelineUpdateIndex,
   };
 };
 
@@ -196,7 +188,7 @@ export const usePipelineStageActions = (pipelines: FullPipeline[]) => {
         order: index,
       })
     );
-    onPipelineUpdateOrderSubmit(list);
+    onUpdatePipelineOrder(list);
   };
 
   const onReorder = (e: FullPipeline[]) => {
@@ -211,36 +203,33 @@ export const usePipelineStageActions = (pipelines: FullPipeline[]) => {
 
   //UPDATE PIPELINE ORDER
   const {
-    mutate: onPipelineUpdateOrder,
-    isPending: isPendingPipelineUpdateOrder,
+    mutate: onUpdatePipelineOrderMutate,
+    isPending: pipelineOrderUpdating,
   } = useMutation({
-    mutationFn: pipelineUpdateOrder,
-    onSuccess: (result) => {
-      if (result.success) {
-        setClose();
-        invalidate(["pipelines"]);
-        toast.success("Pipelines reordered", { id: "ordering-pipelines" });
-      } else toast.error(result.error);
+    mutationFn: updatePipelineOrder,
+    onSuccess: () => {
+      setClose();
+      invalidate(["pipelines"]);
+      toast.success("Pipelines reordered", { id: "ordering-pipelines" });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) =>
+      toast.error(error.message, { id: "ordering-pipelines" }),
   });
 
-  const onPipelineUpdateOrderSubmit = useCallback(
+  const onUpdatePipelineOrder = useCallback(
     (list: { id: string; order: number }[]) => {
       toast.loading("Ordering pipelines...", { id: "ordering-pipelines" });
-      onPipelineUpdateOrder(list);
+      onUpdatePipelineOrderMutate(list);
     },
-    [onPipelineUpdateOrder]
+    [onUpdatePipelineOrderMutate]
   );
-  
+
   return {
     buttonEnabled,
     stages,
     onStageUpdate,
     onReorder,
     onReset,
-    isPendingPipelineUpdateOrder,
+    onUpdatePipelineOrder,pipelineOrderUpdating
   };
 };

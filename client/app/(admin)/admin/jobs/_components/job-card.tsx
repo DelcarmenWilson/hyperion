@@ -28,20 +28,26 @@ const statusColors = {
   [JobStatus.IN_PROGRESS]: "bg-secondary",
   [JobStatus.CLOSED]: "bg-foreground",
 };
-
-const JobCard = ({ job }: { job: Job }) => {
-  const isOpen = job.status === JobStatus.OPEN;
+type Props = {
+  id: string;
+  name: string;
+  description: string | null;
+  status: string;
+  createdAt: Date;
+};
+const JobCard = ({ id, name, description, status, createdAt }: Props) => {
+  const isOpen = status === JobStatus.OPEN;
   return (
     <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30">
       <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
         <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-xs">
-          <span className="italic">{formatDate(job.createdAt)}</span>
+          <span className="italic">{formatDate(createdAt)}</span>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-3">
           <div
             className={cn(
               "flex w-10 h-10 rounded-full items-center justify-center shrink-0",
-              statusColors[job.status as JobStatus]
+              statusColors[status as JobStatus]
             )}
           >
             <BriefcaseIcon className="h-5 w-5" />
@@ -49,29 +55,29 @@ const JobCard = ({ job }: { job: Job }) => {
           <div className="flex-1">
             <h3 className="flex text-base font-bold text-muted-foreground items-center">
               <Link
-                href={`/admin/jobs/${job.id}`}
+                href={`/admin/jobs/${id}`}
                 className="flex items-center hover:underline"
               >
-                {job.name}
+                {name}
               </Link>
 
               <span
                 className={cn(
                   "ml-2 px-2 py-0.5 text-xs font-medium rounded-full",
-                  statusColors[job.status as JobStatus]
+                  statusColors[status as JobStatus]
                 )}
               >
-                {job.status}
+                {status}
               </span>
             </h3>
             <p className="text-xs text-muted-foreground w-[50%] text-ellipsis line-clamp-2">
-              {job.description}
+              {description}
             </p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <Link
-            href={`/admin/jobs/${job.id}`}
+            href={`/admin/jobs/${id}`}
             className={cn(
               buttonVariants({
                 variant: "outline",
@@ -82,7 +88,7 @@ const JobCard = ({ job }: { job: Job }) => {
           >
             <ShuffleIcon size={16} /> Edit
           </Link>
-          {isOpen && <JobActions jobId={job.id} jobName={job.name} />}
+          {isOpen && <JobActions jobId={id} jobName={name} />}
         </div>
       </CardContent>
     </Card>

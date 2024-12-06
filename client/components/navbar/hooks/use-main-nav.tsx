@@ -272,54 +272,19 @@ export const useMainChatActions = () => {
     socket?.on("notification:new-recieved", (data: { dt: string }) =>
       onNotificationReminder(data.dt)
     );
+    socket?.on("conversation-messages-new", () =>
+      invalidate("dashboard-card-data")
+    );
     return () => {
       socket?.off("chat-message-received");
       socket?.off("chat-action-received");
       socket?.off("account-suspended-recieved");
       socket?.off("notification:new-recieved");
       socket?.off("todo:reminder-recieved");
+      socket?.off("conversation-messages-new");
     };
   }, [socket, onMessageRecieved, onRecievedChatAction, onTodoReminder]);
 
-  //   //TODO we can posibly consolidate the next two socket calls
-  //   socket?.on("chat-message-received", (data: { message: FullChatMessage }) =>
-  //     onMessageRecieved(
-  //       chatId as string,
-  //       data.message.chatId,
-  //       data.message.id,
-  //       isChatOpen && isOpen
-  //     )
-  //   );
-  //   socket?.on(
-  //     "chat-action-received",
-  //     (data: { chatId: string; action: string }) =>
-  //       onRecievedChatAction(chatId as string, data.chatId, data.action)
-  //   );
-  //   socket?.on("account-suspended-recieved", () => onAccountSuspended());
-  //   return () => {
-  //     socket?.off(
-  //       "chat-message-received",
-  //       (data: { message: FullChatMessage }) =>
-  //         onMessageRecieved(
-  //           chatId as string,
-  //           data.message.chatId,
-  //           data.message.id,
-  //           isChatOpen && isOpen
-  //         )
-  //     );
-  //     socket?.off(
-  //       "chat-action-received",
-  //       (data: { chatId: string; action: string }) =>
-  //         onRecievedChatAction(chatId as string, data.chatId, data.action)
-  //     );
-  //     socket?.off("account-suspended-recieved", () => onAccountSuspended());
-  //   };
-  // }, [chatId, isOpen, isChatOpen]);
-
-  // useEffect(() => {
-  //   setChatOpen(isChatOpen);
-  //   console.log(isChatOpen);
-  // }, [isChatOpen]);
   return {
     audioRef,
     invalidateNav,

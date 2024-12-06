@@ -13,9 +13,9 @@ import { DropResult } from "react-beautiful-dnd";
 import { PipelineCard } from "./card";
 
 import {
-  pipelineDeleteById,
-  pipelineUpdateById,
-  pipelineUpdateOrder,
+  deletedPipeline,
+  updatePipeline,
+  updatePipelineOrder,
 } from "@/actions/user/pipeline";
 
 type PipeLineListProps = {
@@ -54,32 +54,13 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
     });
   };
 
-  const onPipelineUpdate = async () => {
-    if (!pipeline) return;
-    if (!pipeline.name) {
-      toast.error("title cannot be empty");
-    }
-    setLoading(true);
-    const updatedPipeline = await pipelineUpdateById(pipeline);
-
-    if (updatedPipeline.success) {
-      router.refresh();
-      toast.success(updatedPipeline.success);
-    } else toast.error(updatedPipeline.error);
-
-    setPipeline(null);
-    setDialogOpen(false);
-    setLoading(false);
-  };
-
   const onDelete = async () => {
     if (!pipeline) return;
     setLoading(true);
-    const deletePipeline = await pipelineDeleteById(pipeline.id);
-    if (deletePipeline.success) {
-      router.refresh();
-      toast.success(deletePipeline.success);
-    } else toast.error(deletePipeline.error);
+    await deletedPipeline(pipeline.id);
+
+    router.refresh();
+    toast.success("Pipeline delete");
 
     setPipeline(null);
     setAlertOpen(false);
@@ -99,11 +80,10 @@ export const PipeLineList = ({ leads, initPipelines }: PipeLineListProps) => {
       order: index,
     }));
     //TODO - see if this can be consolidated with the function in the stage list
-    const updatePipeline = await pipelineUpdateOrder(list);
-    if (updatePipeline.success) {
-      toast.success(updatePipeline.success);
-      router.refresh();
-    } else toast.error(updatePipeline.error);
+    await updatePipelineOrder(list);
+
+    toast.success("Pipeline update");
+    router.refresh();
   };
   return (
     <>

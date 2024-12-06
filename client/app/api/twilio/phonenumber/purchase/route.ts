@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { client } from "@/lib/twilio/config";
 import { currentRole } from "@/lib/auth";
-import { phoneNumberInsertTwilio } from "@/actions/user/phone-number";
+import { createPhoneNumber } from "@/actions/user/phone-number";
 
 export async function POST(req: Request) {
   const role = await currentRole();
@@ -18,16 +18,18 @@ export async function POST(req: Request) {
     emergencyAddressSid: "AD0fb0668ae687821d42f4cea08c03062a",
   });
   if (results.sid) {
-    const newPhone = await phoneNumberInsertTwilio(
-      phonenumber,
+    const newPhone = await createPhoneNumber(
+      {
+        phone:phonenumber,
       state,
       agentId,
-      results.sid,
+      sid:results.sid,
       app
+      }
     );
-    if (newPhone.success) {
+   
       return NextResponse.json({ success: "success" }, { status: 200 });
-    }
+
   }
 
   return NextResponse.json({ error: "error" }, { status: 500 });

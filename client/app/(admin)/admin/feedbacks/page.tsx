@@ -1,14 +1,14 @@
 import React, { Suspense } from "react";
 import { MessageSquarePlus } from "lucide-react";
+import { currentRole } from "@/lib/auth";
 
 import AlertError from "@/components/custom/alert-error";
 import FeedbackList from "./_components/feedback-list";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getFeedbacks } from "@/actions/feedback/get-feedbacks";
-import { currentRole } from "@/lib/auth";
 import Unauthenticated from "@/components/global/unauthenticated";
+import { getFeedbacks } from "@/actions/feedback/get-feedbacks";
 
 const FeedBackPage = () => {
   return (
@@ -32,7 +32,7 @@ const FeedbacksSkeleton = () => {
 
 const Feedbacks = async () => {
   const role = await currentRole();
-if (role != "DEVELOPER") return <Unauthenticated/>
+  if (role != "DEVELOPER") return <Unauthenticated />;
 
   const feedbacks = await getFeedbacks();
   if (!feedbacks) return <AlertError />;

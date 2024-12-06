@@ -3,12 +3,11 @@ import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useAgentCarrierData } from "../../hooks/use-carrier";
 
-import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { DrawerRight } from "@/components/custom/drawer/right";
-import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { CarrierForm } from "./form";
-import { CarrierList } from "./list";
+import CarrierDrawer from "./drawer";
+import CarrierList from "./list";
+import { DataTable } from "@/components/tables/data-table";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const CarrierClient = () => {
@@ -28,48 +27,13 @@ export const CarrierClient = () => {
     </SkeletonWrapper>
   );
 
-  // useEffect(() => {
-  //   const onCarrierDeleted = (id: string) => {
-  //     setCarriers((carriers) => {
-  //       if (!carriers) return carriers;
-  //       return carriers.filter((e) => e.id !== id);
-  //     });
-  //   };
-  //   const onCarrierInserted = (newCarrier: FullUserCarrier) => {
-  //     const existing = carriers?.find((e) => e.id == newCarrier.id);
-  //     if (existing == undefined)
-  //       setCarriers((carriers) => [...carriers!, newCarrier]);
-  //   };
-
-  //   const onCarrierUpdated = (updatedCarrier: FullUserCarrier) => {
-  //     setCarriers((carriers) => {
-  //       if (!carriers) return carriers;
-  //       return carriers
-  //         .filter((e) => e.id != updatedCarrier.id)
-  //         .concat(updatedCarrier);
-  //     });
-  //   };
-  //   userEmitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
-  //   userEmitter.on("carrierInserted", (info) => onCarrierInserted(info));
-  //   userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
-  //   return () => {
-  //     userEmitter.on("carrierDeleted", (id) => onCarrierDeleted(id));
-  //     userEmitter.on("carrierInserted", (info) => onCarrierInserted(info));
-  //     userEmitter.on("carrierUpdated", (info) => onCarrierUpdated(info));
-  //   };
-
-  //   // eslint-disable-next-line
-  // }, []);
-
   return (
     <>
-      <DrawerRight
-        title={"New Carrier"}
-        isOpen={isDrawerOpen}
+      <CarrierDrawer
+        open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      >
-        <CarrierForm onClose={() => setIsDrawerOpen(false)} />
-      </DrawerRight>
+      />
+
       {isList ? (
         <SkeletonWrapper isLoading={isFetchingCarriers}>
           <DataTable

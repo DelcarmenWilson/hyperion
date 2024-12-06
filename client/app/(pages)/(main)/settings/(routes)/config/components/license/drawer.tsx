@@ -1,21 +1,13 @@
 import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-import { handleFileUpload } from "@/lib/utils";
-
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAgentLicenseActions } from "../../hooks/use-license";
+
+import { UserLicense } from "@prisma/client";
+import { UserLicenseSchema, UserLicenseSchemaType } from "@/schemas/user";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
+import { DrawerRight } from "@/components/custom/drawer/right";
 import {
   Form,
   FormField,
@@ -24,30 +16,54 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
-import { UserLicenseSchema, UserLicenseSchemaType } from "@/schemas/user";
-
-import { UserLicense } from "@prisma/client";
-import ReactDatePicker from "react-datepicker";
-import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/custom/image-upload";
+import { Input } from "@/components/ui/input";
+import ReactDatePicker from "react-datepicker";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import {
-  userLicenseInsert,
-  userLicenseUpdateById,
-} from "@/actions/user/license";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { states } from "@/constants/states";
 
 type LicenseFormProps = {
   license?: UserLicense;
+  open: boolean;
+  onClose: () => void;
+};
+const LicenseDrawer = ({ license, open, onClose }: LicenseFormProps) => {
+  const title = license ? "Edit License" : "New License";
+  const { onCreateLicense, licenseCreating, onUpdateLicense, licenseUpdating } =
+    useAgentLicenseActions(onClose);
+  return (
+    <DrawerRight title={title} isOpen={open} onClose={onClose} scroll={false}>
+      <LicenseForm
+        license={license}
+        loading={license ? licenseUpdating : licenseCreating}
+        onSubmit={license ? onUpdateLicense : onCreateLicense}
+        onClose={onClose}
+      />
+    </DrawerRight>
+  );
+};
+
+type Props = {
+  license?: UserLicense;
+  loading: boolean;
+  onSubmit: (e: UserLicenseSchemaType) => void;
   onClose: () => void;
 };
 
-export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
-  const [loading, setLoading] = useState(false);
+const LicenseForm = ({ license, loading, onSubmit, onClose }: Props) => {
   const [file, setFile] = useState<{
     image: File | null;
     url: string | null;
   }>({ image: null, url: null });
+
   const btnText = license ? "Update" : "Create";
 
   const form = useForm<UserLicenseSchemaType>({
@@ -75,45 +91,19 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
     setFile({ image: null, url: null });
     form.setValue("image", undefined);
   };
-  const onSubmit = async (values: UserLicenseSchemaType) => {
-    setLoading(true);
-    if (file.image) {
-      values.image = await handleFileUpload({
-        newFile: file.image,
-        filePath: "user-licenses",
-        oldFile: license?.image,
-      });
-    }
-    if (license) {
-      const updatedLicense = await userLicenseUpdateById(values);
-      if (updatedLicense.success) {
-        userEmitter.emit("licenseUpdated", updatedLicense.success);
-        toast.success("License updated!");
-        onCancel();
-      } else toast.error(updatedLicense.error);
-    } else {
-      const InsertedLicense = await userLicenseInsert(values);
-      if (InsertedLicense.success) {
-        userEmitter.emit("licenseInserted", InsertedLicense.success);
-        toast.success("License created!");
-        onCancel();
-      } else toast.error(InsertedLicense.error);
-    }
-    setLoading(false);
-  };
   return (
-    <div>
-      <Form {...form}>
-        <form
-          className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <ImageUpload
-            selectedImage={form.getValues("image") as string}
-            onImageUpdate={onImageUpdate}
-            onImageRemove={onImageRemove}
-          />
-          <div className="flex flex-col gap-2">
+    <Form {...form}>
+      <form
+        className="flex flex-col overflow-hidden w-full h-full px-1"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <ImageUpload
+          selectedImage={form.getValues("image") as string}
+          onImageUpdate={onImageUpdate}
+          onImageRemove={onImageRemove}
+        />
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col gap-3">
             {/* STATE */}
             <FormField
               control={form.control}
@@ -246,16 +236,18 @@ export const LicenseForm = ({ license, onClose }: LicenseFormProps) => {
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button disabled={loading} type="submit">
-              {btnText}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        </ScrollArea>
+        <div className="mt-auto grid grid-cols-2 gap-x-2">
+          <Button onClick={onCancel} type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button disabled={loading} type="submit">
+            {btnText}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
+
+export default LicenseDrawer;

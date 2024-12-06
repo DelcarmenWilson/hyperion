@@ -1,12 +1,13 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
 
+import { PhoneNumber } from "@prisma/client";
+
+import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import UpdatePhoneNumberDialog from "../update-phone-number-dialog";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { PhoneNumber } from "@prisma/client";
 import { formatDate } from "@/formulas/dates";
-import { UnassignedActions } from "./actions";
 
 export const columns: ColumnDef<PhoneNumber>[] = [
   {
@@ -65,6 +66,6 @@ export const columns: ColumnDef<PhoneNumber>[] = [
   {
     header: "Actions",
     id: "actions",
-    cell: ({ row }) => <UnassignedActions phoneNumber={row.original} />,
+    cell: ({ row }) => <UpdatePhoneNumberDialog phoneNumber={row.original} />,
   },
 ];

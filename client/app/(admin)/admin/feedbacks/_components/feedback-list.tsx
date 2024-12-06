@@ -1,9 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { ArrowDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 import { useFeedbackStore } from "@/hooks/feedback/use-feedback";
 
 import { FeedbackStatus, ShortFeedback } from "@/types/feedback";
 
+import { Button } from "@/components/ui/button";
+import { EmptyCard } from "@/components/reusable/empty-card";
 import FeedbackCard from "./feedback-card";
 import {
   Select,
@@ -13,9 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getEnumValues } from "@/lib/helper/enum-converter";
-import { EmptyCard } from "@/components/reusable/empty-card";
-import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp } from "lucide-react";
 
 const FeedbackList = ({
   initFeedbacks,
@@ -139,7 +141,10 @@ const FeedbackList = ({
             <Button variant="outline" className="gap-2" onClick={toggleSorted}>
               <span className="sr-only">Sort by date</span>
               <span className="text-sm text-muted-foreground">Created At</span>
-              {sorted ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
+              <ArrowDown
+                size={15}
+                className={cn("transition-transform ", sorted && "rotate-180")}
+              />
             </Button>
           </>
         )}

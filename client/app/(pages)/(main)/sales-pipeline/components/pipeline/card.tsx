@@ -21,6 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Actions } from "../actions";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { timeZones } from "@/constants/states";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type PipelineCardProps = {
   pipeline: FullPipeline;
@@ -36,7 +37,7 @@ export const PipelineCard = ({
 }: PipelineCardProps) => {
   const { setSelectedPipeline } = usePipelineStore();
   const { onPhoneDialerOpen } = usePhoneStore();
-  const { onPipelineUpdateIndexSubmit } = usePipelineActions();
+  const { onUpdatePipelineUpdateIndex } = usePipelineActions();
   const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
   const [index, setIndex] = useState(idx);
@@ -47,7 +48,7 @@ export const PipelineCard = ({
 
   const onReset = () => {
     setIndex(0);
-    onPipelineUpdateIndexSubmit(pipeline.id, 0);
+    onUpdatePipelineUpdateIndex(pipeline.id, 0);
   };
 
   useEffect(() => {
@@ -62,9 +63,9 @@ export const PipelineCard = ({
       dragControls={controls}
       drag="x"
     >
-      <section className="flex flex-col  shadow-xl h-[400px]">
+      <Card className="flex flex-col  shadow-xl h-[400px] overflow-hidden">
         <SkeletonWrapper isLoading={loading} fullHeight fullWidth>
-          <div className="flex justify-between items-center bg-primary/25 text-primary px-2">
+          <CardHeader className="flex flex-row justify-between items-center bg-primary/25 text-primary p-1">
             <div className="flex flex-1 items-center gap-2">
               <Button
                 size="icon"
@@ -73,52 +74,56 @@ export const PipelineCard = ({
               >
                 <Move size={15} />
               </Button>
-              <p className="font-bold">{pipeline.name}</p>
+              <CardTitle className="font-bold">{pipeline.name}</CardTitle>
             </div>
-            <Actions pipelineId={pipeline.id} onReset={onReset} />
-          </div>
-          <div className="p-1">
-            <Select onValueChange={setTimeZone} defaultValue="%">
-              <SelectTrigger>
-                <Clock size={16} />
-                <SelectValue placeholder="Filter Timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="%">Filter Timezone</SelectItem>
-                {timeZones.map((timeZone) => (
-                  <SelectItem key={timeZone.value} value={timeZone.value}>
-                    {timeZone.text}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-between items-center border-b p-2">
-            <Button
-              variant="gradientDark"
-              size="sm"
-              disabled={!leads.length}
-              onClick={() => {
-                setSelectedPipeline(pipeline, timeZone);
-                onPhoneDialerOpen();
-              }}
-            >
-              START DIALING
-            </Button>
-            <p>Leads: {leads.length}</p>
-          </div>
-
-          <ScrollArea className="relative group h-full" ref={divRef}>
-            {leads.map((lead, i) => (
-              <LeadCard
-                key={lead.id}
-                lead={lead}
-                indexRef={i == index ? indexRef : null}
-              />
-            ))}
-          </ScrollArea>
+            <Actions pipeline={pipeline} onReset={onReset} />
+          </CardHeader>
         </SkeletonWrapper>
-      </section>
+        <CardContent className="!p-0">
+          <SkeletonWrapper isLoading={loading} fullHeight fullWidth>
+            <div className="p-1">
+              <Select onValueChange={setTimeZone} defaultValue="%">
+                <SelectTrigger>
+                  <Clock size={16} />
+                  <SelectValue placeholder="Filter Timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="%">Filter Timezone</SelectItem>
+                  {timeZones.map((timeZone) => (
+                    <SelectItem key={timeZone.value} value={timeZone.value}>
+                      {timeZone.text}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-between items-center border-b p-2">
+              <Button
+                variant="gradientDark"
+                size="sm"
+                disabled={!leads.length}
+                onClick={() => {
+                  setSelectedPipeline(pipeline, timeZone);
+                  onPhoneDialerOpen();
+                }}
+              >
+                START DIALING
+              </Button>
+              <p>Leads: {leads.length}</p>
+            </div>
+
+            <ScrollArea className="relative group h-full" ref={divRef}>
+              {leads.map((lead, i) => (
+                <LeadCard
+                  key={lead.id}
+                  lead={lead}
+                  indexRef={i == index ? indexRef : null}
+                />
+              ))}
+            </ScrollArea>
+          </SkeletonWrapper>
+        </CardContent>
+      </Card>
     </Reorder.Item>
   );
 };

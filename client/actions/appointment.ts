@@ -797,6 +797,7 @@ export const closeOpenAppointments = async (test: boolean = false) => {
       userId: appointment.agentId,
       link: `/appointments/${appointment.id}`,
       linkText: "View Appointment",
+      read:false
     });
 
     return { success: "Message sent!" };

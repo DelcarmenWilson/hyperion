@@ -1,19 +1,11 @@
 "use client";
+import { FileImage, MessageCircle, Phone, X } from "lucide-react";
+
+import { TwilioNumber } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import { TwilioNumber } from "@/types";
-import { FileImage, MessageCircle, Phone, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PurchaseForm } from "./form";
+import PurchasePhoneNumberDialog from "./purchase-phone-number-dialog";
 
 export const columns: ColumnDef<TwilioNumber>[] = [
   {
@@ -93,20 +85,6 @@ export const columns: ColumnDef<TwilioNumber>[] = [
   {
     header: "Actions",
     id: "actions",
-    cell: ({ row }) => (
-      <>
-        <Dialog>
-          <DialogDescription className="hidden">
-            Purchase Phone Number Form
-          </DialogDescription>
-          <DialogTrigger asChild>
-            <Button size="sm">Details</Button>
-          </DialogTrigger>
-          <DialogContent className="p-0 max-h-[96%] max-w-[600px]">
-            <PurchaseForm phoneNumber={row.original} />
-          </DialogContent>
-        </Dialog>
-      </>
-    ),
+    cell: ({ row }) => <PurchasePhoneNumberDialog phoneNumber={row.original} />,
   },
 ];

@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { DashboardDataType } from "@/types/dashboard";
 
-import { dashboardGetAllCards } from "@/actions/dashboard";
+import { getDashboardCards } from "@/actions/dashboard";
 import { useInvalidate } from "@/hooks/use-invalidate";
 import { useSocketStore } from "@/hooks/use-socket-store";
 
@@ -29,7 +29,7 @@ export const useDashboardData = () => {
   const {socket}=useSocketStore()
   const {invalidate}=useInvalidate()
   const { data, isFetching } = useQuery<DashboardDataType | null>({
-    queryFn: () => dashboardGetAllCards(),
+    queryFn: () => getDashboardCards(),
     queryKey: ['dashboard-card-data'],
   });
 
@@ -63,22 +63,13 @@ export const useDashboardData = () => {
       href: "/calls",
       hrefTitle: "Go to calls",
     },
-    {
-      icon: MessageSquarePlus,
-      title: "Feeds",
-      value: data?.feeds || 0,
-      href: "/feeds",
-      hrefTitle: "Go to feeds",
-    },
+    // {
+    //   icon: MessageSquarePlus,
+    //   title: "Feeds",
+    //   value: data?.feeds || 0,
+    //   href: "/feeds",
+    //   hrefTitle: "Go to feeds",
+    // },
   ];
-
-  useEffect(() => {
-    socket?.on("conversation-messages-new", () => invalidate('dashboard-card-data'));
-    return () => {
-      socket?.off("conversation-messages-new");
-    };
-    // eslint-disable-next-line
-  }, []);
-
   return {  dataCard, isFetching };
 };

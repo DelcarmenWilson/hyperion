@@ -1,16 +1,17 @@
 "use client";
 import { useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-import { handleFileUpload } from "@/lib/utils";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+
+import { useAgentTemplateActions } from "../../hooks/use-template";
 
 import { UserTemplate } from "@prisma/client";
 import { UserTemplateSchema, UserTemplateSchemaType } from "@/schemas/user";
 
 import { Button } from "@/components/ui/button";
+
+import { DrawerRight } from "@/components/custom/drawer/right";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -21,22 +22,48 @@ import {
   FormItem,
 } from "@/components/ui/form";
 
-import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/custom/image-upload";
 import { KeywordSelect } from "@/components/custom/keyword-select";
+import { Textarea } from "@/components/ui/textarea";
 
-import {
-  userTemplateInsert,
-  userTemplateUpdateById,
-} from "@/actions/user/template";
+type TemplateDrawerProps = {
+  template?: UserTemplate;
+  open: boolean;
+  onClose: () => void;
+};
+const TemplateDrawer = ({ template, open, onClose }: TemplateDrawerProps) => {
+  const title = template ? "Edit Template" : "New Template";
+  const {
+    onCreateTemplate,
+    templateCreating,
+    onUpdateTemplate,
+    templateUpdating,
+  } = useAgentTemplateActions(onClose);
+  return (
+    <DrawerRight title={title} isOpen={open} onClose={onClose}>
+      <TemplateForm
+        template={template}
+        loading={template ? templateUpdating : templateCreating}
+        onSubmit={template ? onUpdateTemplate : onCreateTemplate}
+        onClose={onClose}
+      />
+    </DrawerRight>
+  );
+};
 
 type TemplateFormProps = {
   template?: UserTemplate;
+  loading: boolean;
+  onSubmit: (e: UserTemplateSchemaType) => void;
   onClose: () => void;
 };
 
-export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
-  const [loading, setLoading] = useState(false);
+const TemplateForm = ({
+  template,
+  loading,
+  onSubmit,
+  onClose,
+}: TemplateFormProps) => {
   const [file, setFile] = useState<{
     image: File | null;
     url: string | null;
@@ -67,40 +94,7 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     setFile({ image: null, url: null });
     form.setValue("attachment", undefined);
   };
-  const onSubmit = async (values: UserTemplateSchemaType) => {
-    setLoading(true);
 
-    if (file.image) {
-      values.attachment = await handleFileUpload({
-        newFile: file.image,
-        filePath: "user-templates",
-        oldFile: template?.attachment,
-      });
-    }
-    if (template) {
-      const updatedTemplate = await userTemplateUpdateById(values);
-      if (updatedTemplate.success) {
-        userEmitter.emit("templateUpdated", updatedTemplate.success);
-        onCancel();
-        toast.success("Template created!");
-      }
-      if (updatedTemplate.error) {
-        toast.error(updatedTemplate.error);
-      }
-    } else {
-      const insertData = await userTemplateInsert(values);
-      if (insertData.success) {
-        userEmitter.emit("templateInserted", insertData.success);
-        toast.success("Template created!");
-        onCancel();
-      }
-      if (insertData.error) {
-        toast.error(insertData.error);
-      }
-    }
-
-    setLoading(false);
-  };
   return (
     <div>
       <Form {...form}>
@@ -195,3 +189,4 @@ export const TemplateForm = ({ template, onClose }: TemplateFormProps) => {
     </div>
   );
 };
+export default TemplateDrawer;

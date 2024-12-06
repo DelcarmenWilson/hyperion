@@ -2,54 +2,35 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Heading } from "@/components/custom/heading";
 
 import { adminUpdateLeadNumbers } from "@/actions/admin/lead";
 import { adminUpdateUserNumber } from "@/actions/admin/user";
-import { Heading } from "@/components/custom/heading";
-import { HalfUser } from "@/types";
+import { UserSelect } from "@/components/user/select";
 
-type PhoneUpdateProps = {
-  users: HalfUser[];
-};
-export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
+export const PhoneUpdate = ({ user }: { user: string }) => {
   const [loading, setLoading] = useState(false);
-  const [selecteUser, setSelecteUser] = useState(users[0].id);
+  const [selecteUser, setSelecteUser] = useState<string | undefined>(user);
 
   const onLeadNumbersUpdate = () => {
-    if (!selecteUser) {
-      toast.error("Please slect a user");
-    }
+    if (!selecteUser) toast.error("Please slect a user");
+
     setLoading(true);
-    adminUpdateLeadNumbers(selecteUser).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
+    adminUpdateLeadNumbers(selecteUser as string).then((data) => {
+      if (data.error) toast.error(data.error);
+      else toast.success(data.success);
     });
     setLoading(false);
   };
   const onUserNumberUpdate = () => {
-    if (!selecteUser) {
-      toast.error("Please slect a user");
-    }
+    if (!selecteUser) toast.error("Please slect a user");
+
     setLoading(true);
-    adminUpdateUserNumber(selecteUser).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
+    adminUpdateUserNumber(selecteUser as string).then((data) => {
+      if (data.error) toast.error(data.error);
+      else toast.success(data.success);
     });
     setLoading(false);
   };
@@ -61,25 +42,15 @@ export const PhoneUpdate = ({ users }: PhoneUpdateProps) => {
         description="Change user specific number"
       />
       <div className="flex flex-col gap-2">
-        <p>User</p>
-        <Select
-          name="ddlUser"
-          disabled={loading}
-          onValueChange={(e) => setSelecteUser(e)}
-          defaultValue={selecteUser}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a User" />
-          </SelectTrigger>
-          <SelectContent>
-            {users.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                {user.userName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex gap-2">
+        <p className="text-sm">User</p>
+        <div className="w-[200px]">
+          <UserSelect
+            disabled={loading}
+            setUserId={setSelecteUser}
+            userId={selecteUser}
+          />
+        </div>
+        <div className="flex justify-end gap-2">
           <Button disabled={loading} onClick={onLeadNumbersUpdate}>
             Lead Number Update
           </Button>

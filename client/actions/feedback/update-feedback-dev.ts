@@ -40,6 +40,7 @@ export const updateFeedbackDev = async (
       linkText: "View Feedback",
       link: `/admin/feedbacks/${feedback.id}`,
       userId: feedback.userId,
+      read:false
     });
   }
 

@@ -8,7 +8,6 @@ import { TopMenu } from "./components/top-menu";
 
 import { EmptyCard } from "@/components/reusable/empty-card";
 import { PipeLineList } from "./components/pipeline/list";
-import { PipelineForm } from "./components/pipeline/form";
 
 const SalesPage = () => {
   const { isFetchingPipelineAndLeads } = usePipelineData();
@@ -23,7 +22,6 @@ const SalesPage = () => {
       ) : (
         <PipeLineList loading={isFetchingPipelineAndLeads} />
       )}
-      <PipelineForm />
     </PageLayout>
   );
 };

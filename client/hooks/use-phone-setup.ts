@@ -10,10 +10,11 @@ import { FullPhoneNumber } from "@/types";
 import { PhoneNumberSchemaType } from "@/schemas/phone-number";
 
 import {
-  phoneNumbersGetAssigned,
-  phoneNumbersGetUnassigned,
-  phoneNumberUpdateById,
+  getAssignedPhoneNumbers,
+  getUnassignedPhoneNumbers,
+  updatePhoneNumber,
 } from "@/actions/user/phone-number";
+import { useInvalidate } from "./use-invalidate";
 
 
 type State = {
@@ -41,13 +42,13 @@ export const usePhoneSetupData = () => {
   const { data: phoneNumbers, isFetching: isFetchingPhoneNumbers } = useQuery<
     FullPhoneNumber[]
   >({
-    queryFn: () => phoneNumbersGetAssigned(),
-    queryKey: ["phoneNumbers"],
+    queryFn: () => getAssignedPhoneNumbers(),
+    queryKey: ["phone-numbers"],
   });
 
   const { data: unasignedNumbers, isFetching: isFetchingUnasignedNumbers } =
     useQuery<PhoneNumber[]>({
-      queryFn: () => phoneNumbersGetUnassigned(),
+      queryFn: () => getUnassignedPhoneNumbers(),
       queryKey: ["unasignedNumbers"],
     });
 
@@ -59,50 +60,46 @@ export const usePhoneSetupData = () => {
   };
 };
 
-export const usePhoneSetupActions = () => {
-  const { phoneNumber, onPhoneDetailsClose } = usePhoneSetupStore();
+export const usePhoneSetupActions = (cb:()=>void) => {
+  const {invalidate}=useInvalidate()
 
-  const queryClient = useQueryClient();
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["phoneNumbers"] });
-  };
-
+  
   //PHONE NUMBER
-  const { mutate: phoneNumberMutate, isPending: phoneNumberIsPending } =
+  const { mutate: updatePhoneNumberMutate, isPending: phoneNumberUpdating } =
     useMutation({
-      mutationFn: phoneNumberUpdateById,
+      mutationFn: updatePhoneNumber,
       onSuccess: async (results) => {
-        if (results.success) {
-          const { app, sid } = results.success;
-          if (app != phoneNumber?.app)
+      
+          const { changes, app, sid } = results;
+          if (changes)
             await axios.post("/api/twilio/phonenumber/update", { sid, app });
 
           toast.success("Phone Number Updated!!", {
             id: "update-phone-number",
           });
-          onPhoneDetailsClose();
-        } else toast.error(results.error);
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-      onSettled: () => {
-        invalidate();
-      },
+      onError: (error) => 
+        toast.error(error.message, {
+          id: "update-phone-number",
+        }),
+      
+      onSettled: () => 
+        invalidate("phone-numbers")
+      ,
     });
 
-  const onPhoneNumberUpdate = useCallback(
+  const onUpdatePhoneNumber = useCallback(
     (values: PhoneNumberSchemaType) => {
       toast.loading("Updating Phone Number Details...", {
         id: "update-phone-number",
       });
-      phoneNumberMutate(values);
+      updatePhoneNumberMutate(values);
     },
-    [phoneNumberMutate]
+    [updatePhoneNumberMutate]
   );
 
   return {
-    onPhoneNumberUpdate,
-    phoneNumberIsPending,
+    onUpdatePhoneNumber,
+    phoneNumberUpdating,
   };
 };

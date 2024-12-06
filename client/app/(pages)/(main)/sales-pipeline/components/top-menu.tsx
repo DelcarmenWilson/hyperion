@@ -7,6 +7,7 @@ import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
 import { Button } from "@/components/ui/button";
 import CustomModal from "@/components/global/custom-modal";
 import { StageList } from "./stage-list";
+import CreatePipelineDialog from "./create-pipeline-dialog";
 
 export const TopMenu = () => {
   const { onFormOpen } = usePipelineStore();
@@ -18,18 +19,19 @@ export const TopMenu = () => {
       <Button
         variant="secondary"
         size="sm"
-        onClick={() => invalidate(["pipelines"])}
+        onClick={() => invalidate("pipelines")}
       >
         <RefreshCcw size={16} />
       </Button>
 
-      <Button
+      <CreatePipelineDialog />
+      {/* <Button
         variant="secondary"
         size="sm"
         onClick={() => onFormOpen("insert")}
       >
         Add stage
-      </Button>
+      </Button> */}
 
       <Button
         variant="secondary"

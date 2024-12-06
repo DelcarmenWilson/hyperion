@@ -30,7 +30,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         normal: "bg-secondary border hover:border-[#000]",
-        simple: "text-gray-500 hover:text-black",
+        simple: "text-gray-500 hover:text-accent-foreground",
         sidebaractive:
           "bg-primary/80 text-primary-foreground shadow hover:bg-primary/90",
         sidebar:

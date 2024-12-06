@@ -3,5 +3,4 @@ export type DashboardDataType={
         texts:number,
         inbound:number,
         outbound:number,
-        feeds:number
   }
