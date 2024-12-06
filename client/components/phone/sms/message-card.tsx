@@ -31,15 +31,6 @@ const setStatus = (status: string): LucideIcon => {
   }
 };
 
-// const setBg = (role: string): { bg: string; pos: boolean } => {
-//   switch (role) {
-//     case "user":
-//       return { bg: "bg-primary text-background", pos: false };
-//     default:
-//       return { bg: "bg-accent", pos: true };
-//   }
-// };
-
 const setBg = (type: MessageType): { bg: string; pos: boolean } => {
   switch (type) {
     case MessageType.LEAD:
@@ -80,7 +71,7 @@ export const MessageCard = ({
       </div>
       <div
         className={cn(
-          "relative text-sm max-w-[60%] w-fit rounded py-2 px-3 text-wrap  break-words",
+          "relative text-sm max-w-[70%] w-fit rounded py-2 px-3 text-wrap  break-words",
           isOwn.bg
         )}
       >

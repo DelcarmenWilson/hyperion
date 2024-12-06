@@ -6,106 +6,69 @@ import { UserCarrierSchema, UserCarrierSchemaType } from "@/schemas/user";
 import { getAssitantForUser } from "@/actions/user";
 
 // DATA
-export const userCarriersGetAll = async () => {
-  try {
-    const userId = await getAssitantForUser();
-    if(!userId) return[]
+export const getUserCarriers = async () => {
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated");
 
-    const carriers = await db.userCarrier.findMany({
-      where: { userId },
-      include: { carrier: { select: { name: true } } },
-    });
-
-    return carriers;
-  } catch {
-    return [];
-  }
+  return await db.userCarrier.findMany({
+    where: { userId },
+    include: { carrier: { select: { name: true, image: true } } },
+  });
 };
 
 //ACTIONS
-export const userCarrierDeleteById = async (id: string) => {
+export const deleteUserCarrier = async (id: string) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
+  if (!user) throw new Error("Unauthenticated");
 
-  const existingCarrier = await db.userCarrier.findUnique({
-    where: { id },
-  });
-
-  if (!existingCarrier) {
-    return { error: "Carrier does not exist!" };
-  }
-
-  if (user.id != existingCarrier?.userId) {
-    return { error: "Unauthorized" };
-  }
   await db.userCarrier.delete({
-    where: { id },
+    where: { id, userId: user.id },
   });
 
-  return { success: "Carrier Deleted" };
+  return "Carrier Deleted";
 };
-export const userCarrierInsert = async (values: UserCarrierSchemaType) => {
-  const validatedFields = UserCarrierSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+export const createUserCarrier = async (values: UserCarrierSchemaType) => {
+  const { success, data } = UserCarrierSchema.safeParse(values);
+
+  if (!success) throw new Error("Invalid fields!");
 
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const { agentId, carrierId, comments } = validatedFields.data;
+  if (!user) throw new Error("Unauthenticated");
 
   const existingLicense = await db.userCarrier.findFirst({
-    where: { carrierId },
+    where: { userId: user.id, carrierId: data.carrierId },
   });
 
-  if (existingLicense) {
-    return { error: "Carrier relationship already exist!" };
-  }
-  const carrier = await db.userCarrier.create({
+  if (existingLicense) throw new Error("Carrier relationship already exist!");
+
+  return await db.userCarrier.create({
     data: {
-      agentId,
-      carrierId,
-      comments,
+      ...data,
       userId: user.id,
     },
     include: { carrier: { select: { name: true } } },
   });
-
-  return { success: carrier };
 };
-export const userCarrierUpdateById = async (values: UserCarrierSchemaType) => {
-  const validatedFields = UserCarrierSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
+export const updateUserCarrier = async (values: UserCarrierSchemaType) => {
+  const { success, data } = UserCarrierSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
 
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthenticated" };
-  }
-  const { id, agentId, carrierId, comments } = validatedFields.data;
+  if (!user) throw new Error("Unauthenticated");
 
   const existingCarrier = await db.userCarrier.findFirst({
-    where: { carrierId },
+    where: { id: data.id, userId: user.id },
   });
 
-  if (!existingCarrier) {
-    return { error: "Carrier does not exist!" };
-  }
+  if (!existingCarrier) throw new Error("Carrier does not exist!");
+
   const carrier = await db.userCarrier.update({
-    where: { id },
+    where: { id: existingCarrier.id },
     data: {
-      agentId,
-      carrierId,
-      comments,
-      userId: user.id,
+      ...data,
     },
     include: { carrier: { select: { name: true } } },
   });
 
-  return { success: carrier };
+  return carrier;
 };

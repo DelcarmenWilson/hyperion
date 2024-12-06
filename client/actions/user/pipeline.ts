@@ -2,36 +2,36 @@
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { getAssitantForUser } from "@/actions/user";
-import { PipelineSchemaType, PipelineSchema } from "@/schemas/pipeline";
+import {
+  CreatePipelineSchema,
+  CreatePipelineSchemaType,
+  UpdatePipelineSchema,
+  UpdatePipelineSchemaType,
+} from "@/schemas/pipeline";
 import { states } from "@/constants/states";
 import { FullLead, PipelineLead } from "@/types";
 import { formatTimeZone } from "@/formulas/dates";
 
 //DATA
-export const pipelineGetAll = async () => {
-  try {
-    const userId = await getAssitantForUser();
-    if (!userId) return [];
+export const getPipelines = async () => {
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated!");
 
-    const pipelines = await db.pipeline.findMany({
-      where: { userId },
-      include: { status: { select: { status: true } } },
-      orderBy: { order: "asc" },
-    });
-    return pipelines;
-  } catch {
-    return [];
-  }
+  return await db.pipeline.findMany({
+    where: { userId },
+    include: { status: { select: { status: true } } },
+    orderBy: { order: "asc" },
+  });
 };
 
-export const pipelineAndLeadsGetAll = async () => {
+export const getPipelinesAndLeads = async () => {
   // Empty variable of no data return
   const empty = { pipelines: [], leads: [] };
 
   try {
     //get the online user and if the user is an assistant get the userid of the agent
     const userId = await getAssitantForUser();
-    if (!userId) return empty;
+    if (!userId) throw new Error("Unauthenticated!");
 
     //Get all the pipeline for this agent
     const pipelines = await db.pipeline.findMany({
@@ -43,33 +43,6 @@ export const pipelineAndLeadsGetAll = async () => {
     //If there are no pipelines then return an empty object
     if (!pipelines) return empty;
 
-    //Get all the leads for this agent that are assciated with the pipelines
-    // const leads = await db.lead.findMany({
-    //   where: { status: { in: pipelines.map((p) => p.status.status) } },
-    // });
-
-    // const leads = await db.lead.findMany({
-    //   where: {
-    //     OR: [
-    //       { userId },
-    //       { assistantId: userId },
-    //       { sharedUserId: userId},
-    //     ],
-    //     status: { in: pipelines.map((p) => p.status.status) }
-    //   },
-    //   include: {
-    //     conversations: { where: { agentId: userId } },
-    //     appointments: { where: { status: "scheduled" } },
-    //     calls: true,
-    //     activities: true,
-    //     beneficiaries: true,
-    //     expenses: true,
-    //     conditions: { include: { condition: true } },
-    //     policy: true,
-    //     assistant: true,
-    //     sharedUser: true,
-    //   },
-    // });
     const leads = await db.lead.findMany({
       where: {
         OR: [{ userId }, { assistantId: userId }, { sharedUserId: userId }],
@@ -88,7 +61,7 @@ export const pipelineAndLeadsGetAll = async () => {
         address: true,
         smoker: true,
         recievedAt: true,
-        type:true
+        type: true,
       },
     });
 
@@ -112,62 +85,49 @@ export const pipelineAndLeadsGetAll = async () => {
     return empty;
   }
 };
-export const pipelineGetById = async (id: string | undefined) => {
-  try {
-    if (!id) return null;
-    const user = await currentUser();
-    if (!user) return null;
-    const pipeline = await db.pipeline.findUnique({
-      where: { id },
-    });
-    return pipeline;
-  } catch {
-    return null;
-  }
+export const getPipeline = async (id: string | undefined) => {
+  if (!id) throw new Error("id cannot be empty!");
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  return await db.pipeline.findUnique({
+    where: { id },
+  });
 };
 //ACTIONS
-export const pipelineInsert = async (values: PipelineSchemaType) => {
+export const createPipeline = async (values: CreatePipelineSchemaType) => {
   const userId = await getAssitantForUser();
-  if (!userId) return { error: "Unauthenticated" };
+  if (!userId) throw new Error("Unauthenticated!");
 
-  const validatedFields = PipelineSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid Fields" };
-
-  const { statusId, name } = validatedFields.data;
+  const { success, data } = CreatePipelineSchema.safeParse(values);
+  if (!success) throw new Error("Invalid Fields!");
 
   const pipelines = await db.pipeline.findMany({
     where: { userId },
   });
 
   const exisitingStatus = pipelines.find(
-    (e) => e.name == name || e.statusId == statusId
+    (e) => e.name == data.name || e.statusId == data.statusId
   );
 
-  if (exisitingStatus) {
-    return { error: "Stage with same status or title already exists" };
-  }
+  if (exisitingStatus)
+    throw new Error("Stage with same status or title already exists");
 
-  const newPipeline = await db.pipeline.create({
+  return await db.pipeline.create({
     data: {
+      ...data,
       userId,
-      statusId,
-      name,
       order: pipelines.length,
     },
     include: { status: { select: { status: true } } },
   });
-
-  return { success: "Pipeline stage created!", data: newPipeline };
 };
 
-export const pipelineUpdateOrder = async (
+export const updatePipelineOrder = async (
   pipelines: { id: string; order: number }[]
 ) => {
   const user = await currentUser();
 
-  if (!user || !user.email) {
-    return { error: "Unathenticated" };
-  }
+  if (!user || !user.email) throw new Error("Unauthenticated!");
 
   for (const pipeline of pipelines) {
     await db.pipeline.update({
@@ -178,65 +138,58 @@ export const pipelineUpdateOrder = async (
     });
   }
 
-  return { success: "Pipeline stages ordered!" };
+  return "Pipeline stages ordered!";
 };
 
-export const pipelineDeleteById = async (id: string | undefined) => {
-  if (!id) return { error: "id was not supplied!" };
-  const user = await currentUser();
+export const deletedPipeline = async (id: string | undefined) => {
+  if (!id) throw new Error("id was not supplied!");
 
-  if (!user || !user.email) return { error: "Unathenticated" };
+  const user = await currentUser();
+  if (!user || !user.email) throw new Error("Unauthenticated!");
 
   const exisitingPipeline = await db.pipeline.findUnique({
     where: { id },
   });
 
-  if (!exisitingPipeline) return { error: "stage does not exists!" };
+  if (!exisitingPipeline) throw new Error("Stage does not exists!");
 
-  if (exisitingPipeline.userId != user.id) return { error: "Unauthorized" };
+  if (exisitingPipeline.userId != user.id) throw new Error("Unauthorized");
 
   await db.pipeline.delete({ where: { id: exisitingPipeline.id } });
 
-  return { success: "stage has been deleted!", data: id };
+  return exisitingPipeline.id;
 };
 
-export const pipelineUpdateById = async (values: PipelineSchemaType) => {
+export const updatePipeline = async (values: UpdatePipelineSchemaType) => {
   const user = await currentUser();
 
-  if (!user || !user.email) {
-    return { error: "Unathenticated" };
-  }
+  if (!user || !user.email) throw new Error("Unauthenticated!");
 
-  const validatedFields = PipelineSchema.safeParse(values);
-  if (!validatedFields.success) return { error: "Invalid Fields" };
-
-  const { id, statusId, name } = validatedFields.data;
+  const { success, data } = UpdatePipelineSchema.safeParse(values);
+  if (!success) throw new Error("Invalid Fields");
 
   const exisitingStatus = await db.pipeline.findFirst({
-    where: { userId: user.id, name, statusId },
+    where: { userId: user.id, statusId: data.statusId },
   });
 
   if (exisitingStatus)
-    return { error: "Another  with same status or title already exists" };
+    throw new Error("Another  with same status or title already exists");
 
   await db.pipeline.update({
-    where: { id },
+    where: { id: data.id },
     data: {
-      statusId,
-      name,
+      ...data,
     },
   });
 
-  return { success: "Pipeline updated!" };
+  return "Pipeline updated!";
 };
 
-type piptype = { id: string; index: number };
-export const pipelineUpdateByIdIndex = async (values: piptype) => {
+
+export const pipelineUpdateByIdIndex = async (values: { id: string; index: number }) => {
   const user = await currentUser();
 
-  if (!user || !user.email) {
-    return { error: "Unathenticated" };
-  }
+  if (!user || !user.email) throw new Error("Unauthenticated!"); 
   const { id, index } = values;
   await db.pipeline.update({
     where: { id },
@@ -245,5 +198,5 @@ export const pipelineUpdateByIdIndex = async (values: piptype) => {
     },
   });
 
-  return { success: "Pipeline index updated!" };
+   "Pipeline index updated!" ;
 };

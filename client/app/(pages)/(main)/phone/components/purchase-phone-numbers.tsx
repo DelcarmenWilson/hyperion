@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ItemProps } from "@/types";
 import {
-  UserPhoneNumberSchema,
-  UserPhoneNumberSchemaType,
+  CreatePhoneNumberSchema,
+  CreatePhoneNumberSchemaType,
 } from "@/schemas/user";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { phoneNumberInsert } from "@/actions/user/phone-number";
+import { createPhoneNumber } from "@/actions/user/phone-number";
 
 import { states } from "@/constants/states";
 import { PhonePurchaseItems } from "@/constants/phone";
@@ -41,8 +41,8 @@ import { PhonePurchaseItems } from "@/constants/phone";
 export const PurchasePhoneNumberForm = () => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<UserPhoneNumberSchemaType>({
-    resolver: zodResolver(UserPhoneNumberSchema),
+  const form = useForm<CreatePhoneNumberSchemaType>({
+    resolver: zodResolver(CreatePhoneNumberSchema),
     defaultValues: {},
   });
 
@@ -51,23 +51,11 @@ export const PurchasePhoneNumberForm = () => {
     form.reset();
   };
 
-  const onSubmit = (values: UserPhoneNumberSchemaType) => {
+  const onSubmit = (values: CreatePhoneNumberSchemaType) => {
     setLoading(true);
     //TODO - need to work on this functionally in the server.. THIS may need to be remover completelty
-    phoneNumberInsert(values).then((data) => {
-      if (data.success) {
-        // userEmitter.emit("policyInfoUpdated", {
-        //   ...data.success,
-        //   startDate: data.success?.startDate || undefined,
-        // });
-        // userEmitter.emit("leadStatusChanged", data.success.leadId, "Sold");
-
-        toast.success(data.success);
-      }
-      // if (data.error) {
-      //   form.reset();
-      //   toast.error(data.error);
-      // }
+    createPhoneNumber(values).then(() => {
+      toast.success("phone Number created succesfully");
     });
 
     setLoading(false);

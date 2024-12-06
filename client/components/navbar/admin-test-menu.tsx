@@ -30,6 +30,7 @@ const AdminTestMenu = () => {
       userId: user?.id as string,
       link: "/appointments/clvimkggz000m12rp8s92z54n",
       linkText: "View Appointment",
+      read: false,
     });
   };
   if (user?.role != "DEVELOPER") return null;

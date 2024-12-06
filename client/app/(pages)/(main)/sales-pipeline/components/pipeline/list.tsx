@@ -17,16 +17,15 @@ export const PipeLineList = ({ loading }: Props) => {
     pipelines,
     leads,
   } = usePipelineStore();
-  const { onPipelineDeleteSubmit, isPendingPipelineDelete } =
-    usePipelineActions();
+  const { onDeletePipeline, pipelineDeleting } = usePipelineActions();
 
   return (
     <>
       <AlertModal
         isOpen={isAlertOpen}
         onClose={onAlertClose}
-        onConfirm={() => onPipelineDeleteSubmit(pipelineId!)}
-        loading={isPendingPipelineDelete}
+        onConfirm={() => onDeletePipeline(pipelineId!)}
+        loading={pipelineDeleting}
         height="h-auto"
       />
 

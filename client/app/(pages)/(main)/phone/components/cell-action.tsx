@@ -17,9 +17,9 @@ import { Button } from "@/components/ui/button";
 import { AlertModal } from "@/components/modals/alert";
 
 import {
-  phoneNumberUpdateByIdActivate,
-  phoneNumberUpdateByIdDeactivate,
-  phoneNumberUpdateByIdDefault,
+  activatePhoneNumber,
+  deactivatePhoneNumber,
+  updatePhoneNumberDefault,
 } from "@/actions/user/phone-number";
 
 type Props = {
@@ -36,7 +36,7 @@ export const CellAction = ({ data }: Props) => {
 
   const onActivate = async () => {
     setLoading(true);
-    phoneNumberUpdateByIdActivate(data.id).then((data) => {
+    activatePhoneNumber(data.id).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
@@ -50,7 +50,7 @@ export const CellAction = ({ data }: Props) => {
   };
   const onDeactivate = async () => {
     setLoading(true);
-    phoneNumberUpdateByIdDeactivate(data.id).then((data) => {
+    deactivatePhoneNumber(data.id).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }
@@ -64,7 +64,7 @@ export const CellAction = ({ data }: Props) => {
 
   const onSetDefault = () => {
     setLoading(true);
-    phoneNumberUpdateByIdDefault(data.id).then((data) => {
+    updatePhoneNumberDefault(data.id).then((data) => {
       if (data.error) {
         toast.error(data.error);
       }

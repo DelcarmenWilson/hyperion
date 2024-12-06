@@ -26,6 +26,16 @@ export const getUnreadNotifications = async () => {
     where: { userId: user.id, read: false },
   });
 };
+export const getMultipledNotifications = async (
+  notificationIds: string[] | undefined
+) => {
+  if (!notificationIds) return null;
+  const user = await currentUser();
+  if (!user?.id) throw new Error("unauthenticated");
+  return await db.notification.findMany({
+    where: { userId: user.id, id: { in: notificationIds } },
+  });
+};
 
 // ACTIONS
 export const createNotification = async (values: {
@@ -35,13 +45,15 @@ export const createNotification = async (values: {
   linkText: string | undefined;
   link: string | undefined;
   userId: string;
+  read: boolean;
 }) => {
   const notification = await db.notification.create({
     data: {
       ...values,
     },
   });
-  sendSocketData(values.userId, "notification:new", notification.id);
+  if (!values.read)
+    sendSocketData(values.userId, "notification:new", notification.id);
   revalidatePath("/notifications");
 };
 
@@ -77,9 +89,12 @@ export const updateUnreadNotification = async (id: string) => {
       },
       data: { read: true },
     });
-  } else
+  } else {
     await db.notification.update({
       where: { id, userId: user.id },
       data: { read: true },
     });
+  }
+
+  return id;
 };

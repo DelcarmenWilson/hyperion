@@ -1,17 +1,23 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCarriers } from "@/components/global/selects/hooks/use-carriers";
 import {
   useLeadPolicyActions,
   useLeadPolicyData,
 } from "@/hooks/lead/use-policy-info";
 
-import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
 import { LeadPolicy } from "@prisma/client";
+import { LeadPolicySchema, LeadPolicySchemaType } from "@/schemas/lead";
+import { FullUserCarrier } from "@/types";
 
 import { Button } from "@/components/ui/button";
+import CustomDialogHeader from "@/components/custom-dialog-header";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CarrierSelect } from "@/components/global/selects/carriers";
-import { CustomDialog } from "@/components/global/custom-dialog";
 import {
   Form,
   FormField,
@@ -22,6 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import ReactDatePicker from "react-datepicker";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -30,33 +37,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { useCarriers } from "@/components/global/selects/hooks/use-carriers";
-import { useEffect, useState } from "react";
-import { FullUserCarrier } from "@/types";
-import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const PolicyInfoForm = () => {
   const { policy, isFetchingPolicy } = useLeadPolicyData();
   const { isPolicyFormOpen, onPolicyFormClose } = useLeadPolicyActions();
   const { leadId, leadFullName } = useLeadStore();
 
-  // const leadName = `${policy?.lead.firstName} ${policy?.lead.lastName}`;
-
   return (
-    <CustomDialog
-      open={isPolicyFormOpen}
-      onClose={onPolicyFormClose}
-      description="Policy Info Form"
-      title={`Policy Info - ${leadFullName}`}
-    >
-      <SkeletonWrapper isLoading={isFetchingPolicy}>
-        <PolicyForm
-          policy={policy}
-          leadId={policy?.lead.id || leadId!}
-          onClose={onPolicyFormClose}
+    <Dialog open={isPolicyFormOpen} onOpenChange={onPolicyFormClose}>
+      <DialogContent>
+        <CustomDialogHeader
+          icon={User}
+          title="Policy Info"
+          subTitle={leadFullName}
         />
-      </SkeletonWrapper>
-    </CustomDialog>
+        <SkeletonWrapper isLoading={isFetchingPolicy}>
+          <PolicyForm
+            policy={policy}
+            leadId={policy?.lead.id || leadId!}
+            onClose={onPolicyFormClose}
+          />
+        </SkeletonWrapper>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -105,13 +108,13 @@ const PolicyForm = ({ policy, leadId, onClose }: Props) => {
     setCarrier(carriers?.find((c) => c.carrierId == policy.carrierId));
   }, [policy]);
   return (
-    <div className="h-full overflow-y-auto">
-      <Form {...form}>
-        <form
-          className="space-y-2 px-2 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="grid grid-cols-2 gap-2">
+    <Form {...form}>
+      <form
+        className="flex flex-col space-y-2 px-2 w-full"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <ScrollArea className="flex-1 max-h-[350px]">
+          <div className="grid grid-cols-2 gap-3">
             {/* CARRIER */}
             <FormField
               control={form.control}
@@ -320,17 +323,16 @@ const PolicyForm = ({ policy, leadId, onClose }: Props) => {
               )}
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-            <Button onClick={onCancel} type="button" variant="outlineprimary">
-              Cancel
-            </Button>
-            <Button disabled={policyIsPending} type="submit">
-              {policy ? "Update" : "Create"} Policy
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        </ScrollArea>
+        <div className="mt-auto grid grid-cols-2 gap-x-2 justify-between my-2">
+          <Button onClick={onCancel} type="button" variant="outlineprimary">
+            Cancel
+          </Button>
+          <Button disabled={policyIsPending} type="submit">
+            {policy ? "Update" : "Create"} Policy
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

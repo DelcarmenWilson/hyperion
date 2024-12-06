@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { currentUser } from "@/lib/auth";
 
 import { EmptyCard } from "@/components/reusable/empty-card";
-import JobMenu from "../_components/menu";
+import JobSidebar from "../_components/job-sidebar";
 import Topbar from "../_components/top-bar";
 import Unauthenticated from "@/components/global/unauthenticated";
 
@@ -29,7 +29,7 @@ const JobLayout = async ({
     <div className="flex flex-col h-full overflow-hidden">
       <Topbar job={job} />
       <section className="flex h-full overflow-auto">
-        <JobMenu miniJobs={miniJobs} jobStatus={job.status} />
+        <JobSidebar miniJobs={miniJobs} jobStatus={job.status} />
         <div className="flex flex-col flex-1 bg-background p-2">{children}</div>
       </section>
     </div>

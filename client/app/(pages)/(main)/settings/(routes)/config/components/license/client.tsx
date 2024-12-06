@@ -1,16 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
-import { userEmitter } from "@/lib/event-emmiter";
-
+import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useAgentLicenseData } from "../../hooks/use-license";
 
-import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
-import { DrawerRight } from "@/components/custom/drawer/right";
-import { LicenseForm } from "./form";
+import { DataTable } from "@/components/tables/data-table";
+import LicenseDrawer from "./drawer";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { LicenseList } from "./list";
+import LicenseList from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const LicenseClient = () => {
@@ -33,13 +30,11 @@ export const LicenseClient = () => {
 
   return (
     <>
-      <DrawerRight
-        title={"New License"}
-        isOpen={isDrawerOpen}
+      <LicenseDrawer
+        open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      >
-        <LicenseForm onClose={() => setIsDrawerOpen(false)} />
-      </DrawerRight>
+      />
+
       {isList ? (
         <SkeletonWrapper isLoading={licensesFetching}>
           <DataTable

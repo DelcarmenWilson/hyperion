@@ -68,7 +68,6 @@ model User {
     schedule             Schedule?
 
     feedbacks   Feedback[]
-    feeds       Feed[]
     jobs        Job[]
     todos       UserTodo[]
     // ONE TO ONE RELATIONS

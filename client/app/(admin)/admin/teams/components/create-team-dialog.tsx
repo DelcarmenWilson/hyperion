@@ -1,12 +1,13 @@
 "use client";
-import { useTeamActions } from "../../../../../hooks/use-team";
+import { Shield } from "lucide-react";
+import { useTeamActions } from "@/hooks/use-team";
 
 import { Button } from "@/components/ui/button";
-import { CustomDialog } from "@/components/global/custom-dialog";
+import CustomDialogHeader from "@/components/custom-dialog-header";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-type Props = { enabled?: boolean };
-export const TeamForm = ({ enabled = false }: Props) => {
+const CreateTeamDialog = ({ enabled = false }: { enabled?: boolean }) => {
   const {
     isFormOpen,
     setFormOpen,
@@ -16,20 +17,19 @@ export const TeamForm = ({ enabled = false }: Props) => {
     teamIsPending,
   } = useTeamActions();
 
-  return (
-    <>
-      {enabled && (
-        <Button size="sm" onClick={() => setFormOpen(true)}>
-          New Team
-        </Button>
-      )}
+  if (!enabled) return null;
 
-      <CustomDialog
-        open={isFormOpen}
-        onClose={() => setFormOpen(false)}
-        title="Create Team"
-        description="New Team Form"
-      >
+  return (
+    <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+      <DialogTrigger asChild>
+        <Button>{"Create Team"}</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <CustomDialogHeader
+          icon={Shield}
+          title="Create Team"
+          subTitle="Add a new Team to the organization"
+        />
         <div>
           <Input
             disabled={teamIsPending}
@@ -48,7 +48,9 @@ export const TeamForm = ({ enabled = false }: Props) => {
         >
           Create
         </Button>
-      </CustomDialog>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 };
+
+export default CreateTeamDialog;

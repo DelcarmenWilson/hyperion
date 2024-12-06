@@ -1,16 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useAgentTemplateData } from "../../hooks/user-template";
+import { useAgentTemplateData } from "../../hooks/use-template";
 
+import { columns } from "./columns";
+import { DataTable } from "@/components/tables/data-table";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { DataTable } from "@/components/tables/data-table";
-import { columns } from "./columns";
-
-import { TemplateForm } from "./form";
-import { TemplateList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import TemplateDrawer from "./drawer";
+import { TemplateList } from "./list";
 
 export const UserTemplateClient = () => {
   const user = useCurrentUser();
@@ -30,13 +29,10 @@ export const UserTemplateClient = () => {
 
   return (
     <>
-      <DrawerRight
-        title={"New Template"}
-        isOpen={isDrawerOpen}
+      <TemplateDrawer
+        open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      >
-        <TemplateForm onClose={() => setIsDrawerOpen(false)} />
-      </DrawerRight>
+      />
 
       {isList ? (
         <SkeletonWrapper isLoading={isFetchingTemplates}>

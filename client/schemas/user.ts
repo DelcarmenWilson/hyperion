@@ -7,12 +7,15 @@ export const UserAboutMeSchema = z.object({
 });
 export type UserAboutMeSchemaType = z.infer<typeof UserAboutMeSchema>;
 
-export const UserPhoneNumberSchema = z.object({
+export const CreatePhoneNumberSchema = z.object({
   id: z.optional(z.string()),
   phone: z.string().min(10, "10 digits requires ex. 7189892356"),
   state: z.string().min(1, "Please select a State"),
+  agentId: z.string(),
+  sid: z.string(),
+  app: z.string()
 });
-export type UserPhoneNumberSchemaType = z.infer<typeof UserPhoneNumberSchema>;
+export type CreatePhoneNumberSchemaType = z.infer<typeof CreatePhoneNumberSchema>;
 
 export const UserLicenseSchema = z.object({
   id: z.optional(z.string()),
@@ -36,6 +39,7 @@ export const UserCarrierSchema = z.object({
   id: z.optional(z.string()),
   agentId: z.string().min(2, "*"),
   carrierId: z.string().min(2, "*"),
+  rate:z.coerce.number(),
   comments: z
     .string()
     .nullish()

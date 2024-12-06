@@ -16,7 +16,7 @@ export const StageList = () => {
     onStageUpdate,
     onReorder,
     onReset,
-    isPendingPipelineUpdateOrder,
+    pipelineOrderUpdating,
   } = usePipelineStageActions(pipelines!);
 
   if (!stages) return null;
@@ -40,17 +40,14 @@ export const StageList = () => {
         <div className="grid grid-cols-2 gap-2 mt-2">
           <Button
             className="gap-2"
-            disabled={isPendingPipelineUpdateOrder}
+            disabled={pipelineOrderUpdating}
             variant="ghost"
             onClick={onReset}
           >
             <RefreshCcw size={16} />
             Reset
           </Button>
-          <Button
-            disabled={isPendingPipelineUpdateOrder}
-            onClick={onStageUpdate}
-          >
+          <Button disabled={pipelineOrderUpdating} onClick={onStageUpdate}>
             Update
           </Button>
         </div>

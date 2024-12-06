@@ -82,7 +82,7 @@ export type FullUserTeamReport = {
 };
 
 export type FullUserCarrier = UserCarrier & {
-  carrier: { name: string };
+  carrier: { name: string,image:string };
 };
 
 export enum UserRoles {

@@ -11,7 +11,7 @@ import CreateMiniJobDialog from "./create-mini-job-dialog";
 import { JobStatus } from "@/types/job";
 import { CheckCheck } from "lucide-react";
 
-const JobMenu = ({
+const JobSidebar = ({
   miniJobs,
   jobStatus,
 }: {
@@ -72,9 +72,9 @@ const TaskMenuBtn = ({
         "relative w-full capitalize justify-start mb-1"
       )}
     >
-      {name}
+      <p className="text-ellipsis line-clamp-2 w-full">{name}</p>
       {status == JobStatus.COMPLETED && (
-        <span className="absolute bottom-0 right-0 stroke-background">
+        <span className="absolute top-1/2 -translate-y-1/2 left-0 stroke-background">
           <CheckCheck size={15} />
         </span>
       )}
@@ -82,4 +82,4 @@ const TaskMenuBtn = ({
   );
 };
 
-export default JobMenu;
+export default JobSidebar;

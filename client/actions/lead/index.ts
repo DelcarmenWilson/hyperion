@@ -21,10 +21,12 @@ import { reFormatPhoneNumber } from "@/formulas/phones";
 import { states } from "@/constants/states";
 import { getAge, getEntireDay } from "@/formulas/dates";
 import { generateTextCode } from "@/formulas/phone";
-import { feedInsert } from "../feed";
+
 import { chatSettingGetTitan } from "../settings/chat";
 import { GetLeadOppositeRelationship } from "@/formulas/lead";
 import { AppointmentStatus } from "@/types/appointment";
+import { createNotification } from "../notification";
+import { NotificationReference } from "@/types/notification";
 
 //LEAD
 
@@ -954,19 +956,27 @@ export const leadUpdateByIdAssistantAdd = async (
     },
   });
 
-  //MINE Feed
-  await feedInsert(
-    `You gave ${afUser.firstName} access to  ${lead.firstName}'s information`,
-    `/leads/${lead.id}`,
-    user.id,
-    true
-  );
-  //Next Agent Feed
-  await feedInsert(
-    `${user.name} gave you acces to ${lead.firstName}'s information`,
-    `/leads/${lead.id}`,
-    afUser.id
-  );
+  //Agent Notification
+  await createNotification({
+    reference: NotificationReference.NEW_ASSSISTANT,
+    title: "New assistant",
+    content: `You gave ${afUser.firstName} access to  ${lead.firstName}'s information`,
+    link: `/leads/${lead.id}`,
+    linkText: "View lead",
+    userId: user.id,
+    read: true,
+  });
+
+  //Assistant Notification
+  await createNotification({
+    reference: NotificationReference.NEW_ASSSISTANT,
+    title: "New assistant",
+    content: `${user.name} gave you acces to ${lead.firstName}'s information`,
+    link: `/leads/${lead.id}`,
+    linkText: "View lead",
+    userId: afUser.id,
+    read: false,
+  });
 
   return {
     success: lead.firstName,
@@ -999,14 +1009,16 @@ export const leadUpdateByIdAssistantRemove = async (id: string) => {
       assistant: { disconnect: true },
     },
   });
-
-  //MINE Feed
-  await feedInsert(
-    `You removed ${afUser.firstName} access to ${lead.firstName}'s information`,
-    `/leads/${lead.id}`,
-    user.id,
-    true
-  );
+  //Agent Notification
+  await createNotification({
+    reference: NotificationReference.UNSHARED_LEAD,
+    title: "Unshared lead",
+    content: `You removed ${afUser.firstName} access to ${lead.firstName}'s information`,
+    link: `/leads/${lead.id}`,
+    linkText: "View Lead",
+    userId: user.id,
+    read: true,
+  });
 
   return {
     success: lead.firstName,
@@ -1044,33 +1056,49 @@ export const leadUpdateByIdShare = async (ids: string[], userId: string) => {
 
   const lead = await db.lead.findUnique({ where: { id: ids[0] } });
   if (ids.length == 1) {
-    //MINE Feed
-    feedInsert(
-      `You shared a lead: ${lead?.firstName} with ${sharedUser?.firstName}`,
-      "",
-      user.id,
-      true
-    );
-    //Next Agent Feed
-    feedInsert(
-      `${user.name} shared a lead: ${lead?.firstName} with you`,
-      `/leads/${lead?.id}`,
-      sharedUser?.id as string
-    );
+    //Agent Notification
+    await createNotification({
+      reference: NotificationReference.SHARED_LEAD,
+      title: "Shared lead",
+      content: `You shared a lead: ${lead?.firstName} with ${sharedUser?.firstName}`,
+      link: `/leads/${lead?.id}`,
+      linkText: "View lead",
+      userId: user.id,
+      read: true,
+    });
+
+    //Shared Agent Notification
+    await createNotification({
+      reference: NotificationReference.SHARED_LEAD,
+      title: "Shared lead",
+      content: `${user.name} shared a lead: ${lead?.firstName} with you`,
+      link: `/leads/${lead?.id}`,
+      linkText: "View lead",
+      userId: sharedUser?.id as string,
+      read: false,
+    });
   } else {
-    //MINE Feed
-    await feedInsert(
-      `You shared multiple leads with ${sharedUser?.firstName}`,
-      "",
-      user.id,
-      true
-    );
-    //Next Agent Feed
-    await feedInsert(
-      `${user.name} transfered multiple leads to you`,
-      "",
-      sharedUser?.id
-    );
+    //Agent Notification
+    await createNotification({
+      reference: NotificationReference.SHARED_LEAD,
+      title: "Shared lead",
+      content: `You shared multiple leads with ${sharedUser?.firstName}`,
+      link: undefined,
+      linkText: undefined,
+      userId: user.id,
+      read: true,
+    });
+
+    //Shared Agent Notification
+    await createNotification({
+      reference: NotificationReference.SHARED_LEAD,
+      title: "Shared lead",
+      content: `${user.name} transfered multiple leads to you`,
+      link: undefined,
+      linkText: undefined,
+      userId: sharedUser?.id as string,
+      read: false,
+    });
   }
 
   return {
@@ -1078,6 +1106,7 @@ export const leadUpdateByIdShare = async (ids: string[], userId: string) => {
     message: `Lead is now shared with ${sharedUser.firstName}!`,
   };
 };
+
 export const leadUpdateByIdUnShare = async (id: string) => {
   const user = await currentUser();
 
@@ -1104,19 +1133,27 @@ export const leadUpdateByIdUnShare = async (id: string) => {
     },
   });
 
-  //MINE Feed
-  feedInsert(
-    `You unshared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,
-    "",
-    user.id,
-    true
-  );
-  //Next Agent Feed
-  feedInsert(
-    `${user.name} unshared a lead: ${lead.firstName} with you`,
-    "",
-    sharedUser?.id as string
-  );
+  //Agent Notification
+  await createNotification({
+    reference: NotificationReference.UNSHARED_LEAD,
+    title: "Unshared lead",
+    content: `You unshared a lead: ${lead.firstName} with ${sharedUser?.firstName}`,
+    link: undefined,
+    linkText: undefined,
+    userId: user.id,
+    read: true,
+  });
+
+  //Shared Agent Notification
+  await createNotification({
+    reference: NotificationReference.UNSHARED_LEAD,
+    title: "Unshared lead",
+    content: `${user.name} unshared a lead: ${lead.firstName} with you`,
+    link: undefined,
+    linkText: undefined,
+    userId: sharedUser?.id as string,
+    read: false,
+  });
 
   return {
     success: unsharedLead.firstName,
@@ -1185,33 +1222,49 @@ export const leadUpdateByIdTransfer = async (ids: string[], userId: string) => {
   }
   const lead = await db.lead.findUnique({ where: { id: ids[0] } });
   if (ids.length == 1) {
-    //MINE Feed
-    await feedInsert(
-      `You transfered ${lead?.firstName}'s information to ${tfUser.firstName}`,
-      "",
-      user.id,
-      true
-    );
-    //Next Agent Feed
-    await feedInsert(
-      `${user.name} transfered ${lead?.firstName}'s information to you`,
-      `/leads/${lead?.id}`,
-      tfUser.id
-    );
+    //Agent Notification
+    await createNotification({
+      reference: NotificationReference.TRANSFERED_LEAD,
+      title: "Transfered lead",
+      content: `You transfered ${lead?.firstName}'s information to ${tfUser.firstName}`,
+      link: undefined,
+      linkText: undefined,
+      userId: user.id,
+      read: true,
+    });
+
+    //Transfered Agent Notification
+    await createNotification({
+      reference: NotificationReference.TRANSFERED_LEAD,
+      title: "Transfered lead",
+      content: `${user.name} transfered ${lead?.firstName}'s information to you`,
+      link: `/leads/${lead?.id}`,
+      linkText: "View Lead",
+      userId: tfUser.id,
+      read: false,
+    });
   } else {
-    //MINE Feed
-    await feedInsert(
-      `You transfered multiple leads to ${tfUser.firstName}`,
-      "",
-      user.id,
-      true
-    );
-    //Next Agent Feed
-    await feedInsert(
-      `${user.name} transfered multiple leads to you`,
-      "",
-      tfUser.id
-    );
+    //Agent Notification
+    await createNotification({
+      reference: NotificationReference.TRANSFERED_LEAD,
+      title: "Transfered lead",
+      content: `You transfered multiple leads to ${tfUser.firstName}`,
+      link: undefined,
+      linkText: undefined,
+      userId: user.id,
+      read: true,
+    });
+
+    //Transfered Agent Notification
+    await createNotification({
+      reference: NotificationReference.TRANSFERED_LEAD,
+      title: "Transfered lead",
+      content: `${user.name} transfered multiple leads to you`,
+      link: undefined,
+      linkText: undefined,
+      userId: tfUser.id,
+      read: false,
+    });
   }
 
   return {

@@ -2,9 +2,10 @@ import { capitalize, stringToJson } from "./text";
 import { reFormatPhoneNumber } from "./phones";
 import { LeadDefaultStatus } from "@/types/lead";
 import { LeadSchemaType } from "@/schemas/lead";
-import {  leadRelationShips } from "@/constants/lead";
+import { leadRelationShips } from "@/constants/lead";
 import { getAge } from "./dates";
 import { FullUserCarrier } from "@/types";
+import { CarrierPremium } from "@/types/carrier";
 
 const convertHeight = (data: string): string => {
   const split = data.split("");
@@ -92,7 +93,7 @@ const Avalanche_Leads = (
       homePhone: reFormatPhoneNumber(d["Primary_Phone"]),
       cellPhone: reFormatPhoneNumber(d["Primary_Phone"]),
       // dateOfBirth: d["DOB"].trim(),
-      dateOfBirth: d["DOB"].trim()?new Date(d["DOB"].trim()):undefined,
+      dateOfBirth: d["DOB"].trim() ? new Date(d["DOB"].trim()) : undefined,
       address: capitalize(d["Address"]),
       city: capitalize(d["City"]),
       state: capitalize(d["State"]),
@@ -128,7 +129,9 @@ const Amm_Leads = (
       homePhone: reFormatPhoneNumber(d["phone_number"]),
       cellPhone: reFormatPhoneNumber(d["phone_number"]),
       // dateOfBirth: d["date_of_birth"].trim(),
-      dateOfBirth: d["date_of_birth"].trim()?new Date(d["date_of_birth"].trim()):undefined,
+      dateOfBirth: d["date_of_birth"].trim()
+        ? new Date(d["date_of_birth"].trim())
+        : undefined,
       address: "N/A",
       city: "N/A",
       state: capitalize(d["state"]),
@@ -170,7 +173,9 @@ const Hyperion = (
       homePhone: reFormatPhoneNumber(d["phone_number"].replace("p:+", "")),
       cellPhone: reFormatPhoneNumber(d["phone_number"].replace("p:+", "")),
       // dateOfBirth: d["date_of_birth"].trim(),
-      dateOfBirth: d["date_of_birth"].trim()?new Date(d["date_of_birth"].trim()):undefined,
+      dateOfBirth: d["date_of_birth"].trim()
+        ? new Date(d["date_of_birth"].trim())
+        : undefined,
       height: d["could_you_please_provide_your_current_height_and_weight?"],
       weight: d["could_you_please_provide_your_current_weight?"],
       address: d["street_address"],
@@ -210,7 +215,9 @@ const IlcLeads = (
       email: d["Email"].toLowerCase(),
       homePhone: reFormatPhoneNumber(d["Home"]),
       cellPhone: reFormatPhoneNumber(d["Other Phone 1"]),
-      dateOfBirth: d["Date Of Birth"].trim()?new Date(d["Date Of Birth"].trim()):undefined,
+      dateOfBirth: d["Date Of Birth"].trim()
+        ? new Date(d["Date Of Birth"].trim())
+        : undefined,
       address: capitalize(d["Street Address"]),
       city: capitalize(d["City"]),
       state: capitalize(d["State"]),
@@ -249,7 +256,9 @@ const Leadrilla = (
       homePhone: reFormatPhoneNumber(d["phone"]),
       cellPhone: reFormatPhoneNumber(d["phone"]),
       // dateOfBirth: d["birthdate"].trim(),
-      dateOfBirth: d["birthdate"].trim()?new Date(d["birthdate"].trim()):undefined,
+      dateOfBirth: d["birthdate"].trim()
+        ? new Date(d["birthdate"].trim())
+        : undefined,
       address: d["street address"],
       city: d["city"],
       state: d["state"],
@@ -284,7 +293,7 @@ const MediaAlphaLeads = (
       homePhone: reFormatPhoneNumber(d["phone_number"]),
       cellPhone: reFormatPhoneNumber(d["phone_number"]),
       // dateOfBirth: d["dob"].trim(),
-      dateOfBirth: d["dob"].trim()?new Date(d["dob"].trim()):undefined,
+      dateOfBirth: d["dob"].trim() ? new Date(d["dob"].trim()) : undefined,
       address: capitalize(d["street_address"]),
       city: capitalize(d["city"]),
       state: capitalize(d["state"]),
@@ -358,7 +367,7 @@ const PrimeTime = (
       homePhone: reFormatPhoneNumber(d["Phone #"]),
       cellPhone: reFormatPhoneNumber(d["Phone #"]),
       // dateOfBirth: d["DOB"].trim(),
-      dateOfBirth: d["DOB"].trim()?new Date(d["DOB"].trim()):undefined,
+      dateOfBirth: d["DOB"].trim() ? new Date(d["DOB"].trim()) : undefined,
       address: d["Address"],
       city: d["City"],
       state: d["State"],
@@ -394,7 +403,9 @@ const ProspectForLeads = (
       homePhone: reFormatPhoneNumber(d["home phone"]),
       cellPhone: reFormatPhoneNumber(d["work phone"]),
       // dateOfBirth: d["date of birth"].trim(),
-      dateOfBirth: d["date of birth"].trim()?new Date(d["date of birth"].trim()):undefined,
+      dateOfBirth: d["date of birth"].trim()
+        ? new Date(d["date of birth"].trim())
+        : undefined,
       address: d["address"],
       city: d["city"],
       state: d["state"],
@@ -426,7 +437,9 @@ export const Amm_Leads_Import = (result: any): LeadSchemaType[] => {
       homePhone: reFormatPhoneNumber(d["phone_number"]),
       cellPhone: reFormatPhoneNumber(d["phone_number"]),
       // dateOfBirth: d["date_of_birth"].trim(),
-      dateOfBirth: d["date_of_birth"].trim()?new Date(d["date_of_birth"].trim()):undefined,
+      dateOfBirth: d["date_of_birth"].trim()
+        ? new Date(d["date_of_birth"].trim())
+        : undefined,
       address: "N/A",
       city: "N/A",
       state: capitalize(d["state"]),
@@ -465,25 +478,27 @@ export const GetLeadOppositeRelationship = (
   return currentRel.opposite[index];
 };
 
-export type CarrierPremium={
-  name:string
-  premium:number
-}
+export const DEFAULT_AGE = 35;
+export const DEFAULT_BASEPREMIUM: number = 100.0;
 
 export const CalculatePremium = (
   carriers: FullUserCarrier[] | undefined,
   dateOfBirth: Date | null | undefined,
+  basePremium: string,
+  baseValue: string,
   coverage: string
-): CarrierPremium[]|string => {
+): CarrierPremium[] | string => {
   // Quote Calculation Logic
   if (!carriers) return "There are no available carriers";
 
   // Get input values
-  const caluclateAge = getAge(dateOfBirth);
-  const age = caluclateAge == "NA" ? 0 : parseInt(caluclateAge);
-  //  const age=36
-  const health = "good";
-  const coverageAmount = parseInt(coverage);
+  // const caluclateAge = getAge(dateOfBirth);
+  // const age = caluclateAge == "NA" ? 0 : parseInt(caluclateAge);
+  const age = DEFAULT_AGE;
+
+  const health: string = "good";
+  // const coverageAmount = parseInt(coverage);
+  const coverageAmount = 1000;
 
   // Validate input
   if (
@@ -496,38 +511,52 @@ export const CalculatePremium = (
   }
 
   // Calculate base premium based on age
-  let basePremium = 100; // Starting premium
-  if (age < 25) {
-    basePremium += 50;
-  } else if (age >= 25 && age <= 40) {
-    basePremium += 20;
-  } else if (age > 40) {
-    basePremium += 100;
-  }
+  // let basePremium = 100; // Starting premium
+  // if (age < 25)
+  //   basePremium += 50;
+  //  else if (age >= 25 && age <= 40)
+  //   basePremium += 20;
+  //  else if (age > 40)
+  //   basePremium += 100;
 
- 
+  const ageDiff = 100 - age;
+  const coveragePerMonth = (
+    parseFloat(coverageAmount.toFixed(2)) /
+    ageDiff /
+    12
+  ).toFixed(2);
+
   // Adjust premium based on health condition
   let healthMultiplier = 1;
-  if (health === "good") {
-    healthMultiplier = 1;
-  } else if (health === "average") {
-    healthMultiplier = 1.5;
-  } else if (health === "poor") {
-    healthMultiplier = 2;
-  }
+  // switch(health)
+  // {
+  //   case "good":
+  //   healthMultiplier = 1;
+  //   break;
+  //   case "average":
+  //   healthMultiplier = 1.5;
+  //   break;
+  //   case "poor":
+  //   healthMultiplier = 2;
+  //   break;
+  // }
 
   // Final premium calculation
-  const premium = basePremium * healthMultiplier * (coverageAmount / 1000);
+  // const premium = basePremium * healthMultiplier * (coverageAmount / 1000);
+  // const premium = (parseFloat(basePremium)  * (coverageAmount / 1000)).toFixed(2);
+  //  const premium= ((age*parseFloat(coveragePerMonth))+parseFloat(basePremium)).toFixed(2)
+  //  const premium= (parseFloat(coveragePerMonth)+parseFloat(basePremium)).toFixed(2)
+  const premium = parseFloat(coveragePerMonth).toFixed(2);
 
-  console.log(premium,basePremium,healthMultiplier,coverageAmount)
+  let carrierPremiums: CarrierPremium[] = [];
 
-let carrierPremiums:CarrierPremium[]=[]
+  carriers.forEach((carrier) => {
+    carrierPremiums.push({
+      name: carrier.carrier.name,
+      image: carrier.carrier.image,
+      premium: premium,
+    });
+  });
 
-carriers.forEach(carrier=>{
-  carrierPremiums.push({name:carrier.carrier.name,premium:premium})
-})
-
-
-  // return premium.toString();
-  return carrierPremiums
+  return carrierPremiums;
 };

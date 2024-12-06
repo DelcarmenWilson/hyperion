@@ -4,109 +4,69 @@ import { currentUser } from "@/lib/auth";
 import { UserTemplateSchema, UserTemplateSchemaType } from "@/schemas/user";
 
 // DATA
-export const userTemplatesGetAll = async () => {
-  try {
-    const user = await currentUser();
-    if (!user) return [];
+export const getTemplates = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated");
 
-    const templates = await db.userTemplate.findMany({
-      where: { userId: user.id },
-    });
-
-    return templates;
-  } catch {
-    return [];
-  }
+  return await db.userTemplate.findMany({
+    where: { userId: user.id },
+  });
 };
 
 //ACTIONS
-export const userTemplateDeleteById = async (id: string) => {
+export const deleteTemplate = async (id: string) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthenticated" };
-  
+  if (!user) throw new Error("Unauthenticated");
 
-  const exisitingTemplate = await db.userTemplate.findUnique({
-    where: { id },
-  });
-
-  if (!exisitingTemplate) 
-    return { error: "Template does not exist!" };
-  
-
-  if (user.id != exisitingTemplate.userId) {
-    return { error: "Unauthorized" };
-  }
   await db.userTemplate.delete({
     where: {
       id,
+      userId: user.id,
     },
   });
 
-  return { success: "Template deleted!" };
+  return "Template deleted!";
 };
-export const userTemplateInsert = async (values: UserTemplateSchemaType) => {
-  const validatedFields = UserTemplateSchema.safeParse(values);
-  if (!validatedFields.success) 
-    return { error: "Invalid fields!" };
-  
+export const createTemplate = async (values: UserTemplateSchemaType) => {
+  const { success, data } = UserTemplateSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
 
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthorized" };
-  
-  const { name, message, description, attachment } = validatedFields.data;
+  if (!user) throw new Error("Unauthenticated");
 
   const exisitingTemplate = await db.userTemplate.findFirst({
-    where: { name, userId: user.id },
+    where: { name: data.name, userId: user.id },
   });
 
-  if (exisitingTemplate) 
-    return { error: "Template with the same name already exist!" };
-  
-  const template = await db.userTemplate.create({
+  if (exisitingTemplate)
+    throw new Error("Template with the same name already exist!");
+
+  return await db.userTemplate.create({
     data: {
+      ...data,
       userId: user.id,
-      name,
-      message: message!,
-      description,
-      attachment,
+      message: data.message || "",
     },
   });
-
-  return { success: template };
 };
-export const userTemplateUpdateById = async (
-  values: UserTemplateSchemaType
-) => {
-  const validatedFields = UserTemplateSchema.safeParse(values);
-  if (!validatedFields.success) 
-    return { error: "Invalid fields!" };
-  
+export const updateTemplate = async (values: UserTemplateSchemaType) => {
+  const { success, data } = UserTemplateSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
 
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthorized" };
-  
-  const { id, name, message, description, attachment } = validatedFields.data;
+  if (!user) throw new Error("Unauthenticated");
 
   const exisitingTemplate = await db.userTemplate.findUnique({
-    where: { id },
+    where: { id: data.id, userId: user.id },
   });
 
-  if (!exisitingTemplate) 
-    return { error: "Template does not exist!" };
-  
-  const template = await db.userTemplate.update({
-    where: { id },
+  if (!exisitingTemplate) throw new Error("Template does not exist!");
+
+  return await db.userTemplate.update({
+    where: { id: exisitingTemplate.id },
     data: {
-      userId: user.id,
-      name,
-      message: message!,
-      description,
-      attachment,
+      ...data,
+      message: data.message || "",
     },
   });
-
-  return { success: template };
 };

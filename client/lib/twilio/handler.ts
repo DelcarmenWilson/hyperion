@@ -84,8 +84,8 @@ export const voiceResponse = async (call: TwilioCall) => {
     case "outbound":
       twiml.dial({
         callerId: agentNumber,
-        // record: "record-from-answer",
-        // recordingStatusCallback: "/api/twilio/voice/recording",
+        record: "record-from-answer",
+        recordingStatusCallback: "/api/twilio/voice/recording",
       },to).number(
         {
           // machineDetection: "DetectMessageEnd",

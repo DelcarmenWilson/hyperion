@@ -3,7 +3,7 @@ import { BriefcaseIcon } from "lucide-react";
 
 import AlertError from "@/components/custom/alert-error";
 import CreateJobDialog from "./_components/create-job-dialog";
-import JobCard from "./_components/job-card";
+import JobList from "./_components/job-list";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,13 +46,7 @@ const Jobs = async () => {
       />
     );
 
-  return (
-    <div className="grid grid-cols-1 gap-4">
-      {jobs.map((job) => (
-        <JobCard key={job.id} job={job} />
-      ))}
-    </div>
-  );
+  return <JobList initJobs={jobs} />;
 };
 
 export default JobsPage;

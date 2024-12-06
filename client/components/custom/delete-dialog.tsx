@@ -1,5 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import { Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,12 +14,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
-import { Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   triggerText?: string;
+  btnClass?: string;
   title: string;
   cfText: string;
   onConfirm: () => void;
@@ -24,6 +27,7 @@ type Props = {
 };
 const DeleteDialog = ({
   triggerText = "Delete",
+  btnClass,
   title,
   cfText,
   onConfirm,
@@ -33,7 +37,7 @@ const DeleteDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="gap-2 w-full">
+        <Button variant="ghost" className={cn("gap-2 w-full", btnClass)}>
           <span className="sr-only">Delete {title}</span>
           <Trash size={16} /> {triggerText}
         </Button>
@@ -45,7 +49,7 @@ const DeleteDialog = ({
             If you delete this {title}, you will not be able to recover it.
             <div className="flex flex-col py-4 gap-2">
               <p>
-                If you are sure, enter <b>{cfText}</b> to confirm:
+                If you are sure, enter <b>"{cfText}"</b> to confirm:
               </p>
               <Input
                 value={confirmText}

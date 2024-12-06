@@ -2,6 +2,7 @@
 import { FilePenLine, MoreVertical, RefreshCcw, Trash } from "lucide-react";
 import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
 
+import { Pipeline } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,14 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import UpdatePipelineDialog from "./update-pipeline-dialog";
+import DeleteDialog from "@/components/custom/delete-dialog";
+import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
 
 type Props = {
-  pipelineId: string;
+  pipeline: Pipeline;
   onReset: () => void;
 };
 
-export const Actions = ({ pipelineId, onReset }: Props) => {
+export const Actions = ({ pipeline, onReset }: Props) => {
   const { onFormOpen, onAlertOpen } = usePipelineStore();
+  const { onDeletePipeline, pipelineDeleting } = usePipelineActions();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,25 +30,30 @@ export const Actions = ({ pipelineId, onReset }: Props) => {
           <MoreVertical size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-60" align="center">
+      <DropdownMenuContent className="w-40" align="center">
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer gap-2" onClick={onReset}>
-          <RefreshCcw size={16} />
-          Reset
+        <DropdownMenuItem asChild>
+          <Button
+            variant="ghost"
+            className="px-4 gap-2 w-full justify-start"
+            onClick={onReset}
+          >
+            <RefreshCcw size={16} />
+            Reset
+          </Button>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer gap-2"
-          onClick={() => onFormOpen("edit", pipelineId)}
-        >
-          <FilePenLine size={16} />
-          Edit
+        <DropdownMenuItem asChild>
+          <UpdatePipelineDialog pipeline={pipeline} />
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer gap-2"
-          onClick={() => onAlertOpen(pipelineId)}
-        >
-          <Trash size={16} />
-          Delete
+
+        <DropdownMenuItem asChild>
+          <DeleteDialog
+            title="stage"
+            btnClass="justify-start"
+            cfText={pipeline.name}
+            onConfirm={() => onDeletePipeline(pipeline.id)}
+            loading={pipelineDeleting}
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

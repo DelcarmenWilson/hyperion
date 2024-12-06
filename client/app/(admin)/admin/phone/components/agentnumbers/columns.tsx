@@ -1,11 +1,12 @@
 "use client";
+import { FullPhoneNumber } from "@/types";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatPhoneNumber } from "@/formulas/phones";
-import { FullPhoneNumber } from "@/types";
+import UpdatePhoneNumberDialog from "../update-phone-number-dialog";
 import { formatDate } from "@/formulas/dates";
-import { UnassignedActions } from "../unassigednumbers/actions";
+
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const columns: ColumnDef<FullPhoneNumber>[] = [
   {
@@ -71,6 +72,6 @@ export const columns: ColumnDef<FullPhoneNumber>[] = [
   {
     header: "Actions",
     id: "actions",
-    cell: ({ row }) => <UnassignedActions phoneNumber={row.original} />,
+    cell: ({ row }) => <UpdatePhoneNumberDialog phoneNumber={row.original} />,
   },
 ];
