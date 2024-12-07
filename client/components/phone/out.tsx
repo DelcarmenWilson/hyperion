@@ -9,7 +9,7 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
 
@@ -37,6 +37,7 @@ import { phoneSettingsUpdateCurrentCall } from "@/actions/settings/phone";
 export const PhoneOut = () => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
+  const { leadId } = useLeadStore();
   const {
     call,
     time,
@@ -55,7 +56,8 @@ export const PhoneOut = () => {
   } = usePhoneStore();
   const { phone } = usePhoneContext();
   const { onDisconnect, onCallMuted } = usePhoneData(phone);
-  const { leadId, leadBasic } = useLeadData();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId as string);
   let leadFullName = leadBasic
     ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
     : "New Call";

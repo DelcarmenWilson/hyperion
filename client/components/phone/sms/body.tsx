@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useConversationId } from "@/hooks/use-conversation";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import {
   useLeadMessageActions,
   useLeadMessageData,
@@ -22,10 +22,12 @@ import { MessageCard } from "./message-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const SmsBody = ({conversationId}:{conversationId:string}) => {
+export const SmsBody = ({ conversationId }: { conversationId: string }) => {
   const { socket } = useContext(SocketContext).SocketState;
   const user = useCurrentUser();
-  const { leadBasic } = useLeadData();
+  const { leadId } = useLeadStore();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId as string);
 
   const { onGetMessages } = useLeadMessageData();
   const {

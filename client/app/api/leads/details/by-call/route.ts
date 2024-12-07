@@ -1,4 +1,4 @@
-import { leadGetById } from "@/actions/lead";
+import { getLead } from "@/actions/lead";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     if (!leadId) {
       return NextResponse.json({});
     }
-    const lead = await leadGetById(leadId);
+    const lead = await getLead(leadId);
 
     return NextResponse.json(lead);
   } catch (error) {

@@ -18,7 +18,7 @@ import { Delta, Op } from "quill/core";
 import "quill/dist/quill.snow.css";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { UserTemplate } from "@prisma/client";
@@ -58,8 +58,10 @@ const QuillEditor = ({
   innerRef,
   onTyping,
 }: Props) => {
+  const { leadId } = useLeadStore();
   const { onlineUser } = useOnlineUserData();
-  const { lead } = useLeadData();
+  const { onGetLead } = useLeadData();
+  const { lead } = onGetLead(leadId as string);
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [templateImage, setTemplateImage] = useState<string>("");

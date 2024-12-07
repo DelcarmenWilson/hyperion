@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { leadUpdateByIdType } from "@/actions/lead";
+import { updateLeadType } from "@/actions/lead";
 
 type Props = {
   id: string;
@@ -27,9 +27,9 @@ export const LeadTypeSelect = ({ id, type, disabled, onChange }: Props) => {
     if (newType == type) return;
     if (onChange) onChange(type);
     else {
-      const updatedType = await leadUpdateByIdType(id, newType);
-      if (updatedType.success) toast.success(updatedType.success);
-      else toast.error(updatedType.error);
+      const updatedType = await updateLeadType({ id, type: newType });
+      if (updatedType) toast.success(updatedType);
+      else toast.error("Something went wrong");
     }
   };
   return (

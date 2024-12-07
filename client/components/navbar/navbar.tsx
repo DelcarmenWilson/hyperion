@@ -5,6 +5,7 @@ import { Bot, List, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useChatStore } from "@/hooks/chat/use-chat";
+import { usePathname } from "next/navigation";
 import { useLeadStore } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/hooks/use-phone";
 import { useTodoStore } from "@/hooks/user/use-todo";
@@ -12,22 +13,17 @@ import { useTodoStore } from "@/hooks/user/use-todo";
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
 import Hint from "../custom/hint";
-import { MainNav } from "./main-nav";
-import { MasterSwitch } from "./master-switch";
-import { NavChat } from "./nav-chat";
-import { NavMessages } from "./nav-messages";
-import { usePathname } from "next/navigation";
-import { NavNotifications } from "./nav-notifications";
+import MainNav from "./main-nav";
+import MasterSwitch from "./master-switch";
+import NavMessages from "./nav-messages";
+import NavNotifications from "./nav-notifications";
 
 const lobster = Lobster_Two({
   subsets: ["latin"],
   weight: ["400", "700"],
 });
-type Props = {
-  admin?: boolean;
-};
 
-const NavBar = ({ admin = false }: Props) => {
+const NavBar = ({ admin = false }: { admin?: boolean }) => {
   const { onPhoneOutOpen, isOnCall, lead } = usePhoneStore();
   const { setLeadId } = useLeadStore();
   const { isChatOpen, onChatOpen, masterUnread } = useChatStore();

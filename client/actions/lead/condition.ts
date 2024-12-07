@@ -4,137 +4,106 @@ import { currentUser } from "@/lib/auth";
 
 import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
-import { leadActivityInsert } from "@/actions/lead/activity";
+import { createLeadActivity } from "@/actions/lead/activity";
+import { LeadActivityType } from "@/types/lead";
 
 //LEAD MEDICAL CONDITIONS
 //DATA
-export const leadConditionsGetAllById = async (leadId: string) => {
-  try {
-    const conditions = await db.leadMedicalCondition.findMany({
-      where: {
-        leadId,
-      },
-      include: { condition: true },
-    });
-    return conditions;
-  } catch {
-    return [];
-  }
-};
-export const leadConditionGetById = async (id: string) => {
-  try {
-    const condition = await db.leadMedicalCondition.findUnique({
-      where: {
-        id,
-      },
-      include: { condition: true },
-    });
-    return condition;
-  } catch {
-    return null;
-  }
-};
-//ACTIONS
-export const leadConditionInsert = async (values: LeadConditionSchemaType) => {
-  const validatedFields = LeadConditionSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { leadId, conditionId, diagnosed, medications, notes } =
-    validatedFields.data;
-
-  const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-
-  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
-  if (!existingLead) {
-    return { error: "Lead does not exists" };
-  }
-
-  const existingCondition = await db.leadMedicalCondition.findFirst({
-    where: { leadId: conditionId },
-  });
-  if (existingCondition) {
-    return { error: "Lead condition already exists" };
-  }
-
-  const newLeadCondition = await db.leadMedicalCondition.create({
-    data: { leadId, conditionId, diagnosed, medications, notes },
+export const getLeadConditions = async (leadId: string) => {
+  return await db.leadMedicalCondition.findMany({
+    where: {
+      leadId,
+    },
     include: { condition: true },
   });
-  await leadActivityInsert(
-    leadId,
-    "Condition",
-    "Condition created",
-    user.id,
-    newLeadCondition.condition.name
-  );
-  return { success: newLeadCondition };
 };
 
-export const leadConditionUpdateById = async (
-  values: LeadConditionSchemaType
-) => {
-  const validatedFields = LeadConditionSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
-
-  const { id, conditionId, diagnosed, medications, notes } =
-    validatedFields.data;
-
-  const existingCondition = await db.leadMedicalCondition.findUnique({
+export const getLeadCondition = async (id: string) => {
+  return await db.leadMedicalCondition.findUnique({
     where: {
       id,
     },
+    include: { condition: true },
+  });
+};
+//ACTIONS
+export const createLeadCondition = async (values: LeadConditionSchemaType) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  const { success, data } = LeadConditionSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!" );
+  
+  const { leadId, conditionId } = data;
+
+  const existingLead = await db.lead.findUnique({ where: { id: leadId } });
+  if (!existingLead) throw new Error("Lead does not exists");
+
+  const existingCondition = await db.leadMedicalCondition.findFirst({
+    where: { leadId, conditionId },
+  });
+  if (existingCondition) throw new Error("Lead condition already exists");
+
+  const newLeadCondition = await db.leadMedicalCondition.create({
+    data: { ...data },
+    include: { condition: true },
   });
 
-  if (!existingCondition) {
-    return { error: "Condition does not exists!" };
-  }
+  await createLeadActivity({
+    leadId,
+    type: LeadActivityType.CONDITION,
+    activity: "Condition created",
+    userId: user.id,
+    newValue: newLeadCondition.condition.name,
+  });
+  return newLeadCondition;
+};
+
+export const updateLeadCondition = async (values: LeadConditionSchemaType) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  const { success, data } = LeadConditionSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
+
+  const existingCondition = await db.leadMedicalCondition.findUnique({
+    where: {
+      id: data.id,
+    },
+  });
+
+  if (!existingCondition) throw new Error("Condition does not exists!");
 
   const modifiedCondition = await db.leadMedicalCondition.update({
-    where: { id },
+    where: { id: existingCondition.id },
     data: {
-      conditionId,
-      diagnosed,
-      medications,
-      notes,
+      ...data,
     },
     include: { condition: true },
   });
-  return { success: modifiedCondition };
+  return modifiedCondition;
 };
 
-export const leadConditionDeleteById = async (id: string) => {
+export const deleteLeadCondition = async (id: string) => {
   const user = await currentUser();
-
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
+  if (!user) throw new Error("Unauthenticated!");
 
   const existingCondition = await db.leadMedicalCondition.findUnique({
     where: { id },
   });
-  if (!existingCondition) {
-    return { error: "Condition no longer exists" };
-  }
+  if (!existingCondition) throw new Error("Condition no longer exists" );
+  
 
   await db.leadMedicalCondition.delete({
     where: { id },
   });
-  await leadActivityInsert(
-    existingCondition.leadId,
-    "Condition",
-    "Condition deleted",
-    user.id
-  );
-  return { success: "Condition deleted!" };
+
+  await createLeadActivity({
+    leadId:existingCondition.leadId,
+    type: LeadActivityType.CONDITION,
+    activity: "Condition deleted",
+    userId: user.id,
+  });
+ 
+  return   "Condition deleted!" ;
 };

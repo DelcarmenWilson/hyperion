@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { create } from "zustand";
-import { FullCall, FullLead, FullLeadNoConvo, PipelineLead } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+
+import { Call, Device } from "@twilio/voice-sdk";
+import { FullCall, FullLead, PipelineLead } from "@/types";
 import { Pipeline, Script } from "@prisma/client";
 import { TwilioParticipant, TwilioShortConference } from "@/types";
-import { Call, Device } from "@twilio/voice-sdk";
 import {
   phoneSettingsUpdateCurrentCall,
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
 import { scriptGetOne } from "@/actions/script";
-import { getLeadByPhone } from "@/actions/lead/main/get-lead-by-phone";
-import { useQuery } from "@tanstack/react-query";
+import { getLeadByPhone } from "@/actions/lead";
 
 type State = {
   //PHONE SPECIFIC

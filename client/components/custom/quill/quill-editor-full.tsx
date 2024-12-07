@@ -1,18 +1,7 @@
-import {
-  MutableRefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, useEffect, useLayoutEffect, useRef } from "react";
 
 import Quill, { type QuillOptions } from "quill";
-import { Delta, Op } from "quill/core";
 import "quill/dist/quill.snow.css";
-import { useLeadData } from "@/hooks/lead/use-lead";
-import { useOnlineUserData } from "@/hooks/user/use-user";
-
-import { replacePreset } from "@/formulas/text";
 
 type Props = {
   placeholder?: string;

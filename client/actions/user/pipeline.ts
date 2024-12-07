@@ -85,7 +85,7 @@ export const getPipelinesAndLeads = async () => {
     return empty;
   }
 };
-export const getPipeline = async (id: string | undefined) => {
+export const getPipeline = async (id: string) => {
   if (!id) throw new Error("id cannot be empty!");
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");

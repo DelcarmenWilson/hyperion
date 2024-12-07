@@ -28,3 +28,4 @@ export enum AppointmentStatus{
   RESCHEDULED = "RESCHEDULED",
   SCHEDULED = "SCHEDULED",
 }
+

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LeadStatus } from "@prisma/client";
 import {
-  leadStatusGetAllDefault,
-  leadUpdateByIdStatus,
+  getLleadStatusDefault,
+  updateLeadStatus,
 } from "@/actions/lead/status";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ export const useLeadStatuses = () => {
   const { data: statuses, isFetching: isFetchingStatuses } = useQuery<
     LeadStatus[]
   >({
-    queryFn: () => leadStatusGetAllDefault(),
+    queryFn: () => getLleadStatusDefault(),
     queryKey: [`userLeadStatuses`],
   });
 
@@ -32,7 +32,7 @@ export const useLeadStatusActions = () => {
   //TODO this need to be moved closer to the lead hooks
   const { mutate: leadStatusUpdate, isPending: isPendingLeadStatusUpdate } =
     useMutation({
-      mutationFn: leadUpdateByIdStatus,
+      mutationFn: updateLeadStatus,
       onSuccess: (results) => {
         if (results.success) 
           {

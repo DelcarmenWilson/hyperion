@@ -1,7 +1,7 @@
 "use client";
 import { Users } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useLeadsData } from "./hooks/use-leads";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { columns } from "./components/columns";
 import { DataTable } from "@/components/tables/data-table";
@@ -11,7 +11,9 @@ import { TopMenu } from "./components/top-menu";
 import { ALLAGENTS } from "@/constants/user";
 
 const LeadsPage = () => {
-  const { leads, isFetchingLeads } = useLeadsData();
+  const { onGetLeads } = useLeadData();
+  const { leads, leadsFetching } = onGetLeads();
+
   const role = useCurrentRole();
   return (
     <PageLayout
@@ -19,7 +21,7 @@ const LeadsPage = () => {
       icon={Users}
       topMenu={ALLAGENTS.includes(role!) && <TopMenu />}
     >
-      <SkeletonWrapper isLoading={isFetchingLeads} fullHeight>
+      <SkeletonWrapper isLoading={leadsFetching} fullHeight>
         <DataTable
           columns={columns}
           data={leads || []}

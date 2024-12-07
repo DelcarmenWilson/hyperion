@@ -44,7 +44,7 @@ export const LeadClient = () => {
             {edit ? (
               <PhoneSwitcher
                 number={defaultNumber}
-                onSetDefaultNumber={onSetDefaultNumber}
+                onSetDefaultNumber={(e) => onSetDefaultNumber(leadId, e)}
                 onClose={() => setEdit(false)}
               />
             ) : (

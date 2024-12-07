@@ -15,6 +15,8 @@ import { TodoContainer } from "./todo/container";
 import { TodoNotification } from "./todo/notification";
 import { AiGeneratorDialog } from "./ai-generator/ai-generator-dialog";
 import NotificationDialog from "./notification-dialog";
+import MultipleLeadsDialog from "../lead/multiple-leads-dialog";
+import MultipleCallsDialog from "./multiple-calls-dialog";
 
 const ModalsContainer = () => {
   return (
@@ -26,7 +28,7 @@ const ModalsContainer = () => {
       <GroupMessageCard />
       <MiniMessageCard />
       <TodoNotification />
-      <NotificationDialog/>
+      <NotificationDialog />
 
       {/* PHONE MODALS */}
       <MainInfoForm />
@@ -40,11 +42,12 @@ const ModalsContainer = () => {
       {/* //LEAD MODALS */}
       {/* //TODO - i dont thin this belons here */}
       <NewLeadForm />
+      <MultipleLeadsDialog />
       {/* SCRIPT MODAL */}
       <ScriptForm />
       {/* GLOABAL MODAL */}
-
       <AiGeneratorDialog />
+      <MultipleCallsDialog />
     </>
   );
 };

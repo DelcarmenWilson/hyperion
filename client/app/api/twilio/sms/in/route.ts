@@ -18,7 +18,7 @@ import { chatFetch } from "@/actions/gpt";
 
 import { createAppointment } from "@/actions/appointment";
 import { chatSettingGetTitan } from "@/actions/settings/chat";
-import { insertMessage } from "@/actions/lead/message/insert-message";
+import { insertMessage } from "@/actions/lead/message";
 
 import { formatDateTime } from "@/formulas/dates";
 import { formatObject } from "@/formulas/objects";
@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
   //Convert the body to Json paramaters
   const sms: TwilioSms = formatObject(body);
-
 
   //Find the agent number where this message is going to
   const agentNumber = await db.phoneNumber.findFirst({
@@ -52,6 +51,8 @@ export async function POST(req: Request) {
   //   const insertedMessage = await forwardTextToLead(sms, agent.userId);
   //   if (insertedMessage) return new NextResponse(null, { status: 200 });
   // }
+
+
 
   let updatedConversation;
   //Pulling the entire conversation based on the phone number
@@ -81,9 +82,9 @@ export async function POST(req: Request) {
     sid: sms.smsSid,
   };
 
-  //Create a new message from the leads response
+    //Create a new message from the leads response
   const newMessage = await insertMessage(smsFromLead);
-
+  
   //Get Keyword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
   const keywordResponse = await getKeywordResponse(

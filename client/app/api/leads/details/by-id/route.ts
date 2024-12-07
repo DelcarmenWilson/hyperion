@@ -1,4 +1,4 @@
-import { leadGetById } from "@/actions/lead";
+import { getLead } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { leadId } = body;
    
-    const lead = await leadGetById(leadId);
+    const lead = await getLead(leadId);
 
     return NextResponse.json(lead);
   } catch (error) {

@@ -6,12 +6,12 @@ import { Call } from "@prisma/client";
 import { FullCall } from "@/types";
 
 import { CallHistoryCard } from "./card";
-import { callsGetAllByLeadId } from "@/actions/call";
+import { getCallsForLead } from "@/actions/call";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
   const { data: calls, isFetching } = useQuery<FullCall[]>({
-    queryFn: () => callsGetAllByLeadId(leadId),
+    queryFn: () => getCallsForLead(leadId),
     queryKey: ["leadCalls"],
   });
   //TODO find the other component that looks just like this one

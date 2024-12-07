@@ -4,7 +4,7 @@ import { TopMenu } from "./components/top-menu";
 import { SalesClient } from "./components/client";
 import { getPipelines } from "@/actions/user/pipeline";
 import { PageLayout } from "@/components/custom/layout/page";
-import { getLeads } from "@/actions/lead/main/get-leads";
+import { getLeads } from "@/actions/lead";
 
 const SalesPage = async () => {
   const leads = await getLeads();

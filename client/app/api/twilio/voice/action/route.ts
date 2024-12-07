@@ -1,3 +1,4 @@
+import { createOrUpdateMissedCallNotification } from "@/actions/call";
 import { formatObject } from "@/formulas/objects";
 import { db } from "@/lib/db";
 import { hangupResponse, voicemailResponse } from "@/lib/twilio/handler";
@@ -17,22 +18,21 @@ export async function POST(req: NextRequest) {
   //and send a voicemail request back to twilio
   if (callStatus.includes(j.dialCallStatus)) {
     if (j.direction == "inbound") {
-      await db.call.update({
+      const call = await db.call.update({
         where: { id: j.callSid },
         data: {
           status: j.dialCallStatus,
         },
       });
-    }
-    //TODO - after the functionaly anove has been tested remove the code below
-    // const phonenumber = await db.phoneNumber.findFirst({
-    //   where: { phone: j.to },
-    // });
-    // const settings = await db.phoneSettings.findUnique({
-    //   where: { userId: phonenumber?.agentId! },
-    // });
-    // j.voicemailIn = settings?.voicemailIn;
 
+      //CREATE OR UPDATE EXISTING MISSEDCALL NOTFICATION
+      if ((j.dialCallStatus == "no-answer")) {
+        await createOrUpdateMissedCallNotification({
+          callId: call.id,
+          userId: call.userId,
+        });
+      }
+    }
     return new NextResponse(await voicemailResponse(voicemailIn), {
       status: 200,
     });

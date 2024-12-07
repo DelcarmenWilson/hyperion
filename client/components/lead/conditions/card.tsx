@@ -12,7 +12,7 @@ import { CardData } from "@/components/reusable/card-data";
 
 import { ConditionForm } from "./form";
 
-import { leadConditionDeleteById } from "@/actions/lead/condition";
+import { deleteLeadCondition } from "@/actions/lead/condition";
 import { formatDate } from "@/formulas/dates";
 import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 

@@ -2,7 +2,7 @@
 import { User } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadId } from "@/hooks/lead/use-lead";
 
 import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,10 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 const LeadsPage = () => {
   const user = useCurrentUser();
-  const { leadBasic, prevNext, isFetchingnextPrev } = useLeadData();
+  const { leadId } = useLeadId();
+  const { onGetLeadBasicInfo, onGetLeadPrevNext } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId);
+  const { prevNext, nextPrevFetching } = onGetLeadPrevNext(leadId);
   if (!leadBasic) return null;
 
   if (![leadBasic.userId, leadBasic.sharedUserId].includes(user?.id!)) {
@@ -28,7 +31,7 @@ const LeadsPage = () => {
       icon={User}
       title={`View Lead - ${leadBasic.firstName}`}
       topMenu={
-        <SkeletonWrapper isLoading={isFetchingnextPrev}>
+        <SkeletonWrapper isLoading={nextPrevFetching}>
           <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
         </SkeletonWrapper>
       }

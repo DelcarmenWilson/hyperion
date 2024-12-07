@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 
 import { convertLead } from "@/formulas/lead";
-import { leadsImport } from "@/actions/lead";
+import { importLleads } from "@/actions/lead";
 import { Loader2 } from "lucide-react";
 
 export const ImportLeadsForm = () => {
@@ -80,12 +80,12 @@ export const ImportLeadsForm = () => {
 
   const onImport = () => {
     startTransition(() => {
-      leadsImport(leads).then((data) => {
+      importLleads(leads).then((data) => {
         if (data?.success) {
           onCancel();
           toast.success(data.success);
           router.refresh();
-        } else toast.error(data.error);
+        } else toast.error("Something went wrong");
       });
     });
   };

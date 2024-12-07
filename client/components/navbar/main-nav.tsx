@@ -6,13 +6,10 @@ import { cn } from "@/lib/utils";
 
 import AdminTestMenu from "./admin-test-menu";
 import { CoachNotification } from "../phone/coach-notification";
-import { TextAnimation } from "../custom/text-animate";
 import { PageNotification } from "./page-notification";
+import { TextAnimation } from "../custom/text-animate";
 
-type Props = {
-  admin?: boolean;
-};
-export const MainNav = ({ admin }: Props) => {
+const MainNav = ({ admin }: { admin?: boolean }) => {
   const {
     user,
     isNotificationOpen,
@@ -62,3 +59,5 @@ export const MainNav = ({ admin }: Props) => {
     </div>
   );
 };
+
+export default MainNav;

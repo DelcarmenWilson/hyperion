@@ -5,7 +5,7 @@ import {
   useAppointmentActions,
   useAppointmentStore,
 } from "@/hooks/use-appointment";
-import { useLeadData } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 import { format } from "date-fns";
 
 import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
@@ -34,9 +34,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatDateTime, formatTimeZone, getYesterday } from "@/formulas/dates";
 
 export const AppointmentForm = () => {
-  const { leadBasic, isFetchingLeadBasic } = useLeadData();
   const { isAppointmentFormOpen, onApointmentFormClose } =
     useAppointmentStore();
+  const { leadId } = useLeadStore();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic, leadBasicFetching } = onGetLeadBasicInfo(leadId as string);
   if (!leadBasic) return null;
   return (
     <DrawerRight
@@ -45,17 +47,14 @@ export const AppointmentForm = () => {
       onClose={onApointmentFormClose}
       scroll={false}
     >
-      <SkeletonWrapper isLoading={isFetchingLeadBasic} fullHeight>
+      <SkeletonWrapper isLoading={leadBasicFetching} fullHeight>
         <AppForm lead={leadBasic} />
       </SkeletonWrapper>
     </DrawerRight>
   );
 };
 
-type AppFormProps = {
-  lead: LeadBasicInfoSchemaTypeP;
-};
-const AppForm = ({ lead }: AppFormProps) => {
+const AppForm = ({ lead }: { lead: LeadBasicInfoSchemaTypeP }) => {
   const {
     form,
     onCancel,

@@ -3,14 +3,28 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
 import { MessageType } from "@/types/message";
+import { SmsMessageSchema, SmsMessageSchemaType } from "@/schemas/message";
 
-import { createConversation } from "../conversation/create-conversation";
-import { smsSend } from "../../sms";
-import { insertMessage } from "./insert-message";
+import { MessageSchema, MessageSchemaType } from "@/schemas/message";
+
+import { createConversation } from "./conversation";
+import { smsSend } from "../sms";
+import { userGetByAssistantOld } from "@/data/user";
 
 import { defaultChat } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
+
+export const getMessagesForConversation = async (
+  conversationId: string | null | undefined
+) => {
+  if (!conversationId) throw new Error("ConversationId was not supplied!!");
+  const user = currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  return await db.leadMessage.findMany({
+    where: { conversationId, role: { not: "system" } },
+  });
+};
 
 export const createInitialMessage = async (
   leadId: string | null | undefined
@@ -107,7 +121,7 @@ export const createInitialMessage = async (
   });
 
   //return an error if the sms was not sent
-  if (!result.success) throw new Error(result.error); 
+  if (!result.success) throw new Error(result.error);
 
   //insert the initial message into the conversation
   await insertMessage({
@@ -120,5 +134,78 @@ export const createInitialMessage = async (
     sid: result.success,
   });
 
-  return   conversationId ;
+  return conversationId;
+};
+
+export const createNewMessage = async (values: SmsMessageSchemaType) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  const { success, data } = SmsMessageSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
+
+  const lead = await db.lead.findUnique({ where: { id: data.leadId } });
+
+  if (!lead) throw new Error("Lead does not exist!");
+  let convoid = data.conversationId;
+  let agentId = user.id;
+
+  if (!convoid) {
+    if (user.role == "ASSISTANT")
+      agentId = (await userGetByAssistantOld(user.id)) as string;
+
+    const existingConversation = await db.leadConversation.findUnique({
+      where: { leadId_agentId: { leadId: lead.id, agentId } },
+    });
+    if (existingConversation) {
+      convoid = existingConversation.id;
+    } else convoid = await createConversation(agentId, lead.id);
+  }
+
+  const result = await smsSend({
+    fromPhone: lead.defaultNumber,
+    toPhone: lead.cellPhone || (lead.homePhone as string),
+    media: data.images,
+    message: data.content,
+  });
+
+  const newMessage = await insertMessage({
+    role: "assistant",
+    content: data.content,
+    conversationId: convoid!,
+    type: MessageType.AGENT,
+    attachment: data.images,
+    senderId: user.id,
+    hasSeen: true,
+  });
+
+  if (!result) throw new Error("Message was not sent!");
+
+  return newMessage;
+};
+export const insertMessage = async (values: MessageSchemaType) => {
+  const { success, data } = MessageSchema.safeParse(values);
+  if (!success) throw new Error("Invalid fields!");
+  const conversation = await db.leadConversation.findUnique({
+    where: { id: data.conversationId },
+  });
+
+  if (!conversation) throw new Error("Conversation does not exists!");
+
+  const newMessage = await db.leadMessage.create({
+    data: {
+      ...data,
+    },
+  });
+
+  await db.leadConversation.update({
+    where: { id: data.conversationId },
+    data: {
+      lastMessageId: newMessage.id,
+      unread:
+        conversation.leadId == data.senderId ? conversation.unread + 1 : 0,
+    },
+  });
+
+  return newMessage;
 };

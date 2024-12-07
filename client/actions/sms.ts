@@ -10,8 +10,8 @@ import { MessageType } from "@/types/message";
 import { LeadDefaultStatus } from "@/types/lead";
 import { MessageSchemaType } from "@/schemas/message";
 
-import { createConversation } from "./lead/conversation/create-conversation";
-import { insertMessage } from "./lead/message/insert-message";
+import { createConversation } from "./lead/conversation";
+import { insertMessage } from "./lead/message";
 
 import {
   formatDateTimeZone,

@@ -2,14 +2,14 @@ import { useCallback, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LeadStatus } from "@prisma/client";
-import { leadStatusGetAllDefault } from "@/actions/lead/status";
+import { getLleadStatusDefault } from "@/actions/lead/status";
 import { userLeadStatusDeleteById } from "@/actions/user/lead-status";
 
 export const useAgentLeadStatusData = () => {
   const { data: leadStatuses, isFetching: isFetchingLeadStatuses } = useQuery<
   LeadStatus[]
   >({
-    queryFn: () => leadStatusGetAllDefault(),
+    queryFn: () => getLleadStatusDefault(),
     queryKey: ["agent-leadstatus"],
   });
 

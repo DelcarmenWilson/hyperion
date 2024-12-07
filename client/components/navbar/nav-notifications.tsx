@@ -6,24 +6,28 @@ import {
   useNotificationData,
 } from "@/hooks/notification/use-notification";
 
+import Link from "next/link";
+
 import { Notification } from "@prisma/client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-
 import { DataDisplayItalic } from "@/components/global/data-display/data-display";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { formatDate } from "@/formulas/dates";
-import { ScrollArea } from "../ui/scroll-area";
 
-export const NavNotifications = () => {
+import { formatDate } from "@/formulas/dates";
+import { cn } from "@/lib/utils";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+
+const NavNotifications = () => {
   const { onGetNotificationsUnread } = useNotificationData();
   const { notifications, fetchingNotifications } = onGetNotificationsUnread();
   const { onUpdateNotificationUnread, updatingNotificationUnread } =
@@ -46,7 +50,12 @@ export const NavNotifications = () => {
         className="w-full lg:w-[300px] overflow-hidden"
         align="center"
       >
-        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+        <DropdownMenuLabel className="flex justify-between">
+          Notifications
+          <Link href="/notifications" className="text-xs underline">
+            View All
+          </Link>
+        </DropdownMenuLabel>
         <SkeletonWrapper isLoading={fetchingNotifications}>
           <ScrollArea>
             <div className="max-h-[400px]">
@@ -91,7 +100,7 @@ const NotificationCard = ({
   onDismiss: () => void;
 }) => {
   const { title, content, linkText, link, reference, createdAt } = notification;
-  const router = useRouter();
+  const { onMultipleLeadDialogOpen } = useLeadStore();
   return (
     <div className="w-full p-2 bg-background hover:bg-primary/25 border-b">
       <p className="text-xs text-muted-foreground text-end italic">
@@ -104,18 +113,42 @@ const NotificationCard = ({
           Dismiss
         </Button>
         {link && (
-          <Button
-            variant="outlineprimary"
-            size="xs"
-            onClick={() => {
-              onDismiss();
-              router.push(link);
-            }}
-          >
-            {linkText}
-          </Button>
+          <>
+            {linkText == "View Leads" ? (
+              <Button
+                variant="outlineprimary"
+                size="xs"
+                onClick={() => onMultipleLeadDialogOpen(JSON.parse(link))}
+              >
+                {linkText}
+              </Button>
+            ) : linkText == "View Calls" ? (
+              <Button
+                variant="outlineprimary"
+                size="xs"
+                onClick={() => onMultipleLeadDialogOpen(JSON.parse(link))}
+              >
+                {linkText}
+              </Button>
+            ) : (
+              <Link
+                className={cn(
+                  buttonVariants({
+                    variant: "outlineprimary",
+                    size: "xs",
+                  })
+                )}
+                onClick={onDismiss}
+                href={link}
+              >
+                {linkText}
+              </Link>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 };
+
+export default NavNotifications;

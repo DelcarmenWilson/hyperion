@@ -25,22 +25,22 @@ import SkeletonWrapper from "../skeleton-wrapper";
 
 import { formatDateTime } from "@/formulas/dates";
 import { formatSecondsToTime } from "@/formulas/numbers";
-import { callsGetAllShared, callUpdateByIdShare } from "@/actions/call";
-
+import { getSharedCalls, shareCall } from "@/actions/call";
+//TODO - need to put this logic into a hook
 export const SharedCallsClient = ({ columns = 3 }: { columns?: number }) => {
   const user = useCurrentUser();
   const { data: calls, isFetching } = useQuery<FullCall[]>({
-    queryFn: () => callsGetAllShared(),
-    queryKey: ["agentSharedCalls"],
+    queryFn: () => getSharedCalls(),
+    queryKey: ["shared-calls"],
   });
 
   const queryClient = useQueryClient();
   const onCallUnshare = async (id: string) => {
-    const unsharedCall = await callUpdateByIdShare(id, false);
-    if (unsharedCall.success) {
-      queryClient.invalidateQueries({ queryKey: ["agentSharedCalls"] });
-      toast.success(unsharedCall.success);
-    } else toast.error(unsharedCall.error);
+    const unsharedCall = await shareCall({ id, shared: false });
+    if (unsharedCall) {
+      queryClient.invalidateQueries({ queryKey: ["shared-calls"] });
+      toast.success(unsharedCall);
+    } else toast.error("Something went wrong");
   };
 
   return (

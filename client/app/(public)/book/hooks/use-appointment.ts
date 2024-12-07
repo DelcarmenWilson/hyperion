@@ -21,7 +21,7 @@ import {
   cancelAppointmentByLead,
 } from "@/actions/appointment";
 import { getUpcomingAppointments } from "@/actions/appointment";
-import { leadGetByIdMain } from "@/actions/lead";
+import { getLeadMainInfo } from "@/actions/lead";
 import { scheduleGet } from "@/actions/user/schedule";
 import { getUserByUserName } from "@/actions/user";
 
@@ -80,7 +80,7 @@ export const useAppointmentActions = () => {
 
   const { data: lead, isFetching: isFetchingLead } =
     useQuery<LeadMainSchemaTypeP | null>({
-      queryFn: () => leadGetByIdMain(leadId),
+      queryFn: () => getLeadMainInfo(leadId),
       queryKey: [`appLead-${leadId}`],
     });
 

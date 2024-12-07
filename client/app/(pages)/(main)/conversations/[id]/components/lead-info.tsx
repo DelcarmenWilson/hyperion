@@ -1,6 +1,6 @@
 "use client";
-import { useLeadData } from "@/hooks/lead/use-lead";
-import { useConversationStore } from "../../../../../../hooks/use-conversation";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useConversationStore } from "@/hooks/use-conversation";
 import { cn } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,12 +14,11 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type Props = {
-  size?: string;
-};
-export const ConversationLeadInfo = ({ size = "full" }: Props) => {
+export const ConversationLeadInfo = ({ size = "full" }: { size?: string }) => {
   const { isLeadInfoOpen } = useConversationStore();
-  const { leadBasic } = useLeadData();
+  const { leadId } = useLeadStore();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId as string);
 
   return (
     <div

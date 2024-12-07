@@ -1,43 +1,35 @@
 "use server";
 import { db } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
 
-import { leadActivityInsert } from "@/actions/lead/activity";
+import { createLeadActivity } from "@/actions/lead/activity";
 import { getAssitantForUser } from "@/actions/user";
+import { LeadActivityType } from "@/types/lead";
 
 // LEADSTATUS
-
 //DATA
-export const leadStatusGetAllDefault = async () => {
-  try {
-    const userId = await getAssitantForUser();
-    if (!userId) return [];
+export const getLleadStatusDefault = async () => {
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated!");
 
-    const leadStatuses = await db.leadStatus.findMany({
-      where: { OR: [{ userId }, { type: { equals: "default" } }],hidden:false },
-    });
-    return leadStatuses;
-  } catch {
-    return [];
-  }
+  return await db.leadStatus.findMany({
+    where: {
+      OR: [{ userId }, { type: { equals: "default" } }],
+      hidden: false,
+    },
+  });
 };
 
-export const leadStatusGetAll = async () => {
-  try {
-    const userId = await getAssitantForUser();
-    if (!userId) return [];
+export const getLleadStatus = async () => {
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated!");
 
-    const leadStatuses = await db.leadStatus.findMany({
-      where: { userId },
-    });
-    return leadStatuses;
-  } catch {
-    return [];
-  }
+  return await db.leadStatus.findMany({
+    where: { userId },
+  });
 };
+
 //ACTIONS
-
-export const leadUpdateByIdStatus = async ({
+export const updateLeadStatus = async ({
   leadId,
   statusId,
 }: {
@@ -57,7 +49,7 @@ export const leadUpdateByIdStatus = async ({
     return { error: "Unauthorized" };
   }
 
-  const lead=await db.lead.update({
+  const lead = await db.lead.update({
     where: { id: leadId },
     data: {
       statusId,
@@ -68,13 +60,13 @@ export const leadUpdateByIdStatus = async ({
     where: { id: existingLead.statusId },
     select: { status: true },
   });
-
-  leadActivityInsert(
+  await createLeadActivity({
     leadId,
-    "status",
-    "Status updated",
+    type: LeadActivityType.STATUS,
+    activity: "Status updated",
     userId,
-    leadStatus?.status
-  );
+    newValue: leadStatus?.status,
+  });
+
   return { success: lead };
 };

@@ -28,8 +28,9 @@ export const usePipelineData = () => {
 
   const { data: pipeline, isFetching: isFetchingPipeline } =
     useQuery<Pipeline | null>({
-      queryFn: () => getPipeline(pipelineId),
+      queryFn: () => getPipeline(pipelineId as string),
       queryKey: [`pipeline-${pipelineId}`],
+      enabled:!!pipelineId
     });
 
   const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<

@@ -6,12 +6,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { LeadBeneficiary } from "@prisma/client";
 import {
-  leadBeneficiariesGetAllById,
-  leadBeneficiaryConvertById,
-  leadBeneficiaryDeleteById,
-  leadBeneficiaryGetById,
-  leadBeneficiaryInsert,
-  leadBeneficiaryUpdateById,
+  getLeadBeneficiaries,
+  convertLeadToBeneficiary,
+  deleteLeadBeneficiary,
+  getLeadBeneficiary,
+  createLeadBeneficiary,
+  updateLeadBeneficiary,
 } from "@/actions/lead/beneficiary";
 import { LeadBeneficiarySchemaType } from "@/schemas/lead";
 
@@ -43,13 +43,13 @@ export const useLeadBeneficiaryData = () => {
   const { data: beneficiaries, isFetching: isFetchingBeneficiaries } = useQuery<
     LeadBeneficiary[]
   >({
-    queryFn: () => leadBeneficiariesGetAllById(leadId as string),
+    queryFn: () => getLeadBeneficiaries(leadId as string),
     queryKey: [`lead-beneficiaries-${leadId}`],
   });
 
   const { data: beneficiary, isFetching: isFetchingBeneficiary } =
     useQuery<LeadBeneficiary | null>({
-      queryFn: () => leadBeneficiaryGetById(beneficiaryId as string),
+      queryFn: () => getLeadBeneficiary(beneficiaryId as string),
       queryKey: [`lead-beneficiary-${beneficiaryId}`],
     });
 
@@ -79,8 +79,8 @@ export const useLeadBeneficiaryActions = () => {
 
   const { mutate, isPending: isBeneficiaryPending } = useMutation({
     mutationFn: beneficiaryId
-      ? leadBeneficiaryUpdateById
-      : leadBeneficiaryInsert,
+      ? updateLeadBeneficiary
+      : createLeadBeneficiary,
     onSuccess: () => {
       const toastString = beneficiaryId
         ? "Beneficiary updated successfully"
@@ -108,7 +108,7 @@ export const useLeadBeneficiaryActions = () => {
 
   const { mutate: onBeneficiaryDelete, isPending: isPendingBeneficiaryDelete } =
     useMutation({
-      mutationFn: leadBeneficiaryDeleteById,
+      mutationFn: deleteLeadBeneficiary,
       onSuccess: () => {
         toast.success("Beneficiary Deleted", { id: "delete-beneficiary" });
         invalidate(`lead-beneficiary-${beneficiaryId}`);
@@ -121,15 +121,14 @@ export const useLeadBeneficiaryActions = () => {
     mutate: beneficiaryConvertMutate,
     isPending: isPendingBeneficiaryConvert,
   } = useMutation({
-    mutationFn: leadBeneficiaryConvertById,
-    onSuccess: (results) => {
-      if (results.success) {
+    mutationFn: convertLeadToBeneficiary,
+    onSuccess: () => {
         toast.success("Beneficiary converted!!!", {
           id: "convert-beneficiary",
         });
         invalidate(`lead-beneficiaries-${leadId}`);
         invalidate(`lead-associated-${leadId}`);
-      } else toast.error(results.error, { id: "convert-beneficiary" });
+     
     },
   });
 

@@ -5,31 +5,13 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  ALargeSmall,
-  ImageIcon,
-  LayoutTemplate,
-  Send,
-  Smile,
-  X,
-} from "lucide-react";
+import { Send } from "lucide-react";
 import Quill, { type QuillOptions } from "quill";
 import { Delta, Op } from "quill/core";
 import "quill/dist/quill.snow.css";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useLeadData } from "@/hooks/lead/use-lead";
-import { useOnlineUserData } from "@/hooks/user/use-user";
 
-import { UserTemplate } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { CustomDialog } from "../../global/custom-dialog";
-
-import Hint from "@/components/custom/hint";
-import EmojiPopover from "../emoji-popover";
-import { TemplateList } from "@/app/(pages)/(main)/settings/(routes)/config/components/templates/list";
-
-import { replacePreset } from "@/formulas/text";
 
 type EditorValue = {
   body: Delta;

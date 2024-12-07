@@ -11,17 +11,17 @@ import { PrevNextMenu } from "@/components/lead/prev-next-menu";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 
 import { LeadHeader } from "@/components/lead/header";
-import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
+import { getLead, getLeadPrevNext } from "@/actions/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
-  const lead = await leadGetById(params.id);
+  const lead = await getLead(params.id);
   const user = await currentUser();
   if (!lead) return null;
 
   if (![lead.userId, lead.sharedUserId].includes(user?.id!)) {
     redirect("/leads");
   }
-  const prevNext = await leadGetPrevNextById(params.id);
+  const prevNext = await getLeadPrevNext(params.id);
   return (
     <PageLayout
       icon={User}

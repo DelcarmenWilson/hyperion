@@ -3,7 +3,7 @@ import { useLeadId } from "./use-lead";
 import { useQuery } from "@tanstack/react-query";
 
 import { LeadActivity } from "@prisma/client";
-import { leadActivitiesGet } from "@/actions/lead/activity";
+import { getLeadActivities } from "@/actions/lead/activity";
 
 export const useLeadActivityData = () => {
     const { leadId } = useLeadId();
@@ -11,7 +11,7 @@ export const useLeadActivityData = () => {
     const { data: initActivities, isFetching: isFetchingActivities } = useQuery<
     LeadActivity[]
     >({
-      queryFn: () => leadActivitiesGet(leadId),
+      queryFn: () => getLeadActivities(leadId),
       queryKey: [`leadActivities-${leadId}`],
     });
 

@@ -6,9 +6,9 @@ import { FullCall } from "@/types";
 import { weekStartEnd } from "@/formulas/dates";
 import { DateRange } from "react-day-picker";
 import {
-  callsGetAllByUserIdFiltered,
-  callsGetAllByAgentIdFiltered,
-  callsGetAllByAgentIdToday,
+  getCallsFiltered,
+  getCallsForUserFiltered,
+  getCallsForToday,
 } from "@/actions/call";
 import { useSocketStore } from "@/hooks/use-socket-store";
 import { useInvalidate } from "@/hooks/use-invalidate";
@@ -29,17 +29,10 @@ export const useCallHistoryData = (
     queryKey: ["agent-calls", dateRange?.from, dateRange?.to],
     queryFn: () =>
       userId
-        ? callsGetAllByAgentIdFiltered(
-            userId,
-            dateRange?.from?.toString() as string,
-            dateRange?.to?.toString() as string
-          )
+        ? getCallsForUserFiltered({ userId, dateRange: dateRange! })
         : showDate
-        ? callsGetAllByUserIdFiltered(
-            dateRange?.from?.toString() as string,
-            dateRange?.to?.toString() as string
-          )
-        : callsGetAllByAgentIdToday(),
+        ? getCallsFiltered(dateRange!)
+        : getCallsForToday(),
   });
 
   useEffect(() => {

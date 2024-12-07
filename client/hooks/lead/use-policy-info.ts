@@ -1,71 +1,74 @@
 import { useCallback } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
-import { toast } from "sonner";
 import { useLeadStore } from "./use-lead";
+import { useInvalidate } from "../use-invalidate";
+import { toast } from "sonner";
 
 import { LeadPolicySchemaType, LeadPolicySchemaTypeP } from "@/schemas/lead";
-import { leadPolicyGet, leadPolicyUpsert } from "@/actions/lead/policy";
-import { useInvalidate } from "../use-invalidate";
+import { getLeadPolicy, createOrUpdateLeadPolicy } from "@/actions/lead/policy";
 
 export const useLeadPolicyData = () => {
-  const { leadId } = useLeadStore();
-
   //POLICY
-  const { data: policy, isFetching: isFetchingPolicy } =
-    useQuery<LeadPolicySchemaTypeP | null>({
-      queryFn: () => leadPolicyGet(leadId as string),
-      queryKey: [`leadPolicy-${leadId}`],
+  const onGetLeadPolicy = (leadId:string) => {
+    const {
+      data: policy,
+      isFetching: policyFetching,
+      isLoading: policyLoading,
+    } = useQuery<LeadPolicySchemaTypeP | null>({
+      queryFn: () => getLeadPolicy(leadId),
+      queryKey: [`lead-policy-${leadId}`],
+      enabled: !!leadId,
     });
+    return {
+      policy,
+      policyFetching,
+      policyLoading,
+    };
+  };
 
   return {
-    policy,
-    isFetchingPolicy,
+    onGetLeadPolicy,
   };
 };
 
-export const useLeadPolicyActions = () => {
-  const { leadId, isPolicyFormOpen, onPolicyFormClose } = useLeadStore();
+export const useLeadPolicyActions = (cb:()=>void) => {
   const { invalidate } = useInvalidate();
 
   //POLICY
-  const { mutate: policyMutate, isPending: policyIsPending } = useMutation({
-    mutationFn: leadPolicyUpsert,
+  const { mutate: updatePolicyMutate, isPending: policyUpdating } = useMutation({
+    mutationFn: createOrUpdateLeadPolicy,
     onSuccess: (results) => {
-      if (results.success) {
+    
         userEmitter.emit("policyInfoUpdated", {
-          ...results.success,
-          startDate: results.success?.startDate || undefined,
+          ...results,
+          startDate: results?.startDate || undefined,
         });
-        userEmitter.emit("leadStatusChanged", results.success.leadId, "Sold");
+        userEmitter.emit("leadStatusChanged", results.leadId, "Sold");
 
         toast.success("Lead Policy Info Updated", { id: "update-policy-info" });
         invalidate("blueprint-active");
         invalidate("blueprint-week-active");
-        invalidate(`leadPolicy-${leadId}`);
-        onPolicyFormClose();
-      } else 
-        toast.error(results.error, { id: "update-policy-info" });
-      
+        invalidate(`lead-policy-${results.leadId}`);
+        cb();
+     
     },
     onError: (error) =>
-      toast.error(error.message, { id: "update-policy-info" }),
+      toast.error(error.message, { id: "update-policy-info" })
   });
 
-  const onPolicySubmit = useCallback(
+  const onUpdatePolicy = useCallback(
     (values: LeadPolicySchemaType) => {
       toast.loading("Updating Policy Information...", {
         id: "update-policy-info",
       });
-      policyMutate(values);
+      updatePolicyMutate(values);
     },
-    [policyMutate]
+    [updatePolicyMutate]
   );
 
   return {
-    isPolicyFormOpen,
-    onPolicyFormClose,
-    onPolicySubmit,
-    policyIsPending,
+     onUpdatePolicy,
+    policyUpdating,
   };
 };

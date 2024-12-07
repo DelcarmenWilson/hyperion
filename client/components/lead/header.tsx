@@ -3,14 +3,16 @@ import { useContext, useEffect } from "react";
 import { redirect } from "next/navigation";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 
 import { LeadDropDown } from "@/components/lead/dropdown";
-import { useLeadData } from "@/hooks/lead/use-lead";
 import SkeletonWrapper from "../skeleton-wrapper";
 import { EmptyData } from "./info/empty-data";
-
+//TODO - need to remove the socket calls here, lets make use of the hooks
 export const LeadHeader = () => {
-  const { lead, isFetchingLead } = useLeadData();
+  const { leadId } = useLeadStore();
+  const { onGetLead } = useLeadData();
+  const { lead, leadFetching } = onGetLead(leadId as string);
   const { socket } = useContext(SocketContext).SocketState;
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export const LeadHeader = () => {
     };
   }, []);
   return (
-    <SkeletonWrapper isLoading={isFetchingLead}>
+    <SkeletonWrapper isLoading={leadFetching}>
       {lead ? (
         <div className="flex justify-center items-center gap-2 bg-secondary pt-2 mt-2">
           <h3 className="text-2xl  font-bold">

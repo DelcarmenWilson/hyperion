@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { callUpdateByIdShare } from "@/actions/call";
+import { shareCall } from "@/actions/call";
 
 export const CallHistoryActions = ({ call }: { call: FullCall }) => {
   const user = useCurrentUser();
@@ -37,13 +37,8 @@ export const CallHistoryActions = ({ call }: { call: FullCall }) => {
   const OnShareToggle = () => {
     const localShared = !isShared;
     setIsShared(localShared);
-    callUpdateByIdShare(call.id, localShared).then((data) => {
-      if (data.error) {
-        toast.error(data.error);
-      }
-      if (data.success) {
-        toast.success(data.success);
-      }
+    shareCall({ id: call.id, shared: localShared }).then((data) => {
+      toast.success(data);
     });
   };
   if (!show) return null;

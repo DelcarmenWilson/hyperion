@@ -1,8 +1,8 @@
 import React from "react";
 import { Phone, PhoneForwarded, PhoneOff } from "lucide-react";
-
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,
@@ -10,9 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { notificationsUpdateByIdMasterSwitch } from "@/actions/settings/notification";
 
-export const MasterSwitch = () => {
+const MasterSwitch = () => {
   const user = useCurrentUser();
 
   const onMasterSwitchChange = async (master: string) => {
@@ -51,3 +52,4 @@ export const MasterSwitch = () => {
     </Select>
   );
 };
+export default MasterSwitch;

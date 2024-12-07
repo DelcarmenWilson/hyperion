@@ -10,19 +10,19 @@ import { Separator } from "@/components/ui/separator";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const DashBoardClient = () => {
-  const { dataCard, isFetching } = useDashboardData();
+  const { dataCards, dashboardCardsLoading } = useDashboardData();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:grid-cols-2">
-      {dataCard.map((data) => (
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:grid-cols-2">
+      {dataCards.map((card) => (
         <DataCard
-          key={data.title}
-          icon={data.icon}
-          title={data.title}
-          value={data.value}
-          href={data.href}
-          hrefTitle={data.hrefTitle}
-          loading={isFetching}
+          key={card.title}
+          icon={card.icon}
+          title={card.title}
+          value={card.value}
+          href={card.href}
+          hrefTitle={card.hrefTitle}
+          loading={dashboardCardsLoading}
         />
       ))}
     </div>

@@ -1,11 +1,12 @@
-import Link from "next/link";
-
 import { MessagesSquare } from "lucide-react";
+import Link from "next/link";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import {
   useConversationActions,
   useConversationData,
 } from "@/hooks/use-conversation";
+
+import { ShortConvo } from "@/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,25 +14,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import NewEmptyCard from "../reusable/new-empty-card";
+import { ScrollArea } from "../ui/scroll-area";
 import SkeletonWrapper from "@/components//skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-//TODO - see if we can consolidate the UI with nav Chats
-export const NavMessages = () => {
+const NavMessages = () => {
   const user = useCurrentUser();
   const { audioRef, onUpdateUnreadConversation, unreadConversationUpdating } =
     useConversationActions();
 
   const { onGetUnreadConversation } = useConversationData();
-  const {
-    unreadConversations,
-    unreadConversationsFetching,
-    unreadConversationsLoading,
-  } = onGetUnreadConversation();
+  const { unreadConversations, unreadConversationsFetching } =
+    onGetUnreadConversation();
 
   return (
     <div>
@@ -47,61 +46,91 @@ export const NavMessages = () => {
             )}
           </Button>
         </DropdownMenuTrigger>
-        <SkeletonWrapper isLoading={unreadConversationsFetching}>
-          <DropdownMenuContent className="w-full lg:w-[300px]" align="center">
-            <DropdownMenuLabel>Lead Messages</DropdownMenuLabel>
-            {unreadConversations?.length ? (
-              <>
-                {unreadConversations?.map((chat) => (
-                  <DropdownMenuItem
-                    key={chat.id}
-                    className="flex gap-2 border-b cursor-pointer"
-                    disabled={unreadConversationUpdating}
-                    onClick={() => onUpdateUnreadConversation(chat.id)}
-                  >
-                    <div className="relative">
-                      <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
-                        {chat.unread}
-                      </Badge>
-                      <div className="flex-center bg-primary text-accent rounded-full p-1 mr-2">
-                        <span className="text-lg font-semibold">{`${chat.lead.firstName.substring(
-                          0,
-                          1
-                        )} ${chat.lead.lastName.substring(0, 1)}`}</span>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <h4 className=" font-bold ms-2">
-                          {chat.lead.firstName}
-                        </h4>
-                        <p className="text-end text-muted-foreground text-sm">
-                          {formatDate(chat.lastMessage?.createdAt)}
-                        </p>
-                      </div>
-                      <p>{chat.lastMessage?.content}</p>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem
-                  disabled={unreadConversationUpdating}
-                  className="gap-2 justify-center"
-                  onClick={() => onUpdateUnreadConversation("clear")}
-                >
-                  Mark all as Read
-                </DropdownMenuItem>
-              </>
-            ) : (
-              <DropdownMenuItem className="flex flex-col">
-                <p className="text-xl text-center w-full">No new Messages</p>
-                <div className="text-end w-full text-sm underline">
-                  <Link href="/conversations">View All</Link>
-                </div>
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </SkeletonWrapper>
+        <DropdownMenuContent
+          className="w-full lg:w-[300px] overflow-hidden"
+          align="center"
+        >
+          <DropdownMenuLabel className="flex justify-between">
+            Lead Messages
+            <Link href="/conversations" className="text-xs underline">
+              View All
+            </Link>
+          </DropdownMenuLabel>
+          <SkeletonWrapper isLoading={unreadConversationsFetching}>
+            <ScrollArea>
+              <div className="max-h-[400px]">
+                {!unreadConversations?.length &&
+                  !unreadConversationsFetching && (
+                    <NewEmptyCard
+                      title="No lead Messages"
+                      icon={MessagesSquare}
+                    />
+                  )}
+
+                {unreadConversations && unreadConversations?.length && (
+                  <>
+                    {unreadConversations?.map((convo) => (
+                      <MessageCard
+                        key={convo.id}
+                        onUpdate={() => onUpdateUnreadConversation(convo.id)}
+                        convo={convo}
+                      />
+                    ))}
+                    <Button
+                      disabled={unreadConversationUpdating}
+                      className="w-full gap-2 justify-center mt-2"
+                      onClick={() => onUpdateUnreadConversation("clear")}
+                    >
+                      Mark all as Read
+                    </Button>
+                  </>
+                )}
+              </div>
+            </ScrollArea>
+          </SkeletonWrapper>
+        </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
 };
+
+const MessageCard = ({
+  convo,
+  onUpdate,
+}: {
+  convo: ShortConvo;
+  onUpdate: () => void;
+}) => {
+  const { lead, lastMessage, unread } = convo;
+  return (
+    <div
+      className="flex gap-2 w-full p-2 bg-background hover:bg-primary/25 border-b cursor-pointer"
+      onClick={onUpdate}
+    >
+      <div className="relative flex-center text-accent">
+        <Avatar className="rounded-full">
+          <AvatarFallback className="rounded-full bg-primary/50 text-sm">
+            {lead.firstName.charAt(0)} {lead.lastName.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+
+        {/* <span className="text-lg font-semibold">
+          {lead.firstName.charAt(0)} {lead.lastName.charAt(0)}
+        </span> */}
+        <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
+          {unread}
+        </Badge>
+      </div>
+      <div className="flex-1">
+        <div className="flex justify-between items-start">
+          <h4 className=" font-bold ms-2">{lead.firstName}</h4>
+          <p className="text-end text-muted-foreground text-sm">
+            {formatDate(lastMessage?.createdAt)}
+          </p>
+        </div>
+        <p>{lastMessage?.content}</p>
+      </div>
+    </div>
+  );
+};
+export default NavMessages;

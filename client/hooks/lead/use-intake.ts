@@ -36,7 +36,7 @@ import {
   leadUpdateByIdIntakeOtherInfo,
   leadUpdateByIdIntakePersonal,
 } from "@/actions/lead/intake";
-import { leadBeneficiariesGetAllById } from "@/actions/lead/beneficiary";
+import { getLeadBeneficiaries } from "@/actions/lead/beneficiary";
 
 export const useLeadIntakeData = () => {
   const { leadId } = useLeadStore();
@@ -48,6 +48,7 @@ export const useLeadIntakeData = () => {
     } = useQuery<IntakePersonalMainSchemaType | null>({
       queryKey: [`lead-intake-personal-${leadId}`],
       queryFn: () => leadGetByIdIntakePersonalInfo(leadId as string),
+      enabled:!!leadId
     });
     return { personal, personalFetching, personalLoading };
   };
@@ -58,7 +59,7 @@ export const useLeadIntakeData = () => {
       isLoading: beneficiariesLoading,
     } = useQuery<LeadBeneficiary[]>({
       queryKey: [`lead-intake-beneficiaries-${leadId}`],
-      queryFn: () => leadBeneficiariesGetAllById(leadId as string),
+      queryFn: () => getLeadBeneficiaries(leadId as string),enabled:!!leadId
     });
     return { beneficiaries, beneficiariesFetching, beneficiariesLoading };
   };
@@ -69,7 +70,7 @@ export const useLeadIntakeData = () => {
       isLoading: doctorLoading,
     } = useQuery<IntakeDoctorInfoSchemaType | null>({
       queryKey: [`lead-intake-doctor-${leadId}`],
-      queryFn: () => leadGetByIdIntakeDoctorInfo(leadId as string),
+      queryFn: () => leadGetByIdIntakeDoctorInfo(leadId as string),enabled:!!leadId
     });
     return { doctor, doctorFetching, doctorLoading };
   };
@@ -80,7 +81,7 @@ export const useLeadIntakeData = () => {
       isLoading: bankLoading,
     } = useQuery<IntakeBankInfoSchemaType | null>({
       queryKey: [`lead-intake-bank-${leadId}`],
-      queryFn: () => leadGetByIdIntakeBankInfo(leadId!),
+      queryFn: () => leadGetByIdIntakeBankInfo(leadId!),enabled:!!leadId
     });
     return { bank, bankFetching, bankLoading };
   };
@@ -91,7 +92,7 @@ export const useLeadIntakeData = () => {
       isLoading: otherLoading,
     } = useQuery<IntakeOtherInfoSchemaType | null>({
       queryKey: [`lead-intake-other-${leadId}`],
-      queryFn: () => leadGetByIdIntakeOtherInfo(leadId as string),
+      queryFn: () => leadGetByIdIntakeOtherInfo(leadId as string),enabled:!!leadId
     });
     return { other, otherFetching, otherLoading };
   };
@@ -102,7 +103,7 @@ export const useLeadIntakeData = () => {
       isLoading: policyLoading,
     } = useQuery<FullLeadPolicy | null>({
       queryKey: [`lead-intake-policy-${leadId}`],
-      queryFn: () => leadGetByIdIntakePolicyInfo(leadId as string),
+      queryFn: () => leadGetByIdIntakePolicyInfo(leadId as string),enabled:!!leadId
     });
     return { policy, policyFetching, policyLoading };
   };
@@ -113,7 +114,7 @@ export const useLeadIntakeData = () => {
       isLoading: medicalLoading,
     } = useQuery<IntakeMedicalInfoSchemaType | null>({
       queryKey: [`lead-intake-medical-${leadId}`],
-      queryFn: () => leadGetByIdIntakeMedicalInfo(leadId as string),
+      queryFn: () => leadGetByIdIntakeMedicalInfo(leadId as string),enabled:!!leadId
     });
 
     return { medical, medicalFetching, medicalLoading };

@@ -5,7 +5,7 @@ import { TwilioCall } from "@/types";
 import { voiceResponse } from "@/lib/twilio/handler";
 import { formatObject } from "@/formulas/objects";
 
-import { leadGetOrCreateByPhoneNumber } from "@/actions/lead";
+import { getOrCreateLeadByPhoneNumber } from "@/actions/lead";
 import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
 
 export async function POST(req: Request) {
@@ -22,12 +22,12 @@ export async function POST(req: Request) {
   //if there is an associated agent phonenumber change the agent id to the agent id from the database
   if (agentPhoneNumber) agentId = agentPhoneNumber.agentId!;
 
-   //get the lead information based on the phone number and call direction
-  const lead = await leadGetOrCreateByPhoneNumber(
-    call.callDirection == "outbound" ? call.to : call.from,
-    call.callerState,
-    agentId
-  );
+  //get the lead information based on the phone number and call direction
+  const lead = await getOrCreateLeadByPhoneNumber({
+    cellPhone: call.callDirection == "outbound" ? call.to : call.from,
+    state: call.callerState,
+    agentId,
+  });
 
   if (call.callDirection == "outbound") {
     call.agentId = agentId;

@@ -13,10 +13,12 @@ import { DEVADMINS } from "@/constants/user";
 
 export const PolicyInfoClient = () => {
   const role = useCurrentRole();
-  const { policy, isFetchingPolicy } = useLeadPolicyData();
-  const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
   const { leadId } = useLeadId();
-  const { leadBasic } = useLeadData();
+  const { onGetLeadPolicy } = useLeadPolicyData();
+  const { policy, policyFetching } = onGetLeadPolicy(leadId);
+  const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId);
 
   if (role == "ASSISTANT") return null;
 
@@ -24,7 +26,7 @@ export const PolicyInfoClient = () => {
   const assistant = policy?.lead.assistant;
 
   return (
-    <SkeletonWrapper isLoading={isFetchingPolicy}>
+    <SkeletonWrapper isLoading={policyFetching}>
       <div className="flex flex-col gap-2 text-sm">
         {DEVADMINS.includes(role!) && (
           <SectionWrapper

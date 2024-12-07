@@ -155,18 +155,6 @@ model Pipeline {
   updatedAt DateTime @updatedAt
 }
 
-//TODO - dont forget to remove this table after the push to production
-model Feed {
-  id      String  @id @default(cuid())
-  content String  @db.LongText
-  link    String?
-  userId  String
-  read    Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 //THIS IS FOR PAGEUPDATES
 model PageUpdate {
   id          String  @id @default(cuid())

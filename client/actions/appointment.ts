@@ -26,9 +26,9 @@ import {
 } from "./sms";
 
 import { getEntireDay, getToday } from "@/formulas/dates";
-import { callUpdateByIdAppointment } from "./call";
+import { updateCallAppointment } from "./call";
 
-import { leadGetOrInsert } from "@/actions/lead";
+import { getOrCreateLead } from "@/actions/lead";
 import { getAssitantForUser } from "@/actions/user";
 import { createEmail } from "@/actions/email/create-email";
 import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
@@ -73,10 +73,10 @@ export const getAppointments = async () => {
 };
 
 export const getAppointment = async (id: string) => {
-    return await db.appointment.findUnique({
-      where: { id },
-      include: { lead: true },
-    });
+  return await db.appointment.findUnique({
+    where: { id },
+    include: { lead: true },
+  });
 };
 
 export const getUpcomingAppointments = async (
@@ -164,14 +164,13 @@ export const getAppointmentsForUser = async ({
   }
 };
 
-
 //APPOINTMENT LABELS
 export const getAppointmentLabels = async () => {
-    const userId = await getAssitantForUser();
-    if (!userId) throw new Error("Unauthenticated!")
-    return await db.appointmentLabel.findMany({
-      where: { OR: [{ userId }, { default: { equals: true } }] },
-    });
+  const userId = await getAssitantForUser();
+  if (!userId) throw new Error("Unauthenticated!");
+  return await db.appointmentLabel.findMany({
+    where: { OR: [{ userId }, { default: { equals: true } }] },
+  });
 };
 
 //ACTIONS
@@ -240,7 +239,10 @@ export const createAppointment = async (values: AppointmentSchemaType) => {
     include: { lead: true },
   });
 
-  await callUpdateByIdAppointment(appointment.leadId, appointment.id);
+  await updateCallAppointment({
+    leadId: appointment.leadId,
+    appointmentId: appointment.id,
+  });
 
   if (!appointment) return { error: "Appointment was not created!" };
 
@@ -325,7 +327,7 @@ export const createBookingAppointment = async (
   } = validatedFields.data;
 
   //Insert or get oldLead with the previous data
-  const lead = await leadGetOrInsert(
+  const lead = await getOrCreateLead(
     {
       id,
       firstName,
@@ -407,19 +409,15 @@ export const updateAppointmentStatus = async (values: {
   status: string;
 }) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthenticated" };
-  
+  if (!user) return { error: "Unauthenticated" };
+
   const { id, status } = values;
   const existingAppointment = await db.appointment.findUnique({
     where: { id },
   });
-  if (!existingAppointment) 
-    return { error: "appointment does not exist" };
-  
+  if (!existingAppointment) return { error: "appointment does not exist" };
 
-  if (existingAppointment.agentId != user.id) 
-    return { error: "Unauthorized" };  
+  if (existingAppointment.agentId != user.id) return { error: "Unauthorized" };
 
   const updatedAppointment = await db.appointment.update({
     where: { id },
@@ -448,7 +446,10 @@ export const rescheduleAppointmentByLead = async (
   if (!existingAppointment) return { error: "Appointment does not exist" };
   await db.appointment.update({
     where: { id: existingAppointment.id },
-    data: { status: AppointmentStatus.RESCHEDULED, comments: "Rescheduled by Lead" },
+    data: {
+      status: AppointmentStatus.RESCHEDULED,
+      comments: "Rescheduled by Lead",
+    },
   });
 
   const { agentId, leadId } = existingAppointment;
@@ -506,7 +507,7 @@ export const cancelAppointmentByLead = async ({
     where: { id },
     data: {
       status: AppointmentStatus.CANCELLED,
-      reason:`Cancelled by Lead - ${reason}`,
+      reason: `Cancelled by Lead - ${reason}`,
     },
   });
 
@@ -523,7 +524,7 @@ export const cancelAppointmentAgent = async ({
     where: { id },
     data: {
       status: AppointmentStatus.CANCELLED,
-      reason:`Cancelled by Agent - ${reason}`,
+      reason: `Cancelled by Agent - ${reason}`,
     },
   });
 
@@ -575,35 +576,30 @@ export const updateAppointmentLabel = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unathenticated" };
-  
-  const {success,data} = AppointmentLabelSchema.safeParse(values);
+  if (!user) return { error: "Unathenticated" };
 
-  if (!success) 
-    return { error: "Invalid fields!" };
-  
-  
+  const { success, data } = AppointmentLabelSchema.safeParse(values);
+
+  if (!success) return { error: "Invalid fields!" };
+
   let userId = user.id;
   if (user.role == "ASSISTANT") {
     userId = (await userGetByAssistantOld(userId)) as string;
   }
 
   const existingLabel = await db.appointmentLabel.findUnique({
-    where: { id:data.id },
+    where: { id: data.id },
   });
   if (!existingLabel) return { error: "This label does not exist!" };
 
   const label = await db.appointmentLabel.update({
-    where: { id:data.id },
+    where: { id: data.id },
     data: {
-     ...data
+      ...data,
     },
   });
 
-  if (!label) 
-    return { error: "Label was not updated!" };
-  
+  if (!label) return { error: "Label was not updated!" };
 
   return { success: label };
 };
@@ -612,19 +608,17 @@ export const updateAppointmentLabelChecked = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unathenticated" };
-  
-  const {success,data} = AppointmentLabelSchema.safeParse(values);
+  if (!user) return { error: "Unathenticated" };
 
-  if (!success) 
-    return { error: "Invalid fields!" };
-  
+  const { success, data } = AppointmentLabelSchema.safeParse(values);
+
+  if (!success) return { error: "Invalid fields!" };
+
   const { id, checked } = data;
   let userId = user.id;
-  if (user.role == "ASSISTANT") 
+  if (user.role == "ASSISTANT")
     userId = (await userGetByAssistantOld(userId)) as string;
-  
+
   await db.appointmentLabel.update({
     where: { id },
     data: {
@@ -653,9 +647,7 @@ export const sendAppointmentReminders = async () => {
     },
   });
 
-  if (appointments.length == 0) 
-    return { error: "No reminders available" };
-  
+  if (appointments.length == 0) return { error: "No reminders available" };
 
   for (const app of appointments) {
     const { agent, lead, startDate } = app;
@@ -797,7 +789,7 @@ export const closeOpenAppointments = async (test: boolean = false) => {
       userId: appointment.agentId,
       link: `/appointments/${appointment.id}`,
       linkText: "View Appointment",
-      read:false
+      read: false,
     });
 
     return { success: "Message sent!" };

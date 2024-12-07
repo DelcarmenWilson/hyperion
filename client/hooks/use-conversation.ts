@@ -1,16 +1,19 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { create } from "zustand";
-import SocketContext from "@/providers/socket";
 import { toast } from "sonner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSocketStore } from "./use-socket-store";
+import { useInvalidate } from "./use-invalidate";
 
 import { FullConversation, ShortConversation, ShortConvo } from "@/types";
 
-import { getConversation } from "@/actions/lead/conversation/get-conversation";
-import { getConversations } from "@/actions/lead/conversation/get-conversations";
-import { getUnreadConversations } from "@/actions/lead/conversation/get-unread-conversations";
-import { updateUnreadConversation } from "@/actions/lead/conversation/update-unread-conversation";
+import {
+  getConversation,
+  getConversations,
+  getUnreadConversations,
+  updateUnreadConversation,
+} from "@/actions/lead/conversation";
 
 type ConversationStore = {
   isLeadInfoOpen: boolean;
@@ -80,18 +83,12 @@ export const useConversationData = () => {
 };
 
 export const useConversationActions = () => {
-  const { socket } = useContext(SocketContext).SocketState;
-  const queryClient = useQueryClient();
+  const { socket } = useSocketStore();
+  const { invalidate } = useInvalidate();
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const invalidate = (key: string) => {
-    queryClient.invalidateQueries({
-      queryKey: [key],
-    });
-  };
-
-  //UPDATE CONVERSATION UNDREAD
+  //UPDATE UNDREAD CONVERSATION
   const {
     mutate: updateUnreadConversationMutate,
     isPending: unreadConversationUpdating,
@@ -102,14 +99,11 @@ export const useConversationActions = () => {
       if (results.success?.length)
         router.push(`/conversations/${results.success}`);
     },
-    onError: (error) => {
-      toast.error(error.message, { id: "update-conversation" });
-    },
+    onError: (error) => toast.error(error.message),
   });
 
   const onUpdateUnreadConversation = useCallback(
     (id: string) => {
-      toast.loading("Deleting chat ...", { id: "delete-chat" });
       updateUnreadConversationMutate(id);
     },
     [updateUnreadConversationMutate]

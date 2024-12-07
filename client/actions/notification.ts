@@ -32,6 +32,7 @@ export const getMultipledNotifications = async (
   if (!notificationIds) return null;
   const user = await currentUser();
   if (!user?.id) throw new Error("unauthenticated");
+  
   return await db.notification.findMany({
     where: { userId: user.id, id: { in: notificationIds } },
   });
@@ -74,6 +75,22 @@ export const updateNotification = async (values: {
     },
   });
 
+  revalidatePath("/notifications");
+};
+
+export const updateExitingNotification = async (values: {
+  id: string;
+  content: string;
+  link: string | undefined;
+}) => {
+  const notification=await db.notification.update({
+    where: { id: values.id },
+    data: {
+      ...values,
+    },
+  });
+
+  sendSocketData(notification.userId, "notification:new", notification.id);
   revalidatePath("/notifications");
 };
 

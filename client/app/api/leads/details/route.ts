@@ -1,4 +1,4 @@
-import { getLeadByPhone } from "@/actions/lead/main/get-lead-by-phone";
+import { getLeadByPhone } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

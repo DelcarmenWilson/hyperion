@@ -1,6 +1,7 @@
 "use client";
 import { PhoneOutgoing } from "lucide-react";
 import { useLeadCallData } from "@/hooks/lead/use-call";
+import { useLeadId } from "@/hooks/lead/use-lead";
 
 import { CallHistoryActions } from "@/components/callhistory/actions";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
@@ -18,7 +19,9 @@ import { formatDateTime } from "@/formulas/dates";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
 export const CallHistoryClient = () => {
-  const { calls, isFetchingCalls } = useLeadCallData();
+  const { leadId } = useLeadId();
+  const { onGetCalls } = useLeadCallData();
+  const { calls, callsFetching } = onGetCalls(leadId);
 
   return (
     <div className="text-sm">
@@ -31,7 +34,7 @@ export const CallHistoryClient = () => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <SkeletonWrapper isLoading={isFetchingCalls} fullWidth>
+        <SkeletonWrapper isLoading={callsFetching} fullWidth>
           <TableBody>
             {calls?.map((call) => (
               <TableRow key={call.id}>

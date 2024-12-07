@@ -1,5 +1,5 @@
 "use client";
-import { useLeadAssociatedData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
 
 import { EmptyData } from "./empty-data";
 import { InputGroup } from "@/components/reusable/input-group";
@@ -10,21 +10,23 @@ import { getAge } from "@/formulas/dates";
 import Hint from "@/components/custom/hint";
 
 export const AssociatedClient = () => {
-  const { leadsAssociated, isFetchingLeadsAssociated } =
-    useLeadAssociatedData();
-  const { onNewLeadFormOpen } = useLeadStore();
+  const { onNewLeadFormOpen, leadId } = useLeadStore();
+  const { onGetAssociatedLeads } = useLeadData();
+  const { associatedLeads, associatedLeadsFetching } = onGetAssociatedLeads(
+    leadId as string
+  );
 
   return (
-    <SkeletonWrapper isLoading={isFetchingLeadsAssociated}>
+    <SkeletonWrapper isLoading={associatedLeadsFetching}>
       <div className="flex flex-col gap-2 text-sm">
         <SectionWrapper
           title="Associated Leads"
           onClick={() => onNewLeadFormOpen(true)}
           showAdd
         >
-          {leadsAssociated ? (
+          {associatedLeads ? (
             <>
-              {leadsAssociated.map((lead) => (
+              {associatedLeads.map((lead) => (
                 <Hint key={lead.id} label={`View ${lead.firstName}'s details`}>
                   <Link href={`/leads/${lead.id}`}>
                     <div className="grid grid-cols-3 gap-2 items-center hover:bg-primary/25 p-2">

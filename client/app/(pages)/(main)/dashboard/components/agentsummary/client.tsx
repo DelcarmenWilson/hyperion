@@ -10,11 +10,14 @@ import { CardLayout } from "@/components/custom/card/layout";
 import { TopMenu } from "./top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { getUserSummaryByTeam } from "@/actions/user";
+import { useCurrentUser } from "@/hooks/user/use-current";
 
 export const AgentSummaryClient = () => {
+  const user = useCurrentUser();
   const { data: agents, isFetching } = useQuery<SummaryUser[]>({
     queryKey: ["agentSummary"],
     queryFn: () => getUserSummaryByTeam(),
+    enabled: user?.role == "MASTER",
   });
 
   const formattedAgents: AgentSummaryColumn[] | undefined = agents?.map(

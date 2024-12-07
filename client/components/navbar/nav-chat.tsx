@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import SkeletonWrapper from "../skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
-
+//TODO- see when and if this is being used. if not please delete this page and all of its functions
 export const NavChat = () => {
   const { onNavChatsGet } = useChatData();
   const { navChats, navChatsIsFectching } = onNavChatsGet();

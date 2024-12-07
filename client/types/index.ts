@@ -78,7 +78,15 @@ import {
 } from "./chat-bot/public-chatbot";
 
 import { FullCampaign, FullAd } from "./facebook";
-
+export type ShortCall = Call & {
+  lead: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    cellPhone: string;
+    email: string | null;
+  } | null;
+};
 export type FullCall = Call & {
   lead: {
     id: string;

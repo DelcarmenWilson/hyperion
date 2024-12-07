@@ -24,16 +24,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export const LeadSidebar = () => {
   const { onPhoneOutOpen } = usePhoneStore();
   const { setLeadId, onMainFormOpen, onGeneralFormOpen } = useLeadStore();
+  const { leadId } = useLeadId();
   const {
-    leadBasic,
-    isFetchingLeadBasic,
-    lead,
     edit,
     setEdit,
     defaultNumber,
     onSetDefaultNumber,
+    onGetLeadBasicInfo,
+    onGetLead,
   } = useLeadData();
-  const { leadId } = useLeadId();
+  const { leadBasic, leadBasicFetching } = onGetLeadBasicInfo(leadId);
+  const { lead } = onGetLead(leadId);
 
   const callCount = leadBasic?.calls?.length;
 
@@ -49,7 +50,7 @@ export const LeadSidebar = () => {
 
   return (
     <div className="flex flex-col bg-background h-full p-2 overflow-hidden">
-      <SkeletonWrapper isLoading={isFetchingLeadBasic}>
+      <SkeletonWrapper isLoading={leadBasicFetching}>
         <div>
           <h3 className="text-3xl text-primary font-bold leading-2 tracking-tight">
             {fullName}
@@ -95,7 +96,7 @@ export const LeadSidebar = () => {
               {edit ? (
                 <PhoneSwitcher
                   number={defaultNumber!}
-                  onSetDefaultNumber={onSetDefaultNumber}
+                  onSetDefaultNumber={(e) => onSetDefaultNumber(leadId, e)}
                   onClose={() => setEdit(false)}
                 />
               ) : (

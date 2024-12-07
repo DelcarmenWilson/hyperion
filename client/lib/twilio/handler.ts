@@ -180,15 +180,19 @@ export const voicemailResponse = async (voicemailIn: string | null) => {
 
   const twiml = new VoiceResponse();
   twiml.pause({ length: 1 });
-  if (voicemailIn) {
-    twiml.play(voicemailIn);
-    //twiml.play({},'/sounds/message.mp3');
-  } else {
-    twiml.say(
-      { voice: "alice" },
-      "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
-    );
-  }
+  // if (voicemailIn) {
+  //   twiml.play(voicemailIn);
+  //   //twiml.play({},'/sounds/message.mp3');
+  // } else {
+  //   twiml.say(
+  //     { voice: "alice" },
+  //     "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
+  //   );
+  // }
+  twiml.say(
+    { voice: "alice" },
+    "The person you are trying to reach is unavailable. Please leave a voicemail after the beep."
+  );
   
   twiml.pause({ length: 1 });
   twiml.record({

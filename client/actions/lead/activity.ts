@@ -1,34 +1,28 @@
-"use server"
+"use server";
 import { db } from "@/lib/db";
 
 // DATA
-export const leadActivitiesGet = async (leadId: string) => {
-  try {
-    const activities = await db.leadActivity.findMany({  where: {
+export const getLeadActivities = async (leadId: string) => {
+  return await db.leadActivity.findMany({
+    where: {
       leadId,
-    },orderBy:{createdAt:"desc"}});
-    return activities;
-  } catch {
-    return [];
-  }
+    },
+    orderBy: { createdAt: "desc" },
+  });
 };
 
 //ACTIONS
-export const leadActivityInsert = async (
-  leadId: string,
-  type: string,
-  activity: string,
-  userId?: string,
-  newValue?: string
-) => {
+export const createLeadActivity = async (data: {
+  leadId: string;
+  type: string;
+  activity: string;
+  userId?: string;
+  newValue?: string;
+}) => {
   await db.leadActivity.create({
     data: {
-      type,
-      activity,
-      leadId,
-      userId,
-      newValue,
+      ...data,
     },
   });
-  return { success: "Activity created" };
+  return  "Activity created";
 };

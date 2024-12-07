@@ -22,13 +22,14 @@ export const SmsClient = ({
   showHeader?: boolean;
 }) => {
   const user = useCurrentUser();
-  const { leadBasic } = useLeadData();
+  const { conversationId } = useLeadStore();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic } = onGetLeadBasicInfo(leadId as string);
   const { isLeadInfoOpen, onLeadInfoToggle } = usePhoneStore();
 
   let leadFullName = `${leadBasic?.firstName} ${leadBasic?.lastName}`;
-  const [loading, setLoading] = useState(false);
+
   const [disabled, setDisabled] = useState(false);
-  const {conversationId}=useLeadStore()
 
   // PHONE VARIABLES
   const [to, setTo] = useState<{ name: string; number: string }>({
@@ -127,7 +128,7 @@ export const SmsClient = ({
           onSetDefaultNumber={setSelectedNumber}
         />
       </div>
-      <SmsBody conversationId={conversationId!}/>
+      <SmsBody conversationId={conversationId!} />
       <FormInput placeholder="Write Something" />
     </div>
   );

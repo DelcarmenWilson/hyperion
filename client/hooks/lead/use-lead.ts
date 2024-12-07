@@ -1,36 +1,14 @@
 import { useCallback, useContext, useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useCurrentUser } from "../user/use-current";
 import SocketContext from "@/providers/socket";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { create } from "zustand";
 
-import { Call, User } from "@prisma/client";
+import { Call, Lead, User } from "@prisma/client";
 import { AssociatedLead, FullLead, LeadPrevNext } from "@/types";
-
-import {
-  leadGetByIdBasicInfo,
-  leadGetByIdCallInfo,
-  leadGetByIdGeneral,
-  leadGetByIdMain,
-  leadGetByIdNotes,
-  leadInsert,
-  leadsGetAssociated,
-  leadUpdateByIdAssistantAdd,
-  leadUpdateByIdAssistantRemove,
-  leadUpdateByIdDefaultNumber,
-  leadUpdateByIdGeneralInfo,
-  leadUpdateByIdMainInfo,
-  leadUpdateByIdNotes,
-  leadUpdateByIdQuote,
-  leadUpdateByIdShare,
-  leadUpdateByIdTitan,
-  leadUpdateByIdTransfer,
-  leadUpdateByIdUnShare,
-} from "@/actions/lead";
-import { useCurrentUser } from "../user/use-current";
-import { useQuery } from "@tanstack/react-query";
 import {
   LeadBasicInfoSchemaTypeP,
   LeadCallInfoSchemaTypeP,
@@ -42,7 +20,30 @@ import {
   LeadPolicySchemaType,
   LeadSchemaType,
 } from "@/schemas/lead";
-import { leadGetById, leadGetPrevNextById } from "@/actions/lead";
+
+import {
+  createLead,
+  getAssociatedLeads,
+  getLead,
+  getLeads,
+  getLeadBasicInfo,
+  getLeadCallInfo,
+  getLeadGeneralInfo,
+  getLeadMainInfo,
+  getLeadNotes,
+  getLeadPrevNext,
+  getMultipleLeads,
+  addLeadAssistant,
+  removeLeadAssistant,
+  updateLeadDefaultNumber,
+  updateLeadGeneralInfo,
+  updateLeadMainInfo,
+  updateLeadNotes,
+  updateLeadQuote,
+  shareLead,
+  unshareLead,
+  transferLead,
+} from "@/actions/lead";
 
 type DialogType =
   | "personal"
@@ -82,6 +83,8 @@ type State = {
   isExportFormOpen: boolean;
   //IMPORT LEAD FORM
   isImportFormOpen: boolean;
+  //MULTIPLE LEAD DIALOG
+  isMultipleLeadDialogOpen: boolean;
 };
 type Actions = {
   onTableClose?: () => void;
@@ -95,7 +98,7 @@ type Actions = {
   onGeneralFormOpen: (l: string) => void;
   onGeneralFormClose: () => void;
   //POLICY
-  onPolicyFormOpen: (l: string,n:string) => void;
+  onPolicyFormOpen: (l: string, n: string) => void;
   onPolicyFormClose: () => void;
   // SHARE
   onShareFormOpen: (l: string[], n: string, u?: User, f?: () => void) => void;
@@ -121,6 +124,10 @@ type Actions = {
   //IMPORT LEAD FORM
   onImportFormOpen: () => void;
   onImportFormClose: () => void;
+
+  //MULTIPLE LEAD DIALOG
+  onMultipleLeadDialogOpen: (ids: string[]) => void;
+  onMultipleLeadDialogClose: () => void;
 };
 
 export const useLeadStore = create<State & Actions>((set) => ({
@@ -134,7 +141,8 @@ export const useLeadStore = create<State & Actions>((set) => ({
   onGeneralFormOpen: (l) => set({ leadId: l, isGeneralFormOpen: true }),
   onGeneralFormClose: () => set({ isGeneralFormOpen: false }),
   isPolicyFormOpen: false,
-  onPolicyFormOpen: (l,n) => set({ leadId: l,leadFullName:n, isPolicyFormOpen: true }),
+  onPolicyFormOpen: (l, n) =>
+    set({ leadId: l, leadFullName: n, isPolicyFormOpen: true }),
   onPolicyFormClose: () => set({ isPolicyFormOpen: false }),
   //SHARE
   isShareFormOpen: false,
@@ -193,87 +201,153 @@ export const useLeadStore = create<State & Actions>((set) => ({
   isImportFormOpen: false,
   onImportFormOpen: () => set({ isImportFormOpen: true }),
   onImportFormClose: () => set({ isImportFormOpen: false }),
+  //MULTIPLE LEAD DIALOG
+  isMultipleLeadDialogOpen: false,
+  onMultipleLeadDialogOpen: (ids) =>
+    set({ leadIds: ids, isMultipleLeadDialogOpen: true }),
+  onMultipleLeadDialogClose: () =>
+    set({ leadIds: undefined, isMultipleLeadDialogOpen: false }),
 }));
 
 export const useLeadData = () => {
-  const { leadId, setConversationId } = useLeadStore();
+  const { leadIds, setConversationId } = useLeadStore();
   const [edit, setEdit] = useState(false);
   const [defaultNumber, setDefaultNumber] = useState("");
 
-  // const invalidate = (queries: string[]) => {
-  //   queries.forEach((query) => {
-  //     queryClient.invalidateQueries({ queryKey: [query] });
-  //   });
-  // };
-
-  const { data: leadBasic, isFetching: isFetchingLeadBasic } =
-    useQuery<LeadBasicInfoSchemaTypeP | null>({
-      queryFn: () => leadGetByIdBasicInfo(leadId as string),
+  const onGetLeadBasicInfo = (leadId: string) => {
+    const {
+      data: leadBasic,
+      isFetching: leadBasicFetching,
+      isLoading: leadBasicLoading,
+    } = useQuery<LeadBasicInfoSchemaTypeP | null>({
+      queryFn: () => getLeadBasicInfo(leadId),
       queryKey: [`lead-basic-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      leadBasic,
+      leadBasicFetching,
+      leadBasicLoading,
+    };
+  };
+  const onGetLead = (leadId: string) => {
+    const {
+      data: lead,
+      isFetching: leadFetching,
+      isLoading: leadLoading,
+    } = useQuery<FullLead | null>({
+      queryFn: () => getLead(leadId as string),
+      queryKey: [`lead-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      lead,
+      leadFetching,
+      leadLoading,
+    };
+  };
+
+  const onGetLeads = () => {
+    const {
+      data: leads,
+      isFetching: leadsFetching,
+      isLoading: leadsLoading,
+    } = useQuery<FullLead[] | []>({
+      queryFn: () => getLeads(),
+      queryKey: ["leads"],
     });
 
-  const { data: lead, isFetching: isFetchingLead } = useQuery<FullLead | null>({
-    queryFn: () => leadGetById(leadId as string),
-    queryKey: [`lead-${leadId}`],
-  });
+    return {
+      leads,
+      leadsFetching,
+      leadsLoading,
+    };
+  };
 
-  const { data: prevNext, isFetching: isFetchingnextPrev } =
-    useQuery<LeadPrevNext | null>({
-      queryFn: () => leadGetPrevNextById(leadId as string),
+  const onGetMultipleLeads = () => {
+    const {
+      data: leads,
+      isFetching: leadsFetching,
+      isLoading: leadsLoading,
+    } = useQuery<Lead[] | []>({
+      queryFn: () => getMultipleLeads({ leadIds }),
+      queryKey: [`leads-${leadIds}`],
+      enabled: !!leadIds,
+    });
+
+    return {
+      leads,
+      leadsFetching,
+      leadsLoading,
+    };
+  };
+  const onGetLeadPrevNext = (leadId: string) => {
+    const {
+      data: prevNext,
+      isFetching: nextPrevFetching,
+      isLoading: leadPrevNextLoading,
+    } = useQuery<LeadPrevNext | null>({
+      queryFn: () => getLeadPrevNext(leadId),
       queryKey: [`leadNextPrev-${leadId}`],
+      enabled: !!leadId,
     });
+    return {
+      prevNext,
+      nextPrevFetching,
+      leadPrevNextLoading,
+    };
+  };
+  const onGetAssociatedLeads = (leadId: string) => {
+    const {
+      data: associatedLeads,
+      isFetching: associatedLeadsFetching,
+      isLoading: associatedLeadsLoading,
+    } = useQuery<AssociatedLead[] | []>({
+      queryFn: () => getAssociatedLeads(leadId),
+      queryKey: [`lead-associated-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      associatedLeads,
+      associatedLeadsFetching,
+      associatedLeadsLoading,
+    };
+  };
 
-  const onSetDefaultNumber = async (phoneNumber: string) => {
+  const onSetDefaultNumber = async (leadId: string, phoneNumber: string) => {
     if (phoneNumber != defaultNumber) {
       setDefaultNumber(phoneNumber);
-      const updatedNumber = await leadUpdateByIdDefaultNumber(
-        leadId as string,
-        phoneNumber
-      );
+      const updatedNumber = await updateLeadDefaultNumber({
+        id: leadId,
+        defaultNumber: phoneNumber,
+      });
 
-      if (updatedNumber.success) {
-        toast.success(updatedNumber.success);
-      } else toast.error(updatedNumber.error);
+      if (updatedNumber) toast.success(updatedNumber);
+      else toast.error("Something went wrong!");
     }
     setEdit(false);
   };
-  useEffect(() => {
-    if (!lead) return;
-    setDefaultNumber(lead.defaultNumber);
-  }, [lead]);
+  // useEffect(() => {
+  //   if (!lead) return;
+  //   setDefaultNumber(lead.defaultNumber);
+  // }, [lead]);
 
-  useEffect(() => {
-    if (!leadBasic) return;
-    setConversationId(leadBasic.conversations[0]?.id);
-  }, [leadBasic]);
+  // useEffect(() => {
+  //   if (!leadBasic) return;
+  //   setConversationId(leadBasic.conversations[0]?.id);
+  // }, [leadBasic]);
 
   return {
-    leadId,
-    leadBasic,
-    isFetchingLeadBasic,
-    lead,
-    isFetchingLead,
     edit,
     setEdit,
     defaultNumber,
     onSetDefaultNumber,
-    prevNext,
-    isFetchingnextPrev,
-  };
-};
-
-export const useLeadAssociatedData = () => {
-  const { leadId } = useLeadStore();
-
-  const { data: leadsAssociated, isFetching: isFetchingLeadsAssociated } =
-    useQuery<AssociatedLead[] | []>({
-      queryFn: () => leadsGetAssociated(leadId as string),
-      queryKey: [`lead-associated-${leadId}`],
-    });
-
-  return {
-    leadsAssociated,
-    isFetchingLeadsAssociated,
+    onGetLeadBasicInfo,
+    onGetLead,
+    onGetLeads,
+    onGetMultipleLeads,
+    onGetLeadPrevNext,
+    onGetAssociatedLeads,
   };
 };
 
@@ -298,7 +372,7 @@ export const useLeadActions = (uId?: string) => {
   const onLeadUpdateByIdShare = async () => {
     if (!leadIds || !userId) return;
     setLoading(true);
-    const updatedShare = await leadUpdateByIdShare(leadIds, userId);
+    const updatedShare = await shareLead({ ids: leadIds, userId });
 
     if (updatedShare.success) {
       socket?.emit(
@@ -311,7 +385,7 @@ export const useLeadActions = (uId?: string) => {
       toast.success(updatedShare.message);
       if (onTableClose) onTableClose();
       onShareFormClose();
-    } else toast.error(updatedShare.error);
+    } else toast.error("Something went wrong!");
     setLoading(false);
   };
 
@@ -321,7 +395,7 @@ export const useLeadActions = (uId?: string) => {
     if (!leadId) return;
 
     setLoading(true);
-    const updatedShare = await leadUpdateByIdUnShare(leadId);
+    const updatedShare = await unshareLead(leadId);
 
     if (updatedShare.success) {
       socket?.emit(
@@ -334,7 +408,7 @@ export const useLeadActions = (uId?: string) => {
       setUserId(undefined);
       toast.success(updatedShare.message);
       onShareFormClose();
-    } else toast.error(updatedShare.error);
+    } else toast.error("Something went wrong");
 
     setLoading(false);
   };
@@ -343,7 +417,7 @@ export const useLeadActions = (uId?: string) => {
     if (!leadIds || !userId) return;
 
     setLoading(true);
-    const transferedLead = await leadUpdateByIdTransfer(leadIds, userId);
+    const transferedLead = await transferLead({ ids: leadIds, userId });
     if (transferedLead.success) {
       socket?.emit(
         "lead-transfered",
@@ -357,7 +431,7 @@ export const useLeadActions = (uId?: string) => {
       toast.success(transferedLead.message);
       if (onTableClose) onTableClose();
       onTransferFormClose();
-    } else toast.error(transferedLead.error);
+    } else toast.error("Something went wrong!");
     setLoading(false);
   };
 
@@ -367,7 +441,10 @@ export const useLeadActions = (uId?: string) => {
     const leadId = leadIds[0];
     if (!leadId || !userId) return;
     setLoading(true);
-    const updatedAssistant = await leadUpdateByIdAssistantAdd(leadId, userId);
+    const updatedAssistant = await addLeadAssistant({
+      id: leadId,
+      assistantId: userId,
+    });
     if (updatedAssistant.success) {
       socket?.emit(
         "lead-assistant-added",
@@ -378,7 +455,7 @@ export const useLeadActions = (uId?: string) => {
       );
       toast.success(updatedAssistant.message);
       onAssistantFormClose();
-    } else toast.error(updatedAssistant.error);
+    } else toast.error("Something went wrong!");
 
     setLoading(false);
   };
@@ -388,11 +465,11 @@ export const useLeadActions = (uId?: string) => {
     const leadId = leadIds[0];
     if (!leadId) return;
     setLoading(true);
-    const updatedAssistant = await leadUpdateByIdAssistantRemove(leadId);
+    const updatedAssistant = await removeLeadAssistant(leadId);
     if (updatedAssistant.success) {
       toast.success(updatedAssistant.message);
       onAssistantFormClose();
-    } else toast.error(updatedAssistant.error);
+    } else toast.error("Something went wrong");
 
     setLoading(false);
   };
@@ -430,19 +507,17 @@ export const useLeadInsertActions = () => {
   //NEW LEAD
   const { mutate: leadInsertMutate, isPending: leadInsertIsPending } =
     useMutation({
-      mutationFn: leadInsert,
+      mutationFn: createLead,
       onSuccess: (results) => {
         if (results.success) {
           toast.success("New lead created", { id: "insert-new-lead" });
           onNewLeadFormClose();
           if (!results.associated) router.push(`/leads/${results.success.id}`);
         } else {
-          toast.error(results.error, { id: "insert-new-lead" });
+          toast.error("Something went wrong", { id: "insert-new-lead" });
         }
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+      onError: (error) => toast.error(error.message, { id: "insert-new-lead" }),
       onSettled: () => invalidate(),
     });
 
@@ -474,31 +549,35 @@ export const useLeadMainInfoActions = (
   };
   const { data: mainInfo, isFetching: isFetchingMainInfo } =
     useQuery<LeadMainSchemaTypeP | null>({
-      queryFn: () => leadGetByIdMain(leadId as string),
+      queryFn: () => getLeadMainInfo(leadId as string),
       queryKey: [`lead-main-info-${leadId}`],
+      enabled: !!leadId,
     });
 
   const onLeadUpdateByIdQuote = async (e?: string) => {
     if (!e) {
       return;
     }
-    const updatedQuote = await leadUpdateByIdQuote(leadId as string, e);
-    if (updatedQuote.success) {
-      toast.success(updatedQuote.success);
-    } else toast.error(updatedQuote.error);
+    const updatedQuote = await updateLeadQuote({
+      id: leadId as string,
+      quote: e,
+    });
+    if (updatedQuote) {
+      toast.success(updatedQuote);
+    } else toast.error("Something wentwrong");
   };
 
   //MAIN INFO
   const onMainInfoUpdate = async (values: LeadMainSchemaType) => {
     setLoading(true);
-    const response = await leadUpdateByIdMainInfo(values);
-    if (response.success) {
-      userEmitter.emit("mainInfoUpdated", response.success);
+    const response = await updateLeadMainInfo(values);
+    if (response) {
+      userEmitter.emit("mainInfoUpdated", response);
       toast.success("Lead demographic info updated");
       ["lead-main-info", "lead"].forEach((key) => invalidate(key));
       if (onClose) onClose();
     } else {
-      toast.error(response.error);
+      toast.error("Something went wrong");
     }
     setLoading(false);
   };
@@ -530,20 +609,21 @@ export const useLeadGeneralInfoActions = (onClose?: () => void) => {
 
   const { data: generalInfo, isFetching: isFetchingGeneralInfo } =
     useQuery<LeadGeneralSchemaTypeP | null>({
-      queryFn: () => leadGetByIdGeneral(leadId as string),
+      queryFn: () => getLeadGeneralInfo(leadId as string),
       queryKey: [`lead-general-info-${leadId}`],
+      enabled: !!leadId,
     });
 
   //GENERAL INFO
   const onGeneralInfoUpdate = async (values: LeadGeneralSchemaType) => {
     setLoading(true);
-    const updatedLead = await leadUpdateByIdGeneralInfo(values);
+    const updatedLead = await updateLeadGeneralInfo(values);
 
-    if (updatedLead.success) {
-      userEmitter.emit("generalInfoUpdated", updatedLead.success);
+    if (updatedLead) {
+      userEmitter.emit("generalInfoUpdated", updatedLead);
       invalidate();
       if (onClose) onClose();
-    } else toast.error(updatedLead.error);
+    } else toast.error("Something went wrong");
 
     setLoading(false);
   };
@@ -569,28 +649,29 @@ export const useLeadNotesActions = () => {
 
   const { data: initNotes, isFetching: isFetchingNotes } =
     useQuery<LeadNotesSchemaTypeP | null>({
-      queryFn: () => leadGetByIdNotes(leadId as string),
+      queryFn: () => getLeadNotes(leadId as string),
       queryKey: [`lead-notes-${leadId}`],
+      enabled: !!leadId,
     });
 
   //NOTES
   const onNotesUpdated = async () => {
     if (!notes || notes == initNotes?.notes) return;
     setLoading(true);
-    const updatedNotes = await leadUpdateByIdNotes(leadId as string, notes);
+    const updatedNotes = await updateLeadNotes({ id: leadId as string, notes });
 
     if (updatedNotes.success) toast.success("Lead notes have been updated");
-    else toast.error(updatedNotes.error);
+    else toast.error("Something went wrong");
     setLoading(false);
   };
 
   //UNSAHRE USER
   const onUnShareLead = async () => {
-    const updatedLead = await leadUpdateByIdUnShare(leadId as string);
+    const updatedLead = await unshareLead(leadId as string);
     if (updatedLead.success) {
       invalidate();
       toast.success(updatedLead.message);
-    } else toast.error(updatedLead.error);
+    } else toast.error("Something went wrong!");
   };
 
   useEffect(() => {
@@ -616,8 +697,9 @@ export const useLeadCallInfoActions = () => {
   //CallInfo
   const { data: callInfo, isFetching: isFetchingCallInfo } =
     useQuery<LeadCallInfoSchemaTypeP | null>({
-      queryFn: () => leadGetByIdCallInfo(leadId as string),
+      queryFn: () => getLeadCallInfo(leadId as string),
       queryKey: [`lead-call-info-${leadId}`],
+      enabled: !!leadId,
     });
 
   const invalidate = () => {
@@ -640,7 +722,6 @@ export const useLeadCallInfoActions = () => {
     isFetchingCallInfo,
   };
 };
-
 
 export const useLeadId = () => {
   const params = useParams();

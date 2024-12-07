@@ -8,9 +8,9 @@ import { useInvalidate } from "../use-invalidate";
 import { FullLeadNoConvo } from "@/types";
 
 import { exportLeads } from "@/lib/xlsx";
-import { deleteLead } from "@/actions/lead/main/delete-lead";
-import { deleteConversation } from "@/actions/lead/conversation/delete-conversation";
-import { leadUpdateByIdTitan } from "@/actions/lead";
+import { deleteLead } from "@/actions/lead";
+import { deleteConversation } from "@/actions/lead/conversation";
+import { updateLeadTitan } from "@/actions/lead";
 
 export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
   const role = useCurrentRole();
@@ -65,17 +65,16 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
 
   //TITAN
   const { mutate: titanUpdateMutate, isPending: titanUpdating } = useMutation({
-    mutationFn: leadUpdateByIdTitan,
+    mutationFn: updateLeadTitan,
     onSuccess: (results) => {
-      if (results.success) {
         toast.success(results.success, { id: "update-titan" });
         invalidate(`lead-basic-${results.data}`);
         invalidate(`lead-${results.data}`);
-      } else toast.error(results.error, { id: "update-titan" });
+      
     },
-    onError: (error) => {
-      toast.error(error.message, { id: "update-titan" });
-    },
+    onError: (error) => 
+      toast.error(error.message, { id: "update-titan" })
+    ,
   });
 
   const onTitanUpdated = useCallback(() => {

@@ -36,9 +36,10 @@ import ReactDatePicker from "react-datepicker";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const NewLeadForm = () => {
-  const { isNewLeadFormOpen, onNewLeadFormClose, associatedLead } =
+  const { isNewLeadFormOpen, onNewLeadFormClose, associatedLead, leadId } =
     useLeadStore();
-  const { leadBasic, isFetchingLeadBasic } = useLeadData();
+  const { onGetLeadBasicInfo } = useLeadData();
+  const { leadBasic, leadBasicFetching } = onGetLeadBasicInfo(leadId as string);
 
   return (
     <DrawerRight
@@ -47,7 +48,7 @@ export const NewLeadForm = () => {
       onClose={onNewLeadFormClose}
       scroll={false}
     >
-      <SkeletonWrapper isLoading={isFetchingLeadBasic}>
+      <SkeletonWrapper isLoading={leadBasicFetching}>
         {associatedLead && leadBasic && (
           <div className="bg-gradient text-background p-2 mb-2">
             <p className="text-center">Associated Lead</p>

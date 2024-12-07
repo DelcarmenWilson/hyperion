@@ -8,11 +8,11 @@ import { MedicalCondition } from "@prisma/client";
 import { FullLeadMedicalCondition } from "@/types";
 import { LeadConditionSchemaType } from "@/schemas/lead";
 import {
-  leadConditionDeleteById,
-  leadConditionGetById,
-  leadConditionInsert,
-  leadConditionsGetAllById,
-  leadConditionUpdateById,
+  deleteLeadCondition,
+  getLeadCondition,
+  createLeadCondition,
+  getLeadConditions,
+  updateLeadCondition,
 } from "@/actions/lead/condition";
 import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
 
@@ -46,18 +46,18 @@ export const useLeadConditionActions = () => {
   const { data: conditions, isFetching: isFetchingConditions } = useQuery<
     FullLeadMedicalCondition[]
   >({
-    queryFn: () => leadConditionsGetAllById(leadId as string),
+    queryFn: () => getLeadConditions(leadId as string),
     queryKey: [`leadConditions-${leadId}`],
   });
 
   const { data: condition, isFetching: isFetchingCondition } =
     useQuery<FullLeadMedicalCondition | null>({
-      queryFn: () => leadConditionGetById(conditionId as string),
+      queryFn: () => getLeadCondition(conditionId as string),
       queryKey: [`leadCondition-${conditionId}`],
     });
 
   const { mutate, isPending: isConditionPending } = useMutation({
-    mutationFn: conditionId ? leadConditionUpdateById : leadConditionInsert,
+    mutationFn: conditionId ? updateLeadCondition : createLeadCondition,
     onSuccess: () => {
       const toastString = conditionId
         ? "Condition updated successfully"
@@ -92,7 +92,7 @@ export const useLeadConditionActions = () => {
 
   const { mutate: onConditionDelete, isPending: isPendingConditionDelete } =
     useMutation({
-      mutationFn: leadConditionDeleteById,
+      mutationFn: deleteLeadCondition,
       onSuccess: () => {
         toast.success("Condition Deleted", {
           id: "condtion-beneficiary",

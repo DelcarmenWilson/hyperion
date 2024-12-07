@@ -1,13 +1,13 @@
 import * as z from "zod";
 import { Gender, MaritalStatus, Prisma } from "@prisma/client";
 import {
-  leadGetByIdBasicInfo,
-  leadGetByIdCallInfo,
-  leadGetByIdGeneral,
-  leadGetByIdMain,
-  leadGetByIdNotes,
+  getLeadBasicInfo,
+  getLeadCallInfo,
+  getLeadGeneralInfo,
+  getLeadMainInfo,
+  getLeadNotes,
 } from "@/actions/lead";
-import { leadPolicyGet } from "@/actions/lead/policy";
+import { getLeadPolicy } from "@/actions/lead/policy";
 
 export const LeadSchema = z.object({
   id: z.optional(z.string()),
@@ -64,7 +64,7 @@ export const LeadMainSchema = z.object({
 });
 export type LeadMainSchemaType = z.infer<typeof LeadMainSchema>;
 export type LeadMainSchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdMain
+  typeof getLeadMainInfo
 >;
 
 export const LeadGeneralSchema = z.object({
@@ -95,7 +95,7 @@ export const LeadGeneralSchema = z.object({
 });
 export type LeadGeneralSchemaType = z.infer<typeof LeadGeneralSchema>;
 export type LeadGeneralSchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdGeneral
+  typeof getLeadGeneralInfo
 >;
 
 export const LeadPolicySchema = z.object({
@@ -340,17 +340,17 @@ export type IntakeMedicalInfoSchemaType = z.infer<
   typeof IntakeMedicalInfoSchema
 >;
 export type LeadBasicInfoSchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdBasicInfo
+  typeof getLeadBasicInfo
 >;
 
 export type LeadNotesSchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdNotes
+  typeof getLeadNotes
 >;
 
 export type LeadPolicySchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadPolicyGet
+  typeof getLeadPolicy
 >;
 
 export type LeadCallInfoSchemaTypeP = Prisma.PromiseReturnType<
-  typeof leadGetByIdCallInfo
+  typeof getLeadCallInfo
 >;

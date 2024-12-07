@@ -1,11 +1,11 @@
-import { leadsGetAllByAgentIdFiltered } from "@/actions/lead";
+import { getLeadsToExport } from "@/actions/lead";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { userId,type, from, to, state, vendor } = body;
-    const leads = await leadsGetAllByAgentIdFiltered({
+    const leads = await getLeadsToExport({
       userId,
       type,
       from,

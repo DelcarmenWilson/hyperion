@@ -1,8 +1,5 @@
-import {  useEffect } from "react";
-
 import {
   LucideIcon,
-  MessageSquarePlus,
   MessageSquareText,
   PhoneIncoming,
   PhoneOutgoing,
@@ -14,8 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardDataType } from "@/types/dashboard";
 
 import { getDashboardCards } from "@/actions/dashboard";
-import { useInvalidate } from "@/hooks/use-invalidate";
-import { useSocketStore } from "@/hooks/use-socket-store";
 
 export type DataType = {
   icon: LucideIcon;
@@ -26,14 +21,12 @@ export type DataType = {
 };
 
 export const useDashboardData = () => {
-  const {socket}=useSocketStore()
-  const {invalidate}=useInvalidate()
-  const { data, isFetching } = useQuery<DashboardDataType | null>({
+  const { data, isFetching:dashboardCardsLoading } = useQuery<DashboardDataType | null>({
     queryFn: () => getDashboardCards(),
     queryKey: ['dashboard-card-data'],
   });
 
-  const dataCard: DataType[] = [
+  const dataCards: DataType[] = [
     {
       icon: Users,
       title: "Leads today",
@@ -71,5 +64,5 @@ export const useDashboardData = () => {
     //   hrefTitle: "Go to feeds",
     // },
   ];
-  return {  dataCard, isFetching };
+  return {  dataCards, dashboardCardsLoading };
 };

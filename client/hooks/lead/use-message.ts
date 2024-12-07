@@ -7,9 +7,11 @@ import { toast } from "sonner";
 import { LeadMessage } from "@prisma/client";
 import { SmsMessageSchemaType } from "@/schemas/message";
 
-import { getMessagesForConversation } from "@/actions/lead/message/get-messages-for-conversation";
-import { createInitialMessage } from "@/actions/lead/message/create-intial-message";
-import { createNewMessage } from "@/actions/lead/message/create-new-message";
+import {
+  getMessagesForConversation,
+  createInitialMessage,
+  createNewMessage,
+} from "@/actions/lead/message";
 
 export const useLeadMessageData = () => {
   const { conversationId } = useLeadStore();

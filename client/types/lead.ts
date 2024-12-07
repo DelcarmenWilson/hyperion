@@ -140,8 +140,22 @@ export enum LeadVendor {
 }
 
 export enum LeadDefaultStatus {
-  NEW= "clssh61710000hgo3esopwumj",
-  DELETED= "cm2s8rui802jouo6fit19ljlj",
-  DONOTCALL= "clsshj6p80007hgo3avc5s7oe",
-  SOLD= "clsshj95h0008hgo3d6tbby9y",
-};
+  NEW = "clssh61710000hgo3esopwumj",
+  DELETED = "cm2s8rui802jouo6fit19ljlj",
+  DONOTCALL = "clsshj6p80007hgo3avc5s7oe",
+  SOLD = "clsshj95h0008hgo3d6tbby9y",
+}
+
+export enum LeadActivityType {
+  BENEFICIARY = "Beneficiary",
+  CONDITION = "Condition",
+  CALLERID = "Caller Id",
+  GENERAL = "General",
+  MAIN = "Main",
+  NOTES = "Notes",
+  QUOTE = "Quote",
+  POLICY = "Policy",  
+  TYPE = "Type",
+  STATUS = "status",
+
+}
