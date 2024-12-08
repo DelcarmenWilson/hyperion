@@ -6,10 +6,10 @@ export enum TodoStatus{
 }
 
 export enum TodoReminderMethod{
-    Notification="Notification",
-    Email="Email",
-    Sms="Sms",
-    EmailSms="Email And Sms"
+    NOTIFICATION="NOTIFICATION",
+    EMAIL="EMAIL",
+    SMS="SMS",
+    EMAIL_AND_SMS="EMAIL_AND_SMS"
 }
 
 export type FullTodo = UserTodo & {category?:UserTodoCategory|null}

@@ -15,48 +15,99 @@ import {
   updateLeadCondition,
 } from "@/actions/lead/condition";
 import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
+import { useInvalidate } from "../use-invalidate";
 
-type LeadConditionStore = {
+type State = {
   conditionId?: string;
-  setConditionId: (b: string) => void;
+};
+
+type Actions = {
+  setConditionId: (c: string) => void;
   isConditionFormOpen: boolean;
-  onConditionFormOpen: (b?: string) => void;
+  onConditionFormOpen: (c?: string) => void;
   onConditionFormClose: () => void;
 };
 
-export const useLeadConditionStore = create<LeadConditionStore>((set) => ({
-  setConditionId: (b) => set({ conditionId: b }),
+export const useLeadConditionStore = create<State & Actions>((set) => ({
+  setConditionId: (c) => set({ conditionId: c }),
   isConditionFormOpen: false,
-  onConditionFormOpen: (b) =>
-    set({ conditionId: b, isConditionFormOpen: true }),
+  onConditionFormOpen: (c) =>
+    set({ conditionId: c, isConditionFormOpen: true }),
   onConditionFormClose: () => set({ isConditionFormOpen: false }),
 }));
 
+export const useLeadConditionData = (leadId: string) => {  
+  const {
+    conditionId,
+  } = useLeadConditionStore();
+
+  //  CONDITIONS
+  const onGetLeadConditions = () => {
+    const {
+      data: conditions,
+      isFetching: conditionsFetching,
+      isLoading: conditionsLoading,
+    } = useQuery<FullLeadMedicalCondition[]>({
+      queryFn: () => getLeadConditions(leadId),
+      queryKey: [`leadConditions-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      conditions,
+      conditionsFetching,
+      conditionsLoading,
+    };
+  };
+  // CONDITION
+  const onGetLeadCondition = () => {
+    const {
+      data: condition,
+      isFetching: conditionFetching,
+      isLoading: conditionLoading,
+    } = useQuery<FullLeadMedicalCondition | null>({
+      queryFn: () => getLeadCondition(conditionId as string),
+      queryKey: [`leadCondition-${conditionId}`],
+    });
+    return {
+      condition,
+      conditionFetching,
+      conditionLoading,
+    };
+  };
+  //TODO this does not belong here. please find it a home
+  const onGetAdminConditions = () => {
+    const {
+      data: conditions,
+      isFetching: conditionsFetching,
+      isLoading: conditionsLoading,
+    } = useQuery<MedicalCondition[]>({
+      queryFn: () => adminMedicalConditionsGetAll(),
+      queryKey: ["admin-conditions"],
+    });
+    return {
+      conditions,
+      conditionsFetching,
+      conditionsLoading,
+    };
+  };
+
+  return {
+    onGetLeadConditions,
+    onGetLeadCondition,
+    onGetAdminConditions,
+  };
+};
+
+//TODO - need to add a delete dialog and remove the alert open state
 export const useLeadConditionActions = () => {
   const { leadId } = useLeadStore();
   const {
     conditionId,
-    isConditionFormOpen,
-    onConditionFormOpen,
     onConditionFormClose,
   } = useLeadConditionStore();
-  const queryClient = useQueryClient();
-  const [alertOpen, setAlertOpen] = useState(false);
+  const { invalidate } = useInvalidate();
 
-  const { data: conditions, isFetching: isFetchingConditions } = useQuery<
-    FullLeadMedicalCondition[]
-  >({
-    queryFn: () => getLeadConditions(leadId as string),
-    queryKey: [`leadConditions-${leadId}`],
-  });
-
-  const { data: condition, isFetching: isFetchingCondition } =
-    useQuery<FullLeadMedicalCondition | null>({
-      queryFn: () => getLeadCondition(conditionId as string),
-      queryKey: [`leadCondition-${conditionId}`],
-    });
-
-  const { mutate, isPending: isConditionPending } = useMutation({
+  const { mutate, isPending: conditionUpserting } = useMutation({
     mutationFn: conditionId ? updateLeadCondition : createLeadCondition,
     onSuccess: () => {
       const toastString = conditionId
@@ -67,9 +118,7 @@ export const useLeadConditionActions = () => {
         id: "insert-update-condition",
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ["leadConditions", `lead-${leadId}`],
-      });
+      ["leadConditions", `lead-${leadId}`].forEach((key) => invalidate(key));
 
       onConditionFormClose();
     },
@@ -78,7 +127,7 @@ export const useLeadConditionActions = () => {
     },
   });
 
-  const onConditionSubmit = useCallback(
+  const onConditionUpsert = useCallback(
     (values: LeadConditionSchemaType) => {
       const toastString = conditionId
         ? "Updating Condition..."
@@ -90,44 +139,21 @@ export const useLeadConditionActions = () => {
     [mutate]
   );
 
-  const { mutate: onConditionDelete, isPending: isPendingConditionDelete } =
+  const { mutate: onDeleteCondition, isPending: conditionDeleting } =
     useMutation({
       mutationFn: deleteLeadCondition,
       onSuccess: () => {
         toast.success("Condition Deleted", {
           id: "condtion-beneficiary",
         });
-        queryClient.invalidateQueries({
-          queryKey: [`leadCondition-${conditionId}`],
-        });
-
-        setAlertOpen(false);
+        invalidate(`leadCondition-${conditionId}`);
       },
     });
 
-  //TODO this does not belong here. please find it a home
-  const { data: adminConditions, isFetching: isFetchingAdminConditions } =
-    useQuery<MedicalCondition[]>({
-      queryKey: ["adminConditions"],
-      queryFn: () => adminMedicalConditionsGetAll(),
-    });
-
   return {
-    leadId,
-    alertOpen,
-    setAlertOpen,
-    isConditionFormOpen,
-    onConditionFormOpen,
-    onConditionFormClose,
-    conditions,
-    isFetchingConditions,
-    condition,
-    isFetchingCondition,
-    onConditionSubmit,
-    isConditionPending,
-    adminConditions,
-    isFetchingAdminConditions,
-    onConditionDelete,
-    isPendingConditionDelete,
+    onConditionUpsert,
+    conditionUpserting,
+    onDeleteCondition,
+    conditionDeleting,
   };
 };

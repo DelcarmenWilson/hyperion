@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { scriptGetOne } from "@/actions/script";
+import { getScriptOne } from "@/actions/script";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { user } = body;
-    const script = await scriptGetOne(null);
+    const script = await getScriptOne(null);
 
     return NextResponse.json(script);
   } catch (error) {

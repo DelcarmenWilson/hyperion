@@ -38,12 +38,14 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { leadRelationShips } from "@/constants/lead";
 import ReactDatePicker from "react-datepicker";
+import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const BeneficiaryForm = () => {
-  const { leadId, beneficiary, isFetchingBeneficiary } =
-    useLeadBeneficiaryData();
+  const { leadId } = useLeadStore();
   const { isBeneficiaryFormOpen, onBeneficiaryFormClose } =
     useBeneficiaryStore();
+  const { onGetLeadBeneficiary } = useLeadBeneficiaryData(leadId as string);
+  const { beneficiary, beneficiaryFetching } = onGetLeadBeneficiary();
 
   return (
     <DrawerRight
@@ -51,7 +53,7 @@ export const BeneficiaryForm = () => {
       isOpen={isBeneficiaryFormOpen}
       onClose={onBeneficiaryFormClose}
     >
-      <SkeletonWrapper isLoading={isFetchingBeneficiary}>
+      <SkeletonWrapper isLoading={beneficiaryFetching}>
         <BeneForm
           leadId={leadId}
           beneficiary={beneficiary}
@@ -68,7 +70,7 @@ type BeneFormProps = {
   onClose: () => void;
 };
 const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
-  const { onBeneficiarySubmit, isBeneficiaryPending } =
+  const { onBeneficiaryUpsert, beneficiaryUpdserting } =
     useLeadBeneficiaryActions();
 
   const btnTitle = beneficiary ? "Update" : "Create";
@@ -93,7 +95,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
       <Form {...form}>
         <form
           className="space-6 px-2 w-full"
-          onSubmit={form.handleSubmit(onBeneficiarySubmit)}
+          onSubmit={form.handleSubmit(onBeneficiaryUpsert)}
         >
           <div>
             <div className="flex flex-col gap-2">
@@ -109,7 +111,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                     </FormLabel>
                     <Select
                       name="ddlType"
-                      disabled={isBeneficiaryPending}
+                      disabled={beneficiaryUpdserting}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -138,7 +140,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                     </FormLabel>
                     <Select
                       name="ddlRelationship"
-                      disabled={isBeneficiaryPending}
+                      disabled={beneficiaryUpdserting}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -175,7 +177,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="50%"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                         type="text"
                       />
@@ -197,7 +199,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="John"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                         type="text"
                       />
@@ -220,7 +222,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="Doe"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -240,7 +242,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                     </FormLabel>
                     <Select
                       name="ddlGender"
-                      disabled={isBeneficiaryPending}
+                      disabled={beneficiaryUpdserting}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -301,7 +303,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="555-555-5555"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -323,7 +325,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="jon.doe@example.com"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                         type="email"
                       />
@@ -346,7 +348,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="565856985"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                         type="text"
                       />
@@ -369,7 +371,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="123 main street"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -391,7 +393,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="Queens"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                       />
                     </FormControl>
@@ -411,7 +413,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                     </FormLabel>
                     <Select
                       name="ddlState"
-                      disabled={isBeneficiaryPending}
+                      disabled={beneficiaryUpdserting}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       autoComplete="off"
@@ -447,7 +449,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Input
                         {...field}
                         placeholder="15468"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="postal-code"
                       />
                     </FormControl>
@@ -469,7 +471,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
                       <Textarea
                         {...field}
                         placeholder="notes"
-                        disabled={isBeneficiaryPending}
+                        disabled={beneficiaryUpdserting}
                         autoComplete="off"
                         rows={10}
                       />
@@ -483,7 +485,7 @@ const BeneForm = ({ leadId, beneficiary, onClose }: BeneFormProps) => {
             <Button onClick={onCancel} type="button" variant="outline">
               Cancel
             </Button>
-            <Button disabled={isBeneficiaryPending} type="submit">
+            <Button disabled={beneficiaryUpdserting} type="submit">
               {btnTitle}
             </Button>
           </div>

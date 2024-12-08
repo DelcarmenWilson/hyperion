@@ -121,14 +121,12 @@ export const getLeads = async () => {
   }
 };
 export const getLeadByPhone = async (cellPhone: string) => {
-  return  await db.lead.findFirst({
-      where: {
-        cellPhone,
-      },
-   select:{id:true,firstName:true,lastName:true}
-    });
-
-   
+  return await db.lead.findFirst({
+    where: {
+      cellPhone,
+    },
+    select: { id: true, firstName: true, lastName: true },
+  });
 };
 export const getMultipleLeads = async ({
   leadIds,
@@ -606,7 +604,7 @@ export const deleteLead = async (id: string) => {
     where: { id },
     data: { statusId: LeadDefaultStatus.DELETED },
   });
-    
+
   // if everything is correct return success
   return { success: id };
 };
@@ -921,7 +919,7 @@ export const updateLeadMainInfo = async (values: LeadMainSchemaType) => {
     activity: "Main info updated",
     userId: user.id,
   });
-  return leadInfo as LeadMainSchemaType;
+  return leadInfo.id;
 };
 
 export const updateLeadGeneralInfo = async (values: LeadGeneralSchemaType) => {
@@ -953,7 +951,7 @@ export const updateLeadGeneralInfo = async (values: LeadGeneralSchemaType) => {
     userId: user.id,
   });
 
-  return leadInfo as LeadGeneralSchemaType;
+  return leadInfo.id;
 };
 
 export const updateLeadTitan = async ({

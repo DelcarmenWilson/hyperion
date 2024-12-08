@@ -2,20 +2,10 @@
 import { db } from "@/lib/db";
 
 //DATA
-export const loginStatusGetAll = async () => {
-  try {
-    const logins = await db.loginStatus.findMany();
-    return logins;
-  } catch (error) {
-    return [];
-  }
+export const getLogins = async () => {
+  return await db.loginStatus.findMany();
 };
 
-export const loginStatusGetAllByUserId = async (userId: string) => {
-  try {
-    const logins = await db.loginStatus.findMany({ where: { userId } });
-    return logins;
-  } catch (error) {
-    return [];
-  }
+export const getLoginStatusForUser = async (userId: string) => {
+  return await db.loginStatus.findMany({ where: { userId } });
 };

@@ -4,30 +4,32 @@ import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import {
   useBeneficiaryStore,
-  useLeadBeneficiaryActions,
   useLeadBeneficiaryData,
 } from "@/hooks/lead/use-beneficiary";
 
+import { columns } from "./columns";
+import { BeneficiaryForm } from "./form";
+import { BeneficiariesList } from "./list";
 import { DataTable } from "@/components/tables/data-table";
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { BeneficiaryForm } from "./form";
-import { BeneficiariesList } from "./list";
-import { columns } from "./columns";
 
 type BeneficiariesClientProp = {
+  leadId: string;
   size?: string;
 };
 
 export const BeneficiariesClient = ({
+  leadId,
   size = "full",
 }: BeneficiariesClientProp) => {
   const user = useCurrentUser();
   const { onBeneficiaryFormOpen } = useBeneficiaryStore();
-  const { beneficiaries, isFetchingBeneficiaries } = useLeadBeneficiaryData();
+  const { onGetLeadBeneficiaries } = useLeadBeneficiaryData(leadId);
+  const { beneficiaries, beneficiariesFetching } = onGetLeadBeneficiaries();
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
-    <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
+    <SkeletonWrapper isLoading={beneficiariesFetching}>
       <ListGridTopMenu
         text="Add Beneficiary"
         isList={isList}
@@ -43,7 +45,7 @@ export const BeneficiariesClient = ({
       <BeneficiaryForm />
 
       {isList ? (
-        <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
+        <SkeletonWrapper isLoading={beneficiariesFetching}>
           <DataTable
             columns={columns}
             data={beneficiaries || []}
@@ -62,7 +64,7 @@ export const BeneficiariesClient = ({
             <h4 className="text-2xl font-semibold">Beneficiaries</h4>
             {topMenu}
           </div>
-          <SkeletonWrapper isLoading={isFetchingBeneficiaries}>
+          <SkeletonWrapper isLoading={beneficiariesFetching}>
             <BeneficiariesList
               beneficiaries={beneficiaries || []}
               size={size}

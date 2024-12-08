@@ -46,7 +46,7 @@ export const LeadSidebar = () => {
     setLeadId(leadId);
   }, [leadId]);
 
-  if (!leadBasic) return null;
+  if (!leadBasic || !leadId) return null;
 
   return (
     <div className="flex flex-col bg-background h-full p-2 overflow-hidden">
@@ -87,9 +87,9 @@ export const LeadSidebar = () => {
           hint="Main Info"
           onEdit={() => onMainFormOpen(leadBasic.id)}
         >
-          <MainInfoClient noConvo={false} showEdit={false} />
+          <MainInfoClient leadId={leadId} noConvo={false} showEdit={false} />
 
-          <CallInfo showBtnCall={false} />
+          <CallInfo leadId={leadId} showBtnCall={false} />
           <div className="pt-1">
             <p className="text-sm tracking-tighter leading-3">Caller Id </p>
             <div className="flex items-center gap-1">
@@ -122,14 +122,14 @@ export const LeadSidebar = () => {
           hint="General Info"
           onEdit={() => onGeneralFormOpen(leadBasic.id)}
         >
-          <GeneralInfoClient showInfo showEdit={false} />
+          <GeneralInfoClient leadId={leadId} showInfo showEdit={false} />
         </LeadSection>
         <LeadSection label="Notes" hint="Notes">
-          <NotesForm />
+          <NotesForm leadId={leadId} />
         </LeadSection>
 
         <LeadSection label="Policy" hint="Policy Info">
-          <PolicyInfoClient />
+          <PolicyInfoClient leadId={leadId} />
         </LeadSection>
         {/* </div> */}
       </ScrollArea>

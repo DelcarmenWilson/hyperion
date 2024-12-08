@@ -1,16 +1,15 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLeadStore } from "./use-lead";
 import { useInvalidate } from "../use-invalidate";
 import { toast } from "sonner";
 
 import { LeadPolicySchemaType, LeadPolicySchemaTypeP } from "@/schemas/lead";
 import { getLeadPolicy, createOrUpdateLeadPolicy } from "@/actions/lead/policy";
 
-export const useLeadPolicyData = () => {
+export const useLeadPolicyData = (leadId: string) => {
   //POLICY
-  const onGetLeadPolicy = (leadId:string) => {
+  const onGetLeadPolicy = () => {
     const {
       data: policy,
       isFetching: policyFetching,
@@ -32,14 +31,14 @@ export const useLeadPolicyData = () => {
   };
 };
 
-export const useLeadPolicyActions = (cb:()=>void) => {
+export const useLeadPolicyActions = (cb: () => void) => {
   const { invalidate } = useInvalidate();
 
   //POLICY
-  const { mutate: updatePolicyMutate, isPending: policyUpdating } = useMutation({
-    mutationFn: createOrUpdateLeadPolicy,
-    onSuccess: (results) => {
-    
+  const { mutate: updatePolicyMutate, isPending: policyUpdating } = useMutation(
+    {
+      mutationFn: createOrUpdateLeadPolicy,
+      onSuccess: (results) => {
         userEmitter.emit("policyInfoUpdated", {
           ...results,
           startDate: results?.startDate || undefined,
@@ -51,11 +50,11 @@ export const useLeadPolicyActions = (cb:()=>void) => {
         invalidate("blueprint-week-active");
         invalidate(`lead-policy-${results.leadId}`);
         cb();
-     
-    },
-    onError: (error) =>
-      toast.error(error.message, { id: "update-policy-info" })
-  });
+      },
+      onError: (error) =>
+        toast.error(error.message, { id: "update-policy-info" }),
+    }
+  );
 
   const onUpdatePolicy = useCallback(
     (values: LeadPolicySchemaType) => {
@@ -68,7 +67,7 @@ export const useLeadPolicyActions = (cb:()=>void) => {
   );
 
   return {
-     onUpdatePolicy,
+    onUpdatePolicy,
     policyUpdating,
   };
 };

@@ -16,7 +16,7 @@ export const TodoNotification = () => {
 
   const { onGetTodo } = useTodoData();
   const { todo, todoFetching } = onGetTodo();
-  const { onTodoComplete, todoCompleting, onTodoSnooze, todoSnoozing } =
+  const { onCompleteTodo, todoCompleting, onSnoozeTodo, todoSnoozing } =
     useTodoActions();
   const loading = todoCompleting || todoSnoozing;
   return (
@@ -51,14 +51,14 @@ export const TodoNotification = () => {
               className="gap-1"
               disabled={loading}
               variant="secondary"
-              onClick={() => onTodoSnooze(todo?.id!)}
+              onClick={() => onSnoozeTodo(todo?.id!)}
             >
               Snooze
               <span className="text-xs">(5 minutes)</span>
             </Button>
             <Button
               disabled={loading}
-              onClick={() => onTodoComplete(todo?.id!)}
+              onClick={() => onCompleteTodo(todo?.id!)}
             >
               Complete
             </Button>

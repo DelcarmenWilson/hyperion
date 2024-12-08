@@ -44,10 +44,11 @@ import { getYesterday } from "@/formulas/dates";
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import CategoryPicker from "./category-picker";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { capitalize } from "@/formulas/text";
 
-export const TodoForm = () => {
+const TodoForm = () => {
   const { todo, isTodoFormOpen, onTodoFormClose } = useTodoStore();
-  const { onTodoInsert, todoInserting, onTodoUpdate, todoUpdating } =
+  const { onCreateTodo, todoCreating, onUpdateTodo, todoUpdating } =
     useTodoActions();
   if (!isTodoFormOpen) return null;
   return (
@@ -69,8 +70,8 @@ export const TodoForm = () => {
       <TodoFrm
         key={todo?.id || "new-todo"}
         todo={todo}
-        onSubmit={todo ? onTodoUpdate : onTodoInsert}
-        loading={todo ? todoUpdating : todoInserting}
+        onSubmit={todo ? onUpdateTodo : onCreateTodo}
+        loading={todo ? todoUpdating : todoCreating}
         onClose={onTodoFormClose}
       />
     </div>
@@ -91,7 +92,7 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
     defaultValues: todo || {
       categoryId: "cm448mzwq0000ujp4ok281xfg",
       reminder: false,
-      reminderMethod: TodoReminderMethod.Notification,
+      reminderMethod: TodoReminderMethod.NOTIFICATION,
     },
   });
 
@@ -239,8 +240,9 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
                   name="startAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-left">
+                      <FormLabel className="flex justify-between">
                         Reminder Date Time
+                        <FormMessage />
                       </FormLabel>
                       <Popover>
                         <FormControl>
@@ -266,10 +268,7 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <= getYesterday() ||
-                              date < new Date("1900-01-01")
-                            }
+                            disabled={(date) => date <= getYesterday()}
                             initialFocus
                           />
                           <div className="p-3 border-t border-border">
@@ -309,7 +308,7 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
                         <SelectContent>
                           {todoReminderMethods.map((method) => (
                             <SelectItem key={method.value} value={method.value}>
-                              {method.name}
+                              {capitalize(method.name)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -324,7 +323,10 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
                   name="endAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-left">End Date</FormLabel>
+                      <FormLabel className="flex justify-between">
+                        End Date
+                        <FormMessage />
+                      </FormLabel>
                       <Popover>
                         <FormControl>
                           <PopoverTrigger asChild>
@@ -349,10 +351,7 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <= getYesterday() ||
-                              date < new Date("1900-01-01")
-                            }
+                            disabled={(date) => date <= getYesterday()}
                             initialFocus
                           />
                           <div className="p-3 border-t border-border">
@@ -382,3 +381,5 @@ const TodoFrm = ({ todo, onSubmit, loading, onClose }: Props) => {
     </div>
   );
 };
+
+export default TodoForm;

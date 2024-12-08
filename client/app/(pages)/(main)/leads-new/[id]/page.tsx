@@ -21,7 +21,7 @@ const LeadsPage = () => {
   const { onGetLeadBasicInfo, onGetLeadPrevNext } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId);
   const { prevNext, nextPrevFetching } = onGetLeadPrevNext(leadId);
-  if (!leadBasic) return null;
+  if (!leadBasic || leadId) return null;
 
   if (![leadBasic.userId, leadBasic.sharedUserId].includes(user?.id!)) {
     redirect("/leads");
@@ -58,13 +58,13 @@ const LeadsPage = () => {
             <ActivityClient />
           </TabsContent>
           <TabsContent value="beneficiaries" className="h-full">
-            <BeneficiariesClient />
+            <BeneficiariesClient leadId={leadId} />
           </TabsContent>
           <TabsContent value="conditions" className="h-full">
-            <ConditionsClient />
+            <ConditionsClient leadId={leadId} />
           </TabsContent>
           <TabsContent value="expenses" className="h-full flex flex-col">
-            <ExpensesClient />
+            <ExpensesClient leadId={leadId} />
           </TabsContent>
         </div>
       </Tabs>

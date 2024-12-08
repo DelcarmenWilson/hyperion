@@ -5,6 +5,7 @@ import { formatDob } from "./dates";
 export const capitalize = (text: string): string => {
   if (!text) return text;
   return text
+    .replaceAll("_", " ")
     .toLowerCase()
     .split(" ")
     .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
@@ -35,7 +36,10 @@ export const replacePreset = (
     .replace("#my_last_name", user.lastName)
     .replace("#my_full_name", `${user.firstName} ${user.lastName}`)
     .replace("#my_company_name", user.team?.name!)
-    .replace("#my_booking_link", `https://hperioncrm.com/book/${user.userName}?lid=`)
+    .replace(
+      "#my_booking_link",
+      `https://hperioncrm.com/book/${user.userName}?lid=`
+    )
 
     // LEAD INFO
     .replace("#lead_id", lead.id)

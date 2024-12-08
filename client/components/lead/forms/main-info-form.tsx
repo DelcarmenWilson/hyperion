@@ -2,7 +2,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
-import { useLeadStore, useLeadMainInfoActions } from "@/hooks/lead/use-lead";
+import {
+  useLeadStore,
+  useLeadInfoActions,
+  useLeadInfoData,
+} from "@/hooks/lead/use-lead";
 
 import {
   LeadMainSchema,
@@ -35,9 +39,11 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { states } from "@/constants/states";
 
 export const MainInfoForm = () => {
-  const { isMainFormOpen, onMainFormClose } = useLeadStore();
-  const { mainInfo, isFetchingMainInfo, loading, onMainInfoUpdate } =
-    useLeadMainInfoActions(onMainFormClose);
+  const { leadId, isMainFormOpen, onMainFormClose } = useLeadStore();
+  const { onGetLeadMainInfo } = useLeadInfoData(leadId as string);
+  const { mainInfo, mainInfoFetching } = onGetLeadMainInfo();
+  const { onUpdateLeadMainInfo, mainInfoUpdating } =
+    useLeadInfoActions(onMainFormClose);
 
   if (!mainInfo) return null;
   return (
@@ -48,11 +54,11 @@ export const MainInfoForm = () => {
           title="Demographics"
           subTitle={`${mainInfo.firstName} ${mainInfo.lastName}`}
         />
-        <SkeletonWrapper isLoading={isFetchingMainInfo}>
+        <SkeletonWrapper isLoading={mainInfoFetching}>
           <MainForm
             mainInfo={mainInfo}
-            loading={loading}
-            onSubmit={onMainInfoUpdate}
+            loading={mainInfoUpdating}
+            onSubmit={onUpdateLeadMainInfo}
             onClose={onMainFormClose}
           />
         </SkeletonWrapper>

@@ -1,5 +1,5 @@
 import { CalendarX, Phone } from "lucide-react";
-import { useLeadStore, useLeadGeneralInfoActions } from "@/hooks/lead/use-lead";
+import { useLeadStore, useLeadInfoData } from "@/hooks/lead/use-lead";
 import { cn } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,23 +11,26 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
 
 type Props = {
+  leadId: string;
   showInfo?: boolean;
   showEdit?: boolean;
 };
 
 export const GeneralInfoClient = ({
+  leadId,
   showInfo = false,
   showEdit = true,
 }: Props) => {
   const { onGeneralFormOpen } = useLeadStore();
-  const { generalInfo, isFetchingGeneralInfo } = useLeadGeneralInfoActions();
+  const { onGetLeadGeneralInfo } = useLeadInfoData(leadId);
+  const { generalInfo, generalInfoFetching } = onGetLeadGeneralInfo();
 
   const lastCall = generalInfo?.calls[0];
   const nextAppointment = generalInfo?.appointments[0];
   // console.log(formatDob(generalInfo?.dateOfBirth))
 
   return (
-    <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
+    <SkeletonWrapper isLoading={generalInfoFetching}>
       {generalInfo ? (
         <SectionWrapper
           title="General"

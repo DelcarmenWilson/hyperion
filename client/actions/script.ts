@@ -5,36 +5,20 @@ import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";
 import { ScriptStatus } from "@/types/script";
 ///TODO - dont forget to remove this file once the new scipt function are completed
 // DATA
-export const scriptGetOne = async (type:string|null|undefined) => {
-  try {
-    const scripts = await db.script.findFirst({where:{type:type||"General",status:ScriptStatus.PUBLISHED}});
-    return scripts;
-  } catch (error: any) {
-    return null;
-  }
+export const getScriptOne = async (type:string|null|undefined) => {
+ return await db.script.findFirst({where:{type:type||"General",status:ScriptStatus.PUBLISHED}});  
 };
 
-export const scriptGetById = async (id: string) => {
-  try {
-    const scripts = await db.script.findUnique({ where: { id } });
-    return scripts;
-  } catch (error: any) {
-    return null;
-  }
+export const getScript = async (id: string) => {
+ return  await db.script.findUnique({ where: { id } });    
 };
 
-export const scriptsGetAll = async () => {
-  try {
-    const scripts = await db.script.findMany({});
-    return scripts;
-  } catch (error: any) {
-    return [];
-  }
+export const getScripts = async () => {
+ return await db.script.findMany({});   
 };
 
 // ACTIONS
-
-export const scriptDeleteById = async (id: string) => {
+export const deleteScript = async (id: string) => {
   const user = await currentUser();
   if (!user) return { error: "Unathenticated" };
 
@@ -44,28 +28,24 @@ export const scriptDeleteById = async (id: string) => {
 
   if (existingScript.userId != user.id) return { error: "Unathorized!" };
 
-  const deletedScript = await db.script.delete({
+  await db.script.delete({
     where: { id },
   });
 
-  return { success:"script was delete succesfully" };
+  return "script was delete succesfully" ;
 };
 
 //TODO - this needs to be removed-- posinly the entire file along with the main hook
-export const scriptInsert = async () => {
+export const createScript = async () => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) throw new Error("Unauthorized!")
   const previousScript = await db.script.findFirst({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
 
-  if(previousScript){
-  if (!previousScript.content) {
-    return { error: "Previous script content is empty!" };
-  }}
+  if(previousScript && !previousScript.content) throw new Error("Previous script content is empty!" );
+ 
   const newScript = await db.script.create({
     data: {
       name: "New Script",
@@ -77,21 +57,17 @@ export const scriptInsert = async () => {
     },
   });
 
-  return { success: newScript };
+  return  newScript ;
 };
 
-export const scriptUpdateById = async (values: ScriptSchemaType) => {
+export const updateScript = async (values: ScriptSchemaType) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unauthorized" };
-  }
+  if (!user) throw new Error("Unauthorized!")
+    
   const {success,data} = ScriptSchema.safeParse(values);
 
-  if (!success) 
-    return { error: "Invalid fields!" };
+  if (!success) throw new Error("Invalid fields!" );
   
-
-
 
   await db.script.update({
     where: { id:data.id },
@@ -100,5 +76,5 @@ export const scriptUpdateById = async (values: ScriptSchemaType) => {
     },
   });
 
-  return { success: "Script updated" };
+  return  "Script updated" ;
 };

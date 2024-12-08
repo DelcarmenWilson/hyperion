@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { EyeIcon, ImageIcon, MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
+import { useFeedbackId } from "@/hooks/feedback/use-feedback";
 
 import { FeedbackStatus } from "@/types/feedback";
 
@@ -38,10 +39,16 @@ const FeedbackCard = ({
   page,
   admin,
 }: Props) => {
+  const { feedbackId } = useFeedbackId();
   const baseUrl = admin ? "/admin/feedbacks" : "/feedback";
   return (
-    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30">
-      <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
+    <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30 mb-1">
+      <CardContent
+        className={cn(
+          "relative p-4 flex items-center justify-between h-[100px] hover:bg-primary/20",
+          feedbackId == id && "bg-primary/50"
+        )}
+      >
         <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-xs">
           {images && (
             <ImageIcon className="stroke-secondary-foreground h-5 w-5" />

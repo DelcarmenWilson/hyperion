@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getEnumValues } from "@/lib/helper/enum-converter";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const FeedbackList = ({
   initFeedbacks,
@@ -65,7 +66,7 @@ const FeedbackList = ({
     setFeedbacks(filtered);
   }, [status, agent, page, sorted]);
   return (
-    <div className="grid grid-cols-1 gap-2">
+    <div className="flex flex-1 flex-col gap-2 overflow-hidden">
       <div className="flex gap-2 p-2 bg-background items-center justify-between sticky">
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">Status</p>
@@ -154,21 +155,23 @@ const FeedbackList = ({
           <span className="font-bold italic"> ({feedbacks.length})</span>
         </div>
       </div>
-      {feedbacks.length == 0 && <EmptyCard title="No feedbacks found" />}
-      {feedbacks.map((feedback) => (
-        <FeedbackCard
-          key={feedback.id}
-          id={feedback.id}
-          title={feedback.title}
-          description={feedback.description}
-          status={feedback.status}
-          createdAt={feedback.createdAt}
-          firstName={feedback.user.firstName}
-          images={!!feedback.images}
-          page={feedback.page}
-          admin={admin}
-        />
-      ))}
+      <ScrollArea>
+        {feedbacks.length == 0 && <EmptyCard title="No feedbacks found" />}
+        {feedbacks.map((feedback) => (
+          <FeedbackCard
+            key={feedback.id}
+            id={feedback.id}
+            title={feedback.title}
+            description={feedback.description}
+            status={feedback.status}
+            createdAt={feedback.createdAt}
+            firstName={feedback.user.firstName}
+            images={!!feedback.images}
+            page={feedback.page}
+            admin={admin}
+          />
+        ))}
+      </ScrollArea>
     </div>
   );
 };

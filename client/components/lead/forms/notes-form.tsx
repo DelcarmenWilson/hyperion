@@ -9,11 +9,16 @@ import { Textarea } from "@/components/ui/textarea";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type NoteFormProps = {
+  leadId: string;
   showShared?: boolean;
   rows?: number;
 };
 
-export const NotesForm = ({ showShared = true, rows = 3 }: NoteFormProps) => {
+export const NotesForm = ({
+  leadId,
+  showShared = true,
+  rows = 3,
+}: NoteFormProps) => {
   const user = useCurrentUser();
   const {
     loading,
@@ -23,7 +28,7 @@ export const NotesForm = ({ showShared = true, rows = 3 }: NoteFormProps) => {
     isFetchingNotes,
     onNotesUpdated,
     onUnShareLead,
-  } = useLeadNotesActions();
+  } = useLeadNotesActions(leadId);
 
   const sharedUser = initNotes?.sharedUser;
   return (

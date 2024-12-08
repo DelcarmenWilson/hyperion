@@ -1,72 +1,95 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
-import { useLeadStore } from "./use-lead";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { LeadExpense } from "@prisma/client";
 import { GetLeadExpenseResponseType } from "@/app/api/leads/expense/balance/route";
-import { leadExpenseDeleteById, leadExpenseInsertSheet, leadExpensesGetAllById } from "@/actions/lead/expense";
+import {
+  leadExpenseDeleteById,
+  leadExpenseInsertSheet,
+  leadExpensesGetAllById,
+} from "@/actions/lead/expense";
 
-export const useLeadExpenseActions = () => {
-  const { leadId } = useLeadStore();
-    const queryClient = useQueryClient();
-    
-  const [alertOpen, setAlertOpen] = useState(false);  
-  const [selectedExpense, setSelectedExpense] = useState<string>("");
+export const useLeadExpenseData = (leadId: string) => {
+ 
 
-  const onSelectedExpense = (id: string) => {
-    setSelectedExpense(id);
-    setAlertOpen(true);
+  const onGetLeadBalance = () => {
+    const {
+      data: leadBalance,
+      isFetching: leadBalanceFetching,
+      isLoading: leadBalanceLoading,
+    } = useQuery<GetLeadExpenseResponseType>({
+      queryFn: () =>
+        fetch(`/api/leads/expense/balance?leadId=${leadId}`).then((res) =>
+          res.json()
+        ),
+      queryKey: [`lead-balance-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      leadBalance,
+      leadBalanceFetching,
+      leadBalanceLoading,
+    };
   };
 
-  const { data: leadBalance, isFetching: isFetchingLeadBalance } = useQuery<GetLeadExpenseResponseType>({
-    queryKey: [`leadBalance-${leadId}`],
-    queryFn: () =>
-      fetch(`/api/leads/expense/balance?leadId=${leadId}`).then((res) =>
-        res.json()
-      ),
-  });
-
-
- const { data: leadExpense, isFetching: isFetchingLeadExpense } = useQuery<LeadExpense[]>({
-    queryKey: [`leadExpense-${leadId}`],
-    queryFn: () => leadExpensesGetAllById(leadId as string),
-  });
-
-  const { mutate:leadExpenseMutate, isPending:isPendingExpense } = useMutation({
-    mutationFn: leadExpenseInsertSheet,
-    onSuccess: () => {
-      toast.success("Expense Sheet Created", {
-        id: "create-expense-sheet",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [`leadExpense-${leadId}`],
-      });
-    },
-  });
-
-  const { mutate:leadExpenseDelete, isPending:isPendingLeadExpenseDelete } = useMutation({
-    mutationFn: leadExpenseDeleteById,
-    onSuccess: () => {
-      toast.success("Transaction deleted succesfully", {
-        id: "delete-transaction",
-      });
-      queryClient.invalidateQueries({
-        queryKey: [`leadExpense-${leadId}`],
-      });
-
-      setAlertOpen((prev) => !prev);
-    },
-  });
-
-  const onExpenseDelete = useCallback(() => {
-    toast.loading("Deleting transaction...", { id: "delete-transaction" });
-    leadExpenseDelete(selectedExpense);
-  }, [leadExpenseDelete, selectedExpense]);
+  const onGetLeadExpense = () => {
+    const {
+      data: leadExpense,
+      isFetching: leadExpenseFetching,
+      isLoading: leadExpenseLoading,
+    } = useQuery<LeadExpense[]>({
+      queryFn: () => leadExpensesGetAllById(leadId as string),
+      queryKey: [`lead-expense-${leadId}`],
+    });
+    return {
+      leadExpense,
+      leadExpenseFetching,
+      leadExpenseLoading,
+    };
+  };
 
   return {
-    leadId,
-    alertOpen, setAlertOpen,onSelectedExpense,
-    leadBalance,  isFetchingLeadBalance,leadExpense, isFetchingLeadExpense,leadExpenseMutate, isPendingExpense,onExpenseDelete, isPendingLeadExpenseDelete
+    onGetLeadBalance,
+    onGetLeadExpense,
+  };
+};
+
+export const useLeadExpenseActions = (leadId: string) => {
+  const { invalidate } = useInvalidate();
+
+  const { mutate: onCreateLeadExpense, isPending: leadExpenseCreating } =
+    useMutation({
+      mutationFn: leadExpenseInsertSheet,
+      onSuccess: () => {
+        toast.success("Expense Sheet Created", {
+          id: "create-expense-sheet",
+        });
+        invalidate(`lead-expense-${leadId}`);
+      },
+    });
+
+  const { mutate: deleteleadExpense, isPending: leadExpenseDeleting } =
+    useMutation({
+      mutationFn: leadExpenseDeleteById,
+      onSuccess: () => {
+        toast.success("Transaction deleted succesfully", {
+          id: "delete-transaction",
+        });
+        invalidate(`lead-expense-${leadId}`);
+      },
+    });
+
+  const onDeleteLeadExpense = useCallback((id:string) => {
+    toast.loading("Deleting transaction...", { id: "delete-transaction" });
+    deleteleadExpense(id);
+  }, [deleteleadExpense]);
+
+  return {
+    onCreateLeadExpense,
+    leadExpenseCreating,
+     onDeleteLeadExpense,
+    leadExpenseDeleting,
   };
 };

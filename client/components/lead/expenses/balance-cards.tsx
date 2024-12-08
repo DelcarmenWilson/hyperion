@@ -1,7 +1,7 @@
 "use client";
 import React, { ReactNode } from "react";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { useLeadExpenseActions } from "@/hooks/lead/use-expense";
+import { useLeadExpenseData } from "@/hooks/lead/use-expense";
 
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Card } from "@/components/ui/card";
@@ -9,8 +9,9 @@ import CountUp from "react-countup";
 
 import { USDollar } from "@/formulas/numbers";
 
-export const BalanceCards = () => {
-  const { leadBalance, isFetchingLeadBalance } = useLeadExpenseActions();
+export const BalanceCards = ({ leadId }: { leadId: string }) => {
+  const { onGetLeadBalance } = useLeadExpenseData(leadId);
+  const { leadBalance, leadBalanceFetching } = onGetLeadBalance();
 
   const income = leadBalance?.income || 0;
   const expense = leadBalance?.expense || 0;
@@ -18,7 +19,7 @@ export const BalanceCards = () => {
 
   return (
     <div className="relative flex w-full flex-wrap gap-2 md:flex-nowrap">
-      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
+      <SkeletonWrapper isLoading={leadBalanceFetching}>
         <StatCard
           value={expense}
           title="Expense"
@@ -28,7 +29,7 @@ export const BalanceCards = () => {
         />
       </SkeletonWrapper>
 
-      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
+      <SkeletonWrapper isLoading={leadBalanceFetching}>
         <StatCard
           value={income}
           title="Income"
@@ -38,7 +39,7 @@ export const BalanceCards = () => {
         />
       </SkeletonWrapper>
 
-      <SkeletonWrapper isLoading={isFetchingLeadBalance}>
+      <SkeletonWrapper isLoading={leadBalanceFetching}>
         <StatCard
           value={balance}
           title="Balance"

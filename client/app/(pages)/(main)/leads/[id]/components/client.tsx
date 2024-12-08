@@ -1,7 +1,9 @@
 "use client";
+import { useEffect } from "react";
 import { Pencil } from "lucide-react";
 import { useLeadData, useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
 
+import { AssociatedClient } from "@/components/lead/info/associated";
 import { Button } from "@/components/ui/button";
 import { GeneralInfoClient } from "@/components/lead/info/general";
 import { PolicyInfoClient } from "@/components/lead/info/policy-info";
@@ -12,8 +14,6 @@ import { NotesForm } from "@/components/lead/forms/notes-form";
 import { PhoneSwitcher } from "@/components/phone/addins/switcher";
 
 import { formatPhoneNumber } from "@/formulas/phones";
-import { useEffect } from "react";
-import { AssociatedClient } from "@/components/lead/info/associated";
 
 export const LeadClient = () => {
   const { setLeadId } = useLeadStore();
@@ -27,11 +27,11 @@ export const LeadClient = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
-      <MainInfoClient noConvo={false} />
-      <GeneralInfoClient showInfo />
-      <CallInfo />
-      <PolicyInfoClient />
-      <NotesForm />
+      <MainInfoClient leadId={leadId} noConvo={false} />
+      <GeneralInfoClient leadId={leadId} showInfo />
+      <CallInfo leadId={leadId} />
+      <PolicyInfoClient leadId={leadId} />
+      <NotesForm leadId={leadId} />
       <AssociatedClient />
       <div className="text-sm font-light col-span-2 px-4">
         <p>Lead Phone Number</p>

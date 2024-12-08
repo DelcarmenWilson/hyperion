@@ -21,12 +21,12 @@ import {
 } from "@/components/ui/form";
 import FormInput from "./form-input";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/modals/modal";
 
 export const ScriptForm = () => {
   const { isScriptFormOpen, onScriptFormClose } = useScriptStore();
-  const { script } = useScriptData();
+  const { onGetScript } = useScriptData();
+  const { script } = onGetScript();
   const {
     onScriptInsert,
     isPendingScriptInsert,
