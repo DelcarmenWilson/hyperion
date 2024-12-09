@@ -8,6 +8,65 @@ import {
   getLeadNotes,
 } from "@/actions/lead";
 import { getLeadPolicy } from "@/actions/lead/policy";
+import { formatPhoneNumber } from "@/formulas/phones";
+
+export const CreateLeadSchema = z.object({
+  id: z.optional(z.string()),
+  firstName: z.string().min(3, "First name must be at least 3 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  address: z.string(),
+  city: z.string(),
+  state: z.string(),
+  zipCode: z
+    .string()
+    .min(5, "min 5 characters")
+    .max(5)
+    .refine((data) => {
+      if (isNaN(parseInt(data))) return false;
+      return true;
+    }, "Invalid zip"),
+  homePhone: z.optional(z.string()).refine((data) => {
+    if (!data) return true;
+    const formattedNumber = formatPhoneNumber(data);
+    if (formattedNumber) return true;
+    return false;
+  }, "Invalid phone number"),
+  cellPhone: z
+    .string()
+    .min(10, "required")
+    .refine((data) => {
+      const formattedNumber = formatPhoneNumber(data);
+      if (formattedNumber) return true;
+      return false;
+    }, "Invalid phone number"),
+  gender: z.enum([Gender.NA, Gender.Male, Gender.Female]),
+  maritalStatus: z.enum([
+    MaritalStatus.Single,
+    MaritalStatus.Married,
+    MaritalStatus.Widowed,
+    MaritalStatus.Divorced,
+  ]),
+  email: z.string().email(),
+  dateOfBirth: z.optional(z.date()),
+  weight: z.optional(z.string()),
+  height: z.optional(z.string()),
+  income: z.optional(z.string()),
+  policyAmount: z.optional(z.string()),
+  smoker: z.optional(z.boolean()),
+  currentlyInsured: z.optional(z.boolean()),
+  currentInsuranse: z.optional(z.string()),
+  type: z.optional(z.string()),
+  vendor: z.optional(z.string()),
+  conversationId: z.optional(z.string()),
+  recievedAt: z.optional(z.string()),
+  statusId: z.optional(z.string()),
+  assistantId: z.optional(z.string()),
+  notes: z.optional(z.string()),
+  adId: z.optional(z.string()),
+  associatedLead: z.optional(z.string()),
+  relationship: z.optional(z.string()),
+});
+export type CreateLeadSchemaType = z.infer<typeof CreateLeadSchema>;
 
 export const LeadSchema = z.object({
   id: z.optional(z.string()),
@@ -76,7 +135,7 @@ export const LeadGeneralSchema = z.object({
     MaritalStatus.Widowed,
     MaritalStatus.Divorced,
   ]),
-  dateOfBirth:z.date().optional(),
+  dateOfBirth: z.date().optional(),
   // dateOfBirth: z
   //   .string()
   //   .nullish()
@@ -239,22 +298,17 @@ export const IntakeGeneralSchema = z.object({
   placeOfBirth: z.optional(z.string()),
   stateOfBirth: z.optional(z.string()),
 });
-export type IntakeGeneralSchemaType = z.infer<
-  typeof IntakeGeneralSchema
->;
+export type IntakeGeneralSchemaType = z.infer<typeof IntakeGeneralSchema>;
 export const IntakePersonalSchema = z.object({
   id: z.string(),
   ssn: z.optional(z.string()),
   licenseNumber: z.optional(z.string()),
   licenseState: z.optional(z.string()),
   licenseExpires: z.date(),
- 
 });
-export type IntakePersonalSchemaType = z.infer<
-  typeof IntakePersonalSchema
->;
+export type IntakePersonalSchemaType = z.infer<typeof IntakePersonalSchema>;
 export const IntakeEmploymentSchema = z.object({
-  id: z.string(),  
+  id: z.string(),
   annualIncome: z.coerce.number(),
   experience: z.string(),
   netWorth: z.coerce.number(),
@@ -263,9 +317,7 @@ export const IntakeEmploymentSchema = z.object({
   employerPhone: z.optional(z.string()),
   occupation: z.optional(z.string()),
 });
-export type IntakeEmploymentSchemaType = z.infer<
-  typeof IntakeEmploymentSchema
->;
+export type IntakeEmploymentSchemaType = z.infer<typeof IntakeEmploymentSchema>;
 export const IntakeMiscSchema = z.object({
   id: z.string(),
   greenCardNum: z.string(),
@@ -276,9 +328,7 @@ export const IntakeMiscSchema = z.object({
   motherAge: z.coerce.number(),
   cuaseOfDeath: z.string(),
 });
-export type IntakeMiscSchemaType = z.infer<
-  typeof IntakeMiscSchema
->;
+export type IntakeMiscSchemaType = z.infer<typeof IntakeMiscSchema>;
 
 export const IntakeDoctorInfoSchema = z.object({
   leadId: z.string(),

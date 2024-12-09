@@ -265,13 +265,22 @@ export const createAppointment = async (values: AppointmentSchemaType) => {
 
   let message;
   if (lead) {
-    await smsSendAgentAppointmentNotification(userId, lead, appointmentDate);
+    await smsSendAgentAppointmentNotification({
+      firstName: lead.firstName,
+      lastName: lead.lastName,
+      defaultNumber: lead.defaultNumber,
+      userId,
+      date: appointmentDate,
+    });
     if (smsReminder) {
-      message = await smsSendLeadAppointmentNotification(
+      message = await smsSendLeadAppointmentNotification({
+        leadId: lead.id,
+        firstName: lead.firstName,
+        defaultNumber: lead.defaultNumber,
+        cellPhone: lead.cellPhone,
         userId,
-        lead,
-        localDate!
-      );
+        date: localDate!,
+      });
     }
 
     if (emailReminder && lead.email) {
@@ -375,8 +384,8 @@ export const createBookingAppointment = async (
     data: {
       agentId,
       leadId,
-      startDate: startDate!,
       endDate,
+      startDate: startDate!,
       localDate: localDate!,
       comments: "",
       status: AppointmentStatus.SCHEDULED,
@@ -386,16 +395,21 @@ export const createBookingAppointment = async (
   if (!appointment) return { error: "Appointment was not created!" };
 
   //Send appointment reminders both to the agent and to the lead
-  await smsSendAgentAppointmentNotification(
-    agentId,
-    lead.success,
-    appointment.startDate
-  );
-  await smsSendLeadAppointmentNotification(
-    agentId,
-    lead.success,
-    appointment.localDate
-  );
+  await smsSendAgentAppointmentNotification({
+    firstName: lead.success.firstName,
+    lastName: lead.success.lastName,
+    defaultNumber: lead.success.defaultNumber,
+    userId: agentId,
+    date: appointment.startDate,
+  });
+  await smsSendLeadAppointmentNotification({
+    leadId: lead.success.id,
+    firstName: lead.success.firstName,
+    defaultNumber: lead.success.defaultNumber,
+    cellPhone: lead.success.cellPhone,
+    userId: agentId,
+    date: appointment.localDate,
+  });
 
   //Update the blue print for this week
   updateBluePrintWeekData(agentId, "appointments");
@@ -479,23 +493,28 @@ export const rescheduleAppointmentByLead = async (
   });
   //If the appointment was not created return and error and exit the function
   if (!appointment) return { error: "Appointment was not rescheduled!" };
-
+  const lead = appointment.lead;
   //Send appointment reminders both to the agent and to the lead
-  await smsSendAgentAppointmentNotification(
-    agentId,
-    appointment.lead,
-    appointment.startDate
-  );
-  await smsSendLeadAppointmentNotification(
-    agentId,
-    appointment.lead,
-    appointment.localDate
-  );
+  await smsSendAgentAppointmentNotification({
+    firstName: lead.firstName,
+    lastName: lead.lastName,
+    defaultNumber: lead.defaultNumber,
+    userId: agentId,
+    date: appointment.startDate,
+  });
+  await smsSendLeadAppointmentNotification({
+    leadId: lead.id,
+    firstName: lead.firstName,
+    defaultNumber: lead.defaultNumber,
+    cellPhone: lead.cellPhone,
+    userId: agentId,
+    date: appointment.localDate,
+  });
 
   //If everything was successfull return a success message
   return { success: "Appointment rescheduled!" };
 };
-// TODO- See if we can solidate the next two functions
+// TODO- See if we can consolidate the next two functions
 export const cancelAppointmentByLead = async ({
   id,
   reason,

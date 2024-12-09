@@ -11,8 +11,9 @@ import {
   createAssistant,
   createUser,
   getUserById,
-  getUsers,
+  getOtherUsers,
   getUsersByRole,
+  getUsers,
 } from "@/actions/user";
 
 import { updateUserAccountStatus, updateUserRole } from "@/actions/admin/user";
@@ -45,7 +46,7 @@ export const useUserData = () => {
       isLoading: siteUsersLoading,
     } = useQuery<User[]>({
       queryKey: [`site-users-${role || "all"}`],
-      queryFn: () => (role ? getUsersByRole(role) : getUsers()),
+      queryFn: () => (role ? getUsersByRole(role) : getOtherUsers()),
     });
     return {
       siteUsers,
@@ -53,7 +54,6 @@ export const useUserData = () => {
       siteUsersLoading,
     };
   };
-
   //USERS
   const onGetUsers = () => {
     const {
@@ -62,6 +62,22 @@ export const useUserData = () => {
       isLoading: usersLoading,
     } = useQuery<User[] | []>({
       queryFn: () => getUsers(),
+      queryKey: ["users"],
+    });
+    return {
+      users,
+      usersFetching,
+      usersLoading,
+    };
+  };
+  //OTHER USERS
+  const onGetOtherUsers = () => {
+    const {
+      data: users,
+      isFetching: usersFetching,
+      isLoading: usersLoading,
+    } = useQuery<User[] | []>({
+      queryFn: () => getOtherUsers(),
       queryKey: ["users"],
     });
     return {
@@ -106,8 +122,9 @@ export const useUserData = () => {
   };
 
   return {
-    onGetSiteUsers,
     onGetUsers,
+    onGetSiteUsers,
+    onGetOtherUsers,
     onGetUserById,
     onGetAdmins,
   };

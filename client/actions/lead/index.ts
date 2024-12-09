@@ -10,6 +10,8 @@ import { LeadDefaultStatus } from "@/types/lead";
 import { NotificationReference } from "@/types/notification";
 
 import {
+  CreateLeadSchema,
+  CreateLeadSchemaType,
   LeadExportSchemaType,
   LeadGeneralSchema,
   LeadGeneralSchemaType,
@@ -483,11 +485,11 @@ export const getAssociatedLeads = async (id: string) => {
 };
 
 //ACTIONS
-export const createLead = async (values: LeadSchemaType) => {
+export const createLead = async (values: CreateLeadSchemaType) => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
 
-  const { success, data } = LeadSchema.safeParse(values);
+  const { success, data } = CreateLeadSchema.safeParse(values);
   if (!success) throw new Error("Invalid fields!");
 
   const {
@@ -533,18 +535,10 @@ export const createLead = async (values: LeadSchemaType) => {
   if (existingLead) {
     newLead = await db.leadDuplicates.create({
       data: {
-        firstName,
-        lastName,
-        address,
-        city,
+       ...data,
         state: st?.abv || state,
-        zipCode,
         homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
         cellPhone: reFormatPhoneNumber(cellPhone),
-        gender: gender,
-        maritalStatus: maritalStatus,
-        email,
-        dateOfBirth,
         userId: user.id,
       },
     });

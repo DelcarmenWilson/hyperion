@@ -5,7 +5,7 @@ import { useLeadActions } from "@/hooks/lead/use-lead";
 import { Button } from "@/components/ui/button";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 import { Reply } from "lucide-react";
 
 export const TransferForm = () => {
@@ -34,7 +34,7 @@ export const TransferForm = () => {
           <p className="text-sm text-muted-foreground font-bold">
             Select a agent to transfer the lead to
           </p>
-          <UserSelect userId={userId} setUserId={setUserId} />
+          <OtherUserSelect userId={userId} setUserId={setUserId} />
           <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
             <Button
               onClick={onTransferFormClose}

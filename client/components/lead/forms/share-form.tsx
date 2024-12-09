@@ -7,7 +7,7 @@ import { useLeadActions } from "@/hooks/lead/use-lead";
 import { Button } from "@/components/ui/button";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 
 export const ShareForm = () => {
   const {
@@ -58,7 +58,7 @@ export const ShareForm = () => {
             Select {initUser ? "a new" : "an"} agent
           </p>
 
-          <UserSelect userId={userId} setUserId={setUserId} />
+          <OtherUserSelect userId={userId} setUserId={setUserId} />
 
           <div className="grid grid-cols-2 gap-x-2 justify-between mt-auto">
             <Button onClick={onShareFormClose} type="button" variant="outline">

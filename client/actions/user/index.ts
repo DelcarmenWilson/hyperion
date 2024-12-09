@@ -57,10 +57,21 @@ export const getUsers = async () => {
 
   const filter = user.role == "MASTER" ? undefined : user.organization;
   return await db.user.findMany({
+    where: { team: { organizationId: filter } },
+    orderBy: { firstName: "asc" },
+  });
+};
+export const getOtherUsers = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  const filter = user.role == "MASTER" ? undefined : user.organization;
+  return await db.user.findMany({
     where: { team: { organizationId: filter }, id: { not: user.id } },
     orderBy: { firstName: "asc" },
   });
 };
+
 export const getUserById = async (id: string) => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");

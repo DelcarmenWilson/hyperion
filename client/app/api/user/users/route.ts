@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUsers } from "@/actions/user";
+import { getOtherUsers } from "@/actions/user";
 import { getUsersByRole } from "@/actions/user";
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     let users;
     if (role == "all") 
-      users = await getUsers();
+      users = await getOtherUsers();
      else 
       users = await getUsersByRole(role);
     

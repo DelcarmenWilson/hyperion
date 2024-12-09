@@ -8,7 +8,7 @@ import { Heading } from "@/components/custom/heading";
 
 import { adminUpdateLeadNumbers } from "@/actions/admin/lead";
 import { adminUpdateUserNumber } from "@/actions/admin/user";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 
 export const PhoneUpdate = ({ user }: { user: string }) => {
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ export const PhoneUpdate = ({ user }: { user: string }) => {
       <div className="flex flex-col gap-2">
         <p className="text-sm">User</p>
         <div className="w-[200px]">
-          <UserSelect
+          <OtherUserSelect
             disabled={loading}
             setUserId={setSelecteUser}
             userId={selecteUser}

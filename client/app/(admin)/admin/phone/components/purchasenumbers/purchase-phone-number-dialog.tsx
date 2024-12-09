@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { TwilioNumber } from "@/types";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
@@ -107,7 +107,7 @@ const PurchasePhoneNumberDialog = ({
             <div className="text-sm">
               <p className="font-semibold">Assign To</p>
 
-              <UserSelect
+              <OtherUserSelect
                 userId={selectedUser}
                 setUserId={setSelectedUser}
                 unassigned

@@ -9,7 +9,7 @@ import { PageLayoutAdmin } from "@/components/custom/layout/page-admin";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 const UsersPage = () => {
-  const { onGetUsers } = useUserData();
+  const { onGetOtherUsers: onGetUsers } = useUserData();
   const { users, usersFetching } = onGetUsers();
   return (
     <PageLayoutAdmin

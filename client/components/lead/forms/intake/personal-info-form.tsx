@@ -434,9 +434,10 @@ const PersonalForm = ({ info, onClose }: FormProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="ssn"
+                    placeholder="eg. 555-55-5555"
                     disabled={personalIsPending}
                     autoComplete="off"
+                    maxLength={9}
                   />
 
                   {/* <InputOTP maxLength={9} {...field}>
@@ -490,6 +491,7 @@ const PersonalForm = ({ info, onClose }: FormProps) => {
                     placeholder="DF584-8596-45"
                     disabled={personalIsPending}
                     autoComplete="off"
+                    maxLength={12}
                   />
                 </FormControl>
                 <FormMessage />

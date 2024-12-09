@@ -21,6 +21,7 @@ import {
 
 import { sendSocketData } from "@/services/socket-service";
 import { defaultOptOut } from "@/placeholder/chat";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const smsSend = async ({
   fromPhone,
@@ -69,12 +70,19 @@ export const smsSend = async ({
   return { success: result.sid, message: "Message sent!" };
 };
 
-export const smsSendAgentAppointmentNotification = async (
-  userId: string,
-  lead: Lead | null | undefined,
-  date: Date
-) => {
-  if (!lead) return { error: "Lead Info requiered" };
+export const smsSendAgentAppointmentNotification = async ({
+  userId,
+  firstName,
+lastName,
+defaultNumber,
+  date,
+}: {
+  userId: string;
+  firstName: string;
+lastName: string;
+defaultNumber: string;
+  date: Date;
+}) => {
 
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -96,8 +104,8 @@ export const smsSendAgentAppointmentNotification = async (
     return { error: "PhoneNumber not set!" };
 
   //TODO - dont forget to remap the agents timezone here
-  const message = `Hi ${user.firstName},\nGreat news! ${lead.firstName} ${
-    lead.lastName
+  const message = `Hi ${user.firstName},\nGreat news! ${firstName} ${
+    lastName
   } has booked an appointment for ${formatDateTimeZone(
     date
   )} at ${formatTimeZone(
@@ -105,7 +113,7 @@ export const smsSendAgentAppointmentNotification = async (
   )}. Be sure to prepare for the meeting and address any specific concerns the client may have mentioned. Let us know if you need any further assistance.\n\nBest regards,\nStrongside Financial`;
 
   const result = await smsSend({
-    fromPhone: lead.defaultNumber,
+    fromPhone: defaultNumber,
     toPhone: user.phoneSettings.personalNumber,
     message,
   });
@@ -115,36 +123,45 @@ export const smsSendAgentAppointmentNotification = async (
   return { success: "Message sent!" };
 };
 
-export const smsSendLeadAppointmentNotification = async (
-  userId: string,
-  lead: Lead | null | undefined,
-  date: Date
-) => {
-  if (!lead) throw new Error("Lead Info required!");
+export const smsSendLeadAppointmentNotification = async ({
+  leadId,
+  firstName,
+  defaultNumber,
+  cellPhone,
+  userId,
+  date,
+}: {
+  leadId: string;
+  firstName: string;
+  defaultNumber: string;
+  cellPhone: string;
+  userId: string;
+  date: Date;
+}) => {
   //TODO - update does not go as planned tommorrow - change this back to use the default time ln.292
   //const timeZone=states.find(e=>e.abv.toLocaleLowerCase()==lead.state.toLocaleLowerCase())?.zone || "US/Eastern"
-  const message = `Hi ${
-    lead.firstName
-  },\nThanks for booking an appointment with us! Your meeting is confirmed for ${formatHyperionDate(
+  const message = `Hi ${firstName},\nThanks for booking an appointment with us! Your meeting is confirmed for ${formatHyperionDate(
     date
   )} at ${formatTimeZone(
     date
+  )}. You will recieve a call from ${formatPhoneNumber(
+    defaultNumber
   )}. Our team looks forward to discussing your life insurance needs. If you have any questions before the appointment, feel free to ask.\n\nBest regards,\nStrongside Financial
   `;
 
   const result = await smsSend({
-    fromPhone: lead.defaultNumber,
-    toPhone: lead.cellPhone,
+    fromPhone: defaultNumber,
+    toPhone: cellPhone,
     message,
   });
 
   const existingConversation = await db.leadConversation.findFirst({
     where: {
-      lead: { id: lead.id },
+      lead: { id: leadId },
     },
   });
   let convoid = existingConversation?.id;
-  if (!convoid) convoid = await createConversation(userId, lead.id);
+  if (!convoid) convoid = await createConversation(userId, leadId);
 
   if (!result.success) throw new Error("Message was not sent!");
 
