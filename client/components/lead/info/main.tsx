@@ -1,7 +1,11 @@
 "use client";
 import Link from "next/link";
 
-import { useLeadStore, useLeadMainInfoActions } from "@/hooks/lead/use-lead";
+import {
+  useLeadStore,
+  useLeadInfoData,
+  useLeadInfoActions,
+} from "@/hooks/lead/use-lead";
 
 import { CopyButton } from "@/components/reusable/copy-button";
 import { EmptyData } from "./empty-data";
@@ -12,21 +16,24 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 type MainInfoProps = {
+  leadId: string;
   noConvo: boolean;
   showInfo?: boolean;
   showEdit?: boolean;
 };
 export const MainInfoClient = ({
+  leadId,
   noConvo,
   showInfo = false,
   showEdit = true,
 }: MainInfoProps) => {
   const { onMainFormOpen } = useLeadStore();
-  const { mainInfo, isFetchingMainInfo, initConvo, onLeadUpdateByIdQuote } =
-    useLeadMainInfoActions(() => {}, noConvo);
+  const { onGetLeadMainInfo } = useLeadInfoData(leadId);
+  const { mainInfo, mainInfoFetching } = onGetLeadMainInfo();
+  const { onLeadUpdateQuote } = useLeadInfoActions();
 
   return (
-    <SkeletonWrapper isLoading={isFetchingMainInfo}>
+    <SkeletonWrapper isLoading={mainInfoFetching}>
       {mainInfo ? (
         <SectionWrapper
           title="Main"
@@ -70,7 +77,9 @@ export const MainInfoClient = ({
             <FieldBox
               name="Quote"
               field={mainInfo.quote!}
-              onFieldUpdate={onLeadUpdateByIdQuote}
+              onFieldUpdate={(e) =>
+                onLeadUpdateQuote({ id: leadId, quote: e as string })
+              }
             />
           </div>
         </SectionWrapper>

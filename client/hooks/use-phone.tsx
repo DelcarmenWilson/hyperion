@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { create } from "zustand";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,8 +10,9 @@ import {
   phoneSettingsUpdateCurrentCall,
   phoneSettingsUpdateRemoveCurrentCall,
 } from "@/actions/settings/phone";
-import { scriptGetOne } from "@/actions/script";
+import { getScriptOne } from "@/actions/script";
 import { getLeadByPhone } from "@/actions/lead";
+import { usePhoneContext } from "@/providers/phone";
 
 type State = {
   //PHONE SPECIFIC
@@ -120,6 +121,7 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
       isRunning: false,
       time: 0,
       isPhoneInOpen: false,
+      isIncomingCallOpen: false,
     }),
   pipeIndex: 0,
   isPhoneInOpen: false,
@@ -178,7 +180,7 @@ export const usePhoneStore = create<State & Actions>((set, get) => ({
 
   fetchData: async () => {
     //NEED TO REPLACE THIS WITH A MORE SPECIFIC SCRIPT
-    const script = await scriptGetOne(get().lead?.type);
+    const script = await getScriptOne(get().lead?.type);
     set({ script: script as Script });
   },
 }));
@@ -265,13 +267,16 @@ export const usePhoneData = (phone: Device | null) => {
 };
 
 export const useIncomingCallData = () => {
+  // const { phone } = usePhoneContext();
+  // const { onPhoneInOpen, isPhoneOutOpen, onIncomingCallOpen } = usePhoneStore();
+  // const { onDisconnect } = usePhoneData(phone);
   // PHONE VARIABLES
   const [from, setFrom] = useState<{
-    id: string;
+    id: string | undefined;
     name: string;
     number: string;
   }>({
-    id: "unknown",
+    id: undefined,
     name: "unknown",
     number: "unknown",
   });
@@ -288,5 +293,6 @@ export const useIncomingCallData = () => {
     });
     return { lead, leadFetching, leadLoading };
   };
+
   return { from, setFrom, onGetLeadByPhone };
 };

@@ -85,7 +85,7 @@ const ScriptActions = ({
   scriptId: string;
   scriptName: string;
 }) => {
-  const { onDeleteScript, deletingScript } = useScriptActions();
+  const { onDeleteScript, scriptDeleting } = useScriptActions();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -105,7 +105,7 @@ const ScriptActions = ({
             title="script"
             cfText={scriptName}
             onConfirm={() => onDeleteScript(scriptId)}
-            loading={deletingScript}
+            loading={scriptDeleting}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

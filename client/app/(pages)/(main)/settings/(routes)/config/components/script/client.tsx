@@ -3,19 +3,20 @@ import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useScriptData, useScriptStore } from "@/hooks/admin/use-script";
 
-import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { ScriptList } from "./list";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const ScriptClient = () => {
   const user = useCurrentUser();
-  const { scripts, isFetchingScripts } = useScriptData();
-  const { onScriptFormOpen, onScriptFormClose } = useScriptStore();
+  const { onGetScripts } = useScriptData();
+  const { scripts, scriptsFetching } = onGetScripts();
+  const { onScriptFormOpen } = useScriptStore();
   const [isList, setIsList] = useState(user?.dataStyle == "list");
   const topMenu = (
-    <SkeletonWrapper isLoading={isFetchingScripts}>
+    <SkeletonWrapper isLoading={scriptsFetching}>
       <ListGridTopMenu
         text="Add Script"
         isList={isList}
@@ -28,7 +29,7 @@ export const ScriptClient = () => {
   return (
     <>
       {isList ? (
-        <SkeletonWrapper isLoading={isFetchingScripts}>
+        <SkeletonWrapper isLoading={scriptsFetching}>
           <DataTable
             columns={columns}
             data={scripts || []}

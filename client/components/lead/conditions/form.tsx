@@ -1,9 +1,13 @@
-import { useLeadConditionActions } from "@/hooks/lead/use-condition";
+import { useLeadStore } from "@/hooks/lead/use-lead";
+import {
+  useLeadConditionActions,
+  useLeadConditionData,
+  useLeadConditionStore,
+} from "@/hooks/lead/use-condition";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { MedicalCondition } from "@prisma/client";
 import { FullLeadMedicalCondition } from "@/types";
 import { LeadConditionSchema, LeadConditionSchemaType } from "@/schemas/lead";
 
@@ -32,15 +36,11 @@ import { DrawerRight } from "@/components/custom/drawer/right";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 export const ConditionForm = () => {
-  const {
-    leadId,
-    isConditionFormOpen,
-    onConditionFormClose,
-    condition,
-    isFetchingCondition,
-    onConditionSubmit,
-    isConditionPending,
-  } = useLeadConditionActions();
+  const { leadId } = useLeadStore();
+  const { isConditionFormOpen, onConditionFormClose } = useLeadConditionStore();
+  const { onGetLeadCondition } = useLeadConditionData(leadId as string);
+  const { condition, conditionFetching } = onGetLeadCondition();
+  const { onConditionUpsert, conditionUpserting } = useLeadConditionActions();
 
   return (
     <DrawerRight
@@ -48,12 +48,12 @@ export const ConditionForm = () => {
       isOpen={isConditionFormOpen}
       onClose={onConditionFormClose}
     >
-      <SkeletonWrapper isLoading={isFetchingCondition}>
+      <SkeletonWrapper isLoading={conditionFetching}>
         <CondForm
-          loading={isConditionPending}
           leadId={leadId}
           condition={condition}
-          onSubmit={onConditionSubmit}
+          loading={conditionUpserting}
+          onSubmit={onConditionUpsert}
           onClose={onConditionFormClose}
         />
       </SkeletonWrapper>
@@ -78,8 +78,8 @@ const CondForm = ({
 }: CondFormProps) => {
   const btnTitle = condition ? "Update" : "Add";
 
-  const { adminConditions, isFetchingAdminConditions } =
-    useLeadConditionActions();
+  const { onGetAdminConditions } = useLeadConditionData("admin");
+  const { conditions, conditionsFetching } = onGetAdminConditions();
 
   const form = useForm<LeadConditionSchemaType>({
     resolver: zodResolver(LeadConditionSchema),
@@ -119,7 +119,7 @@ const CondForm = ({
                     </FormLabel>
                     <Select
                       name="ddlCondition"
-                      disabled={isFetchingAdminConditions}
+                      disabled={conditionsFetching}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
@@ -129,7 +129,7 @@ const CondForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {adminConditions?.map((condition) => (
+                        {conditions?.map((condition) => (
                           <SelectItem key={condition.id} value={condition.id}>
                             {condition.name}
                           </SelectItem>

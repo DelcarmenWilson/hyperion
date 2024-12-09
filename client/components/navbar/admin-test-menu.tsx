@@ -42,8 +42,10 @@ const AdminTestMenu = () => {
           <ChevronDown size={15} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Admin Test Menu</DropdownMenuLabel>
+      <DropdownMenuContent align="center">
+        <DropdownMenuLabel className="text-primary">
+          Admin Test Menu
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => remindTodos(true)}>
           Reminders
@@ -51,7 +53,7 @@ const AdminTestMenu = () => {
         <DropdownMenuItem onClick={() => closeOpenAppointments(true)}>
           Close appointments
         </DropdownMenuItem>
-        <DropdownMenuLabel>Notification</DropdownMenuLabel>
+        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => onNotificationOpen("cm46bkupq0000uj0sz7p2uo4k")}

@@ -14,15 +14,13 @@ import { ConditionsClient } from "@/components/lead/conditions/client";
 import { LeadHeader } from "@/components/lead/header";
 import { PhoneButtons } from "./phone-buttons";
 import { PhoneQuoter } from "./quoter";
-import { usePhoneStore } from "@/hooks/use-phone";
 
-export const PhoneLeadInfo = () => {
-  const {lead}=usePhoneStore()
-  if (!lead) return null;
+export const PhoneLeadInfo = ({ leadId }: { leadId: string | undefined }) => {
+  if (!leadId) return null;
   return (
     <div className="flex flex-col bg-background relative overflow-hidden h-full w-full">
       <Tabs defaultValue="general" className="flex flex-col flex-1 h-full">
-        <LeadHeader />
+        <LeadHeader leadId={leadId} />
         <TabsList className="flex w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
@@ -34,30 +32,30 @@ export const PhoneLeadInfo = () => {
           value="general"
         >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2">
-            <MainInfoClient noConvo={false} />
-            <GeneralInfoClient showInfo />
-            <CallInfo showBtnCall={false} />
-            <PolicyInfoClient />
-            <NotesForm />
+            <MainInfoClient leadId={leadId} noConvo={false} />
+            <GeneralInfoClient leadId={leadId} showInfo />
+            <CallInfo leadId={leadId} showBtnCall={false} />
+            <PolicyInfoClient leadId={leadId} />
+            <NotesForm leadId={leadId} />
           </div>
         </TabsContent>
         <TabsContent
           value="beneficiaries"
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
         >
-          <BeneficiariesClient />
+          <BeneficiariesClient leadId={leadId} />
         </TabsContent>
         <TabsContent
           value="conditions"
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
         >
-          <ConditionsClient />
+          <ConditionsClient leadId={leadId} />
         </TabsContent>
         <TabsContent
           className="flex-1 overflow-y-auto data-[state=active]:h-full"
           value="expenses"
         >
-          <ExpensesClient />
+          <ExpensesClient leadId={leadId} />
         </TabsContent>
       </Tabs>
       <PhoneScript />

@@ -10,7 +10,11 @@ import { CopyButton } from "@/components/reusable/copy-button";
 import { formatPhoneNumber } from "@/formulas/phones";
 
 import { LeadMainSchemaType } from "@/schemas/lead";
-import { useLeadStore, useLeadMainInfoActions } from "@/hooks/lead/use-lead";
+import {
+  useLeadActions,
+  useLeadInfoActions,
+  useLeadStore,
+} from "@/hooks/lead/use-lead";
 import { FieldBox } from "@/components/lead/field-box";
 
 type MainInfoProps = {
@@ -26,8 +30,7 @@ export const MainInfoClient = ({
   showEdit = true,
 }: MainInfoProps) => {
   const { onMainFormOpen } = useLeadStore();
-  const { initConvo, onLeadUpdateByIdQuote } = useLeadMainInfoActions(() => {},
-  noConvo);
+  const { onLeadUpdateQuote } = useLeadInfoActions();
 
   return (
     <>
@@ -79,7 +82,9 @@ export const MainInfoClient = ({
         <FieldBox
           name="Quote"
           field={info.quote!}
-          onFieldUpdate={onLeadUpdateByIdQuote}
+          onFieldUpdate={(e) =>
+            onLeadUpdateQuote({ id: info.id, quote: e as string })
+          }
         />
       </div>
     </>

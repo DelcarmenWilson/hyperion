@@ -121,14 +121,12 @@ export const getLeads = async () => {
   }
 };
 export const getLeadByPhone = async (cellPhone: string) => {
-  return  await db.lead.findFirst({
-      where: {
-        cellPhone,
-      },
-   select:{id:true,firstName:true,lastName:true}
-    });
-
-   
+  return await db.lead.findFirst({
+    where: {
+      cellPhone,
+    },
+    select: { id: true, firstName: true, lastName: true },
+  });
 };
 export const getMultipleLeads = async ({
   leadIds,
@@ -184,7 +182,7 @@ export const getLeadBasicInfo = async (id: string) => {
 export const getLeadMainInfo = async (id: string) => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
-  return await db.lead.findUnique({
+  const lead= await db.lead.findUnique({
     where: {
       id,
       userId: user.id,
@@ -204,6 +202,8 @@ export const getLeadMainInfo = async (id: string) => {
       textCode: true,
     },
   });
+  console.log(lead)
+  return lead
 };
 export const getLeadGeneralInfo = async (id: string) => {
   const user = await currentUser();
@@ -606,7 +606,7 @@ export const deleteLead = async (id: string) => {
     where: { id },
     data: { statusId: LeadDefaultStatus.DELETED },
   });
-    
+
   // if everything is correct return success
   return { success: id };
 };
@@ -921,7 +921,7 @@ export const updateLeadMainInfo = async (values: LeadMainSchemaType) => {
     activity: "Main info updated",
     userId: user.id,
   });
-  return leadInfo as LeadMainSchemaType;
+  return leadInfo.id;
 };
 
 export const updateLeadGeneralInfo = async (values: LeadGeneralSchemaType) => {
@@ -953,7 +953,7 @@ export const updateLeadGeneralInfo = async (values: LeadGeneralSchemaType) => {
     userId: user.id,
   });
 
-  return leadInfo as LeadGeneralSchemaType;
+  return leadInfo.id;
 };
 
 export const updateLeadTitan = async ({

@@ -2,7 +2,11 @@
 import { useState, useEffect } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { cn } from "@/lib/utils";
-import { useLeadConditionActions } from "@/hooks/lead/use-condition";
+import {
+  useLeadConditionActions,
+  useLeadConditionData,
+  useLeadConditionStore,
+} from "@/hooks/lead/use-condition";
 
 import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import { DataTable } from "@/components/tables/data-table";
@@ -12,16 +16,23 @@ import { columns } from "./columns";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type ConditionsClientProp = {
+  leadId: string;
   size?: string;
 };
 
-export const ConditionsClient = ({ size = "full" }: ConditionsClientProp) => {
+export const ConditionsClient = ({
+  leadId,
+  size = "full",
+}: ConditionsClientProp) => {
   const user = useCurrentUser();
   const [isList, setIsList] = useState(user?.dataStyle == "list");
-  const { conditions, onConditionFormOpen, isFetchingConditions } =
-    useLeadConditionActions();
+  const { onConditionFormOpen } = useLeadConditionStore();
+
+  const { onGetLeadConditions } = useLeadConditionData(leadId);
+  const { conditions, conditionsFetching } = onGetLeadConditions();
+
   const topMenu = (
-    <SkeletonWrapper isLoading={isFetchingConditions}>
+    <SkeletonWrapper isLoading={conditionsFetching}>
       <ListGridTopMenu
         text="Add Condition"
         setIsDrawerOpen={onConditionFormOpen}
@@ -36,7 +47,7 @@ export const ConditionsClient = ({ size = "full" }: ConditionsClientProp) => {
     <>
       <ConditionForm />
       {isList ? (
-        <SkeletonWrapper isLoading={isFetchingConditions}>
+        <SkeletonWrapper isLoading={conditionsFetching}>
           <DataTable
             columns={columns}
             data={conditions || []}
@@ -55,7 +66,7 @@ export const ConditionsClient = ({ size = "full" }: ConditionsClientProp) => {
             <h4 className="text-2xl font-semibold">Medical Conditions</h4>
             {topMenu}
           </div>
-          <SkeletonWrapper isLoading={isFetchingConditions}>
+          <SkeletonWrapper isLoading={conditionsFetching}>
             <ConditionsList conditions={conditions || []} size={size} />
           </SkeletonWrapper>
         </>

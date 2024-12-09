@@ -21,18 +21,14 @@ import {
 } from "@/components/ui/form";
 import FormInput from "./form-input";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/modals/modal";
 
 export const ScriptForm = () => {
   const { isScriptFormOpen, onScriptFormClose } = useScriptStore();
-  const { script } = useScriptData();
-  const {
-    onScriptInsert,
-    isPendingScriptInsert,
-    onScriptUpdate,
-    isPendingScriptUpdate,
-  } = useScriptActions();
+  const { onGetScript } = useScriptData();
+  const { script } = onGetScript();
+  const { onCreateScript, scriptCreating, onUpdateScript, scriptUpdating } =
+    useScriptActions();
   const title = script ? ` - ${script.name}` : "";
   return (
     <Modal
@@ -44,9 +40,9 @@ export const ScriptForm = () => {
     >
       <SpForm
         script={script || undefined}
-        loading={script ? isPendingScriptUpdate : isPendingScriptInsert}
+        loading={script ? scriptUpdating : scriptCreating}
         onClose={onScriptFormClose}
-        onSubmit={script ? onScriptUpdate : onScriptInsert}
+        onSubmit={script ? onUpdateScript : onCreateScript}
       />
     </Modal>
   );

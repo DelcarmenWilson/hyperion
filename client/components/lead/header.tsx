@@ -9,10 +9,9 @@ import { LeadDropDown } from "@/components/lead/dropdown";
 import SkeletonWrapper from "../skeleton-wrapper";
 import { EmptyData } from "./info/empty-data";
 //TODO - need to remove the socket calls here, lets make use of the hooks
-export const LeadHeader = () => {
-  const { leadId } = useLeadStore();
+export const LeadHeader = ({ leadId }: { leadId: string }) => {
   const { onGetLead } = useLeadData();
-  const { lead, leadFetching } = onGetLead(leadId as string);
+  const { lead, leadFetching } = onGetLead(leadId);
   const { socket } = useContext(SocketContext).SocketState;
 
   useEffect(() => {

@@ -2,7 +2,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
-import { useLeadStore, useLeadGeneralInfoActions } from "@/hooks/lead/use-lead";
+import {
+  useLeadStore,
+  useLeadInfoActions,
+  useLeadInfoData,
+} from "@/hooks/lead/use-lead";
 
 import {
   LeadGeneralSchema,
@@ -23,7 +27,7 @@ import {
   FormMessage,
   FormItem,
 } from "@/components/ui/form";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -34,12 +38,14 @@ import {
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Switch } from "@/components/ui/switch";
 import ReactDatePicker from "react-datepicker";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const GeneralInfoForm = () => {
-  const { isGeneralFormOpen, onGeneralFormClose } = useLeadStore();
-  const { generalInfo, isFetchingGeneralInfo, loading, onGeneralInfoUpdate } =
-    useLeadGeneralInfoActions(onGeneralFormClose);
+  const { leadId, isGeneralFormOpen, onGeneralFormClose } = useLeadStore();
+  const { onGetLeadGeneralInfo } = useLeadInfoData(leadId as string);
+  const { generalInfo, generalInfoFetching } = onGetLeadGeneralInfo();
+  const { onUpdateLeadGeneralInfo, generalInfoUpdating } =
+    useLeadInfoActions(onGeneralFormClose);
+
   if (!generalInfo) return null;
   return (
     <Dialog open={isGeneralFormOpen} onOpenChange={onGeneralFormClose}>
@@ -49,11 +55,11 @@ export const GeneralInfoForm = () => {
           title="General"
           subTitle={`${generalInfo.firstName} ${generalInfo.lastName}`}
         />
-        <SkeletonWrapper isLoading={isFetchingGeneralInfo}>
+        <SkeletonWrapper isLoading={generalInfoFetching}>
           <GeneralForm
             generalInfo={generalInfo}
-            loading={loading}
-            onSubmit={onGeneralInfoUpdate}
+            loading={generalInfoUpdating}
+            onSubmit={onUpdateLeadGeneralInfo}
             onClose={onGeneralFormClose}
           />
         </SkeletonWrapper>

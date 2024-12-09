@@ -1,8 +1,9 @@
 import { useCallback, useContext, useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useCurrentUser } from "../user/use-current";
-import SocketContext from "@/providers/socket";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
+import { useSocketStore } from "../use-socket-store";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { create } from "zustand";
@@ -263,7 +264,22 @@ export const useLeadData = () => {
       leadsLoading,
     };
   };
-
+  const onGetLeadPrevNext = (leadId: string) => {
+    const {
+      data: prevNext,
+      isFetching: nextPrevFetching,
+      isLoading: leadPrevNextLoading,
+    } = useQuery<LeadPrevNext | null>({
+      queryFn: () => getLeadPrevNext(leadId),
+      queryKey: [`leadNextPrev-${leadId}`],
+      enabled: !!leadId,
+    });
+    return {
+      prevNext,
+      nextPrevFetching,
+      leadPrevNextLoading,
+    };
+  };
   const onGetMultipleLeads = () => {
     const {
       data: leads,
@@ -281,22 +297,7 @@ export const useLeadData = () => {
       leadsLoading,
     };
   };
-  const onGetLeadPrevNext = (leadId: string) => {
-    const {
-      data: prevNext,
-      isFetching: nextPrevFetching,
-      isLoading: leadPrevNextLoading,
-    } = useQuery<LeadPrevNext | null>({
-      queryFn: () => getLeadPrevNext(leadId),
-      queryKey: [`leadNextPrev-${leadId}`],
-      enabled: !!leadId,
-    });
-    return {
-      prevNext,
-      nextPrevFetching,
-      leadPrevNextLoading,
-    };
-  };
+
   const onGetAssociatedLeads = (leadId: string) => {
     const {
       data: associatedLeads,
@@ -350,10 +351,10 @@ export const useLeadData = () => {
     onGetAssociatedLeads,
   };
 };
-
+//TODO - see if we can use the mutation for all of these functions
 export const useLeadActions = (uId?: string) => {
   const user = useCurrentUser();
-  const { socket } = useContext(SocketContext).SocketState;
+  const { socket } =useSocketStore()
   const {
     isShareFormOpen,
     onShareFormClose,
@@ -535,117 +536,126 @@ export const useLeadInsertActions = () => {
   };
 };
 
-export const useLeadMainInfoActions = (
-  onClose?: () => void,
-  noConvo: boolean = false
-) => {
-  const { leadId } = useLeadStore();
-  const queryClient = useQueryClient();
-  const [initConvo, setInitConvo] = useState(noConvo);
-  const [loading, setLoading] = useState(false);
-
-  const invalidate = (key: string) => {
-    queryClient.invalidateQueries({ queryKey: [`${key}-${leadId}`] });
-  };
-  const { data: mainInfo, isFetching: isFetchingMainInfo } =
-    useQuery<LeadMainSchemaTypeP | null>({
-      queryFn: () => getLeadMainInfo(leadId as string),
+export const useLeadInfoData = (leadId: string) => {
+  //MAIN INFO
+  const onGetLeadMainInfo = () => {
+    const {
+      data: mainInfo,
+      isFetching: mainInfoFetching,
+      isLoading: mainInfoLoading,
+    } = useQuery<LeadMainSchemaTypeP | null>({
+      queryFn: () => getLeadMainInfo(leadId),
       queryKey: [`lead-main-info-${leadId}`],
       enabled: !!leadId,
     });
-
-  const onLeadUpdateByIdQuote = async (e?: string) => {
-    if (!e) {
-      return;
-    }
-    const updatedQuote = await updateLeadQuote({
-      id: leadId as string,
-      quote: e,
-    });
-    if (updatedQuote) {
-      toast.success(updatedQuote);
-    } else toast.error("Something wentwrong");
+    return {
+      mainInfo,
+      mainInfoFetching,
+      mainInfoLoading,
+    };
   };
 
-  //MAIN INFO
-  const onMainInfoUpdate = async (values: LeadMainSchemaType) => {
-    setLoading(true);
-    const response = await updateLeadMainInfo(values);
-    if (response) {
-      userEmitter.emit("mainInfoUpdated", response);
-      toast.success("Lead demographic info updated");
-      ["lead-main-info", "lead"].forEach((key) => invalidate(key));
-      if (onClose) onClose();
-    } else {
-      toast.error("Something went wrong");
-    }
-    setLoading(false);
-  };
-
-  // useEffect(() => {
-  //   userEmitter.on("mainInfoUpdated", (info) => onSetInfo(info));
-  // }, [info]);
-
-  return {
-    mainInfo,
-    isFetchingMainInfo,
-    initConvo,
-    onLeadUpdateByIdQuote,
-    loading,
-    onMainInfoUpdate,
-  };
-};
-
-export const useLeadGeneralInfoActions = (onClose?: () => void) => {
-  const { leadId } = useLeadStore();
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: [`lead-general-info-${leadId}`],
-    });
-  };
-
-  const { data: generalInfo, isFetching: isFetchingGeneralInfo } =
-    useQuery<LeadGeneralSchemaTypeP | null>({
+  // GENERAL INFO
+  const onGetLeadGeneralInfo = () => {
+    const {
+      data: generalInfo,
+      isFetching: generalInfoFetching,
+      isLoading: generalInfoLoading,
+    } = useQuery<LeadGeneralSchemaTypeP | null>({
       queryFn: () => getLeadGeneralInfo(leadId as string),
       queryKey: [`lead-general-info-${leadId}`],
       enabled: !!leadId,
     });
-
-  //GENERAL INFO
-  const onGeneralInfoUpdate = async (values: LeadGeneralSchemaType) => {
-    setLoading(true);
-    const updatedLead = await updateLeadGeneralInfo(values);
-
-    if (updatedLead) {
-      userEmitter.emit("generalInfoUpdated", updatedLead);
-      invalidate();
-      if (onClose) onClose();
-    } else toast.error("Something went wrong");
-
-    setLoading(false);
+    return {
+      generalInfo,
+      generalInfoFetching,
+      generalInfoLoading,
+    };
   };
-
   return {
-    generalInfo,
-    isFetchingGeneralInfo,
-    loading,
-    onGeneralInfoUpdate,
+    onGetLeadMainInfo,
+    onGetLeadGeneralInfo,
   };
 };
 
-export const useLeadNotesActions = () => {
-  const { leadId } = useLeadStore();
-  const queryClient = useQueryClient();
+export const useLeadInfoActions = (cb?: () => void) => {
+  const { invalidate } = useInvalidate();
+
+  //UPDATE Quote
+  const { mutate: onLeadUpdateQuote, isPending: leadQuoteUpdating } =
+    useMutation({
+      mutationFn: updateLeadQuote,
+      onSuccess: () => toast.success("Quote Udpated!", { id: "update-quote" }),
+
+      onError: (error) => toast.error(error.message, { id: "update-quote" }),
+    });
+
+  //MAIN INFO
+  const { mutate: updateLeadMainInfoMutate, isPending: mainInfoUpdating } =
+    useMutation({
+      mutationFn: updateLeadMainInfo,
+      onSuccess: (results) => {
+        if (results) {
+          toast.success("Main info updated", { id: "update-main-info" });
+          [`lead-main-info-${results}`, `lead-${results}`].forEach((key) =>
+            invalidate(key)
+          );
+        }
+        if (cb) cb();
+      },
+      onError: (error) =>
+        toast.error(error.message, { id: "update-main-info" }),
+    });
+
+  const onUpdateLeadMainInfo = useCallback(
+    (values: LeadMainSchemaType) => {
+      toast.loading("Updating main info...", { id: "update-main-info" });
+      updateLeadMainInfoMutate(values);
+    },
+    [updateLeadMainInfoMutate]
+  );
+
+  //GENERAL INFO
+  const {
+    mutate: updateLeadGeneralInfoMutate,
+    isPending: generalInfoUpdating,
+  } = useMutation({
+    mutationFn: updateLeadGeneralInfo,
+    onSuccess: (results) => {
+      if (results) {
+        toast.success("General info updated", { id: "update-general-info" });
+        invalidate(`lead-general-info-${results}`);
+      }
+      if (cb) cb();
+    },
+    onError: (error) =>
+      toast.error(error.message, { id: "update-general-info" }),
+  });
+
+  const onUpdateLeadGeneralInfo = useCallback(
+    (values: LeadGeneralSchemaType) => {
+      toast.loading("Updating general info...", { id: "update-general-info" });
+      updateLeadGeneralInfoMutate(values);
+    },
+    [updateLeadGeneralInfoMutate]
+  );
+
+  return {
+    onLeadUpdateQuote,
+    leadQuoteUpdating,
+    onUpdateLeadMainInfo,
+    mainInfoUpdating,
+    onUpdateLeadGeneralInfo,
+    generalInfoUpdating,
+  };
+};
+
+//TODO this need to be extracted and removed
+export const useLeadNotesActions = (leadId:string) => {
+  const { invalidate } = useInvalidate();
   const [loading, setLoading] = useState(false);
 
   const [notes, setNotes] = useState<string | null>("");
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`lead-notes-${leadId}`] });
-  };
 
   const { data: initNotes, isFetching: isFetchingNotes } =
     useQuery<LeadNotesSchemaTypeP | null>({
@@ -669,7 +679,7 @@ export const useLeadNotesActions = () => {
   const onUnShareLead = async () => {
     const updatedLead = await unshareLead(leadId as string);
     if (updatedLead.success) {
-      invalidate();
+      invalidate(`lead-notes-${leadId}`);
       toast.success(updatedLead.message);
     } else toast.error("Something went wrong!");
   };
@@ -690,36 +700,36 @@ export const useLeadNotesActions = () => {
   };
 };
 
-export const useLeadCallInfoActions = () => {
-  const { leadId } = useLeadStore();
-  const queryClient = useQueryClient();
-  const { socket } = useContext(SocketContext).SocketState;
-  //CallInfo
-  const { data: callInfo, isFetching: isFetchingCallInfo } =
+export const useLeadCallInfoActions = (leadId:string) => {
+  const {invalidate} = useInvalidate();
+  const { socket } = useSocketStore()
+
+  //CALL INFO
+  const onGetLeadCallInfo=()=>{
+    const { data: callInfo, isFetching: callInfoFetching,isLoading:callInfoLoading } =
     useQuery<LeadCallInfoSchemaTypeP | null>({
       queryFn: () => getLeadCallInfo(leadId as string),
       queryKey: [`lead-call-info-${leadId}`],
       enabled: !!leadId,
     });
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: [`lead-call-info-${leadId}`] });
-  };
+    return{
+      callInfo,
+      callInfoFetching,
+      callInfoLoading
+    }
+  }
 
   useEffect(() => {
     socket?.on("calllog:new", (data: { dt: Call }) => {
-      if (data.dt.leadId == leadId) invalidate();
+      if (data.dt.leadId == leadId) invalidate(`lead-call-info-${leadId}`);
     });
-    return () => {
-      socket?.off("calllog:new", (data: { dt: Call }) => {
-        if (data.dt.leadId == leadId) invalidate();
-      });
+    return () => {      
+      socket?.off("calllog:new");
     };
   }, []);
 
   return {
-    callInfo,
-    isFetchingCallInfo,
+    onGetLeadCallInfo
   };
 };
 

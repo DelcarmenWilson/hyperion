@@ -20,6 +20,7 @@ export const ConversationLeadInfo = ({ size = "full" }: { size?: string }) => {
   const { onGetLeadBasicInfo } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId as string);
 
+  if (!leadId) return null;
   return (
     <div
       className={cn(
@@ -47,22 +48,22 @@ export const ConversationLeadInfo = ({ size = "full" }: { size?: string }) => {
                 size == "full" ? "grid-cols-3" : "grid-cols-1"
               )}
             >
-              <MainInfoClient noConvo={false} />
-              <GeneralInfoClient showInfo />
-              <CallInfo showBtnCall={false} />
-              <PolicyInfoClient />
-              <NotesForm />
+              <MainInfoClient leadId={leadId} noConvo={false} />
+              <GeneralInfoClient leadId={leadId} showInfo />
+              <CallInfo leadId={leadId} showBtnCall={false} />
+              <PolicyInfoClient leadId={leadId} />
+              <NotesForm leadId={leadId} />
             </div>
           </TabsContent>
           <TabsContent value="beneficiaries">
             {/*TODO need to implement the sizes for all 3 clients */}
-            <BeneficiariesClient size={size} />
+            <BeneficiariesClient leadId={leadId} size={size} />
           </TabsContent>
           <TabsContent value="conditions">
-            <ConditionsClient size={size} />
+            <ConditionsClient leadId={leadId} size={size} />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesClient size={size} />
+            <ExpensesClient leadId={leadId} size={size} />
           </TabsContent>
         </ScrollArea>
       </Tabs>

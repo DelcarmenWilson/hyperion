@@ -13,9 +13,11 @@ export const CreatePhoneNumberSchema = z.object({
   state: z.string().min(1, "Please select a State"),
   agentId: z.string(),
   sid: z.string(),
-  app: z.string()
+  app: z.string(),
 });
-export type CreatePhoneNumberSchemaType = z.infer<typeof CreatePhoneNumberSchema>;
+export type CreatePhoneNumberSchemaType = z.infer<
+  typeof CreatePhoneNumberSchema
+>;
 
 export const UserLicenseSchema = z.object({
   id: z.optional(z.string()),
@@ -39,7 +41,7 @@ export const UserCarrierSchema = z.object({
   id: z.optional(z.string()),
   agentId: z.string().min(2, "*"),
   carrierId: z.string().min(2, "*"),
-  rate:z.coerce.number(),
+  rate: z.coerce.number(),
   comments: z
     .string()
     .nullish()
@@ -56,17 +58,35 @@ export const UserTemplateSchema = z.object({
 });
 export type UserTemplateSchemaType = z.infer<typeof UserTemplateSchema>;
 
-export const TodoSchema = z.object({
-  id: z.string().optional(),
-  userId: z.string().optional(),
-  categoryId:z.string().optional(),
-  title: z.string(),
-  description: z.string(),
-  comments: z.string(),
-  reminder:z.boolean(),
-  reminderMethod:z.string(),
-  nextReminder:z.date().optional(),
-  startAt:z.date().optional(),
-  endAt:z.date().optional(),
-});
+export const TodoSchema = z
+  .object({
+    id: z.string().optional(),
+    userId: z.string().optional(),
+    categoryId: z.string(),
+    title: z.string(),
+    description: z.string(),
+    comments: z.string(),
+    reminder: z.boolean(),
+    reminderMethod: z.string(),
+    nextReminder: z.date().optional(),
+    startAt: z
+      .date()
+      .optional()
+      .refine((value) => {
+        if (!value) return true;
+        if (value < new Date()) return false;
+      },{message:"Invalid date",path:["startAt"]}),
+    // endAt:z.date().optional(),
+    endAt: z.coerce.date().optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.endAt || !data.startAt) return false;
+      if (data.endAt < data.startAt) return true;
+    },
+    {
+      message: "End date cannot be earlier than start date.",
+      path: ["endAt"],
+    }
+  );
 export type TodoSchemaType = z.infer<typeof TodoSchema>;

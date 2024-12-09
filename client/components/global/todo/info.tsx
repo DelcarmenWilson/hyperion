@@ -14,7 +14,7 @@ import { formatDate } from "@/formulas/dates";
 export const TodoInfo = () => {
   const { todo, onTodoInfoClose, isTodoInfoOpen, onTodoFormOpen } =
     useTodoStore();
-  const { onTodoComplete, todoCompleting, onTodoDelete, todoDeleteing } =
+  const { onCompleteTodo, todoCompleting, onDeleteTodo, todoDeleteing } =
     useTodoActions();
 
   if (!todo || !isTodoInfoOpen) return null;
@@ -47,7 +47,7 @@ export const TodoInfo = () => {
           <DeleteDialog
             title="todo"
             cfText={title}
-            onConfirm={() => onTodoDelete(todo.id)}
+            onConfirm={() => onDeleteTodo(todo.id)}
             loading={todoDeleteing}
           />
           <Button size="sm" className="ml-auto" onClick={onTodoInfoClose}>
@@ -77,7 +77,7 @@ export const TodoInfo = () => {
         </p>
 
         <Box title="Category" value={category?.name} />
-        <Box title="Comments" value={comments} />
+        <Box title="Description" value={description} />
         <Box title="Comments" value={comments} />
 
         {reminder && (
@@ -118,7 +118,7 @@ export const TodoInfo = () => {
             <Button
               variant="outlineprimary"
               disabled={todoCompleting}
-              onClick={() => onTodoComplete(todo.id)}
+              onClick={() => onCompleteTodo(todo.id)}
             >
               Mark as Completed
             </Button>

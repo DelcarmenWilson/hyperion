@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { BriefcaseIcon } from "lucide-react";
+import { BriefcaseIcon, Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFeedbackActions } from "@/hooks/feedback/use-feedback";
 
@@ -38,11 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { handleFileUpload } from "@/lib/utils";
 import { DashboardRoutes } from "@/constants/page-routes";
 
-const CreateFeedbackDialog = ({
-  triggerText = "Create Feedback",
-}: {
-  triggerText?: string;
-}) => {
+const CreateFeedbackDialog = () => {
   const [open, setOpen] = useState(false);
 
   const [files, setFiles] = useState<{
@@ -72,7 +68,7 @@ const CreateFeedbackDialog = ({
   });
 
   const { onCreateFeedback, creatingFeedback } = useFeedbackActions(() => {
-    onCancel()
+    onCancel();
   });
 
   const onImagesAdded = (e: string[], fls?: File[]) => {
@@ -126,135 +122,138 @@ const CreateFeedbackDialog = ({
       }}
     >
       <DialogTrigger asChild>
-        <Button>{triggerText}</Button>
+        <Button
+          variant="outlineprimary"
+          size="lg"
+          className="absolute bottom-1 right-1 rounded-full !p-4"
+        >
+          <Plus size={20} />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <CustomDialogHeader icon={BriefcaseIcon} title="Create Feedback" />
-      
-      <ImageModal
-        title="Upload FeedBack Images?"
-        description=""
-        filePath="assets/feedbacks"
-        multi
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onImageUpdate={onImagesAdded}
-        autoUpload={false}
-      />
-      <div className="px-6 py-4">
-        <Form {...form}>
-          <form
-            className="space-6 px-2 w-full"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="flex flex-col gap-2">
-              {/* HeadLine */}
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel> Title</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Dashboard Error"
-                        autoComplete="HeadLine"
-                        disabled={creatingFeedback}
-                        type="text"
-                        maxLength={40}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              {/* PAGE */}
-              <FormField
-                control={form.control}
-                name="page"
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel> Page</FormLabel>
-                    <Select
-                      name="ddlPage"
-                      disabled={creatingFeedback}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Page" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {routes.map((route) => (
-                          <SelectItem key={route.title} value={route.title}>
-                            {route.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* DESCRIPTION */}
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel className="flex flex-wrap justify-between items-center gap-2">
-                      Description
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setModalOpen(true)}
-                      >
-                        Add Attachments
-                      </Button>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="If leaving an Error or concern, please be as specific as possible."
-                        disabled={creatingFeedback}
-                        autoComplete="feedback"
-                        rows={5}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
-              <Button onClick={onCancel} type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button disabled={creatingFeedback} type="submit">
-                Create Feedback
-              </Button>
-            </div>
-          </form>
-        </Form>
-        <ImageGrid
-          images={files.images}
-          setModalOpen={setModalOpen}
-          onImageRemove={onImageRemove}
+        <ImageModal
+          title="Upload FeedBack Images?"
+          description=""
+          filePath="assets/feedbacks"
+          multi
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onImageUpdate={onImagesAdded}
+          autoUpload={false}
         />
-      </div>
-  
+        <div className="px-6 py-4">
+          <Form {...form}>
+            <form
+              className="space-6 px-2 w-full"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <div className="flex flex-col gap-2">
+                {/* HeadLine */}
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel> Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Dashboard Error"
+                          autoComplete="HeadLine"
+                          disabled={creatingFeedback}
+                          type="text"
+                          maxLength={40}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* PAGE */}
+                <FormField
+                  control={form.control}
+                  name="page"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel> Page</FormLabel>
+                      <Select
+                        name="ddlPage"
+                        disabled={creatingFeedback}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Page" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {routes.map((route) => (
+                            <SelectItem key={route.title} value={route.title}>
+                              {route.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* DESCRIPTION */}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormLabel className="flex flex-wrap justify-between items-center gap-2">
+                        Description
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setModalOpen(true)}
+                        >
+                          Add Attachments
+                        </Button>
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="If leaving an Error or concern, please be as specific as possible."
+                          disabled={creatingFeedback}
+                          autoComplete="feedback"
+                          rows={5}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
+                <Button onClick={onCancel} type="button" variant="outline">
+                  Cancel
+                </Button>
+                <Button disabled={creatingFeedback} type="submit">
+                  Create Feedback
+                </Button>
+              </div>
+            </form>
+          </Form>
+          <ImageGrid
+            images={files.images}
+            setModalOpen={setModalOpen}
+            onImageRemove={onImageRemove}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
-
-
 
 export default CreateFeedbackDialog;

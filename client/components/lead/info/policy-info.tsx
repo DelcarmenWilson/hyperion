@@ -11,11 +11,10 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
 import { DEVADMINS } from "@/constants/user";
 
-export const PolicyInfoClient = () => {
+export const PolicyInfoClient = ({ leadId }: { leadId: string }) => {
   const role = useCurrentRole();
-  const { leadId } = useLeadId();
-  const { onGetLeadPolicy } = useLeadPolicyData();
-  const { policy, policyFetching } = onGetLeadPolicy(leadId);
+  const { onGetLeadPolicy } = useLeadPolicyData(leadId);
+  const { policy, policyFetching } = onGetLeadPolicy();
   const { onPolicyFormOpen, onAssistantFormOpen } = useLeadStore();
   const { onGetLeadBasicInfo } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId);

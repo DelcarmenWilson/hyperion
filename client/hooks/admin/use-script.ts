@@ -5,21 +5,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "zustand";
 
-import { chatbotGetActive, chatbotSettingsUpsert } from "@/actions/chat-bot/chatbot";
+import {
+  chatbotGetActive,
+  chatbotSettingsUpsert,
+} from "@/actions/chat-bot/chatbot";
 import {
   ChatbotSettingsSchema,
   ChatbotSettingsSchemaType,
 } from "@/schemas/chat-bot/chatbot";
 import { Script } from "@prisma/client";
 import {
-  scriptGetById,
-  scriptsGetAll,
-  scriptInsert,
-  scriptUpdateById,
-  scriptDeleteById,
+  getScript,
+  getScripts,
+  createScript,
+  updateScript,
+  deleteScript,
 } from "@/actions/script";
 import { ScriptSchemaType } from "@/schemas/admin";
-import { deleteScript } from "@/actions/script/delete-script";
+import { useInvalidate } from "../use-invalidate";
 
 type ScriptStore = {
   scriptId?: string;
@@ -39,111 +42,123 @@ export const useScriptStore = create<ScriptStore>((set) => ({
 export const useScriptData = () => {
   const { scriptId, setScriptId } = useScriptStore();
 
-  const { data: scripts, isFetching: isFetchingScripts } = useQuery<
-    Script[] | []
-  >({
-    queryFn: () => scriptsGetAll(),
-    queryKey: ["admin-scripts"],
-  });
-
-  const { data: script, isFetching: isFetchingScript } =
-    useQuery<Script | null>({
-      queryFn: () => scriptGetById(scriptId as string),
-      queryKey: [`admin-script-${scriptId}`],
+  const onGetScripts = () => {
+    const {
+      data: scripts,
+      isFetching: scriptsFetching,
+      isLoading: scriptsLoading,
+    } = useQuery<Script[] | []>({
+      queryFn: () => getScripts(),
+      queryKey: ["admin-scripts"],
     });
+    return {
+      scripts,
+      scriptsFetching,
+      scriptsLoading,
+    };
+  };
+  const onGetScript = () => {
+    const {
+      data: script,
+      isFetching: scriptFetching,
+      isLoading: scriptLoading,
+    } = useQuery<Script | null>({
+      queryFn: () => getScript(scriptId as string),
+      queryKey: [`admin-script-${scriptId}`],
+      enabled: !!scriptId,
+    });
+    return {
+      script,
+      scriptFetching,
+      scriptLoading,
+    };
+  };
 
-  useEffect(() => {
-    if (!scripts || scripts.length==0) return;
-    setScriptId(scripts[0].id);
-  }, [scripts]);
+  // useEffect(() => {
+  //   if (!scripts || scripts.length==0) return;
+  //   setScriptId(scripts[0].id);
+  // }, [scripts]);
 
   return {
-    scriptId,
-    setScriptId,
-    scripts,
-    isFetchingScripts,
-    script,
-    isFetchingScript,
+    onGetScripts,
+    onGetScript,
   };
 };
 
 export const useScriptActions = () => {
   const { setScriptId } = useScriptStore();
-  const queryClient = useQueryClient();
-  const [alertOpen, setAlertOpen] = useState(false);
+  const { invalidate } = useInvalidate();
+  
+  const { mutate: createScriptMutate, isPending: scriptCreating } = useMutation(
+    {
+      mutationFn: createScript,
+      onSuccess: (results) => {
+        toast.success("New Script Created!!", {
+          id: "insert-script",
+        });
+        invalidate("admin-scripts");
+        setScriptId(results.id);
+      },
+      onError: (error) => {
+        toast.error(error.message, { id: "insert-script" });
+      },
+    }
+  );
 
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["admin-scripts"] });
-  };
+  const onCreateScript = useCallback(() => {
+    toast.loading("creating new script...", { id: "insert-script" });
+    createScriptMutate();
+  }, [createScriptMutate]);
 
-  const { mutate: deleteScriptMutate, isPending: deletingScript } =
-    useMutation({
+  const { mutate: deleteScriptMutate, isPending: scriptDeleting } = useMutation(
+    {
       mutationFn: deleteScript,
-      onSuccess: () => toast.success("Script deleted successfully", { id: "delete-script" }),
-      onError: () => toast.error("Something went wrong", { id: "delete-script" }),
-    });
-  const onDeleteScript  = useCallback(
+      onSuccess: () =>
+        toast.success("Script deleted successfully", { id: "delete-script" }),
+      onError: () =>
+        toast.error("Something went wrong", { id: "delete-script" }),
+    }
+  );
+  const onDeleteScript = useCallback(
     (id: string) => {
       toast.loading("Deleting Script...", { id: "delete-script" });
-
       deleteScriptMutate(id);
     },
     [deleteScriptMutate]
   );
 
-  const { mutate: scriptMutateInsert, isPending: isPendingScriptInsert } =
-    useMutation({
-      mutationFn: scriptInsert,
-      onSuccess: (result) => {
-        if (result.success) {
-          toast.success("New Script Created!!", {
-            id: "insert-script",
-          });
-          invalidate();
-          setScriptId(result.success.id);
-        } else toast.error(result.error);
-      },
-      onError: (error) => {
-        toast.error(error.message, { id: "insert-script" });
-      },
-    });
+ 
 
-  const onScriptInsert = useCallback(() => {
-    toast.loading("creating new script...", { id: "insert-script" });
-    scriptMutateInsert();
-  }, [scriptMutateInsert]);
-
-  const { mutate: scriptUpdate, isPending: isPendingScriptUpdate } =
-    useMutation({
-      mutationFn: scriptUpdateById,
-      onSuccess: (result) => {
-        if (result.success) {
-          toast.success("Script Updated!!", {
-            id: "update-script",
-          });
-          invalidate();
-        } else toast.error(result.error);
+  const { mutate: updateScriptMutate, isPending: scriptUpdating } = useMutation(
+    {
+      mutationFn: updateScript,
+      onSuccess: () => {
+        toast.success("Script Updated!!", {
+          id: "update-script",
+        });
+        invalidate("admin-scripts");
       },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
+      onError: (error) =>
+        toast.error(error.message, {
+          id: "update-script",
+        }),
+    }
+  );
 
-  const onScriptUpdate = useCallback(
+  const onUpdateScript = useCallback(
     (values: ScriptSchemaType) => {
       toast.loading("Updating script...", { id: "update-script" });
-      scriptUpdate(values);
+      updateScriptMutate(values);
     },
-    [scriptUpdate]
+    [updateScriptMutate]
   );
 
   return {
-    alertOpen,
-    setAlertOpen,
-    onDeleteScript, deletingScript,
-    onScriptInsert,
-    isPendingScriptInsert,
-    onScriptUpdate,
-    isPendingScriptUpdate,
+    onCreateScript,
+    scriptCreating,
+    onDeleteScript,
+    scriptDeleting,
+    onUpdateScript,
+    scriptUpdating,
   };
 };

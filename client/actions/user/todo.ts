@@ -49,7 +49,6 @@ export const createTodo = async (values: TodoSchemaType) => {
       ...data,
       nextReminder,
       status: TodoStatus.PENDING,
-      categoryId:"cm448mzwq0000ujp4ok281xfg"
     },
   });
 };
@@ -111,6 +110,7 @@ export const remindTodos = async (test: boolean = false) => {
         gte: startDate,
         lte: endDate,
       },
+      status:TodoStatus.PENDING
     },
     select: {
       id: true,
@@ -134,80 +134,111 @@ export const remindTodos = async (test: boolean = false) => {
     },
   });
 
+  const sendTodoSms = async ({
+    personalNumber,
+    hyperionNumber,
+    title,
+    description,
+  }: {
+    personalNumber: string | null | undefined;
+    hyperionNumber: string;
+    title: string;
+    description: string;
+  }) => {
+    if (personalNumber && hyperionNumber) {
+      await smsSend({
+        fromPhone: hyperionNumber,
+        toPhone: personalNumber,
+        message: `Hyperion Reminders: \n ${title} \n -${description} `,
+      });
+    }
+  };
+
+  const sendTodoEmail = async ({
+    id,
+    email,
+    title,
+    description,
+    userId,
+    username,
+    comments,
+    dueDate,
+  }: {
+    id: string;
+    email: string | null;
+    title: string;
+    description: string;
+    userId: string;
+    username: string;
+    comments: string;
+    dueDate: Date;
+  }) => {
+    if (email) {
+      const createdEmail = await sendTodoReminderEmail({
+        email,
+        todoId: id,
+        title,
+        description,
+        username,
+        comments,
+        dueDate,
+      });
+      if (createdEmail.data) {
+        await createEmail({
+          id: createdEmail.data.id as string,
+          type: "react-email",
+          body: "TodoReminderEmail",
+          subject: "Task Reminder",
+          leadId: undefined,
+          userId,
+        });
+      }
+    }
+  };
+
   for (const todo of todos) {
     const method = todo.reminderMethod as TodoReminderMethod;
     //- always sent the noticication to the agents front end.
     await sendSocketData(todo.userId, "todo:reminder", todo.id);
     const personalNumber = todo.user.phoneSettings?.personalNumber;
     const hyperionNumber = todo.user.phoneNumbers[0].phone;
-    //TODO - the function for Sms and Lead are duplicaed, we need to find a way to consolidate these two functions.
 
+    
     switch (method) {
-      // case TodoReminderMethod.Notification:
-      //   await sendSocketData(todo.userId, "todo:reminder", todo.id);
-      //   break;
-
-      case TodoReminderMethod.Sms:
-        if (personalNumber && hyperionNumber) {
-          await smsSend({
-            fromPhone: hyperionNumber,
-            toPhone: personalNumber,
-            message: `Hyperion Reminders: \n ${todo.title} \n -${todo.description} `,
-          });
-        }
+      case TodoReminderMethod.SMS:
+        await sendTodoSms({
+          personalNumber,
+          hyperionNumber,
+          title: todo.title,
+          description: todo.description,
+        });
         break;
-      case TodoReminderMethod.Email:
-        if (todo.user.email) {
-          const email = await sendTodoReminderEmail({
-            email: todo.user.email,
-            todoId: todo.id,
-            title: todo.title,
-            description: todo.description,
-            username: todo.user.userName,
-            comments: todo.comments,
-            dueDate: todo.startAt!,
-          });
-          if (email.data) {
-            await createEmail({
-              id: email.data.id as string,
-              type: "react-email",
-              body: "TodoReminderEmail",
-              subject: "Task Reminder",
-              leadId: undefined,
-              userId: todo.userId,
-            });
-          }
-        }
+      case TodoReminderMethod.EMAIL:
+        await sendTodoEmail({id: todo.id,
+          email: todo.user.email,      
+          title: todo.title,
+          description: todo.description,
+          userId: todo.userId,
+          username: todo.user.userName,
+          comments: todo.comments,
+          dueDate: todo.startAt!});
+        
         break;
-      case TodoReminderMethod.EmailSms:
-        if (personalNumber && hyperionNumber) {
-          await smsSend({
-            fromPhone: hyperionNumber,
-            toPhone: personalNumber,
-            message: `Hyperion Reminders: \n ${todo.title} \n -${todo.description} `,
-          });
-        }
-        if (todo.user.email) {
-          const email = await sendTodoReminderEmail({
-            email: todo.user.email,
-            todoId: todo.id,
-            title: todo.title,
-            description: todo.description,
-            username: todo.user.userName,
-            comments: todo.comments,
-            dueDate: todo.startAt!,
-          });
-          if (email.data) {
-            await createEmail({
-              id: email.data.id as string,
-              type: "react-email",
-              body: "TodoReminderEmail",
-              subject: "Task Reminder",
-              leadId: undefined,
-              userId: todo.userId,
-            });
-          }
-        }
+      case TodoReminderMethod.EMAIL_AND_SMS:
+         await sendTodoSms({
+          personalNumber,
+          hyperionNumber,
+          title: todo.title,
+          description: todo.description,
+        });
+         await sendTodoEmail({id: todo.id,
+          email: todo.user.email,      
+          title: todo.title,
+          description: todo.description,
+          userId: todo.userId,
+          username: todo.user.userName,
+          comments: todo.comments,
+          dueDate: todo.startAt!});
         break;
     }
   }

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useTodoCategoryData } from "@/hooks/user/use-todo-category";
+import { HyperionColors } from "@/lib/colors";
 
 import { UserTodoCategory } from "@prisma/client";
 
@@ -21,7 +22,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { HyperionColors } from "@/lib/colors";
+import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 interface Props {
   defaultValue: string | undefined;
@@ -83,23 +84,25 @@ const CategoryPicker = ({ defaultValue, onChange }: Props) => {
           </CommandEmpty>
           <CommandGroup>
             <CommandList>
-              {categories?.map((category) => (
-                <CommandItem
-                  key={category.name}
-                  onSelect={() => {
-                    setValue(category.id);
-                    setOpen((prev) => !prev);
-                  }}
-                >
-                  <CategoryRow category={category} />
-                  <Check
-                    className={cn(
-                      "mr-2 w-4 h-4 opacity-0",
-                      value === category.name && "opacity-100"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+              <SkeletonWrapper isLoading={categoriesFetching}>
+                {categories?.map((category) => (
+                  <CommandItem
+                    key={category.name}
+                    onSelect={() => {
+                      setValue(category.id);
+                      setOpen((prev) => !prev);
+                    }}
+                  >
+                    <CategoryRow category={category} />
+                    <Check
+                      className={cn(
+                        "mr-2 w-4 h-4 opacity-0",
+                        value === category.name && "opacity-100"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </SkeletonWrapper>
             </CommandList>
           </CommandGroup>
         </Command>

@@ -1,6 +1,6 @@
 "use client";
 import { Call } from "@twilio/voice-sdk";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Mic,
   MicOff,
@@ -9,7 +9,6 @@ import {
   PhoneIncoming,
   PhoneOff,
 } from "lucide-react";
-import axios from "axios";
 import { cn } from "@/lib/utils";
 import {
   usePhoneStore,
@@ -30,6 +29,7 @@ import { formatSecondsToTime } from "@/formulas/numbers";
 import { usePhoneContext } from "@/providers/phone";
 import { PhoneAgents } from "@/constants/phone";
 import { PhoneLeadInfo } from "./addins/lead-info";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const PhoneInModal = () => {
   const {
@@ -37,8 +37,6 @@ export const PhoneInModal = () => {
     isPhoneInOpen,
     onPhoneInOpen,
     isPhoneOutOpen,
-    onSetLead,
-    lead,
     isLeadInfoOpen,
     onLeadInfoToggle,
     onIncomingCallOpen,
@@ -54,42 +52,40 @@ export const PhoneInModal = () => {
   } = usePhoneData(phone);
   const [agent, setAgent] = useState("");
   const { from, setFrom, onGetLeadByPhone } = useIncomingCallData();
+  // const { lead: testLead } = onGetLeadByPhone("+13478030962");
 
+  const { lead } = onGetLeadByPhone(from.number);
+  const incoming = (incomingCall: Call) => {
+    // if (phone.status() == "busy") {
+    //   incomingCall?.reject();
+    //   return;
+    // }
+
+    //On Call disconnect or cancel - call the diconnect function
+    ["disconnect", "cancel"].forEach((type) => {
+      incomingCall.on(type, (call) => {
+        console.log("call disconnected", call);
+        onDisconnect();
+      });
+    });
+
+    //Get the leads infomation based on the phone number
+    // setFrom(prev=>{...prev,number:incomingCall.parameters.From})
+    setFrom({
+      id: "",
+      name: "",
+      number: incomingCall.parameters.From,
+    });
+
+    if (isPhoneOutOpen) onIncomingCallOpen();
+    else onPhoneInOpen(incomingCall);
+  };
   const addDeviceListeners = () => {
     if (!phone) return;
-    //If the phone out fialog is open then dont display this modal. instead display the smaller incoming dialog
-    if (isPhoneOutOpen) return;
-
-    phone.on("incoming", async function (incomingCall: Call) {
-      // if (phone.status() == "busy") {
-      //   incomingCall?.reject();
-      //   return;
-      // }
-
-      //On Call disconnect or cancel - call the diconnect function
-      ["disconnect", "cancel"].forEach((type) => {
-        incomingCall.on(type, (call) => {
-          console.log("call disconnected", call);
-          onDisconnect();
-        });
-      });
-
-      //Get the leads infomation based on the phone number
-      const { lead } = onGetLeadByPhone(incomingCall.parameters.From);
-      if (lead) {
-        // onSetLead(data);
-        setFrom({
-          id: lead.id,
-          name: lead.firstName
-            ? `${lead.firstName} ${lead.lastName}`
-            : "Unknown Caller",
-          number: incomingCall.parameters.From,
-        });
-      }
-
-      if (isPhoneOutOpen) onIncomingCallOpen();
-      else onPhoneInOpen(incomingCall);
-    });
+    //If the phone out dialog is open then dont display this modal. instead display the smaller incoming dialogs
+    phone.audio?.incoming(!isPhoneOutOpen);
+    // phone.removeListener("incoming", incoming);
+    phone.on("incoming", incoming);
   };
 
   useEffect(() => {
@@ -97,26 +93,37 @@ export const PhoneInModal = () => {
     addDeviceListeners();
   }, [addDeviceListeners]);
 
+  useEffect(() => {
+    if (!lead) return;
+    // onSetLead(data);
+    setFrom((prev) => {
+      return {
+        ...prev,
+        id: lead.id,
+        name: lead.firstName
+          ? `${lead.firstName} ${lead.lastName}`
+          : "Unknown Caller",
+      };
+    });
+  }, [lead]);
   //TODO - dont forget to remove this test data....
   // useEffect(() => {
   //   const test = async () => {
-  //     const response = await axios.post("/api/leads/details", {
-  //       phone: "+13478030962",
-  //     });
-
-  //     const data = response.data;
-
-  //     onSetLead(data);
-
-  //     setFrom({
-  //       name: data.firstName
-  //         ? `${data.firstName} ${data.lastName}`
-  //         : "Unknown Caller",
-  //       phone: data.cellPhone || "+3478030962",
-  //     });
+  //     if (testLead) {
+  //       // onSetLead(data);
+  //       setFrom({
+  //         id: testLead.id,
+  //         name: testLead.firstName
+  //           ? `${testLead.firstName} ${testLead.lastName}`
+  //           : "Unknown Caller",
+  //         number: "+13478030962",
+  //       });
+  //     }
+  //     // onSetLead(data);
   //   };
   //   test();
-  // }, []);
+  // }, [testLead]);
+
   return (
     <Transition.Root show={isPhoneInOpen} as={Fragment}>
       <Dialog
@@ -213,17 +220,18 @@ export const PhoneInModal = () => {
                         </div>
                       )}
                     </div>
-                    <PhoneLeadInfo />
+                    <PhoneLeadInfo leadId={from.id} />
                   </div>
                 ) : (
                   <div className="flex flex-col bg-background gap-2 p-2 shadow-xl rounded-md text-sm overflow-y-auto">
                     <div className="flex items-center gap-2">
                       <PhoneIncoming size={16} />
-                      Incoming call from
+                      {!isOnCall && <span>Incoming</span>}
+                      <span>call from</span>
                       <span className="text-primary font-bold italic">
-                        {from?.number}
+                        {formatPhoneNumber(from?.number)}
                       </span>
-                      {lead && (
+                      {from.id && (
                         <Button
                           size="sm"
                           className="ml-auto"

@@ -14,19 +14,21 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { Input } from "@/components/ui/input";
 
 type Props = {
+  leadId: string;
   showBtnCall?: boolean;
 };
 
-export const CallInfo = ({ showBtnCall = true }: Props) => {
+export const CallInfo = ({ leadId, showBtnCall = true }: Props) => {
   const { onPhoneOutOpen, onLeadInfoToggle } = usePhoneStore();
-  const { callInfo, isFetchingCallInfo } = useLeadCallInfoActions();
+  const { onGetLeadCallInfo } = useLeadCallInfoActions(leadId);
+  const { callInfo, callInfoFetching } = onGetLeadCallInfo();
 
   const callCount = callInfo?.calls?.filter(
     (e) => e.direction == "outbound"
   ).length;
 
   return (
-    <SkeletonWrapper isLoading={isFetchingCallInfo}>
+    <SkeletonWrapper isLoading={callInfoFetching}>
       {/* <p className="text-sm">Local time : 11:31 am</p> */}
       {/* <p className="text-sm">Local time : {getLocalTime("TX")}</p> */}
       {callInfo ? (

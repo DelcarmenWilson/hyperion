@@ -78,7 +78,7 @@ export const PhoneDialerModal = () => {
                   defaultSize={80}
                   maxSize={80}
                 >
-                  {lead && <PhoneLeadInfo />}
+                  {lead && <PhoneLeadInfo leadId={lead.id} />}
 
                   <SmsDrawer />
                   {/* <DialpadDialog /> */}

@@ -10,9 +10,10 @@ type Props = {
   size?: string;
 };
 export const ScriptList = ({ size = "full" }: Props) => {
-  const { scripts, isFetchingScripts } = useScriptData();
+  const { onGetScripts } = useScriptData();
+  const { scripts, scriptsFetching } = onGetScripts();
   return (
-    <SkeletonWrapper isLoading={isFetchingScripts}>
+    <SkeletonWrapper isLoading={scriptsFetching}>
       {scripts?.length ? (
         <div
           className={cn(

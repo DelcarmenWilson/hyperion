@@ -49,7 +49,8 @@ export const voiceResponse = async (call: TwilioCall) => {
   const twiml = new VoiceResponse();
   switch (direction) {
     case "inbound":
-      twiml.play("/sounds/SSF-Greeting-2.mp3");
+      //TODO - dont forget to put this back on
+      // twiml.play("/sounds/SSF-Greeting-2.mp3");
       //   twiml.say(
         //   { voice:"Polly.Amy" },
         //   "Thankyou for calling Strong Side Financial. Your call may be monitored and or recorded. By continuing you consent to the companys monitoring and recording of your call."

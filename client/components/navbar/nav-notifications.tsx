@@ -26,6 +26,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { formatDate } from "@/formulas/dates";
 import { cn } from "@/lib/utils";
 import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useCallStore } from "@/hooks/lead/use-call";
 
 const NavNotifications = () => {
   const { onGetNotificationsUnread } = useNotificationData();
@@ -101,6 +102,7 @@ const NotificationCard = ({
 }) => {
   const { title, content, linkText, link, reference, createdAt } = notification;
   const { onMultipleLeadDialogOpen } = useLeadStore();
+  const { onMultipleCallDialogOpen } = useCallStore();
   return (
     <div className="w-full p-2 bg-background hover:bg-primary/25 border-b">
       <p className="text-xs text-muted-foreground text-end italic">
@@ -126,7 +128,7 @@ const NotificationCard = ({
               <Button
                 variant="outlineprimary"
                 size="xs"
-                onClick={() => onMultipleLeadDialogOpen(JSON.parse(link))}
+                onClick={() => onMultipleCallDialogOpen(JSON.parse(link))}
               >
                 {linkText}
               </Button>

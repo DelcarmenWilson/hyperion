@@ -15,8 +15,8 @@ export const LoginStatusModal = () => {
     isLoginStatusOpen: isLoginStausOpen,
     onLoginStatusClose: onLoginStausClose,
   } = useLoginStatus();
-  const { onloginStatusGetAllByUserId } = useLoginStatusData(user?.id!);
-  const { logins, loginsIsFetching } = onloginStatusGetAllByUserId();
+  const { onGetLoginsForUser } = useLoginStatusData(user?.id!);
+  const { logins, loginsFetching } = onGetLoginsForUser();
 
   const totalDuration = logins?.reduce((sum, login) => login.duration + sum, 0);
   if (!user) return null;
@@ -28,7 +28,7 @@ export const LoginStatusModal = () => {
       subTitle={`${user.firstName} ${user.lastName}`}
       description="Login Status Form"
     >
-      <SkeletonWrapper isLoading={loginsIsFetching}>
+      <SkeletonWrapper isLoading={loginsFetching}>
         <DataTable
           topMenu={
             <div className=" col-span-3 flex justify-end items-center gap-2">

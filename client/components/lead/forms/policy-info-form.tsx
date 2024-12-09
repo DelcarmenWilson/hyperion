@@ -41,8 +41,8 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 export const PolicyInfoForm = () => {
   const { leadId, leadFullName, isPolicyFormOpen, onPolicyFormClose } =
     useLeadStore();
-  const { onGetLeadPolicy } = useLeadPolicyData();
-  const { policy, policyFetching } = onGetLeadPolicy(leadId as string);
+  const { onGetLeadPolicy } = useLeadPolicyData(leadId as string);
+  const { policy, policyFetching } = onGetLeadPolicy();
   const { onUpdatePolicy, policyUpdating } =
     useLeadPolicyActions(onPolicyFormClose);
 

@@ -2,7 +2,10 @@
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { ExpenseType } from "@/types";
 import { cn } from "@/lib/utils";
-import { useLeadExpenseActions } from "@/hooks/lead/use-expense";
+import {
+  useLeadExpenseActions,
+  useLeadExpenseData,
+} from "@/hooks/lead/use-expense";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -13,22 +16,20 @@ import CreateExpenseForm from "./create-expense-form";
 import { Button } from "@/components/ui/button";
 import { LeadExpense } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import DeleteDialog from "@/components/custom/delete-dialog";
 
-export const CatergoryCards = () => {
-  const {
-    leadId,
-    leadExpense,
-    isFetchingLeadExpense,
-    leadExpenseMutate,
-    isPendingExpense,
-  } = useLeadExpenseActions();
+export const CatergoryCards = ({ leadId }: { leadId: string }) => {
+  const { onGetLeadExpense } = useLeadExpenseData(leadId);
+  const { leadExpense, leadExpenseFetching } = onGetLeadExpense();
+  const { onCreateLeadExpense, leadExpenseCreating } =
+    useLeadExpenseActions(leadId);
 
   return (
     <>
       {leadExpense?.length ? (
         <div className="flex-1 flex w-full h-full flex-wrap gap-2 md:flex-nowrap overflow-hidden">
           {["Expense", "Income"].map((type) => (
-            <SkeletonWrapper key={type} isLoading={isFetchingLeadExpense}>
+            <SkeletonWrapper key={type} isLoading={leadExpenseFetching}>
               <CategoriesCard
                 leadId={leadId!}
                 type={type as ExpenseType}
@@ -40,8 +41,8 @@ export const CatergoryCards = () => {
       ) : (
         <div className="flex-center h-full">
           <Button
-            disabled={isPendingExpense || isFetchingLeadExpense}
-            onClick={() => leadExpenseMutate(leadId!)}
+            disabled={leadExpenseCreating || leadExpenseFetching}
+            onClick={() => onCreateLeadExpense(leadId!)}
           >
             Create Expense Sheet
           </Button>
@@ -60,23 +61,11 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
   const filteredData = data.filter((el) => el.type === type);
   const total = filteredData.reduce((acc, el) => acc + (el.value || 0), 0);
 
-  const {
-    alertOpen,
-    setAlertOpen,
-    onSelectedExpense,
-    onExpenseDelete,
-    isPendingLeadExpenseDelete,
-  } = useLeadExpenseActions();
+  const { onDeleteLeadExpense, leadExpenseDeleting } =
+    useLeadExpenseActions(leadId);
 
   return (
     <>
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        onConfirm={onExpenseDelete}
-        loading={isPendingLeadExpenseDelete}
-        height="auto"
-      />
       <Card className="flex flex-col w-full h-full">
         <CardHeader>
           <CardTitle className="flex flex--col justify-between items-center gap-2 text-muted-foreground md:flex-row">
@@ -127,17 +116,14 @@ const CategoriesCard = ({ leadId, data, type }: CategoriesCardProps) => {
                         </span>
                       </span>
                       <div className="flex gap-1 items-center">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className={cn(
-                            "opacity-0",
-                            item.isDefault ? "" : "group-hover:opacity-100"
-                          )}
-                          onClick={() => onSelectedExpense(item.id)}
-                        >
-                          Delete
-                        </Button>
+                        {!item.isDefault && (
+                          <DeleteDialog
+                            title={type}
+                            cfText="delete"
+                            onConfirm={() => onDeleteLeadExpense(item.id)}
+                            loading={leadExpenseDeleting}
+                          />
+                        )}
 
                         <CreateExpenseForm
                           trigger={

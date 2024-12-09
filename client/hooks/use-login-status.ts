@@ -1,8 +1,10 @@
-import { loginStatusGetAllByUserId } from "@/actions/login-status";
-import { OnlineUser } from "@/types/user";
-import { LoginStatus } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
+import { useQuery } from "@tanstack/react-query";
+
+import { LoginStatus } from "@prisma/client";
+import { OnlineUser } from "@/types/user";
+
+import { getLoginStatusForUser } from "@/actions/login-status";
 
 type useLoginStatusStore = {
   user?: OnlineUser;
@@ -19,18 +21,19 @@ export const useLoginStatus = create<useLoginStatusStore>((set) => ({
 
 export const useLoginStatusData = (userId: string) => {
   //DEFAULT NODES
-  const onloginStatusGetAllByUserId = () => {
-    const { data: logins, isFetching: loginsIsFetching } = useQuery<
+  const onGetLoginsForUser = () => {
+    const { data: logins, isFetching: loginsFetching } = useQuery<
       LoginStatus[]
     >({
-      queryKey: ["agentLogins", `user-${userId}`],
-      queryFn: () => loginStatusGetAllByUserId(userId),
+      queryKey: [`agent-logins-${userId}`],
+      queryFn: () => getLoginStatusForUser(userId),
+      enabled:!!userId
     });
 
-    return { logins, loginsIsFetching };
+    return { logins, loginsFetching };
   };
 
   return {
-    onloginStatusGetAllByUserId,
+     onGetLoginsForUser,
   };
 };
