@@ -182,7 +182,7 @@ export const getLeadBasicInfo = async (id: string) => {
 export const getLeadMainInfo = async (id: string) => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
-  return await db.lead.findUnique({
+  const lead= await db.lead.findUnique({
     where: {
       id,
       userId: user.id,
@@ -202,6 +202,8 @@ export const getLeadMainInfo = async (id: string) => {
       textCode: true,
     },
   });
+  console.log(lead)
+  return lead
 };
 export const getLeadGeneralInfo = async (id: string) => {
   const user = await currentUser();

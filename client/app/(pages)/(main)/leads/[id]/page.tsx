@@ -14,7 +14,8 @@ import { LeadHeader } from "@/components/lead/header";
 import { getLead, getLeadPrevNext } from "@/actions/lead";
 
 const LeadsPage = async ({ params }: { params: { id: string } }) => {
-  const lead = await getLead(params.id);
+  const leadId = params.id;
+  const lead = await getLead(leadId);
   const user = await currentUser();
   if (!lead) return null;
 
@@ -31,7 +32,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
       }
     >
       <Tabs defaultValue="general" className="h-full">
-        <LeadHeader />
+        <LeadHeader leadId={leadId} />
         <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
@@ -44,13 +45,13 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
           <LeadClient />
         </TabsContent>
         <TabsContent value="beneficiaries">
-          <BeneficiariesClient />
+          <BeneficiariesClient leadId={leadId} />
         </TabsContent>
         <TabsContent value="conditions">
-          <ConditionsClient />
+          <ConditionsClient leadId={leadId} />
         </TabsContent>
         <TabsContent value="expenses">
-          <ExpensesClient />
+          <ExpensesClient leadId={leadId} />
         </TabsContent>
         <TabsContent value="activity">
           <LeadTabsClient lead={lead} />

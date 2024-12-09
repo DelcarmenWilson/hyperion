@@ -63,6 +63,7 @@ export const useLeadBeneficiaryData = (leadId: string) => {
     } = useQuery<LeadBeneficiary | null>({
       queryFn: () => getLeadBeneficiary(beneficiaryId as string),
       queryKey: [`lead-beneficiary-${beneficiaryId}`],
+      enabled:!!beneficiaryId
     });
     return {
       beneficiary,

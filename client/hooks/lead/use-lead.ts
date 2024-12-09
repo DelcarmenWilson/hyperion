@@ -544,7 +544,7 @@ export const useLeadInfoData = (leadId: string) => {
       isFetching: mainInfoFetching,
       isLoading: mainInfoLoading,
     } = useQuery<LeadMainSchemaTypeP | null>({
-      queryFn: () => getLeadMainInfo(leadId as string),
+      queryFn: () => getLeadMainInfo(leadId),
       queryKey: [`lead-main-info-${leadId}`],
       enabled: !!leadId,
     });

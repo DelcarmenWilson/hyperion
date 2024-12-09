@@ -300,7 +300,11 @@ export const PhoneOut = () => {
                   showScript && "top-0"
                 )}
               >
-                <NotesForm showShared={false} rows={9} />
+                <NotesForm
+                  leadId={leadId as string}
+                  showShared={false}
+                  rows={9}
+                />
               </div>
 
               <TouchPad onNumberClick={onNumberClick} />

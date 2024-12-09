@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { create } from "zustand";
 import { toast } from "sonner";
 import { useLeadStore } from "./use-lead";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { MedicalCondition } from "@prisma/client";
 import { FullLeadMedicalCondition } from "@/types";
@@ -36,10 +36,8 @@ export const useLeadConditionStore = create<State & Actions>((set) => ({
   onConditionFormClose: () => set({ isConditionFormOpen: false }),
 }));
 
-export const useLeadConditionData = (leadId: string) => {  
-  const {
-    conditionId,
-  } = useLeadConditionStore();
+export const useLeadConditionData = (leadId: string) => {
+  const { conditionId } = useLeadConditionStore();
 
   //  CONDITIONS
   const onGetLeadConditions = () => {
@@ -49,7 +47,7 @@ export const useLeadConditionData = (leadId: string) => {
       isLoading: conditionsLoading,
     } = useQuery<FullLeadMedicalCondition[]>({
       queryFn: () => getLeadConditions(leadId),
-      queryKey: [`leadConditions-${leadId}`],
+      queryKey: [`lead-conditions-${leadId}`],
       enabled: !!leadId,
     });
     return {
@@ -66,7 +64,8 @@ export const useLeadConditionData = (leadId: string) => {
       isLoading: conditionLoading,
     } = useQuery<FullLeadMedicalCondition | null>({
       queryFn: () => getLeadCondition(conditionId as string),
-      queryKey: [`leadCondition-${conditionId}`],
+      queryKey: [`lead-condition-${conditionId}`],
+      enabled: !!conditionId,
     });
     return {
       condition,
@@ -98,13 +97,9 @@ export const useLeadConditionData = (leadId: string) => {
   };
 };
 
-//TODO - need to add a delete dialog and remove the alert open state
 export const useLeadConditionActions = () => {
   const { leadId } = useLeadStore();
-  const {
-    conditionId,
-    onConditionFormClose,
-  } = useLeadConditionStore();
+  const { conditionId, onConditionFormClose } = useLeadConditionStore();
   const { invalidate } = useInvalidate();
 
   const { mutate, isPending: conditionUpserting } = useMutation({
@@ -118,7 +113,7 @@ export const useLeadConditionActions = () => {
         id: "insert-update-condition",
       });
 
-      ["leadConditions", `lead-${leadId}`].forEach((key) => invalidate(key));
+      [`lead-conditions-${leadId}`, `lead-${leadId}`].forEach((key) => invalidate(key));
 
       onConditionFormClose();
     },
