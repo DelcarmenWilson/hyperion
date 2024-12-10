@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getMonth } from "@/lib/utils";
 import dayjs from "dayjs";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 
 import { Button } from "@/components/ui/button";
 

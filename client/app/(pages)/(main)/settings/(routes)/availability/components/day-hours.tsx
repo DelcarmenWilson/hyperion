@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useSchedule } from "@/hooks/use-schedule";
+import { useScheduleStore } from "@/stores/schedule-store";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ export const DayHour = ({
   onSetAvail,
   onSetWorkHours,
 }: DayHoursProps) => {
-  const { onOpen } = useSchedule();
+  const { onOpen } = useScheduleStore();
   const [available, setAvailable] = useState(schedule.available);
   const index = schedule.index;
 
@@ -39,7 +39,7 @@ export const DayHour = ({
             disabled={disabled}
             name="cblAvailable"
             checked={available}
-            onCheckedChange={ onSetAvailable}
+            onCheckedChange={onSetAvailable}
           />
         </div>
       </div>

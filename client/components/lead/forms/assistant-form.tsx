@@ -6,7 +6,7 @@ import { useLeadActions } from "@/hooks/lead/use-lead";
 import { Button } from "@/components/ui/button";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 
 export const AssistantForm = () => {
   const {
@@ -50,7 +50,11 @@ export const AssistantForm = () => {
           <p className="text-md text-muted-foreground font-bold">
             Select a {assistant && "new"} assistant
           </p>
-          <UserSelect role="ASSISTANT" userId={userId} setUserId={setUserId} />
+          <OtherUserSelect
+            role="ASSISTANT"
+            userId={userId}
+            setUserId={setUserId}
+          />
           {assistant?.id !== userId && (
             <div className="grid grid-cols-2 gap-x-2 justify-between my-2">
               <Button

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useLeadFilterStore } from "@/stores/lead-filter-store";
 
 import { Table } from "@tanstack/react-table";
 
@@ -9,7 +10,6 @@ import { LeadFilterDropDown } from "@/components/lead/filter-dropdown";
 import { LeadStatusSelect } from "@/components/lead/select/lead-status-select";
 import { LeadVendorSelect } from "@/components/lead/select/vendor-select";
 import { LeadStateSelect } from "@/components/lead/select/state-select";
-import { useLeadFilterStore } from "@/hooks/lead/use-lead-filter-store";
 
 type LeadFilterProps<TData> = {
   table: Table<TData>;
@@ -26,7 +26,6 @@ export function LeadFilter<TData>({ table }: LeadFilterProps<TData>) {
       case "statusId":
         onSetStatus(filter);
         break;
-
       case "vendor":
         onSetVendor(filter);
         break;

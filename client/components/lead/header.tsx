@@ -3,7 +3,8 @@ import { useContext, useEffect } from "react";
 import { redirect } from "next/navigation";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { LeadDropDown } from "@/components/lead/dropdown";
 import SkeletonWrapper from "../skeleton-wrapper";

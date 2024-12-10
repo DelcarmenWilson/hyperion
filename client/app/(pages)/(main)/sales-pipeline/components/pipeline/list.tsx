@@ -1,34 +1,34 @@
+"use client";
 import { Reorder } from "framer-motion";
-import { AlertModal } from "@/components/modals/alert";
 
 import { PipelineCard } from "./card";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
-import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
+import { usePipelineStore } from "@/stores/pipeline-store";
+import { usePipelineData } from "@/hooks/pipeline/use-pipeline";
+import { useEffect } from "react";
+import { EmptyCard } from "@/components/reusable/empty-card";
 
-type Props = {
-  loading: boolean;
-};
-export const PipeLineList = ({ loading }: Props) => {
-  const {
-    isAlertOpen,
-    onAlertClose,
-    pipelineId,
-    setPipelines,
-    pipelines,
-    leads,
-  } = usePipelineStore();
-  const { onDeletePipeline, pipelineDeleting } = usePipelineActions();
+export const PipeLineList = () => {
+  const { loaded, setPipelines, pipelines, leads, initialSetUp } =
+    usePipelineStore();
+
+  const { onGetPipelinesAndLeads } = usePipelineData();
+  const { pipelinesAndLeads, pipelinesAndLeadsFetching } =
+    onGetPipelinesAndLeads();
+
+  useEffect(() => {
+    if (loaded) return;
+    if (!pipelinesAndLeads) return;
+    initialSetUp(pipelinesAndLeads.pipelines, pipelinesAndLeads.leads);
+  }, [loaded, pipelinesAndLeads]);
 
   return (
     <>
-      <AlertModal
-        isOpen={isAlertOpen}
-        onClose={onAlertClose}
-        onConfirm={() => onDeletePipeline(pipelineId!)}
-        loading={pipelineDeleting}
-        height="h-auto"
-      />
-
+      {!pipelines && !pipelinesAndLeadsFetching && (
+        <EmptyCard
+          title="No Stages Available"
+          subTitle="Please add a new stage"
+        />
+      )}
       {pipelines && (
         <Reorder.Group values={pipelines} onReorder={setPipelines}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -37,7 +37,7 @@ export const PipeLineList = ({ loading }: Props) => {
                 key={pipeline.id}
                 idx={index}
                 pipeline={pipeline}
-                loading={loading}
+                loading={pipelinesAndLeadsFetching}
                 initLeads={leads!.filter(
                   (e) => e.statusId == pipeline.statusId
                 )}

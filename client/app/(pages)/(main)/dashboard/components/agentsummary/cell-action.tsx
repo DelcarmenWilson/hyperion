@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { Button } from "@/components/ui/button";
 import { AgentSummaryColumn } from "./columns";

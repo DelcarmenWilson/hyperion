@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
+import { Phone } from "lucide-react";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useLeadStore } from "@/stores/lead-store";
+
 import { Lead } from "@prisma/client";
 
-import { formatPhoneNumber } from "@/formulas/phones";
 import { Button } from "@/components/ui/button";
-import { Phone } from "lucide-react";
-import axios from "axios";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { formatPhoneNumber } from "@/formulas/phones";
 
 export const CellDetails = ({ lead }: { lead: Lead }) => {
   const { onPhoneOutOpen } = usePhoneStore();

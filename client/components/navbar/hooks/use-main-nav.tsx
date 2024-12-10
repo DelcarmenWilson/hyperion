@@ -3,14 +3,16 @@ import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 import { toast } from "sonner";
 import SocketContext from "@/providers/socket";
-import { useGroupMessageStore } from "@/hooks/chat/use-group-message";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useGroupMessageStore } from "@/stores/group-message-store";
+import { usePhoneStore } from "@/stores/phone-store";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useMiniMessageStore } from "@/hooks/chat/use-mini-message";
-import { useSocketStore } from "@/hooks/use-socket-store";
-import { useChatStore } from "@/hooks/chat/use-chat";
+import { useMiniMessageStore } from "@/stores/mini-message-store";
+import { useSocketStore } from "@/stores/socket-store";
+import { useChatStore } from "@/stores/chat-store";
 import { usePathname } from "next/navigation";
 import { useInvalidate } from "@/hooks/use-invalidate";
+import { useTodoStore } from "@/stores/todo-store";
+import { useNotificationStore } from "@/stores/notification-store";
 import { signOut } from "next-auth/react";
 
 import Link from "next/link";
@@ -22,9 +24,7 @@ import { sendTestEmail } from "@/lib/mail";
 import { sendAppointmentReminders } from "@/actions/appointment";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";
 
-import { useTodoStore } from "@/hooks/user/use-todo";
 import { updateUnreadChat } from "@/actions/chat/update-unread-chat";
-import { useNotificationStore } from "@/hooks/notification/use-notification";
 
 export const useMainNav = () => {
   const { socket } = useContext(SocketContext).SocketState;

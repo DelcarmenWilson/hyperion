@@ -1,7 +1,8 @@
 "use client";
 import { ArrowRight, Trash, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useChatActions, useChatStore } from "@/hooks/chat/use-chat";
+import { useChatStore } from "@/stores/chat-store";
+import { useChatActions } from "@/hooks/chat/use-chat";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

@@ -1,7 +1,7 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useChatStore } from "@/hooks/chat/use-chat";
+import { useChatStore } from "@/stores/chat-store";
 
 import { Button } from "@/components/ui/button";
 import {

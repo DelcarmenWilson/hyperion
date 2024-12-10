@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useChatbot } from "@/stores/chatbot-store";
 
 import { ShortChatbotConversation } from "@/types";
 import { formatDistance } from "date-fns";
-import { formatDate } from "@/formulas/dates";
-import { useChatbot } from "../hooks/use-chatbot";
 
 type Props = {
   conversation: ShortChatbotConversation;

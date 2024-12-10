@@ -1,8 +1,8 @@
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadConditionStore } from "@/stores/lead-condition-store";
 import {
   useLeadConditionActions,
   useLeadConditionData,
-  useLeadConditionStore,
 } from "@/hooks/lead/use-condition";
 
 import { useForm } from "react-hook-form";

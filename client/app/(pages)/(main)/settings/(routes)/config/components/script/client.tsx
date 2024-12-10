@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useScriptData, useScriptStore } from "@/hooks/admin/use-script";
+import { useScriptStore } from "@/stores/script-store";
+import { useScriptData } from "@/hooks/admin/use-script";
 
 import { DataTable } from "@/components/tables/data-table";
 import { columns } from "./columns";

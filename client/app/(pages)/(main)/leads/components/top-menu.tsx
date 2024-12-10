@@ -1,25 +1,10 @@
 "use client";
-
-import { useState } from "react";
 import { Download, Paperclip, Plus } from "lucide-react";
 import Link from "next/link";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { Button } from "@/components/ui/button";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ImportLeadsForm } from "./import/import-leads-form";
-import { NewLeadForm } from "./new-lead-form";
 import { ExportLeadForm } from "./export-lead-form";
 import Hint from "@/components/custom/hint";
 
@@ -28,7 +13,6 @@ export const TopMenu = () => {
     useLeadStore();
   return (
     <div className="flex justify-end gap-2 w-full">
-      {/* <NewLeadForm /> */}
       <ExportLeadForm />
       <ImportLeadsForm />
       <Hint label="View all duplicated Leads" side="bottom">
@@ -61,7 +45,11 @@ export const TopMenu = () => {
       </Hint>
 
       <Hint label="Add new lead" side="bottom">
-        <Button className="gap-2" size="sm" onClick={() => onNewLeadFormOpen(false)}>
+        <Button
+          className="gap-2"
+          size="sm"
+          onClick={() => onNewLeadFormOpen(false)}
+        >
           <Plus size={16} />
           CREATE LEAD
         </Button>

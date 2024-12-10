@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useJobStore } from "@/hooks/job/use-job";
+import { useJobStore } from "@/stores/job-store";
 
 import { Job } from "@prisma/client";
 import { JobStatus } from "@/types/job";
 
 import { Button } from "@/components/ui/button";
 import { EmptyCard } from "@/components/reusable/empty-card";
+import JobCard from "./job-card";
 import {
   Select,
   SelectContent,
@@ -16,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import JobCard from "./job-card";
 
 import { getEnumValues } from "@/lib/helper/enum-converter";
 

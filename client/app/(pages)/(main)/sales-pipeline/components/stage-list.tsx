@@ -2,7 +2,7 @@
 import { FullPipeline } from "@/types";
 import { RefreshCcw } from "lucide-react";
 import { Reorder } from "framer-motion";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
 import { usePipelineStageActions } from "@/hooks/pipeline/use-pipeline";
 
 import { Button } from "@/components/ui/button";

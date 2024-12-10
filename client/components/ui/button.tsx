@@ -44,6 +44,9 @@ const buttonVariants = cva(
         gradientDark:
           "gradient-dark border hover:border-primary hover:scale-105",
         gradientLight: "gradient-light border hover:border-primary",
+        landingMain: "text-white bg-black hover:bg-white hover:text-black",
+        landingOutline:
+          "text-white bg-transparent border border-white hover:text-white shadow hover:bg-black",
       },
 
       size: {
@@ -52,6 +55,7 @@ const buttonVariants = cva(
         xs: "h-6 rounded-md p-2 text-xs",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
+        xl: "h-12 rounded-md py-5 px-10 text-lg",
         icon: "h-9 w-9",
       },
     },

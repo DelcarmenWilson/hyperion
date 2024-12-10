@@ -1,6 +1,7 @@
 "use client";
 import { ArrowRight, Edit, List } from "lucide-react";
-import { useTodoActions, useTodoStore } from "@/hooks/user/use-todo";
+import { useTodoStore } from "@/stores/todo-store";
+import { useTodoActions } from "@/hooks/user/use-todo";
 
 import { TodoStatus } from "@/types/todo";
 

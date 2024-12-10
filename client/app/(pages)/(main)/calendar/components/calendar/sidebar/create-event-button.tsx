@@ -1,5 +1,5 @@
 import "react";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

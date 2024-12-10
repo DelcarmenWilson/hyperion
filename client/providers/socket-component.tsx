@@ -8,12 +8,12 @@ import React, {
 
 import { UserSocket } from "@/types";
 
-import { useChatStore } from "@/hooks/chat/use-chat";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useChatStore } from "@/stores/chat-store";
+import { useCalendarStore } from "@/stores/calendar-store";
+import { usePhoneStore } from "@/stores/phone-store";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useSocket } from "@/hooks/use-socket";
-import { useSocketStore } from "@/hooks/use-socket-store";
+import { useSocketStore } from "@/stores/socket-store";
 
 import {
   defaultSocketContextState,

@@ -1,11 +1,8 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useScriptActions,
-  useScriptData,
-  useScriptStore,
-} from "@/hooks/admin/use-script";
+import { useScriptStore } from "@/stores/script-store";
+import { useScriptActions, useScriptData } from "@/hooks/admin/use-script";
 
 import { Script } from "@prisma/client";
 import { ScriptSchema, ScriptSchemaType } from "@/schemas/admin";

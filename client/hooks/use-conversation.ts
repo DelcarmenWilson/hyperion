@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { create } from "zustand";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSocketStore } from "./use-socket-store";
+import { useSocketStore } from "@/stores/socket-store";
 import { useInvalidate } from "./use-invalidate";
 
 import { FullConversation, ShortConversation, ShortConvo } from "@/types";
@@ -14,16 +13,6 @@ import {
   getUnreadConversations,
   updateUnreadConversation,
 } from "@/actions/lead/conversation";
-
-type ConversationStore = {
-  isLeadInfoOpen: boolean;
-  onLeadInfoToggle: () => void;
-};
-
-export const useConversationStore = create<ConversationStore>((set, get) => ({
-  isLeadInfoOpen: false,
-  onLeadInfoToggle: () => set({ isLeadInfoOpen: !get().isLeadInfoOpen }),
-}));
 
 export const useConversationData = () => {
   const { conversationId } = useConversationId();

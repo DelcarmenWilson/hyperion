@@ -1,39 +1,22 @@
-import { useCallback, useState } from "react";
-import { create } from "zustand";
+import { useCallback } from "react";
 import { toast } from "sonner";
-import { useLeadStore } from "./use-lead";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
+import { useLeadStore } from "@/stores/lead-store";
+import { useBeneficiaryStore } from "@/stores/beneficiary-store";
 
 import { LeadBeneficiary } from "@prisma/client";
+import { LeadBeneficiarySchemaType } from "@/schemas/lead";
+
 import {
-  getLeadBeneficiaries,
-  convertLeadToBeneficiary,
-  deleteLeadBeneficiary,
-  getLeadBeneficiary,
   createLeadBeneficiary,
+  convertLeadToBeneficiary,
+  getLeadBeneficiaries,
+  getLeadBeneficiary,
+  deleteLeadBeneficiary,
   updateLeadBeneficiary,
 } from "@/actions/lead/beneficiary";
-import { LeadBeneficiarySchemaType } from "@/schemas/lead";
-import { useInvalidate } from "../use-invalidate";
 
-type State = {
-  beneficiaryId?: string;
-  isBeneficiaryFormOpen: boolean;
-};
-
-type Actions = {
-  setBeneficiaryId: (b: string) => void;
-  onBeneficiaryFormOpen: (b?: string) => void;
-  onBeneficiaryFormClose: () => void;
-};
-
-export const useBeneficiaryStore = create<State & Actions>((set) => ({
-  setBeneficiaryId: (b) => set({ beneficiaryId: b }),
-  isBeneficiaryFormOpen: false,
-  onBeneficiaryFormOpen: (b) =>
-    set({ beneficiaryId: b, isBeneficiaryFormOpen: true }),
-  onBeneficiaryFormClose: () => set({ isBeneficiaryFormOpen: false }),
-}));
 
 export const useLeadBeneficiaryData = (leadId: string) => {
   const { beneficiaryId } = useBeneficiaryStore();

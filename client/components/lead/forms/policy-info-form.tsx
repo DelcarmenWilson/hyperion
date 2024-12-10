@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

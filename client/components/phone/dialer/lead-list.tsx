@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadStore } from "@/stores/lead-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { PipelineLead } from "@/types";
 

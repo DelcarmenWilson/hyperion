@@ -1,6 +1,6 @@
 "use client";
 import { useContext, useState } from "react";
-import { useChatStore } from "@/hooks/chat/use-chat";
+import { useChatStore } from "@/stores/chat-store";
 import SocketContext from "@/providers/socket";
 import { toast } from "sonner";
 

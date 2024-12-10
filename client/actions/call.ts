@@ -221,55 +221,58 @@ export const getSharedCalls = async () => {
   });
 };
 //ACTIONS
-export const createCall = async (
-  data
-: {
+export const createCall = async (data: {
   id: string;
   userId: string;
   leadId: string;
   direction: string;
 }) => {
+  if (!data.userId) throw new Error("User id is required!");
 
-    if (!data.userId) throw new Error("User id is required!" );
-    
-    if (!data.leadId) throw new Error("Lead id is required!" );
-    
-    await db.call.create({
-      data: {
-        ...data,
-        status: "",
-        from: "",
-      },
-    });
-    return  "Call created" ;
+  if (!data.leadId) throw new Error("Lead id is required!");
+
+  await db.call.create({
+    data: {
+      ...data,
+      status: "",
+      from: "",
+    },
+  });
+  return "Call created";
 };
 
-export const shareCall = async ({id, shared}:{id: string, shared: boolean}) => {
-
-    await db.call.update({
-      where: { id },
-      data: {
-        shared,
-      },
-    });
-    return   `Call ${shared ? "" : "un"}shared` ;
- 
+export const shareCall = async ({
+  id,
+  shared,
+}: {
+  id: string;
+  shared: boolean;
+}) => {
+  await db.call.update({
+    where: { id },
+    data: {
+      shared,
+    },
+  });
+  return `Call ${shared ? "" : "un"}shared`;
 };
 
-export const updateCallAppointment = async (
- { leadId,
-  appointmentId}:{ leadId: string,
-    appointmentId: string}
-) => {
+export const updateCallAppointment = async ({
+  leadId,
+  appointmentId,
+}: {
+  leadId: string;
+  appointmentId: string;
+}) => {
   const call = await db.call.findFirst({
     where: { leadId },
     orderBy: { createdAt: "desc" },
   });
-  if (!call) throw new Error("Call not found!" );
+  if (!call) return "Call not found!";
 
   const diff = timeDiff(call.createdAt, new Date());
 
-  if (diff > 60) throw new Error("Call time is over 1 hour" );
+  if (diff > 60) throw new Error("Call time is over 1 hour");
 
   await db.call.update({
     where: { id: call.id },
@@ -277,7 +280,7 @@ export const updateCallAppointment = async (
       appointmentId,
     },
   });
-  return   "call appointmenthas been updated!" ;
+  return "call appointmenthas been updated!";
 };
 
 //CREATE OR UPDATE MISSED CALL NOTIFICATION
@@ -317,4 +320,3 @@ export const createOrUpdateMissedCallNotification = async ({
     });
   }
 };
-

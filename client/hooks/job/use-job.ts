@@ -1,29 +1,13 @@
-import { create } from "zustand";
+
 import { useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { JobStatus } from "@/types/job";
 import { CreateJobSchemaType, UpdateJobSchemaType } from "@/schemas/job";
 
 import { createJob,deleteJob,updateJob } from "@/actions/developer/job";
 
-type State = {
-  status:JobStatus|string
-  sorted:boolean;}
-  type Actions = {
-   setStatus:(s:string)=>void
-   toggleSorted:()=>void
-  };
- 
- export const useJobStore = create<State & Actions>((set,get) => ({
-   status:JobStatus.IN_PROGRESS,
-   sorted:false,
-   setStatus:(s)=>set({status:s}),  
-   toggleSorted:()=>set({sorted:!get().sorted})
- 
- }));
 
 export const useJobActions = () => {
   //JOB DELETE

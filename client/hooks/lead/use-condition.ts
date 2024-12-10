@@ -1,8 +1,9 @@
 import { useCallback } from "react";
-import { create } from "zustand";
 import { toast } from "sonner";
-import { useLeadStore } from "./use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
+import { useLeadConditionStore } from "@/stores/lead-condition-store";
 
 import { MedicalCondition } from "@prisma/client";
 import { FullLeadMedicalCondition } from "@/types";
@@ -15,26 +16,6 @@ import {
   updateLeadCondition,
 } from "@/actions/lead/condition";
 import { adminMedicalConditionsGetAll } from "@/actions/admin/medical";
-import { useInvalidate } from "../use-invalidate";
-
-type State = {
-  conditionId?: string;
-};
-
-type Actions = {
-  setConditionId: (c: string) => void;
-  isConditionFormOpen: boolean;
-  onConditionFormOpen: (c?: string) => void;
-  onConditionFormClose: () => void;
-};
-
-export const useLeadConditionStore = create<State & Actions>((set) => ({
-  setConditionId: (c) => set({ conditionId: c }),
-  isConditionFormOpen: false,
-  onConditionFormOpen: (c) =>
-    set({ conditionId: c, isConditionFormOpen: true }),
-  onConditionFormClose: () => set({ isConditionFormOpen: false }),
-}));
 
 export const useLeadConditionData = (leadId: string) => {
   const { conditionId } = useLeadConditionStore();

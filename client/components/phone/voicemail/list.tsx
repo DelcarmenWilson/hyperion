@@ -4,7 +4,7 @@ import { Eye, MoreHorizontal, Phone, Trash } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 import { toast } from "sonner";
 import { usePhoneContext } from "@/providers/phone";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import axios from "axios";
 import { format } from "date-fns";
 

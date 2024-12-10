@@ -1,13 +1,4 @@
 import { RefObject, useEffect, useRef, useState } from "react";
-import { create } from "zustand";
-
-type audioStore = {
-  audio?: RefObject<HTMLAudioElement>;
-  setAudio: (e: RefObject<HTMLAudioElement>) => void;
-};
-export const useAudio = create<audioStore>((set) => ({
-  setAudio: (e) => set({ audio: e }),
-}));
 
 export const useAudioPlayer = (
   audio: RefObject<HTMLAudioElement> | undefined,

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { useScriptStore } from "../hooks/use-script-store";
+import { useScriptStore } from "@/stores/script-store";
 
 import { Script } from "@prisma/client";
 import { ScriptStatus } from "@/types/script";

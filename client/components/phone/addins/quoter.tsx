@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
+
 import { CalculatePremium, DEFAULT_BASEPREMIUM } from "@/formulas/lead";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

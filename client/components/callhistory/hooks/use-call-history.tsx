@@ -1,17 +1,15 @@
-import { useContext, useEffect, useState } from "react";
-import SocketContext from "@/providers/socket";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useSocketStore } from "@/stores/socket-store";
+import { useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "@/hooks/use-invalidate";
 
 import { FullCall } from "@/types";
-import { weekStartEnd } from "@/formulas/dates";
 import { DateRange } from "react-day-picker";
 import {
   getCallsFiltered,
   getCallsForUserFiltered,
   getCallsForToday,
 } from "@/actions/call";
-import { useSocketStore } from "@/hooks/use-socket-store";
-import { useInvalidate } from "@/hooks/use-invalidate";
 
 export const useCallHistoryData = (
   dateRange?: DateRange,

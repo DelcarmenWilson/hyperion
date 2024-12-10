@@ -1,14 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { create } from "zustand";
-import { useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 
 import {
-  ShortPublicChatbotConversation,
   FullPublicChatbotConversation,
 } from "@/types";
 
@@ -16,55 +10,18 @@ import {
   publicChatbotConversationDeleteById,
   publicChatbotConversationGetById,
   publicChatbotConversationInsert,
-  publicChatbotConversationsGet,
   publicChatbotMessageInsert,
 } from "@/actions/chat-bot/public-chatbot";
+
 import {
-  PublicChatbotMessageSchema,
   PublicChatbotMessageSchemaType,
 } from "@/schemas/chat-bot/publicchatbot";
+
 import { PublicChatbotMessage } from "@prisma/client";
-import { immer } from "zustand/middleware/immer";
+import { usePublicChatbotStore, usePublicConversationAtom } from "@/stores/public-chatbot-store";
 
-type State = {
-  messages: PublicChatbotMessage[];
-  isTyping: boolean;
-};
-type Actions = {
-  setMessages: (m: PublicChatbotMessage[]) => void;
-  addMessage: (m: PublicChatbotMessage) => void;
-  setIsTyping: () => void;
-};
 
-export const usePublicChatbotStore = create<State & Actions>()(
-  immer((set) => ({
-    messages: [],
-    setMessages: (m) => set({ messages: m }),
-    addMessage: (m) =>
-      set((state) => {
-        state.messages?.push(m);
-      }),
 
-    isTyping: false,
-    setIsTyping: () =>
-      set((state) => {
-        state.isTyping = !state.isTyping;
-      }),
-  }))
-);
-
-type ConversationState = {
-  conversationId?: string;
-};
-
-const publicConversationAtom = atomWithStorage<ConversationState>(
-  "publicConversation",
-  {}
-);
-
-export function usePublicConversationAtom() {
-  return useAtom(publicConversationAtom);
-}
 
 export const usePublicChatbotData = () => {
   const [store, setConversationId] = usePublicConversationAtom();

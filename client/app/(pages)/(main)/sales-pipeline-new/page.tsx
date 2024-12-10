@@ -1,22 +1,13 @@
 import { UserSquare } from "lucide-react";
 
-import { TopMenu } from "./components/top-menu";
-import { SalesClient } from "./components/client";
-import { getPipelines } from "@/actions/user/pipeline";
+import { TopMenu } from "./_components/top-menu";
 import { PageLayout } from "@/components/custom/layout/page";
-import { getLeads } from "@/actions/lead";
+import { PipeLineList } from "./_components/pipeline/list";
 
-const SalesPage = async () => {
-  const leads = await getLeads();
-  const pipelines = await getPipelines();
-  //TODO - need to add react query to this page
+const SalesPage = () => {
   return (
-    <PageLayout
-      title="Sales Pipeline"
-      icon={UserSquare}
-      topMenu={<TopMenu pipelines={pipelines} />}
-    >
-      <SalesClient leads={leads} pipelines={pipelines} />
+    <PageLayout title="Sales Pipeline" icon={UserSquare} topMenu={<TopMenu />}>
+      <PipeLineList />
     </PageLayout>
   );
 };

@@ -1,10 +1,11 @@
 import {  useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {  useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { create } from "zustand";
-import { useRouter } from "next/navigation";
+import { useChatbot } from "@/stores/chatbot-store";
+
+
 import { FullChatbotConversation, ShortChatbotConversation } from "@/types";
 
 import {
@@ -19,14 +20,6 @@ import {
   ChatbotSettingsSchemaType,
 } from "@/schemas/chat-bot/chatbot";
 
-type useChatbotStore = { 
-  chatId?: string;
-  setChatId: (c?: string) => void;
-};
-
-export const useChatbot = create<useChatbotStore>((set) => ({
-  setChatId: (c) => set({ chatId: c }),
-}));
 
 export const useChatbotData = () => {
   const { chatId,setChatId } = useChatbot();

@@ -2,10 +2,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import {
-  useBeneficiaryStore,
-  useLeadBeneficiaryData,
-} from "@/hooks/lead/use-beneficiary";
+import { useBeneficiaryStore } from "@/stores/beneficiary-store";
+import { useLeadBeneficiaryData } from "@/hooks/lead/use-beneficiary";
 
 import { columns } from "./columns";
 import { BeneficiaryForm } from "./form";

@@ -1,34 +1,18 @@
 import { useCallback, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { create } from "zustand";
 import { useCurrentUser } from "../user/use-current";
-import { useSocketStore } from "../use-socket-store";
+import { useSocketStore } from "@/stores/socket-store";
 import { useInvalidate } from "../use-invalidate";
+import { useMiniMessageStore } from "@/stores/mini-message-store";
+
 import { toast } from "sonner";
 import Quill from "quill";
 import { Delta } from "quill/core";
 
 import { FullMiniMessage } from "@/types";
-import {  CreateChatMessageSchemaType } from "@/schemas/chat";
+import { CreateChatMessageSchemaType } from "@/schemas/chat";
 import { getMessage } from "@/actions/chat/message/get-message";
 import { createMessage } from "@/actions/chat/message/create-message";
-
-
-type State = {
-  messageId?: string;
-  isMiniMessageOpen: boolean;
-};
-type Actions = {
-  onMiniMessageOpen: (m: string) => void;
-  onMiniMessageClose: () => void;
-};
-
-export const useMiniMessageStore = create<State & Actions>((set) => ({
-  //  messageId: "cm30nyurz001587wugvl5np8f",
-  isMiniMessageOpen: false,
-  onMiniMessageOpen: (m) => set({ isMiniMessageOpen: true, messageId: m }),
-  onMiniMessageClose: () => set({ isMiniMessageOpen: false, messageId: undefined }),
-}));
 
 export const useMiniMessageData = () => {
   const { messageId } = useMiniMessageStore();
@@ -42,7 +26,7 @@ export const useMiniMessageData = () => {
     } = useQuery<FullMiniMessage | null>({
       queryFn: () => getMessage(messageId as string),
       queryKey: [`chat-message-${messageId}`],
-      enabled:!!messageId
+      enabled: !!messageId,
     });
     return { message, messageFetching, messageLoading };
   };
@@ -56,7 +40,7 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
   const { socket } = useSocketStore();
   const editorRef = useRef<Quill | null>(null);
   const { invalidateMultiple } = useInvalidate();
-  const {  onMiniMessageClose } = useMiniMessageStore();
+  const { onMiniMessageClose } = useMiniMessageStore();
   const user = useCurrentUser();
 
   // INSERT MESSAGE
@@ -64,11 +48,9 @@ export const useMiniMessageFormActions = (chatId: string, agentId: string) => {
     useMutation({
       mutationFn: createMessage,
       onSuccess: (results) => {
-     
-          invalidateMultiple([`chat-${results.chatId}`, "full-chats"]);
-          socket?.emit("chat-message-sent", agentId, results);
-          onMiniMessageClose();
-     
+        invalidateMultiple([`chat-${results.chatId}`, "full-chats"]);
+        socket?.emit("chat-message-sent", agentId, results);
+        onMiniMessageClose();
       },
       onError: (error) =>
         toast.error(error.message, { id: "insert-chat-message" }),

@@ -1,10 +1,9 @@
 "use client";
-
-import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
 import { useEffect } from "react";
+import { useMasterAccountStore } from "@/stores/master-account-store";
 
 export default function Home() {
-  const { isOpen, onOpen } = useMasterAccountModal();
+  const { isOpen, onOpen } = useMasterAccountStore();
 
   useEffect(() => {
     if (!isOpen) onOpen();

@@ -11,19 +11,21 @@ import {
   X,
 } from "lucide-react";
 import { MdDialpad } from "react-icons/md";
-import { DialerSettingsType } from "@/types";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { usePhoneData, usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
+import { usePhoneData } from "@/hooks/use-phone";
 import { usePhoneContext } from "@/providers/phone";
-import { useDialerStore } from "../hooks/use-dialer";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { useDialerStore } from "@/stores/dialer-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
+
+import { DialerSettingsType } from "@/types";
 
 import { Button } from "@/components/ui/button";
+import { DialerSettings } from "./settings";
 
 import { formatSecondsToTime } from "@/formulas/numbers";
 import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
-import { DialerSettings } from "./settings";
 
 type Props = {
   setIndex: (idx: number) => void;

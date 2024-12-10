@@ -1,5 +1,5 @@
 "use client";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,7 +33,7 @@ export const columns: ColumnDef<UserLicense>[] = [
     accessorKey: "image",
     header: "Image",
     cell: function CellComponent({ row }) {
-      const { onOpen } = useImageViewer();
+      const { onOpen } = useImageViewerStore();
       return (
         row.original.image && (
           <Image

@@ -9,7 +9,7 @@ import {
   PhoneCall,
   Video,
 } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { FullConversation } from "@/types";
 import { FullLead } from "@/types";

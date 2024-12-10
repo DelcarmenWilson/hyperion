@@ -1,20 +1,17 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import {
-  useLeadConditionActions,
-  useLeadConditionStore,
-} from "@/hooks/lead/use-condition";
+import { useLeadConditionStore } from "@/stores/lead-condition-store";
+import { useLeadConditionActions } from "@/hooks/lead/use-condition";
 
 import { FullLeadMedicalCondition } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
-
+import DeleteDialog from "@/components/custom/delete-dialog";
 import { ConditionForm } from "./form";
 
 import { formatDate } from "@/formulas/dates";
-import DeleteDialog from "@/components/custom/delete-dialog";
 
 type ConditionsListProps = {
   conditions: FullLeadMedicalCondition[];

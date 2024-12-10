@@ -2,7 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useNotificationStore } from "@/hooks/notification/use-notification";
+import { useNotificationStore } from "@/stores/notification-store";
 
 import { NotificationReference } from "@/types/notification";
 

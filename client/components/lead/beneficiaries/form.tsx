@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLeadStore } from "@/stores/lead-store";
+import { useBeneficiaryStore } from "@/stores/beneficiary-store";
 import {
-  useBeneficiaryStore,
   useLeadBeneficiaryActions,
   useLeadBeneficiaryData,
 } from "@/hooks/lead/use-beneficiary";
@@ -38,7 +39,6 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { leadRelationShips } from "@/constants/lead";
 import ReactDatePicker from "react-datepicker";
-import { useLeadStore } from "@/hooks/lead/use-lead";
 
 export const BeneficiaryForm = () => {
   const { leadId } = useLeadStore();

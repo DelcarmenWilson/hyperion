@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { create } from "zustand";
 import { useCurrentUser } from "./user/use-current";
 import { useMutation } from "@tanstack/react-query";
-import { useCalendarStore } from "./calendar/use-calendar-store";
+import { useCalendarStore } from "../stores/calendar-store";
 import { useInvalidate } from "./use-invalidate";
+import { useAppointmentStore } from "@/stores/appointment-store";
 import { toast } from "sonner";
 
-import { FullAppointment } from "@/types";
 import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";
 
 import {
@@ -30,47 +29,12 @@ import {
   cancelAppointmentAgent,
   createAppointment,
 } from "@/actions/appointment";
-import { AppointmentStatus } from "@/types/appointment";
-
-type State = {
-  appointment?: FullAppointment;
-  //APPOINTMENT FORM
-  isAppointmentFormOpen: boolean;
-  //APPOINTMENT DETAILS
-  isDetailsOpen: boolean;
-  status: string;
-};
-type Actions = {
-  //APPOINTMENT FORM
-  onAppointmentFormOpen: () => void;
-  onApointmentFormClose: () => void;
-  //APPOINTMENT DETAILS
-  onDetailsOpen: (e: FullAppointment) => void;
-  onDetailsClose: () => void;
-  onSetStatus: (s: string) => void;
-};
-
-export const useAppointmentStore = create<State & Actions>((set) => ({
-  //APPOINTMENT FORM
-  isAppointmentFormOpen: false,
-  onAppointmentFormOpen: () => set({ isAppointmentFormOpen: true }),
-  onApointmentFormClose: () => set({ isAppointmentFormOpen: false }),
-
-  //APPOINTMENT DETAILS
-  isDetailsOpen: false,
-  onDetailsOpen: (e) => set({ isDetailsOpen: true, appointment: e }),
-  onDetailsClose: () => set({ isDetailsOpen: false }),
-
-  // to store status value(default will be scheduled)
-  status: AppointmentStatus.SCHEDULED,
-  onSetStatus: (s) => set({ status: s }),
-}));
 
 export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
   const user = useCurrentUser();
   const { appointments, schedule, labels } = useCalendarStore();
   const { invalidate } = useInvalidate();
-  const { onApointmentFormClose: onFormClose } = useAppointmentStore();
+  const { onApointmentFormClose } = useAppointmentStore();
   const stateData = states.find((e) => e.abv == lead!.state);
   const timeDiff = timeDifference(stateData?.zone);
 
@@ -103,7 +67,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
     form.clearErrors();
     form.reset();
     onDateSelected(defaultDate);
-    onFormClose();
+    onApointmentFormClose();
   };
 
   const onDateSelected = (date: Date) => {
@@ -192,7 +156,7 @@ export const useAppointmentActions = (lead: LeadBasicInfoSchemaTypeP) => {
     stateData,
     calOpen,
     setCalOpen,
-    onFormClose,
+    onApointmentFormClose,
     available,
     onAppointmentSubmit,
     isPendingAppointment,

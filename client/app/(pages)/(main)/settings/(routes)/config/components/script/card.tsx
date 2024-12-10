@@ -1,5 +1,6 @@
 "use client";
-import { useScriptActions, useScriptStore } from "@/hooks/admin/use-script";
+import { useScriptStore } from "@/stores/script-store";
+import { useScriptActions } from "@/hooks/admin/use-script";
 import { Script } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";

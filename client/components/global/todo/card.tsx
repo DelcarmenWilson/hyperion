@@ -1,5 +1,5 @@
 import React from "react";
-import { useTodoStore } from "@/hooks/user/use-todo";
+import { useTodoStore } from "@/stores/todo-store";
 import { cn } from "@/lib/utils";
 
 import { UserTodo } from "@prisma/client";

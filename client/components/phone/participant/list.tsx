@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import SocketContext from "@/providers/socket";
 import { toast } from "sonner";
 

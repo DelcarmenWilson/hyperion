@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import { PageUpdate } from "@prisma/client";
 import { CardData } from "@/components/reusable/card-data";
 
 export const PageUpdateCard = ({ update }: { update: PageUpdate }) => {
-  const { onOpen } = useImageViewer();
+  const { onOpen } = useImageViewerStore();
 
   return (
     <div className="flex flex-col justify-between bg-gray-200 border rounded-sm p-2 lg:flex-row">

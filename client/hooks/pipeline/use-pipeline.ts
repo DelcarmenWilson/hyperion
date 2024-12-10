@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { userEmitter } from "@/lib/event-emmiter";
 import { useModal } from "@/providers/modal";
-import { usePipelineStore } from "./use-pipeline-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
+import { useInvalidate } from "../use-invalidate";
 import { toast } from "sonner";
+
 import { FullPipeline, PipelineAndLeads } from "@/types";
 import { Pipeline } from "@prisma/client";
 import {
@@ -12,60 +14,68 @@ import {
 } from "@/schemas/pipeline";
 
 import {
+  createPipeline,
+  getPipeline,
+  getPipelines,
   getPipelinesAndLeads,
   deletedPipeline,
-  getPipelines,
-  getPipeline,
-  createPipeline,
   updatePipeline,
-  pipelineUpdateByIdIndex,
+  updatePipelineIndex,
   updatePipelineOrder,
 } from "@/actions/user/pipeline";
-import { useInvalidate } from "../use-invalidate";
 
 export const usePipelineData = () => {
-  const { pipelineId, initialSetUp, loaded } = usePipelineStore();
+  const { pipelineId } = usePipelineStore();
 
-  const { data: pipeline, isFetching: isFetchingPipeline } =
-    useQuery<Pipeline | null>({
+  const onGetPipeline = () => {
+    const {
+      data: pipeline,
+      isFetching: pipelineFetching,
+      isLoading: pieplineLoading,
+    } = useQuery<Pipeline | null>({
       queryFn: () => getPipeline(pipelineId as string),
       queryKey: [`pipeline-${pipelineId}`],
-      enabled:!!pipelineId
+      enabled: !!pipelineId,
     });
+    return { pipeline, pipelineFetching, pieplineLoading };
+  };
+  const onGetPipelines = () => {
+    const {
+      data: pipelines,
+      isFetching: pipelinesFetching,
+      isLoading: pieplinesLoading,
+    } = useQuery<FullPipeline[]>({
+      queryFn: () => getPipelines(),
+      queryKey: ["pipelines"],
+    });
+    return { pipelines, pipelinesFetching, pieplinesLoading };
+  };
 
-  const { data: pipelines, isFetching: isFetchingPipelines } = useQuery<
-    FullPipeline[]
-  >({
-    queryFn: () => getPipelines(),
-    queryKey: ["pipelines"],
-  });
-
-  const { data: pipelineAndLeads, isFetching: isFetchingPipelineAndLeads } =
-    useQuery<PipelineAndLeads>({
+  const onGetPipelinesAndLeads = () => {
+    const {
+      data: pipelinesAndLeads,
+      isFetching: pipelinesAndLeadsFetching,
+      isLoading: pipelinesAndLeadsLoading,
+    } = useQuery<PipelineAndLeads>({
       queryFn: () => getPipelinesAndLeads(),
-      queryKey: ["pipeline-and-leads"],
+      queryKey: ["pipelines-and-leads"],
     });
-
-  useEffect(() => {
-    if (loaded) return;
-    if (!pipelineAndLeads) return;
-    initialSetUp(pipelineAndLeads.pipelines, pipelineAndLeads.leads);
-  }, [loaded, pipelineAndLeads]);
+    return {
+      pipelinesAndLeads,
+      pipelinesAndLeadsFetching,
+      pipelinesAndLeadsLoading,
+    };
+  };
 
   return {
-    pipeline,
-    isFetchingPipeline,
-    pipelines,
-    isFetchingPipelines,
-    pipelineAndLeads,
-    isFetchingPipelineAndLeads,
+    onGetPipeline,
+    onGetPipelines,
+    onGetPipelinesAndLeads,
   };
 };
 
 export const usePipelineActions = (cb?: () => void) => {
   const {
-    onFormClose,
-    onAlertClose,
     deletePipeline,
     addPipeline,
     updateLeadStatus,
@@ -79,7 +89,6 @@ export const usePipelineActions = (cb?: () => void) => {
       onSuccess: (results) => {
         deletePipeline(results);
         toast.success("Pipeline Deleted", { id: "delete-pipeline" });
-        onAlertClose();
         invalidate("pipelines");
       },
       onError: (error) => toast.error(error.message, { id: "delete-pipeline" }),
@@ -141,7 +150,7 @@ export const usePipelineActions = (cb?: () => void) => {
 
   //UPDATE PIPELINE INDEX
   const { mutate: onUpdatePipelineIndexMutate } = useMutation({
-    mutationFn: pipelineUpdateByIdIndex,
+    mutationFn: updatePipelineIndex,
     onSuccess: (result) => {},
     onError: (error) => {
       toast.error(error.message);
@@ -175,12 +184,7 @@ export const usePipelineStageActions = (pipelines: FullPipeline[]) => {
   const [buttonEnabled, setButtonEnabled] = useState(false);
 
   const { setClose } = useModal();
-  const queryClient = useQueryClient();
-  const invalidate = (queries: string[]) => {
-    queries.forEach((query) => {
-      queryClient.invalidateQueries({ queryKey: [query] });
-    });
-  };
+  const {invalidate} = useInvalidate();
 
   const onStageUpdate = async () => {
     const list: { id: string; order: number }[] = stages.map(
@@ -210,7 +214,7 @@ export const usePipelineStageActions = (pipelines: FullPipeline[]) => {
     mutationFn: updatePipelineOrder,
     onSuccess: () => {
       setClose();
-      invalidate(["pipelines"]);
+      invalidate("pipelines");
       toast.success("Pipelines reordered", { id: "ordering-pipelines" });
     },
     onError: (error) =>
@@ -231,6 +235,7 @@ export const usePipelineStageActions = (pipelines: FullPipeline[]) => {
     onStageUpdate,
     onReorder,
     onReset,
-    onUpdatePipelineOrder,pipelineOrderUpdating
+    onUpdatePipelineOrder,
+    pipelineOrderUpdating,
   };
 };

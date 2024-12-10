@@ -3,8 +3,9 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { Button } from "@/components/ui/button";
 import FormInput from "./form-input";

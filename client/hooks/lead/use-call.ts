@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import { useQuery } from "@tanstack/react-query";
 
 import { ShortCall } from "@/types";
@@ -9,24 +8,8 @@ import {
   getMultipleCalls,
   getOutboundCalls,
 } from "@/actions/call";
+import { useCallStore } from "@/stores/call-store";
 
-type State = {
-  callIds?: string[];
-  isMultipleCallDialogOpen: boolean;
-};
-type Actions = {
-  onMultipleCallDialogOpen: (c: string[]) => void;
-  onMultipleCallDialogClose: () => void;
-};
-
-export const useCallStore = create<State & Actions>((set) => ({
-  //MULTIPLE CALL DIALOG
-  isMultipleCallDialogOpen: false,
-  onMultipleCallDialogOpen: (ids) =>
-    set({ callIds: ids, isMultipleCallDialogOpen: true }),
-  onMultipleCallDialogClose: () =>
-    set({ callIds: undefined, isMultipleCallDialogOpen: false }),
-}));
 
 export const useLeadCallData = () => {
   const { callIds } = useCallStore();

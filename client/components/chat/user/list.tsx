@@ -1,10 +1,11 @@
 "use client";
-import { useChatOnlineActions, useChatStore } from "@/hooks/chat/use-chat";
+import { useEffect, useState } from "react";
+import { useChatStore } from "@/stores/chat-store";
+import { useChatOnlineActions } from "@/hooks/chat/use-chat";
 
 import ChatCard from "./card";
-import { ScrollArea } from "../../ui/scroll-area";
-import { Switch } from "../../ui/switch";
-import { useEffect, useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import { EmptyCard } from "../../reusable/empty-card";
 
 const ChatUserList = () => {

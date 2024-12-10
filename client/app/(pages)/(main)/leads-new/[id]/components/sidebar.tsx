@@ -1,8 +1,9 @@
 "use client";
 import { useEffect } from "react";
 import { Pencil, Phone } from "lucide-react";
-import { useLeadStore, useLeadData, useLeadId } from "@/hooks/lead/use-lead";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData, useLeadId } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { LeadDefaultStatus } from "@/types/lead";
 

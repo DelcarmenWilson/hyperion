@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { create } from "zustand";
 import axios from "axios";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "./use-invalidate";
 import { toast } from "sonner";
 
 import { PhoneNumber } from "@prisma/client";
@@ -14,29 +14,8 @@ import {
   getUnassignedPhoneNumbers,
   updatePhoneNumber,
 } from "@/actions/user/phone-number";
-import { useInvalidate } from "./use-invalidate";
 
-
-type State = {
-  phoneNumber?: PhoneNumber;
-  isPhoneDetailsOpen: boolean;
-};
-
-type Actions = {
-  onPhoneDetailsOpen: (p: PhoneNumber) => void;
-  onPhoneDetailsClose: () => void;
-};
-
-export const usePhoneSetupStore = create<State & Actions>((set) => ({
-  isPhoneDetailsOpen: false,
-  onPhoneDetailsOpen: (p) => set({ phoneNumber: p, isPhoneDetailsOpen: true }),
-  onPhoneDetailsClose: () =>
-    set({
-      phoneNumber: undefined,
-      isPhoneDetailsOpen: false,
-    }),
-}));
-
+//TODO - need to rename all the format all the function
 export const usePhoneSetupData = () => {
   //PHONE NUMBERS
   const { data: phoneNumbers, isFetching: isFetchingPhoneNumbers } = useQuery<

@@ -1,14 +1,11 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useLeadStore,
-  useLeadData,
-  useLeadInsertActions,
-} from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData, useLeadInsertActions } from "@/hooks/lead/use-lead";
 
 import { Gender, MaritalStatus } from "@prisma/client";
-import { LeadSchema, LeadSchemaType } from "@/schemas/lead";
+import { CreateLeadSchema, CreateLeadSchemaType } from "@/schemas/lead";
 
 import { Button } from "@/components/ui/button";
 import { DrawerRight } from "@/components/custom/drawer/right";
@@ -74,8 +71,8 @@ type NewLFormProps = {
 };
 const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
   const { onLeadInsertMutate, leadInsertIsPending } = useLeadInsertActions();
-  const form = useForm<LeadSchemaType>({
-    resolver: zodResolver(LeadSchema),
+  const form = useForm<CreateLeadSchemaType>({
+    resolver: zodResolver(CreateLeadSchema),
     defaultValues: {
       homePhone: "",
       gender: Gender.Male,
@@ -94,10 +91,10 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
   return (
     <Form {...form}>
       <form
-        className="flex-1 flex flex-col gap-2 h-full space-6 px-2 w-full overflow-hidden"
+        className="flex-1 flex flex-col gap-2 h-full w-full overflow-hidden"
         onSubmit={form.handleSubmit(onLeadInsertMutate)}
       >
-        <ScrollArea className="flex-1">
+        <ScrollArea>
           {/* RELATIONSHIP */}
           {showRelationship && (
             <FormField
@@ -136,7 +133,7 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
             />
           )}
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-1 ">
             {/* FIRSTNAME */}
             <FormField
               control={form.control}
@@ -144,7 +141,6 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between items-center">
-                    {" "}
                     First Name
                     <FormMessage />
                   </FormLabel>
@@ -168,7 +164,6 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between items-center">
-                    {" "}
                     Last Name <FormMessage />
                   </FormLabel>
                   <FormControl>
@@ -250,7 +245,6 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex justify-between items-center">
-                    {" "}
                     Home Phone
                     <FormMessage />
                   </FormLabel>
@@ -260,6 +254,10 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
                       placeholder="457-458-9695"
                       disabled={leadInsertIsPending}
                       autoComplete="phone"
+                      type="tel"
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      minLength={10}
+                      maxLength={12}
                     />
                   </FormControl>
                 </FormItem>
@@ -282,6 +280,10 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
                       placeholder="555-555-5555"
                       disabled={leadInsertIsPending}
                       autoComplete="phone"
+                      type="tel"
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      minLength={10}
+                      maxLength={12}
                     />
                   </FormControl>
                 </FormItem>
@@ -445,6 +447,8 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
                       placeholder="15468"
                       disabled={leadInsertIsPending}
                       autoComplete="postal-code"
+                      minLength={5}
+                      maxLength={5}
                     />
                   </FormControl>
                 </FormItem>

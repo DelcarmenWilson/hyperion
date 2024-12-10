@@ -1,4 +1,4 @@
-import { useDialerStore } from "../hooks/use-dialer";
+import { useDialerStore } from "@/stores/dialer-store";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { SmsClient } from "../sms/client";
 

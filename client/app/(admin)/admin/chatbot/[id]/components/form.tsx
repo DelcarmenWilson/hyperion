@@ -1,7 +1,6 @@
-import * as z from "zod";
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { useChatbot } from "../../hooks/use-chatbot";
+import { useChatbot } from "@/stores/chatbot-store";
 
 import { userEmitter } from "@/lib/event-emmiter";
 

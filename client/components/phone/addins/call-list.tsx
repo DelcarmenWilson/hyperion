@@ -1,6 +1,6 @@
 import React from "react";
 import { Phone } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import axios from "axios";
 
 import { ShortCall } from "@/types";

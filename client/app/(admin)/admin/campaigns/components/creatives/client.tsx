@@ -1,25 +1,25 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useCampaign, useCampaignViewData } from "../../hooks/use-campaigns";
+import { useCampaignStore } from "@/stores/campaign-store";
+import { useCampaignViewData } from "@/hooks/use-campaigns";
+import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 import { CampaignCreative } from "@prisma/client";
 
+import { Button } from "@/components/ui/button";
 import { CreativeForm } from "./form";
 import { CreativeList } from "./list";
+import { columns } from "./columns";
 import { DrawerRight } from "@/components/custom/drawer/right";
 import { DataTable } from "@/components/tables/data-table";
-import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-
-import { columns } from "./columns";
 import { Heading } from "@/components/custom/heading";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 
 export const CreativeClient = () => {
   const user = useCurrentUser();
-  const { isCreativeViewOpen, setCreativeViewOpen } = useCampaign();
+  const { isCreativeViewOpen, setCreativeViewOpen } = useCampaignStore();
   const { creatives, isFetchingCreatives } = useCampaignViewData();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

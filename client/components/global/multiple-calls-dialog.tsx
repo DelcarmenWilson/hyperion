@@ -2,8 +2,9 @@
 import { Phone } from "lucide-react";
 
 import axios from "axios";
-import { useCallStore, useLeadCallData } from "@/hooks/lead/use-call";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadCallData } from "@/hooks/lead/use-call";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useCallStore } from "@/stores/call-store";
 
 import { ShortCall } from "@/types";
 import { Button } from "../ui/button";

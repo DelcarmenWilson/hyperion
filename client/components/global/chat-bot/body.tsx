@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { usePublicChatbotStore } from "./hooks/use-chatbot";
+import { usePublicChatbotStore } from "@/stores/public-chatbot-store";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCard } from "./message-card";
@@ -46,12 +46,7 @@ export const PublicChatbotConversationBody = () => {
   );
 };
 
-import React from "react";
-
-type Props = {
-  title?: string;
-};
-const Dots = ({ title }: Props) => {
+const Dots = ({ title }: { title?: string }) => {
   return (
     <p className="flex gap-1 text-gray-500 text-sm italic">
       {title} <span className="loading-dots"></span>

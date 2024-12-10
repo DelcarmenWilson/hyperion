@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 
 import { CustomDialog } from "../global/custom-dialog";
 
 export const ImageViewerModal = () => {
-  const { isOpen, onClose, imageUrl, alt } = useImageViewer();
+  const { isOpen, onClose, imageUrl, alt } = useImageViewerStore();
 
   if (!imageUrl) return null;
   return (

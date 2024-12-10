@@ -1,6 +1,7 @@
 "use client";
 import { RefreshCcw } from "lucide-react";
-import { useSchedule, useScheduleBreak } from "@/hooks/use-schedule";
+import { useScheduleStore } from "@/stores/schedule-store";
+import { useScheduleBreak } from "@/hooks/use-schedule";
 
 import { Button } from "@/components/ui/button";
 import { CustomDialog } from "../global/custom-dialog";
@@ -15,7 +16,7 @@ export const ScheduleBreakModal = ({
 }: {
   setDay: (e: ScheduleDay) => void;
 }) => {
-  const { isOpen, onClose, schedule } = useSchedule();
+  const { isOpen, onClose, schedule } = useScheduleStore();
   const {
     scd,
     showBreak1,

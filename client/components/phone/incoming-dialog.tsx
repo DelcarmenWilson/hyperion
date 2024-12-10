@@ -1,15 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { PhoneIncoming, PhoneOff } from "lucide-react";
-import { Call } from "@twilio/voice-sdk";
 import { cn } from "@/lib/utils";
 
 import { usePhoneContext } from "@/providers/phone";
-import {
-  useIncomingCallData,
-  usePhoneData,
-  usePhoneStore,
-} from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useIncomingCallData, usePhoneData } from "@/hooks/use-phone";
 
 import { Button } from "../ui/button";
 

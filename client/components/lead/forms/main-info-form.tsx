@@ -2,11 +2,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
-import {
-  useLeadStore,
-  useLeadInfoActions,
-  useLeadInfoData,
-} from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadInfoActions, useLeadInfoData } from "@/hooks/lead/use-lead";
 
 import {
   LeadMainSchema,

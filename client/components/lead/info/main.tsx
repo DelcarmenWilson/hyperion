@@ -1,11 +1,8 @@
 "use client";
 import Link from "next/link";
 
-import {
-  useLeadStore,
-  useLeadInfoData,
-  useLeadInfoActions,
-} from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadInfoData, useLeadInfoActions } from "@/hooks/lead/use-lead";
 
 import { CopyButton } from "@/components/reusable/copy-button";
 import { EmptyData } from "./empty-data";

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Heading } from "@/components/custom/heading";
-import { UserSelect } from "@/components/user/select";
+import { OtherUserSelect } from "@/components/user/select";
 
 import { adminChangeLeadDefaultNumber } from "@/actions/admin/lead";
 
@@ -37,7 +37,7 @@ export const NumberChange = ({ user }: { user: string }) => {
       <div className="flex flex-col gap-2">
         <p className="text-sm">User</p>
         <div className="w-[200px]">
-          <UserSelect
+          <OtherUserSelect
             disabled={loading}
             userId={selecteUser}
             setUserId={setSelecteUser}

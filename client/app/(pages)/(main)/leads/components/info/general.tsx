@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CalendarX, FilePenLine, Phone } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { cn } from "@/lib/utils";
 
 import { Appointment } from "@prisma/client";
