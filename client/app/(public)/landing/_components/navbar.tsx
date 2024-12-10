@@ -6,7 +6,7 @@ import { Hand, LucideIcon, User, UserPlus } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <div className="container bg-pink-500">
+    <div className="container absolute z-2 top-0">
       <div className="flex justify-between items-center text-white  p-3">
         <Link href="/" className="flex gap-2 items-center">
           <Image src="/logo3.png" height={36} width={36} alt="logo" />
