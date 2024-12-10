@@ -1,8 +1,9 @@
 import React from "react";
 import { Clock, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePhoneStore } from "@/hooks/use-phone";
 import Link from "next/link";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { PipelineLead } from "@/types";
 
@@ -10,7 +11,6 @@ import { Button } from "@/components/ui/button";
 
 import { formatDate } from "@/formulas/dates";
 import { formatPhoneNumber } from "@/formulas/phones";
-import { useLeadStore } from "@/hooks/lead/use-lead";
 
 type Props = {
   lead: PipelineLead;
@@ -30,8 +30,8 @@ export const LeadCard = ({ lead, indexRef }: Props) => {
     <div ref={indexRef} className="border-b">
       <div
         className={cn(
-          "flex justify-between items-center p-2 text-xs",
-          indexRef && "bg-primary/10"
+          "flex justify-between items-center p-2 text-xs hover:bg-primary/20",
+          indexRef && "bg-primary/30"
         )}
       >
         <div>

@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMiniMessageStore } from "@/stores/mini-message-store";
 import {
   useMiniMessageData,
   useMiniMessageFormActions,
-  useMiniMessageStore,
 } from "@/hooks/chat/use-mini-message";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

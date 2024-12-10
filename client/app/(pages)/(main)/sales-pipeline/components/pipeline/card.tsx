@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Clock, Move } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
 
 import { FullPipeline, PipelineLead } from "@/types";
 
+import { Actions } from "../actions";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LeadCard } from "../lead-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -15,13 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LeadCard } from "../lead-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { Actions } from "../actions";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+
 import { timeZones } from "@/constants/states";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type PipelineCardProps = {
   pipeline: FullPipeline;
@@ -35,8 +35,8 @@ export const PipelineCard = ({
   initLeads,
   loading = false,
 }: PipelineCardProps) => {
-  const { setSelectedPipeline } = usePipelineStore();
   const { onPhoneDialerOpen } = usePhoneStore();
+  const { setSelectedPipeline } = usePipelineStore();
   const { onUpdatePipelineUpdateIndex } = usePipelineActions();
   const [timeZone, setTimeZone] = useState("%");
   const [leads, setLeads] = useState(initLeads);
@@ -63,7 +63,7 @@ export const PipelineCard = ({
       dragControls={controls}
       drag="x"
     >
-      <Card className="flex flex-col  shadow-xl h-[400px] overflow-hidden">
+      <Card className="flex flex-col  shadow-xl h-[450px] overflow-hidden">
         <SkeletonWrapper isLoading={loading} fullHeight fullWidth>
           <CardHeader className="flex flex-row justify-between items-center bg-primary/25 text-primary p-1">
             <div className="flex flex-1 items-center gap-2">
@@ -79,7 +79,7 @@ export const PipelineCard = ({
             <Actions pipeline={pipeline} onReset={onReset} />
           </CardHeader>
         </SkeletonWrapper>
-        <CardContent className="!p-0">
+        <CardContent className="flex-1 flex flex-col h-full overflow-hidden !p-0">
           <SkeletonWrapper isLoading={loading} fullHeight fullWidth>
             <div className="p-1">
               <Select onValueChange={setTimeZone} defaultValue="%">

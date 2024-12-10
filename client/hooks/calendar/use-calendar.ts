@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useCalendarStore } from "./use-calendar-store";
+import { useCalendarStore } from "../../stores/calendar-store";
 
 import { AppointmentLabelSchemaType } from "@/schemas/appointment";
 import {

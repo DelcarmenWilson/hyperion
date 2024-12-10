@@ -1,6 +1,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 import dayjs from "dayjs";
 
 import { Button } from "@/components/ui/button";

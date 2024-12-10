@@ -1,7 +1,8 @@
 "use client";
 import { useEffect } from "react";
 import { Pencil } from "lucide-react";
-import { useLeadData, useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData, useLeadId } from "@/hooks/lead/use-lead";
 
 import { AssociatedClient } from "@/components/lead/info/associated";
 import { Button } from "@/components/ui/button";

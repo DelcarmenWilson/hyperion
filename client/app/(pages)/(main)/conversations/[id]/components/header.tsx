@@ -2,12 +2,10 @@
 import { useEffect } from "react";
 import { Phone } from "lucide-react";
 
-import {
-  useConversationData,
-  useConversationStore,
-} from "@/hooks/use-conversation";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useConversationStore } from "@/stores/conversation-store";
+import { useConversationData } from "@/hooks/use-conversation";
+import { useLeadStore } from "@/stores/lead-store";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { LeadDefaultStatus } from "@/types/lead";
 

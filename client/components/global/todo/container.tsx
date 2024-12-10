@@ -1,5 +1,5 @@
 "use client";
-import { useTodoStore } from "@/hooks/user/use-todo";
+import { useTodoStore } from "@/stores/todo-store";
 
 import { AddTodoBtn } from "./add-btn";
 import { DrawerExtendedSm } from "@/components/custom/drawer/extended-sm";

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 
 import { Card } from "@/components/ui/card";
 import { states } from "@/constants/states";
@@ -62,7 +62,7 @@ const CredentialsCard = ({ userId }: { userId: string }) => {
 };
 
 const LicenseCard = ({ license }: { license: UserLicense }) => {
-  const { onOpen } = useImageViewer();
+  const { onOpen } = useImageViewerStore();
   const state = states.find((e) => e.abv == license.state)?.state;
   return (
     <div

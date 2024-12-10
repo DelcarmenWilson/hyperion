@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BookMarked, Calendar, Check, Plus, Trash, X } from "lucide-react";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 import { useAppointmentContext } from "@/providers/app";
 
 import { Button } from "@/components/ui/button";

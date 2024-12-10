@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTodoActions, useTodoStore } from "@/hooks/user/use-todo";
+import { useTodoStore } from "@/stores/todo-store";
+import { useTodoActions } from "@/hooks/user/use-todo";
 
 import { UserTodo } from "@prisma/client";
 import { TodoSchema, TodoSchemaType } from "@/schemas/user";

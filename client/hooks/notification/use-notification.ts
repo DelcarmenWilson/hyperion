@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useInvalidate } from "../use-invalidate";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import { toast } from "sonner";
+import { useNotificationStore } from "@/stores/notification-store";
 
 import { Notification } from "@prisma/client";
 import {
@@ -13,34 +12,6 @@ import {
   updateUnreadNotification,
 } from "@/actions/notification";
 
-type State = {
-  notificationId?: string;
-  notificationIds?: string[];
-  isNotificationOpen: boolean;
-};
-type Actions = {
-  onNotificationOpen: (n: string) => void;
-  onNotificationClose: (n: string) => void;
-};
-
-export const useNotificationStore = create<State & Actions>()(
-  immer((set) => ({
-    isNotificationOpen: false,
-    onNotificationOpen: (n) =>
-      set((state) => {
-        state.notificationIds?.push(n);
-        state.isNotificationOpen = true;
-      }),
-    onNotificationClose: (n) =>
-      set((state) => {
-        if (n == "clear") state.notificationIds = [];
-        else
-          state.notificationIds = state.notificationIds?.filter((e) => e != n);
-        if (state.notificationIds?.length == 0)
-          state.isNotificationOpen = false;
-      }),
-  }))
-);
 
 export const useNotificationData = () => {
   const { notificationId, notificationIds } = useNotificationStore();

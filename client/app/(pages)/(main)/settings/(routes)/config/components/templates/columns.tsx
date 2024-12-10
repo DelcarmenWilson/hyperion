@@ -1,5 +1,5 @@
 "use client";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import Image from "next/image";
 import { UserTemplate } from "@prisma/client";
 
@@ -47,7 +47,7 @@ export const columns: ColumnDef<UserTemplate>[] = [
     accessorKey: "attachment",
     header: "Attachment",
     cell: function CellComponent({ row }) {
-      const { onOpen } = useImageViewer();
+      const { onOpen } = useImageViewerStore();
       return (
         row.original.attachment && (
           <Image

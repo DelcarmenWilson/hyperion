@@ -14,8 +14,8 @@ import {
 
 import { cn } from "@/lib/utils";
 
-import { useAppointmentStore } from "@/hooks/use-appointment";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useAppointmentStore } from "@/stores/appointment-store";
+import { useLeadStore } from "@/stores/lead-store";
 import { useLeadDropdownActions } from "@/hooks/lead/use-dropdown";
 
 import { FullLeadNoConvo } from "@/types";

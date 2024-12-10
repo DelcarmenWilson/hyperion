@@ -18,7 +18,8 @@ import { Delta, Op } from "quill/core";
 import "quill/dist/quill.snow.css";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 
 import { UserTemplate } from "@prisma/client";

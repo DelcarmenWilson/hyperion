@@ -1,10 +1,9 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import Quill from "quill";
-import { Delta } from "quill/core";
+import { useScriptStore } from "@/stores/script-store";
 import { useLeadMessageActions } from "@/hooks/lead/use-message";
+import Quill from "quill";
 import QuillEditorFull from "@/components/custom/quill/quill-editor-full";
-import { useScriptStore } from "../hooks/use-script-store";
 
 const ScriptEditor = () => {
   const editorRef = useRef<Quill | null>(null);

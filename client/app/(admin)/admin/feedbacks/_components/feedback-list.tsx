@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { useFeedbackStore } from "@/hooks/feedback/use-feedback";
+import { useFeedbackStore } from "@/stores/feedback-store";
 
 import { FeedbackStatus, ShortFeedback } from "@/types/feedback";
 
@@ -17,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getEnumValues } from "@/lib/helper/enum-converter";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getEnumValues } from "@/lib/helper/enum-converter";
 
 const FeedbackList = ({
   initFeedbacks,

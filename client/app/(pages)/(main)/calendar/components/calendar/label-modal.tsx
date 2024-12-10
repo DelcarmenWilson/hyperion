@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash, X } from "lucide-react";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 import { useCalendarActions } from "@/hooks/calendar/use-calendar";
 import { useAppointmentContext } from "@/providers/app";
 import { cn } from "@/lib/utils";

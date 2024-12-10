@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import {
   useAgentLicenseActions,
   useAgentLicenseData,
@@ -54,7 +54,7 @@ const LicenseList = ({ size = "full" }: { size?: string }) => {
 
 const LicenseCard = ({ license }: { license: UserLicense }) => {
   const { onDeleteLicense, licenseDeleting } = useAgentLicenseActions();
-  const { onOpen } = useImageViewer();
+  const { onOpen } = useImageViewerStore();
   const [isOpen, setIsOpen] = useState(false);
 
   return (

@@ -1,12 +1,11 @@
 import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery,useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useLeadStore } from "./use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { LeadBeneficiary } from "@prisma/client";
 import { FullLeadPolicy } from "@/types";
 
-import { useQuery } from "@tanstack/react-query";
 import {
   IntakeBankInfoSchemaType,
   IntakeDoctorInfoSchemaType,

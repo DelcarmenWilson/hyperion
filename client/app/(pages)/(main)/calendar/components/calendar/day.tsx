@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
 
 import { CalendarAppointment } from "@/types/appointment";

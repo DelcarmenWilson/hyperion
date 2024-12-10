@@ -2,11 +2,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import {
-  useChatData,
-  useChatActions,
-  useChatStore,
-} from "@/hooks/chat/use-chat";
+import { useChatStore } from "@/stores/chat-store";
+import { useChatData, useChatActions } from "@/hooks/chat/use-chat";
 
 import { Button } from "@/components/ui/button";
 import { ChatCard } from "./card";

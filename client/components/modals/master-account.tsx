@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useMasterAccountStore } from "@/stores/master-account-store";
 
 import {
   MasterRegisterSchema,
   MasterRegisterSchemaType,
 } from "@/schemas/register";
-import { useMasterAccountModal } from "@/hooks/use-master-account-modal";
-import { Modal } from "@/components/modals/modal";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -20,14 +21,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/modals/modal";
 import { ScrollArea } from "../ui/scroll-area";
+
 import { createMaster } from "@/actions/user";
 
 export const MasterAccountModal = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const masterModel = useMasterAccountModal();
+  const masterModel = useMasterAccountStore();
 
   const form = useForm<MasterRegisterSchemaType>({
     resolver: zodResolver(MasterRegisterSchema),

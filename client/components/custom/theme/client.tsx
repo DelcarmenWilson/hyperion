@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { CheckIcon, Moon, Sun } from "lucide-react";
+import { DesktopIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -33,11 +34,11 @@ export function ThemeClient() {
           <p className="text-[0.8rem] text-muted-foreground">Set Page Theme</p>
         </div>
         <div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {mounted ? (
               <>
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setMode("light")}
                   className={cn(mode === "light" && "border-2 border-primary")}
@@ -46,13 +47,23 @@ export function ThemeClient() {
                   Light
                 </Button>
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setMode("dark")}
                   className={cn(mode === "dark" && "border-2 border-primary")}
                 >
                   <Moon className="mr-1" />
                   Dark
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMode("system")}
+                  className={cn(mode === "system" && "border-2 border-primary")}
+                >
+                  <DesktopIcon className="mr-1" />
+                  System
                 </Button>
               </>
             ) : (

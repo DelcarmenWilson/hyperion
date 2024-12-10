@@ -14,8 +14,8 @@ import {
 import SocketContext from "@/providers/socket";
 import { useRouter } from "next/navigation";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useChatStore } from "@/hooks/chat/use-chat";
-import { useLoginStatus } from "@/hooks/use-login-status";
+import { useChatStore } from "@/stores/chat-store";
+import { useLoginStatusStore } from "@/stores/login-status-store";
 
 import { OnlineUser } from "@/types/user";
 
@@ -43,7 +43,7 @@ const ChatUserCard = ({ user }: { user: OnlineUser }) => {
 
   const { socket } = useContext(SocketContext).SocketState;
   const { onChatInfoOpen, user: agent, onChatClose } = useChatStore();
-  const { onLoginStatusOpen } = useLoginStatus();
+  const { onLoginStatusOpen } = useLoginStatusStore();
   //TODO - need to add this to the hooks
   const onChatClick = async () => {
     let chatId = user.chatId;

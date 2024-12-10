@@ -4,11 +4,11 @@ import React from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Tiptap } from "@/components/reusable/tiptap";
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import { useUserData } from "@/hooks/user/use-user";
 
 const AboutMeCard = ({ userId }: { userId: string }) => {
-  const { onOpen } = useImageViewer();
+  const { onOpen } = useImageViewerStore();
   const { onGetUserById } = useUserData();
   const { user } = onGetUserById(userId);
   return (

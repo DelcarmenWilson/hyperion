@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
 
 import { Lead } from "@prisma/client";
 import CustomDialogHeader from "@/components/custom-dialog-header";

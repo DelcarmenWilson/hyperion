@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useCalendarData } from "@/hooks/calendar/use-calendar";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 
 import { HyperionColors } from "@/lib/colors";
 import { CalendarAppointment } from "@/types/appointment";

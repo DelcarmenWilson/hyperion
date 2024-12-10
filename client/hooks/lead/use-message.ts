@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLeadStore } from "./use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

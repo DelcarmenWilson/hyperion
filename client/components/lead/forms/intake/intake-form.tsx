@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { useLeadIntakeData } from "@/hooks/lead/use-intake";
 
 import {

@@ -3,11 +3,8 @@
 import { Edit, RefreshCw, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-import {
-  useBeneficiaryStore,
-  useLeadBeneficiaryActions,
-} from "@/hooks/lead/use-beneficiary";
+import { useBeneficiaryStore } from "@/stores/beneficiary-store";
+import { useLeadBeneficiaryActions } from "@/hooks/lead/use-beneficiary";
 
 import { LeadBeneficiary } from "@prisma/client";
 

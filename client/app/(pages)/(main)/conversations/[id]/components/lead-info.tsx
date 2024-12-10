@@ -1,18 +1,19 @@
 "use client";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
-import { useConversationStore } from "@/hooks/use-conversation";
 import { cn } from "@/lib/utils";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { useConversationStore } from "@/stores/conversation-store";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PolicyInfoClient } from "@/components/lead/info/policy-info";
+import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
+import { CallInfo } from "@/components/lead/info/call";
+import { ConditionsClient } from "@/components/lead/conditions/client";
+import { ExpensesClient } from "@/components/lead/expenses/client";
 import { GeneralInfoClient } from "@/components/lead/info/general";
 import { MainInfoClient } from "@/components/lead/info/main";
-import { CallInfo } from "@/components/lead/info/call";
 import { NotesForm } from "@/components/lead/forms/notes-form";
-import { ExpensesClient } from "@/components/lead/expenses/client";
-import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
-import { ConditionsClient } from "@/components/lead/conditions/client";
+import { PolicyInfoClient } from "@/components/lead/info/policy-info";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const ConversationLeadInfo = ({ size = "full" }: { size?: string }) => {
   const { isLeadInfoOpen } = useConversationStore();

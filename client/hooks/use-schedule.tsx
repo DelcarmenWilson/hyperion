@@ -1,33 +1,16 @@
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { scheduleUpdateByUserId } from "@/actions/user/schedule";
 import {
   breakDownSchedule,
   consolitateSchedule,
-  daysOfTheWeek,
-  defaultDay,
   getNewDefaultDay,
   ScheduleDay,
 } from "@/formulas/schedule";
 import { ScheduleSchemaType } from "@/schemas/settings";
 import { Schedule } from "@prisma/client";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { create } from "zustand";
 
-type useScheduleStore = {
-  //SCHEDULE BREAK FORM
-  isOpen: boolean;
-  schedule?: ScheduleDay;
-  onOpen: (schedule: ScheduleDay) => void;
-  onClose: () => void;
-};
-
-export const useSchedule = create<useScheduleStore>((set) => ({
-  //SCHEDULE BREAK FORM
-  isOpen: false,
-  onOpen: (s) => set({ schedule: s, isOpen: true }),
-  onClose: () => set({ isOpen: false }),
-}));
-
+//TODO - need to revisit this later on in the future. this need to be refactored
 export const useScheduleActions = (schedule: Schedule) => {
   const [loading, setLoading] = useState(false);
   const [brSchedule, setBrSchedule] = useState(breakDownSchedule(schedule));

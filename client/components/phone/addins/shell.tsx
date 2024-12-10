@@ -2,8 +2,8 @@
 import { useEffect } from "react";
 import { MessageSquare, Phone, Voicemail } from "lucide-react";
 import { usePhoneContext } from "@/providers/phone";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useLeadStore } from "@/stores/lead-store";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { Badge } from "@/components/ui/badge";
 import { PhoneOut } from "@/components/phone/out";

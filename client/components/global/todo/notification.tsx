@@ -2,11 +2,8 @@
 import React from "react";
 import { Bell, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  useTodoActions,
-  useTodoData,
-  useTodoStore,
-} from "@/hooks/user/use-todo";
+import { useTodoStore } from "@/stores/todo-store";
+import { useTodoActions, useTodoData } from "@/hooks/user/use-todo";
 
 import { Button } from "@/components/ui/button";
 import SkeletonWrapper from "@/components/skeleton-wrapper";

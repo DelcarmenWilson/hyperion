@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import { useAgentLicenseData } from "@/app/(pages)/(main)/settings/(routes)/config/hooks/use-license";
 import { useOnlineUserData } from "@/hooks/user/use-user";
 

@@ -1,7 +1,7 @@
 "use client";
 import { Download, Paperclip, Plus } from "lucide-react";
 import Link from "next/link";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { Button } from "@/components/ui/button";
 import { ImportLeadsForm } from "./import/import-leads-form";

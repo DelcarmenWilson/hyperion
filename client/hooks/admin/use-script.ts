@@ -1,18 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInvalidate } from "../use-invalidate";
+import { useScriptStore } from "@/stores/script-store";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { create } from "zustand";
 
-import {
-  chatbotGetActive,
-  chatbotSettingsUpsert,
-} from "@/actions/chat-bot/chatbot";
-import {
-  ChatbotSettingsSchema,
-  ChatbotSettingsSchemaType,
-} from "@/schemas/chat-bot/chatbot";
 import { Script } from "@prisma/client";
 import {
   getScript,
@@ -22,22 +13,6 @@ import {
   deleteScript,
 } from "@/actions/script";
 import { ScriptSchemaType } from "@/schemas/admin";
-import { useInvalidate } from "../use-invalidate";
-
-type ScriptStore = {
-  scriptId?: string;
-  setScriptId: (s?: string) => void;
-  isScriptFormOpen: boolean;
-  onScriptFormOpen: (e?: string) => void;
-  onScriptFormClose: () => void;
-};
-
-export const useScriptStore = create<ScriptStore>((set) => ({
-  setScriptId: (a) => set({ scriptId: a }),
-  isScriptFormOpen: false,
-  onScriptFormOpen: (e) => set({ scriptId: e, isScriptFormOpen: true }),
-  onScriptFormClose: () => set({ isScriptFormOpen: false }),
-}));
 
 export const useScriptData = () => {
   const { scriptId, setScriptId } = useScriptStore();
@@ -88,7 +63,7 @@ export const useScriptData = () => {
 export const useScriptActions = () => {
   const { setScriptId } = useScriptStore();
   const { invalidate } = useInvalidate();
-  
+
   const { mutate: createScriptMutate, isPending: scriptCreating } = useMutation(
     {
       mutationFn: createScript,
@@ -126,8 +101,6 @@ export const useScriptActions = () => {
     },
     [deleteScriptMutate]
   );
-
- 
 
   const { mutate: updateScriptMutate, isPending: scriptUpdating } = useMutation(
     {

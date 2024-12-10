@@ -2,10 +2,10 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { Phone } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { Call } from "@prisma/client";
 import { FullLead, FullLeadNoConvo } from "@/types";

@@ -4,6 +4,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useAiGeneratorStore } from "@/stores/ai-generator-store";
 
 import { AlertCircle, Smile, Star } from "lucide-react";
 
@@ -23,7 +24,6 @@ import { Preset } from "@prisma/client";
 import { PresetSchema, PresetSchemaType } from "@/schemas/settings";
 import { presetKeywords } from "@/constants/texts";
 import { presetInsert } from "@/actions/user/preset";
-import { useAiGeneratorStore } from "@/hooks/ai-generator/use-ai-generator";
 
 type PresetFormProps = {
   type: Preset;

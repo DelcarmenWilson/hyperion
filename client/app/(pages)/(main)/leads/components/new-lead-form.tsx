@@ -1,11 +1,8 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useLeadStore,
-  useLeadData,
-  useLeadInsertActions,
-} from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData, useLeadInsertActions } from "@/hooks/lead/use-lead";
 
 import { Gender, MaritalStatus } from "@prisma/client";
 import { CreateLeadSchema, CreateLeadSchemaType } from "@/schemas/lead";

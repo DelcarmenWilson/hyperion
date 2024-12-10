@@ -10,11 +10,8 @@ import {
   PhoneOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  usePhoneStore,
-  usePhoneData,
-  useIncomingCallData,
-} from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
+import { usePhoneData, useIncomingCallData } from "@/hooks/use-phone";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";

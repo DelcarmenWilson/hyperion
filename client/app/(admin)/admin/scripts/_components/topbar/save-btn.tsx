@@ -2,11 +2,11 @@
 import React from "react";
 import { CheckIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { useScriptStore } from "@/stores/script-store";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { updateScript } from "@/actions/script/update-script";
-import { useScriptStore } from "../../hooks/use-script-store";
 
 const SaveBtn = ({ scriptId }: { scriptId: string }) => {
   const { content, script } = useScriptStore();

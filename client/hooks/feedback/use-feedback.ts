@@ -1,5 +1,6 @@
-import { create } from "zustand";
+
 import { useCallback, useMemo } from "react";
+import { useParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -13,33 +14,7 @@ import { createFeedback } from "@/actions/feedback/create-feedback";
 import { deleteFeedback } from "@/actions/feedback/delete-feedback";
 import { updateFeedback } from "@/actions/feedback/update-feedback";
 import { updateFeedbackDev } from "@/actions/feedback/update-feedback-dev";
-import { FeedbackStatus } from "@/types/feedback";
-import { useParams } from "next/navigation";
-
-type State = {
-  status: FeedbackStatus | string;
-  agent: string;
-  page: string;
-  sorted: boolean;
-};
-type Actions = {
-  setStatus: (s: string) => void;
-  setAgent: (a: string) => void;
-  setPage: (a: string) => void;
-  toggleSorted: () => void;
-};
-
-export const useFeedbackStore = create<State & Actions>((set, get) => ({
-  status: FeedbackStatus.PENDING,
-  agent: "All",
-  page: "All",
-  sorted: false,
-  setStatus: (s) => set({ status: s }),
-  setAgent: (a) => set({ agent: a }),
-  setPage: (p) => set({ page: p }),
-  toggleSorted: () => set({ sorted: !get().sorted }),
-}));
-
+//TODO need to consolidate all the actions
 export const useFeedbackActions = (callback?: () => void) => {
   //DELETE FEEDBACK
   const { mutate: deleteFeedbackMutate, isPending: deletingFeedback } =

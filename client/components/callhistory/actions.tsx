@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Eye, MoreHorizontal, Phone, Share } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import axios from "axios";
 
 import { FullCall } from "@/types";

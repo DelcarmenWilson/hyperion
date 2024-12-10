@@ -2,7 +2,7 @@
 
 import { AppWindow } from "lucide-react";
 import Image from "next/image";
-import { useCampaignData } from "../../../hooks/use-campaigns";
+import { useCampaignData } from "../../../../../../../hooks/use-campaigns";
 
 import { PageMiniLayout } from "@/components/custom/layout/page-mini";
 

@@ -177,7 +177,7 @@ export const getAppointmentLabels = async () => {
 export const createAppointment = async (values: AppointmentSchemaType) => {
   //Get current user
   const user = await currentUser();
-  //If there is no user -- Unathenticated
+  //If there is no user -- Unauthenticated
   if (!user) throw new Error("Unauthenticated!");
 
   const { data, success } = AppointmentSchema.safeParse(values);
@@ -554,62 +554,52 @@ export const createAppointmentLabel = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) {
-    return { error: "Unathenticated" };
-  }
-  const validatedFields = AppointmentLabelSchema.safeParse(values);
+  if (!user) throw new Error("Unauthenticated!");
 
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-  const { name, color, description } = validatedFields.data;
+  const { success, data } = AppointmentLabelSchema.safeParse(values);
+
+  if (!success) throw new Error("Invalid fields!");
+
   let userId = user.id;
-  if (user.role == "ASSISTANT") {
+  if (user.role == "ASSISTANT")
     userId = (await userGetByAssistantOld(userId)) as string;
-  }
 
   const existingLabel = await db.appointmentLabel.findFirst({
-    where: { userId, color },
+    where: { userId, color: data.color },
   });
-  if (existingLabel) {
-    return { error: "You already have a label associated with this color!" };
-  }
+  if (existingLabel)
+    throw new Error("You already have a label associated with this color!");
 
   const label = await db.appointmentLabel.create({
     data: {
-      name,
-      color,
-      description,
+      ...data,
       userId,
     },
   });
 
-  if (!label) {
-    return { error: "Label was not created!" };
-  }
+  if (!label) throw new Error("Label was not created!");
 
-  return { success: label };
+  return label;
 };
 
 export const updateAppointmentLabel = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) return { error: "Unathenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
   const { success, data } = AppointmentLabelSchema.safeParse(values);
 
-  if (!success) return { error: "Invalid fields!" };
+  if (!success) throw new Error("Invalid fields!");
 
   let userId = user.id;
-  if (user.role == "ASSISTANT") {
+  if (user.role == "ASSISTANT")
     userId = (await userGetByAssistantOld(userId)) as string;
-  }
 
   const existingLabel = await db.appointmentLabel.findUnique({
     where: { id: data.id },
   });
-  if (!existingLabel) return { error: "This label does not exist!" };
+  if (!existingLabel) throw new Error("This label does not exist!");
 
   const label = await db.appointmentLabel.update({
     where: { id: data.id },
@@ -618,20 +608,20 @@ export const updateAppointmentLabel = async (
     },
   });
 
-  if (!label) return { error: "Label was not updated!" };
+  if (!label) throw new Error("Label was not updated!");
 
-  return { success: label };
+  return label;
 };
 
 export const updateAppointmentLabelChecked = async (
   values: AppointmentLabelSchemaType
 ) => {
   const user = await currentUser();
-  if (!user) return { error: "Unathenticated" };
+  if (!user) throw new Error("Unauthenticated!");
 
   const { success, data } = AppointmentLabelSchema.safeParse(values);
 
-  if (!success) return { error: "Invalid fields!" };
+  if (!success) throw new Error("Invalid fields!");
 
   const { id, checked } = data;
   let userId = user.id;
@@ -645,7 +635,7 @@ export const updateAppointmentLabelChecked = async (
     },
   });
 
-  return { success: "Label was updated!" };
+  return "Label was updated!";
 };
 
 //create notification alert for appointment

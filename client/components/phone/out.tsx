@@ -9,9 +9,11 @@ import axios from "axios";
 import SocketContext from "@/providers/socket";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
-import { usePhoneStore, usePhoneData } from "@/hooks/use-phone";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/stores/phone-store";
 import { usePhoneContext } from "@/providers/phone";
+import { usePhoneData } from "@/hooks/use-phone";
 
 import {
   TwilioParticipant,

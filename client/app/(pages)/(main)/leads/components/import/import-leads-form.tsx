@@ -5,7 +5,7 @@ import Papa from "papaparse";
 import { toast } from "sonner";
 import { useCurrentRole } from "@/hooks/user/use-current";
 import { useUserData } from "@/hooks/user/use-user";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
 import { usePipelineData } from "@/hooks/pipeline/use-pipeline";
 
 import { getEnumValues } from "@/lib/helper/enum-converter";
@@ -36,7 +36,10 @@ export const ImportLeadsForm = () => {
   const router = useRouter();
   const { isImportFormOpen, onImportFormClose } = useLeadStore();
   const { onGetSiteUsers } = useUserData();
-  const { pipelines, isFetchingPipelines } = usePipelineData();
+  const { siteUsers, siteUsersFetching } = onGetSiteUsers("ASSISTANT");
+  const { onGetPipelines } = usePipelineData();
+  const { pipelines, pipelinesFetching } = onGetPipelines();
+
   const [leads, setLeads] = useState<LeadSchemaType[]>([]);
   const [formattedLeads, setFormmatedLeads] = useState<ImportLeadColumn[]>([]);
   const leadVendors = getEnumValues(LeadVendor).slice(1);
@@ -45,7 +48,6 @@ export const ImportLeadsForm = () => {
   const [status, setStatus] = useState<string>();
   const [assistant, setAssistant] = useState<string>();
   const [loading, startTransition] = useTransition();
-  const { siteUsers, siteUsersFetching } = onGetSiteUsers("ASSISTANT");
   const disabled = leads.length > 0;
 
   const onFileUploaded = (e: any) => {
@@ -140,7 +142,7 @@ export const ImportLeadsForm = () => {
           <span>Pipeline</span>
           <Select
             name="ddlStatus"
-            disabled={disabled || isFetchingPipelines}
+            disabled={disabled || pipelinesFetching}
             defaultValue={status}
             onValueChange={setStatus}
           >

@@ -3,7 +3,7 @@ import { Phone, PhoneOutgoing } from "lucide-react";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import AudioPlayerHp from "@/components/custom/audio-player-hp";
 import { Button } from "@/components/ui/button";

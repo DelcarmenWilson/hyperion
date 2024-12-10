@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-import { useImageViewer } from "@/hooks/use-image-viewer";
+import { useImageViewerStore } from "@/stores/image-viewer-store";
 import {
   useAgentTemplateData,
   useAgentTemplateActions,
@@ -66,7 +66,7 @@ type TemplateCardProps = {
 };
 const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
   const { onDeleteTemplate, templateDeleting } = useAgentTemplateActions();
-  const { onOpen } = useImageViewer();
+  const { onOpen } = useImageViewerStore();
   const [isOpen, setIsOpen] = useState(false);
 
   return (

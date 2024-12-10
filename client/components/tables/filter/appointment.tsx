@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { useAppointmentStore } from "@/stores/appointment-store";
+
 import { AppointmentStatus } from "@/types/appointment";
 
 import {
@@ -12,7 +14,6 @@ import { Table } from "@tanstack/react-table";
 
 import { getEnumValues } from "@/lib/helper/enum-converter";
 import { capitalize } from "@/formulas/text";
-import { useAppointmentStore } from "@/hooks/use-appointment";
 
 type AppointmentFilterProps<TData> = {
   table: Table<TData>;
@@ -21,10 +22,10 @@ type AppointmentFilterProps<TData> = {
 export function AppointmentFilter<TData>({
   table,
 }: AppointmentFilterProps<TData>) {
-  const {status,onSetStatus}=useAppointmentStore()
+  const { status, onSetStatus } = useAppointmentStore();
   const statuses = getEnumValues(AppointmentStatus);
   const OnFilter = (column: string, filter: string) => {
-    onSetStatus(filter)
+    onSetStatus(filter);
     if (filter == "%") {
       filter = "";
     }

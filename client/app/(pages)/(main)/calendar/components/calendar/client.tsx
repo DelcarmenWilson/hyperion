@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getMonth } from "@/lib/utils";
-import { useCalendarStore } from "@/hooks/calendar/use-calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 
 import CalendarHeader from "./header";
 import { SidebarClient } from "./sidebar/client";

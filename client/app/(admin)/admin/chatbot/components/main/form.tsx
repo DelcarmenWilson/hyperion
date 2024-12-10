@@ -1,7 +1,6 @@
-import * as z from "zod";
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { useChatbot } from "../../hooks/use-chatbot";
+import { useChatbot } from "@/stores/chatbot-store";
 
 import { userEmitter } from "@/lib/event-emmiter";
 
@@ -13,9 +12,9 @@ import {
   ChatbotMessageSchema,
   ChatbotMessageSchemaType,
 } from "@/schemas/chat-bot/chatbot";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormField,

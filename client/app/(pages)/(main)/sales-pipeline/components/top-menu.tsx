@@ -1,17 +1,15 @@
 "use client";
 import { Cog, RefreshCcw } from "lucide-react";
 import { useModal } from "@/providers/modal";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
-import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
+import { useInvalidate } from "@/hooks/use-invalidate";
 
 import { Button } from "@/components/ui/button";
+import CreatePipelineDialog from "./create-pipeline-dialog";
 import CustomModal from "@/components/global/custom-modal";
 import { StageList } from "./stage-list";
-import CreatePipelineDialog from "./create-pipeline-dialog";
 
 export const TopMenu = () => {
-  const { onFormOpen } = usePipelineStore();
-  const { invalidate } = usePipelineActions();
+  const { invalidate } = useInvalidate();
   const { setOpen } = useModal();
 
   return (

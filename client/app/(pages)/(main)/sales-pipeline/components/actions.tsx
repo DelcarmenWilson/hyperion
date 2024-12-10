@@ -1,8 +1,10 @@
 "use client";
-import { FilePenLine, MoreVertical, RefreshCcw, Trash } from "lucide-react";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { MoreVertical, RefreshCcw } from "lucide-react";
+
+import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
 
 import { Pipeline } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,9 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import UpdatePipelineDialog from "./update-pipeline-dialog";
 import DeleteDialog from "@/components/custom/delete-dialog";
-import { usePipelineActions } from "@/hooks/pipeline/use-pipeline";
+import UpdatePipelineDialog from "./update-pipeline-dialog";
 
 type Props = {
   pipeline: Pipeline;
@@ -21,7 +22,6 @@ type Props = {
 };
 
 export const Actions = ({ pipeline, onReset }: Props) => {
-  const { onFormOpen, onAlertOpen } = usePipelineStore();
   const { onDeletePipeline, pipelineDeleting } = usePipelineActions();
   return (
     <DropdownMenu>

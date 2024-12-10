@@ -1,7 +1,7 @@
 "use client";
 import { LayoutGrid } from "lucide-react";
 
-import { useCampaignData } from "../../hooks/use-campaigns";
+import { useCampaignData } from "../../../../../../hooks/use-campaigns";
 
 import { PageMiniLayout } from "@/components/custom/layout/page-mini";
 

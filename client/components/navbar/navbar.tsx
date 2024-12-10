@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import { Bot, List, MessageSquarePlus, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useChatStore } from "@/hooks/chat/use-chat";
+import { useChatStore } from "@/stores/chat-store";
 import { usePathname } from "next/navigation";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { useTodoStore } from "@/hooks/user/use-todo";
+import { useLeadStore } from "@/stores/lead-store";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useTodoStore } from "@/stores/todo-store";
 
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";

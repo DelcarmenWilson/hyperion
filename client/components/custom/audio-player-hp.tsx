@@ -1,6 +1,8 @@
 "use client";
 import { FastForward, Pause, Play, Rewind } from "lucide-react";
-import { useAudio, useAudioPlayer } from "@/hooks/use-audio-player";
+import { useAudioPlayer } from "@/hooks/use-audio-player";
+import { useAudioStore } from "@/stores/audio-player";
+
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { calculateTime } from "@/formulas/dates";
@@ -11,7 +13,7 @@ type AudioPlayerHpProps = {
 };
 
 const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
-  const { audio, setAudio } = useAudio();
+  const { audio, setAudio } = useAudioStore();
   const {
     audioPlayer,
     isPlaying,

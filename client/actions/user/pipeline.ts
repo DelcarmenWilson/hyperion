@@ -186,7 +186,7 @@ export const updatePipeline = async (values: UpdatePipelineSchemaType) => {
 };
 
 
-export const pipelineUpdateByIdIndex = async (values: { id: string; index: number }) => {
+export const updatePipelineIndex = async (values: { id: string; index: number }) => {
   const user = await currentUser();
 
   if (!user || !user.email) throw new Error("Unauthenticated!"); 

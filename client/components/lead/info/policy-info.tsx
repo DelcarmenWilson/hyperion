@@ -1,6 +1,7 @@
 "use client";
 import { useCurrentRole } from "@/hooks/user/use-current";
-import { useLeadData, useLeadId, useLeadStore } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
 import { useLeadPolicyData } from "@/hooks/lead/use-policy-info";
 
 import { EmptyData } from "./empty-data";

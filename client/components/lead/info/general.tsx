@@ -1,5 +1,6 @@
 import { CalendarX, Phone } from "lucide-react";
-import { useLeadStore, useLeadInfoData } from "@/hooks/lead/use-lead";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadInfoData } from "@/hooks/lead/use-lead";
 import { cn } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";

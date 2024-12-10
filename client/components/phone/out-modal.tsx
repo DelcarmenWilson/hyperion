@@ -1,6 +1,6 @@
 "use client";
-import { usePhoneStore } from "@/hooks/use-phone";
-import { useLeadStore } from "@/hooks/lead/use-lead";
+import { usePhoneStore } from "@/stores/phone-store";
+import { useLeadStore } from "@/stores/lead-store";
 
 import { DrawerExtended } from "@/components/custom/drawer/extended";
 import PhoneShell from "@/components/phone/addins/shell";

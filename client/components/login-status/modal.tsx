@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { useLoginStatus, useLoginStatusData } from "@/hooks/use-login-status";
+import { useLoginStatusStore } from "@/stores/login-status-store";
+import { useLoginStatusData } from "@/hooks/use-login-status";
 
 import { CustomDialog } from "../global/custom-dialog";
 import { columns } from "./columns";
@@ -10,11 +11,7 @@ import SkeletonWrapper from "../skeleton-wrapper";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
 export const LoginStatusModal = () => {
-  const {
-    user,
-    isLoginStatusOpen: isLoginStausOpen,
-    onLoginStatusClose: onLoginStausClose,
-  } = useLoginStatus();
+  const { user, isLoginStatusOpen, onLoginStatusClose } = useLoginStatusStore();
   const { onGetLoginsForUser } = useLoginStatusData(user?.id!);
   const { logins, loginsFetching } = onGetLoginsForUser();
 
@@ -22,8 +19,8 @@ export const LoginStatusModal = () => {
   if (!user) return null;
   return (
     <CustomDialog
-      open={isLoginStausOpen}
-      onClose={onLoginStausClose}
+      open={isLoginStatusOpen}
+      onClose={onLoginStatusClose}
       title="Logins"
       subTitle={`${user.firstName} ${user.lastName}`}
       description="Login Status Form"

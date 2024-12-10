@@ -1,8 +1,8 @@
 "use client";
 import { Fragment } from "react";
 
-import { usePhoneStore } from "@/hooks/use-phone";
-import { usePipelineStore } from "@/hooks/pipeline/use-pipeline-store";
+import { usePhoneStore } from "@/stores/phone-store";
+import { usePipelineStore } from "@/stores/pipeline-store";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { DialerMenu } from "./menu";
@@ -12,7 +12,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { pipelineUpdateByIdIndex } from "@/actions/user/pipeline";
+import { updatePipelineIndex } from "@/actions/user/pipeline";
 import { LeadList } from "./lead-list";
 import { SmsDrawer } from "./sms-drawer";
 import DialpadDialog from "./dialpad-dialog";
@@ -24,7 +24,7 @@ export const PhoneDialerModal = () => {
   const setIndex = (number: number = 0) => {
     const index = number == 0 ? 0 : pipeIndex + number;
     onSetIndex(index);
-    pipelineUpdateByIdIndex({ id: selectedPipeline?.id!, index });
+    updatePipelineIndex({ id: selectedPipeline?.id!, index });
   };
 
   return (

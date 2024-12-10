@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { useCampaign, useCampaignData } from "../hooks/use-campaigns";
+import { useCampaignStore } from "@/stores/campaign-store";
+import { useCampaignData } from "@/hooks/use-campaigns";
 
 import { Button } from "@/components/ui/button";
 import { CampaignCard } from "./card";
@@ -21,7 +22,7 @@ export const CampaignsClient = () => {
     setAudienceViewOpen,
     isCreativeViewOpen,
     setCreativeViewOpen,
-  } = useCampaign();
+  } = useCampaignStore();
   const {
     campaignId,
     adsetId,

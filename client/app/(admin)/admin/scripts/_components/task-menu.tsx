@@ -1,4 +1,5 @@
 "use client";
+import { useScriptStore } from "@/stores/script-store";
 import {
   Accordion,
   AccordionContent,
@@ -7,8 +8,8 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { DefaultKeyWords } from "@/constants/texts";
-import { useScriptStore } from "../hooks/use-script-store";
 
 const TaskMenu = () => {
   return (

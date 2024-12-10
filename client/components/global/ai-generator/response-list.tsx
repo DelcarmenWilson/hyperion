@@ -1,5 +1,5 @@
 "use client";
-import { useAiGeneratorStore } from "@/hooks/ai-generator/use-ai-generator";
+import { useAiGeneratorStore } from "@/stores/ai-generator-store";
 
 import { LoadingCard } from "@/components/reusable/loading-card";
 import { EmptyCard } from "@/components/reusable/empty-card";

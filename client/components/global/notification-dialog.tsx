@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
+import { useNotificationStore } from "@/stores/notification-store";
 import {
   useNotificationActions,
   useNotificationData,
-  useNotificationStore,
 } from "@/hooks/notification/use-notification";
 import { cn } from "@/lib/utils";
 import { Bell, X } from "lucide-react";

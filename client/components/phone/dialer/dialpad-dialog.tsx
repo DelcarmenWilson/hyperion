@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronDown, X } from "lucide-react";
-import { useDialerStore } from "../hooks/use-dialer";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { useDialerStore } from "@/stores/dialer-store";
+import { usePhoneStore } from "@/stores/phone-store";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

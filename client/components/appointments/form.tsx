@@ -1,11 +1,11 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import {
-  useAppointmentActions,
-  useAppointmentStore,
-} from "@/hooks/use-appointment";
-import { useLeadData, useLeadStore } from "@/hooks/lead/use-lead";
+import { useAppointmentStore } from "@/stores/appointment-store";
+import { useAppointmentActions } from "@/hooks/use-appointment";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadData } from "@/hooks/lead/use-lead";
+
 import { format } from "date-fns";
 
 import { LeadBasicInfoSchemaTypeP } from "@/schemas/lead";

@@ -3,7 +3,7 @@ import React from "react";
 import { PlayIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
-import { useScriptStore } from "../../hooks/use-script-store";
+import { useScriptStore } from "@/stores/script-store";
 
 import { Button } from "@/components/ui/button";
 import { publishScript } from "@/actions/script/publish-script";

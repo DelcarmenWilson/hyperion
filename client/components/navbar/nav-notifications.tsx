@@ -1,6 +1,8 @@
 "use client";
 import { Bell } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useLeadStore } from "@/stores/lead-store";
+import { useCallStore } from "@/stores/call-store";
 import {
   useNotificationActions,
   useNotificationData,
@@ -24,9 +26,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { cn } from "@/lib/utils";
-import { useLeadStore } from "@/hooks/lead/use-lead";
-import { useCallStore } from "@/hooks/lead/use-call";
 
 const NavNotifications = () => {
   const { onGetNotificationsUnread } = useNotificationData();

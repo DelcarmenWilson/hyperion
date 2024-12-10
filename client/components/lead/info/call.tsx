@@ -1,6 +1,6 @@
 "use client";
 import { Phone } from "lucide-react";
-import { usePhoneStore } from "@/hooks/use-phone";
+import { usePhoneStore } from "@/stores/phone-store";
 import { useLeadCallInfoActions } from "@/hooks/lead/use-lead";
 
 import { LeadDefaultStatus } from "@/types/lead";

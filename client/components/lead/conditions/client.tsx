@@ -1,18 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useCurrentUser } from "@/hooks/user/use-current";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  useLeadConditionActions,
-  useLeadConditionData,
-  useLeadConditionStore,
-} from "@/hooks/lead/use-condition";
+import { useCurrentUser } from "@/hooks/user/use-current";
+import { useLeadConditionStore } from "@/stores/lead-condition-store";
+import { useLeadConditionData } from "@/hooks/lead/use-condition";
 
-import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
-import { DataTable } from "@/components/tables/data-table";
+import { columns } from "./columns";
 import { ConditionsList } from "./list";
 import { ConditionForm } from "./form";
-import { columns } from "./columns";
+import { DataTable } from "@/components/tables/data-table";
+import { ListGridTopMenu } from "@/components/reusable/list-grid-top-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 type ConditionsClientProp = {
