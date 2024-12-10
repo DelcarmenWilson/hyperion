@@ -6,7 +6,7 @@ export default async function SetupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="text-white bg-[#00416A]">
+    <div>
       {children}
       <ChatBot />
     </div>
