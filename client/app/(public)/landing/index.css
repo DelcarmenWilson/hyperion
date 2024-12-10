@@ -3,3 +3,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.bg-hero {
+  background: radial-gradient(
+    56.07% 46.07% at 70.39% 50.07%,
+    #8c00ff 0,
+    rgba(0, 0, 0, 1) 100%
+  );
+  overflow: hidden;
+}
+.bg-landing {
+  background-image: linear-gradient(102deg, #8c00ff, #ff96d2);
+}

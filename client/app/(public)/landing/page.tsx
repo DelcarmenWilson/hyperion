@@ -1,18 +1,18 @@
 import React from "react";
-import Hero from "./_components/hero";
 import "./index.css";
-import Navbar from "./_components/navbar";
-import Intro from "./_components/Intro";
+import Header from "./_components/header";
+import Hero from "./_components/hero";
+import BusinessCarousel from "./_components/business-carousel";
+import Pricing from "./_components/pricing";
 
 const HyperionLandingPage = () => {
   return (
-    <>
+    <main className="overflow-hidden bg-black w-full pb-20">
+      <Header />
       <Hero />
-      <div className="relative">
-      <Navbar />
-      <Intro/>
-      </div>
-    </>
+      <BusinessCarousel />
+      <Pricing />
+    </main>
   );
 };
 

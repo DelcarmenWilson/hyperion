@@ -11,7 +11,7 @@ import "./index.css";
 
 const XeroLandingPage = () => {
   return (
-    <main className="overflow-hidden">
+    <main className="overflow-hidden bg-black">
       <Header />
       <Hero />
       <Features />

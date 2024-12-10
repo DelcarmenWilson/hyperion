@@ -1,19 +1,47 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Hand, LucideIcon, User, UserPlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 32);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
-    <div className="container absolute z-2 top-0">
-      <div className="flex justify-between items-center text-white  p-3">
+    <div
+      className={cn(
+        "container z-2 transition-colors duration-500",
+        hasScrolled && "bg-black backdrop-blur-[8px]"
+      )}
+    >
+      <div className="flex justify-between items-center text-white p-3">
         <Link href="/" className="flex gap-2 items-center">
-          <Image src="/logo3.png" height={36} width={36} alt="logo" />
-          <p className="text-xl font-bold">Hyperion</p>
+          <Image
+            src="/logo3.png"
+            height={44}
+            width={44}
+            className={cn("w-11 h-11 transition-all", hasScrolled && "w-9 h-9")}
+            alt="logo"
+          />
+          <p className={cn("text-2xl font-bold", hasScrolled && "text-xl")}>
+            Hyperion
+          </p>
         </Link>
 
-        <div className="flex flex-col gap-3">
+        <div className={cn("flex flex-col gap-3", hasScrolled && "gap-2")}>
           <div className="flex items-center justify-end gap-2">
             <NavTopLink icon={Hand} href="" title="email support" />
             <NavTopLink icon={User} href="" title="login" />

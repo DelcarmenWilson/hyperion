@@ -1,21 +1,16 @@
 "use client";
 import Link from "next/link";
-
-import { FilePenLine, MessageSquare } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-
-import { CopyButton } from "@/components/reusable/copy-button";
-
-import { formatPhoneNumber } from "@/formulas/phones";
+import { FilePenLine } from "lucide-react";
+import { useLeadStore } from "@/stores/lead-store";
+import { useLeadInfoActions } from "@/hooks/lead/use-lead";
 
 import { LeadMainSchemaType } from "@/schemas/lead";
-import {
-  useLeadActions,
-  useLeadInfoActions,
-  useLeadStore,
-} from "@/hooks/lead/use-lead";
+
+import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/reusable/copy-button";
 import { FieldBox } from "@/components/lead/field-box";
+
+import { formatPhoneNumber } from "@/formulas/phones";
 
 type MainInfoProps = {
   info: LeadMainSchemaType;
@@ -33,60 +28,58 @@ export const MainInfoClient = ({
   const { onLeadUpdateQuote } = useLeadInfoActions();
 
   return (
-    <>
-      <div className="space-y-1 text-sm">
-        {showInfo && (
-          <Link className="font-semibold text-lg" href={`/leads/${info.id}`}>
-            {info.firstName} {info.lastName}
+    <div className="space-y-1 text-sm">
+      {showInfo && (
+        <Link className="font-semibold text-lg" href={`/leads/${info.id}`}>
+          {info.firstName} {info.lastName}
+        </Link>
+        // <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+      )}
+      <p className="flex items-center gap-2 text-primary">
+        {showInfo ? (
+          <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
+            {formatPhoneNumber(info.cellPhone)}
           </Link>
-          // <p className="font-semibold text-lg">{`${info.firstName} ${info.lastName}`}</p>
+        ) : (
+          <span className="font-extrabold italic">
+            {formatPhoneNumber(info.cellPhone)}
+          </span>
         )}
-        <p className="flex items-center gap-2 text-primary">
-          {showInfo ? (
-            <Link className="font-extrabold italic" href={`/leads/${info.id}`}>
-              {formatPhoneNumber(info.cellPhone)}
-            </Link>
-          ) : (
-            <span className="font-extrabold italic">
-              {formatPhoneNumber(info.cellPhone)}
-            </span>
-          )}
-          <CopyButton value={info.cellPhone} message="Lead phone#" />
+        <CopyButton value={info.cellPhone} message="Lead phone#" />
 
-          <Link href={`/leads-new/${info.id}`}>{info.textCode}</Link>
-        </p>
-        <div className="relative group">
-          <p>{info.email}</p>
+        <Link href={`/leads-new/${info.id}`}>{info.textCode}</Link>
+      </p>
+      <div className="relative group">
+        <p>{info.email}</p>
 
-          {info.address != "N/A" ? (
-            <address>
-              <p>{info.address}</p>
-              <p>{`${info.city}, ${info.state} ${info.zipCode}`}</p>
-            </address>
-          ) : (
-            <address>
-              <p>No Address</p>
-              <p>State: {info.state}</p>
-            </address>
-          )}
+        {info.address != "N/A" ? (
+          <address>
+            <p>{info.address}</p>
+            <p>{`${info.city}, ${info.state} ${info.zipCode}`}</p>
+          </address>
+        ) : (
+          <address>
+            <p>No Address</p>
+            <p>State: {info.state}</p>
+          </address>
+        )}
 
-          {showEdit && (
-            <Button
-              className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
-              onClick={() => onMainFormOpen(info.id)}
-            >
-              <FilePenLine size={16} />
-            </Button>
-          )}
-        </div>
-        <FieldBox
-          name="Quote"
-          field={info.quote!}
-          onFieldUpdate={(e) =>
-            onLeadUpdateQuote({ id: info.id, quote: e as string })
-          }
-        />
+        {showEdit && (
+          <Button
+            className="absolute translate-y-1/2 top-0 right-0 rounded-full lg:opacity-0 group-hover:opacity-100"
+            onClick={() => onMainFormOpen(info.id)}
+          >
+            <FilePenLine size={16} />
+          </Button>
+        )}
       </div>
-    </>
+      <FieldBox
+        name="Quote"
+        field={info.quote!}
+        onFieldUpdate={(e) =>
+          onLeadUpdateQuote({ id: info.id, quote: e as string })
+        }
+      />
+    </div>
   );
 };

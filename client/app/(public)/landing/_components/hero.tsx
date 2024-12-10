@@ -1,15 +1,43 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import React from "react";
 
 const Hero = () => {
   return (
-    <div className="bg-gradient-to-tr from-[#3A00E7] via-[#8C8DE2] to-[#AAABDA]">
-      <div className="flex justify-center items-center gap-2 py-5">
-        <p className="text-white">
-          Ringy is evolving with new tools and features, designed around current
-          industry trends. Check out our latest updates!
-        </p>
-        <Button variant="landingMain">Learn More</Button>
+    <div className="container bg-hero pt-[calc(152px+5rem)]">
+      <div className="grid grid-cols-2">
+        {/* Grid column1 */}
+        <div className="space-y-3 p-4 font-serif">
+          <p className="text-5xl font-extrabold text-white">
+            Close More Sales with a Communications-focused CRM
+          </p>
+          <p className="text-2xl text-pink-500">
+            Conversations drive sales. Hyperion handles them for you.
+          </p>
+          <p className="text-lg font-normal text-white">
+            Turn calls into customers with an automated sales platform that
+            supports ambitious sales teams.
+          </p>
+
+          <Button variant="landingMain" className="!mt-10 uppercase" size="xl">
+            Try &nbsp;
+            <span className="text-pink-500">Hyperion</span>
+            &nbsp; for free
+          </Button>
+        </div>
+
+        {/* Grid column2 */}
+        <div className="px-5">
+          <div className="rounded bg-white p-2">
+            <Image
+              src="/assets/landing/dashboard.png"
+              height={800}
+              width={800}
+              alt="image1"
+              className="w-full aspect-video"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

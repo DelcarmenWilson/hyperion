@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useCalendarStore } from "../../stores/calendar-store";
+import { useCalendarStore } from "@/stores/calendar-store";
 
 import { AppointmentLabelSchemaType } from "@/schemas/appointment";
 import {
@@ -39,14 +39,14 @@ export const useCalendarActions = () => {
   } = useMutation({
     mutationFn: createAppointmentLabel,
     onSuccess: (results) => {
-      if (results.success) {
-        addLabel(results.success);
+      if (results) {
+        addLabel(results);
         setShowLabelModal(false);
         toast.success("Label Created", { id: "insert-appointment-label" });
       }
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message, { id: "insert-appointment-label" });
     },
   });
 
@@ -56,14 +56,14 @@ export const useCalendarActions = () => {
   } = useMutation({
     mutationFn: updateAppointmentLabel,
     onSuccess: (results) => {
-      if (results.success) {
-        updateLabel(results.success);
+      if (results) {
+        updateLabel(results);
         setShowLabelModal(false);
         toast.success("Label Updated", { id: "update-appointment-label" });
       }
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message, { id: "update-appointment-label" });
     },
   });
 
