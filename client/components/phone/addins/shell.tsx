@@ -16,6 +16,7 @@ import CallsList from "./call-list";
 
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
+  //TODO - see if we really nedd this and why
   const { lead } = usePhoneStore();
   const { setLeadId: setLead } = useLeadStore();
   const { onInboundCalls, onOutboundCalls, onMissedCalls } = useLeadCallData();

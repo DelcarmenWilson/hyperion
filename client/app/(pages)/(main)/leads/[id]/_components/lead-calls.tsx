@@ -1,15 +1,21 @@
 "use client";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { PhoneOutgoing } from "lucide-react";
 
 import { Call } from "@prisma/client";
 import { FullCall } from "@/types";
 
-import { CallHistoryCard } from "./card";
-import { getCallsForLead } from "@/actions/call";
+import { CallHistoryActions } from "@/components/callhistory/actions";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
-export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
+import { formatSecondsToTime } from "@/formulas/numbers";
+import { getPhoneStatusText } from "@/formulas/phone";
+import { formatDateTime } from "@/formulas/dates";
+import { getCallsForLead } from "@/actions/call";
+
+//TODO - need to give some TLC to this Component
+const LeadCalls = ({ leadId }: { leadId: string }) => {
   const { data: calls, isFetching } = useQuery<FullCall[]>({
     queryFn: () => getCallsForLead(leadId),
     queryKey: ["leadCalls"],
@@ -42,7 +48,7 @@ export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
         {calls?.length ? (
           <>
             {calls?.map((call) => (
-              <CallHistoryCard key={call.id} call={call} />
+              <CallCard key={call.id} call={call} />
             ))}
           </>
         ) : (
@@ -54,3 +60,30 @@ export const CallHistoryClient = ({ leadId }: { leadId: string }) => {
     </SkeletonWrapper>
   );
 };
+
+const CallCard = ({ call }: { call: FullCall }) => {
+  return (
+    <div className="grid grid-cols-5 items-center gap-2 border-b py-2 ">
+      <div className="flex gap-2 items-center">
+        {call.direction.toLowerCase() === "inbound" ? (
+          getPhoneStatusText(call.status as string)
+        ) : (
+          <>
+            <PhoneOutgoing size={16} />
+            {call.direction}
+          </>
+        )}
+      </div>
+      <div>{call.duration && formatSecondsToTime(call.duration)}</div>
+      <div className="col-span-2">
+        {call.createdAt && formatDateTime(call.createdAt)}
+      </div>
+      {/* <div>{call.recordUrl && <AudioPlayer src={call.recordUrl} />}</div> */}
+      <div>
+        <CallHistoryActions call={call} />
+      </div>
+    </div>
+  );
+};
+
+export default LeadCalls;

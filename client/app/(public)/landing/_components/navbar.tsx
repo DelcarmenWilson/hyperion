@@ -27,7 +27,7 @@ const Navbar = () => {
         hasScrolled && "bg-black backdrop-blur-[8px]"
       )}
     >
-      <div className="flex justify-between items-center text-white p-3">
+      <div className="flex flex-col justify-between items-center text-white p-3 lg:flex-row">
         <Link href="/" className="flex gap-2 items-center">
           <Image
             src="/logo3.png"
@@ -42,19 +42,20 @@ const Navbar = () => {
         </Link>
 
         <div className={cn("flex flex-col gap-3", hasScrolled && "gap-2")}>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-center lg:justify-end gap-2">
             <NavTopLink icon={Hand} href="" title="email support" />
             <NavTopLink icon={User} href="" title="login" />
             <NavTopLink icon={UserPlus} href="" title="try hyperion for free" />
           </div>
 
-          <nav className="flex items-center justify-end gap-2">
-            <NavLink href="#" title="PRODUCT" />
-            <NavLink href="#" title="USE CASES" />
-            <NavLink href="#" title="CUSTOMER STORIES" />
-            <NavLink href="#" title="PRICING" />
-            <NavLink href="#" title="BLOB" />
-
+          <nav className="flex flex-col items-center justify-center lg:justify-end lg:flex-row gap-2">
+            <div className="flex gap-1">
+              <NavLink href="#" title="PRODUCT" />
+              <NavLink href="#" title="USE CASES" />
+              <NavLink href="#" title="CUSTOMER STORIES" />
+              <NavLink href="#" title="PRICING" />
+              <NavLink href="#" title="BLOB" />
+            </div>
             <Button variant="landingOutline" className="uppercase">
               request a demo
             </Button>
@@ -67,7 +68,10 @@ const Navbar = () => {
 
 const NavLink = ({ title, href }: { title: string; href: string }) => {
   return (
-    <Link className=" hover:underline font-semibold uppercase" href={href}>
+    <Link
+      className=" hover:underline font-semibold text-sm lg:text-xs uppercase"
+      href={href}
+    >
       {title}
     </Link>
   );

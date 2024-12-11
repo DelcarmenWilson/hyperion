@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
-
+import { useLeadActivityData } from "@/hooks/lead/use-activity";
 import { LeadActivity } from "@prisma/client";
+
 import {
   Select,
   SelectContent,
@@ -10,11 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ActivityCard } from "./card";
+import { formatDateTime } from "@/formulas/dates";
 
-type ActivityLogProps = {
-  initActivities: LeadActivity[];
-};
 const types = [
   "Caller Id",
   "General",
@@ -24,15 +21,11 @@ const types = [
   "Sale",
   "Status",
 ];
+//TODO - need to give some TLC to this Component
+const LeadActivities = () => {
+  const { activities, isFetchingActivities, onSetActivities } =
+    useLeadActivityData();
 
-export const ActivityList = ({ initActivities }: ActivityLogProps) => {
-  const [activities, setActivities] = useState(initActivities);
-
-  const onSetActivities = (type: string) => {
-    setActivities(
-      initActivities.filter((e) => e.type.includes(type == "%" ? "" : type))
-    );
-  };
   return (
     <div className="text-sm">
       <div className="flex items-center gap-2">
@@ -62,14 +55,26 @@ export const ActivityList = ({ initActivities }: ActivityLogProps) => {
         <span>Date / Time</span>
       </div>
 
-      {activities?.map((activity) => (
-        <ActivityCard key={activity.id} activity={activity} />
-      ))}
-      {!activities.length && (
+      {!activities && (
         <p className="text-muted-foreground text-center mt-2">
           No activities posted
         </p>
       )}
+      {activities?.map((activity) => (
+        <ActivityCard key={activity.id} activity={activity} />
+      ))}
     </div>
   );
 };
+
+const ActivityCard = ({ activity }: { activity: LeadActivity }) => {
+  return (
+    <div className="grid grid-cols-3 items-center gap-2 border-b py-2">
+      <div>{activity.activity}</div>
+      <div>{activity.newValue}</div>
+      <div>{formatDateTime(activity.createdAt)}</div>
+    </div>
+  );
+};
+
+export default LeadActivities;

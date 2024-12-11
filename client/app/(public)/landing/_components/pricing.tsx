@@ -20,7 +20,7 @@ const Pricing = () => {
         </p>
       </div>
 
-      <div className="container grid grid-cols-3 gap-10">
+      <div className="container grid grid-cols-1 lg:grid-cols-3 gap-10">
         <Box
           icon={Phone}
           title="24/7 Customer Service"
@@ -61,8 +61,8 @@ const Box = ({
 }) => {
   return (
     <Card className="bg-gray-600 border-gray-400">
-      <CardContent className="flex gap-2 text-white ">
-        <div className="w-20">
+      <CardContent className="flex gap-2 text-white py-2">
+        <div className="w-20 pt-4 lg:pt-0">
           <div className="bg-purple-600 text-white rounded-full p-4 w-fit">
             <Icon size={20} />
           </div>
@@ -80,7 +80,7 @@ const Dashboard = () => {
   return (
     <div className="relative flex-center py-10">
       <Image
-        src="/assets/landing/img1.png"
+        src="/assets/landing/dashboard.png"
         height={800}
         width={800}
         alt="image1"

@@ -15,7 +15,7 @@ import Autoplay from "embla-carousel-autoplay";
 const BusinessCarousel = () => {
   return (
     <div className="container  bg-gradient-to-r from-[#8c00ff] to-[#50e6c8] p-16 ">
-      <div className="flex gap-5 items-center justify-between">
+      <div className="flex flex-col gap-5 items-center justify-between lg:flex-row">
         <p className="text-white text-xl">These businesses trust Hyperion.</p>
         <CarouselSpacing />
       </div>
