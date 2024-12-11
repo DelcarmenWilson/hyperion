@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const Pricing = () => {
   return (
-    <div className="bg-gray-800 py-[100px] text-white space-y-6">
+    <div className="bg-gray-800 py-[100px] text-white space-y-6 pb-20">
       <div className="flex flex-col items-center justify-center gap-5">
         <p className="text-pink-500 text-3xl uppercase">Why choose Hyperion </p>
         <div className="w-[50%] text-center">
@@ -78,7 +78,8 @@ const Box = ({
 
 const Dashboard = () => {
   return (
-    <div className="relative flex-center py-10">
+    <div className="relative flex-center pt-10 pb-20">
+      <div className="relative rounded-lg">
       <Image
         src="/assets/landing/dashboard.png"
         height={800}
@@ -86,6 +87,8 @@ const Dashboard = () => {
         alt="image1"
         className="w-[800px] h-[600px] bg-white rounded-lg p-2"
       />
+      <div className="absolute inset-0 bg-black opacity-30"/>
+      </div>
 
       <div className="absolute top-1/2 left-[150px]">
         <Image
@@ -98,7 +101,7 @@ const Dashboard = () => {
         <p className="text-white text-xl ">Desktop and smartphone app</p>
       </div>
 
-      <div className="absolute top-3/4 left-[500px]">
+      <div className="absolute top-[60%] left-[440px]">
         <Image
           src="/assets/landing/details.png"
           height={400}
