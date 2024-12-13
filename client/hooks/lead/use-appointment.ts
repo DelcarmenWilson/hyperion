@@ -2,7 +2,7 @@ import { useLeadId } from "./use-lead";
 import { useQuery } from "@tanstack/react-query";
 
 import { Appointment } from "@prisma/client";
-import { leadAppointmentsGetAllByLeadId } from "@/actions/lead/appointment";
+import { getLeadAppointments } from "@/actions/lead/appointment";
 
 export const useLeadAppointmentData = () => {
   const { leadId } = useLeadId();
@@ -10,7 +10,7 @@ export const useLeadAppointmentData = () => {
   const { data: appointments, isFetching: isFetchingAppointments } = useQuery<
   Appointment[]
 >({
-  queryFn: () => leadAppointmentsGetAllByLeadId(leadId),
+  queryFn: () => getLeadAppointments(leadId),
   queryKey: [`leadAppointments-${leadId}`],
 });
   return {    

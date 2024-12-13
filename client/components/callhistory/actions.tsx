@@ -69,7 +69,7 @@ export const CallHistoryActions = ({ call }: { call: FullCall }) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer gap-2" onClick={onCallBack}>
           <Phone size={16} />
-          Call Back
+          {call.direction == "inbound" ? "Call Back" : " Call Again"}
         </DropdownMenuItem>
         {call.recordUrl && (
           <DropdownMenuItem

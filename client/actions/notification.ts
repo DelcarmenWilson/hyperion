@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { sendSocketData } from "@/services/socket-service";
+import { DateRange } from "react-day-picker";
 
 // DATA
 export const getNotifications = async (id: string) => {
@@ -17,6 +18,18 @@ export const getNotification = async (id: string) => {
   return await db.notification.findUnique({
     where: { id, userId: user.id },
   });
+};
+export const getFilteredNotifications = async (dateRange: DateRange) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unathenticated!");
+  const notifications = await db.notification.findMany({
+    where: {
+      userId: user.id,
+      createdAt: { lte: dateRange.to, gte: dateRange.from },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return notifications;
 };
 
 export const getUnreadNotifications = async () => {

@@ -1,6 +1,13 @@
 "use client";
 import { useEffect } from "react";
-import { MessageSquare, Phone, Voicemail } from "lucide-react";
+import {
+  MessageSquare,
+  Phone,
+  PhoneIncoming,
+  PhoneMissed,
+  PhoneOutgoing,
+  Voicemail,
+} from "lucide-react";
 import { usePhoneContext } from "@/providers/phone";
 import { useLeadStore } from "@/stores/lead-store";
 import { usePhoneStore } from "@/stores/phone-store";
@@ -14,8 +21,27 @@ import { MdDialpad } from "react-icons/md";
 import { useLeadCallData } from "@/hooks/lead/use-call";
 import CallsList from "./call-list";
 
+const callsData = [
+  {
+    type: "inbound",
+    title: "Inbound",
+    icon: PhoneIncoming,
+  },
+  {
+    type: "outbound",
+    title: "Outbound",
+    icon: PhoneOutgoing,
+  },
+  {
+    type: "missedcalls",
+    title: "Missed calls",
+    icon: PhoneMissed,
+  },
+];
+
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
+  //TODO - see if we really nedd this and why
   const { lead } = usePhoneStore();
   const { setLeadId: setLead } = useLeadStore();
   const { onInboundCalls, onOutboundCalls, onMissedCalls } = useLeadCallData();
@@ -80,9 +106,12 @@ const PhoneShell = () => {
               defaultValue="inbound"
             >
               <TabsList className="w-full h-auto bg-secondary justify-evenly">
-                <TabsTrigger value="inbound">Inbound</TabsTrigger>
-                <TabsTrigger value="outbound">Outbound</TabsTrigger>
-                <TabsTrigger value="missedcalls">Missed calls</TabsTrigger>
+                {callsData.map(({ type, icon: Icon, title }) => (
+                  <TabsTrigger key={type} value={type} className="flex gap-2">
+                    <Icon size={16} />
+                    <span>{title}</span>
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
               <TabsContent
@@ -132,70 +161,5 @@ const PhoneShell = () => {
     </div>
   );
 };
-
-// const PhoneShell = () => {
-//   const { voicemails } = usePhoneContext();
-//   const { lead } = usePhoneStore();
-//   const { setLeadId: setLead } = useLeadStore();
-//   useEffect(() => {
-//     if (!lead) return;
-//     setLead(lead.id);
-//   }, []);
-//   return (
-//     <div className="flex flex-1 border-t h-full overflow-hidden">
-//       <Tabs className="w-[400px] flex flex-col h-full" defaultValue="phone">
-//         <TabsList className="w-full h-auto bg-primary/25">
-//           <TabsTrigger
-//             className="flex-1 flex-col justify-center gap-2"
-//             value="phone"
-//           >
-//             <Phone size={16} />
-//             PHONE
-//           </TabsTrigger>
-//           <TabsTrigger
-//             className="flex-1 flex-col justify-center gap-1 py-1"
-//             value="sms"
-//           >
-//             <MessageSquare size={16} />
-//             SMS
-//           </TabsTrigger>
-//           <TabsTrigger
-//             className="flex-1 flex-col justify-center gap-2 relative"
-//             value="voicemail"
-//           >
-//             <Voicemail size={16} />
-//             VOICEMAIL
-//             {voicemails && voicemails?.length > 0 && (
-//               <Badge className="absolute top-0 right-0 rounded-full">
-//                 {voicemails.length}
-//               </Badge>
-//             )}
-//           </TabsTrigger>
-//         </TabsList>
-//         <div className="flex-1 flex flex-col h-full overflow-hidden">
-//           <TabsContent
-//             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
-//             value="phone"
-//           >
-
-//             <PhoneOut />
-//           </TabsContent>
-//           <TabsContent
-//             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
-//             value="sms"
-//           >
-//             <SmsClient />
-//           </TabsContent>
-//           <TabsContent
-//             className="flex flex-col m-0 overflow-hidden data-[state=active]:h-full"
-//             value="voicemail"
-//           >
-//             <VoicemailList />
-//           </TabsContent>
-//         </div>
-//       </Tabs>
-//     </div>
-//   );
-// };
 
 export default PhoneShell;

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useNotificationStore } from "@/stores/notification-store";
 import {
   useNotificationActions,
@@ -19,8 +19,15 @@ import {
 } from "@/components/ui/carousel";
 
 import SkeletonWrapper from "../skeleton-wrapper";
+import { useLeadStore } from "@/stores/lead-store";
+import { useCallStore } from "@/stores/call-store";
+import { TimerBar } from "./time-bar";
+import NotificationActions from "./notification-actions";
 
 const NotificationDialog = () => {
+  const [hover, setHover] = useState(false);
+  const { onMultipleLeadDialogOpen } = useLeadStore();
+  const { onMultipleCallDialogOpen } = useCallStore();
   const { notificationIds, isNotificationOpen, onNotificationClose } =
     useNotificationStore();
   const { onGetMultipleNotifications } = useNotificationData();
@@ -29,6 +36,7 @@ const NotificationDialog = () => {
     onGetMultipleNotifications();
   const { onUpdateNotificationUnread, updatingNotificationUnread } =
     useNotificationActions();
+
   const count = notificationIds?.length;
   return (
     <div
@@ -37,7 +45,10 @@ const NotificationDialog = () => {
         isNotificationOpen && "bottom-0"
       )}
     >
-      <div className="relative flex flex-col bg-background  w-full gap-2 p-2 rounded-sm ">
+      <div
+        className="relative flex flex-col bg-background  w-full gap-2 p-2 rounded-sm "
+        onMouseEnter={() => setHover(true)}
+      >
         <Carousel className="w-full max-w-xs">
           <div className="flex items-center justify-between px-2">
             <p className="flex items-center gap-2 font-semibold text-sm text-muted-foreground">
@@ -75,30 +86,16 @@ const NotificationDialog = () => {
                         size="sm"
                         disabled={updatingNotificationUnread}
                         onClick={() =>
-                          onUpdateNotificationUnread(notification?.id as string)
+                          onUpdateNotificationUnread(notification.id)
                         }
                       >
                         Dismiss
                       </Button>
 
-                      {notification?.link && (
-                        <Link
-                          href={notification.link}
-                          className={cn(
-                            buttonVariants({
-                              variant: "outlineprimary",
-                              size: "sm",
-                            })
-                          )}
-                          onClick={() =>
-                            onUpdateNotificationUnread(
-                              notification?.id as string
-                            )
-                          }
-                        >
-                          {notification?.linkText}
-                        </Link>
-                      )}
+                      <NotificationActions
+                        link={notification.link}
+                        linkText={notification.linkText}
+                      />
                     </div>
                   </div>
                 </SkeletonWrapper>
@@ -106,6 +103,15 @@ const NotificationDialog = () => {
             ))}
           </CarouselContent>
         </Carousel>
+        <div className="absolute bottom-2 w-full pe-3 pt-2">
+          <TimerBar
+            hover={hover}
+            hold={notificationsFetching}
+            duration={10}
+            onClose={() => onNotificationClose("clear")}
+            enable={!!notifications}
+          />
+        </div>
       </div>
     </div>
   );

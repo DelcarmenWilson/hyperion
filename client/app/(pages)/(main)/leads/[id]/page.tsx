@@ -3,8 +3,8 @@ import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PageLayout } from "@/components/custom/layout/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LeadTabsClient } from "./components/tabs-client";
-import { LeadClient } from "./components/client";
+import { LeadTabsClient } from "./_components/tabs-client";
+import { LeadClient } from "./_components/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { PrevNextMenu } from "@/components/lead/prev-next-menu";
@@ -54,7 +54,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
           <ExpensesClient leadId={leadId} />
         </TabsContent>
         <TabsContent value="activity">
-          <LeadTabsClient lead={lead} />
+          <LeadTabsClient leadId={leadId} />
         </TabsContent>
       </Tabs>
     </PageLayout>

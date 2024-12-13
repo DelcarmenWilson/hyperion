@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const Pricing = () => {
   return (
-    <div className="bg-gray-800 py-[100px] text-white space-y-6">
+    <div className="bg-gray-800 py-[100px] text-white space-y-6 pb-20">
       <div className="flex flex-col items-center justify-center gap-5">
         <p className="text-pink-500 text-3xl uppercase">Why choose Hyperion </p>
         <div className="w-[50%] text-center">
@@ -20,7 +20,7 @@ const Pricing = () => {
         </p>
       </div>
 
-      <div className="container grid grid-cols-3 gap-10">
+      <div className="container grid grid-cols-1 lg:grid-cols-3 gap-10">
         <Box
           icon={Phone}
           title="24/7 Customer Service"
@@ -61,8 +61,8 @@ const Box = ({
 }) => {
   return (
     <Card className="bg-gray-600 border-gray-400">
-      <CardContent className="flex gap-2 text-white ">
-        <div className="w-20">
+      <CardContent className="flex gap-2 text-white py-2">
+        <div className="w-20 pt-4 lg:pt-0">
           <div className="bg-purple-600 text-white rounded-full p-4 w-fit">
             <Icon size={20} />
           </div>
@@ -78,14 +78,17 @@ const Box = ({
 
 const Dashboard = () => {
   return (
-    <div className="relative flex-center py-10">
-      <Image
-        src="/assets/landing/img1.png"
-        height={800}
-        width={800}
-        alt="image1"
-        className="w-[800px] h-[600px] bg-white rounded-lg p-2"
-      />
+    <div className="relative flex-center pt-10 pb-20">
+      <div className="relative rounded-lg">
+        <Image
+          src="/assets/landing/dashboard.png"
+          height={800}
+          width={800}
+          alt="image1"
+          className="w-[800px] h-[600px] bg-white rounded-lg p-2"
+        />
+        <div className="absolute inset-0 bg-black opacity-30" />
+      </div>
 
       <div className="absolute top-1/2 left-[150px]">
         <Image
@@ -98,7 +101,7 @@ const Dashboard = () => {
         <p className="text-white text-xl ">Desktop and smartphone app</p>
       </div>
 
-      <div className="absolute top-3/4 left-[500px]">
+      <div className="absolute top-[60%] left-[440px]">
         <Image
           src="/assets/landing/details.png"
           height={400}

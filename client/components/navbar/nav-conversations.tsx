@@ -8,6 +8,7 @@ import {
 
 import { ShortConvo } from "@/types";
 
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,13 +18,13 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import NewEmptyCard from "../reusable/new-empty-card";
+import Hint from "../custom/hint";
 import { ScrollArea } from "../ui/scroll-area";
 import SkeletonWrapper from "@/components//skeleton-wrapper";
 
 import { formatDate } from "@/formulas/dates";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-const NavMessages = () => {
+const NavConversations = () => {
   const user = useCurrentUser();
   const { audioRef, onUpdateUnreadConversation, unreadConversationUpdating } =
     useConversationActions();
@@ -36,22 +37,25 @@ const NavMessages = () => {
     <div>
       <audio ref={audioRef} src={`/sounds/${user?.messageNotification}.wav`} />
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="relative" size="icon" variant="outline">
-            <MessagesSquare size={16} />
-            {unreadConversations && unreadConversations?.length > 0 && (
-              <Badge className="absolute rounded-full text-xs -top-2 -right-2">
-                {unreadConversations.length}
-              </Badge>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
+        <Hint label="Conversations">
+          <DropdownMenuTrigger asChild>
+            <Button className="relative" size="icon" variant="outline">
+              <MessagesSquare size={20} />
+
+              {unreadConversations && unreadConversations?.length > 0 && (
+                <Badge className="absolute rounded-full text-xs -top-2 -right-2">
+                  {unreadConversations.length}
+                </Badge>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+        </Hint>
         <DropdownMenuContent
           className="w-full lg:w-[300px] overflow-hidden"
           align="center"
         >
           <DropdownMenuLabel className="flex justify-between">
-            Lead Messages
+            Lead Conversations
             <Link href="/conversations" className="text-xs underline">
               View All
             </Link>
@@ -62,7 +66,7 @@ const NavMessages = () => {
                 {!unreadConversations?.length &&
                   !unreadConversationsFetching && (
                     <NewEmptyCard
-                      title="No lead Messages"
+                      title="No lead conversations"
                       icon={MessagesSquare}
                     />
                   )}
@@ -70,7 +74,7 @@ const NavMessages = () => {
                 {unreadConversations && unreadConversations?.length && (
                   <>
                     {unreadConversations?.map((convo) => (
-                      <MessageCard
+                      <ConversationCard
                         key={convo.id}
                         onUpdate={() => onUpdateUnreadConversation(convo.id)}
                         convo={convo}
@@ -94,7 +98,7 @@ const NavMessages = () => {
   );
 };
 
-const MessageCard = ({
+const ConversationCard = ({
   convo,
   onUpdate,
 }: {
@@ -133,4 +137,4 @@ const MessageCard = ({
     </div>
   );
 };
-export default NavMessages;
+export default NavConversations;

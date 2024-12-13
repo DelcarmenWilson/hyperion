@@ -6,7 +6,7 @@ model Notification {
   content   String? @db.LongText
 
   linkText String?
-  link     String?
+  link     String? @db.LongText
 
   userId String
   read   Boolean @default(false)

@@ -34,7 +34,7 @@ export const CardLayout = ({
           {topMenu}
         </div>
       </div>
-      <CardContent className="flex flex-col flex-1 items-center space-y-0 gap-2 py-2">
+      <CardContent className="flex flex-col flex-1 items-center space-y-0 gap-2 py-2 overflow-hidden">
         {children}
       </CardContent>
     </Card>

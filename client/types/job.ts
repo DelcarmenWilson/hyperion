@@ -1,6 +1,6 @@
 export enum JobStatus{
-    OPEN="Open",
-    IN_PROGRESS="In Progress",
-    COMPLETED="Completed",
-    CLOSED="Closed"
+    OPEN="OPEN",
+    IN_PROGRESS="IN_PROGRESS",
+    COMPLETED="COMPLETED",
+    CLOSED="CLOSED"
 }

@@ -15,15 +15,9 @@ import { PhoneSwitcher } from "../addins/switcher";
 
 import { formatPhoneNumber } from "@/formulas/phones";
 
-export const SmsClient = ({
-  leadId,
-  showHeader = true,
-}: {
-  leadId?: string;
-  showHeader?: boolean;
-}) => {
+export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
   const user = useCurrentUser();
-  const { conversationId } = useLeadStore();
+  const { conversationId, leadId } = useLeadStore();
   const { onGetLeadBasicInfo } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId as string);
   const { isLeadInfoOpen, onLeadInfoToggle } = usePhoneStore();

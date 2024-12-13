@@ -5,9 +5,9 @@ import React from "react";
 const Hero = () => {
   return (
     <div className="container bg-hero pt-[calc(152px+5rem)]">
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Grid column1 */}
-        <div className="space-y-3 p-4 font-serif">
+        <div className="space-y-3 p-4 font-serif text-center lg:text-left">
           <p className="text-5xl font-extrabold text-white">
             Close More Sales with a Communications-focused CRM
           </p>
