@@ -6,6 +6,7 @@ import { useAudioStore } from "@/stores/audio-player";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { calculateTime } from "@/formulas/dates";
+import Hint from "./hint";
 
 type AudioPlayerHpProps = {
   src: string | undefined;
@@ -27,14 +28,16 @@ const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
     <div className="bg-background border rounded-sm w-full *:p-1">
       <audio ref={audioPlayer} src={src} preload="metadata" />
       <div className="flex gap-2 items-center justify-center">
-        <Button
-          className="flex gap-2"
-          variant="ghost"
-          size="sm"
-          onClick={() => onStep(-10)}
-        >
-          <Rewind size={20} />
-        </Button>
+        <Hint label="10 sec" side="top" align="center">
+          <Button
+            className="flex gap-2"
+            variant="ghost"
+            size="sm"
+            onClick={() => onStep(-10)}
+          >
+            <Rewind size={20} />
+          </Button>
+        </Hint>
         <Button
           className="rounded-full"
           onClick={togglePlayPause}
@@ -42,9 +45,11 @@ const AudioPlayerHp = ({ src, onListened }: AudioPlayerHpProps) => {
         >
           {isPlaying ? <Pause size={20} /> : <Play size={20} />}
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => onStep(10)}>
-          <FastForward size={20} />
-        </Button>
+        <Hint label="10 sec" side="top" align="center">
+          <Button variant="ghost" size="sm" onClick={() => onStep(10)}>
+            <FastForward size={20} />
+          </Button>
+        </Hint>
       </div>
       <div className="flex gap-2 items-center justify-between ">
         <div className="text-sm w-[90px]">{calculateTime(currentTime)}</div>

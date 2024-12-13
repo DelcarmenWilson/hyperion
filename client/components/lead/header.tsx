@@ -9,8 +9,10 @@ import { useLeadData } from "@/hooks/lead/use-lead";
 import { LeadDropDown } from "@/components/lead/dropdown";
 import SkeletonWrapper from "../skeleton-wrapper";
 import { EmptyData } from "./info/empty-data";
+
 //TODO - need to remove the socket calls here, lets make use of the hooks
 export const LeadHeader = ({ leadId }: { leadId: string }) => {
+  const { setConversationId } = useLeadStore();
   const { onGetLead } = useLeadData();
   const { lead, leadFetching } = onGetLead(leadId);
   const { socket } = useContext(SocketContext).SocketState;
@@ -31,6 +33,11 @@ export const LeadHeader = ({ leadId }: { leadId: string }) => {
       });
     };
   }, []);
+  useEffect(() => {
+    if (!lead) return;
+    console.log(lead.conversations);
+    setConversationId(lead.conversations![0].id);
+  }, [lead]);
   return (
     <SkeletonWrapper isLoading={leadFetching}>
       {lead ? (

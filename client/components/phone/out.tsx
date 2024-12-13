@@ -34,6 +34,7 @@ import { formatPhoneNumber, reFormatPhoneNumber } from "@/formulas/phones";
 import { formatSecondsToTime } from "@/formulas/numbers";
 
 import { phoneSettingsUpdateCurrentCall } from "@/actions/settings/phone";
+import LeadPicker from "./lead-picker";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
@@ -152,6 +153,7 @@ export const PhoneOut = () => {
     if (call) {
       call.sendDigits(num);
     } else {
+      if (disabled) return;
       setTo((state) => {
         return { ...state, number: (state.number += num) };
       });
@@ -161,6 +163,9 @@ export const PhoneOut = () => {
   };
 
   const onNumberTyped = (num: string) => {
+    const isNumber = parseInt(num.charAt(num.length - 1));
+    if (!isNumber) num = num.substring(0, num.length - 1);
+    if (disabled) return;
     setTo((state) => {
       return { ...state, number: num };
     });
@@ -260,17 +265,19 @@ export const PhoneOut = () => {
       ) : (
         <>
           <div className="flex justify-between items-center">
-            {to.name}
+            <span>{to.name}</span>
 
-            {leadId && (
-              <Button
-                variant={isLeadInfoOpen ? "default" : "outlineprimary"}
-                size="sm"
-                onClick={onLeadInfoToggle}
-              >
-                LEAD INFO
-              </Button>
-            )}
+            <div>
+              {leadId && (
+                <Button
+                  variant={isLeadInfoOpen ? "default" : "outlineprimary"}
+                  size="sm"
+                  onClick={onLeadInfoToggle}
+                >
+                  LEAD INFO
+                </Button>
+              )}
+            </div>
             <span className="text-primary font-bold w-10">
               {formatSecondsToTime(time)}
             </span>
@@ -278,6 +285,7 @@ export const PhoneOut = () => {
           <div className="relative">
             <Input
               placeholder="Phone Number"
+              //placeholder="e.g. 5555555555"
               value={to.number}
               maxLength={10}
               onChange={(e) => onNumberTyped(e.target.value)}
@@ -289,6 +297,15 @@ export const PhoneOut = () => {
               )}
               onClick={onReset}
             />
+            {/* //TODO -- need to make this work today */}
+            <div className="absolute bottom-full left-0 w-full z-50 hidden">
+              <LeadPicker
+                defaultValue={undefined}
+                open={true}
+                setOpen={() => {}}
+                onChange={() => {}}
+              />
+            </div>
           </div>
           <div className="flex justify-between items-center">
             <span>Caller Id</span>

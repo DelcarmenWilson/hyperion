@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { voicemailUpdateByIdListened } from "@/actions/voicemail";
+import { formatSecondsToTime } from "@/formulas/numbers";
 
 export const VoicemailList = () => {
   const { voicemails, setVoicemails } = usePhoneContext();
@@ -58,6 +59,7 @@ export const VoicemailList = () => {
             <TableRow>
               <TableHead>From</TableHead>
               <TableHead>Recording</TableHead>
+              <TableHead>Duration</TableHead>
               <TableHead>Date/Time</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -105,8 +107,9 @@ const VoicemailCard = ({ voicemail: vm, onUpdate }: VoicemailCardProps) => {
           // onListened={() => onUpdate(vm.id)}
         />
       </TableCell>
+      <TableCell>{formatSecondsToTime(vm.recordDuration)}</TableCell>
       <TableCell>{format(vm.updatedAt, "MM/dd hh:mm aa")}</TableCell>
-      <TableCell>
+      <TableCell className="text-end justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon">

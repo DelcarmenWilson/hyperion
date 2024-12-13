@@ -80,14 +80,14 @@ const Dashboard = () => {
   return (
     <div className="relative flex-center pt-10 pb-20">
       <div className="relative rounded-lg">
-      <Image
-        src="/assets/landing/dashboard.png"
-        height={800}
-        width={800}
-        alt="image1"
-        className="w-[800px] h-[600px] bg-white rounded-lg p-2"
-      />
-      <div className="absolute inset-0 bg-black opacity-30"/>
+        <Image
+          src="/assets/landing/dashboard.png"
+          height={800}
+          width={800}
+          alt="image1"
+          className="w-[800px] h-[600px] bg-white rounded-lg p-2"
+        />
+        <div className="absolute inset-0 bg-black opacity-30" />
       </div>
 
       <div className="absolute top-1/2 left-[150px]">

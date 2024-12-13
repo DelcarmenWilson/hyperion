@@ -8,14 +8,12 @@ const data = [
     description:
       " Built-in VoIP softphone complete with progressive dialing, click-to-call, instant alerts, automatic call logs, call recordings, and more mean that your sales team can work smarter, not harder, no matter where they are.",
   },
-
   {
     icon: MapPin,
     title: "Local ID",
     description:
       "Boost answered calls and gain more opportunities to sell with local ID. Skyrocket your connection rate by choosing a local number that matches your prospects area.",
   },
-
   {
     icon: Eye,
     title: "Complete Contact Visibility",
@@ -27,13 +25,11 @@ const Calling = () => {
   return (
     <div className="grid grid-cols-2">
       <div className="px-8 space-y-5">
-        {data.map(item=>(
-            <Box
-          key={item.title} {...item}
-        />
+        {data.map((item) => (
+          <Box key={item.title} {...item} />
         ))}
-        
-{/* 
+
+        {/* 
         <Box
           icon={MapPin}
           title="Local ID"
