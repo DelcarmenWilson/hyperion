@@ -10,6 +10,7 @@ import { TopMenu } from "./top-menu";
 import { useState } from "react";
 import { startOfMonth } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { ScrollArea } from "../ui/scroll-area";
 
 type CallHistoryClientProps = {
   userId?: string;
@@ -46,17 +47,19 @@ export const CallHistoryClient = ({
         />
       }
     >
-      <SkeletonWrapper isLoading={callsLoading}>
-        <DataTable
-          columns={columns}
-          data={calls || []}
-          headers
-          striped
-          paginationType="advance"
-          filterType="call"
-          hidden={{ direction: false, status: false }}
-        />
-      </SkeletonWrapper>
+      <ScrollArea>
+        <SkeletonWrapper isLoading={callsLoading}>
+          <DataTable
+            columns={columns}
+            data={calls || []}
+            headers
+            striped
+            paginationType="advance"
+            filterType="call"
+            hidden={{ direction: false, status: false }}
+          />
+        </SkeletonWrapper>
+      </ScrollArea>
     </CardLayout>
   );
 };

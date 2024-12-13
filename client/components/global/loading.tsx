@@ -1,5 +1,5 @@
 import React from "react";
-
+//TODO see if we really need this. remove it from every reference and then delete the component
 const Loading = () => {
   return (
     <div role="status">

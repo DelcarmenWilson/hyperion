@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { JobStatus } from "@/types/job";
 
 type State = {
-  status: JobStatus | string;
+  status: string;
   sorted: boolean;
 };
 type Actions = {

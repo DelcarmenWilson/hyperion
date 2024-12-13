@@ -54,7 +54,7 @@ const LeadsPage = async ({ params }: { params: { id: string } }) => {
           <ExpensesClient leadId={leadId} />
         </TabsContent>
         <TabsContent value="activity">
-          <LeadTabsClient lead={lead} />
+          <LeadTabsClient leadId={leadId} />
         </TabsContent>
       </Tabs>
     </PageLayout>

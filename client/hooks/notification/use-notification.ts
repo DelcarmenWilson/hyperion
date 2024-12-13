@@ -6,11 +6,13 @@ import { useNotificationStore } from "@/stores/notification-store";
 
 import { Notification } from "@prisma/client";
 import {
+  getFilteredNotifications,
   getMultipledNotifications,
   getNotification,
   getUnreadNotifications,
   updateUnreadNotification,
 } from "@/actions/notification";
+import { DateRange } from "react-day-picker";
 
 
 export const useNotificationData = () => {
@@ -27,6 +29,17 @@ export const useNotificationData = () => {
     });
     return { notification, notificationFetching, notificationLoading };
   };
+  const onGetFilteredNotifications=(dateRange: DateRange)=>{
+    const {
+      data: notifications,
+      isFetching: notificationsFetching,
+      isLoading: notificationsLoading,
+    } = useQuery<Notification[] | []>({
+      queryFn: () => getFilteredNotifications(dateRange),
+      queryKey: ["notifications-filtered"]
+    });
+    return { notifications, notificationsFetching, notificationsLoading };
+  }
   const onGetNotificationsUnread = () => {
     const {
       data: notifications,
@@ -51,8 +64,11 @@ export const useNotificationData = () => {
     });
     return { notifications, notificationsFetching, notificationsLoading };
   };
+  
+
   return {
     onGetNotification,
+    onGetFilteredNotifications,
     onGetMultipleNotifications,
     onGetNotificationsUnread,
   };

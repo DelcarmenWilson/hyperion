@@ -96,6 +96,7 @@ export const useChatStore = create<State & Actions>()(
       });
     },
     fetchData: async () => {
+      if(get().loaded)return
       const users = await getUsersChat();
       const settings = await chatSettingsGet();
       set({
@@ -105,7 +106,7 @@ export const useChatStore = create<State & Actions>()(
       });
       setTimeout(() => {
         set({ loaded: true });
-      }, 2000);
+      }, 1000);
     },
   }))
 );

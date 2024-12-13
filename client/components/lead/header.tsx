@@ -34,9 +34,8 @@ export const LeadHeader = ({ leadId }: { leadId: string }) => {
     };
   }, []);
   useEffect(() => {
-    if (!lead) return;
-    console.log(lead.conversations);
-    setConversationId(lead.conversations![0].id);
+    if (!lead || !lead.conversations?.length) return;
+    setConversationId(lead.conversations[0].id);
   }, [lead]);
   return (
     <SkeletonWrapper isLoading={leadFetching}>

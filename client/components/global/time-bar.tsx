@@ -7,6 +7,7 @@ type Props = {
   onClose?: () => void;
   hover?: boolean;
   hold?: boolean;
+  enable?: boolean;
 };
 
 export const TimerBar = ({
@@ -14,12 +15,13 @@ export const TimerBar = ({
   onClose,
   hover = false,
   hold = false,
+  enable = false,
 }: Props) => {
   const [progress, setProgress] = useState(100);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (hold) return;
+    if (hold || !enable) return;
     setIntervalId(
       setInterval(() => {
         setProgress((prevProgress) => {
@@ -36,7 +38,7 @@ export const TimerBar = ({
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [duration, hold]);
+  }, [duration, hold, enable]);
 
   useEffect(() => {
     if (!hover) return;
@@ -44,7 +46,7 @@ export const TimerBar = ({
     clearInterval(intervalId!);
     setProgress(0);
   }, [hover]);
-
+  if (!enable) return null;
   return (
     <Progress
       className={cn("h-2", progress <= 0 && "opacity-0")}

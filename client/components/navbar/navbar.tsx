@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import Hint from "../custom/hint";
 import MainNav from "./main-nav";
 import MasterSwitch from "./master-switch";
-import NavMessages from "./nav-messages";
+import NavConversations from "./nav-conversations";
 import NavNotifications from "./nav-notifications";
 
 const lobster = Lobster_Two({
@@ -61,12 +61,11 @@ const NavBar = ({ admin = false }: { admin?: boolean }) => {
               size="icon"
               onClick={onTodosOpen}
             >
-              <List size={15} />
+              <List size={20} />
             </Button>
           </Hint>
-
-          {/* messages list */}
-          <NavMessages />
+          {/* Conversation List */}
+          <NavConversations />
           {/*srini- Agent chat */}
           {/* //TODO - dont forget to remove if this wont be used anymore */}
           {/* <NavChat /> */}
@@ -80,7 +79,7 @@ const NavBar = ({ admin = false }: { admin?: boolean }) => {
               onClick={onChatOpen}
               disabled={isDisabled}
             >
-              <Bot size={15} />
+              <Bot size={20} />
               {masterUnread > 0 && (
                 <Badge className="absolute rounded-full text-xs -top-2 -right-2 p-1">
                   {masterUnread}
@@ -100,17 +99,19 @@ const NavBar = ({ admin = false }: { admin?: boolean }) => {
               Feedback
             </Link>
           </Button>
-          <Button
-            variant={isOnCall ? "blue" : "default"}
-            className={cn("rounded-full", isOnCall && "animate-ping")}
-            size="icon"
-            onClick={() => {
-              setLeadId(undefined);
-              onPhoneOutOpen(isOnCall ? lead : undefined);
-            }}
-          >
-            <Smartphone size={16} />
-          </Button>
+          <Hint label="phone">
+            <Button
+              variant={isOnCall ? "blue" : "default"}
+              className={cn("rounded-full", isOnCall && "animate-ping")}
+              size="icon"
+              onClick={() => {
+                setLeadId(undefined);
+                onPhoneOutOpen(isOnCall ? lead : undefined);
+              }}
+            >
+              <Smartphone size={16} />
+            </Button>
+          </Hint>
         </div>
       </div>
     </div>

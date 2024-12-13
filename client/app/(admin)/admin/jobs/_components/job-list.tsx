@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 
 import { getEnumValues } from "@/lib/helper/enum-converter";
+import { capitalize } from "@/formulas/text";
 
 const JobList = ({ initJobs }: { initJobs: Job[] }) => {
   const [jobs, setJobs] = useState(initJobs);
@@ -43,10 +44,9 @@ const JobList = ({ initJobs }: { initJobs: Job[] }) => {
           <p className="text-sm text-muted-foreground">Status</p>
           <Select
             name="ddlStatus"
-            onValueChange={(e) => {
-              setStatus(e as JobStatus);
-            }}
+            onValueChange={setStatus}
             defaultValue={status}
+            value={status}
           >
             <SelectTrigger className="max-w-max">
               <SelectValue placeholder="Select Status" />
@@ -55,7 +55,7 @@ const JobList = ({ initJobs }: { initJobs: Job[] }) => {
               <SelectItem value="All">All </SelectItem>
               {jobStatuses.map((status) => (
                 <SelectItem key={status.value} value={status.value}>
-                  {status.name}
+                  {capitalize(status.name.replace("_", " "))}
                 </SelectItem>
               ))}
             </SelectContent>

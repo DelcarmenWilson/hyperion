@@ -21,6 +21,7 @@ import {
 import DeleteDialog from "@/components/custom/delete-dialog";
 import TooltipWrapper from "@/components/tooltip-wrapper";
 import { formatDate } from "@/formulas/dates";
+import { capitalize } from "@/formulas/text";
 
 const statusColors = {
   [JobStatus.OPEN]: "bg-yellow-400 text-yellow-600",
@@ -40,7 +41,7 @@ const JobCard = ({ id, name, description, status, createdAt }: Props) => {
   return (
     <Card className="border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-sm dark:shadow-primary/30">
       <CardContent className="relative p-4 flex items-center justify-between h-[100px]">
-        <div className="absolute top-1 right-2 flex gap-1 items-center text-muted-foreground text-xs">
+        <div className="absolute top-2 right-3 flex gap-1 items-center text-muted-foreground text-xs">
           <span className="italic">{formatDate(createdAt)}</span>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-3">
@@ -67,7 +68,7 @@ const JobCard = ({ id, name, description, status, createdAt }: Props) => {
                   statusColors[status as JobStatus]
                 )}
               >
-                {status}
+                {capitalize(status.replace("_", " "))}
               </span>
             </h3>
             <p className="text-xs text-muted-foreground w-[50%] text-ellipsis line-clamp-2">

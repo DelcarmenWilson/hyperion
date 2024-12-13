@@ -255,7 +255,7 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
                       disabled={leadInsertIsPending}
                       autoComplete="phone"
                       type="tel"
-                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      // pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                       minLength={10}
                       maxLength={12}
                     />
@@ -281,7 +281,7 @@ const NewLForm = ({ leadId, showRelationship, onClose }: NewLFormProps) => {
                       disabled={leadInsertIsPending}
                       autoComplete="phone"
                       type="tel"
-                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      // pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                       minLength={10}
                       maxLength={12}
                     />

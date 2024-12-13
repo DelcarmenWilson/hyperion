@@ -6,6 +6,7 @@ import { hangupResponse, voicemailResponse } from "@/lib/twilio/handler";
 import { NextRequest, NextResponse } from "next/server";
 const callStatus = ["busy", "no-answer", "canceled", "failed"];
 
+
 export async function POST(req: NextRequest) {
   //The paramters passed in from twilio
   const body = await req.formData();
@@ -13,10 +14,12 @@ export async function POST(req: NextRequest) {
   const voicemailIn = req.nextUrl.searchParams.get("voicemailin");
   //Convert the body to Json paramaters
   const j: any = formatObject(body);
+  console.log(j)
 
   //If the call status matched to any of the defined call statuses update the current call
   //and send a voicemail request back to twilio
   if (callStatus.includes(j.dialCallStatus)) {
+    console.log("we made it inside the function call")
     if (j.direction == "inbound") {
       const call = await db.call.update({
         where: { id: j.callSid },
@@ -36,7 +39,11 @@ export async function POST(req: NextRequest) {
     return new NextResponse(await voicemailResponse(voicemailIn), {
       status: 200,
     });
+    
   }
+
+  
+
   return new NextResponse(await hangupResponse(), { status: 200 });
 }
 

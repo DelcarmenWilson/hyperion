@@ -43,7 +43,9 @@ const MultipleCallsDialog = () => {
       <DialogContent>
         <CustomDialogHeader
           icon={Phone}
-          title={`${callCount} missed call${callCount && callCount > 1 && "s"}`}
+          title={`${callCount} missed call${
+            callCount && callCount > 1 ? "s" : ""
+          }`}
         />
         <SkeletonWrapper isLoading={callsFetching}>
           {calls?.map((call) => (

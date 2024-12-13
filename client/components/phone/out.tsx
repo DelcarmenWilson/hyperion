@@ -163,8 +163,8 @@ export const PhoneOut = () => {
   };
 
   const onNumberTyped = (num: string) => {
-    const isNumber = parseInt(num.charAt(num.length - 1));
-    if (!isNumber) num = num.substring(0, num.length - 1);
+    const number = parseInt(num.charAt(num.length - 1));
+    if (isNaN(number)) num = num.substring(0, num.length - 1);
     if (disabled) return;
     setTo((state) => {
       return { ...state, number: num };

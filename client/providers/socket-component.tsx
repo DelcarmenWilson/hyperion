@@ -61,7 +61,6 @@ const SocketContextComponent: React.FunctionComponent<
 
   useEffect(() => {
     if (!loaded) return;
-
     socket.connect();
     SocketDispatch({ type: "update_socket", payload: socket });
     onSetSocket(socket);

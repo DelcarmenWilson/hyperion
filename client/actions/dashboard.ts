@@ -14,7 +14,7 @@ export const getDashboardCards = async () => {
     where: {
       userId: user.id,
       OR: [
-        { direction: "inbound" },
+        { direction: "inbound",status:{not:"no-anwser"} },
         { direction: "outbound", recordDuration: { gt: 5 } },
       ],
       createdAt: { gte: date.start },

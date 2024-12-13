@@ -66,9 +66,13 @@ export const MiniMessageCard = () => {
           innerRef={editorRef}
           onTyping={onTyping}
         />
-        <div className="absolute bottom-2 w-full pe-3">
-          {/* TODO - need to add the onclose function. it was giving me an erro when closing the popup automatically. */}
-          <TimerBar hover={hover} hold={messageFetching} />
+        <div className="absolute bottom-2 w-full pe-3 pt-2">
+          <TimerBar
+            hover={hover}
+            hold={messageFetching}
+            onClose={onMiniMessageClose}
+            enable={!!message}
+          />
         </div>
       </div>
     </div>

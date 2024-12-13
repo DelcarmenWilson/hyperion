@@ -10,8 +10,8 @@
   --clr-2: #073438;
   --clr-3: #0e4b50;
   --clr-4: #2d8f85;
-  --clr-5: #637c54;  
- 
+  --clr-5: #637c54;
+
   --radius: 0.95rem;
 }
 
@@ -216,19 +216,12 @@ body,
 }
 
 .animate-fill {
-  position: relative;
-  overflow: hidden;
+  @apply relative overflow-hidden;
 }
 .animate-fill::before {
   content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 100%;
-  @apply bg-gradient-to-tr from-foreground to-primary;
-  overflow: hidden;
-  animation: animate-fill 6s linear infinite;
+  @apply absolute overflow-hidden left-0 top-0 h-full bg-gradient-to-tr from-foreground to-primary;
+  animation: animate-fill 3s ease-in-out infinite;
 }
 @keyframes animate-fill {
   0%,
