@@ -30,7 +30,7 @@ const Navbar = () => {
       <div className="flex flex-col justify-between items-center text-white p-3 lg:flex-row">
         <Link href="/" className="flex gap-2 items-center">
           <Image
-            src="/logo3.png"
+            src="/logo.png"
             height={44}
             width={44}
             className={cn("w-11 h-11 transition-all", hasScrolled && "w-9 h-9")}

@@ -32,10 +32,15 @@ const MiniJobForm = ({ miniJob, open, onClose }: Props) => {
     //@ts-ignore
     defaultValues: miniJob,
   });
+
+  const onCancel = () => {
+    form.reset();
+    onClose();
+  };
   return (
     <div
       className={cn(
-        "absolute flex flex-col gap-2 top-0 left-full transitio-[left] duration-500 ease-in-out w-full h-full border rounded-md bg-secondary p-2 overflow-hidden",
+        "absolute  flex flex-col gap-2 top-0 left-full transitio-[left] duration-500 ease-in-out w-full h-full border rounded-md bg-secondary p-2 overflow-hidden",
         open && "left-0"
       )}
     >
@@ -44,7 +49,7 @@ const MiniJobForm = ({ miniJob, open, onClose }: Props) => {
           <span>Update </span>
           <span className="text-primary">Mini Job</span>
         </p>
-        <Button onClick={onClose} size="icon" variant="normal">
+        <Button onClick={onCancel} size="icon" variant="normal">
           <X size={15} />
         </Button>
       </div>
@@ -98,8 +103,7 @@ const MiniJobForm = ({ miniJob, open, onClose }: Props) => {
                       <Textarea className="resize-none" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Provide a brief descripotion of what your mini job is for
-                      does.
+                      Provide a brief description of what your mini job is for.
                       <br /> This is optional but can help you remeber the
                       job&apos;s purpose.
                     </FormDescription>
@@ -125,21 +129,15 @@ const MiniJobForm = ({ miniJob, open, onClose }: Props) => {
                       <Textarea className="resize-none" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Provide a brief description of what your mini job is for
-                      does.
-                      <br /> Leave comments behind for the team.
+                      Leave comments behind for the team.
                     </FormDescription>
                   </FormItem>
                 )}
               />
             </div>
           </ScrollArea>
-          <div className="mt-auto">
-            <Button
-              type="submit"
-              className="w-full gap-2"
-              disabled={updatingMiniJob}
-            >
+          <div className="mt-auto text-end">
+            <Button type="submit" className="gap-2" disabled={updatingMiniJob}>
               {updatingMiniJob && <Loader2 className="animate-spin" />}
               Update
             </Button>

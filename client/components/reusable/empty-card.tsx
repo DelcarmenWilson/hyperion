@@ -15,7 +15,7 @@ export const EmptyCard = ({ title, subTitle }: EmptyCardProps) => {
             height={80}
             width={80}
             className="w-[80px] h-[80px] opacity-50"
-            src="/logo3.png"
+            src="/logo.png"
             alt="logo"
             priority
           />

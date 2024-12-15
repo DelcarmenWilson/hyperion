@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils";
 import { BriefcaseIcon, MoreVerticalIcon, ShuffleIcon } from "lucide-react";
 import Link from "next/link";
 import { useJobActions } from "@/hooks/job/use-job";
-
-import { Job } from "@prisma/client";
 import { JobStatus } from "@/types/job";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,15 +18,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DeleteDialog from "@/components/custom/delete-dialog";
 import TooltipWrapper from "@/components/tooltip-wrapper";
+
 import { formatDate } from "@/formulas/dates";
 import { capitalize } from "@/formulas/text";
+import { statusColors } from "../_constants/colors";
 
-const statusColors = {
-  [JobStatus.OPEN]: "bg-yellow-400 text-yellow-600",
-  [JobStatus.COMPLETED]: "bg-primary",
-  [JobStatus.IN_PROGRESS]: "bg-secondary",
-  [JobStatus.CLOSED]: "bg-foreground",
-};
 type Props = {
   id: string;
   name: string;

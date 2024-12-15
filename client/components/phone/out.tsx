@@ -8,6 +8,7 @@ import axios from "axios";
 
 import SocketContext from "@/providers/socket";
 
+import { useSocketStore } from "@/stores/socket-store";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import { useLeadStore } from "@/stores/lead-store";
 import { useLeadData } from "@/hooks/lead/use-lead";
@@ -38,7 +39,7 @@ import LeadPicker from "./lead-picker";
 //import { testConference, testParticipants } from "@/test-data/phone";
 
 export const PhoneOut = () => {
-  const { socket } = useContext(SocketContext).SocketState;
+  const { socket } = useSocketStore();
   const user = useCurrentUser();
   const { leadId } = useLeadStore();
   const {
@@ -64,6 +65,8 @@ export const PhoneOut = () => {
   let leadFullName = leadBasic
     ? `${leadBasic?.firstName} ${leadBasic?.lastName}`
     : "New Call";
+
+  const [isLeadPickerOpen, setLeadPickerOpen] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [empty, setEmpty] = useState(false);
 
@@ -147,6 +150,11 @@ export const PhoneOut = () => {
     call.on("disconnect", onDisconnect);
     userEmitter.emit("newCall", leadBasic?.id!);
     onPhoneConnect(call);
+  };
+
+  const onLeadPicked = (name: string, number: string) => {
+    setTo({ name, number });
+    setDisabled(true);
   };
 
   const onNumberClick = (num: string) => {
@@ -252,6 +260,11 @@ export const PhoneOut = () => {
     setDisabled(true);
   }, [leadBasic]);
 
+  useEffect(() => {
+    if (to.number.length > 3 && !disabled) setLeadPickerOpen(true);
+    if (to.number.length >= 10) setLeadPickerOpen(false);
+  }, [to]);
+
   //TODO - Test data dont forget to remove
   // useEffect(() => {
   //   setConference(testConference);
@@ -298,12 +311,12 @@ export const PhoneOut = () => {
               onClick={onReset}
             />
             {/* //TODO -- need to make this work today */}
-            <div className="absolute bottom-full left-0 w-full z-50 hidden">
+            <div className="absolute top-full left-0 w-full z-50 pt-2">
               <LeadPicker
-                defaultValue={undefined}
-                open={true}
-                setOpen={() => {}}
-                onChange={() => {}}
+                filter={to.number}
+                open={isLeadPickerOpen}
+                onClose={() => setLeadPickerOpen(false)}
+                onChange={onLeadPicked}
               />
             </div>
           </div>

@@ -112,7 +112,7 @@ export const TodoReminderEmail = ({
                   alt="Hyperion logo"
                   height={42}
                   width={42}
-                  src={`${baseUrl2}/logo3.png`}
+                  src={`${baseUrl2}/logo.png`}
                 />
               </td>
             </tr>

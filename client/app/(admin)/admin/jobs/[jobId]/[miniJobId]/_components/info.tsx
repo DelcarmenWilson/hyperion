@@ -36,6 +36,7 @@ const MiniJobInfo = ({ miniJob }: { miniJob: MiniJob }) => {
       <ScrollArea>
         <div className="flex justify-between items-center p-2 ">
           <Badge>{status}</Badge>
+
           <div className="flex gap-2 w-fit">
             {!isCompleted && (
               <Button variant="ghost" onClick={() => setShowForm(true)}>

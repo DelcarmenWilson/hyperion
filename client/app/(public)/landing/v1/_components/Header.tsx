@@ -41,7 +41,7 @@ const Header = () => {
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
         <a className="flex gap-2 items-center w-[12rem] xl:mr-8" href="#hero">
           <Image
-            src="/logo3.png"
+            src="/logo.png"
             className="w-[40px] h-[40px]"
             width={40}
             height={40}

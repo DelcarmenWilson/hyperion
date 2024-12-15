@@ -1,16 +1,15 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BriefcaseIcon, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 
-import { CreateJobSchema, CreateJobSchemaType } from "@/schemas/job";
+import { UpdateJobSchema, UpdateJobSchemaType } from "@/schemas/job";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Job } from "@prisma/client";
 import CustomDialogHeader from "@/components/custom-dialog-header";
 import {
   Form,
@@ -24,27 +23,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { createJob } from "@/actions/developer/job";
 import { useJobActions } from "@/hooks/job/use-job";
 
-const CreateJobDialog = ({
-  triggerText = "Create Job",
-}: {
-  triggerText?: string;
-}) => {
+const UpdateJobDialog = ({ job }: { job: Job }) => {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<CreateJobSchemaType>({
-    resolver: zodResolver(CreateJobSchema),
-    defaultValues: {},
+  const form = useForm<UpdateJobSchemaType>({
+    resolver: zodResolver(UpdateJobSchema),
+    //@ts-ignore
+    defaultValues: job,
   });
-
   const onCancel = () => {
     form.reset();
     setOpen(false);
   };
-
-  const { onCreateJob, jobCreating } = useJobActions(onCancel);
+  const { onJobUpdate, jobUpdating } = useJobActions(onCancel);
 
   return (
     <Dialog
@@ -55,15 +48,17 @@ const CreateJobDialog = ({
       }}
     >
       <DialogTrigger asChild>
-        <Button>{triggerText}</Button>
+        <Button variant="outlineprimary" size="xs">
+          Edit
+        </Button>
       </DialogTrigger>
       <DialogContent>
-        <CustomDialogHeader icon={BriefcaseIcon} title="Create job" />
+        <CustomDialogHeader icon={BriefcaseIcon} title="Update job" />
         <div className="px-4 py-2">
           <Form {...form}>
             <form
               className="space-y-4 w-full"
-              onSubmit={form.handleSubmit(onCreateJob)}
+              onSubmit={form.handleSubmit(onJobUpdate)}
             >
               {/* NAME */}
               <FormField
@@ -114,8 +109,33 @@ const CreateJobDialog = ({
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={jobCreating}>
-                {jobCreating ? <Loader2 className="animate-spin" /> : "Proceed"}
+
+              {/* COMMENTS */}
+              <FormField
+                control={form.control}
+                name="comments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex gap-1 items-center">
+                      Comments
+                      <p className="text-xs text-muted-foreground">
+                        (optional)
+                      </p>
+                      <div className="ml-auto">
+                        <FormMessage />
+                      </div>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea className="resize-none" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Leave some comments for the team
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={jobUpdating}>
+                {jobUpdating ? <Loader2 className="animate-spin" /> : "Update"}
               </Button>
             </form>
           </Form>
@@ -125,4 +145,4 @@ const CreateJobDialog = ({
   );
 };
 
-export default CreateJobDialog;
+export default UpdateJobDialog;

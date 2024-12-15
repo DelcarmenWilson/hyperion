@@ -122,6 +122,27 @@ export const getLeads = async () => {
     return [];
   }
 };
+export const getLeadsFiltered = async (filter:string) => {
+
+    const user = await currentUser();
+    if (!user)  throw new Error("Unathenticated")
+
+    const leads = await db.lead.findMany({
+      where: {
+        OR: [
+          { userId: user.id },
+          { assistantId: user.id },
+          { sharedUserId: user.id },
+        ],
+        NOT: { statusId: LeadDefaultStatus.DELETED },
+        cellPhone:{contains:filter}
+      },
+      select:{id:true,firstName:true,lastName:true,cellPhone:true}
+    });    
+
+    return leads
+ 
+};
 export const getLeadByPhone = async (cellPhone: string) => {
   return await db.lead.findFirst({
     where: {

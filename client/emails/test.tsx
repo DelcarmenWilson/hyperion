@@ -27,7 +27,7 @@ export const TestEmail = ({ username }: Props) => (
     </Preview>
     <Body className="bg-white text-[#24292e]" style={main}>
       <Container className="m-w-[480[px] m-0 mx-auto p-2">
-        <Img src={`${baseUrl}/logo3.png`} width="32" height="32" alt="Github" />
+        <Img src={`${baseUrl}/logo.png`} width="32" height="32" alt="Github" />
 
         <Text className="text-[24px] leading-tight">
           <strong>@{username}</strong>, a personal access was created on your
@@ -73,7 +73,7 @@ export const TestEmail = ({ username }: Props) => (
 //     </Preview>
 //     <Body style={main}>
 //       <Container style={container}>
-//         <Img src={`${baseUrl}/logo3.png`} width="32" height="32" alt="Github" />
+//         <Img src={`${baseUrl}/logo.png`} width="32" height="32" alt="Github" />
 
 //         <Text style={title}>
 //           <strong>@{username}</strong>, a personal access was created on your

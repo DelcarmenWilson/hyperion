@@ -1,4 +1,3 @@
-
 import { useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -6,10 +5,9 @@ import { toast } from "sonner";
 
 import { CreateJobSchemaType, UpdateJobSchemaType } from "@/schemas/job";
 
-import { createJob,deleteJob,updateJob } from "@/actions/developer/job";
+import { createJob, deleteJob, updateJob } from "@/actions/developer/job";
 
-
-export const useJobActions = () => {
+export const useJobActions = (cb?: () => void) => {
   //JOB DELETE
   const { mutate: jobDeleteMutate, isPending: jobDeleting } = useMutation({
     mutationFn: deleteJob,
@@ -34,29 +32,32 @@ export const useJobActions = () => {
   );
 
   //JOB INSERT
-  const { mutate: jobInsertMutate, isPending: jobInserting } = useMutation({
+  const { mutate: createJobMutate, isPending: jobCreating } = useMutation({
     mutationFn: createJob,
-    onSuccess: (results) =>
-      toast.success("Job created!!", { id: "insert-job" }),
-
-    onError: (error) => toast.error(error.message, { id: "insert-job" }),
+    onSuccess: () =>{
+      if(cb)cb()
+      toast.success("Job created!!", { id: "create-job" })
+    },
+    onError: (error) => toast.error(error.message, { id: "create-job" }),
   });
 
-  const onJobInsert = useCallback(
+  const onCreateJob = useCallback(
     (values: CreateJobSchemaType) => {
       toast.loading("Creating new Job...", {
-        id: "insert-job",
+        id: "create-job",
       });
-      jobInsertMutate(values);
+      createJobMutate(values);
     },
-    [jobInsertMutate]
+    [createJobMutate]
   );
 
   //JOB UPDATE
   const { mutate: jobUpdateMutate, isPending: jobUpdating } = useMutation({
     mutationFn: updateJob,
-    onSuccess: (results) =>
-      toast.success("Job Updated!!!", { id: "update-job" }),
+    onSuccess: (results) => {
+      if (cb) cb();
+      toast.success("Job Updated!!!", { id: "update-job" });
+    },
     onError: (error) => toast.error(error.message, { id: "update-job" }),
   });
 
@@ -71,8 +72,8 @@ export const useJobActions = () => {
   return {
     onJobDelete,
     jobDeleting,
-    onJobInsert,
-    jobInserting,
+     onCreateJob,
+     jobCreating,
     onJobUpdate,
     jobUpdating,
   };

@@ -1,4 +1,4 @@
-import { useCallback,  useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useCurrentUser } from "../user/use-current";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,9 +43,8 @@ import {
   shareLead,
   unshareLead,
   transferLead,
+  getLeadsFiltered,
 } from "@/actions/lead";
-
-
 
 export const useLeadData = () => {
   const { leadIds, setConversationId } = useLeadStore();
@@ -101,6 +100,28 @@ export const useLeadData = () => {
       leadsLoading,
     };
   };
+
+  const onGetLeadsFiltered = (filter: string) => {
+    const {
+      data: leads,
+      isFetching: leadsFetching,
+      isLoading: leadsLoading,
+    } = useQuery<
+      | { id: string; firstName: string; lastName: string; cellPhone: string }[]
+      | []
+    >({
+      queryFn: () => getLeadsFiltered(filter),
+      queryKey: [`leads-filtered-${filter}`],
+      enabled: !!filter && filter.length>2,
+    });
+
+    return {
+      leads,
+      leadsFetching,
+      leadsLoading,
+    };
+  };
+
   const onGetLeadPrevNext = (leadId: string) => {
     const {
       data: prevNext,
@@ -183,6 +204,7 @@ export const useLeadData = () => {
     onGetLeadBasicInfo,
     onGetLead,
     onGetLeads,
+    onGetLeadsFiltered,
     onGetMultipleLeads,
     onGetLeadPrevNext,
     onGetAssociatedLeads,
@@ -191,7 +213,7 @@ export const useLeadData = () => {
 //TODO - see if we can use the mutation for all of these functions
 export const useLeadActions = (uId?: string) => {
   const user = useCurrentUser();
-  const { socket } =useSocketStore()
+  const { socket } = useSocketStore();
   const {
     isShareFormOpen,
     onShareFormClose,
@@ -488,7 +510,7 @@ export const useLeadInfoActions = (cb?: () => void) => {
 };
 
 //TODO this need to be extracted and removed
-export const useLeadNotesActions = (leadId:string) => {
+export const useLeadNotesActions = (leadId: string) => {
   const { invalidate } = useInvalidate();
   const [loading, setLoading] = useState(false);
 
@@ -537,36 +559,39 @@ export const useLeadNotesActions = (leadId:string) => {
   };
 };
 
-export const useLeadCallInfoActions = (leadId:string) => {
-  const {invalidate} = useInvalidate();
-  const { socket } = useSocketStore()
+export const useLeadCallInfoActions = (leadId: string) => {
+  const { invalidate } = useInvalidate();
+  const { socket } = useSocketStore();
 
   //CALL INFO
-  const onGetLeadCallInfo=()=>{
-    const { data: callInfo, isFetching: callInfoFetching,isLoading:callInfoLoading } =
-    useQuery<LeadCallInfoSchemaTypeP | null>({
+  const onGetLeadCallInfo = () => {
+    const {
+      data: callInfo,
+      isFetching: callInfoFetching,
+      isLoading: callInfoLoading,
+    } = useQuery<LeadCallInfoSchemaTypeP | null>({
       queryFn: () => getLeadCallInfo(leadId as string),
       queryKey: [`lead-call-info-${leadId}`],
       enabled: !!leadId,
     });
-    return{
+    return {
       callInfo,
       callInfoFetching,
-      callInfoLoading
-    }
-  }
+      callInfoLoading,
+    };
+  };
 
   useEffect(() => {
     socket?.on("calllog:new", (data: { dt: Call }) => {
       if (data.dt.leadId == leadId) invalidate(`lead-call-info-${leadId}`);
     });
-    return () => {      
+    return () => {
       socket?.off("calllog:new");
     };
   }, []);
 
   return {
-    onGetLeadCallInfo
+    onGetLeadCallInfo,
   };
 };
 
