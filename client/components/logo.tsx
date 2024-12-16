@@ -18,14 +18,14 @@ const Logo = ({
         fontSize
       )}
     >
-      <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-2">
+      <div className="rounded-xl bg-gradient-to-r from-primary to-primary/50 p-2">
         <MousePointerSquareDashed size={iconSize} className="stroke-white" />
       </div>
       <div>
-        <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
           Hyper
         </span>
-        <span className="text-stone-700 dark:text-stone-300">ion</span>
+        <span>ion</span>
       </div>
     </Link>
   );

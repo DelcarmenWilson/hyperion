@@ -1,21 +1,24 @@
-import { CodeIcon, LucideProps } from "lucide-react";
+import { Facebook, LucideProps } from "lucide-react";
 import { TaskParamType, TaskType } from "@/types/workflow/task";
 import { WorkflowTask } from "@/types/workflow/workflow";
 
-export const PageToHtmlTask = {
-  type: TaskType.PAGE_TO_HTML,
-  label: "Get html from page",
+export const TestLeadTask = {
+  type: TaskType.TEST_LEAD_TASK,
+  label: "Test leads",
   icon: (props: LucideProps) => (
-    <CodeIcon className="stroke-primary" {...props} />
+    <Facebook className="stroke-primary" {...props} />
   ),
-  isEntryPoint: false,
 
   credits: 2,
   inputs: [
     {
-      name: "Web page",
-      type: TaskParamType.BROWSER_INSTANCE,
+      name: "Option",
+      type: TaskParamType.SELECT,
       required: true,
+      options: [
+        { value: "Lead", name: "Lead" },
+        { value: "Agent", name: "Agent" },
+      ],
     },
   ],
   outputs: [

@@ -1,31 +1,23 @@
 "use client";
 import React from "react";
-import { CheckIcon, PlayIcon } from "lucide-react";
-import { toast } from "sonner";
+import { PlayIcon } from "lucide-react";
 import { useReactFlow } from "@xyflow/react";
-import { useMutation } from "@tanstack/react-query";
 import useExecutionPlan from "@/components/hooks/use-execution-plan";
+import { useWorkflowActions } from "@/hooks/use-workflow";
 
 import { Button } from "@/components/ui/button";
-import { runWorkflow } from "@/actions/workflow/run-workflow";
 
 const ExecuteBtn = ({ workflowId }: { workflowId: string }) => {
   const generate = useExecutionPlan();
   const { toObject } = useReactFlow();
 
-  const mutation = useMutation({
-    mutationFn: runWorkflow,
-    onSuccess: () =>
-      toast.success("Execution started", { id: "flow-execution" }),
-    onError: () =>
-      toast.error("Something went worng", { id: "flow-execution" }),
-  });
+  const { onExecuteWorkflow, workflowExecuting } = useWorkflowActions();
 
   return (
     <Button
       variant="outline"
       className="flex items-center gap-2"
-      disabled={mutation.isPending}
+      disabled={workflowExecuting}
       onClick={() => {
         const plan = generate();
         if (!plan) {
@@ -33,7 +25,7 @@ const ExecuteBtn = ({ workflowId }: { workflowId: string }) => {
           return;
         }
 
-        mutation.mutate({
+        onExecuteWorkflow({
           workflowId,
           flowDefinition: JSON.stringify(toObject()),
         });

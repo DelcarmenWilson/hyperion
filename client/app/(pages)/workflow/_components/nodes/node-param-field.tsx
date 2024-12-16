@@ -5,6 +5,7 @@ import { AppNode } from "@/types/workflow/app-node";
 
 import StringParam from "./param/string-param";
 import BrowserInstanceParam from "./param/browser-instance-param";
+import SelectParam from "./param/select-param";
 
 const NodeParamField = ({
   param,
@@ -45,6 +46,15 @@ const NodeParamField = ({
           param={param}
           value={""}
           updateNodeParamValue={updateNodeParamValue}
+        />
+      );
+    case TaskParamType.SELECT:
+      return (
+        <SelectParam
+          param={param}
+          value={value}
+          updateNodeParamValue={updateNodeParamValue}
+          disabled={disabled}
         />
       );
     default:

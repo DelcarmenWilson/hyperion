@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CardData } from "@/components/reusable/card-data";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
-import { UpdateAgentWorkInfoDialog } from "./form";
+import { UpdateAgentWorkInfoDialog } from "./update-agent-work-info-dialog";
 
 import { USDollar } from "@/formulas/numbers";
 import { formatJustTime } from "@/formulas/dates";

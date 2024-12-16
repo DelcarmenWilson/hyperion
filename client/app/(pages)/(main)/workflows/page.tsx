@@ -3,11 +3,12 @@ import { InboxIcon } from "lucide-react";
 
 import AlertError from "@/components/custom/alert-error";
 import CreateWorkflowDialog from "./_components/create-workflow-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import NewEmptyCard from "@/components/reusable/new-empty-card";
 import NewPageLayout from "@/components/custom/layout/new-page-layout";
+import { Skeleton } from "@/components/ui/skeleton";
 import WorkflowCard from "./_components/workflow-card";
-import { getWorkFlowForUser } from "@/actions/workflow/get-workflows-for-user";
+
+import { getWorkflows } from "@/actions/workflow";
 
 const WorkflowPage = () => {
   return (
@@ -34,7 +35,7 @@ const UserWorkflowsSkeleton = () => {
 };
 
 const UserWorkflows = async () => {
-  const workflows = await getWorkFlowForUser();
+  const workflows = await getWorkflows();
   if (!workflows) return <AlertError />;
   if (workflows.length === 0)
     return (

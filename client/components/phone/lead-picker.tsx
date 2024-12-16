@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useLeadData } from "@/hooks/lead/use-lead";
 
 import {
@@ -11,6 +12,7 @@ import {
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { formatPhoneNumber } from "@/formulas/phones";
+import { Button } from "../ui/button";
 
 interface Props {
   filter: string;
@@ -20,9 +22,10 @@ interface Props {
 }
 
 const LeadPicker = ({ filter, onChange, open, onClose }: Props) => {
+  const [disabled, setDisabled] = useState(false);
   const { onGetLeadsFiltered } = useLeadData();
   const { leads, leadsFetching, leadsLoading } = onGetLeadsFiltered(filter);
-  if (!open) return null;
+  if (!open || disabled) return null;
   return (
     <Command
       className="border"
@@ -63,6 +66,11 @@ const LeadPicker = ({ filter, onChange, open, onClose }: Props) => {
             ))}
           </SkeletonWrapper>
         </CommandList>
+        <div className="text-end">
+          <Button variant="link" size="xs" onClick={() => setDisabled(true)}>
+            Close
+          </Button>
+        </div>
       </CommandGroup>
     </Command>
   );

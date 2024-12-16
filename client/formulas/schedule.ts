@@ -9,6 +9,15 @@ export const daysOfTheWeek = [
   "friday",
   "saturday",
 ];
+export const daysOfTheWeek2: { name: string; value: string }[] = [
+  { name: "sunday", value: "0" },
+  { name: "monday", value: "1" },
+  { name: "tuesday", value: "2" },
+  { name: "wednesday", value: "3" },
+  { name: "thursday", value: "4" },
+  { name: "friday", value: "5" },
+  { name: "saturday", value: "6" },
+];
 export type ScheduleDay = {
   index: number;
   available: boolean;
@@ -40,13 +49,13 @@ export const defaultDay: ScheduleDay = {
   workTo: "18:00",
 };
 
-export const getNewDefaultDay=(index:number)=>{
+export const getNewDefaultDay = (index: number) => {
   let clone = JSON.parse(JSON.stringify(defaultDay));
-  clone.index=index;
-  clone.day=daysOfTheWeek[index]
+  clone.index = index;
+  clone.day = daysOfTheWeek[index];
 
-return clone;
-}
+  return clone;
+};
 type BreakHourType = {
   hour: number;
 };

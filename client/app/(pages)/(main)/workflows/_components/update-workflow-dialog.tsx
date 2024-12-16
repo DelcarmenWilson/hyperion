@@ -6,9 +6,10 @@ import { Layers2Icon, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useWorkflowActions } from "@/hooks/use-workflow";
 
+import { Workflow } from "@prisma/client";
 import {
-  createWorkflowSchemaType,
-  createWorkflowSchema,
+  updateWorkflowSchema,
+  updateWorkflowSchemaType,
 } from "@/schemas/workflow";
 
 import { Button } from "@/components/ui/button";
@@ -26,17 +27,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
+const UpdateWorkflowDialog = ({ workflow }: { workflow: Workflow }) => {
   const [open, setOpen] = useState(false);
-  const form = useForm<createWorkflowSchemaType>({
-    resolver: zodResolver(createWorkflowSchema),
-    defaultValues: {},
+  const form = useForm<updateWorkflowSchemaType>({
+    resolver: zodResolver(updateWorkflowSchema),
+    defaultValues: workflow as updateWorkflowSchemaType,
   });
   const onCancel = () => {
     form.reset();
     setOpen(false);
   };
-  const { onCreateWorkflow, workflowCreating } = useWorkflowActions(onCancel);
+  const { onUpdateWorkflow, workflowUpdating } = useWorkflowActions(onCancel);
 
   return (
     <Dialog
@@ -47,7 +48,9 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{triggerText ?? "Create Workflow"}</Button>
+        <Button variant="outlineprimary" size="sm">
+          Edit
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <CustomDialogHeader
@@ -59,7 +62,7 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
           <Form {...form}>
             <form
               className="space-y-8 w-full"
-              onSubmit={form.handleSubmit(onCreateWorkflow)}
+              onSubmit={form.handleSubmit(onUpdateWorkflow)}
             >
               {/* NAME */}
               <FormField
@@ -107,12 +110,12 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={workflowCreating}
+                disabled={workflowUpdating}
               >
-                {workflowCreating ? (
+                {workflowUpdating ? (
                   <Loader2 className="animate-spin" />
                 ) : (
-                  "Proceed"
+                  "Update"
                 )}
               </Button>
             </form>
@@ -123,4 +126,4 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
   );
 };
 
-export default CreateWorkflowDialog;
+export default UpdateWorkflowDialog;

@@ -13,8 +13,9 @@ import Link from "next/link";
 import { Workflow } from "@prisma/client";
 import { WorkflowStatus } from "@/types/workflow/workflow";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import DeleteWorkflowDialog from "./delete-workflow-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import TooltipWrapper from "@/components/tooltip-wrapper";
-import DeleteWorkflowDialog from "./delete-workflow-dialog";
 
 const statusColors = {
   [WorkflowStatus.DRAFT]: "bg-yellow-400 text-yellow-600",
