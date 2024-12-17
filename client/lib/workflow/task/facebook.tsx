@@ -20,6 +20,24 @@ export const TestLeadTask = {
         { value: "Agent", name: "Agent" },
       ],
     },
+    {
+    name: "Pipeline",
+    type: TaskParamType.SELECT_PIPELINE,
+    required:true,
+    helperText:"Select a pipeline"
+
+
+
+    },
+    {
+      name: "Carriers",
+      type: TaskParamType.SELECT_CARRIER,
+      required:true,
+      helperText:"Select a Carrier"
+  
+  
+  
+      }
   ],
   outputs: [
     {

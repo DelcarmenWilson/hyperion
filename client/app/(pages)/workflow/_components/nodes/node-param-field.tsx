@@ -6,6 +6,8 @@ import { AppNode } from "@/types/workflow/app-node";
 import StringParam from "./param/string-param";
 import BrowserInstanceParam from "./param/browser-instance-param";
 import SelectParam from "./param/select-param";
+import SelectPipelineParam from "./param/select-pipeline-param";
+import SelectCarrierParam from "./param/select-carrier-param";
 
 const NodeParamField = ({
   param,
@@ -57,6 +59,24 @@ const NodeParamField = ({
           disabled={disabled}
         />
       );
+      case TaskParamType.SELECT_PIPELINE:
+      return (
+        <SelectPipelineParam
+          param={param}
+          value={value}
+          updateNodeParamValue={updateNodeParamValue}
+          disabled={disabled}
+        />
+      );
+      case TaskParamType.SELECT_CARRIER:
+        return (
+          <SelectCarrierParam
+            param={param}
+            value={value}
+            updateNodeParamValue={updateNodeParamValue}
+            disabled={disabled}
+          />
+        );
     default:
       return (
         <div className="w-full">
