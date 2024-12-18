@@ -70,7 +70,7 @@ model Lead {
     expenses      LeadExpense[]
     conversations LeadConversation[]
     appointments  Appointment[]
-    calls         Call[]
+    calls         LeadCommunication[]
     activities    LeadActivity[]
     policy        LeadPolicy?
     dotor         LeadDoctor?
@@ -290,6 +290,49 @@ model LeadConversation {
     @@unique([leadId, agentId])
 }
 
+//LEADCOMMUNICATION
+model LeadCommunication {
+  id String @id @unique
+  conversationId String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  from   String
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId String?
+
+  type String @default("call")
+
+  direction String  @default("inbound")
+  status    String?
+  duration  Int?
+  price     String?
+
+  recordId        String?
+  recordUrl       String?
+  recordStartTime DateTime?
+  recordStatus    String?
+  recordDuration  Int?
+  recordPrice     String?
+
+  transcriptionId   String?
+  transcriptionUrl  String?
+  transcriptionText String?
+  listened          Boolean      @default(true)
+  shared            Boolean      @default(false)
+  appointment       Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  appointmentId     String?
+
+  // Answering maching detation (AMD) PARAMS
+  answeredBy               String @default("unknown")
+  machineDetectionDuration String @default("unknown")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+	@@map("LeadCommunication")
+}
+
 model LeadMessage {
     id             String           @id @default(cuid())
     conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
@@ -331,3 +374,4 @@ model LeadActivity {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
+

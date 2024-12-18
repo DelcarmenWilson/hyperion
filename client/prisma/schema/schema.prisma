@@ -99,46 +99,6 @@ model Team {
   updatedAt DateTime @updatedAt
 }
 
-//CALLS
-model Call {
-  id String @id @unique
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  from   String
-  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String?
-
-  type String @default("call")
-
-  direction String  @default("inbound")
-  status    String?
-  duration  Int?
-  price     String?
-
-  recordId        String?
-  recordUrl       String?
-  recordStartTime DateTime?
-  recordStatus    String?
-  recordDuration  Int?
-  recordPrice     String?
-
-  transcriptionId   String?
-  transcriptionUrl  String?
-  transcriptionText String?
-  listened          Boolean      @default(true)
-  shared            Boolean      @default(false)
-  appointment       Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  appointmentId     String?
-
-  // Answering maching detation (AMD) PARAMS
-  answeredBy               String @default("unknown")
-  machineDetectionDuration String @default("unknown")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Pipeline {
   id   String @id @default(cuid())
