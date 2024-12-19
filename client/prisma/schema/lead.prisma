@@ -275,10 +275,10 @@ model LeadConversation {
     lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
     leadId String
 
-    messages LeadMessage[]
+    communications LeadCommunication[]
 
-    lastMessageId String?      @unique
-    lastMessage   LeadMessage? @relation("lastConversationMessage", fields: [lastMessageId], references: [id], onDelete: Cascade)
+    lastCommunicationId String?            @unique
+    lastCommunication   LeadCommunication? @relation("lastCommunication", fields: [lastCommunicationId], references: [id], onDelete: Cascade)
 
     agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
     agentId String
@@ -292,57 +292,76 @@ model LeadConversation {
 
 //LEADCOMMUNICATION
 model LeadCommunication {
-  id String @id @unique
-  conversationId String?
+    // id,from,price - shared between calls and sms
+    id String @id @unique @default(cuid())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+    conversation   LeadConversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId String?
 
-  from   String
-  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  leadId String?
+    //TODO - dont forget to remove this as the conversation already has the userId
+    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String?
 
-  type String @default("call")
+    lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+    leadId String?
 
-  direction String  @default("inbound")
-  status    String?
-  duration  Int?
-  price     String?
+    from String @default("AGENT")
 
-  recordId        String?
-  recordUrl       String?
-  recordStartTime DateTime?
-  recordStatus    String?
-  recordDuration  Int?
-  recordPrice     String?
+    type String @default("call")
 
-  transcriptionId   String?
-  transcriptionUrl  String?
-  transcriptionText String?
-  listened          Boolean      @default(true)
-  shared            Boolean      @default(false)
-  appointment       Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  appointmentId     String?
+    direction String  @default("inbound")
+    status    String  @default("sent")
+    duration  Int?
+    price     String?
 
-  // Answering maching detation (AMD) PARAMS
-  answeredBy               String @default("unknown")
-  machineDetectionDuration String @default("unknown")
+    recordId        String?
+    recordUrl       String?
+    recordStartTime DateTime?
+    recordStatus    String?
+    recordDuration  Int?
+    recordPrice     String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-	@@map("LeadCommunication")
+    transcriptionId   String?
+    transcriptionUrl  String?
+    transcriptionText String?
+    listened          Boolean      @default(true)
+    shared            Boolean      @default(false)
+    appointment       Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+    appointmentId     String?
+
+    //   SMS FIELDS
+    role       MessageRole @default(user)
+    content    String?     @db.LongText
+    attachment String?
+    //TODO - Don't forget to remove this one all the communication table is completed
+    sid        String?
+    error      String?
+    senderId   String?
+    hasSeen    Boolean     @default(false)
+
+    // Answering maching detation (AMD) PARAMS
+    answeredBy               String @default("unknown")
+    machineDetectionDuration String @default("unknown")
+
+    lastCommunication LeadConversation? @relation("lastCommunication")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("LeadCommunication")
 }
 
+//DONT forget to srop this table once everything is completed
 model LeadMessage {
-    id             String           @id @default(cuid())
-    conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    id             String      @id @default(cuid())
+    // conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
     conversationId String
     //todo- dont forget to repush this in the production database - all the manual labor has been completed
-    type           String           @default("AGENT")
+    type           String      @default("AGENT")
     //type String
-    role           MessageRole      @default(user)
+    role           MessageRole @default(user)
 
-    lastMessage LeadConversation? @relation("lastConversationMessage")
+    // lastMessage LeadConversation? @relation("lastConversationMessage")
 
     content    String  @db.LongText
     attachment String?
@@ -374,4 +393,3 @@ model LeadActivity {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
-

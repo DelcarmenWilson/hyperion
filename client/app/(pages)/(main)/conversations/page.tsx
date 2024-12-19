@@ -5,9 +5,9 @@ import { getLastConversation } from "@/actions/lead/conversation";
 const ConversationsPage = async () => {
   const conversation = await getLastConversation();
 
-  if (conversation) {
-    redirect(`/conversations/${conversation.id}`);
-  }
+  // if (conversation) {
+  //   redirect(`/conversations/${conversation.id}`);
+  // }
   return <EmptyCard title="Start a new Conversation" />;
 };
 

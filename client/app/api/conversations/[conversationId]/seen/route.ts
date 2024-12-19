@@ -17,16 +17,16 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     const conversation = await db.leadConversation.findUnique({
       where: { id: conversationId },
       include: { 
-        messages:true
+        communications:true
         , agent: true },
     });
 
-    if (!conversation) {
+    if (!conversation) 
       return new NextResponse("Invalid Id", { status: 400 });
-    }
+    
 
     //Find the last message
-    const lastMessage = conversation.messages[conversation.messages.length - 1];
+    const lastMessage = conversation.communications[conversation.communications.length - 1];
     if (!lastMessage) {
       return NextResponse.json(conversation);
     }

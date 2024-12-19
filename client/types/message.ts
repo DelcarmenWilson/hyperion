@@ -3,21 +3,21 @@ import {
   ChatMessage,
   ChatMessageReaction,
   Lead,
+  LeadCommunication,
   LeadConversation,
-  LeadMessage,
   User,
 } from "@prisma/client";
 
 import { FullLeadNoConvo } from "./lead";
 
-export type FullMessage = LeadMessage & {
+export type FullMessage = LeadCommunication & {
   sender?: User | null;
 };
 
 // CONVERSATIONS
 export type ShortConvo = LeadConversation & {
   lead: Lead;
-  lastMessage: LeadMessage | null;
+  lastCommunication: LeadCommunication | null;
 };
 export type ShortConversation = {
   id: string;
@@ -32,13 +32,13 @@ export type ShortConversation = {
 
 export type FullConversation = LeadConversation & {
   lead: FullLeadNoConvo;
-  messages: FullMessage[];
+  communications: FullMessage[];
 };
 
 export type FullConversationWithLead = LeadConversation & {
   lead: Lead;
-  lastMessage: LeadMessage | null;
-  messages: FullMessage[];
+  lastcommunication: LeadCommunication | null;
+  communications: FullMessage[];
 };
 
 export type LeadAndConversation = LeadConversation & {

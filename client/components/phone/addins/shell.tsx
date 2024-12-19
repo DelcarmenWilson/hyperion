@@ -41,7 +41,7 @@ const callsData = [
 
 const PhoneShell = () => {
   const { voicemails } = usePhoneContext();
-  //TODO - see if we really nedd this and why
+  //TODO - see if we really need this and why
   const { lead } = usePhoneStore();
   const { setLeadId: setLead } = useLeadStore();
   const { onInboundCalls, onOutboundCalls, onMissedCalls } = useLeadCallData();

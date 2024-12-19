@@ -5,15 +5,11 @@ import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 
 import { useCurrentUser } from "@/hooks/user/use-current";
-import { useConversationId } from "@/hooks/use-conversation";
 import { useLeadStore } from "@/stores/lead-store";
 import { useLeadData } from "@/hooks/lead/use-lead";
-import {
-  useLeadMessageActions,
-  useLeadMessageData,
-} from "@/hooks/lead/use-message";
+import { useLeadMessageActions } from "@/hooks/lead/use-message";
 
-import { LeadMessage } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { FullMessage } from "@/types";
 import { MessageType } from "@/types/message";
 
@@ -22,26 +18,29 @@ import { Button } from "@/components/ui/button";
 import { MessageCard } from "./message-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { useSocketStore } from "@/stores/socket-store";
+import { useLeadCommunicationData } from "@/hooks/lead/use-communication";
+import { CallCard } from "./call-card";
 
 export const SmsBody = ({ conversationId }: { conversationId: string }) => {
-  const { socket } = useContext(SocketContext).SocketState;
+  const { socket } = useSocketStore();
   const user = useCurrentUser();
   const { leadId } = useLeadStore();
   const { onGetLeadBasicInfo } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId as string);
 
-  const { onGetMessages } = useLeadMessageData();
+  const { onGetCommunications } = useLeadCommunicationData();
   const {
-    messages: initMessages,
-    messagesFetching,
-    messagesLoading,
-  } = onGetMessages();
+    communications: initCommunications,
+    communicationsFetching,
+    communicationsLoading,
+  } = onGetCommunications();
 
   // const { conversationId } = useConversationId();
   const { IsPendinginitialMessage, onMessageInitialSubmit } =
     useLeadMessageActions();
 
-  const [messages, setMessages] = useState(initMessages);
+  const [communications, setCommunications] = useState(initCommunications);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -51,10 +50,13 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
       bottomRef.current?.scrollIntoView(true);
     }, 2000);
   };
-  const onSetMessage = (newMessage: LeadMessage) => {
-    const existing = messages?.find((e) => e.id == newMessage.id);
+  const onSetMessage = (newCommunication: LeadCommunication) => {
+    const existing = communications?.find((e) => e.id == newCommunication.id);
     if (existing != undefined) return;
-    setMessages((messages) => [...messages!, newMessage]);
+    setCommunications((communications) => [
+      ...communications!,
+      newCommunication,
+    ]);
     scrollToBottom();
   };
 
@@ -64,15 +66,15 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
       userEmitter.emit("conversationSeen", conversationId as string);
     }
     scrollToBottom();
-    userEmitter.on("messageInserted", (info) => onSetMessage(info));
+    userEmitter.on("communicationInserted", (info) => onSetMessage(info));
     return () => {
-      userEmitter.off("messageInserted", (info) => onSetMessage(info));
+      userEmitter.off("communicationInserted", (info) => onSetMessage(info));
     };
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    const messageHandler = (message: LeadMessage) => {
+    const messageHandler = (message: LeadCommunication) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
       onSetMessage(message);
     };
@@ -91,10 +93,10 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
   }, []);
 
   useEffect(() => {
-    if (!initMessages) return;
-    setMessages(initMessages);
+    if (!initCommunications) return;
+    setCommunications(initCommunications);
     scrollToBottom();
-  }, [initMessages]);
+  }, [initCommunications]);
 
   return (
     <ScrollArea className="flex flex-col flex-1 rounded-sm p-4">
@@ -102,8 +104,8 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
         ref={chatContainerRef}
         className="flex flex-1 flex-col h-full w-full"
       >
-        <SkeletonWrapper isLoading={messagesFetching} fullHeight>
-          {!messages?.length && (
+        <SkeletonWrapper isLoading={communicationsFetching} fullHeight>
+          {!communications?.length && (
             <div className="flex-center flex-col text-muted-foreground h-full gap-2">
               <p className="font-bold">No sms have been sent</p>
               <Button
@@ -119,30 +121,43 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
               <p className="mt-2"> Type a message below</p>
             </div>
           )}
-          {messages?.map((message) => (
+          {communications?.map((communication) => (
             <>
-              {message.type === MessageType.AI ? (
-                <AiCard
-                  key={message.id}
-                  id={message.id}
-                  body={message.content}
-                  createdAt={message.createdAt}
-                />
+              {communication.type == "sms" ? (
+                <>
+                  {communication.from === MessageType.AI ? (
+                    <AiCard
+                      key={communication.id}
+                      id={communication.id}
+                      body={communication.content as string}
+                      createdAt={communication.createdAt}
+                    />
+                  ) : (
+                    <MessageCard
+                      key={communication.id}
+                      id={communication.id}
+                      body={communication.content}
+                      attachment={communication.attachment}
+                      role={communication.role}
+                      status={communication.status}
+                      from={communication.from}
+                      createdAt={communication.createdAt}
+                      username={
+                        communication.role === "user"
+                          ? leadBasic?.firstName!
+                          : user?.name!
+                      }
+                    />
+                  )}
+                </>
               ) : (
-                <MessageCard
-                  key={message.id}
-                  id={message.id}
-                  body={message.content}
-                  attachment={message.attachment}
-                  role={message.role}
-                  status={message.status}
-                  type={message.type}
-                  createdAt={message.createdAt}
-                  username={
-                    message.role === "user"
-                      ? leadBasic?.firstName!
-                      : user?.name!
-                  }
+                <CallCard
+                  key={communication.id}
+                  direction={communication.direction}
+                  status={communication.status}
+                  duration={communication.duration || 0}
+                  recordUrl={communication.recordUrl as string}
+                  createdAt={communication.createdAt}
                 />
               )}
             </>

@@ -1,7 +1,6 @@
 import {
   User,
   Lead,
-  Call,
   Team,
   Organization,
   Feedback,
@@ -11,6 +10,7 @@ import {
   Carrier,
   CarrierCondition,
   Appointment,
+  LeadCommunication,
 } from "@prisma/client";
 
 import { FullAppointment, CalendarEvent, CalendarLabel } from "./appointment";
@@ -78,7 +78,7 @@ import {
 } from "./chat-bot/public-chatbot";
 
 import { FullCampaign, FullAd } from "./facebook";
-export type ShortCall = Call & {
+export type ShortCall = LeadCommunication & {
   lead: {
     id: string;
     firstName: string;
@@ -87,7 +87,7 @@ export type ShortCall = Call & {
     email: string | null;
   } | null;
 };
-export type FullCall = Call & {
+export type FullCall = LeadCommunication & {
   lead: {
     id: string;
     firstName: string;

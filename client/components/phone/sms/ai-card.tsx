@@ -3,13 +3,13 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistance } from "date-fns";
 
-type MessageCardProps = {
+type AiCardProps = {
   id: string;
   body: string;
   createdAt: Date;
 };
 
-export const AiCard = ({ id, body, createdAt }: MessageCardProps) => {
+export const AiCard = ({ id, body, createdAt }: AiCardProps) => {
   return (
     <div className="relative bg-gradient text-sm w-full p-1 rounded mb-1">
       <div className="flex flex-col gap-1 bg-background/75 py-2 px-3 rounded">

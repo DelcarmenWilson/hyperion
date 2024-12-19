@@ -18,6 +18,8 @@ import {
 import { closeOpenAppointments } from "@/actions/appointment";
 import { createNotification } from "@/actions/notification";
 import { remindTodos } from "@/actions/user/todo";
+import { createConversationForCalls } from "@/actions/call";
+import { toast } from "sonner";
 
 const AdminTestMenu = () => {
   const user = useCurrentUser();
@@ -32,6 +34,12 @@ const AdminTestMenu = () => {
       linkText: "View Appointment",
       read: false,
     });
+  };
+  const onCreateCallConversations = async () => {
+    const conversationsCreated = await createConversationForCalls();
+    if (conversationsCreated.success)
+      toast.success(conversationsCreated.success);
+    else toast.success(conversationsCreated.error);
   };
   if (user?.role != "DEVELOPER") return null;
   return (
@@ -62,6 +70,11 @@ const AdminTestMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onCreateNewNotification}>
           Create Notification
+        </DropdownMenuItem>
+        <DropdownMenuLabel>Call Conversations</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => onCreateCallConversations()}>
+          Create Call Conversations
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -8,11 +8,11 @@ import { MessageType } from "@/types/message";
 
 type MessageCardProps = {
   id: string;
-  body: string;
+  body: string | null;
   attachment: string | null;
   role: string;
   status: string;
-  type: string;
+  from: string;
   createdAt: Date;
   username: string;
 };
@@ -52,17 +52,17 @@ export const MessageCard = ({
   attachment,
   role,
   status,
-  type,
+  from,
   createdAt,
   username,
 }: MessageCardProps) => {
-  const isOwn = setBg(type as MessageType);
+  const isOwn = setBg(from as MessageType);
   const Icon = setStatus(status);
 
   return (
     <div className={cn("flex flex-col group mb-2", isOwn.pos && "items-end")}>
       <div className=" text-xs italic px-2">
-        <span>{type === MessageType.TITAN ? "Titan" : username}</span>{" "}
+        <span>{from === MessageType.TITAN ? "Titan" : username}</span>{" "}
         <span className="text-muted-foreground ">
           {formatDistance(createdAt, new Date(), {
             addSuffix: true,

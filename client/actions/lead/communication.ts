@@ -14,15 +14,16 @@ import { userGetByAssistantOld } from "@/data/user";
 import { defaultChat } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
-//TODO - this has to be removed before we get rid of all the tables and actions
-export const getMessagesForConversation = async (
+
+export const getCommunicationForConversation = async (
   conversationId: string | null | undefined
 ) => {
   if (!conversationId) throw new Error("ConversationId was not supplied!!");
   const user = currentUser();
   if (!user) throw new Error("Unauthenticated!");
-  return await db.leadMessage.findMany({
+  return await db.leadCommunication.findMany({
     where: { conversationId, role: { not: "system" } },
+    orderBy: { createdAt: "asc" },
   });
 };
 
@@ -192,7 +193,7 @@ export const insertMessage = async (values: MessageSchemaType) => {
 
   if (!conversation) throw new Error("Conversation does not exists!");
 
-  const newMessage = await db.leadMessage.create({
+  const newMessage = await db.leadCommunication.create({
     data: {
       ...data,
     },

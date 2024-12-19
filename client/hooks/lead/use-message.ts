@@ -13,6 +13,7 @@ import {
   createNewMessage,
 } from "@/actions/lead/message";
 
+//TODO - this file has to be removed before we get rid of all the tables and actions
 export const useLeadMessageData = () => {
   const { conversationId } = useLeadStore();
   //ALL MESSAGES
