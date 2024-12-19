@@ -70,7 +70,6 @@ model Lead {
     expenses      LeadExpense[]
     conversations LeadConversation[]
     appointments  Appointment[]
-    calls         LeadCommunication[]
     activities    LeadActivity[]
     policy        LeadPolicy?
     dotor         LeadDoctor?
@@ -292,18 +291,10 @@ model LeadConversation {
 
 //LEADCOMMUNICATION
 model LeadCommunication {
-    // id,from,price - shared between calls and sms
-    id String @id @unique @default(cuid())
+    id String @id @unique
 
-    conversation   LeadConversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-    conversationId String?
-
-    //TODO - dont forget to remove this as the conversation already has the userId
-    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String?
-
-    lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-    leadId String?
+    conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId String
 
     from String @default("AGENT")
 
@@ -333,10 +324,7 @@ model LeadCommunication {
     role       MessageRole @default(user)
     content    String?     @db.LongText
     attachment String?
-    //TODO - Don't forget to remove this one all the communication table is completed
-    sid        String?
     error      String?
-    senderId   String?
     hasSeen    Boolean     @default(false)
 
     // Answering maching detation (AMD) PARAMS
@@ -349,32 +337,6 @@ model LeadCommunication {
     updatedAt DateTime @updatedAt
 
     @@map("LeadCommunication")
-}
-
-//DONT forget to srop this table once everything is completed
-model LeadMessage {
-    id             String      @id @default(cuid())
-    // conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-    conversationId String
-    //todo- dont forget to repush this in the production database - all the manual labor has been completed
-    type           String      @default("AGENT")
-    //type String
-    role           MessageRole @default(user)
-
-    // lastMessage LeadConversation? @relation("lastConversationMessage")
-
-    content    String  @db.LongText
-    attachment String?
-
-    sid    String?
-    status String  @default("sent")
-    error  String?
-    price  String?
-
-    senderId String?
-
-    hasSeen   Boolean  @default(false)
-    createdAt DateTime @default(now())
 }
 
 model LeadActivity {

@@ -15,14 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { closeOpenAppointments } from "@/actions/appointment";
 import { createNotification } from "@/actions/notification";
 import { remindTodos } from "@/actions/user/todo";
-import {
-  assignLastCommunicationId,
-  createConversationForCalls,
-} from "@/actions/lead/communication";
-import { toast } from "sonner";
 
 const AdminTestMenu = () => {
   const user = useCurrentUser();
@@ -38,18 +34,7 @@ const AdminTestMenu = () => {
       read: false,
     });
   };
-  const onCreateCallConversations = async () => {
-    const conversationsCreated = await createConversationForCalls();
-    if (conversationsCreated.success)
-      toast.success(conversationsCreated.success);
-    else toast.success(conversationsCreated.error);
-  };
 
-  const onAssignLastCommunicationId = async () => {
-    const results = await assignLastCommunicationId();
-    if (results.success) toast.success(results.success);
-    else toast.success(results.error);
-  };
   if (user?.role != "DEVELOPER") return null;
   return (
     <DropdownMenu>
@@ -79,14 +64,6 @@ const AdminTestMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onCreateNewNotification}>
           Create Notification
-        </DropdownMenuItem>
-        <DropdownMenuLabel>Call Conversations</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onCreateCallConversations()}>
-          Create Call Conversations
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onAssignLastCommunicationId()}>
-          Assign Last Communication
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

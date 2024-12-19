@@ -90,7 +90,7 @@ const VoicemailCard = ({ voicemail: vm, onUpdate }: VoicemailCardProps) => {
   const onCallBack = async () => {
     //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
     const response = await axios.post("/api/leads/details/by-id", {
-      leadId: vm?.lead?.id,
+      leadId: vm?.conversation.lead?.id,
     });
     const lead = response.data;
     onPhoneOutClose();
@@ -99,7 +99,7 @@ const VoicemailCard = ({ voicemail: vm, onUpdate }: VoicemailCardProps) => {
   return (
     <TableRow key={vm.id}>
       <TableCell className="font-medium">
-        {vm.lead ? vm.lead.firstName : vm.from}
+        {vm.conversation.lead ? vm.conversation.lead.firstName : vm.from}
       </TableCell>
       <TableCell>
         <AudioPlayer

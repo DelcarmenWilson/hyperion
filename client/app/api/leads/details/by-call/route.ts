@@ -10,9 +10,9 @@ export async function POST(req: Request) {
     const leadId = (
       await db.leadCommunication.findUnique({
         where: { id: callSid },
-        select: { leadId: true },
+        select: { conversation:{select:{leadId:true}} },
       })
-    )?.leadId;
+    )?.conversation.leadId;
 
     if (!leadId) {
       return NextResponse.json({});

@@ -31,17 +31,17 @@ export async function POST(req: Request) {
 
     const newMessage = await db.leadCommunication.create({
       data: {
+        id: result.sid,
         role: "assistant",
-        content: message,
         type:MessageType.TITAN,
+        direction:"outbound",
+        content: message,
         hasSeen: hasSeen || false,
         conversation: {
           connect: {
             id: conversationId,
           },
         },
-        senderId: user.id,
-        sid: result.sid,
       },
     });
 

@@ -2,25 +2,30 @@
 import { db } from "@/lib/db";
 import { timeDiff, getEntireDay } from "@/formulas/dates";
 import { currentUser } from "@/lib/auth";
-import { FullCall } from "@/types";
 import { NotificationReference } from "@/types/notification";
 import { createNotification, updateExitingNotification } from "./notification";
 import { DateRange } from "react-day-picker";
-import { string } from "zod";
-import { connect } from "http2";
+import { LeadCommunicationType } from "@/types/lead";
 //DATA
 //TODO - need to refactor thsi file
 export const getCallsForUser = async (userId: string) => {
   return await db.leadCommunication.findMany({
-    where: { userId },
+    where: {
+      conversation: { agentId: userId },
+      type: { not: LeadCommunicationType.SMS },
+    },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
         },
       },
     },
@@ -32,12 +37,38 @@ export const getCallsForToday = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
 
-  const calls = await db.leadCommunication.findMany({
-    where: { userId: user.id, createdAt: { gte: getEntireDay().start } },
-    include: { lead: true, appointment: true },
+  return await db.leadCommunication.findMany({
+    where: {
+      conversation: { agentId: user.id },
+      type: { not: LeadCommunicationType.SMS },
+      createdAt: { gte: getEntireDay().start },
+    },
+    include: {
+      conversation: {
+        select: {
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
+          },
+        },
+      },
+      appointment: true,
+    },
     orderBy: { createdAt: "desc" },
   });
-  return calls as FullCall[];
 };
 
 export const getCallsForUserFiltered = async ({
@@ -47,23 +78,38 @@ export const getCallsForUserFiltered = async ({
   userId: string;
   dateRange: DateRange;
 }) => {
-  const calls = await db.leadCommunication.findMany({
-    where: { userId, createdAt: { lte: dateRange.to, gte: dateRange.from } },
+  return await db.leadCommunication.findMany({
+    where: {
+      conversation: { agentId: userId },
+      type: { not: LeadCommunicationType.SMS },
+      createdAt: { lte: dateRange.to, gte: dateRange.from },
+    },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
+          },
         },
       },
       appointment: true,
     },
     orderBy: { createdAt: "desc" },
   });
-  return calls as FullCall[];
 };
 
 export const getMultipleCalls = async ({
@@ -75,15 +121,20 @@ export const getMultipleCalls = async ({
   if (!user) throw new Error("Unauthenticated");
 
   return await db.leadCommunication.findMany({
-    where: { userId: user.id, id: { in: callIds } },
+    where: { conversation: { agentId: user.id }, id: { in: callIds } },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agentId: true,
         },
       },
     },
@@ -93,39 +144,67 @@ export const getMultipleCalls = async ({
 export const getCallsFiltered = async (dateRange: DateRange) => {
   const user = await currentUser();
   if (!user) throw new Error("Unathenticated!");
-  const calls = await db.leadCommunication.findMany({
+
+  return await db.leadCommunication.findMany({
     where: {
-      userId: user.id,
+      conversation: { agentId: user.id },
+      type: { not: LeadCommunicationType.SMS },
       createdAt: { lte: dateRange.to, gte: dateRange.from },
     },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
+          },
         },
       },
       appointment: true,
     },
     orderBy: { createdAt: "desc" },
   });
-  return calls as FullCall[];
 };
 
 export const getCallsForLead = async (leadId: string) => {
   return await db.leadCommunication.findMany({
-    where: { leadId },
+    where: {
+      conversation: { leadId },
+      type: { not: LeadCommunicationType.SMS },
+    },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
+          },
         },
       },
     },
@@ -138,18 +217,23 @@ export const getInboundCalls = async () => {
   if (!user) throw new Error("Unauthenticated");
   return await db.leadCommunication.findMany({
     where: {
-      userId: user.id,
+      conversation: { agentId: user.id },
       direction: "inbound",
       status: { not: "no-answer" },
+      type: { not: LeadCommunicationType.SMS },
     },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
         },
       },
     },
@@ -162,15 +246,23 @@ export const getOutboundCalls = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
   return await db.leadCommunication.findMany({
-    where: { userId: user.id, direction: "outbound" },
+    where: {
+      conversation: { agentId: user.id },
+      direction: "outbound",
+      type: { not: LeadCommunicationType.SMS },
+    },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
         },
       },
     },
@@ -183,15 +275,24 @@ export const getMissedCalls = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
   return await db.leadCommunication.findMany({
-    where: { userId: user.id, direction: "inbound", status: "no-answer" },
+    where: {
+      conversation: { agentId: user.id },
+      direction: "inbound",
+      status: "no-answer",
+      type: { not: LeadCommunicationType.SMS },
+    },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
         },
       },
     },
@@ -202,23 +303,30 @@ export const getMissedCalls = async () => {
 
 export const getSharedCalls = async () => {
   return await db.leadCommunication.findMany({
-    where: { shared: true },
+    where: { shared: true, type: { not: LeadCommunicationType.SMS } },
     include: {
-      lead: {
+      conversation: {
         select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          cellPhone: true,
-          email: true,
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
+          },
         },
       },
-      user: {
-        select: {
-          firstName: true,
-        },
-      },
-      appointment:true
+      appointment: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -285,7 +393,7 @@ export const updateCallAppointment = async ({
   appointmentId: string;
 }) => {
   const call = await db.leadCommunication.findFirst({
-    where: { leadId },
+    where: { conversation: { leadId } },
     orderBy: { createdAt: "desc" },
   });
   if (!call) return "Call not found!";

@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSocketStore } from "@/stores/socket-store";
 import { useInvalidate } from "./use-invalidate";
 
-import { FullConversation, ShortConversation, ShortConvo } from "@/types";
+import { FullConversation,  ShortConversation, ShortConvo } from "@/types";
 
 import {
   getConversation,

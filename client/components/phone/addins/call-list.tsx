@@ -38,7 +38,7 @@ const CallsList = ({
           <CallCard
             key={call.id}
             call={call}
-            onCallBack={() => onCallBack(call.leadId as string)}
+            onCallBack={() => onCallBack(call.conversation.lead?.id as string)}
           />
         ))}
       </ScrollArea>
@@ -58,12 +58,13 @@ const CallCard = ({
       <CardContent className="flex justify-between items-center gap-2 !p-2">
         <div className="text-sm">
           <p>
-            {call.lead?.firstName} {call.lead?.lastName}
+            {call.conversation.lead?.firstName}{" "}
+            {call.conversation.lead?.lastName}
           </p>
 
           <div className="flex gap-2 items-center">
             <p className="text-muted-foreground">
-              {formatPhoneNumber(call.lead?.cellPhone as string)}
+              {formatPhoneNumber(call.conversation.lead?.cellPhone as string)}
             </p>
             <Button variant="outlineprimary" size="xs" onClick={onCallBack}>
               <Phone size={14} />

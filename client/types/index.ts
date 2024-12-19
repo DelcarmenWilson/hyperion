@@ -79,26 +79,31 @@ import {
 
 import { FullCampaign, FullAd } from "./facebook";
 export type ShortCall = LeadCommunication & {
-  lead: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    cellPhone: string;
-    email: string | null;
-  } | null;
+  conversation: {
+    lead: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      cellPhone: string;
+      email: string | null;
+    } | null;
+  };
 };
 export type FullCall = LeadCommunication & {
-  lead: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    cellPhone: string;
-    email: string | null;
-  } | null;
-  user?: {
-    firstName: string;
-  }|null;
-  appointment?:Appointment|null
+  conversation: {
+    lead: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      cellPhone: string;
+      email: string | null;
+    } | null;
+    agentId: string;
+    agent:{
+      firstName:string
+    }
+  };
+  appointment?: Appointment | null;
 };
 
 export type FullTeam = Team & {
@@ -155,7 +160,7 @@ export type UserSocket = {
   sid: string;
   role: string;
   firstName: string;
-  orgId:string
+  orgId: string;
 };
 //TERM CARRIER
 export type FullCarrierCondition = CarrierCondition & {
@@ -192,7 +197,8 @@ export type {
   LeadAndConversation,
   ShortChat,
   FullChat,
-  FullChatMessage,FullMiniMessage,
+  FullChatMessage,
+  FullMiniMessage,
   UnreadShortChat,
 };
 //PHONE

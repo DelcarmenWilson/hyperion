@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 import { cfg, client } from "@/lib/twilio/config";
 
-import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
+import { HyperionLead, Lead, LeadCommunication } from "@prisma/client";
 import { LeadAndConversation, TwilioSms } from "@/types";
 import { MessageType } from "@/types/message";
 import { LeadDefaultStatus } from "@/types/lead";
@@ -166,13 +166,13 @@ export const smsSendLeadAppointmentNotification = async ({
   if (!result.success) throw new Error("Message was not sent!");
 
   const newMessage = await insertMessage({
-    role: "assistant",
-    content: message,
+    id: result.success,
     conversationId: convoid!,
-    senderId: userId,
+    role: "assistant",
+    from: MessageType.APPOINTMENT,
+    direction:"outbound",
+    content: message,
     hasSeen: true,
-    type: MessageType.APPOINTMENT,
-    sid: result.success,
   });
 
   return newMessage;
@@ -266,7 +266,7 @@ export const getKeywordResponse = async (
 // Reponse when the autoChat is turned off
 export const disabledAutoChatResponse = async (
   conversation: LeadAndConversation,
-  message: LeadMessage | undefined
+  message: LeadCommunication | undefined
 ) => {
   const updatedConversation = await db.leadConversation.update({
     where: { id: conversation.id },
@@ -319,23 +319,24 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
   }
 
   //Send Message to lead
-  const sid = (
+  const sid = 
     await smsSend({
       toPhone: sms.to,
       fromPhone: lead.cellPhone,
       message: message[1],
     })
-  ).success;
+
+    if(!sid.success)throw new Error("Message not sent")
 
   //Update Messages And conversation
   const insertedMessage = await insertMessage({
+    id: sid.success,
     role: "user",
-    content: message[1],
     conversationId: conversation.id,
-    senderId: agentId,
+    from: MessageType.AGENT,
+    direction:"outbound",
+    content: message[1],
     hasSeen: true,
-    type: MessageType.AGENT,
-    sid: sid,
   });
   return insertedMessage;
 };

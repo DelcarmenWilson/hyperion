@@ -40,10 +40,7 @@ const TeamPage = async ({
 
   const teamReport: FullTeamReport = {
     ...team,
-    calls: team.users.reduce(
-      (sum, user) => sum + user.communications.length,
-      0
-    ),
+    calls: team.users.reduce((sum, user) => sum + user.conversations.length, 0),
     appointments: team.users.reduce(
       (sum, user) => sum + user.appointments.length,
       0
@@ -58,7 +55,8 @@ const TeamPage = async ({
 
   const userReport: FullUserTeamReport[] = team.users.map((user) => ({
     ...user,
-    calls: user.communications.length,
+    //TODO - wee need to change this to use the communications but only for any calls
+    calls: user.conversations.length,
     appointments: user.appointments.length,
     conversations: user.conversations.length,
     revenue: user.leads.reduce(

@@ -17,7 +17,10 @@ export async function POST(req: Request) {
       image: user.image,
       userName: user.userName,
       role: user.role,
-      calls: user.communications.length,
+      calls: user.conversations.reduce(
+        (sum, c) => sum + c.communications.length,
+        0
+      ),
       appointments: user.appointments.length,
       conversations: user.conversations.length,
       revenue: user.leads.reduce((sum, lead) => sum + parseFloat(lead.policy?.ap!), 0),

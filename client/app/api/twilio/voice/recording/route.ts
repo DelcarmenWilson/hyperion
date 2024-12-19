@@ -23,10 +23,11 @@ export async function POST(req: Request) {
       recordDuration: parseInt(j.recordingDuration),
       recordPrice: recording.price,
     },
+    include: { conversation: { select: { leadId: true, agentId: true } } },
   });
 
-  if (call?.leadId) {
-    sendSocketData(call.userId as string, "calllog:new", "");
-  }
+  if (call?.conversation.leadId)
+    sendSocketData(call.conversation.agentId, "calllog:new", "");
+
   return new NextResponse("", { status: 200 });
 }

@@ -25,10 +25,11 @@ export async function POST(req: Request) {
       recordPrice: recording.price,
       type: "conference",
     },
+    include: { conversation: { select: { leadId: true, agentId: true } } },
   });
 
-  if (newCall?.leadId) {
-    sendSocketData(newCall.userId as string, "calllog:new", "");
-  }
+  if (newCall?.conversation.leadId)
+    sendSocketData(newCall.conversation.agentId, "calllog:new", "");
+
   return new NextResponse("", { status: 200 });
 }

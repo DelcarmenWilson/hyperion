@@ -32,13 +32,14 @@ export type ShortConversation = {
 
 export type FullConversation = LeadConversation & {
   lead: FullLeadNoConvo;
-  communications: FullMessage[];
+  communications: LeadCommunication[];
+  lastCommunication: LeadCommunication | null;
 };
 
 export type FullConversationWithLead = LeadConversation & {
   lead: Lead;
-  lastcommunication: LeadCommunication | null;
-  communications: FullMessage[];
+  lastCommunication: LeadCommunication | null;
+  communications: LeadCommunication[];
 };
 
 export type LeadAndConversation = LeadConversation & {

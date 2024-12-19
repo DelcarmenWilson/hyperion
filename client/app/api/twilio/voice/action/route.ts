@@ -25,13 +25,14 @@ export async function POST(req: NextRequest) {
         data: {
           status: j.dialCallStatus,
         },
+        include:{conversation:{select:{agentId:true}}}
       });
 
       //CREATE OR UPDATE EXISTING MISSEDCALL NOTFICATION
       if ((j.dialCallStatus == "no-answer")) {
         await createOrUpdateMissedCallNotification({
           callId: call.id,
-          userId: call.userId as string,
+          userId: call.conversation.agentId,
         });
       }
     }

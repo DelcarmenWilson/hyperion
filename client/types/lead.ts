@@ -7,7 +7,6 @@ import {
   LeadBeneficiary,
   LeadExpense,
   LeadMedicalCondition,
-  LeadMessage,
   MedicalCondition,
   LeadPolicy,
   Carrier,
@@ -29,7 +28,6 @@ export type HalfLeadNoConvo = Lead & {
 };
 
 export type FullLeadNoConvo = Lead & {
-  calls: LeadCommunication[];
   appointments: Appointment[];
   activities?: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];
@@ -42,13 +40,16 @@ export type FullLeadNoConvo = Lead & {
 
 export type LeadConversationType = LeadConversation & {
   lead: Lead;
-  messages: LeadMessage[];
+  messages: LeadCommunication[];
 };
 
+type FullLeadConversation=LeadConversation&{
+  communications:LeadCommunication[]
+}
+
 export type FullLead = Lead & {
-  conversations: LeadConversation[] | null;
-  conversation?: LeadConversation | null;
-  calls: LeadCommunication[];
+  conversations: FullLeadConversation[] | null;
+  conversation?: FullLeadConversation | null;
   appointments: Appointment[];
   activities: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];
@@ -159,3 +160,12 @@ export enum LeadActivityType {
   STATUS = "status",
 
 }
+
+
+export enum LeadCommunicationType {
+  CALL = "CALL",
+  CONFERENCE = "CONFERENCE",
+  SMS = "SMS",
+  VOICEMAIL = "VOICEMAIL",
+}
+

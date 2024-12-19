@@ -2,14 +2,14 @@ import * as z from "zod";
 import { MessageRole } from "@prisma/client";
 
 export const MessageSchema = z.object({
+  id:z.string(),
+  conversationId: z.string(),
+  from:z.string(),
+  direction:z.string(),
   role: z.enum([MessageRole.user, MessageRole.assistant, MessageRole.system]),
   content: z.string(),
-  conversationId: z.string(),
-  type:z.string(),
   attachment: z.optional(z.string()),
-  senderId: z.string(),
   hasSeen: z.boolean(),
-  sid: z.optional(z.string()),
 });
 export type MessageSchemaType = z.infer<typeof MessageSchema>;
 

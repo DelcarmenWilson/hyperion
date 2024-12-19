@@ -14,6 +14,8 @@ import { userGetByAssistantOld } from "@/data/user";
 import { defaultChat } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
+import { LeadCommunicationType } from "@/types/lead";
+import { randomUUID } from "crypto";
 
 export const getCommunicationForConversation = async (
   conversationId: string | null | undefined
@@ -106,11 +108,12 @@ export const createInitialMessage = async (
 
   //insert the prompt into the conversation- the first message will have a role of system. this tells chat gpt to use this as a prompt
   await insertMessage({
-    role: "system",
-    content: prompt,
+    id: randomUUID(),
+    from: MessageType.AGENT,
     conversationId,
-    type: MessageType.AGENT,
-    senderId: user.id,
+    role: "system",
+    direction: "outbound",
+    content: prompt,
     hasSeen: true,
   });
 
@@ -126,13 +129,13 @@ export const createInitialMessage = async (
 
   //insert the initial message into the conversation
   await insertMessage({
+    id: result.success,
+    from: MessageType.TITAN,
+    direction: "outbound",
+    conversationId,
     role: "assistant",
     content: message,
-    conversationId,
-    type: MessageType.TITAN,
-    senderId: user.id,
     hasSeen: true,
-    sid: result.success,
   });
 
   return conversationId;
@@ -170,17 +173,18 @@ export const createNewMessage = async (values: SmsMessageSchemaType) => {
     message: data.content,
   });
 
+  if (!result.success) throw new Error("Message was not sent!");
+
   const newMessage = await insertMessage({
+    id: result.success,
+    conversationId: convoid!,
+    from: MessageType.AGENT,
+    direction: "outbound",
     role: "assistant",
     content: data.content,
-    conversationId: convoid!,
-    type: MessageType.AGENT,
     attachment: data.images,
-    senderId: user.id,
     hasSeen: true,
   });
-
-  if (!result) throw new Error("Message was not sent!");
 
   return newMessage;
 };
@@ -193,72 +197,24 @@ export const insertMessage = async (values: MessageSchemaType) => {
 
   if (!conversation) throw new Error("Conversation does not exists!");
 
-  const newMessage = await db.leadCommunication.create({
+  // const newMessage = await db.leadCommunication.create({
+  //   data: {
+  //     ...data,
+  //     type: LeadCommunicationType.SMS,
+  //   },
+  // });
+
+  const updatedConversation=await db.leadConversation.update({
+    where: { id: data.conversationId },select:{lastCommunication:true},
+  
     data: {
-      ...data,
+      lastCommunication:{create:{
+        ...data,
+        type: LeadCommunicationType.SMS,
+      }},
+      unread: { increment: data.direction == "inbound" ? 1 : 0 },
     },
   });
 
-  await db.leadConversation.update({
-    where: { id: data.conversationId },
-    data: {
-      lastCommunicationId: newMessage.id,
-      unread:
-        conversation.leadId == data.senderId ? conversation.unread + 1 : 0,
-    },
-  });
-
-  return newMessage;
+  return updatedConversation.lastCommunication;
 };
-
-
-//TODO - please remove this action after we run only once
-
-export const createConversationForCalls = async () => {
-  const calls = await db.leadCommunication.findMany({
-    where: { conversationId: undefined, leadId: { not: undefined } },
-  });
-
-  if (!calls) return { error: "No calls to convert" };
-
-  const conversationsToCreate: { agentId: string; leadId: string }[] = [];
-
-  for (const call of calls) {
-    if(call.leadId==null) continue
-    const exists = conversationsToCreate.find(
-      (e) => e.agentId == call.userId && e.leadId == call.leadId
-    );
-    if (!exists) {
-      conversationsToCreate.push({
-        agentId: call.userId as string,
-        leadId: call.leadId as string,
-      });
-    }
-  }
-  
-  await db.leadConversation.createMany({
-    data: conversationsToCreate,
-    skipDuplicates: true,
-  });
-
-  return { success: "Eveything went well" };
-};
-
-export const assignLastCommunicationId=async()=>{
-const conversations=await db.leadConversation.findMany({where:{lastCommunicationId:undefined},select:{id:true}})
-if(!conversations.length) return {error:"No conversations available"}
-for (const convo of conversations) {
-  const first=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"asc"}})
-  const last=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"desc"}})
-  
-  if(!first || !last)continue
-
-  await db.leadConversation.update({where:{id:convo.id},data:{
-    createdAt:first.createdAt,
-    updatedAt:last.createdAt,
-    lastCommunicationId:last.id ,
-  }})
-}
-return {success:"Everything went well"}
-
-}

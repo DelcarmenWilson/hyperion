@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { ShortCall } from "@/types";
+import { FullCall, ShortCall } from "@/types";
 import {
   getCallsForLead,
   getInboundCalls,
@@ -18,7 +18,7 @@ export const useLeadCallData = () => {
       data: calls,
       isFetching: callsFetching,
       isLoading: callsLoading,
-    } = useQuery<ShortCall[]>({
+    } = useQuery<FullCall[]>({
       queryFn: () => getCallsForLead(leadId),
       queryKey: [`leadCalls-${leadId}`],
     });

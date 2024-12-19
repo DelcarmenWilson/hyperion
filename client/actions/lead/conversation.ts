@@ -32,15 +32,14 @@ export const getConversations = async () => {
   return formattedConversations;
 };
 
-export const getConversation = async (conversationId: string) => {
+export const getConversation = async (id: string) => {
   const agentId = await getAssitantForUser();
   if (!agentId) throw new Error("Unauthenticated!");
   return await db.leadConversation.findUnique({
-    where: { id: conversationId, agentId },
+    where: { id, agentId },
     include: {
       lead: {
         include: {
-          calls: true,
           appointments: true,
           activities: true,
           beneficiaries: true,
@@ -49,8 +48,8 @@ export const getConversation = async (conversationId: string) => {
           policy: true,
         },
       },
-      lastCommunication: true,
       communications: true,
+      lastCommunication: true,
     },
   });
 };
@@ -61,7 +60,7 @@ export const getConversationForLead = async (leadId: string) => {
     where: { leadId },
     include: {
       lead: {
-        include: { calls: true, appointments: true, activities: true },
+        include: { appointments: true, activities: true },
       },
       communications: true,
     },
@@ -85,7 +84,6 @@ export const getUnreadConversations = async () => {
   return await db.leadConversation.findMany({
     where: {
       agentId: user.id,
-      lastCommunication: { senderId: { not: user.id } },
       unread: { gt: 0 },
     },
     include: { lastCommunication: true, lead: true },
@@ -131,10 +129,17 @@ export const updateUnreadConversation = async (id: string) => {
     await db.leadConversation.updateMany({
       where: {
         agentId: user.id,
-        lastCommunication: { senderId: { not: user.id } },
         unread: { gt: 0 },
       },
       data: { unread: 0 },
+    });
+
+    await db.leadCommunication.updateMany({
+      where: {
+        conversation:{agentId: user.id,},        
+        hasSeen: false,
+      },
+      data: { hasSeen: true },
     });
   } else {
     const existingConversation = await db.leadConversation.findUnique({
@@ -142,7 +147,15 @@ export const updateUnreadConversation = async (id: string) => {
     });
     if (!existingConversation) throw new Error("Conversation does not exist!");
 
-    await db.leadConversation.update({ where: { id }, data: { unread: 0 } });
+    await db.leadConversation.update({ where: { id:existingConversation.id }, data: { unread: 0 } });
+
+    await db.leadCommunication.updateMany({
+      where: {
+        conversationId:existingConversation.id,     
+        hasSeen: false,
+      },
+      data: { hasSeen: true },
+    });
   }
 
   return { success: id };

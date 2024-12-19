@@ -37,6 +37,7 @@ import { displaySettingsInsert } from "../settings/display";
 
 import { capitalize } from "@/formulas/text";
 import { getEntireDay } from "@/formulas/dates";
+import { LeadCommunicationType } from "@/types/lead";
 
 //DATA
 export const getOnlineUser = async () => {
@@ -92,7 +93,13 @@ export const getUsersChat = async () => {
         team: { organizationId: user.organization },
       },
       include: {
-        communications: { where: {type: { not: "sms" }, createdAt: { gte: getEntireDay().start } } },
+        conversations: {
+          include: {
+            communications: {
+              where: { type: { not: LeadCommunicationType.SMS }, createdAt: { gte: getEntireDay().start } },
+            },
+          },
+        },
         loginStatus: { where: { createdAt: { gte: getEntireDay().start } } },
       },
       orderBy: { firstName: "asc" },
@@ -125,11 +132,11 @@ export const getUsersChat = async () => {
     const users: OnlineUser[] = dbUsers.map((usr) => {
       return {
         ...usr,
-        // chatId:
-        //   chats.find((e) => e.userOneId == usr.id || e.userTwoId == usr.id)
-        //     ?.id || "",
         online: false,
-        calls: usr.communications.length,
+        calls:usr.conversations.reduce(
+          (sum, c) => sum + c.communications.length,
+          0
+        ),
         duration: usr.loginStatus.reduce(
           (sum, login) => sum + login.duration,
           0
@@ -139,21 +146,7 @@ export const getUsersChat = async () => {
       };
     });
 
-    // const users: OnlineUser[] = dbUsers.map((usr) => {
-    //   return {
-    //     ...usr,
-    //     chatId:
-    //       chats.find((e) => e.userOneId == usr.id || e.userTwoId == usr.id)
-    //         ?.id || "",
-    //     online: false,
-    //     calls: usr.calls.length,
-    //     duration: usr.loginStatus.reduce(
-    //       (sum, login) => sum + login.duration,
-    //       0
-    //     ),
-    //     unread: getUnreadMessages(usr.id),
-    //   };
-    // });
+   
 
     return users;
   } catch {

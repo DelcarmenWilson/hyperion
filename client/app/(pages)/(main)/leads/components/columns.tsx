@@ -112,7 +112,7 @@ export const columns: ColumnDef<FullLead>[] = [
           <GeneralInfoClient
             info={leadInfo}
             leadName={`${row.original.firstName} ${row.original.lastName}`}
-            lastCall={row.original.calls[0]?.createdAt}
+            lastCall={row.original.conversation?.communications[0]?.createdAt}
             nextAppointment={row.original.appointments[0]?.startDate}
           />
         </div>

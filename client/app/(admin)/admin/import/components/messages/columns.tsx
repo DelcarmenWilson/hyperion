@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { LeadMessage } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 
-export const columns: ColumnDef<LeadMessage>[] = [
+export const columns: ColumnDef<LeadCommunication>[] = [
   {
     id: "select",
     header: ({ table }) => (

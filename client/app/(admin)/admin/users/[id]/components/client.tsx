@@ -75,10 +75,14 @@ export const UserClient = ({
     (sum, lead) => sum + parseFloat(lead.policy?.ap!),
     0
   );
+  const calls = user.conversations.reduce(
+    (sum, c) => sum + c.communications.length,
+    0
+  );
   const data = [
     {
       title: "Calls",
-      value: user.communications.length.toString() || "0",
+      value: calls.toString() || "0",
       icon: <Phone />,
     },
     {
