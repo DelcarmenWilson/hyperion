@@ -29,7 +29,7 @@ import { getSharedCalls, shareCall } from "@/actions/call";
 //TODO - need to put this logic into a hook
 export const SharedCallsClient = ({ columns = 3 }: { columns?: number }) => {
   const user = useCurrentUser();
-  const { data: calls, isFetching } = useQuery<FullCall[]>({
+  const { data: calls, isFetching } = useQuery<FullCall[] | []>({
     queryFn: () => getSharedCalls(),
     queryKey: ["shared-calls"],
   });

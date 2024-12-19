@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Layers2Icon, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useWorkflowActions } from "@/hooks/use-workflow";
 
 import {
   createWorkflowSchemaType,
@@ -26,30 +26,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { toast } from "sonner";
-import { createWorkflow } from "@/actions/workflow/create-workflow";
-
 const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
   const [open, setOpen] = useState(false);
   const form = useForm<createWorkflowSchemaType>({
     resolver: zodResolver(createWorkflowSchema),
     defaultValues: {},
   });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: createWorkflow,
-    onSuccess: () =>
-      toast.success("Workflow created", { id: "create-workflow" }),
-    onError: () =>
-      toast.error("Failed to create workflow", { id: "create-workflow" }),
-  });
-  const onSubmit = useCallback(
-    (values: createWorkflowSchemaType) => {
-      toast.loading("Creating workflow", { id: "create-workflow" });
-      mutate(values);
-    },
-    [mutate]
-  );
+  const onCancel = () => {
+    form.reset();
+    setOpen(false);
+  };
+  const { onCreateWorkflow, workflowCreating } = useWorkflowActions(onCancel);
 
   return (
     <Dialog
@@ -72,7 +59,7 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
           <Form {...form}>
             <form
               className="space-y-8 w-full"
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onCreateWorkflow)}
             >
               {/* NAME */}
               <FormField
@@ -117,8 +104,16 @@ const CreateWorkflowDialog = ({ triggerText }: { triggerText?: string }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? <Loader2 className="animate-spin" /> : "Proceed"}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={workflowCreating}
+              >
+                {workflowCreating ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Proceed"
+                )}
               </Button>
             </form>
           </Form>

@@ -13,8 +13,9 @@ export const getUserProfile = async ({
     where: { id },
     include: {
       phoneNumbers: true,
-      calls: {
+      communications: {
         where: {
+          type: { not: "sms" },
           createdAt: {
             gte: dateRange.from,
             lte: dateRange.to,

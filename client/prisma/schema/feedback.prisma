@@ -48,7 +48,7 @@ model Job {
   name        String
   description String? @db.LongText
 
-  status   String  @default("Open")
+  status   String  @default("OPEN")
   comments String? @db.LongText
 
   startedAt   DateTime?
@@ -75,7 +75,7 @@ model MiniJob {
   category    String
   description String? @db.LongText
 
-  status   String  @default("Open")
+  status   String  @default("OPEN")
   comments String? @db.LongText
 
   startedAt   DateTime?

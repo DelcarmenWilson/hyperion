@@ -28,7 +28,9 @@ export type CreateAgentWorkInfoSchemaType = z.infer<typeof CreateAgentWorkInfoSc
 export const UpdateAgentWorkInfoSchema = z.object({
   userId:z.string(),
   workType: z.string().min(1),
-  workingDays: z.string().min(1),
+  workingDays: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one day.",
+  }),
   workingHours: z.string().min(1),
   annualTarget: z.coerce.number(),
   targetType: z.string().min(1),

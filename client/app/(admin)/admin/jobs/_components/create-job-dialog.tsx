@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { createJob } from "@/actions/developer/job";
+import { useJobActions } from "@/hooks/job/use-job";
 
 const CreateJobDialog = ({
   triggerText = "Create Job",
@@ -38,18 +39,12 @@ const CreateJobDialog = ({
     defaultValues: {},
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: createJob,
-    onSuccess: () => toast.success("Job created", { id: "create-job" }),
-    onError: () => toast.error("Failed to create job", { id: "create-job" }),
-  });
-  const onSubmit = useCallback(
-    (values: CreateJobSchemaType) => {
-      toast.loading("Creating new job...", { id: "create-job" });
-      mutate(values);
-    },
-    [mutate]
-  );
+  const onCancel = () => {
+    form.reset();
+    setOpen(false);
+  };
+
+  const { onCreateJob, jobCreating } = useJobActions(onCancel);
 
   return (
     <Dialog
@@ -64,11 +59,11 @@ const CreateJobDialog = ({
       </DialogTrigger>
       <DialogContent>
         <CustomDialogHeader icon={BriefcaseIcon} title="Create job" />
-        <div className="px-6 py-4">
+        <div className="px-4 py-2">
           <Form {...form}>
             <form
               className="space-y-4 w-full"
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onCreateJob)}
             >
               {/* NAME */}
               <FormField
@@ -119,8 +114,8 @@ const CreateJobDialog = ({
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? <Loader2 className="animate-spin" /> : "Proceed"}
+              <Button type="submit" className="w-full" disabled={jobCreating}>
+                {jobCreating ? <Loader2 className="animate-spin" /> : "Proceed"}
               </Button>
             </form>
           </Form>

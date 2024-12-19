@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PhoneOutgoing } from "lucide-react";
 
-import { Call } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { FullCall } from "@/types";
 
 import { CallHistoryActions } from "@/components/callhistory/actions";
@@ -22,7 +22,7 @@ const LeadCalls = ({ leadId }: { leadId: string }) => {
   });
   //TODO find the other component that looks just like this one
   useEffect(() => {
-    const callHandler = (newCall: Call) => {
+    const callHandler = (newCall: LeadCommunication) => {
       //TODO - need to invalidate the quesry instead
       // setCalls((current) => {
       //   const existingCall = current.find((e) => e.id == newCall.id);

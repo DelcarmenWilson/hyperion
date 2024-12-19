@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import axios from "axios";
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 import { formatObject } from "@/formulas/objects";
@@ -14,7 +13,7 @@ export async function POST(req: Request) {
     await client.recordings.get(j.recordingSid).fetch()
   ).toJSON();
 
-  const call = await db.call.update({
+  const call = await db.leadCommunication.update({
     where: { id: j.callSid },
     data: {
       recordId: j.recordingSid,
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
   });
 
   if (call?.leadId) {
-    sendSocketData(call.userId, "calllog:new", "");
+    sendSocketData(call.userId as string, "calllog:new", "");
   }
   return new NextResponse("", { status: 200 });
 }

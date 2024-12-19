@@ -40,7 +40,7 @@ const NavBar = ({ admin = false }: { admin?: boolean }) => {
     >
       <a className="flex gap-1 items-center" href="/">
         <Image
-          src="/logo3.png"
+          src="/logo.png"
           alt="hyperion logo"
           width={30}
           height={30}

@@ -25,7 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { USDollar } from "@/formulas/numbers";
 import { convertBluePrintMonthData } from "@/formulas/reports";
 import { allMonths } from "@/constants/texts";
-import { CreateAgentWorkInfoDialog } from "./form";
+import { CreateAgentWorkInfoDialog } from "./update-agent-work-info-dialog";
 
 export const AgentWorkInfoClient = () => {
   const { onGetAgentWorkInfo, onGetBluePrintWeekReport } = useBluePrintData();

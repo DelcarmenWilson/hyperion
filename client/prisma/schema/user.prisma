@@ -27,7 +27,7 @@ model User {
 
     //LEAD COLUMNS
     leads         Lead[]
-    calls         Call[]
+    communications LeadCommunication[]
     conversations LeadConversation[]
     appointments  Appointment[]
     activities    LeadActivity[]

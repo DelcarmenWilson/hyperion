@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createNewBlueprintWeek } from "@/actions/blueprint/week/create-new-blueprint-week";
+import { createNewBlueprintWeek } from "@/actions/blueprint/week";
 import { hideDeletedMessages } from "@/actions/chat/message/hide-deleted-messages";
 import { remindTodos } from "@/actions/user/todo";
 import { scheduleLeadsToImport } from "@/actions/facebook/leads";

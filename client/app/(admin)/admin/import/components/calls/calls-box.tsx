@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Papa from "papaparse";
 
-import { Call } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { columns } from "./columns";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
 export const CallsBox = () => {
-  const [calls, setCalls] = useState<Call[]>([]);
+  const [calls, setCalls] = useState<LeadCommunication[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const onFileUploaded = (e: any) => {
@@ -21,7 +21,7 @@ export const CallsBox = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (result: any) {
-        const mapped: Call[] = convertCalls(result);
+        const mapped: LeadCommunication[] = convertCalls(result);
         setCalls(mapped);
       },
     });

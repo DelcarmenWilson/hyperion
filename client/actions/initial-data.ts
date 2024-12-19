@@ -3,9 +3,9 @@
 import { db } from "@/lib/db";
 import {
   Appointment,
-  Call,
   ChatSettings,
   Lead,
+  LeadCommunication,
   LeadConversation,
   LeadMessage,
   PhoneNumber,
@@ -64,8 +64,8 @@ export const initialLeads = async (values: Lead[]) => {
   };
 };
 
-export const initialCalls = async (values: Call[]) => {
-  const calls = await db.call.createMany({
+export const initialCalls = async (values: LeadCommunication[]) => {
+  const calls = await db.leadCommunication.createMany({
     data: values,
     skipDuplicates: true,
   });

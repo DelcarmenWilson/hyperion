@@ -40,7 +40,10 @@ const TeamPage = async ({
 
   const teamReport: FullTeamReport = {
     ...team,
-    calls: team.users.reduce((sum, user) => sum + user.calls.length, 0),
+    calls: team.users.reduce(
+      (sum, user) => sum + user.communications.length,
+      0
+    ),
     appointments: team.users.reduce(
       (sum, user) => sum + user.appointments.length,
       0
@@ -55,7 +58,7 @@ const TeamPage = async ({
 
   const userReport: FullUserTeamReport[] = team.users.map((user) => ({
     ...user,
-    calls: user.calls.length,
+    calls: user.communications.length,
     appointments: user.appointments.length,
     conversations: user.conversations.length,
     revenue: user.leads.reduce(

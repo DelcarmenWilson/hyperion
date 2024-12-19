@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import axios from "axios";
 import { client } from "@/lib/twilio/config";
 import { NextResponse } from "next/server";
 import { TwilioConferenceRecording } from "@/types";
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
     await client.recordings.get(call.recordingSid).fetch()
   ).toJSON();
 
-  const newCall = await db.call.update({
+  const newCall = await db.leadCommunication.update({
     where: { id: recording.callSid },
     data: {
       recordId: call.recordingSid,
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
   });
 
   if (newCall?.leadId) {
-    sendSocketData(newCall.userId, "calllog:new", "");
+    sendSocketData(newCall.userId as string, "calllog:new", "");
   }
   return new NextResponse("", { status: 200 });
 }

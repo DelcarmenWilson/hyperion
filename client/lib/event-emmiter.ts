@@ -24,6 +24,7 @@ import {
   Presets,
   UserLicense,
   UserTemplate,
+  LeadCommunication,
 } from "@prisma/client";
 
 type UserEvents = {
@@ -61,8 +62,9 @@ type UserEvents = {
 
   mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
-  chatbotMessageInserted: [info: ChatbotMessage[]];
+  chatbotMessageInserted: [info: ChatbotMessage[]];  
   messageInserted: [info: LeadMessage];
+  communicationInserted: [info: LeadCommunication];
 
   presetInserted: [Presets];
   policyInfoUpdated: [info: FullLeadPolicy];

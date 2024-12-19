@@ -66,7 +66,7 @@ export const ResetPasswordEmail = ({ username, resetLink }: Props) => (
 
         <Text className="flex justify-center items-center gap-2 text-[12px] text-color-[#6a737d] mt-15">
           <Img
-            src={`${baseUrl}/logo3.png`}
+            src={`${baseUrl}/logo.png`}
             width="20"
             height="20"
             alt="Hyperion"

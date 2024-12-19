@@ -14,7 +14,7 @@ import { userGetByAssistantOld } from "@/data/user";
 import { defaultChat } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
-
+//TODO - this has to be removed before we get rid of all the tables and actions
 export const getMessagesForConversation = async (
   conversationId: string | null | undefined
 ) => {
@@ -32,7 +32,7 @@ export const createInitialMessage = async (
   if (!leadId) throw new Error("Lead was not supplied!");
 
   const dbuser = await currentUser();
-  //if user is not logged in, then return unathorized
+  //if user is not logged in, then return unauthorized
   if (!dbuser) throw new Error("Unauthenticated!");
 
   //retrieve user data from database and include the team
@@ -201,7 +201,7 @@ export const insertMessage = async (values: MessageSchemaType) => {
   await db.leadConversation.update({
     where: { id: data.conversationId },
     data: {
-      lastMessageId: newMessage.id,
+      lastCommunicationId: newMessage.id,
       unread:
         conversation.leadId == data.senderId ? conversation.unread + 1 : 0,
     },

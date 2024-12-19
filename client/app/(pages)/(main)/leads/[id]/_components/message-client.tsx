@@ -16,22 +16,22 @@ export const Body = ({ initialData }: BodyProps) => {
     <div className="w-full flex flex-col items-center ">
       <div className="flex flex-col items-center h-[400px] w-full">
         <ScrollArea className="flex flex-col flex-1 w-full rounded-sm p-4 overflow-hidden overflow-y-auto ">
-          {!initialData?.messages.length}
+          {!initialData?.communications.length}
           {
             <p className="text-center text-muted-foreground">
               No sms have been sent
             </p>
           }
-          {initialData?.messages.map((message, i) => (
+          {initialData?.communications.map((communication, i) => (
             <MessageBox
-              key={message.id}
-              data={message}
+              key={communication.id}
+              data={communication}
               username={
-                message.role === "user"
+                communication.role === "user"
                   ? initialData.lead.lastName
-                  : message.sender?.userName!
+                  : communication.sender?.userName!
               }
-              isLast={i === initialData.messages.length - 1}
+              isLast={i === initialData.communications.length - 1}
             />
           ))}
         </ScrollArea>

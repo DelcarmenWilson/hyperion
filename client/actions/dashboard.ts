@@ -9,7 +9,7 @@ export const getDashboardCards = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
   const date = getEntireDay();
-  const calls = await db.call.groupBy({
+  const calls = await db.leadCommunication.groupBy({
     by: ["direction"],
     where: {
       userId: user.id,
@@ -17,6 +17,7 @@ export const getDashboardCards = async () => {
         { direction: "inbound",status:{not:"no-anwser"} },
         { direction: "outbound", recordDuration: { gt: 5 } },
       ],
+      type:{not:"sms"},
       createdAt: { gte: date.start },
     },
     _count: {
@@ -33,11 +34,11 @@ export const getDashboardCards = async () => {
     },
   });
 
-  const messages = await db.leadMessage.aggregate({
+  const messages = await db.leadCommunication.aggregate({
     _count: { id: true },
     where: {
       conversation: { agentId: user.id },
-      type: MessageType.LEAD,
+      from: MessageType.LEAD,
       createdAt: { gte: date.start },
     },
   });

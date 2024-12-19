@@ -2,29 +2,22 @@
 import React from "react";
 import { CheckIcon } from "lucide-react";
 import { useReactFlow } from "@xyflow/react";
-import { useMutation } from "@tanstack/react-query";
+import { useWorkflowActions } from "@/hooks/use-workflow";
 
 import { Button } from "@/components/ui/button";
-import { updateWorkflow } from "@/actions/workflow/update-workflow";
-import { toast } from "sonner";
 
 const SaveBtn = ({ workflowId }: { workflowId: string }) => {
   const { toObject } = useReactFlow();
-  const saveMutation = useMutation({
-    mutationFn: updateWorkflow,
-    onSuccess: () =>
-      toast.success("Flow save succesfully", { id: "save-workflow" }),
-    onError: () => toast.error("Something went worng", { id: "save-workflow" }),
-  });
+  const { onSaveWorkflow, workflowSaving } = useWorkflowActions();
+
   return (
     <Button
       variant="outline"
       className="flex items-center gap-2"
-      disabled={saveMutation.isPending}
+      disabled={workflowSaving}
       onClick={() => {
         const workflowDefinition = JSON.stringify(toObject());
-        toast.loading("Saving workflow...", { id: "save-workflow" });
-        saveMutation.mutate({
+        onSaveWorkflow({
           id: workflowId,
           definition: workflowDefinition,
         });

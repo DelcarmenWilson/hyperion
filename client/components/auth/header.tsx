@@ -10,7 +10,7 @@ export const Header = ({ label }: HeaderProps) => {
     <div className="width-full flex flex-col gap-y-4 items-center justify-center">
       <h1 className="text-3xl font-semibold flex justify-between items-center gap-x-2">
         <Image
-          src="/logo3.png"
+          src="/logo.png"
           width="60"
           height="60"
           className="w-[60px] h-[60px]"

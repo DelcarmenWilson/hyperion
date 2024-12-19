@@ -14,8 +14,8 @@ export const LoadingCard = ({ title = "loading", subTitle }: Props) => {
           <Image
             height={80}
             width={80}
-            className="absolute w-full h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  bg-secondary/20 p-4 rounded-full"
-            src="/logo3.png"
+            className="absolute w-full h-full p-2"
+            src="/logo-transparent.png"
             alt="logo"
             priority
           />

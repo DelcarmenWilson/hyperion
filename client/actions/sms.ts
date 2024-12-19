@@ -262,8 +262,6 @@ export const getKeywordResponse = async (
     default:
       return null;
   }
-
-  return null;
 };
 // Reponse when the autoChat is turned off
 export const disabledAutoChatResponse = async (
@@ -272,9 +270,9 @@ export const disabledAutoChatResponse = async (
 ) => {
   const updatedConversation = await db.leadConversation.update({
     where: { id: conversation.id },
-    include: { lastMessage: true, lead: true },
+    include: { lastCommunication: true, lead: true },
     data: {
-      lastMessageId: message?.id,
+      lastCommunicationId: message?.id,
     },
   });
   const lead = conversation.lead;

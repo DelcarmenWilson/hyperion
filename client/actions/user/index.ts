@@ -92,7 +92,7 @@ export const getUsersChat = async () => {
         team: { organizationId: user.organization },
       },
       include: {
-        calls: { where: { createdAt: { gte: getEntireDay().start } } },
+        communications: { where: {type: { not: "sms" }, createdAt: { gte: getEntireDay().start } } },
         loginStatus: { where: { createdAt: { gte: getEntireDay().start } } },
       },
       orderBy: { firstName: "asc" },
@@ -129,7 +129,7 @@ export const getUsersChat = async () => {
         //   chats.find((e) => e.userOneId == usr.id || e.userTwoId == usr.id)
         //     ?.id || "",
         online: false,
-        calls: usr.calls.length,
+        calls: usr.communications.length,
         duration: usr.loginStatus.reduce(
           (sum, login) => sum + login.duration,
           0

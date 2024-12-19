@@ -58,7 +58,7 @@ const MenuOptions = ({ main = false, defaultOpen }: Props) => {
         <div className="flex flex-col h-full flex-1">
           <a className="flex h-14 gap-2 items-center" href="/">
             <Image
-              src="/logo3.png"
+              src="/logo.png"
               alt="hyperion logo"
               width={30}
               height={30}

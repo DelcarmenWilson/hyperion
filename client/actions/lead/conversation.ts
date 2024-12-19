@@ -13,8 +13,7 @@ export const getConversations = async () => {
     where: { agentId },
     include: {
       lead: true,
-      lastMessage: true,
-      messages: true,
+      lastCommunication: true,
     },
     orderBy: { updatedAt: "desc" },
   });
@@ -26,9 +25,8 @@ export const getConversations = async () => {
       lastName: conversation.lead.lastName,
       disposition: "",
       cellPhone: conversation.lead.cellPhone,
-      message: conversation.lastMessage?.content!,
-      unread: conversation.messages.filter((message) => !message.hasSeen)
-        .length,
+      lastCommunication: conversation.lastCommunication!,
+      unread: conversation.unread
     })
   );
   return formattedConversations;
@@ -51,8 +49,8 @@ export const getConversation = async (conversationId: string) => {
           policy: true,
         },
       },
-      lastMessage: true,
-      messages: true,
+      lastCommunication: true,
+      communications: true,
     },
   });
 };
@@ -65,7 +63,7 @@ export const getConversationForLead = async (leadId: string) => {
       lead: {
         include: { calls: true, appointments: true, activities: true },
       },
-      messages: true,
+      communications: true,
     },
   });
 };
@@ -87,10 +85,10 @@ export const getUnreadConversations = async () => {
   return await db.leadConversation.findMany({
     where: {
       agentId: user.id,
-      lastMessage: { senderId: { not: user.id } },
+      lastCommunication: { senderId: { not: user.id } },
       unread: { gt: 0 },
     },
-    include: { lastMessage: true, lead: true },
+    include: { lastCommunication: true, lead: true },
   });
 };
 
@@ -133,7 +131,7 @@ export const updateUnreadConversation = async (id: string) => {
     await db.leadConversation.updateMany({
       where: {
         agentId: user.id,
-        lastMessage: { senderId: { not: user.id } },
+        lastCommunication: { senderId: { not: user.id } },
         unread: { gt: 0 },
       },
       data: { unread: 0 },

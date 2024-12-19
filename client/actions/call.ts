@@ -6,10 +6,12 @@ import { FullCall } from "@/types";
 import { NotificationReference } from "@/types/notification";
 import { createNotification, updateExitingNotification } from "./notification";
 import { DateRange } from "react-day-picker";
+import { string } from "zod";
+import { connect } from "http2";
 //DATA
 //TODO - need to refactor thsi file
 export const getCallsForUser = async (userId: string) => {
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { userId },
     include: {
       lead: {
@@ -30,7 +32,7 @@ export const getCallsForToday = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
 
-  const calls = await db.call.findMany({
+  const calls = await db.leadCommunication.findMany({
     where: { userId: user.id, createdAt: { gte: getEntireDay().start } },
     include: { lead: true, appointment: true },
     orderBy: { createdAt: "desc" },
@@ -45,7 +47,7 @@ export const getCallsForUserFiltered = async ({
   userId: string;
   dateRange: DateRange;
 }) => {
-  const calls = await db.call.findMany({
+  const calls = await db.leadCommunication.findMany({
     where: { userId, createdAt: { lte: dateRange.to, gte: dateRange.from } },
     include: {
       lead: {
@@ -72,7 +74,7 @@ export const getMultipleCalls = async ({
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
 
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { userId: user.id, id: { in: callIds } },
     include: {
       lead: {
@@ -91,7 +93,7 @@ export const getMultipleCalls = async ({
 export const getCallsFiltered = async (dateRange: DateRange) => {
   const user = await currentUser();
   if (!user) throw new Error("Unathenticated!");
-  const calls = await db.call.findMany({
+  const calls = await db.leadCommunication.findMany({
     where: {
       userId: user.id,
       createdAt: { lte: dateRange.to, gte: dateRange.from },
@@ -114,7 +116,7 @@ export const getCallsFiltered = async (dateRange: DateRange) => {
 };
 
 export const getCallsForLead = async (leadId: string) => {
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { leadId },
     include: {
       lead: {
@@ -134,7 +136,7 @@ export const getCallsForLead = async (leadId: string) => {
 export const getInboundCalls = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: {
       userId: user.id,
       direction: "inbound",
@@ -159,7 +161,7 @@ export const getInboundCalls = async () => {
 export const getOutboundCalls = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { userId: user.id, direction: "outbound" },
     include: {
       lead: {
@@ -180,7 +182,7 @@ export const getOutboundCalls = async () => {
 export const getMissedCalls = async () => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated");
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { userId: user.id, direction: "inbound", status: "no-answer" },
     include: {
       lead: {
@@ -199,7 +201,7 @@ export const getMissedCalls = async () => {
 };
 
 export const getSharedCalls = async () => {
-  return await db.call.findMany({
+  return await db.leadCommunication.findMany({
     where: { shared: true },
     include: {
       lead: {
@@ -216,6 +218,7 @@ export const getSharedCalls = async () => {
           firstName: true,
         },
       },
+      appointment:true
     },
     orderBy: { createdAt: "desc" },
   });
@@ -223,19 +226,36 @@ export const getSharedCalls = async () => {
 //ACTIONS
 export const createCall = async (data: {
   id: string;
-  userId: string;
+  agentId: string;
   leadId: string;
   direction: string;
+  from: string;
+  status: string;
 }) => {
-  if (!data.userId) throw new Error("User id is required!");
-
+  if (!data.agentId) throw new Error("Agent id is required!");
   if (!data.leadId) throw new Error("Lead id is required!");
 
-  await db.call.create({
+  const conversation = await db.leadConversation.upsert({
+    where: { leadId_agentId: { leadId: data.leadId, agentId: data.agentId } },
+    update: {
+      unread: { increment: data.direction == "outbound" ? 1 : 0 },
+    },
+    create: {
+      leadId: data.leadId,
+      agentId: data.agentId,
+    },
+  });
+
+  const call = await db.leadCommunication.create({
     data: {
       ...data,
-      status: "",
-      from: "",
+      conversationId: conversation.id,
+    },
+  });
+  await db.leadConversation.update({
+    where: { id: conversation.id },
+    data: {
+      lastCommunicationId: call.id,
     },
   });
   return "Call created";
@@ -248,7 +268,7 @@ export const shareCall = async ({
   id: string;
   shared: boolean;
 }) => {
-  await db.call.update({
+  await db.leadCommunication.update({
     where: { id },
     data: {
       shared,
@@ -264,7 +284,7 @@ export const updateCallAppointment = async ({
   leadId: string;
   appointmentId: string;
 }) => {
-  const call = await db.call.findFirst({
+  const call = await db.leadCommunication.findFirst({
     where: { leadId },
     orderBy: { createdAt: "desc" },
   });
@@ -274,7 +294,7 @@ export const updateCallAppointment = async ({
 
   if (diff > 60) throw new Error("Call time is over 1 hour");
 
-  await db.call.update({
+  await db.leadCommunication.update({
     where: { id: call.id },
     data: {
       appointmentId,

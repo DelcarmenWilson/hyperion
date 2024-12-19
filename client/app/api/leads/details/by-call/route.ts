@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { callSid } = body;
 
     const leadId = (
-      await db.call.findUnique({
+      await db.leadCommunication.findUnique({
         where: { id: callSid },
         select: { leadId: true },
       })

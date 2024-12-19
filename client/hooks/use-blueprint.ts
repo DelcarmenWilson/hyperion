@@ -10,18 +10,21 @@ import {
   UpdateAgentWorkInfoSchemaType,
 } from "@/schemas/blueprint";
 
-import { getActiveBlueprint } from "@/actions/blueprint/get-active-blueprint";
-import { getBlueprints } from "@/actions/blueprint/get-blueprints";
+import { getActiveBlueprint, getBlueprints } from "@/actions/blueprint/index";
 
-import { createAgentWorkInfo } from "@/actions/blueprint/agent-work-info/create-agent-work-info";
-import { getAgentWorkInfo } from "@/actions/blueprint/agent-work-info/get-agent-work-info";
-import { updateAgentWorkInfo } from "@/actions/blueprint/agent-work-info/update-agent-work-info";
+import {
+  createAgentWorkInfo,
+  getAgentWorkInfo,
+  updateAgentWorkInfo,
+} from "@/actions/blueprint/agent-work-info";
 
-import { createNewBlueprintWeek } from "@/actions/blueprint/week/create-new-blueprint-week";
-import { getActiveBluePrintWeek } from "@/actions/blueprint/week/get-active-blueprint-week";
-import { getBluePrintWeeksReport } from "@/actions/blueprint/week/get-blueprint-weeks-report";
-import { getBluePrintWeeks } from "@/actions/blueprint/week/get-blueprint-weeks";
-import { updateBluePrintWeek } from "@/actions/blueprint/week/update-blueprint-week";
+import {
+  createNewBlueprintWeek,
+  getActiveBluePrintWeek,
+  getBluePrintWeeksReport,
+  getBluePrintWeeks,
+  updateBluePrintWeek,
+} from "@/actions/blueprint/week";
 
 export const useBluePrintData = () => {
   const onGetAgentWorkInfo = () => {

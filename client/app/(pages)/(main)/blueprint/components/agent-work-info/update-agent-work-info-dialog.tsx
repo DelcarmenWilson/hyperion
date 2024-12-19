@@ -38,7 +38,8 @@ import {
 import { TargetList } from "./list";
 
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
-import { daysOfTheWeek } from "@/formulas/schedule";
+import { daysOfTheWeek, daysOfTheWeek2 } from "@/formulas/schedule";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const CreateAgentWorkInfoDialog = ({
   triggerText = "Create Agent Work Info",
@@ -229,6 +230,7 @@ export const UpdateAgentWorkInfoDialog = ({
   const [open, setOpen] = useState(false);
   const form = useForm<UpdateAgentWorkInfoSchemaType>({
     resolver: zodResolver(UpdateAgentWorkInfoSchema),
+    //@ts-ignore
     defaultValues: workInfo,
   });
 
@@ -291,19 +293,51 @@ export const UpdateAgentWorkInfoDialog = ({
                 <FormField
                   control={form.control}
                   name="workingDays"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
-                      <FormLabel>
-                        Working Days
-                        <FormMessage />
-                      </FormLabel>
-                      <FormControl>
-                        <WorkingDays
-                          defaultValue={field.value}
-                          onChange={field.onChange}
-                          loading={agentWorkInfoUpdating}
+                      <div className="mb-4">
+                        <FormLabel className="text-base">Sidebar</FormLabel>
+                        <FormDescription>
+                          Select the items you want to display in the sidebar.
+                        </FormDescription>
+                      </div>
+                      {daysOfTheWeek2.map((item) => (
+                        <FormField
+                          key={item.value}
+                          control={form.control}
+                          name="workingDays"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={item.value}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(item.value)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([
+                                            ...field.value,
+                                            item.value,
+                                          ])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== item.value
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-sm font-normal">
+                                  {item.name}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
                         />
-                      </FormControl>
+                      ))}
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

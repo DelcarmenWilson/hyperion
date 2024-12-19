@@ -19,9 +19,8 @@ export async function POST(req: NextRequest) {
   //If the call status matched to any of the defined call statuses update the current call
   //and send a voicemail request back to twilio
   if (callStatus.includes(j.dialCallStatus)) {
-    console.log("we made it inside the function call")
     if (j.direction == "inbound") {
-      const call = await db.call.update({
+      const call = await db.leadCommunication.update({
         where: { id: j.callSid },
         data: {
           status: j.dialCallStatus,
@@ -32,7 +31,7 @@ export async function POST(req: NextRequest) {
       if ((j.dialCallStatus == "no-answer")) {
         await createOrUpdateMissedCallNotification({
           callId: call.id,
-          userId: call.userId,
+          userId: call.userId as string,
         });
       }
     }
