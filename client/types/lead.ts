@@ -7,7 +7,6 @@ import {
   LeadBeneficiary,
   LeadExpense,
   LeadMedicalCondition,
-  LeadMessage,
   MedicalCondition,
   LeadPolicy,
   Carrier,
@@ -42,7 +41,7 @@ export type FullLeadNoConvo = Lead & {
 
 export type LeadConversationType = LeadConversation & {
   lead: Lead;
-  messages: LeadMessage[];
+  messages: LeadCommunication[];
 };
 
 export type FullLead = Lead & {

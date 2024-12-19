@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 import { cfg, client } from "@/lib/twilio/config";
 
-import { HyperionLead, Lead, LeadMessage } from "@prisma/client";
+import { HyperionLead, Lead, LeadCommunication } from "@prisma/client";
 import { LeadAndConversation, TwilioSms } from "@/types";
 import { MessageType } from "@/types/message";
 import { LeadDefaultStatus } from "@/types/lead";
@@ -171,7 +171,7 @@ export const smsSendLeadAppointmentNotification = async ({
     conversationId: convoid!,
     senderId: userId,
     hasSeen: true,
-    type: MessageType.APPOINTMENT,
+    from: MessageType.APPOINTMENT,
     sid: result.success,
   });
 
@@ -266,7 +266,7 @@ export const getKeywordResponse = async (
 // Reponse when the autoChat is turned off
 export const disabledAutoChatResponse = async (
   conversation: LeadAndConversation,
-  message: LeadMessage | undefined
+  message: LeadCommunication | undefined
 ) => {
   const updatedConversation = await db.leadConversation.update({
     where: { id: conversation.id },
@@ -334,7 +334,7 @@ export const forwardTextToLead = async (sms: TwilioSms, agentId: string) => {
     conversationId: conversation.id,
     senderId: agentId,
     hasSeen: true,
-    type: MessageType.AGENT,
+    from: MessageType.AGENT,
     sid: sid,
   });
   return insertedMessage;

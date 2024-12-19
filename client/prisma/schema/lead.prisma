@@ -351,31 +351,6 @@ model LeadCommunication {
     @@map("LeadCommunication")
 }
 
-//DONT forget to srop this table once everything is completed
-model LeadMessage {
-    id             String      @id @default(cuid())
-    // conversation   LeadConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-    conversationId String
-    //todo- dont forget to repush this in the production database - all the manual labor has been completed
-    type           String      @default("AGENT")
-    //type String
-    role           MessageRole @default(user)
-
-    // lastMessage LeadConversation? @relation("lastConversationMessage")
-
-    content    String  @db.LongText
-    attachment String?
-
-    sid    String?
-    status String  @default("sent")
-    error  String?
-    price  String?
-
-    senderId String?
-
-    hasSeen   Boolean  @default(false)
-    createdAt DateTime @default(now())
-}
 
 model LeadActivity {
     id String @id @default(cuid())
@@ -393,3 +368,4 @@ model LeadActivity {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
+

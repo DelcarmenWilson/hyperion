@@ -7,7 +7,6 @@ import {
   Lead,
   LeadCommunication,
   LeadConversation,
-  LeadMessage,
   PhoneNumber,
   Presets,
   Schedule,
@@ -94,8 +93,8 @@ export const initialConversations = async (values: LeadConversation[]) => {
   };
 };
 
-export const initialMessages = async (values: LeadMessage[]) => {
-  const messages = await db.leadMessage.createMany({
+export const initialMessages = async (values: LeadCommunication[]) => {
+  const messages = await db.leadCommunication.createMany({
     data: values,
     skipDuplicates: true,
   });

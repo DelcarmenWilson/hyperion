@@ -20,7 +20,6 @@ import {
   ChatbotMessage,
   HyperionLead,
   LeadStatus,
-  LeadMessage,
   Presets,
   UserLicense,
   UserTemplate,
@@ -63,7 +62,7 @@ type UserEvents = {
   mainInfoUpdated: [info: LeadMainSchemaType];
   chatMessageInserted: [info: FullChatMessage];
   chatbotMessageInserted: [info: ChatbotMessage[]];  
-  messageInserted: [info: LeadMessage];
+  messageInserted: [info: LeadCommunication];
   communicationInserted: [info: LeadCommunication];
 
   presetInserted: [Presets];

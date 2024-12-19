@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     }
 
     //Update seen of last message
-    await db.leadMessage.updateMany({
+    await db.leadCommunication.updateMany({
       where: { conversationId: conversation.id },
       data: {
         hasSeen: true

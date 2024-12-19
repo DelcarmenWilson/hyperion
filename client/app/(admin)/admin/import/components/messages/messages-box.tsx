@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Papa from "papaparse";
 
-import { LeadMessage } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { DataTableImport } from "@/components/tables/data-table-import";
 import { columns } from "./columns";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
 export const MessagesBox = () => {
-  const [messages, setMessages] = useState<LeadMessage[]>([]);
+  const [messages, setMessages] = useState<LeadCommunication[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const onFileUploaded = (e: any) => {
@@ -21,7 +21,7 @@ export const MessagesBox = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (result: any) {
-        const mapped: LeadMessage[] = convertMessages(result);
+        const mapped: LeadCommunication[] = convertMessages(result);
         setMessages(mapped);
       },
     });

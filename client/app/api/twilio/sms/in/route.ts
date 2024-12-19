@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     role: "user",
-    type: MessageType.LEAD,
+    from: MessageType.LEAD,
     content: sms.body,
     conversationId: conversation.id,
     senderId: conversation.leadId,
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
   }
 
   //If autochat is enabled - get all the messages in the conversation
-  const messages = await db.leadMessage.findMany({
+  const messages = await db.leadCommunication.findMany({
     where: { conversationId: conversation.id },
   });
 
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
   const newChatMessage = await insertMessage({
     role,
     content,
-    type: MessageType.TITAN,
+    from: MessageType.TITAN,
     conversationId: conversation.id,
     senderId: conversation.agentId,
     hasSeen: true,

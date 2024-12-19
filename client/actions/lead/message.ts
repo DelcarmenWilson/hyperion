@@ -21,8 +21,8 @@ export const getMessagesForConversation = async (
   if (!conversationId) throw new Error("ConversationId was not supplied!!");
   const user = currentUser();
   if (!user) throw new Error("Unauthenticated!");
-  return await db.leadMessage.findMany({
-    where: { conversationId, role: { not: "system" } },
+  return await db.leadCommunication.findMany({
+    where: { conversationId, role: { not: "system" } , type:"sms"},
   });
 };
 
@@ -108,7 +108,7 @@ export const createInitialMessage = async (
     role: "system",
     content: prompt,
     conversationId,
-    type: MessageType.AGENT,
+    from: MessageType.AGENT,
     senderId: user.id,
     hasSeen: true,
   });
@@ -128,7 +128,7 @@ export const createInitialMessage = async (
     role: "assistant",
     content: message,
     conversationId,
-    type: MessageType.TITAN,
+    from: MessageType.TITAN,
     senderId: user.id,
     hasSeen: true,
     sid: result.success,
@@ -173,7 +173,7 @@ export const createNewMessage = async (values: SmsMessageSchemaType) => {
     role: "assistant",
     content: data.content,
     conversationId: convoid!,
-    type: MessageType.AGENT,
+    from: MessageType.AGENT,
     attachment: data.images,
     senderId: user.id,
     hasSeen: true,
@@ -183,6 +183,7 @@ export const createNewMessage = async (values: SmsMessageSchemaType) => {
 
   return newMessage;
 };
+
 export const insertMessage = async (values: MessageSchemaType) => {
   const { success, data } = MessageSchema.safeParse(values);
   if (!success) throw new Error("Invalid fields!");
@@ -192,9 +193,9 @@ export const insertMessage = async (values: MessageSchemaType) => {
 
   if (!conversation) throw new Error("Conversation does not exists!");
 
-  const newMessage = await db.leadMessage.create({
+  const newMessage = await db.leadCommunication.create({
     data: {
-      ...data,
+      ...data,type:"sms"
     },
   });
 

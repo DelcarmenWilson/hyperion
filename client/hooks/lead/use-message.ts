@@ -4,7 +4,7 @@ import { useLeadStore } from "@/stores/lead-store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { LeadMessage } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { SmsMessageSchemaType } from "@/schemas/message";
 
 import {
@@ -23,7 +23,7 @@ export const useLeadMessageData = () => {
       data: messages,
       isFetching: messagesFetching,
       isLoading: messagesLoading,
-    } = useQuery<LeadMessage[]>({
+    } = useQuery<LeadCommunication[]>({
       queryFn: () => getMessagesForConversation(conversationId),
       queryKey: [`leadMessages-${conversationId}`],
       enabled: !!conversationId,
