@@ -78,7 +78,7 @@ export const UserClient = ({
   const data = [
     {
       title: "Calls",
-      value: user.calls.length.toString() || "0",
+      value: user.communications.length.toString() || "0",
       icon: <Phone />,
     },
     {

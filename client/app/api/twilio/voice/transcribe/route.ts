@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   const j: any = formatObject(body);
 
-  await db.call.update({
+  await db.leadCommunication.update({
     where: { id: j.callSid },
     data: {
       type: "voicemail",

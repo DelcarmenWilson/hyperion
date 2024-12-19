@@ -8,7 +8,7 @@ import { userEmitter } from "@/lib/event-emmiter";
 import { useLeadStore } from "@/stores/lead-store";
 import { toast } from "sonner";
 
-import { Call, Lead } from "@prisma/client";
+import { LeadCommunication, Lead } from "@prisma/client";
 import { AssociatedLead, FullLead, LeadPrevNext } from "@/types";
 import {
   LeadBasicInfoSchemaTypeP,
@@ -582,7 +582,7 @@ export const useLeadCallInfoActions = (leadId: string) => {
   };
 
   useEffect(() => {
-    socket?.on("calllog:new", (data: { dt: Call }) => {
+    socket?.on("calllog:new", (data: { dt: LeadCommunication }) => {
       if (data.dt.leadId == leadId) invalidate(`lead-call-info-${leadId}`);
     });
     return () => {

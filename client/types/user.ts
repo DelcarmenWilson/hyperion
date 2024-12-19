@@ -1,8 +1,8 @@
 import {
   Appointment,
-  Call,
   ChatSettings,
   Lead,
+  LeadCommunication,
   LeadConversation,
   PhoneNumber,
   PhoneSettings,
@@ -39,7 +39,7 @@ export type SummaryUser = User & {
 };
 
 export type FullUser = User & {
-  calls: Call[];
+  calls: LeadCommunication[];
   leads: Lead[];
   appointments: Appointment[];
   conversations: LeadConversation[];
@@ -48,7 +48,7 @@ export type FullUser = User & {
 
 export type FullUserReport = User & {
   phoneNumbers: PhoneNumber[];
-  calls: Call[];
+  calls: LeadCommunication[];
   leads: LeadPolicyType[];
   conversations: LeadConversation[];
   appointments: Appointment[];

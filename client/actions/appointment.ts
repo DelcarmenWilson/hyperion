@@ -31,7 +31,7 @@ import { updateCallAppointment } from "./call";
 import { getOrCreateLead } from "@/actions/lead";
 import { getAssitantForUser } from "@/actions/user";
 import { createEmail } from "@/actions/email/create-email";
-import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
+import { updateBluePrintWeekData } from "@/actions/blueprint/week";
 import { createNotification } from "./notification";
 import { DateRange } from "react-day-picker";
 
@@ -734,7 +734,7 @@ export const updatAppointmentStatusFromCall = async ({
   });
 
   if (setAppointment)
-    await db.call.update({
+    await db.leadCommunication.update({
       where: { id: callId },
       data: {
         appointment: { connect: appointment },

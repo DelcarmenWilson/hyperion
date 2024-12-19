@@ -12,11 +12,11 @@ export async function POST(req: Request) {
 
     const conversation = await db.leadConversation.findFirst({
       where: { leadId, agentId },
-      include: { messages: true },
+      include: { communications: {where:{type:{not:"sms"}}} },
     });
     if (!conversation) return NextResponse.json([]);
 
-    return NextResponse.json(conversation.messages);
+    return NextResponse.json(conversation.communications);
   } catch (error) {
     console.log("LEAD_MESSAGES_POST", error);
     return new NextResponse("Internal Error", { status: 500 });

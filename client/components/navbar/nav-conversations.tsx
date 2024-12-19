@@ -105,7 +105,7 @@ const ConversationCard = ({
   convo: ShortConvo;
   onUpdate: () => void;
 }) => {
-  const { lead, lastMessage, unread } = convo;
+  const { lead, lastCommunication, unread } = convo;
   return (
     <div
       className="flex gap-2 w-full p-2 bg-background hover:bg-primary/25 border-b cursor-pointer"
@@ -129,10 +129,10 @@ const ConversationCard = ({
         <div className="flex justify-between items-start">
           <h4 className=" font-bold ms-2">{lead.firstName}</h4>
           <p className="text-end text-muted-foreground text-sm">
-            {formatDate(lastMessage?.createdAt)}
+            {formatDate(lastCommunication?.createdAt)}
           </p>
         </div>
-        <p>{lastMessage?.content}</p>
+        <p>{lastCommunication?.content}</p>
       </div>
     </div>
   );

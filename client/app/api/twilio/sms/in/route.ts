@@ -182,9 +182,9 @@ export async function POST(req: Request) {
   if (newChatMessage) {
     updatedConversation = await db.leadConversation.update({
       where: { id: conversation.id },
-      include: { lastMessage: true, lead: true },
+      include: { lastCommunication: true, lead: true },
       data: {
-        lastMessageId: newChatMessage.id,
+        lastCommunicationId: newChatMessage.id,
       },
     });
 

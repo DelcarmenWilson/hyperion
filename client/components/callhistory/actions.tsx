@@ -7,7 +7,7 @@ import { usePhoneStore } from "@/stores/phone-store";
 import axios from "axios";
 
 import { FullCall } from "@/types";
-import { Call } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

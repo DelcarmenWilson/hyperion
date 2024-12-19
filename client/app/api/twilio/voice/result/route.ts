@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const callResult: TwilioCallResult = formatObject(body);
 
   //Fetch the exisit call asdicated with the callSid
-  const existingCall = await db.call.findUnique({
+  const existingCall = await db.leadCommunication.findUnique({
     where: { id: callResult.callSid },
   });
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   ).toJSON();
   const duration = parseInt(callResult.callDuration);
 
-  const call = await db.call.update({
+  const call = await db.leadCommunication.update({
     where: { id: callResult.callSid },
     data: {
       status: callStatus.includes(existingCall.status as string)
@@ -47,12 +47,12 @@ export async function POST(req: Request) {
     await updatAppointmentStatusFromCall({
       callId: call.id,
       leadId: call.leadId,
-      agentId: call.userId,
+      agentId: call.userId as string,
       duration,
       direction: call.direction,
       setAppointment:!!call.appointmentId
     });
-    sendSocketData(call.userId, "calllog:new", call);
+    sendSocketData(call.userId as string, "calllog:new", call);
   }
 
   //return an Success message if everything is ok

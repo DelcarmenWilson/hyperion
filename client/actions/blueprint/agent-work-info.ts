@@ -1,15 +1,28 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 import {
   CreateAgentWorkInfoSchema,
   CreateAgentWorkInfoSchemaType,
+  UpdateAgentWorkInfoSchema,
+  UpdateAgentWorkInfoSchemaType,
 } from "@/schemas/blueprint";
 
 import { calculateWeeklyBluePrint } from "@/constants/blue-print";
 import { weekStartEnd } from "@/formulas/dates";
 import { getDay, getWeek } from "date-fns";
 
+//DATA
+export const getAgentWorkInfo = async () => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+  return await db.agentWorkInfo.findUnique({
+    where: { userId: user.id },
+  });
+};
+
+//ACTIONS
 export const createAgentWorkInfo = async (
   values: CreateAgentWorkInfoSchemaType
 ) => {
@@ -63,4 +76,28 @@ export const createAgentWorkInfo = async (
   });
 
   return { success: insertedAgentWorkInfo };
+};
+
+export const updateAgentWorkInfo = async (
+  values: UpdateAgentWorkInfoSchemaType
+) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthenticated!");
+
+  const { success, data } = UpdateAgentWorkInfoSchema.safeParse(values);
+  if (!success) throw new Error("Invalid Fields!");
+
+  const agentWorkInfoOld = await db.agentWorkInfo.findUnique({
+    where: { userId: user.id },
+  });
+  if (!agentWorkInfoOld) throw new Error("Work details not available!");
+  //TODO -this needs to be added back see where the issue is coming from. we had changed the working days in the blue pring to use an array of numbers instead of days of the week
+//   const updateAgentWorkInfo = await db.agentWorkInfo.update({
+//     where: { userId: user.id },
+//     data: {
+//       ...data,
+//     },
+//   });
+
+  revalidatePath("/blueprint");
 };

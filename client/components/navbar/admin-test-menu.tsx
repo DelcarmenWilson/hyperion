@@ -21,7 +21,7 @@ import { remindTodos } from "@/actions/user/todo";
 import {
   assignLastCommunicationId,
   createConversationForCalls,
-} from "@/actions/call";
+} from "@/actions/lead/communication";
 import { toast } from "sonner";
 
 const AdminTestMenu = () => {

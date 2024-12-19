@@ -6,7 +6,8 @@ import { voiceResponse } from "@/lib/twilio/handler";
 import { formatObject } from "@/formulas/objects";
 
 import { getOrCreateLeadByPhoneNumber } from "@/actions/lead";
-import { updateBluePrintWeekData } from "@/actions/blueprint/week/update-blueprint-week-data";
+import { updateBluePrintWeekData } from "@/actions/blueprint/week";
+import { createCall } from "@/actions/call";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -73,15 +74,13 @@ export async function POST(req: Request) {
 
   //Set a new record for the call in the database
   if (["inbound", "outbound"].includes(call.direction)) {
-    await db.call.create({
-      data: {
+    await createCall({   
         id: call.callSid,
-        userId: call.agentId,
+        agentId: call.agentId,
         from: call.from,
         direction: call.direction,
         status: call.callStatus,
         leadId: lead?.id,
-      },
     });
   }
 

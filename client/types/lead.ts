@@ -1,6 +1,5 @@
 import {
   User,
-  Call,
   Appointment,
   Lead,
   LeadActivity,
@@ -12,6 +11,7 @@ import {
   MedicalCondition,
   LeadPolicy,
   Carrier,
+  LeadCommunication,
 } from "@prisma/client";
 
 export type AssociatedLead = {
@@ -23,13 +23,13 @@ export type AssociatedLead = {
 };
 
 export type HalfLeadNoConvo = Lead & {
-  calls: Call[];
+  calls: LeadCommunication[];
   appointments: Appointment[];
   activities: LeadActivity[];
 };
 
 export type FullLeadNoConvo = Lead & {
-  calls: Call[];
+  calls: LeadCommunication[];
   appointments: Appointment[];
   activities?: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];
@@ -48,7 +48,7 @@ export type LeadConversationType = LeadConversation & {
 export type FullLead = Lead & {
   conversations: LeadConversation[] | null;
   conversation?: LeadConversation | null;
-  calls: Call[];
+  calls: LeadCommunication[];
   appointments: Appointment[];
   activities: LeadActivity[];
   beneficiaries?: LeadBeneficiary[];

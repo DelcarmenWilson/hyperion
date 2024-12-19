@@ -218,6 +218,7 @@ export const getSharedCalls = async () => {
           firstName: true,
         },
       },
+      appointment:true
     },
     orderBy: { createdAt: "desc" },
   });
@@ -225,19 +226,36 @@ export const getSharedCalls = async () => {
 //ACTIONS
 export const createCall = async (data: {
   id: string;
-  userId: string;
+  agentId: string;
   leadId: string;
   direction: string;
+  from: string;
+  status: string;
 }) => {
-  if (!data.userId) throw new Error("User id is required!");
-
+  if (!data.agentId) throw new Error("Agent id is required!");
   if (!data.leadId) throw new Error("Lead id is required!");
 
-  await db.leadCommunication.create({
+  const conversation = await db.leadConversation.upsert({
+    where: { leadId_agentId: { leadId: data.leadId, agentId: data.agentId } },
+    update: {
+      unread: { increment: data.direction == "outbound" ? 1 : 0 },
+    },
+    create: {
+      leadId: data.leadId,
+      agentId: data.agentId,
+    },
+  });
+
+  const call = await db.leadCommunication.create({
     data: {
       ...data,
-      status: "",
-      from: "",
+      conversationId: conversation.id,
+    },
+  });
+  await db.leadConversation.update({
+    where: { id: conversation.id },
+    data: {
+      lastCommunicationId: call.id,
     },
   });
   return "Call created";
@@ -322,61 +340,3 @@ export const createOrUpdateMissedCallNotification = async ({
     });
   }
 };
-
-//TODO - please remove this action after we run only once
-
-export const createConversationForCalls = async () => {
-  const calls = await db.leadCommunication.findMany({
-    where: { conversationId: "newconversation", leadId: { not: undefined } },
-  });
-
-  if (!calls) return { error: "No calls to convert" };
-
-  const conversationsToCreate: { agentId: string; leadId: string }[] = [];
-
-  for (const call of calls) {
-    if(call.leadId==null) continue
-    const exists = conversationsToCreate.find(
-      (e) => e.agentId == call.userId && e.leadId == call.leadId
-    );
-    if (!exists) {
-      conversationsToCreate.push({
-        agentId: call.userId as string,
-        leadId: call.leadId as string,
-      });
-    }
-  }
-
-  // for (const call of conversationsToCreate) {
-  //     await db.leadConversation.create({
-  //       data: {
-  //         agentId: call.userId,
-  //         leadId: call.leadId as string,
-  //       },})
-  // }
-
-  await db.leadConversation.createMany({
-    data: conversationsToCreate,
-    skipDuplicates: true,
-  });
-
-  return { success: "Eveything went well" };
-};
-export const assignLastCommunicationId=async()=>{
-const conversations=await db.leadConversation.findMany({where:{lastCommunicationId:undefined},select:{id:true}})
-if(!conversations.length) return {error:"No conversations available"}
-for (const convo of conversations) {
-  const first=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"asc"}})
-  const last=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"desc"}})
-  
-  if(!first || !last)continue
-
-  await db.leadConversation.update({where:{id:convo.id},data:{
-    createdAt:first.createdAt,
-    updatedAt:last.createdAt,
-    lastCommunicationId:last.id ,
-  }})
-}
-return {success:"Everything went well"}
-
-}

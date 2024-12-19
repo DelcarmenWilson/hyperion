@@ -27,7 +27,7 @@ export const getTeam = async (id: string) => {
     include: {
       users: {
         include: {
-          calls: true,
+          communications: { where: { type: { not: "sms" } } },
           appointments: true,
           conversations: true,
           leads: { include: { policy: true } },
@@ -39,7 +39,15 @@ export const getTeam = async (id: string) => {
   });
 };
 
-export const getTeamStats = async ({id,from,to}:{id: string, from: string, to: string}) => {
+export const getTeamStats = async ({
+  id,
+  from,
+  to,
+}: {
+  id: string;
+  from: string;
+  to: string;
+}) => {
   try {
     const fromDate = new Date(from);
     const toDate = new Date(to);
@@ -48,7 +56,12 @@ export const getTeamStats = async ({id,from,to}:{id: string, from: string, to: s
       include: {
         users: {
           include: {
-            calls: { where: { createdAt: { lte: toDate, gte: fromDate } } },
+            communications: {
+              where: {
+                type: { not: "sms" },
+                createdAt: { lte: toDate, gte: fromDate },
+              },
+            },
             appointments: {
               where: { createdAt: { lte: toDate, gte: fromDate } },
             },

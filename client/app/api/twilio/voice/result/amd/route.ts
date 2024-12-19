@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   const amdResult: TwilioAmdResult = formatObject(body);
 
   //Fetch the exisit call asdicated with the callSid
-  const existingCall = await db.call.findUnique({
+  const existingCall = await db.leadCommunication.findUnique({
     where: { id: amdResult.callSid },
   });
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   if (!existingCall)
     return new NextResponse("Call does not exists!", { status: 500 });
 
-  const call = await db.call.update({
+  const call = await db.leadCommunication.update({
     where: { id: amdResult.callSid },
     data: {
       answeredBy: amdResult.answeredBy,

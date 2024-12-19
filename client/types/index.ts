@@ -97,8 +97,8 @@ export type FullCall = LeadCommunication & {
   } | null;
   user?: {
     firstName: string;
-  };
-  appointment?:Appointment
+  }|null;
+  appointment?:Appointment|null
 };
 
 export type FullTeam = Team & {

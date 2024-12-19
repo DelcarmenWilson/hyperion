@@ -7,7 +7,7 @@ import { useLeadStore } from "@/stores/lead-store";
 import { Phone } from "lucide-react";
 import { usePhoneStore } from "@/stores/phone-store";
 
-import { Call } from "@prisma/client";
+import { LeadCommunication } from "@prisma/client";
 import { FullLead, FullLeadNoConvo } from "@/types";
 import { LeadDefaultStatus } from "@/types/lead";
 
@@ -42,11 +42,11 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
     const callHandler = (leadId: string | null) => {
       if (leadId == lead.id) setCallCount((count) => count + 1);
     };
-    socket?.on("calllog:new", (data: { dt: Call }) =>
+    socket?.on("calllog:new", (data: { dt: LeadCommunication }) =>
       callHandler(data.dt.leadId)
     );
     return () => {
-      socket?.off("calllog:new", (data: { dt: Call }) =>
+      socket?.off("calllog:new", (data: { dt: LeadCommunication }) =>
         callHandler(data.dt.leadId)
       );
     };

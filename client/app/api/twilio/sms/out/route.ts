@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       to: phone,
     });
 
-    const newMessage = await db.leadMessage.create({
+    const newMessage = await db.leadCommunication.create({
       data: {
         role: "assistant",
         content: message,
@@ -49,11 +49,11 @@ export async function POST(req: Request) {
       where: { id: conversationId },
       data: {
         updatedAt: new Date(),
-        messages: {
+        communications: {
           connect: { id: newMessage.id },
         },
       },
-      include: { agent: true, messages: true },
+      include: { agent: true, communications: true },
     });
 //TODO - see if this is really needed
     // await pusherServer.trigger(conversationId, "messages:new", newMessage);

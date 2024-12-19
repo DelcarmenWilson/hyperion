@@ -1,8 +1,8 @@
 import {
   Appointment,
-  Call,
   ChatSettings,
   Lead,
+  LeadCommunication,
   LeadConversation,
   LeadMessage,
   PhoneNumber,
@@ -172,10 +172,10 @@ export const convertLeads = (result: any): Lead[] => {
   return mapped;
 };
 
-export const convertCalls = (result: any): Call[] => {
-  let mapped: Call[] = [];
+export const convertCalls = (result: any): LeadCommunication[] => {
+  let mapped: LeadCommunication[] = [];
   result.data.map((d: any) => {
-    const newobj: Call = {
+    const newobj: LeadCommunication = {
       id: d["id"],
       userId: d["userId"],
       leadId: d["leadId"] || null,
@@ -205,6 +205,13 @@ export const convertCalls = (result: any): Call[] => {
       appointmentId: d["appointmentId"],
       answeredBy:d["answeredBy"],
       machineDetectionDuration:d["machineDetectionDuration"],
+      role:d["role"],
+       content:d["content"], conversationId:d["conversationId"],
+       attachment:d["attachment"], 
+       sid:d["sid"], 
+       error:d["error"], 
+       senderId:d["senderId"], 
+       hasSeen:d["hasSeen"]
     };
     mapped.push(newobj);
   });
@@ -244,7 +251,7 @@ export const convertConversations = (result: any): LeadConversation[] => {
       agentId: d["agentId"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
-      lastMessageId: d["lastMessageId"],
+      lastCommunicationId: d["lastCommunicationId"],
       unread: d["lastMessageId"],
     };
     mapped.push(newobj);

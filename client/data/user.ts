@@ -65,7 +65,7 @@ export const userGetByIdReport = async (id: string) => {
       where: { id },
       include: {
         phoneNumbers: true,
-        calls: true,
+        communications: true,
         leads: { include: { policy: true } },
         licenses: true,
         appointments: true,
