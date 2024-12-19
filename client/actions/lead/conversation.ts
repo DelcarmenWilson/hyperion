@@ -14,7 +14,6 @@ export const getConversations = async () => {
     include: {
       lead: true,
       lastCommunication: true,
-      communications: true,
     },
     orderBy: { updatedAt: "desc" },
   });
@@ -26,9 +25,8 @@ export const getConversations = async () => {
       lastName: conversation.lead.lastName,
       disposition: "",
       cellPhone: conversation.lead.cellPhone,
-      message: conversation.lastCommunication?.content!,
-      unread: conversation.communications.filter((communication) => !communication.hasSeen)
-        .length,
+      lastCommunication: conversation.lastCommunication!,
+      unread: conversation.unread
     })
   );
   return formattedConversations;

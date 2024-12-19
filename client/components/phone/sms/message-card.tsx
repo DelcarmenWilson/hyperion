@@ -2,20 +2,8 @@ import { cn } from "@/lib/utils";
 import { Ban, Check, CheckCheck, LucideIcon, X } from "lucide-react";
 import Image from "next/image";
 
-import { LeadMessage } from "@prisma/client";
 import { formatDistance } from "date-fns";
 import { MessageType } from "@/types/message";
-
-type MessageCardProps = {
-  id: string;
-  body: string | null;
-  attachment: string | null;
-  role: string;
-  status: string;
-  from: string;
-  createdAt: Date;
-  username: string;
-};
 
 const setStatus = (status: string): LucideIcon => {
   switch (status) {
@@ -46,6 +34,17 @@ const setBg = (type: MessageType): { bg: string; pos: boolean } => {
   }
 };
 
+type MessageCardProps = {
+  id: string;
+  body: string | null;
+  attachment: string | null;
+  role: string;
+  status: string;
+  from: string;
+  createdAt: Date;
+  username: string;
+};
+
 export const MessageCard = ({
   id,
   body,
@@ -71,7 +70,7 @@ export const MessageCard = ({
       </div>
       <div
         className={cn(
-          "relative text-sm max-w-[70%] w-fit rounded py-2 px-3 text-wrap  break-words",
+          "relative text-sm max-w-[70%] w-fit rounded py-2 px-3 text-wrap break-words",
           isOwn.bg
         )}
       >

@@ -154,6 +154,7 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
                 <CallCard
                   key={communication.id}
                   direction={communication.direction}
+                  type={communication.type}
                   status={communication.status}
                   duration={communication.duration || 0}
                   recordUrl={communication.recordUrl as string}

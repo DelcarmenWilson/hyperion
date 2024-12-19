@@ -18,7 +18,10 @@ import {
 import { closeOpenAppointments } from "@/actions/appointment";
 import { createNotification } from "@/actions/notification";
 import { remindTodos } from "@/actions/user/todo";
-import { createConversationForCalls } from "@/actions/call";
+import {
+  assignLastCommunicationId,
+  createConversationForCalls,
+} from "@/actions/call";
 import { toast } from "sonner";
 
 const AdminTestMenu = () => {
@@ -40,6 +43,12 @@ const AdminTestMenu = () => {
     if (conversationsCreated.success)
       toast.success(conversationsCreated.success);
     else toast.success(conversationsCreated.error);
+  };
+
+  const onAssignLastCommunicationId = async () => {
+    const results = await assignLastCommunicationId();
+    if (results.success) toast.success(results.success);
+    else toast.success(results.error);
   };
   if (user?.role != "DEVELOPER") return null;
   return (
@@ -75,6 +84,9 @@ const AdminTestMenu = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => onCreateCallConversations()}>
           Create Call Conversations
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onAssignLastCommunicationId()}>
+          Assign Last Communication
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

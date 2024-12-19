@@ -7,6 +7,7 @@ import { NotificationReference } from "@/types/notification";
 import { createNotification, updateExitingNotification } from "./notification";
 import { DateRange } from "react-day-picker";
 import { string } from "zod";
+import { connect } from "http2";
 //DATA
 //TODO - need to refactor thsi file
 export const getCallsForUser = async (userId: string) => {
@@ -361,3 +362,21 @@ export const createConversationForCalls = async () => {
 
   return { success: "Eveything went well" };
 };
+export const assignLastCommunicationId=async()=>{
+const conversations=await db.leadConversation.findMany({where:{lastCommunicationId:undefined},select:{id:true}})
+if(!conversations.length) return {error:"No conversations available"}
+for (const convo of conversations) {
+  const first=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"asc"}})
+  const last=await db.leadCommunication.findFirst({where:{conversationId:convo.id},orderBy:{createdAt:"desc"}})
+  
+  if(!first || !last)continue
+
+  await db.leadConversation.update({where:{id:convo.id},data:{
+    createdAt:first.createdAt,
+    updatedAt:last.createdAt,
+    lastCommunicationId:last.id ,
+  }})
+}
+return {success:"Everything went well"}
+
+}

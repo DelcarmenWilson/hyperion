@@ -25,7 +25,7 @@ export type ShortConversation = {
   lastName: string;
   disposition: string;
   cellPhone: string;
-  message: string;
+  lastCommunication:LeadCommunication| null;
   updatedAt: Date;
   unread: number;
 };
