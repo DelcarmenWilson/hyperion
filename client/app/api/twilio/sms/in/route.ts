@@ -73,13 +73,13 @@ export async function POST(req: Request) {
 
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
+    id: sms.smsSid,
     role: "user",
-    from: MessageType.LEAD,
-    content: sms.body,
     conversationId: conversation.id,
-    senderId: conversation.leadId,
+    from: MessageType.LEAD,
+    direction:"inbound",
+    content: sms.body,
     hasSeen: false,
-    sid: sms.smsSid,
   };
 
     //Create a new message from the leads response
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
   const titan = await chatSettingGetTitan(agentNumber?.agentId as string);
   //If titan is disabled
   if (!titan || !conversation.lead.titan) {
-    await disabledAutoChatResponse(conversation, newMessage);
+    await disabledAutoChatResponse(conversation, newMessage!);
     //exit the workflow
     return new NextResponse("Titan is turned off", { status: 200 });
   }
@@ -160,24 +160,25 @@ export async function POST(req: Request) {
   const words = content.split(" ");
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
-  const sid = (
+
+  const results = 
     await smsSend({
       toPhone: sms.from,
       fromPhone: sms.to,
       message: content,
       timer: delay,
     })
-  ).success;
+  
+    if(!results.success) return new NextResponse(results.error, { status: 200 }) 
 
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = await insertMessage({
-    role,
-    content,
-    from: MessageType.TITAN,
+    id:results.success,
     conversationId: conversation.id,
-    senderId: conversation.agentId,
+    role,
+    from: MessageType.TITAN,direction:"outbound",
+    content,
     hasSeen: true,
-    sid,
   });
   if (newChatMessage) {
     updatedConversation = await db.leadConversation.update({

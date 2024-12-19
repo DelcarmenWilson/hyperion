@@ -176,8 +176,6 @@ export const convertCalls = (result: any): LeadCommunication[] => {
   result.data.map((d: any) => {
     const newobj: LeadCommunication = {
       id: d["id"],
-      userId: d["userId"],
-      leadId: d["leadId"] || null,
       status: d["status"],
       createdAt: new Date(d["createdAt"]),
       updatedAt: new Date(d["updatedAt"]),
@@ -208,9 +206,7 @@ export const convertCalls = (result: any): LeadCommunication[] => {
       content: d["content"],
       conversationId: d["conversationId"],
       attachment: d["attachment"],
-      sid: d["sid"],
       error: d["error"],
-      senderId: d["senderId"],
       hasSeen: d["hasSeen"],
     };
     mapped.push(newobj);
@@ -268,28 +264,19 @@ export const convertMessages = (result: any): LeadCommunication[] => {
       role: d["role"],
       attachment: d["attachment"],
       content: d["content"],
-      senderId: d["senderId"],
       createdAt: new Date(d["createdAt"]),
       hasSeen: d["hasSeen"] == "f" ? false : true,
       error: d["error"],
       price: d["price"],
       from: d["from"],
-      sid: d["sid"],
       status: d["status"],
       type: d["type"],
-
       direction: d["direction"],
-
       listened: d["listened"],
-      shared: d["type"],
-
-      // Answering maching detation (AMD) PARAMS
+      shared: d["shared"],
       answeredBy: d["answeredBy"],
       machineDetectionDuration: d["machineDetectionDuration"],
-
       updatedAt: d["updatedAt"],
-      leadId: d["leadId"],
-      userId: d["userId"],
       duration: d["duration"],
       recordId: d["recordId"],
       recordUrl: d["recordUrl"],

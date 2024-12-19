@@ -23,9 +23,10 @@ export const CallInfo = ({ leadId, showBtnCall = true }: Props) => {
   const { onGetLeadCallInfo } = useLeadCallInfoActions(leadId);
   const { callInfo, callInfoFetching } = onGetLeadCallInfo();
 
-  const callCount = callInfo?.calls?.filter(
-    (e) => e.direction == "outbound"
-  ).length;
+  const callCount = callInfo?.conversations.reduce(
+    (sum, c) => sum + c.communications.length,
+    0
+  );
 
   return (
     <SkeletonWrapper isLoading={callInfoFetching}>

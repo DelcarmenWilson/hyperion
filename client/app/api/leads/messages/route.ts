@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { getAssitantForUser } from "@/actions/user";
+import { LeadCommunicationType } from "@/types/lead";
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
 
     const conversation = await db.leadConversation.findFirst({
       where: { leadId, agentId },
-      include: { communications: {where:{type:{not:"sms"}}} },
+      include: { communications: {where:{type:{not:LeadCommunicationType.SMS}}} },
     });
     if (!conversation) return NextResponse.json([]);
 

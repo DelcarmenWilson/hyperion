@@ -13,15 +13,6 @@ export const getUserProfile = async ({
     where: { id },
     include: {
       phoneNumbers: true,
-      communications: {
-        where: {
-          type: { not: "sms" },
-          createdAt: {
-            gte: dateRange.from,
-            lte: dateRange.to,
-          },
-        },
-      },
       leads: {
         include: { policy: true },
         where: {
@@ -43,23 +34,18 @@ export const getUserProfile = async ({
         },
       },
       conversations: {
-        where: {
-          createdAt: {
-            gte: dateRange.from,
-            lte: dateRange.to,
-          },
-        },
+        include:{
+          communications:{ where: {
+            createdAt: {
+              gte: dateRange.from,
+              lte: dateRange.to,
+            },
+          },}
+        }
+       
       },
       team: { include: { organization: true, owner: true } },
     },
   });
-  // return await db.user.findUnique({
-  //   where: { id },
-  //   include: {
-  //     phoneNumbers: true,
-  //     team: {
-  //       select: { name: true, organization: { select: { id:true,name: true } } },
-  //     },
-  //   },
-  // });
+ 
 };

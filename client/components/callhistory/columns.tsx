@@ -57,12 +57,12 @@ export const columns: ColumnDef<FullCall>[] = [
     header: "Phone Number",
     cell: ({ row }) => (
       <div>
-        {row.original?.lead ? (
+        {row.original?.conversation.lead ? (
           <Link
             className="text-primary font-bold italic"
-            href={`/leads/${row.original.lead.id}`}
+            href={`/leads/${row.original.conversation.lead.id}`}
           >
-            {formatPhoneNumber(row.original?.lead.cellPhone)}
+            {formatPhoneNumber(row.original?.conversation.lead.cellPhone)}
           </Link>
         ) : (
           <span className="text-primary font-bold italic">
@@ -90,11 +90,11 @@ export const columns: ColumnDef<FullCall>[] = [
     cell: ({ row }) => (
       <div>
         <p className="capitalize">
-          {row.original.lead
-            ? `${row.original.lead.firstName} ${row.original.lead.lastName}`
+          {row.original.conversation.lead
+            ? `${row.original.conversation.lead.firstName} ${row.original.conversation.lead.lastName}`
             : "Unknown Caller"}
         </p>
-        <p className="lowercase">{row.original.lead?.email}</p>
+        <p className="lowercase">{row.original.conversation.lead?.email}</p>
       </div>
     ),
   },
@@ -133,12 +133,12 @@ export const columns: ColumnDef<FullCall>[] = [
         row.original.appointment && (
           <AppointmentDetails
             status={row.original.appointment.status}
-            firstName={row.original.lead?.firstName!}
-            lastName={row.original.lead?.lastName!}
+            firstName={row.original.conversation.lead?.firstName!}
+            lastName={row.original.conversation.lead?.lastName!}
             startDate={row.original.appointment.startDate}
             localDate={row.original.appointment.localDate}
-            cellPhone={row.original.lead?.cellPhone!}
-            email={row.original.lead?.email!}
+            cellPhone={row.original.conversation.lead?.cellPhone!}
+            email={row.original.conversation.lead?.email!}
             comments={row.original.appointment.comments}
             reason={row.original.appointment.reason}
           />

@@ -5,7 +5,7 @@ import { useLeadStore } from "@/stores/lead-store";
 import { useLeadData, useLeadId } from "@/hooks/lead/use-lead";
 import { usePhoneStore } from "@/stores/phone-store";
 
-import { LeadDefaultStatus } from "@/types/lead";
+import { LeadCommunicationType, LeadDefaultStatus } from "@/types/lead";
 
 import { Button } from "@/components/ui/button";
 import { LeadSection } from "./section";
@@ -37,10 +37,11 @@ export const LeadSidebar = () => {
   const { leadBasic, leadBasicFetching } = onGetLeadBasicInfo(leadId);
   const { lead } = onGetLead(leadId);
 
-  const callCount = leadBasic?.calls?.length;
+  const callCount = leadBasic?.conversations[0].communications.filter(
+    (e) => e.type != LeadCommunicationType.SMS
+  ).length;
 
   const fullName = `${leadBasic?.firstName} ${leadBasic?.lastName}`;
-  const conversations = lead?.conversations;
 
   useEffect(() => {
     if (!leadId) return;

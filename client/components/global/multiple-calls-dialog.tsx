@@ -52,7 +52,9 @@ const MultipleCallsDialog = () => {
             <CallCard
               key={call.id}
               call={call}
-              onCallBack={() => onCallBack(call.leadId as string)}
+              onCallBack={() =>
+                onCallBack(call.conversation.lead?.id as string)
+              }
             />
           ))}
         </SkeletonWrapper>
@@ -75,7 +77,8 @@ const CallCard = ({
       <CardContent className="flex justify-between items-center gap-2 !p-2">
         <div className="text-sm">
           <p>
-            {call.lead?.firstName} {call.lead?.lastName}
+            {call.conversation.lead?.firstName}{" "}
+            {call.conversation.lead?.lastName}
           </p>
 
           <div className="flex gap-2 items-center">
@@ -89,7 +92,9 @@ const CallCard = ({
         </div>
         <div className="text-sm">
           <p>{formatDateTime(call.createdAt)}</p>
-          <span className="text-muted-foreground">{call.lead?.email}</span>
+          <span className="text-muted-foreground">
+            {call.conversation.lead?.email}
+          </span>
         </div>
       </CardContent>
     </Card>

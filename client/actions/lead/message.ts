@@ -14,6 +14,8 @@ import { userGetByAssistantOld } from "@/data/user";
 import { defaultChat } from "@/placeholder/chat";
 import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
+import { randomUUID } from "crypto";
+import { LeadCommunicationType } from "@/types/lead";
 //TODO - this has to be removed before we get rid of all the tables and actions
 export const getMessagesForConversation = async (
   conversationId: string | null | undefined
@@ -22,7 +24,7 @@ export const getMessagesForConversation = async (
   const user = currentUser();
   if (!user) throw new Error("Unauthenticated!");
   return await db.leadCommunication.findMany({
-    where: { conversationId, role: { not: "system" } , type:"sms"},
+    where: { conversationId, role: { not: "system" } , type:LeadCommunicationType.SMS},
   });
 };
 
@@ -105,11 +107,12 @@ export const createInitialMessage = async (
 
   //insert the prompt into the conversation- the first message will have a role of system. this tells chat gpt to use this as a prompt
   await insertMessage({
-    role: "system",
-    content: prompt,
+    id:randomUUID(),
     conversationId,
     from: MessageType.AGENT,
-    senderId: user.id,
+    direction:"outbound",
+    content: prompt,
+    role: "system",
     hasSeen: true,
   });
 
@@ -125,13 +128,13 @@ export const createInitialMessage = async (
 
   //insert the initial message into the conversation
   await insertMessage({
-    role: "assistant",
-    content: message,
+    id: result.success,
     conversationId,
+    role: "assistant",
     from: MessageType.TITAN,
-    senderId: user.id,
+    direction:"outbound",
+    content: message,
     hasSeen: true,
-    sid: result.success,
   });
 
   return conversationId;
@@ -169,17 +172,20 @@ export const createNewMessage = async (values: SmsMessageSchemaType) => {
     message: data.content,
   });
 
+  if (!result.success) throw new Error("Message was not sent!");
+
   const newMessage = await insertMessage({
-    role: "assistant",
-    content: data.content,
+    id:result.success,
     conversationId: convoid!,
+    role: "assistant",
     from: MessageType.AGENT,
+    direction:"outbound",
+    content: data.content,
     attachment: data.images,
-    senderId: user.id,
     hasSeen: true,
   });
 
-  if (!result) throw new Error("Message was not sent!");
+  
 
   return newMessage;
 };
@@ -192,21 +198,20 @@ export const insertMessage = async (values: MessageSchemaType) => {
   });
 
   if (!conversation) throw new Error("Conversation does not exists!");
+  
+   const updatedConversation=await db.leadConversation.update({
+      where: { id: data.conversationId },select:{lastCommunication:true},
+    
+      data: {
+        lastCommunication:{create:{
+          ...data,
+          type: LeadCommunicationType.SMS,
+        }},
+        unread: { increment: data.direction == "inbound" ? 1 : 0 },
+      },
+    });
 
-  const newMessage = await db.leadCommunication.create({
-    data: {
-      ...data,type:"sms"
-    },
-  });
 
-  await db.leadConversation.update({
-    where: { id: data.conversationId },
-    data: {
-      lastCommunicationId: newMessage.id,
-      unread:
-        conversation.leadId == data.senderId ? conversation.unread + 1 : 0,
-    },
-  });
 
-  return newMessage;
+    return updatedConversation.lastCommunication;
 };

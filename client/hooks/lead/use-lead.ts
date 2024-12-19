@@ -580,15 +580,15 @@ export const useLeadCallInfoActions = (leadId: string) => {
       callInfoLoading,
     };
   };
-
-  useEffect(() => {
-    socket?.on("calllog:new", (data: { dt: LeadCommunication }) => {
-      if (data.dt.leadId == leadId) invalidate(`lead-call-info-${leadId}`);
-    });
-    return () => {
-      socket?.off("calllog:new");
-    };
-  }, []);
+//TODO - need to see how we can get the lead id here
+  // useEffect(() => {
+  //   socket?.on("calllog:new", (data: { dt: LeadCommunication }) => {
+  //     if (data.dt.leadId == leadId) invalidate(`lead-call-info-${leadId}`);
+  //   });
+  //   return () => {
+  //     socket?.off("calllog:new");
+  //   };
+  // }, []);
 
   return {
     onGetLeadCallInfo,

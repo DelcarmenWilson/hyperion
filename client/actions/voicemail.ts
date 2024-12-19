@@ -5,41 +5,48 @@ import { currentUser } from "@/lib/auth";
 
 //DATA
 export const voicemailGetUnHeard = async (userId: string) => {
-  try {
-    const voicemails = await db.leadCommunication.findMany({
-      where: { userId, type: "voicemail", listened: false },
-      include: {
-        lead: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            cellPhone: true,
-            email: true,
+  return await db.leadCommunication.findMany({
+    where: {
+      conversation: { agentId: userId },
+      type: "voicemail",
+      listened: false,
+    },
+    include: {
+      conversation: {
+        select: {
+          leadId: true,
+          agentId: true,
+          lead: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              cellPhone: true,
+              email: true,
+            },
+          },
+          agent: {
+            select: {
+              id: true,
+              firstName: true,
+            },
           },
         },
       },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return voicemails;
-  } catch {
-    return [];
-  }
+    },
+    orderBy: { createdAt: "desc" },
+  });
 };
 //ACTIONS
-export const voicemailUpdateByIdListened = async (id:string) => {
+export const voicemailUpdateByIdListened = async (id: string) => {
   const user = await currentUser();
-  if (!user) 
-    return { error: "Unauthorized" };
-  
-  
+  if (!user) return { error: "Unauthorized" };
+
   await db.leadCommunication.update({
-    where: { id},
+    where: { id },
     data: {
-      listened:true
+      listened: true,
     },
   });
   return { success: "Voicemail Updated! " };
 };
-

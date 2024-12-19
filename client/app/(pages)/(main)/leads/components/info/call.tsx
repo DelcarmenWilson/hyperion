@@ -28,29 +28,30 @@ export const CallInfo = ({ info, showBtnCall = true }: Props) => {
 
   const { onPhoneOutOpen } = usePhoneStore();
   const [lead, setLead] = useState<FullLead | FullLeadNoConvo>(info);
+  //TODO need to intrgrate the call count again
+  // const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;
 
-  const leadcount = info.calls?.filter((e) => e.direction == "outbound").length;
-
-  const [callCount, setCallCount] = useState(leadcount || 0);
+  // const [callCount, setCallCount] = useState(leadcount || 0);
+  const [callCount, setCallCount] = useState(0);
 
   const onCallClick = () => {
     setLeadId(lead.id);
     setConversationId();
     onPhoneOutOpen(lead);
   };
-  useEffect(() => {
-    const callHandler = (leadId: string | null) => {
-      if (leadId == lead.id) setCallCount((count) => count + 1);
-    };
-    socket?.on("calllog:new", (data: { dt: LeadCommunication }) =>
-      callHandler(data.dt.leadId)
-    );
-    return () => {
-      socket?.off("calllog:new", (data: { dt: LeadCommunication }) =>
-        callHandler(data.dt.leadId)
-      );
-    };
-  }, [lead.id]);
+  // useEffect(() => {
+  //   const callHandler = (leadId: string | null) => {
+  //     if (leadId == lead.id) setCallCount((count) => count + 1);
+  //   };
+  //   socket?.on("calllog:new", (data: { dt: LeadCommunication }) =>
+  //     callHandler(data.dt.leadId)
+  //   );
+  //   return () => {
+  //     socket?.off("calllog:new", (data: { dt: LeadCommunication }) =>
+  //       callHandler(data.dt.leadId)
+  //     );
+  //   };
+  // }, [lead.id]);
 
   useEffect(() => {
     setLead(info);

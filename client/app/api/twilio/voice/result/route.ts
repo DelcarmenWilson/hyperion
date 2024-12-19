@@ -41,18 +41,19 @@ export async function POST(req: Request) {
       duration,
       price,
     },
+    include:{conversation:{select:{leadId:true,agentId:true}}}
   });
   //if this call has a lead associated with it send  call information to the  agent asssigned to this lead
-  if (call.leadId) {
+  if (call.conversation.leadId) {
     await updatAppointmentStatusFromCall({
       callId: call.id,
-      leadId: call.leadId,
-      agentId: call.userId as string,
+      leadId: call.conversation.leadId,
+      agentId: call.conversation.agentId,
       duration,
       direction: call.direction,
       setAppointment:!!call.appointmentId
     });
-    sendSocketData(call.userId as string, "calllog:new", call);
+    sendSocketData(call.conversation.agentId, "calllog:new", call);
   }
 
   //return an Success message if everything is ok

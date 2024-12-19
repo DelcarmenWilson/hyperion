@@ -26,7 +26,7 @@ export const GeneralInfoClient = ({
   const { onGetLeadGeneralInfo } = useLeadInfoData(leadId);
   const { generalInfo, generalInfoFetching } = onGetLeadGeneralInfo();
 
-  const lastCall = generalInfo?.calls[0];
+  const lastCall = generalInfo?.conversations[0];
   const nextAppointment = generalInfo?.appointments[0];
   // console.log(formatDob(generalInfo?.dateOfBirth))
 

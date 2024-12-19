@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { getEntireDay } from "@/formulas/dates";
 import { MessageType } from "@/types/message";
+import { LeadCommunicationType } from "@/types/lead";
 
 //DATA
 export const getDashboardCards = async () => {
@@ -12,13 +13,13 @@ export const getDashboardCards = async () => {
   const calls = await db.leadCommunication.groupBy({
     by: ["direction"],
     where: {
-      userId: user.id,
+      conversation:{agentId:user.id},
+      type:{not:LeadCommunicationType.SMS},
+      createdAt: { gte: date.start },
       OR: [
         { direction: "inbound",status:{not:"no-anwser"} },
         { direction: "outbound", recordDuration: { gt: 5 } },
       ],
-      type:{not:"sms"},
-      createdAt: { gte: date.start },
     },
     _count: {
       direction: true,

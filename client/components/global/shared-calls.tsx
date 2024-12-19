@@ -57,7 +57,7 @@ export const SharedCallsClient = ({ columns = 3 }: { columns?: number }) => {
               <SharedCallsCard
                 key={call.id}
                 call={call}
-                showBtn={user?.id == call.userId}
+                showBtn={user?.id == call.conversation.agentId}
                 onCallUnshare={onCallUnshare}
               />
             ))
@@ -93,8 +93,8 @@ const SharedCallsCard = ({
       <p className="capitalize">
         <span className="text-muted-foreground">Lead: </span>
         <span className="text-primary font-medium">
-          {call.lead
-            ? `${call.lead.firstName} ${call.lead.lastName}`
+          {call.conversation.lead
+            ? `${call.conversation.lead.firstName} ${call.conversation.lead.lastName}`
             : "Unknown Caller"}
         </span>
       </p>
@@ -107,7 +107,9 @@ const SharedCallsCard = ({
       <AudioPlayerHp src={call.recordUrl!} />
       <p className="text-end">
         <span className="text-muted-foreground">Agent: </span>
-        <span className="text-primary font-medium">{call.user?.firstName}</span>
+        <span className="text-primary font-medium">
+          {call.conversation.agent?.firstName}
+        </span>
       </p>
     </div>
   );

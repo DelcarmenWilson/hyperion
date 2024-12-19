@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
-import SocketContext from "@/providers/socket";
 import { userEmitter } from "@/lib/event-emmiter";
 import axios from "axios";
 
@@ -21,6 +20,7 @@ import SkeletonWrapper from "@/components/skeleton-wrapper";
 import { useSocketStore } from "@/stores/socket-store";
 import { useLeadCommunicationData } from "@/hooks/lead/use-communication";
 import { CallCard } from "./call-card";
+import { LeadCommunicationType } from "@/types/lead";
 
 export const SmsBody = ({ conversationId }: { conversationId: string }) => {
   const { socket } = useSocketStore();
@@ -123,7 +123,7 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
           )}
           {communications?.map((communication) => (
             <>
-              {communication.type == "sms" ? (
+              {communication.type == LeadCommunicationType.SMS ? (
                 <>
                   {communication.from === MessageType.AI ? (
                     <AiCard

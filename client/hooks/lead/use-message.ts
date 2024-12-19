@@ -81,6 +81,7 @@ export const useLeadMessageActions = (callback?: () => void) => {
           id: "insert-message",
         });
         if (callback) callback();
+        if(result)
         userEmitter.emit("messageInserted", result);
       },
       onError: (error) => {

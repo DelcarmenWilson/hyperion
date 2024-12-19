@@ -5,7 +5,7 @@ import { currentUser } from "@/lib/auth";
 import { AppointmentStatus } from "@/types/appointment";
 import { AssociatedLead } from "@/types";
 import { FullLead } from "@/types";
-import { LeadActivityType } from "@/types/lead";
+import { LeadActivityType, LeadCommunicationType } from "@/types/lead";
 import { LeadDefaultStatus } from "@/types/lead";
 import { NotificationReference } from "@/types/notification";
 
@@ -57,12 +57,13 @@ export const getLead = async (id: string) => {
       id,
     },
     include: {
-      conversations: { where: { agentId: user.id } },
-      appointments: { orderBy: { startDate: "desc" } },
-      calls: {
-        where: { status: "completed" },
-        orderBy: { createdAt: "desc" },
+      conversations: {
+        where: { agentId: user.id },
+        include: {
+          communications: { orderBy: { createdAt: "desc" } },
+        },
       },
+      appointments: { orderBy: { startDate: "desc" } },
       activities: { orderBy: { createdAt: "desc" } },
       expenses: true,
       beneficiaries: true,
@@ -90,9 +91,13 @@ export const getLeads = async () => {
         NOT: { statusId: LeadDefaultStatus.DELETED },
       },
       include: {
-        conversations: { where: { agentId: user.id } },
+        conversations: {
+          where: { agentId: user.id },
+          include: {
+            communications: { orderBy: { createdAt: "desc" } },
+          },
+        },
         appointments: { where: { status: "scheduled" } },
-        calls: true,
         activities: true,
         beneficiaries: true,
         expenses: true,
@@ -122,26 +127,24 @@ export const getLeads = async () => {
     return [];
   }
 };
-export const getLeadsFiltered = async (filter:string) => {
+export const getLeadsFiltered = async (filter: string) => {
+  const user = await currentUser();
+  if (!user) throw new Error("Unathenticated");
 
-    const user = await currentUser();
-    if (!user)  throw new Error("Unathenticated")
+  const leads = await db.lead.findMany({
+    where: {
+      OR: [
+        { userId: user.id },
+        { assistantId: user.id },
+        { sharedUserId: user.id },
+      ],
+      NOT: { statusId: LeadDefaultStatus.DELETED },
+      cellPhone: { contains: filter },
+    },
+    select: { id: true, firstName: true, lastName: true, cellPhone: true },
+  });
 
-    const leads = await db.lead.findMany({
-      where: {
-        OR: [
-          { userId: user.id },
-          { assistantId: user.id },
-          { sharedUserId: user.id },
-        ],
-        NOT: { statusId: LeadDefaultStatus.DELETED },
-        cellPhone:{contains:filter}
-      },
-      select:{id:true,firstName:true,lastName:true,cellPhone:true}
-    });    
-
-    return leads
- 
+  return leads;
 };
 export const getLeadByPhone = async (cellPhone: string) => {
   return await db.lead.findFirst({
@@ -188,8 +191,12 @@ export const getLeadBasicInfo = async (id: string) => {
       statusId: true,
       gender: true,
       maritalStatus: true,
-      calls: { where: { direction: "outbound" } },
-      conversations: { where: { agentId: user.id } },
+      conversations: {
+        where: { agentId: user.id },
+        include: {
+          communications: { orderBy: { createdAt: "desc" } },
+        },
+      },
       userId: true,
       sharedUserId: true,
       state: true,
@@ -205,7 +212,7 @@ export const getLeadBasicInfo = async (id: string) => {
 export const getLeadMainInfo = async (id: string) => {
   const user = await currentUser();
   if (!user) throw new Error("Unauthenticated!");
-  const lead= await db.lead.findUnique({
+  const lead = await db.lead.findUnique({
     where: {
       id,
       userId: user.id,
@@ -225,8 +232,8 @@ export const getLeadMainInfo = async (id: string) => {
       textCode: true,
     },
   });
-  console.log(lead)
-  return lead
+  console.log(lead);
+  return lead;
 };
 export const getLeadGeneralInfo = async (id: string) => {
   const user = await currentUser();
@@ -241,10 +248,10 @@ export const getLeadGeneralInfo = async (id: string) => {
         where: { status: "Scheduled" },
         orderBy: { startDate: "desc" },
       },
-      calls: {
-        where: { status: "completed" },
-        orderBy: { createdAt: "desc" },
-      },
+      conversations: { where: { agentId: user.id },include:{
+        communications:{orderBy:{createdAt:"desc"}}
+      } },
+      
     },
   });
 };
@@ -275,7 +282,7 @@ export const getLeadCallInfo = async (id: string) => {
       statusId: true,
       type: true,
       vendor: true,
-      calls: { where: { direction: "outbound" } },
+      conversations: {include:{communications:{where:{type:{not:LeadCommunicationType.SMS}}}}},
     },
   });
 };
@@ -291,7 +298,7 @@ export const getLeadByConversation = async (id: string) => {
       id: conversation.leadId,
     },
     include: {
-      calls: true,
+      conversations: {where:{id:conversation.id},include:{communications:true}},
       appointments: true,
       activities: true,
       beneficiaries: true,
@@ -556,7 +563,7 @@ export const createLead = async (values: CreateLeadSchemaType) => {
   if (existingLead) {
     newLead = await db.leadDuplicates.create({
       data: {
-       ...data,
+        ...data,
         state: st?.abv || state,
         homePhone: homePhone ? reFormatPhoneNumber(homePhone) : "",
         cellPhone: reFormatPhoneNumber(cellPhone),

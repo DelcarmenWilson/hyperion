@@ -23,12 +23,13 @@ export const CallHistoryActions = ({ call }: { call: FullCall }) => {
   const { onCallOpen, onPhoneOutOpen } = usePhoneStore();
   const [isShared, setIsShared] = useState(call.shared);
   if (!user) return null;
-  const show: boolean = user.id == call.userId || user?.role == "MASTER";
+  const show: boolean =
+    user.id == call.conversation.agentId || user?.role == "MASTER";
 
   const onCallBack = async () => {
     //TODO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
     const response = await axios.post("/api/leads/details/by-id", {
-      leadId: call.leadId,
+      leadId: call.conversation.lead?.id,
     });
     const lead = response.data;
     onPhoneOutOpen(lead);

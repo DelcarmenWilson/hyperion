@@ -10,6 +10,8 @@ import {
 } from "@/hooks/use-conversation";
 
 import { LeadCommunication } from "@prisma/client";
+import { LeadCommunicationType } from "@/types/lead";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
@@ -105,7 +107,7 @@ export const ConversationCard = ({
           </p>
         </div>
 
-        {lastCommunication?.type == "sms" ? (
+        {lastCommunication?.type == LeadCommunicationType.SMS ? (
           <div className="text-sm text-muted-foreground w-full text-ellipsis line-clamp-1">
             <span>{lastCommunication?.content}</span>
           </div>

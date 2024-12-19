@@ -29,7 +29,7 @@ export const CallModal = () => {
   const onCallBack = async () => {
     //TO DO THIS IS ALL TEMPORARY UNTIL WE FIND A MORE PERMANENT SOLUTION
     const response = await axios.post("/api/leads/details/by-id", {
-      leadId: call?.lead?.id,
+      leadId: call?.conversation.lead?.id,
     });
     const lead = response.data;
     onCallClose();
@@ -41,8 +41,8 @@ export const CallModal = () => {
     onCallClose();
   };
   if (!call) return null;
-  const leadName = call?.lead
-    ? `${call?.lead?.firstName} ${call?.lead?.lastName}`
+  const leadName = call?.conversation.lead
+    ? `${call?.conversation.lead?.firstName} ${call?.conversation.lead?.lastName}`
     : formatPhoneNumber(call?.from as string);
   const caller = call?.from.startsWith("client");
 
