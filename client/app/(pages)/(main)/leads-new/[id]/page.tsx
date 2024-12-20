@@ -12,8 +12,9 @@ import { BeneficiariesClient } from "@/components/lead/beneficiaries/client";
 import { ConditionsClient } from "@/components/lead/conditions/client";
 import { ExpensesClient } from "@/components/lead/expenses/client";
 import { CommunicationClient } from "./components/communication/client";
-import { PrevNextMenu } from "@/components/lead/prev-next-menu";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
+import { PrevNextMenu } from "@/components/lead/prev-next-menu";
+import { capitalize } from "@/formulas/text";
 
 const LeadsPage = () => {
   const user = useCurrentUser();
@@ -21,7 +22,8 @@ const LeadsPage = () => {
   const { onGetLeadBasicInfo, onGetLeadPrevNext } = useLeadData();
   const { leadBasic } = onGetLeadBasicInfo(leadId);
   const { prevNext, nextPrevFetching } = onGetLeadPrevNext(leadId);
-  if (!leadBasic || leadId) return null;
+
+  if (!leadBasic || !leadId) return null;
 
   if (![leadBasic.userId, leadBasic.sharedUserId].includes(user?.id!)) {
     redirect("/leads");
@@ -35,7 +37,7 @@ const LeadsPage = () => {
           <PrevNextMenu href="leads" btnText="lead" prevNext={prevNext!} />
         </SkeletonWrapper>
       }
-      cardClass="h-full"
+      cardClass="h-full !rounded-l-none"
       contentClass="!p-1 flex"
       scroll={false}
     >
@@ -44,14 +46,20 @@ const LeadsPage = () => {
         className="flex flex-col flex-1 h-full overflow-hidden"
       >
         <TabsList className="flex flex-col md:flex-row w-full h-auto rounded-none bg-primary/25">
-          <TabsTrigger value="comunication">Comunication</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="beneficiaries">Beneficiaries</TabsTrigger>
-          <TabsTrigger value="conditions">Conditions</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          {[
+            "comunication",
+            "activity",
+            "beneficiaries",
+            "conditions",
+            "expenses",
+          ].map((trigger) => (
+            <TabsTrigger key={trigger} value={trigger}>
+              {capitalize(trigger)}
+            </TabsTrigger>
+          ))}
         </TabsList>
         <div className="flex-1 h-full overflow-hidden">
-          <TabsContent value="comunication" className="h-full">
+          <TabsContent value="comunication" className="h-full overflow-hidden">
             <CommunicationClient />
           </TabsContent>
           <TabsContent value="activity" className="h-full">
@@ -63,7 +71,7 @@ const LeadsPage = () => {
           <TabsContent value="conditions" className="h-full">
             <ConditionsClient leadId={leadId} />
           </TabsContent>
-          <TabsContent value="expenses" className="h-full flex flex-col">
+          <TabsContent value="expenses" className="h-full">
             <ExpensesClient leadId={leadId} />
           </TabsContent>
         </div>

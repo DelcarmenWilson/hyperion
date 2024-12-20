@@ -22,7 +22,11 @@ import { useLeadCommunicationData } from "@/hooks/lead/use-communication";
 import { CallCard } from "./call-card";
 import { LeadCommunicationType } from "@/types/lead";
 
-export const SmsBody = ({ conversationId }: { conversationId: string }) => {
+export const SmsBody = ({
+  conversationId,
+}: {
+  conversationId: string | undefined;
+}) => {
   const { socket } = useSocketStore();
   const user = useCurrentUser();
   const { leadId } = useLeadStore();
@@ -36,7 +40,6 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
     communicationsLoading,
   } = onGetCommunications();
 
-  // const { conversationId } = useConversationId();
   const { IsPendinginitialMessage, onMessageInitialSubmit } =
     useLeadMessageActions();
 
@@ -99,13 +102,19 @@ export const SmsBody = ({ conversationId }: { conversationId: string }) => {
   }, [initCommunications]);
 
   return (
-    <ScrollArea className="flex flex-col flex-1 rounded-sm p-4">
+    <ScrollArea className="flex flex-col flex-1 px-4">
       <div
         ref={chatContainerRef}
         className="flex flex-1 flex-col h-full w-full"
       >
         <SkeletonWrapper isLoading={communicationsFetching} fullHeight>
-          {!communications?.length && (
+          {!leadId && (
+            <div className="flex-center flex-col text-muted-foreground h-full gap-2">
+              <p className="font-bold">Please slect a lead to message</p>
+            </div>
+          )}
+
+          {leadId && !communications?.length && (
             <div className="flex-center flex-col text-muted-foreground h-full gap-2">
               <p className="font-bold">No sms have been sent</p>
               <Button

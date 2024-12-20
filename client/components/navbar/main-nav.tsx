@@ -41,7 +41,7 @@ const MainNav = ({ admin }: { admin?: boolean }) => {
         textAnchor="left"
         viewBox="0 0 700 160"
         x="0"
-        y="70%"
+        y="60%"
       />
 
       <AdminTestMenu />

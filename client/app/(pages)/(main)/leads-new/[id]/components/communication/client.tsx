@@ -7,7 +7,7 @@ import { EmailClient } from "../email/client";
 
 export const CommunicationClient = () => {
   return (
-    <Tabs defaultValue="sms" className="flex gap-2 h-full">
+    <Tabs defaultValue="sms" className="flex gap-2 h-full w-full">
       <TabsList
         className="flex flex-col justify-start p-1 gap-2 h-full min-w-[125x]"
         aria-orientation="vertical"
@@ -35,7 +35,7 @@ export const CommunicationClient = () => {
         </TabsTrigger>
       </TabsList>
 
-      <div className="flex-1 px-2">
+      <div className="flex-1 h-full w-full overflow-hidden px-2">
         <TabsContent value="sms" className="h-full">
           <SmsClient showHeader={false} />
         </TabsContent>

@@ -24,7 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const LeadSidebar = () => {
   const { onPhoneOutOpen } = usePhoneStore();
-  const { setLeadId, onMainFormOpen, onGeneralFormOpen } = useLeadStore();
+  const { setLeadId, onMainFormOpen, onGeneralFormOpen, setConversationId } =
+    useLeadStore();
   const { leadId } = useLeadId();
   const {
     edit,
@@ -48,6 +49,11 @@ export const LeadSidebar = () => {
     setLeadId(leadId);
   }, [leadId]);
 
+  useEffect(() => {
+    if (!leadBasic) return;
+    setConversationId(leadBasic.conversations[0].id);
+  }, [leadBasic]);
+
   if (!leadBasic || !leadId) return null;
 
   return (
@@ -58,13 +64,11 @@ export const LeadSidebar = () => {
             {fullName}
           </h3>
           <div className="grid grid-cols-2 justify-between items-center gap-2">
-            {/* <LeadDropDown
-              lead={lead!}
-              conversationId={
-                conversations?.length ? conversations[0].id : undefined
-              }
+            <LeadDropDown
+              lead={lead}
+              conversationId={leadBasic.conversations[0].id}
               action
-            /> */}
+            />
             <Button
               variant="outlineprimary"
               className="relative gap-2"
@@ -82,8 +86,7 @@ export const LeadSidebar = () => {
           </div>
         </div>
       </SkeletonWrapper>
-      <ScrollArea className="flex-1 pb-2">
-        {/* <div className="flex-1 overflow-y-auto pb-2"> */}
+      <ScrollArea>
         <LeadSection
           label="Main"
           hint="Main Info"
@@ -92,8 +95,10 @@ export const LeadSidebar = () => {
           <MainInfoClient leadId={leadId} noConvo={false} showEdit={false} />
 
           <CallInfo leadId={leadId} showBtnCall={false} />
-          <div className="pt-1">
-            <p className="text-sm tracking-tighter leading-3">Caller Id </p>
+          <div className="border rounded-sm shadow-md p-2">
+            <div className="flex justify-between items-center pb-1">
+              <h4 className="text-muted-foreground">Caller Id</h4>
+            </div>
             <div className="flex items-center gap-1">
               {edit ? (
                 <PhoneSwitcher
@@ -124,7 +129,12 @@ export const LeadSidebar = () => {
           hint="General Info"
           onEdit={() => onGeneralFormOpen(leadBasic.id)}
         >
-          <GeneralInfoClient leadId={leadId} showInfo showEdit={false} />
+          <GeneralInfoClient
+            leadId={leadId}
+            showInfo
+            size="sm"
+            showEdit={false}
+          />
         </LeadSection>
         <LeadSection label="Notes" hint="Notes">
           <NotesForm leadId={leadId} />
@@ -133,7 +143,6 @@ export const LeadSidebar = () => {
         <LeadSection label="Policy" hint="Policy Info">
           <PolicyInfoClient leadId={leadId} />
         </LeadSection>
-        {/* </div> */}
       </ScrollArea>
     </div>
   );

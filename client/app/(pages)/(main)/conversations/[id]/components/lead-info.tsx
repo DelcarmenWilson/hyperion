@@ -50,7 +50,7 @@ export const ConversationLeadInfo = ({ size = "full" }: { size?: string }) => {
               )}
             >
               <MainInfoClient leadId={leadId} noConvo={false} />
-              <GeneralInfoClient leadId={leadId} showInfo />
+              <GeneralInfoClient leadId={leadId} size={size} showInfo />
               <CallInfo leadId={leadId} showBtnCall={false} />
               <PolicyInfoClient leadId={leadId} />
               <NotesForm leadId={leadId} />

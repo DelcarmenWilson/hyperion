@@ -23,7 +23,13 @@ export const TextAnimation = ({
 }: Props) => {
   return (
     <svg className={cn("svg-logo", font.className)} viewBox={viewBox}>
-      <text x={x} y={y} dy={dy} textAnchor={textAnchor} className="capitalize">
+      <text
+        x={x}
+        y={y}
+        alignmentBaseline="middle"
+        textAnchor={textAnchor}
+        className="capitalize"
+      >
         {text}
       </text>
     </svg>

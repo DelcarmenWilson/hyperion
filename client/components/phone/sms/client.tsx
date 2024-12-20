@@ -65,21 +65,6 @@ export const SmsClient = ({ showHeader = true }: { showHeader?: boolean }) => {
     });
   }, [leadBasic]);
 
-  // useEffect(() => {
-  //   const setData = async () => {
-  //     setLoading(true);
-  //     if (lid) {
-  //       const response = await axios.post("/api/leads/messages", {
-  //         leadId: lid,
-  //       });
-  //       setMessages(response.data);
-  //     }
-  //     setLoading(false);
-  //   };
-  //   setData();
-  // return () => setData();
-  //}, [lid]);
-
   return (
     <div className="flex flex-col flex-1 gap-2 p-2 h-full overflow-hidden">
       {showHeader && (

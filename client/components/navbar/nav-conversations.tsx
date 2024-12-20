@@ -1,4 +1,4 @@
-import { MessagesSquare } from "lucide-react";
+import { MessagesSquare, PhoneOutgoing } from "lucide-react";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/user/use-current";
 import {
@@ -7,6 +7,7 @@ import {
 } from "@/hooks/use-conversation";
 
 import { ShortConvo } from "@/types";
+import { LeadCommunicationType } from "@/types/lead";
 
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,9 @@ import Hint from "../custom/hint";
 import { ScrollArea } from "../ui/scroll-area";
 import SkeletonWrapper from "@/components//skeleton-wrapper";
 
-import { formatDate } from "@/formulas/dates";
+import { calculateTime, formatDate } from "@/formulas/dates";
+import { getPhoneStatusText } from "@/formulas/phone";
+import { formatDistance } from "date-fns";
 
 const NavConversations = () => {
   const user = useCurrentUser();
@@ -44,7 +47,11 @@ const NavConversations = () => {
 
               {unreadConversations && unreadConversations?.length > 0 && (
                 <Badge className="absolute rounded-full text-xs -top-2 -right-2">
-                  {unreadConversations.length}
+                  {unreadConversations.length > 9 ? (
+                    <span>9+</span>
+                  ) : (
+                    <span>{unreadConversations.length}</span>
+                  )}
                 </Badge>
               )}
             </Button>
@@ -117,11 +124,7 @@ const ConversationCard = ({
             {lead.firstName.charAt(0)} {lead.lastName.charAt(0)}
           </AvatarFallback>
         </Avatar>
-
-        {/* <span className="text-lg font-semibold">
-          {lead.firstName.charAt(0)} {lead.lastName.charAt(0)}
-        </span> */}
-        <Badge className="absolute rounded-full text-xs -top-2 -right-2 z-2">
+        <Badge className="flex-center absolute rounded-full text-xs -top-2 -right-2 z-2 px-2.5 py-0.5">
           {unread}
         </Badge>
       </div>
@@ -129,10 +132,32 @@ const ConversationCard = ({
         <div className="flex justify-between items-start">
           <h4 className=" font-bold ms-2">{lead.firstName}</h4>
           <p className="text-end text-muted-foreground text-sm">
-            {formatDate(lastCommunication?.createdAt)}
+            {formatDistance(convo.updatedAt, new Date(), {
+              addSuffix: true,
+            }).replace("about", "")}
           </p>
         </div>
-        <p>{lastCommunication?.content}</p>
+        {lastCommunication?.type == LeadCommunicationType.SMS ? (
+          <div className="text-sm text-muted-foreground w-full text-ellipsis line-clamp-1">
+            <span>{lastCommunication?.content}</span>
+          </div>
+        ) : (
+          <div className="flex gap-2 items-center text-sm text-muted-foreground">
+            {lastCommunication?.direction.toLowerCase() === "inbound" ? (
+              getPhoneStatusText(lastCommunication?.status as string)
+            ) : (
+              <>
+                <PhoneOutgoing size={16} />
+                {lastCommunication?.direction}
+              </>
+            )}
+            <span>
+              {isNaN(lastCommunication?.duration as number)
+                ? "0:00"
+                : calculateTime(lastCommunication?.duration as number)}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

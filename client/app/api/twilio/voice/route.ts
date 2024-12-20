@@ -23,14 +23,16 @@ export async function POST(req: Request) {
   //if there is an associated agent phonenumber change the agent id to the agent id from the database
   if (agentPhoneNumber) agentId = agentPhoneNumber.agentId!;
 
+  const direction=call.callDirection||"inbound"
+
   //get the lead information based on the phone number and call direction
   const lead = await getOrCreateLeadByPhoneNumber({
-    cellPhone: call.callDirection == "outbound" ? call.to : call.from,
+    cellPhone: direction == "outbound" ? call.to : call.from,
     state: call.callerState,
     agentId,
   });
 
-  if (call.callDirection == "outbound") {
+  if (direction == "outbound") {
     call.agentId = agentId;
     call.direction = "outbound";
 

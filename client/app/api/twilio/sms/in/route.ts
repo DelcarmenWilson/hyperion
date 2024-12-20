@@ -18,11 +18,13 @@ import { chatFetch } from "@/actions/gpt";
 
 import { createAppointment } from "@/actions/appointment";
 import { chatSettingGetTitan } from "@/actions/settings/chat";
-import { insertMessage } from "@/actions/lead/message";
+import { createMessage, insertMessage } from "@/actions/lead/message";
 
 import { formatDateTime } from "@/formulas/dates";
 import { formatObject } from "@/formulas/objects";
 import { sendSocketData } from "@/services/socket-service";
+import { getOrCreateLeadByPhoneNumber } from "@/actions/lead";
+import { LeadCommunicationType } from "@/types/lead";
 
 export async function POST(req: Request) {
   //The paramters passed in from twilio
@@ -52,46 +54,40 @@ export async function POST(req: Request) {
   //   if (insertedMessage) return new NextResponse(null, { status: 200 });
   // }
 
-
-
-  let updatedConversation;
-  //Pulling the entire conversation based on the phone number
-  const conversation = await db.leadConversation.findFirst({
-    where: {
-      lead: {
-        cellPhone: sms.from,
-      },
-      agentId: agentNumber.agentId!,
-    },
-    include: { lead: true },
+  //Get or create the lead infor based on the cellphone
+  const lead = await getOrCreateLeadByPhoneNumber({
+    cellPhone: sms.from,
+    state: sms.fromState,
+    agentId: agentNumber.agentId!,
   });
-
-  //If the conversation does not exist - exit the work flow
-  if (!conversation)
-    //TODO - create a new lead into a temp lead table
-    return new NextResponse(null, { status: 200 });
 
   //The incoming message from the lead
   const smsFromLead: MessageSchemaType = {
     id: sms.smsSid,
     role: "user",
-    conversationId: conversation.id,
+    conversationId: "conversation.id",
     from: MessageType.LEAD,
-    direction:"inbound",
+    direction: "inbound",
     content: sms.body,
     hasSeen: false,
   };
 
-    //Create a new message from the leads response
-  const newMessage = await insertMessage(smsFromLead);
-  
+  //Create a new message from the leads response
+  const messageResult = await createMessage({
+    ...smsFromLead,
+    leadId: lead.id,
+    agentId: agentNumber.agentId!,
+  });
+
+  smsFromLead.conversationId = messageResult.conversation.id;
+
   //Get Keyword Response based ont the leads text
   //If a reponse is generated end the flow and return a success message to the lead
   const keywordResponse = await getKeywordResponse(
     smsFromLead,
     sms,
-    conversation.id,
-    conversation.leadId
+    messageResult.conversation.id,
+    messageResult.conversation.leadId
   );
   if (keywordResponse)
     return new NextResponse(keywordResponse, { status: 200 });
@@ -99,15 +95,18 @@ export async function POST(req: Request) {
   //Check weather titan is enabled globally for this agent
   const titan = await chatSettingGetTitan(agentNumber?.agentId as string);
   //If titan is disabled
-  if (!titan || !conversation.lead.titan) {
-    await disabledAutoChatResponse(conversation, newMessage!);
+  if (!titan || !lead.titan) {
+    await disabledAutoChatResponse(
+      messageResult.conversation,
+      messageResult.sms!
+    );
     //exit the workflow
     return new NextResponse("Titan is turned off", { status: 200 });
   }
 
   //If autochat is enabled - get all the messages in the conversation
   const messages = await db.leadCommunication.findMany({
-    where: { conversationId: conversation.id },
+    where: { conversationId: messageResult.conversation.id,type:LeadCommunicationType.SMS },
   });
 
   //Convert all the messags into a list that chatGpt can read
@@ -134,8 +133,8 @@ export async function POST(req: Request) {
       date: new Date(),
       localDate: aptDate,
       startDate: aptDate,
-      leadId: conversation.leadId,
-      agentId: conversation.agentId,
+      leadId: messageResult.conversation.leadId,
+      agentId: messageResult.conversation.agentId,
       labelId: "cm1nvphdz0000ycm71r4vidu0",
       comments: "",
       smsReminder: false,
@@ -161,44 +160,45 @@ export async function POST(req: Request) {
   const wpm = 38;
   const delay = Math.round(words.length / wpm);
 
-  const results = 
-    await smsSend({
-      toPhone: sms.from,
-      fromPhone: sms.to,
-      message: content,
-      timer: delay,
-    })
-  
-    if(!results.success) return new NextResponse(results.error, { status: 200 }) 
+  const results = await smsSend({
+    toPhone: sms.from,
+    fromPhone: sms.to,
+    message: content,
+    timer: delay,
+  });
+
+  if (!results.success) return new NextResponse(results.error, { status: 200 });
 
   //Insert the new message from chat gpt into the conversation
   const newChatMessage = await insertMessage({
-    id:results.success,
-    conversationId: conversation.id,
+    id: results.success,
+    conversationId: messageResult.conversation.id,
     role,
-    from: MessageType.TITAN,direction:"outbound",
+    from: MessageType.TITAN,
+    direction: "outbound",
     content,
     hasSeen: true,
   });
   if (newChatMessage) {
-    updatedConversation = await db.leadConversation.update({
-      where: { id: conversation.id },
+    await db.leadConversation.update({
+      where: { id: messageResult.conversation.id },
       include: { lastCommunication: true, lead: true },
       data: {
         lastCommunicationId: newChatMessage.id,
       },
     });
+    //TODO need to reintegrate this withing the server
+    // sendSocketData(
+    //   messageResult.conversation.agentId,
+    //   "conversation:updated",
+    //   updatedConversation
+    // );
 
     sendSocketData(
-      conversation.agentId,
-      "conversation:updated",
-      updatedConversation
+      messageResult.conversation.agentId,
+      "conversation-messages:new",
+      [messageResult.sms, newChatMessage]
     );
-
-    sendSocketData(conversation.agentId, "conversation-messages:new", [
-      newMessage,
-      newChatMessage,
-    ]);
   }
   return new NextResponse(content, { status: 200 });
 }
