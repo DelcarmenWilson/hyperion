@@ -13,10 +13,12 @@ import { LeadCommunication } from "@prisma/client";
 import { LeadCommunicationType } from "@/types/lead";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { EmptyCard } from "@/components/reusable/empty-card";
 import SkeletonWrapper from "@/components/skeleton-wrapper";
 
 import { getPhoneStatusText } from "@/formulas/phone";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const ConversationsSidebar = () => {
   const { onGetConversations } = useConversationData();
@@ -28,28 +30,30 @@ export const ConversationsSidebar = () => {
       <h4 className="text-lg text-muted-foreground font-semibold">
         Conversations
       </h4>
-      <div className="flex-1 space-y-2 overflow-hidden overflow-y-auto h-full">
-        <SkeletonWrapper isLoading={conversationsFetching} fullHeight>
-          {conversations && conversations.length > 0 ? (
-            <>
-              {conversations.map((conversation) => (
-                <ConversationCard
-                  key={conversation.id}
-                  id={conversation.id}
-                  lastCommunication={conversation.lastCommunication}
-                  firstName={conversation.firstName}
-                  lastName={conversation.lastName}
-                  unread={conversation.unread}
-                  lastDate={conversation.updatedAt}
-                  active={conversationId == conversation.id}
-                />
-              ))}
-            </>
-          ) : (
-            <EmptyCard title="No Conversations" />
-          )}
-        </SkeletonWrapper>
-      </div>
+      <ScrollArea>
+        <div className="space-y-2 h-full">
+          <SkeletonWrapper isLoading={conversationsFetching} fullHeight>
+            {conversations && conversations.length > 0 ? (
+              <>
+                {conversations.map((conversation) => (
+                  <ConversationCard
+                    key={conversation.id}
+                    id={conversation.id}
+                    lastCommunication={conversation.lastCommunication}
+                    firstName={conversation.firstName}
+                    lastName={conversation.lastName}
+                    unread={conversation.unread}
+                    lastDate={conversation.updatedAt}
+                    active={conversationId == conversation.id}
+                  />
+                ))}
+              </>
+            ) : (
+              <EmptyCard title="No Conversations" />
+            )}
+          </SkeletonWrapper>
+        </div>
+      </ScrollArea>
     </div>
   );
 };
@@ -84,9 +88,9 @@ export const ConversationCard = ({
     >
       <div className="relative">
         {unread > 0 && (
-          <span className="absolute -top-2 -right-2 bg-primary text-accent rounded-full text-sm p-1">
+          <Badge className="flex-center absolute rounded-full text-xs -top-2 -right-2 z-2 px-2.5 py-0.5">
             {unread}
-          </span>
+          </Badge>
         )}
 
         <Avatar className="rounded-full">
@@ -103,7 +107,7 @@ export const ConversationCard = ({
           <p className="text-xs text-right">
             {formatDistance(lastDate, new Date(), {
               addSuffix: true,
-            })}
+            }).replace("about", "")}
           </p>
         </div>
 

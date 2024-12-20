@@ -24,6 +24,7 @@ type Props = {
   cfText: string;
   onConfirm: () => void;
   loading: boolean;
+  onlyIcon?: boolean;
 };
 const DeleteDialog = ({
   triggerText = "Delete",
@@ -32,14 +33,20 @@ const DeleteDialog = ({
   cfText,
   onConfirm,
   loading,
+  onlyIcon = false,
 }: Props) => {
   const [confirmText, setConfirmText] = useState("");
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className={cn("gap-2 w-full", btnClass)}>
+        <Button
+          variant="ghost"
+          size={onlyIcon ? "icon" : "default"}
+          className={cn("gap-2 w-full", btnClass)}
+        >
           <span className="sr-only">Delete {title}</span>
-          <Trash size={16} /> {triggerText}
+          <Trash size={16} />
+          {!onlyIcon && <span>{triggerText}</span>}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

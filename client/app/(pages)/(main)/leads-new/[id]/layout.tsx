@@ -11,7 +11,7 @@ type Props = {
 
 const LeadLayoutPage = ({ children }: Props) => {
   return (
-    <div className="flex gap-2 absolute top-14 left-0 bg-secondary w-full h-[calc(100%-3.5rem)] p-2 overflow-hidden">
+    <div className="flex gap-2 absolute top-12 left-0 bg-secondary w-full h-[calc(100%-3rem)] px-2 overflow-hidden">
       <ResizablePanelGroup direction="horizontal" autoSaveId="rpg-lead">
         <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
           <LeadSidebar />

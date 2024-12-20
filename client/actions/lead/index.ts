@@ -424,7 +424,7 @@ export const getOrCreateLeadByPhoneNumber = async ({
       e.abv.toLowerCase() == state.toLowerCase()
   );
 
-  const firstName = "New";
+  const firstName = "Unknown";
   let lastName = "Lead";
 
   //Geta new TextCode a code based on lead infomation
@@ -445,7 +445,7 @@ export const getOrCreateLeadByPhoneNumber = async ({
       gender: "NA",
       maritalStatus: "Single",
       email: "",
-      dateOfBirth: "",
+      dateOfBirth: new Date(),
       weight: "",
       height: "",
       income: "",

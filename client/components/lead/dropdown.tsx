@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type DropDownProps = {
-  lead: FullLeadNoConvo;
+  lead: FullLeadNoConvo | null | undefined;
   conversationId?: string;
   action?: boolean;
 };
@@ -63,6 +63,8 @@ export const LeadDropDown = ({
     titanUpdating,
     onPreExport,
   } = useLeadDropdownActions(lead);
+
+  if (!lead) return null;
   const leadFullName = `${lead.firstName} ${lead.lastName}`;
 
   return (

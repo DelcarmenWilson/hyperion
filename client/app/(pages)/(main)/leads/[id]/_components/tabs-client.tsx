@@ -18,15 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { SmsClient } from "@/components/phone/sms/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type LeadTabsClientProps = {
-  leadId: string;
-  conversation?: FullConversation;
-};
-
-export const LeadTabsClient = ({
-  leadId,
-  conversation,
-}: LeadTabsClientProps) => {
+export const LeadTabsClient = ({ leadId }: { leadId: string }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[400px]">
       {/* ACTIVITY */}
@@ -113,10 +105,9 @@ export const LeadTabsClient = ({
           )}
         </div>
 
-        <div className="px-2">
+        <div className="h-[400px] px-2">
           <TabsContent value="sms">
             <SmsClient showHeader={false} />
-            {/* <Body initialData={conversation!} /> */}
           </TabsContent>
           <TabsContent value="email">SEND EMAIL</TabsContent>
           <TabsContent value="documents">DOCUMENTS</TabsContent>

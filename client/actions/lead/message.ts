@@ -16,6 +16,7 @@ import { getRandomNumber } from "@/formulas/numbers";
 import { replacePreset } from "@/formulas/text";
 import { randomUUID } from "crypto";
 import { LeadCommunicationType } from "@/types/lead";
+import { MessageRole } from "@prisma/client";
 //TODO - this has to be removed before we get rid of all the tables and actions
 export const getMessagesForConversation = async (
   conversationId: string | null | undefined
@@ -214,4 +215,65 @@ export const insertMessage = async (values: MessageSchemaType) => {
 
 
     return updatedConversation.lastCommunication;
+};
+
+///TODO see if this is really necessary and delete the opld once if this is better than the previous one
+export const createMessage = async ({
+  id,
+  role,
+  from,
+  direction,
+  content,
+  attachment,
+  hasSeen,
+  agentId,
+  leadId,
+}: {
+  id: string;
+  role: string;
+  from: string;
+  direction: string;
+  content: string;
+  attachment?: string;
+  hasSeen: boolean;
+  agentId: string;
+  leadId: string;
+}) => {
+  
+
+  
+  const conversation = await db.leadConversation.upsert({
+    where: { leadId_agentId: { leadId , agentId } },
+    update: {
+      unread: { increment: direction == "inbound" ? 1 : 0 },
+    },
+    create: {
+      leadId,
+      agentId,
+    },include:{lead:true}
+  });
+
+  const sms = await db.leadCommunication.create({
+    data: {
+
+      id,
+  role:role as MessageRole,
+  from,
+  direction,
+  content,
+  attachment,
+  hasSeen,
+      conversationId: conversation.id,
+          type: LeadCommunicationType.SMS,
+    },
+  });
+
+  await db.leadConversation.update({
+    where: { id: conversation.id },
+    data: {
+      lastCommunicationId: sms.id,
+    },
+  });  
+
+  return {conversation,sms};
 };

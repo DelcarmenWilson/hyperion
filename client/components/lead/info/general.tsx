@@ -13,12 +13,14 @@ import { formatDateTime, formatDob, getAge } from "@/formulas/dates";
 
 type Props = {
   leadId: string;
+  size?: string;
   showInfo?: boolean;
   showEdit?: boolean;
 };
 
 export const GeneralInfoClient = ({
   leadId,
+  size = "full",
   showInfo = false,
   showEdit = true,
 }: Props) => {
@@ -28,7 +30,6 @@ export const GeneralInfoClient = ({
 
   const lastCall = generalInfo?.conversations[0];
   const nextAppointment = generalInfo?.appointments[0];
-  // console.log(formatDob(generalInfo?.dateOfBirth))
 
   return (
     <SkeletonWrapper isLoading={generalInfoFetching}>
@@ -41,32 +42,32 @@ export const GeneralInfoClient = ({
             {lastCall && (
               <div
                 className={cn(
-                  "flex items-center  gap-1",
-                  !showInfo && "flex-col items-start"
+                  "flex items-center gap-1",
+                  !showInfo || (size == "sm" && "flex-col items-start")
                 )}
               >
                 <Badge className="gap-1 w-fit">
                   <Phone size={16} /> Last Call
                 </Badge>
-                <span className="text-xs">
+                <p className={cn("text-xs w-full", size == "sm" && "text-end")}>
                   {formatDateTime(lastCall.createdAt)}
-                </span>
+                </p>
               </div>
             )}
 
             {nextAppointment && (
               <div
                 className={cn(
-                  "flex items-center  gap-1",
-                  !showInfo && "flex-col items-start"
+                  "flex items-center gap-1",
+                  !showInfo || (size == "sm" && "flex-col items-start")
                 )}
               >
                 <Badge className="gap-1 w-fit">
                   <CalendarX size={16} /> Appt Set
                 </Badge>
-                <span className="text-xs">
+                <p className={cn("text-xs w-full", size == "sm" && "text-end")}>
                   {formatDateTime(nextAppointment.startDate)}
-                </span>
+                </p>
               </div>
             )}
 

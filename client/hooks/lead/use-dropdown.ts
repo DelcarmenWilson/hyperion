@@ -12,10 +12,10 @@ import { deleteLead } from "@/actions/lead";
 import { deleteConversation } from "@/actions/lead/conversation";
 import { updateLeadTitan } from "@/actions/lead";
 
-export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
+export const useLeadDropdownActions = (lead: FullLeadNoConvo|undefined|null) => {
   const role = useCurrentRole();
   const { invalidate } = useInvalidate();
-  const [titan, setTitan] = useState<boolean>(lead?.titan);
+  const [titan, setTitan] = useState<boolean>(lead?.titan||false);
   const isAssistant = role == "ASSISTANT";
   const [alertDeleteConvoOpen, setAlertDeleteConvoOpen] = useState(false);
   const pathName = usePathname();
@@ -60,7 +60,7 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
 
   const onLeadDelete = useCallback(() => {
     toast.loading("Deleting Lead...", { id: "delete-lead" });
-    leadDeleteMutate(lead.id);
+    leadDeleteMutate(lead?.id as string);
   }, [leadDeleteMutate]);
 
   //TITAN
@@ -80,7 +80,7 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
   const onTitanUpdated = useCallback(() => {
     toast.loading("Updating Titan...", { id: "update-titan" });
     setTitan((state) => !state);
-    titanUpdateMutate({ id: lead.id, titan: !titan });
+    titanUpdateMutate({ id: lead?.id as string, titan: !titan });
   }, [titanUpdateMutate]);
 
   const onPreExport = (fileType: string) => {
@@ -88,6 +88,11 @@ export const useLeadDropdownActions = (lead: FullLeadNoConvo) => {
       toast.error("Not Authorized");
       return;
     }
+    if(!lead){
+      toast.error("Not Authorized");
+      return;
+    }
+    
     exportLeads(fileType, [lead], `${lead.firstName} ${lead.lastName}`);
   };
 

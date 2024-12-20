@@ -42,7 +42,7 @@ export const LeadSection = ({
 
           <Hint label={hint}>
             <Button
-              variant="ghost"
+              variant="simple"
               size="sm"
               className="flex-1 px-1.5 text-sm  h-[28px] justify-start overflow-hidden items-center"
               onClick={toggle}
@@ -63,7 +63,7 @@ export const LeadSection = ({
           )}
         </div>
       )}
-      <div className="pl-3">{on && children}</div>
+      <div>{on && children}</div>
     </div>
   );
 };

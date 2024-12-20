@@ -356,7 +356,10 @@ export const createCall = async (data: {
 
   const call = await db.leadCommunication.create({
     data: {
-      ...data,
+      id: data.id,
+      direction: data.direction,
+      from: data.from,
+      status: data.status,
       conversationId: conversation.id,
     },
   });
