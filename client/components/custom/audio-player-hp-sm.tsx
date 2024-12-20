@@ -9,9 +9,10 @@ import { calculateTime } from "@/formulas/dates";
 
 type Props = {
   src: string | undefined;
+  text?: string;
 };
 
-const AudioPlayerHpSm = ({ src }: Props) => {
+const AudioPlayerHpSm = ({ src,text }: Props) => {
   const { audio, setAudio } = useAudioStore();
   const {
     audioPlayer,
@@ -50,6 +51,7 @@ const AudioPlayerHpSm = ({ src }: Props) => {
           />
           <div className="flex justify-between items-center text-muted-foreground">
             <span className="text-sm px-1">{calculateTime(currentTime)}</span>
+            <span className="text-sm px-1 font-bold text-primary">{text}</span>
             <span className="text-sm px-1 text-end">
               {isNaN(duration) ? "0:00" : calculateTime(duration)}
             </span>

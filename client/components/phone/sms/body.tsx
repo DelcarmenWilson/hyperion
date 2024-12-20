@@ -166,6 +166,7 @@ export const SmsBody = ({
                   type={communication.type}
                   status={communication.status}
                   duration={communication.duration || 0}
+                  recordDuration={communication.recordDuration || 0}
                   recordUrl={communication.recordUrl as string}
                   createdAt={communication.createdAt}
                 />

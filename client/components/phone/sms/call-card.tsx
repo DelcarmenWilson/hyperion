@@ -4,6 +4,8 @@ import AudioPlayerHpSm from "@/components/custom/audio-player-hp-sm";
 import { formatDistance } from "date-fns";
 import { getPhoneStatusText } from "@/formulas/phone";
 import { cn } from "@/lib/utils";
+import { LeadCommunicationType } from "@/types/lead";
+import { calculateTime } from "@/formulas/dates";
 
 const setBg = (direction: string): { bg: string; pos: boolean } => {
   switch (direction) {
@@ -24,6 +26,7 @@ type CallCardProps = {
   direction: string;
   duration: number;
   type: string;
+  recordDuration:number;
   recordUrl: string;
   status: string;
   createdAt: Date;
@@ -34,6 +37,7 @@ export const CallCard = ({
   status,
   duration,
   type,
+  recordDuration,
   recordUrl,
   createdAt,
 }: CallCardProps) => {
@@ -64,10 +68,12 @@ export const CallCard = ({
           </span>
         </div>
         <div className="flex-center">
-          {duration > 8 ? (
-            <AudioPlayerHpSm src={recordUrl} />
+          {recordDuration > 0 ? (
+            <AudioPlayerHpSm src={recordUrl} text={type==LeadCommunicationType.VOICEMAIL?"voicemail":""} />
           ) : (
-            <span className="uppercase font-bold">{status}</span>
+           
+            <span className="uppercase font-bold">{status}     {isNaN(duration) ? "0:00" : calculateTime(duration)}</span>
+          
           )}
         </div>
       </div>

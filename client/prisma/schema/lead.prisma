@@ -298,7 +298,7 @@ model LeadCommunication {
 
     from String @default("AGENT")
 
-    type String @default("call")
+    type String @default("CALL")
 
     direction String  @default("inbound")
     status    String  @default("sent")
